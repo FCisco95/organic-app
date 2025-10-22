@@ -54,28 +54,39 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-organic-900 via-organic-800 to-organic-700 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-organic-yellow/30 via-white to-organic-orange/30 p-4">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center space-x-2 mb-4">
-            <div className="w-14 h-14 bg-white rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-2xl font-bold bg-gradient-to-r from-organic-600 to-organic-800 bg-clip-text text-transparent">
+          <div className="inline-flex items-center space-x-3 mb-6">
+            <div className="w-16 h-16 bg-gradient-to-br from-organic-orange to-organic-yellow rounded-2xl flex items-center justify-center shadow-2xl border-4 border-organic-black animate-breathe">
+              <span className="text-3xl font-luckiest text-white" style={{
+                textShadow: '2px 2px 0px rgba(0,0,0,0.3)',
+                WebkitTextStroke: '1px rgba(0,0,0,0.2)'
+              }}>
                 O
               </span>
             </div>
           </div>
-          <h2 className="text-white text-2xl font-bold">Organic DAO</h2>
-          <p className="text-organic-100 mt-2">Community Coordination Platform</p>
+          <h2 className="text-4xl font-luckiest text-organic-black mb-2" style={{
+            textShadow: '2px 2px 0px rgba(255,122,0,0.3)',
+            WebkitTextStroke: '0.5px rgba(255,122,0,0.3)'
+          }}>
+            ORGANIC DAO
+          </h2>
+          <p className="text-lg font-comic text-gray-700">Community Coordination Platform</p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-2xl p-8">
+        <div className="bg-white rounded-2xl shadow-2xl p-8 border-4 border-organic-black">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              {isLogin ? 'Welcome Back' : 'Join Organic'}
+            <h1 className="text-3xl font-luckiest text-organic-orange mb-3" style={{
+              textShadow: '2px 2px 0px rgba(255,122,0,0.2)',
+              WebkitTextStroke: '0.5px rgba(255,122,0,0.3)'
+            }}>
+              {isLogin ? 'WELCOME BACK!' : 'JOIN ORGANIC'}
             </h1>
-            <p className="text-gray-600">
+            <p className="text-base font-comic text-gray-600">
               {isLogin ? 'Sign in to access your account' : 'Create an account to get started'}
             </p>
           </div>
@@ -83,7 +94,7 @@ export default function LoginPage() {
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="email" className="block text-sm font-comic font-bold text-gray-800 mb-2">
                 Email
               </label>
               <input
@@ -92,13 +103,13 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 border-3 border-gray-300 rounded-xl focus:border-organic-orange focus:ring-0 transition-all font-comic"
                 placeholder="you@example.com"
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="password" className="block text-sm font-comic font-bold text-gray-800 mb-2">
                 Password
               </label>
               <input
@@ -108,20 +119,24 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 border-3 border-gray-300 rounded-xl focus:border-organic-orange focus:ring-0 transition-all font-comic"
                 placeholder="••••••••"
               />
               {!isLogin && (
-                <p className="mt-2 text-sm text-gray-500">Minimum 6 characters</p>
+                <p className="mt-2 text-sm font-comic text-gray-500">Minimum 6 characters</p>
               )}
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-organic-600 to-organic-700 hover:from-organic-700 hover:to-organic-800 text-white font-medium py-3 px-4 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transform hover:scale-[1.02]"
+              className="w-full bg-gradient-to-r from-organic-orange to-organic-yellow hover:from-organic-yellow hover:to-organic-orange text-white font-luckiest text-lg py-4 px-4 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 active:translate-y-1"
+              style={{
+                boxShadow: loading ? 'none' : '0 6px 0 0 #CC6200, 0 10px 15px rgba(0,0,0,0.3)',
+                textShadow: '2px 2px 0px rgba(0,0,0,0.2)'
+              }}
             >
-              {loading ? 'Processing...' : isLogin ? 'Sign In' : 'Sign Up'}
+              {loading ? 'PROCESSING...' : isLogin ? 'SIGN IN' : 'SIGN UP'}
             </button>
           </form>
 
@@ -129,7 +144,7 @@ export default function LoginPage() {
           <div className="mt-6 text-center">
             <button
               onClick={() => setIsLogin(!isLogin)}
-              className="text-sm text-organic-600 hover:text-organic-700 font-medium transition-colors"
+              className="text-sm font-comic font-bold text-organic-orange hover:text-orange-600 transition-colors underline"
             >
               {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
             </button>
@@ -139,7 +154,7 @@ export default function LoginPage() {
           <div className="mt-4 text-center">
             <Link
               href="/"
-              className="text-sm text-gray-600 hover:text-gray-900 transition-colors inline-flex items-center"
+              className="text-sm font-comic font-bold text-gray-600 hover:text-organic-black transition-colors inline-flex items-center"
             >
               <span className="mr-1">←</span> Back to home
             </Link>
@@ -148,10 +163,10 @@ export default function LoginPage() {
 
         {/* Info Box */}
         {!isLogin && (
-          <div className="mt-6 bg-organic-50 border border-organic-200 rounded-lg p-4">
-            <p className="text-sm text-organic-800">
-              <strong>Note:</strong> After signing up, you'll receive a verification email. Check
-              your inbox and spam folder.
+          <div className="mt-6 bg-organic-yellow/20 border-3 border-organic-orange rounded-xl p-5">
+            <p className="text-sm font-comic text-gray-800">
+              <strong className="font-bold">Note:</strong> After signing up, you'll receive a verification email. Check
+              your inbox and spam folder!
             </p>
           </div>
         )}
