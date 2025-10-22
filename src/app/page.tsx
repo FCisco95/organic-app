@@ -2,65 +2,20 @@
 
 import Link from 'next/link';
 import { useAuth } from '@/features/auth/context';
+import { Navigation } from '@/components/navigation';
 
 export default function Home() {
   const { user, profile, loading } = useAuth();
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Navigation */}
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <div className="flex items-center">
-              <span className="text-2xl font-bold text-blue-600">Organic</span>
-            </div>
-            <div className="flex items-center gap-4">
-              {loading ? (
-                <div className="h-8 w-24 bg-gray-200 rounded animate-pulse"></div>
-              ) : user ? (
-                <>
-                  <Link
-                    href="/profile"
-                    className="text-gray-700 hover:text-gray-900 font-medium"
-                  >
-                    Profile
-                  </Link>
-                  {profile?.organic_id && (
-                    <>
-                      <Link
-                        href="/proposals"
-                        className="text-gray-700 hover:text-gray-900 font-medium"
-                      >
-                        Proposals
-                      </Link>
-                      <Link
-                        href="/tasks"
-                        className="text-gray-700 hover:text-gray-900 font-medium"
-                      >
-                        Tasks
-                      </Link>
-                    </>
-                  )}
-                </>
-              ) : (
-                <Link
-                  href="/login"
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-                >
-                  Sign In
-                </Link>
-              )}
-            </div>
-          </div>
-        </div>
-      </nav>
+    <main className="min-h-screen bg-gradient-to-br from-organic-50 via-white to-organic-50">
+      <Navigation />
 
       {/* Hero Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="text-center">
           <h1 className="text-5xl font-bold text-gray-900 mb-6">
-            Welcome to <span className="text-blue-600">Organic</span>
+            Welcome to <span className="bg-gradient-to-r from-organic-600 to-organic-800 bg-clip-text text-transparent">Organic</span>
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
             A community coordination platform for the Organic DAO. Propose ideas, vote on
@@ -71,7 +26,7 @@ export default function Home() {
             <div className="flex gap-4 justify-center">
               <Link
                 href="/login"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium text-lg transition-colors shadow-lg"
+                className="bg-gradient-to-r from-organic-600 to-organic-700 hover:from-organic-700 hover:to-organic-800 text-white px-8 py-3 rounded-lg font-medium text-lg transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
               >
                 Get Started
               </Link>
@@ -79,34 +34,34 @@ export default function Home() {
           )}
 
           {user && !profile?.organic_id && (
-            <div className="mt-8 bg-yellow-50 border-2 border-yellow-200 rounded-lg p-6 max-w-2xl mx-auto">
-              <p className="text-lg text-yellow-800 mb-4">
+            <div className="mt-8 bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-300 rounded-xl p-6 max-w-2xl mx-auto shadow-md">
+              <p className="text-lg text-yellow-900 mb-4 font-medium">
                 Hold $ORG tokens? Link your wallet and get your Organic ID!
               </p>
               <Link
                 href="/profile"
-                className="inline-block bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                className="inline-block bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white px-6 py-2 rounded-lg font-medium transition-all shadow-sm hover:shadow"
               >
-                Go to Profile
+                Go to Profile →
               </Link>
             </div>
           )}
 
           {user && profile?.organic_id && (
-            <div className="mt-8 bg-green-50 border-2 border-green-200 rounded-lg p-6 max-w-2xl mx-auto">
-              <p className="text-lg text-green-800 mb-2">
-                Welcome back, <strong>Organic #{profile.organic_id}</strong>!
+            <div className="mt-8 bg-gradient-to-r from-organic-50 to-emerald-50 border-2 border-organic-300 rounded-xl p-6 max-w-2xl mx-auto shadow-md">
+              <p className="text-lg text-organic-900 mb-2 font-medium">
+                Welcome back, <strong>Organic #{profile.organic_id}</strong>! 🌱
               </p>
               <div className="flex gap-4 justify-center mt-4">
                 <Link
                   href="/proposals"
-                  className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                  className="bg-gradient-to-r from-organic-600 to-organic-700 hover:from-organic-700 hover:to-organic-800 text-white px-6 py-2 rounded-lg font-medium transition-all shadow-sm hover:shadow"
                 >
                   View Proposals
                 </Link>
                 <Link
                   href="/tasks"
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-2 rounded-lg font-medium transition-all shadow-sm hover:shadow"
                 >
                   View Tasks
                 </Link>

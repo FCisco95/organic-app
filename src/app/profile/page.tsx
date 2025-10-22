@@ -5,12 +5,13 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/features/auth/context';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { Navigation } from '@/components/navigation';
 import toast from 'react-hot-toast';
 import bs58 from 'bs58';
 import nacl from 'tweetnacl';
 
 export default function ProfilePage() {
-  const { user, profile, loading, signOut, refreshProfile } = useAuth();
+  const { user, profile, loading, refreshProfile } = useAuth();
   const { publicKey, signMessage, connected } = useWallet();
   const router = useRouter();
   const [linkingWallet, setLinkingWallet] = useState(false);
@@ -141,19 +142,15 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-organic-50 via-white to-organic-50">
+      <Navigation />
+
+      <div className="max-w-4xl mx-auto py-8 px-4">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-bold text-gray-900">Profile</h1>
-            <button
-              onClick={signOut}
-              className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 border border-red-600 rounded-lg hover:bg-red-50 transition-colors"
-            >
-              Sign Out
-            </button>
-          </div>
+        <div className="bg-white rounded-xl shadow-md p-8 mb-6 border border-organic-100">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-organic-600 to-organic-800 bg-clip-text text-transparent">
+            My Profile
+          </h1>
         </div>
 
         {/* Profile Info */}
