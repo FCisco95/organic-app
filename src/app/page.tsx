@@ -8,86 +8,60 @@ export default function Home() {
   const { user, profile, loading } = useAuth();
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-organic-yellow/20 via-white to-organic-orange/20">
+    <main className="min-h-screen bg-gray-50">
       <Navigation />
 
       {/* Hero Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center">
-          <h1 className="text-6xl md:text-7xl font-luckiest text-organic-black mb-6 animate-breathe" style={{
-            textShadow: '3px 3px 0px rgba(255,122,0,0.5)',
-            WebkitTextStroke: '1px rgba(255,122,0,0.3)'
-          }}>
-            WELCOME TO <span className="text-organic-orange">ORGANIC</span>
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            Welcome to <span className="text-organic-orange">Organic</span>
           </h1>
-          <p className="text-xl md:text-2xl font-comic text-gray-700 mb-12 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
             A community coordination platform for the Organic DAO. Propose ideas, vote on
-            decisions, and collaborate on tasks - all powered by $ORG!
+            decisions, and collaborate on tasks.
           </p>
 
           {!user && (
-            <div className="flex gap-6 justify-center">
+            <div className="flex gap-4 justify-center">
               <Link
                 href="/login"
-                className="px-10 py-4 rounded-2xl font-luckiest text-xl text-white bg-gradient-to-r from-organic-orange to-organic-yellow hover:from-organic-yellow hover:to-organic-orange transition-all duration-200 transform hover:scale-110 active:translate-y-1 shadow-xl animate-breathe"
-                style={{
-                  boxShadow: '0 8px 0 0 #CC6200, 0 12px 20px rgba(0,0,0,0.3)',
-                  textShadow: '2px 2px 0px rgba(0,0,0,0.3)'
-                }}
+                className="bg-organic-orange hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
               >
-                GET STARTED
+                Get Started
               </Link>
             </div>
           )}
 
           {user && !profile?.organic_id && (
-            <div className="mt-12 bg-gradient-to-r from-organic-yellow to-organic-orange/30 border-4 border-organic-black rounded-2xl p-8 max-w-2xl mx-auto shadow-2xl transform hover:scale-105 transition-all duration-200">
-              <p className="text-2xl font-luckiest text-organic-black mb-6" style={{
-                textShadow: '2px 2px 0px rgba(255,255,255,0.5)'
-              }}>
-                HOLD $ORG TOKENS?
-              </p>
-              <p className="text-lg font-comic text-gray-800 mb-6">
-                Link your wallet and get your exclusive Organic ID!
+            <div className="mt-8 bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-lg p-6 max-w-2xl mx-auto">
+              <p className="text-base text-gray-800 mb-4 font-medium">
+                Hold $ORG tokens? Link your wallet and get your Organic ID!
               </p>
               <Link
                 href="/profile"
-                className="inline-block px-8 py-3 rounded-xl font-luckiest text-white bg-organic-black hover:bg-gray-800 transition-all duration-200 transform hover:scale-105 active:translate-y-1 shadow-lg"
-                style={{
-                  boxShadow: '0 6px 0 0 rgba(0,0,0,0.5), 0 8px 15px rgba(0,0,0,0.3)'
-                }}
+                className="inline-block bg-organic-orange hover:bg-orange-600 text-white px-5 py-2.5 rounded-lg font-medium transition-colors"
               >
-                GO TO PROFILE →
+                Go to Profile →
               </Link>
             </div>
           )}
 
           {user && profile?.organic_id && (
-            <div className="mt-12 bg-gradient-to-r from-green-300 to-emerald-300 border-4 border-organic-black rounded-2xl p-8 max-w-2xl mx-auto shadow-2xl animate-breathe">
-              <p className="text-3xl font-luckiest text-organic-black mb-2" style={{
-                textShadow: '2px 2px 0px rgba(255,255,255,0.5)'
-              }}>
-                WELCOME BACK!
+            <div className="mt-8 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-6 max-w-2xl mx-auto">
+              <p className="text-base text-gray-800 mb-2 font-medium">
+                Welcome back, <strong>Organic #{profile.organic_id}</strong>!
               </p>
-              <p className="text-2xl font-luckiest text-organic-orange mb-6">
-                ORGANIC #{profile.organic_id}
-              </p>
-              <div className="flex gap-4 justify-center mt-6 flex-wrap">
+              <div className="flex gap-3 justify-center mt-4 flex-wrap">
                 <Link
                   href="/proposals"
-                  className="px-6 py-3 rounded-xl font-comic font-bold text-white bg-organic-orange hover:bg-orange-600 transition-all duration-200 transform hover:scale-105 active:translate-y-1 shadow-lg"
-                  style={{
-                    boxShadow: '0 6px 0 0 #CC6200, 0 8px 15px rgba(0,0,0,0.2)'
-                  }}
+                  className="bg-organic-orange hover:bg-orange-600 text-white px-5 py-2 rounded-lg font-medium transition-colors"
                 >
                   View Proposals
                 </Link>
                 <Link
                   href="/tasks"
-                  className="px-6 py-3 rounded-xl font-comic font-bold text-white bg-blue-500 hover:bg-blue-600 transition-all duration-200 transform hover:scale-105 active:translate-y-1 shadow-lg"
-                  style={{
-                    boxShadow: '0 6px 0 0 #1E40AF, 0 8px 15px rgba(0,0,0,0.2)'
-                  }}
+                  className="bg-gray-700 hover:bg-gray-800 text-white px-5 py-2 rounded-lg font-medium transition-colors"
                 >
                   View Tasks
                 </Link>
@@ -97,61 +71,44 @@ export default function Home() {
         </div>
 
         {/* Features */}
-        <div className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="bg-white border-4 border-organic-black rounded-2xl shadow-xl p-8 transform hover:scale-105 transition-all duration-200 hover:rotate-1">
-            <div className="text-6xl mb-4 animate-breathe">📝</div>
-            <h3 className="text-2xl font-luckiest text-organic-orange mb-3" style={{
-              textShadow: '2px 2px 0px rgba(255,122,0,0.2)'
-            }}>
-              PROPOSALS
-            </h3>
-            <p className="text-lg font-comic text-gray-700 leading-relaxed">
-              Submit ideas and vote on proposals with token-weighted voting power!
+        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="text-3xl mb-3">📝</div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Proposals</h3>
+            <p className="text-sm text-gray-600">
+              Submit ideas and vote on proposals with token-weighted voting.
             </p>
           </div>
 
-          <div className="bg-white border-4 border-organic-black rounded-2xl shadow-xl p-8 transform hover:scale-105 transition-all duration-200 hover:-rotate-1">
-            <div className="text-6xl mb-4 animate-breathe">✅</div>
-            <h3 className="text-2xl font-luckiest text-organic-orange mb-3" style={{
-              textShadow: '2px 2px 0px rgba(255,122,0,0.2)'
-            }}>
-              TASKS
-            </h3>
-            <p className="text-lg font-comic text-gray-700 leading-relaxed">
-              Turn approved proposals into tasks and track progress with organized sprints!
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="text-3xl mb-3">✅</div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Tasks</h3>
+            <p className="text-sm text-gray-600">
+              Turn approved proposals into tasks and track progress with sprints.
             </p>
           </div>
 
-          <div className="bg-white border-4 border-organic-black rounded-2xl shadow-xl p-8 transform hover:scale-105 transition-all duration-200 hover:rotate-1">
-            <div className="text-6xl mb-4 animate-breathe">🎫</div>
-            <h3 className="text-2xl font-luckiest text-organic-orange mb-3" style={{
-              textShadow: '2px 2px 0px rgba(255,122,0,0.2)'
-            }}>
-              ORGANIC ID
-            </h3>
-            <p className="text-lg font-comic text-gray-700 leading-relaxed">
-              Token holders get a unique ID and verified member status in the community!
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="text-3xl mb-3">🎫</div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Organic ID</h3>
+            <p className="text-sm text-gray-600">
+              Token holders get a unique ID and verified member status.
             </p>
           </div>
         </div>
 
         {/* Additional Info */}
-        <div className="mt-24 text-center">
-          <div className="bg-gradient-to-r from-organic-orange to-organic-yellow border-4 border-organic-black rounded-2xl p-12 shadow-2xl transform hover:scale-105 transition-all duration-300">
-            <h2 className="text-4xl font-luckiest text-white mb-6" style={{
-              textShadow: '3px 3px 0px rgba(0,0,0,0.3)',
-              WebkitTextStroke: '1px rgba(0,0,0,0.2)'
-            }}>
-              POWERED BY $ORG
+        <div className="mt-16">
+          <div className="bg-white border border-gray-200 rounded-lg p-8 shadow-sm">
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">
+              Powered by $ORG
             </h2>
-            <p className="text-xl font-comic text-white mb-8 max-w-2xl mx-auto" style={{
-              textShadow: '1px 1px 2px rgba(0,0,0,0.2)'
-            }}>
-              The Organic DAO is a community-driven organization on Solana. Hold $ORG tokens to participate in governance and shape the future!
+            <p className="text-base text-gray-600 mb-6 max-w-2xl">
+              The Organic DAO is a community-driven organization on Solana. Hold $ORG tokens to participate in governance and shape the future.
             </p>
-            <div className="inline-block bg-white border-3 border-organic-black rounded-xl px-6 py-3 shadow-lg">
-              <p className="font-comic font-bold text-organic-black text-sm mb-1">Contract Address</p>
-              <p className="font-mono text-xs text-gray-700 break-all">
+            <div className="inline-block bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
+              <p className="text-xs font-medium text-gray-700 mb-1">Contract Address</p>
+              <p className="font-mono text-xs text-gray-600 break-all">
                 {process.env.NEXT_PUBLIC_ORG_TOKEN_MINT || 'Loading...'}
               </p>
             </div>

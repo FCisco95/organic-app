@@ -8,7 +8,6 @@ import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { Navigation } from '@/components/navigation';
 import toast from 'react-hot-toast';
 import bs58 from 'bs58';
-import nacl from 'tweetnacl';
 
 export default function ProfilePage() {
   const { user, profile, loading, refreshProfile } = useAuth();
@@ -128,10 +127,10 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-organic-yellow/20 via-white to-organic-orange/20">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-organic-orange border-t-organic-yellow rounded-full animate-spin mx-auto"></div>
-          <p className="mt-6 text-xl font-comic text-gray-700">Loading your profile...</p>
+          <div className="w-12 h-12 border-3 border-organic-orange border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="mt-4 text-sm text-gray-600">Loading your profile...</p>
         </div>
       </div>
     );
@@ -142,96 +141,73 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-organic-yellow/20 via-white to-organic-orange/20">
+    <div className="min-h-screen bg-gray-50">
       <Navigation />
 
-      <div className="max-w-4xl mx-auto py-12 px-4">
+      <div className="max-w-4xl mx-auto py-8 px-4">
         {/* Header */}
-        <div className="bg-white border-4 border-organic-black rounded-2xl shadow-2xl p-8 mb-8 transform hover:scale-105 transition-all duration-200">
-          <h1 className="text-5xl font-luckiest text-organic-orange" style={{
-            textShadow: '3px 3px 0px rgba(255,122,0,0.2)',
-            WebkitTextStroke: '0.5px rgba(255,122,0,0.3)'
-          }}>
-            MY PROFILE
-          </h1>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
+          <p className="text-sm text-gray-600 mt-1">Manage your account and wallet settings</p>
         </div>
 
         {/* Profile Info */}
-        <div className="bg-white border-4 border-organic-black rounded-2xl shadow-xl p-8 mb-8">
-          <h2 className="text-3xl font-luckiest text-organic-black mb-6" style={{
-            textShadow: '2px 2px 0px rgba(255,122,0,0.2)'
-          }}>
-            ACCOUNT INFO
-          </h2>
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Account Information</h2>
 
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* Email */}
             <div>
-              <label className="block text-sm font-comic font-bold text-gray-700 mb-2">Email</label>
-              <p className="text-lg font-comic text-gray-900 bg-gray-50 px-4 py-3 rounded-xl border-2 border-gray-200">
-                {profile.email}
-              </p>
+              <label className="block text-xs font-medium text-gray-500 uppercase mb-1">Email</label>
+              <p className="text-sm text-gray-900">{profile.email}</p>
             </div>
 
             {/* Role */}
             <div>
-              <label className="block text-sm font-comic font-bold text-gray-700 mb-2">Role</label>
-              <span className={`inline-flex px-6 py-3 rounded-xl text-base font-comic font-bold border-3 border-organic-black shadow-lg ${
-                profile.role === 'admin' ? 'bg-purple-400 text-white' :
-                profile.role === 'council' ? 'bg-blue-400 text-white' :
-                profile.role === 'member' ? 'bg-green-400 text-white' :
-                'bg-gray-300 text-organic-black'
+              <label className="block text-xs font-medium text-gray-500 uppercase mb-1">Role</label>
+              <span className={`inline-flex px-2.5 py-1 rounded-md text-xs font-medium capitalize ${
+                profile.role === 'admin' ? 'bg-purple-100 text-purple-700' :
+                profile.role === 'council' ? 'bg-blue-100 text-blue-700' :
+                profile.role === 'member' ? 'bg-green-100 text-green-700' :
+                'bg-gray-100 text-gray-700'
               }`}>
-                {profile.role.toUpperCase()}
+                {profile.role}
               </span>
             </div>
 
             {/* Organic ID */}
             <div>
-              <label className="block text-sm font-comic font-bold text-gray-700 mb-2">Organic ID</label>
+              <label className="block text-xs font-medium text-gray-500 uppercase mb-1">Organic ID</label>
               {profile.organic_id ? (
-                <p className="text-4xl font-luckiest text-organic-orange animate-breathe" style={{
-                  textShadow: '2px 2px 0px rgba(255,122,0,0.2)'
-                }}>
-                  #{profile.organic_id}
-                </p>
+                <p className="text-xl font-bold text-organic-orange">#{profile.organic_id}</p>
               ) : (
-                <p className="text-lg font-comic text-gray-500 italic">Not assigned yet</p>
+                <p className="text-sm text-gray-500 italic">Not assigned</p>
               )}
             </div>
           </div>
         </div>
 
         {/* Wallet Section */}
-        <div className="bg-white border-4 border-organic-black rounded-2xl shadow-xl p-8 mb-8">
-          <h2 className="text-3xl font-luckiest text-organic-black mb-6" style={{
-            textShadow: '2px 2px 0px rgba(255,122,0,0.2)'
-          }}>
-            SOLANA WALLET
-          </h2>
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Solana Wallet</h2>
 
           {/* Wallet Connect Button */}
-          <div className="mb-6">
+          <div className="mb-4">
             <WalletMultiButton />
           </div>
 
           {/* Linked Wallet */}
           {profile.wallet_pubkey && (
-            <div className="mb-6">
-              <label className="block text-sm font-comic font-bold text-gray-700 mb-2">Linked Wallet</label>
-              <div className="bg-gradient-to-r from-organic-yellow/20 to-organic-orange/20 border-3 border-organic-black rounded-xl p-4">
-                <p className="text-sm font-mono bg-white p-3 rounded-lg break-all border-2 border-gray-200">
+            <div className="mb-4">
+              <label className="block text-xs font-medium text-gray-500 uppercase mb-2">Linked Wallet</label>
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                <p className="text-xs font-mono text-gray-700 break-all mb-3">
                   {profile.wallet_pubkey}
                 </p>
                 {tokenBalance !== null && (
-                  <div className="mt-4 flex items-center justify-center">
-                    <div className="bg-gradient-to-r from-organic-orange to-organic-yellow px-6 py-3 rounded-xl border-3 border-organic-black shadow-lg">
-                      <p className="text-base font-luckiest text-white" style={{
-                        textShadow: '1px 1px 0px rgba(0,0,0,0.3)'
-                      }}>
-                        $ORG: {tokenBalance.toFixed(2)}
-                      </p>
-                    </div>
+                  <div className="flex items-center">
+                    <span className="text-xs font-medium text-gray-500 mr-2">$ORG Balance:</span>
+                    <span className="text-sm font-semibold text-organic-orange">{tokenBalance.toFixed(2)}</span>
                   </div>
                 )}
               </div>
@@ -243,35 +219,24 @@ export default function ProfilePage() {
             <button
               onClick={handleLinkWallet}
               disabled={linkingWallet}
-              className="w-full bg-gradient-to-r from-organic-orange to-organic-yellow hover:from-organic-yellow hover:to-organic-orange text-white font-luckiest text-lg py-4 px-6 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 active:translate-y-1"
-              style={{
-                boxShadow: linkingWallet ? 'none' : '0 6px 0 0 #CC6200, 0 10px 15px rgba(0,0,0,0.3)',
-                textShadow: '2px 2px 0px rgba(0,0,0,0.2)'
-              }}
+              className="w-full bg-organic-orange hover:bg-orange-600 text-white font-medium py-2.5 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
             >
-              {linkingWallet ? 'LINKING...' : 'LINK WALLET'}
+              {linkingWallet ? 'Linking Wallet...' : 'Link Wallet to Profile'}
             </button>
           )}
         </div>
 
         {/* Get Organic ID Section */}
         {profile.wallet_pubkey && !profile.organic_id && (
-          <div className="bg-gradient-to-r from-organic-yellow to-organic-orange border-4 border-organic-black rounded-2xl shadow-2xl p-8 animate-breathe">
-            <h2 className="text-3xl font-luckiest text-white mb-4" style={{
-              textShadow: '2px 2px 0px rgba(0,0,0,0.3)',
-              WebkitTextStroke: '1px rgba(0,0,0,0.2)'
-            }}>
-              GET YOUR ORGANIC ID!
-            </h2>
-            <p className="text-lg font-comic text-white mb-6" style={{
-              textShadow: '1px 1px 0px rgba(0,0,0,0.2)'
-            }}>
+          <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-lg shadow-sm p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-2">Get Your Organic ID</h2>
+            <p className="text-sm text-gray-600 mb-4">
               Hold $ORG tokens? Get your unique Organic ID and become a verified member!
             </p>
 
             {tokenBalance !== null && tokenBalance > 0 && (
-              <div className="bg-green-400 border-3 border-organic-black rounded-xl p-4 mb-6">
-                <p className="text-base font-comic font-bold text-white text-center">
+              <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
+                <p className="text-sm text-green-700 font-medium">
                   ✓ You hold {tokenBalance.toFixed(2)} $ORG tokens
                 </p>
               </div>
@@ -280,27 +245,21 @@ export default function ProfilePage() {
             <button
               onClick={handleGetOrganicId}
               disabled={gettingOrganicId}
-              className="w-full bg-white hover:bg-gray-100 text-organic-orange font-luckiest text-xl py-4 px-6 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 active:translate-y-1 border-3 border-organic-black"
-              style={{
-                boxShadow: gettingOrganicId ? 'none' : '0 6px 0 0 rgba(0,0,0,0.3), 0 10px 15px rgba(0,0,0,0.4)',
-                textShadow: '1px 1px 0px rgba(255,122,0,0.2)'
-              }}
+              className="bg-organic-orange hover:bg-orange-600 text-white font-medium py-2.5 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
             >
-              {gettingOrganicId ? 'VERIFYING...' : 'GET ORGANIC ID'}
+              {gettingOrganicId ? 'Verifying...' : 'Get Organic ID'}
             </button>
           </div>
         )}
 
         {/* Success Message */}
         {profile.organic_id && (
-          <div className="bg-gradient-to-r from-green-300 to-emerald-300 border-4 border-organic-black rounded-2xl shadow-xl p-8 animate-breathe">
-            <h3 className="text-3xl font-luckiest text-organic-black mb-4" style={{
-              textShadow: '2px 2px 0px rgba(255,255,255,0.5)'
-            }}>
-              🎉 YOU'RE A VERIFIED MEMBER!
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg shadow-sm p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              🎉 You're a verified member!
             </h3>
-            <p className="text-xl font-comic text-gray-800 leading-relaxed">
-              You can now create proposals, vote on decisions, and participate in the Organic DAO community!
+            <p className="text-sm text-gray-600">
+              You can now create proposals, vote on decisions, and participate in the Organic DAO.
             </p>
           </div>
         )}

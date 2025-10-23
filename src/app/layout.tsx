@@ -1,20 +1,13 @@
 import type { Metadata } from 'next';
-import { Luckiest_Guy, Comic_Neue } from 'next/font/google';
+import { Inter } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/features/auth/context';
 import { SolanaWalletProvider } from '@/features/auth/wallet-provider';
 import { Toaster } from 'react-hot-toast';
 
-const luckiestGuy = Luckiest_Guy({
-  weight: '400',
+const inter = Inter({
   subsets: ['latin'],
-  variable: '--font-luckiest',
-});
-
-const comicNeue = Comic_Neue({
-  weight: ['300', '400', '700'],
-  subsets: ['latin'],
-  variable: '--font-comic',
+  variable: '--font-inter',
 });
 
 export const metadata: Metadata = {
@@ -29,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${luckiestGuy.variable} ${comicNeue.variable} font-comic`}>
+      <body className={inter.className}>
         <AuthProvider>
           <SolanaWalletProvider>
             {children}

@@ -10,19 +10,6 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      fontFamily: {
-        'luckiest': ['"Luckiest Guy"', 'cursive'],
-        'comic': ['"Comic Neue"', 'cursive'],
-      },
-      animation: {
-        'breathe': 'breathe 2.8s ease-in-out infinite',
-      },
-      keyframes: {
-        breathe: {
-          '0%, 100%': { transform: 'scale(1)', filter: 'drop-shadow(0 0 0px rgba(255, 122, 0, 0))' },
-          '50%': { transform: 'scale(1.03)', filter: 'drop-shadow(0 0 20px rgba(255, 122, 0, 0.5))' },
-        },
-      },
       colors: {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',

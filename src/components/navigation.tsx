@@ -19,29 +19,23 @@ export function Navigation() {
   ];
 
   return (
-    <nav className="bg-white border-b-4 border-organic-orange sticky top-0 z-50 shadow-lg">
+    <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-20">
+        <div className="flex justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-3 group">
-              <div className="w-12 h-12 bg-gradient-to-br from-organic-orange to-organic-yellow rounded-xl flex items-center justify-center transform transition-transform group-hover:scale-110 shadow-lg">
-                <span className="text-white font-luckiest text-2xl" style={{
-                  textShadow: '2px 2px 0px rgba(0,0,0,0.3)',
-                  WebkitTextStroke: '1px rgba(0,0,0,0.2)'
-                }}>O</span>
+            <Link href="/" className="flex items-center space-x-2 group">
+              <div className="w-9 h-9 bg-gradient-to-br from-organic-orange to-organic-yellow rounded-lg flex items-center justify-center transition-transform group-hover:scale-105">
+                <span className="text-white font-semibold text-lg">O</span>
               </div>
-              <span className="text-2xl font-luckiest text-organic-black" style={{
-                textShadow: '2px 2px 0px rgba(255,122,0,0.3)',
-                WebkitTextStroke: '0.5px rgba(255,122,0,0.5)'
-              }}>
-                ORGANIC
+              <span className="text-xl font-semibold text-gray-900">
+                Organic
               </span>
             </Link>
           </div>
 
           {/* Navigation Links */}
-          <div className="hidden md:flex items-center space-x-2">
+          <div className="hidden md:flex items-center space-x-1">
             {navLinks.map(
               (link) =>
                 link.show && (
@@ -49,14 +43,11 @@ export function Navigation() {
                     key={link.href}
                     href={link.href}
                     className={cn(
-                      'px-5 py-2.5 rounded-xl text-sm font-comic font-bold transition-all duration-200 transform hover:scale-105',
+                      'px-4 py-2 rounded-md text-sm font-medium transition-colors',
                       pathname === link.href
-                        ? 'bg-organic-orange text-white shadow-lg'
-                        : 'text-organic-black hover:bg-organic-yellow hover:shadow-md active:translate-y-0.5'
+                        ? 'bg-organic-orange/10 text-organic-orange'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                     )}
-                    style={{
-                      boxShadow: pathname === link.href ? '0 4px 0 0 #CC6200, 0 8px 10px rgba(0,0,0,0.2)' : '0 2px 0 0 rgba(0,0,0,0.1)',
-                    }}
                   >
                     {link.label}
                   </Link>
@@ -65,25 +56,25 @@ export function Navigation() {
           </div>
 
           {/* Right Side Actions */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3">
             {loading ? (
-              <div className="h-10 w-28 bg-organic-yellow/30 rounded-xl animate-pulse"></div>
+              <div className="h-8 w-24 bg-gray-100 rounded animate-pulse"></div>
             ) : user ? (
               <>
                 {/* Organic ID Badge */}
                 {profile?.organic_id && (
-                  <div className="hidden sm:flex items-center space-x-3 bg-gradient-to-r from-organic-yellow to-organic-orange px-4 py-2 rounded-full border-2 border-organic-black shadow-lg animate-breathe">
-                    <span className="text-sm font-luckiest text-organic-black">
-                      #{profile.organic_id}
+                  <div className="hidden sm:flex items-center space-x-2 bg-gradient-to-r from-organic-orange/10 to-organic-yellow/10 px-3 py-1.5 rounded-full border border-organic-orange/20">
+                    <span className="text-xs font-medium text-organic-orange">
+                      ID #{profile.organic_id}
                     </span>
                     <span className={cn(
-                      'px-3 py-1 rounded-full text-xs font-comic font-bold border-2 border-organic-black',
-                      profile.role === 'admin' ? 'bg-purple-400 text-white' :
-                      profile.role === 'council' ? 'bg-blue-400 text-white' :
-                      profile.role === 'member' ? 'bg-green-400 text-white' :
-                      'bg-gray-300 text-organic-black'
+                      'px-2 py-0.5 rounded-full text-xs font-medium capitalize',
+                      profile.role === 'admin' ? 'bg-purple-100 text-purple-700' :
+                      profile.role === 'council' ? 'bg-blue-100 text-blue-700' :
+                      profile.role === 'member' ? 'bg-green-100 text-green-700' :
+                      'bg-gray-100 text-gray-700'
                     )}>
-                      {profile.role.toUpperCase()}
+                      {profile.role}
                     </span>
                   </div>
                 )}
@@ -96,10 +87,7 @@ export function Navigation() {
                 {/* Sign Out */}
                 <button
                   onClick={signOut}
-                  className="px-4 py-2.5 rounded-xl text-sm font-comic font-bold text-white bg-red-500 hover:bg-red-600 transition-all duration-200 transform hover:scale-105 active:translate-y-0.5 shadow-lg"
-                  style={{
-                    boxShadow: '0 4px 0 0 #B91C1C, 0 6px 10px rgba(0,0,0,0.2)'
-                  }}
+                  className="text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md hover:bg-gray-50 transition-colors"
                 >
                   Sign Out
                 </button>
@@ -107,11 +95,7 @@ export function Navigation() {
             ) : (
               <Link
                 href="/login"
-                className="px-6 py-3 rounded-xl font-luckiest text-white bg-gradient-to-r from-organic-orange to-organic-yellow hover:from-organic-yellow hover:to-organic-orange transition-all duration-200 transform hover:scale-105 active:translate-y-0.5 shadow-lg animate-breathe"
-                style={{
-                  boxShadow: '0 6px 0 0 #CC6200, 0 10px 15px rgba(0,0,0,0.3)',
-                  textShadow: '2px 2px 0px rgba(0,0,0,0.3)'
-                }}
+                className="bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
               >
                 Sign In
               </Link>
@@ -122,8 +106,8 @@ export function Navigation() {
 
       {/* Mobile Navigation */}
       {user && (
-        <div className="md:hidden border-t-2 border-organic-black bg-organic-yellow/20">
-          <div className="px-4 py-3 space-y-2">
+        <div className="md:hidden border-t border-gray-200 bg-gray-50">
+          <div className="px-4 py-2 space-y-1">
             {navLinks.map(
               (link) =>
                 link.show && (
@@ -131,10 +115,10 @@ export function Navigation() {
                     key={link.href}
                     href={link.href}
                     className={cn(
-                      'block px-4 py-2.5 rounded-xl text-sm font-comic font-bold transition-all duration-200',
+                      'block px-3 py-2 rounded-md text-sm font-medium transition-colors',
                       pathname === link.href
-                        ? 'bg-organic-orange text-white shadow-lg'
-                        : 'text-organic-black hover:bg-organic-yellow'
+                        ? 'bg-organic-orange/10 text-organic-orange'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                     )}
                   >
                     {link.label}
