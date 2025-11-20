@@ -2,23 +2,31 @@ import { NextResponse } from 'next/server';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { isOrgHolder } from '@/lib/solana';
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    // Get auth token from header
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Missing authorization token' }, { status: 401 });
+    }
 
-    if (!user) {
-      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    const token = authHeader.split(' ')[1];
+
+    // Verify the token and get user
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+    if (authError || !user) {
+      console.error('Auth error:', authError);
+      return NextResponse.json({ error: 'Not authenticated. Please sign in again.' }, { status: 401 });
     }
 
     // Get user profile
     const { data: profile, error: profileError } = await supabase
       .from('user_profiles')
       .select('*')
-      .eq('id', user.id)
-      .single();
+      .eq('id', user.id as any)
+      .maybeSingle();
 
     if (profileError || !profile) {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
@@ -68,8 +76,8 @@ export async function POST() {
       .update({
         organic_id: organicId,
         role: 'member',
-      })
-      .eq('id', user.id);
+      } as any)
+      .eq('id', user.id as any);
 
     if (updateError) {
       console.error('Error updating profile with Organic ID:', updateError);

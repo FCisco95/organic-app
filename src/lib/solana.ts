@@ -8,9 +8,14 @@ export function getConnection(): Connection {
 }
 
 // ORG Token mint address
-export const ORG_TOKEN_MINT = new PublicKey(
-  process.env.NEXT_PUBLIC_ORG_TOKEN_MINT || 'DuXugm3sExzq2DfoDsdnK45xZdsHcSbonk'
-);
+// Use a function to lazy-load the token mint to avoid module initialization errors
+export function getOrgTokenMint(): PublicKey {
+  const mintAddress = process.env.NEXT_PUBLIC_ORG_TOKEN_MINT || 'DuXugm4oTXrGDopgxgudyhboaf6uUg1GVbJ6jk6qbonk';
+  return new PublicKey(mintAddress);
+}
+
+// Legacy export for backwards compatibility
+export const ORG_TOKEN_MINT = getOrgTokenMint();
 
 /**
  * Get SPL token balance for a wallet

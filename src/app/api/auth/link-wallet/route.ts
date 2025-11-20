@@ -27,14 +27,21 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }
 
-    // Update user profile with wallet address
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    // Get auth token from header
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Missing authorization token' }, { status: 401 });
+    }
 
-    if (!user) {
-      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    const token = authHeader.split(' ')[1];
+
+    // Verify the token and get user
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+    if (authError || !user) {
+      console.error('Auth error:', authError);
+      return NextResponse.json({ error: 'Not authenticated. Please sign in again.' }, { status: 401 });
     }
 
     // Check if wallet is already linked to another account
@@ -42,8 +49,8 @@ export async function POST(request: Request) {
       .from('user_profiles')
       .select('id')
       .eq('wallet_pubkey', walletAddress)
-      .neq('id', user.id)
-      .single();
+      .neq('id', user.id as any)
+      .maybeSingle();
 
     if (existingProfile) {
       return NextResponse.json(
@@ -55,8 +62,8 @@ export async function POST(request: Request) {
     // Link wallet to user profile
     const { error: updateError } = await supabase
       .from('user_profiles')
-      .update({ wallet_pubkey: walletAddress })
-      .eq('id', user.id);
+      .update({ wallet_pubkey: walletAddress } as any)
+      .eq('id', user.id as any);
 
     if (updateError) {
       console.error('Error updating profile:', updateError);
