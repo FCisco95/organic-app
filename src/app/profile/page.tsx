@@ -1,21 +1,53 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/features/auth/context';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { Navigation } from '@/components/navigation';
+import { createClient } from '@/lib/supabase/client';
+import { Edit2, Save, X, Upload, MapPin, Globe, Twitter, MessageCircle, Calendar } from 'lucide-react';
 import toast from 'react-hot-toast';
 import bs58 from 'bs58';
+import { formatDistanceToNow } from 'date-fns';
 
 export default function ProfilePage() {
   const { user, profile, loading, refreshProfile } = useAuth();
   const { publicKey, signMessage, connected } = useWallet();
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [linkingWallet, setLinkingWallet] = useState(false);
   const [gettingOrganicId, setGettingOrganicId] = useState(false);
   const [tokenBalance, setTokenBalance] = useState<number | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  // Edit form states
+  const [editForm, setEditForm] = useState({
+    name: '',
+    bio: '',
+    location: '',
+    website: '',
+    twitter: '',
+    discord: '',
+  });
+
+  // Initialize form with profile data
+  useEffect(() => {
+    if (profile) {
+      setEditForm({
+        name: profile.name || '',
+        bio: profile.bio || '',
+        location: profile.location || '',
+        website: profile.website || '',
+        twitter: profile.twitter || '',
+        discord: profile.discord || '',
+      });
+    }
+  }, [profile]);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -45,6 +77,7 @@ export default function ProfilePage() {
       setTokenBalance(data.balance || 0);
     } catch (error) {
       console.error('Error checking balance:', error);
+      setTokenBalance(0);
     }
   };
 
@@ -54,24 +87,35 @@ export default function ProfilePage() {
       return;
     }
 
+    if (!user) {
+      toast.error('Please sign in first');
+      return;
+    }
+
     setLinkingWallet(true);
 
     try {
-      // Step 1: Get nonce from server
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session?.access_token) {
+        toast.error('Session expired. Please sign in again.');
+        return;
+      }
+
       const nonceResponse = await fetch('/api/auth/nonce');
       const { nonce } = await nonceResponse.json();
 
-      // Step 2: Create message to sign
       const message = `Sign this message to link your wallet to Organic App.\n\nNonce: ${nonce}`;
       const encodedMessage = new TextEncoder().encode(message);
-
-      // Step 3: Sign message with wallet
       const signature = await signMessage(encodedMessage);
 
-      // Step 4: Verify signature and link wallet
       const response = await fetch('/api/auth/link-wallet', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
         body: JSON.stringify({
           walletAddress: publicKey.toBase58(),
           signature: bs58.encode(signature),
@@ -88,6 +132,11 @@ export default function ProfilePage() {
       toast.success('Wallet linked successfully!');
       await refreshProfile();
       await checkTokenBalance();
+      router.refresh();
+
+      setTimeout(async () => {
+        await refreshProfile();
+      }, 500);
     } catch (error: any) {
       console.error('Error linking wallet:', error);
       toast.error(error.message || 'Failed to link wallet');
@@ -102,11 +151,27 @@ export default function ProfilePage() {
       return;
     }
 
+    if (!user) {
+      toast.error('Please sign in first');
+      return;
+    }
+
     setGettingOrganicId(true);
 
     try {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session?.access_token) {
+        toast.error('Session expired. Please sign in again.');
+        return;
+      }
+
       const response = await fetch('/api/organic-id/assign', {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`
+        },
       });
 
       const data = await response.json();
@@ -122,6 +187,112 @@ export default function ProfilePage() {
       toast.error(error.message || 'Failed to get Organic ID');
     } finally {
       setGettingOrganicId(false);
+    }
+  };
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+
+    // Validate file size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image must be less than 5MB');
+      return;
+    }
+
+    setUploading(true);
+
+    try {
+      const supabase = createClient();
+
+      // Generate unique filename
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user!.id}/${Date.now()}.${fileExt}`;
+
+      // Upload to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false,
+        });
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName);
+
+      // Update user profile with new avatar URL
+      const { error: updateError } = await supabase
+        .from('user_profiles')
+        .update({ avatar_url: publicUrl } as any)
+        .eq('id', user!.id as any);
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      toast.success('Profile picture updated!');
+      await refreshProfile();
+    } catch (error: any) {
+      console.error('Error uploading avatar:', error);
+      toast.error(error.message || 'Failed to upload image');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    setSaving(true);
+
+    try {
+      const supabase = createClient();
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({
+          name: editForm.name.trim() || null,
+          bio: editForm.bio.trim() || null,
+          location: editForm.location.trim() || null,
+          website: editForm.website.trim() || null,
+          twitter: editForm.twitter.trim() || null,
+          discord: editForm.discord.trim() || null,
+        } as any)
+        .eq('id', user!.id as any);
+
+      if (error) throw error;
+
+      toast.success('Profile updated successfully!');
+      setIsEditing(false);
+      await refreshProfile();
+    } catch (error: any) {
+      console.error('Error updating profile:', error);
+      toast.error('Failed to update profile');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    if (profile) {
+      setEditForm({
+        name: profile.name || '',
+        bio: profile.bio || '',
+        location: profile.location || '',
+        website: profile.website || '',
+        twitter: profile.twitter || '',
+        discord: profile.discord || '',
+      });
     }
   };
 
@@ -146,44 +317,266 @@ export default function ProfilePage() {
 
       <div className="max-w-4xl mx-auto py-8 px-4">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
-          <p className="text-sm text-gray-600 mt-1">Manage your account and wallet settings</p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
+            <p className="text-sm text-gray-600 mt-1">Manage your account and personal information</p>
+          </div>
+          {!isEditing && (
+            <button
+              onClick={() => setIsEditing(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition-colors"
+            >
+              <Edit2 className="w-4 h-4" />
+              Edit Profile
+            </button>
+          )}
+          {isEditing && (
+            <div className="flex gap-2">
+              <button
+                onClick={handleCancelEdit}
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition-colors"
+              >
+                <X className="w-4 h-4" />
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveProfile}
+                disabled={saving}
+                className="flex items-center gap-2 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+              >
+                <Save className="w-4 h-4" />
+                {saving ? 'Saving...' : 'Save Changes'}
+              </button>
+            </div>
+          )}
         </div>
 
-        {/* Profile Info */}
+        {/* Profile Header Card */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Account Information</h2>
-
-          <div className="space-y-4">
-            {/* Email */}
-            <div>
-              <label className="block text-xs font-medium text-gray-500 uppercase mb-1">Email</label>
-              <p className="text-sm text-gray-900">{profile.email}</p>
+          <div className="flex items-start gap-6">
+            {/* Avatar */}
+            <div className="relative">
+              <div className="w-24 h-24 rounded-full overflow-hidden bg-gradient-to-br from-organic-orange to-yellow-400 flex items-center justify-center">
+                {profile.avatar_url ? (
+                  <img
+                    src={profile.avatar_url}
+                    alt={profile.name || 'Profile'}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-3xl font-bold text-white">
+                    {(profile.name || profile.email).charAt(0).toUpperCase()}
+                  </span>
+                )}
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarUpload}
+                className="hidden"
+              />
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+                className="absolute -bottom-1 -right-1 p-2 bg-organic-orange hover:bg-orange-600 text-white rounded-full shadow-lg transition-colors disabled:opacity-50"
+                title="Change profile picture"
+              >
+                {uploading ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  <Upload className="w-4 h-4" />
+                )}
+              </button>
             </div>
 
-            {/* Role */}
-            <div>
-              <label className="block text-xs font-medium text-gray-500 uppercase mb-1">Role</label>
-              <span className={`inline-flex px-2.5 py-1 rounded-md text-xs font-medium capitalize ${
-                profile.role === 'admin' ? 'bg-purple-100 text-purple-700' :
-                profile.role === 'council' ? 'bg-blue-100 text-blue-700' :
-                profile.role === 'member' ? 'bg-green-100 text-green-700' :
-                'bg-gray-100 text-gray-700'
-              }`}>
-                {profile.role}
-              </span>
-            </div>
-
-            {/* Organic ID */}
-            <div>
-              <label className="block text-xs font-medium text-gray-500 uppercase mb-1">Organic ID</label>
-              {profile.organic_id ? (
-                <p className="text-xl font-bold text-organic-orange">#{profile.organic_id}</p>
+            {/* Basic Info */}
+            <div className="flex-1">
+              {isEditing ? (
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-500 uppercase mb-1">Name</label>
+                    <input
+                      type="text"
+                      value={editForm.name}
+                      onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                      placeholder="Your name"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
+                      maxLength={100}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-500 uppercase mb-1">Bio</label>
+                    <textarea
+                      value={editForm.bio}
+                      onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
+                      placeholder="Tell us about yourself..."
+                      rows={3}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none"
+                      maxLength={500}
+                    />
+                    <p className="text-xs text-gray-500 mt-1">{editForm.bio.length}/500 characters</p>
+                  </div>
+                </div>
               ) : (
-                <p className="text-sm text-gray-500 italic">Not assigned</p>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-1">
+                    {profile.name || 'Anonymous User'}
+                  </h2>
+                  <p className="text-sm text-gray-600 mb-3">{profile.email}</p>
+                  {profile.bio && (
+                    <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{profile.bio}</p>
+                  )}
+                  {!profile.bio && !isEditing && (
+                    <p className="text-sm text-gray-400 italic">No bio yet. Click Edit Profile to add one!</p>
+                  )}
+                </div>
               )}
             </div>
+          </div>
+        </div>
+
+        {/* Account Details */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          {/* Left Column */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Account Details</h3>
+            <div className="space-y-4">
+              {/* Organic ID */}
+              <div>
+                <label className="block text-xs font-medium text-gray-500 uppercase mb-1">Organic ID</label>
+                {profile.organic_id ? (
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl font-bold text-organic-orange">#{profile.organic_id}</span>
+                    <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">Verified</span>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500 italic">Not assigned</p>
+                )}
+              </div>
+
+              {/* Role */}
+              <div>
+                <label className="block text-xs font-medium text-gray-500 uppercase mb-1">Role</label>
+                <span className={`inline-flex px-2.5 py-1 rounded-md text-xs font-medium capitalize ${
+                  profile.role === 'admin' ? 'bg-purple-100 text-purple-700' :
+                  profile.role === 'council' ? 'bg-blue-100 text-blue-700' :
+                  profile.role === 'member' ? 'bg-green-100 text-green-700' :
+                  'bg-gray-100 text-gray-700'
+                }`}>
+                  {profile.role || 'Guest'}
+                </span>
+              </div>
+
+              {/* Member Since */}
+              <div>
+                <label className="block text-xs font-medium text-gray-500 uppercase mb-1">Member Since</label>
+                <div className="flex items-center gap-2 text-sm text-gray-700">
+                  <Calendar className="w-4 h-4" />
+                  <span>{formatDistanceToNow(new Date(profile.created_at), { addSuffix: true })}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - Social & Contact */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Social & Contact</h3>
+            {isEditing ? (
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 uppercase mb-1">Location</label>
+                  <div className="relative">
+                    <MapPin className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input
+                      type="text"
+                      value={editForm.location}
+                      onChange={(e) => setEditForm({ ...editForm, location: e.target.value })}
+                      placeholder="City, Country"
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
+                      maxLength={100}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 uppercase mb-1">Website</label>
+                  <div className="relative">
+                    <Globe className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input
+                      type="url"
+                      value={editForm.website}
+                      onChange={(e) => setEditForm({ ...editForm, website: e.target.value })}
+                      placeholder="https://yoursite.com"
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
+                      maxLength={200}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 uppercase mb-1">Twitter/X</label>
+                  <div className="relative">
+                    <Twitter className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input
+                      type="text"
+                      value={editForm.twitter}
+                      onChange={(e) => setEditForm({ ...editForm, twitter: e.target.value })}
+                      placeholder="@username"
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
+                      maxLength={50}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 uppercase mb-1">Discord</label>
+                  <div className="relative">
+                    <MessageCircle className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input
+                      type="text"
+                      value={editForm.discord}
+                      onChange={(e) => setEditForm({ ...editForm, discord: e.target.value })}
+                      placeholder="username#1234"
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
+                      maxLength={50}
+                    />
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {profile.location && (
+                  <div className="flex items-center gap-2 text-sm text-gray-700">
+                    <MapPin className="w-4 h-4 text-gray-400" />
+                    <span>{profile.location}</span>
+                  </div>
+                )}
+                {profile.website && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <Globe className="w-4 h-4 text-gray-400" />
+                    <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-organic-orange hover:underline">
+                      {profile.website.replace(/^https?:\/\//, '')}
+                    </a>
+                  </div>
+                )}
+                {profile.twitter && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <Twitter className="w-4 h-4 text-gray-400" />
+                    <a href={`https://x.com/${profile.twitter.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="text-organic-orange hover:underline">
+                      {profile.twitter}
+                    </a>
+                  </div>
+                )}
+                {profile.discord && (
+                  <div className="flex items-center gap-2 text-sm text-gray-700">
+                    <MessageCircle className="w-4 h-4 text-gray-400" />
+                    <span>{profile.discord}</span>
+                  </div>
+                )}
+                {!profile.location && !profile.website && !profile.twitter && !profile.discord && !isEditing && (
+                  <p className="text-sm text-gray-400 italic">No social links yet. Click Edit Profile to add some!</p>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -191,12 +584,10 @@ export default function ProfilePage() {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Solana Wallet</h2>
 
-          {/* Wallet Connect Button */}
           <div className="mb-4">
             <WalletMultiButton />
           </div>
 
-          {/* Linked Wallet */}
           {profile.wallet_pubkey && (
             <div className="mb-4">
               <label className="block text-xs font-medium text-gray-500 uppercase mb-2">Linked Wallet</label>
@@ -214,7 +605,6 @@ export default function ProfilePage() {
             </div>
           )}
 
-          {/* Link Wallet Button */}
           {connected && publicKey && !profile.wallet_pubkey && (
             <button
               onClick={handleLinkWallet}

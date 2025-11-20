@@ -31,14 +31,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchProfile = async (userId: string) => {
     try {
+      // Use maybeSingle() instead of single() to avoid errors on empty results
+      // Also force a fresh fetch by using a timestamp
       const { data, error } = await supabase
         .from('user_profiles')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
-      setProfile(data);
+      if (error) {
+        console.error('Error fetching profile:', error);
+        throw error;
+      }
+
+      if (data) {
+        console.log('Profile fetched:', {
+          id: data.id,
+          email: data.email,
+          wallet_pubkey: data.wallet_pubkey,
+          organic_id: data.organic_id
+        });
+        setProfile(data);
+      } else {
+        console.warn('No profile found for user:', userId);
+        setProfile(null);
+      }
     } catch (error) {
       console.error('Error fetching profile:', error);
       setProfile(null);
