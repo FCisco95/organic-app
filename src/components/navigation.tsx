@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/features/auth/context';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
@@ -24,13 +25,15 @@ export function Navigation() {
         <div className="flex justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2 group">
-              <div className="w-9 h-9 bg-gradient-to-br from-organic-orange to-organic-yellow rounded-lg flex items-center justify-center transition-transform group-hover:scale-105">
-                <span className="text-white font-semibold text-lg">O</span>
-              </div>
-              <span className="text-xl font-semibold text-gray-900">
-                Organic
-              </span>
+            <Link href="/" className="flex items-center group">
+              <Image
+                src="/organic-logo.png"
+                alt="Organic Logo"
+                width={200}
+                height={67}
+                className="h-16 w-auto transition-transform group-hover:scale-105"
+                priority
+              />
             </Link>
           </div>
 
@@ -78,6 +81,29 @@ export function Navigation() {
                     </span>
                   </div>
                 )}
+
+                {/* User Avatar */}
+                <Link
+                  href="/profile"
+                  className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
+                  title="View Profile"
+                >
+                  {profile?.avatar_url ? (
+                    <Image
+                      src={profile.avatar_url}
+                      alt={profile.name || 'User avatar'}
+                      width={32}
+                      height={32}
+                      className="rounded-full object-cover border-2 border-gray-200"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-organic-orange to-organic-yellow flex items-center justify-center border-2 border-gray-200">
+                      <span className="text-white text-sm font-bold">
+                        {(profile?.name || user?.email || 'U')[0].toUpperCase()}
+                      </span>
+                    </div>
+                  )}
+                </Link>
 
                 {/* Wallet Button */}
                 <div className="hidden lg:block">
