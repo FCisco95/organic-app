@@ -17,6 +17,7 @@ export function Navigation() {
     { href: '/proposals', label: 'Proposals', show: !!user },
     { href: '/tasks', label: 'Tasks', show: !!profile?.organic_id },
     { href: '/sprints', label: 'Sprints', show: !!profile?.organic_id },
+    { href: '/leaderboard', label: 'Leaderboard', show: !!user },
   ];
 
   return (
@@ -91,7 +92,7 @@ export function Navigation() {
                   {profile?.avatar_url ? (
                     <Image
                       src={profile.avatar_url}
-                      alt={profile.name || 'User avatar'}
+                      alt={(profile as any).name || 'User avatar'}
                       width={32}
                       height={32}
                       className="rounded-full object-cover border-2 border-gray-200"
@@ -99,7 +100,7 @@ export function Navigation() {
                   ) : (
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-organic-orange to-organic-yellow flex items-center justify-center border-2 border-gray-200">
                       <span className="text-white text-sm font-bold">
-                        {(profile?.name || user?.email || 'U')[0].toUpperCase()}
+                        {((profile as any)?.name || user?.email || 'U')[0].toUpperCase()}
                       </span>
                     </div>
                   )}
