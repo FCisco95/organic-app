@@ -4,8 +4,10 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/features/auth/context';
 import { Navigation } from '@/components/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { Plus, Calendar, User, MoreVertical, AlertCircle, Clock, Tag } from 'lucide-react';
+import { Plus, Calendar, User, MoreVertical, AlertCircle, Clock, Tag, Edit2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 type TaskStatus = 'backlog' | 'todo' | 'in_progress' | 'review' | 'done';
 type TaskPriority = 'low' | 'medium' | 'high' | 'critical';
@@ -65,6 +67,7 @@ export default function TasksPage() {
   const [loading, setLoading] = useState(true);
   const [showNewTaskModal, setShowNewTaskModal] = useState(false);
   const [showNewSprintModal, setShowNewSprintModal] = useState(false);
+  const [draggedTask, setDraggedTask] = useState<Task | null>(null);
 
   const canManage = profile?.role && ['member', 'council', 'admin'].includes(profile.role);
 
@@ -152,6 +155,21 @@ export default function TasksPage() {
       toast.error('Failed to update task');
     }
   }
+
+  const handleDragStart = (task: Task) => {
+    setDraggedTask(task);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (status: TaskStatus) => {
+    if (draggedTask && draggedTask.status !== status) {
+      updateTaskStatus(draggedTask.id, status);
+    }
+    setDraggedTask(null);
+  };
 
   const getTasksByStatus = (status: TaskStatus) => {
     return tasks.filter((task) => task.status === status);
@@ -280,10 +298,15 @@ export default function TasksPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {COLUMNS.map((column) => {
               const columnTasks = getTasksByStatus(column.id);
+              const isDropTarget = draggedTask && draggedTask.status !== column.id;
               return (
                 <div
                   key={column.id}
-                  className={`rounded-lg border-2 p-4 ${column.color} min-h-[500px]`}
+                  className={`rounded-lg border-2 p-4 ${column.color} min-h-[500px] transition-all ${
+                    isDropTarget ? 'ring-2 ring-organic-orange ring-offset-2 scale-[1.02]' : ''
+                  }`}
+                  onDragOver={handleDragOver}
+                  onDrop={() => handleDrop(column.id)}
                 >
                   {/* Column Header */}
                   <div className="mb-4">
@@ -302,7 +325,9 @@ export default function TasksPage() {
                         key={task.id}
                         task={task}
                         onStatusChange={updateTaskStatus}
+                        onDragStart={handleDragStart}
                         canManage={canManage}
+                        isDragging={draggedTask?.id === task.id}
                       />
                     ))}
                   </div>
@@ -342,12 +367,17 @@ export default function TasksPage() {
 function TaskCard({
   task,
   onStatusChange,
+  onDragStart,
   canManage,
+  isDragging,
 }: {
   task: Task;
   onStatusChange: (taskId: string, status: TaskStatus) => void;
+  onDragStart: (task: Task) => void;
   canManage: boolean | undefined;
+  isDragging: boolean;
 }) {
+  const router = useRouter();
   const [showActions, setShowActions] = useState(false);
 
   const getPriorityColor = (priority: TaskPriority | null) => {
@@ -368,100 +398,131 @@ function TaskCard({
   const isOverdue = task.due_date && new Date(task.due_date) < new Date() && task.status !== 'done';
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-3 shadow-sm hover:shadow-md transition-shadow group">
-      {/* Priority Badge */}
-      {task.priority && (
-        <div className="mb-2">
-          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${getPriorityColor(task.priority)}`}>
-            <AlertCircle className="w-3 h-3" />
-            {task.priority}
-          </span>
-        </div>
-      )}
+    <div
+      draggable={canManage}
+      onDragStart={() => onDragStart(task)}
+      className={`bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all group relative ${
+        isDragging ? 'opacity-50 scale-95' : ''
+      } ${canManage ? 'cursor-move' : ''}`}
+    >
+      <Link href={`/tasks/${task.id}`} className="block p-3">
+        {/* Priority Badge */}
+        {task.priority && (
+          <div className="mb-2">
+            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${getPriorityColor(task.priority)}`}>
+              <AlertCircle className="w-3 h-3" />
+              {task.priority}
+            </span>
+          </div>
+        )}
 
-      <div className="flex items-start justify-between gap-2 mb-2">
-        <h4 className="font-medium text-gray-900 text-sm line-clamp-2 flex-1">
-          {task.title}
-        </h4>
-        {canManage && (
-          <div className="relative">
-            <button
-              onClick={() => setShowActions(!showActions)}
-              className="text-gray-400 hover:text-gray-600 p-1"
-            >
-              <MoreVertical className="w-4 h-4" />
-            </button>
-            {showActions && (
-              <div className="absolute right-0 mt-1 w-32 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
+        <div className="flex items-start justify-between gap-2 mb-2">
+          <h4 className="font-medium text-gray-900 text-sm line-clamp-2 flex-1 group-hover:text-organic-orange transition-colors">
+            {task.title}
+          </h4>
+        </div>
+
+        {task.description && (
+          <p className="text-xs text-gray-600 mb-2 line-clamp-2">
+            {task.description}
+          </p>
+        )}
+
+        {/* Labels */}
+        {task.labels && task.labels.length > 0 && (
+          <div className="flex flex-wrap gap-1 mb-2">
+            {task.labels.map((label, idx) => (
+              <span key={idx} className="inline-flex items-center gap-1 px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs">
+                <Tag className="w-3 h-3" />
+                {label}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Due Date */}
+        {task.due_date && (
+          <div className={`flex items-center gap-1 mb-2 text-xs ${isOverdue ? 'text-red-600 font-medium' : 'text-gray-500'}`}>
+            <Clock className="w-3 h-3" />
+            Due: {new Date(task.due_date).toLocaleDateString()}
+            {isOverdue && ' (Overdue)'}
+          </div>
+        )}
+
+        <div className="flex items-center justify-between text-xs">
+          <div className="flex items-center gap-2">
+            {task.points && (
+              <span className="px-2 py-0.5 bg-gray-100 text-gray-700 rounded-full font-medium">
+                {task.points}pt
+              </span>
+            )}
+            {task.sprints && (
+              <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full">
+                {task.sprints.name}
+              </span>
+            )}
+          </div>
+          {task.assignee && (
+            <div className="flex items-center gap-1 text-gray-500">
+              <User className="w-3 h-3" />
+              <span className="text-xs">
+                {task.assignee.organic_id
+                  ? `#${task.assignee.organic_id}`
+                  : task.assignee.email.split('@')[0]}
+              </span>
+            </div>
+          )}
+        </div>
+      </Link>
+
+      {/* Quick Status Change Menu - positioned absolutely */}
+      {canManage && (
+        <div className="absolute top-2 right-2 z-10">
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setShowActions(!showActions);
+            }}
+            className="text-gray-400 hover:text-gray-600 p-1 bg-white rounded hover:bg-gray-50"
+          >
+            <MoreVertical className="w-4 h-4" />
+          </button>
+          {showActions && (
+            <div className="absolute right-0 mt-1 w-40 bg-white rounded-lg shadow-lg border border-gray-200 py-1">
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowActions(false);
+                  router.push(`/tasks/${task.id}`);
+                }}
+                className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 border-b border-gray-100"
+              >
+                <Edit2 className="w-3.5 h-3.5" />
+                Edit Task
+              </button>
+              <div className="py-1">
+                <div className="px-3 py-1 text-xs font-medium text-gray-500 uppercase">Move to</div>
                 {COLUMNS.map((col) => (
                   <button
                     key={col.id}
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
                       onStatusChange(task.id, col.id);
                       setShowActions(false);
                     }}
                     className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
                   >
-                    Move to {col.title}
+                    {col.title}
                   </button>
                 ))}
               </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      {task.description && (
-        <p className="text-xs text-gray-600 mb-2 line-clamp-2">
-          {task.description}
-        </p>
-      )}
-
-      {/* Labels */}
-      {task.labels && task.labels.length > 0 && (
-        <div className="flex flex-wrap gap-1 mb-2">
-          {task.labels.map((label, idx) => (
-            <span key={idx} className="inline-flex items-center gap-1 px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs">
-              <Tag className="w-3 h-3" />
-              {label}
-            </span>
-          ))}
-        </div>
-      )}
-
-      {/* Due Date */}
-      {task.due_date && (
-        <div className={`flex items-center gap-1 mb-2 text-xs ${isOverdue ? 'text-red-600 font-medium' : 'text-gray-500'}`}>
-          <Clock className="w-3 h-3" />
-          Due: {new Date(task.due_date).toLocaleDateString()}
-          {isOverdue && ' (Overdue)'}
-        </div>
-      )}
-
-      <div className="flex items-center justify-between text-xs">
-        <div className="flex items-center gap-2">
-          {task.points && (
-            <span className="px-2 py-0.5 bg-gray-100 text-gray-700 rounded-full font-medium">
-              {task.points}pt
-            </span>
-          )}
-          {task.sprints && (
-            <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full">
-              {task.sprints.name}
-            </span>
+            </div>
           )}
         </div>
-        {task.assignee && (
-          <div className="flex items-center gap-1 text-gray-500">
-            <User className="w-3 h-3" />
-            <span className="text-xs">
-              {task.assignee.organic_id
-                ? `#${task.assignee.organic_id}`
-                : task.assignee.email.split('@')[0]}
-            </span>
-          </div>
-        )}
-      </div>
+      )}
     </div>
   );
 }
