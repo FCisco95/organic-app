@@ -19,6 +19,12 @@
 - [x] Assignee management
 - [x] Permission-based task management
 - [x] Status workflow (backlog → todo → in_progress → review → done)
+- [x] Task detail pages with full information
+- [x] Task comments system with real-time updates
+- [x] User assignment modal for admin/council
+- [x] Task deletion with confirmation (admin only)
+- [x] Drag-and-drop task status changes
+- [x] Task cards with quick navigation and actions
 
 ### Phase 3: Enhanced Profiles (Completed)
 - [x] Profile picture upload to Supabase Storage
@@ -44,6 +50,9 @@
 - [x] Better error handling across API routes
 - [x] Solana RPC fallback system
 - [x] Environment variable configuration
+- [x] Enhanced SSR session handling with debugging
+- [x] Cookie configuration for production environments
+- [x] Auth callback error handling and redirects
 
 ## 🚧 In Progress / Next Steps
 
@@ -56,13 +65,15 @@
 - [ ] Active sprint indicator
 - [ ] Sprint history and archive
 
-### Phase 7: Proposals System
-- [ ] Proposal creation form
-- [ ] Proposal listing with filters
-- [ ] Proposal detail view
-- [ ] Voting mechanism (on-chain or off-chain)
-- [ ] Proposal status workflow (draft → active → passed/rejected)
-- [ ] Discussion/comments on proposals
+### Phase 7: Proposals System (In Progress)
+- [x] Proposal creation form
+- [x] Proposal listing with filters
+- [x] Proposal detail view
+- [x] Voting mechanism (off-chain)
+- [x] Proposal status workflow (draft → active → passed/rejected)
+- [x] Discussion/comments on proposals
+- [x] Edit functionality for draft proposals (author/admin)
+- [x] Delete functionality with confirmation (author/admin)
 - [ ] Proposal templates
 - [ ] Proposal categories/tags
 
@@ -218,5 +229,25 @@
 
 ---
 
-Last Updated: 2025-01-20
-Version: 1.0
+Last Updated: 2025-01-26
+Version: 1.1
+
+## Recent Updates (2025-01-26)
+
+### Task Management Enhancements
+- Added comprehensive task detail pages with comments system
+- Implemented user assignment modal for admin/council members
+- Added task deletion with confirmation modal (admin only)
+- Enhanced kanban board with drag-and-drop improvements
+- Added quick navigation and action buttons on task cards
+
+### Proposal System Improvements
+- Added inline editing for draft proposals
+- Implemented delete functionality with confirmation
+- Restricted edit/delete to authors and admins for draft proposals only
+
+### Infrastructure Updates
+- Enhanced Supabase SSR session handling with comprehensive logging
+- Fixed middleware cookie configuration for production
+- Improved auth callback error handling and redirects
+- Implemented client-side Supabase operations for LocalStorage session compatibility
