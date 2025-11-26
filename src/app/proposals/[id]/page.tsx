@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useAuth } from '@/features/auth/context';
 import { Navigation } from '@/components/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { ArrowLeft, Calendar, User, MessageCircle, CheckCircle, XCircle, Clock, ListTodo } from 'lucide-react';
+import { ArrowLeft, Calendar, User, MessageCircle, CheckCircle, XCircle, Clock, ListTodo, Edit2, Trash2, Save } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import toast from 'react-hot-toast';
 
@@ -44,6 +44,9 @@ export default function ProposalDetailPage() {
   const [loading, setLoading] = useState(true);
   const [commentText, setCommentText] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState({ title: '', body: '' });
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const proposalId = params.id as string;
   const isAuthor = user && proposal && user.id === proposal.created_by;
@@ -73,6 +76,7 @@ export default function ProposalDetailPage() {
 
       if (error) throw error;
       setProposal(data as Proposal);
+      setEditForm({ title: data.title, body: data.body });
     } catch (error) {
       console.error('Error loading proposal:', error);
       toast.error('Failed to load proposal');
@@ -191,6 +195,64 @@ export default function ProposalDetailPage() {
     }
   }
 
+  async function handleSaveEdit() {
+    if (!editForm.title.trim() || !editForm.body.trim()) {
+      toast.error('Title and body are required');
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      const supabase = createClient();
+
+      const { data, error } = await supabase
+        .from('proposals')
+        .update({
+          title: editForm.title.trim(),
+          body: editForm.body.trim(),
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', proposalId)
+        .select(
+          `
+          *,
+          user_profiles!proposals_created_by_fkey (
+            organic_id,
+            email
+          )
+        `
+        )
+        .single();
+
+      if (error) throw error;
+
+      setProposal(data as Proposal);
+      setIsEditing(false);
+      toast.success('Proposal updated successfully');
+    } catch (error) {
+      console.error('Error updating proposal:', error);
+      toast.error('Failed to update proposal');
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleDelete() {
+    try {
+      const supabase = createClient();
+
+      const { error } = await supabase.from('proposals').delete().eq('id', proposalId);
+
+      if (error) throw error;
+
+      toast.success('Proposal deleted successfully');
+      router.push('/proposals');
+    } catch (error) {
+      console.error('Error deleting proposal:', error);
+      toast.error('Failed to delete proposal');
+    }
+  }
+
   const getStatusConfig = (status: string) => {
     switch (status) {
       case 'draft':
@@ -261,10 +323,63 @@ export default function ProposalDetailPage() {
         <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
           {/* Header */}
           <div className="flex items-start justify-between gap-4 mb-4">
-            <h1 className="text-3xl font-bold text-gray-900 flex-1">{proposal.title}</h1>
-            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${statusConfig.color}`}>
-              <StatusIcon className="w-4 h-4" />
-              <span className="capitalize">{proposal.status}</span>
+            {isEditing ? (
+              <input
+                type="text"
+                value={editForm.title}
+                onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                className="text-3xl font-bold text-gray-900 flex-1 border-b-2 border-organic-orange focus:outline-none"
+                placeholder="Proposal title"
+              />
+            ) : (
+              <h1 className="text-3xl font-bold text-gray-900 flex-1">{proposal.title}</h1>
+            )}
+            <div className="flex items-center gap-2">
+              <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${statusConfig.color}`}>
+                <StatusIcon className="w-4 h-4" />
+                <span className="capitalize">{proposal.status}</span>
+              </div>
+              {(isAuthor || isAdmin) && !isEditing && proposal.status === 'draft' && (
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="flex items-center gap-1 px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className="flex items-center gap-1 px-3 py-1.5 text-sm bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Delete
+                  </button>
+                </div>
+              )}
+              {isEditing && (
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleSaveEdit}
+                    disabled={submitting}
+                    className="flex items-center gap-1 px-3 py-1.5 text-sm bg-organic-orange hover:bg-orange-600 text-white rounded-lg transition-colors disabled:opacity-50"
+                  >
+                    <Save className="w-4 h-4" />
+                    {submitting ? 'Saving...' : 'Save'}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsEditing(false);
+                      setEditForm({ title: proposal.title, body: proposal.body });
+                    }}
+                    disabled={submitting}
+                    className="flex items-center gap-1 px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors disabled:opacity-50"
+                  >
+                    <XCircle className="w-4 h-4" />
+                    Cancel
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
@@ -290,7 +405,17 @@ export default function ProposalDetailPage() {
 
           {/* Body */}
           <div className="prose max-w-none">
-            <p className="text-gray-700 whitespace-pre-wrap">{proposal.body}</p>
+            {isEditing ? (
+              <textarea
+                value={editForm.body}
+                onChange={(e) => setEditForm({ ...editForm, body: e.target.value })}
+                rows={12}
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none text-gray-700"
+                placeholder="Proposal body"
+              />
+            ) : (
+              <p className="text-gray-700 whitespace-pre-wrap">{proposal.body}</p>
+            )}
           </div>
 
           {/* Admin Actions */}
@@ -406,6 +531,35 @@ export default function ProposalDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Delete Proposal</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete this proposal? This action cannot be undone.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setShowDeleteConfirm(false);
+                  handleDelete();
+                }}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors"
+              >
+                Delete Proposal
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
