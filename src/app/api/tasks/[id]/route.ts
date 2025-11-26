@@ -1,0 +1,190 @@
+import { NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
+
+// GET - Fetch a single task with details
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const supabase = await createClient();
+
+    console.log('[Task API] Checking authentication for task:', id);
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    console.log('[Task API] Auth result:', {
+      hasUser: !!user,
+      userId: user?.id,
+      authError: authError?.message
+    });
+
+    if (authError || !user) {
+      console.error('[Task API] Authentication failed:', authError);
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    }
+
+    const { data: task, error } = await supabase
+      .from('tasks')
+      .select(`
+        *,
+        assignee:user_profiles!tasks_assignee_id_fkey(
+          id,
+          name,
+          email,
+          organic_id,
+          avatar_url
+        ),
+        created_by_user:user_profiles!tasks_created_by_fkey(
+          id,
+          name,
+          email,
+          organic_id
+        ),
+        sprint:sprints(
+          id,
+          name,
+          status
+        )
+      `)
+      .eq('id', id)
+      .single();
+
+    if (error || !task) {
+      return NextResponse.json({ error: 'Task not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ task });
+  } catch (error: any) {
+    console.error('Error in task detail route:', error);
+    return NextResponse.json(
+      { error: error.message || 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+// PATCH - Update a task
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const supabase = await createClient();
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { title, description, status, priority, points, assignee_id, sprint_id } = body;
+
+    // Build update object with only provided fields
+    const updates: any = {};
+    if (title !== undefined) updates.title = title;
+    if (description !== undefined) updates.description = description;
+    if (status !== undefined) updates.status = status;
+    if (priority !== undefined) updates.priority = priority;
+    if (points !== undefined) updates.points = points;
+    if (assignee_id !== undefined) updates.assignee_id = assignee_id;
+    if (sprint_id !== undefined) updates.sprint_id = sprint_id;
+
+    const { data: task, error } = await supabase
+      .from('tasks')
+      .update(updates)
+      .eq('id', id)
+      .select(`
+        *,
+        assignee:user_profiles!tasks_assignee_id_fkey(
+          id,
+          name,
+          email,
+          organic_id,
+          avatar_url
+        ),
+        created_by_user:user_profiles!tasks_created_by_fkey(
+          id,
+          name,
+          email,
+          organic_id
+        ),
+        sprint:sprints(
+          id,
+          name,
+          status
+        )
+      `)
+      .single();
+
+    if (error) {
+      console.error('Error updating task:', error);
+      return NextResponse.json({ error: 'Failed to update task' }, { status: 500 });
+    }
+
+    return NextResponse.json({ task });
+  } catch (error: any) {
+    console.error('Error in update task:', error);
+    return NextResponse.json(
+      { error: error.message || 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE - Delete a task
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const supabase = await createClient();
+
+    console.log('[Task DELETE] Checking authentication for task:', id);
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    console.log('[Task DELETE] Auth result:', {
+      hasUser: !!user,
+      userId: user?.id,
+      authError: authError?.message
+    });
+
+    if (authError || !user) {
+      console.error('[Task DELETE] Authentication failed:', authError);
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    }
+
+    // Check if user is admin or council
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+    if (!profile || !['council', 'admin'].includes(profile.role)) {
+      return NextResponse.json(
+        { error: 'Only council and admin members can delete tasks' },
+        { status: 403 }
+      );
+    }
+
+    const { error } = await supabase
+      .from('tasks')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error deleting task:', error);
+      return NextResponse.json({ error: 'Failed to delete task' }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    console.error('Error in delete task:', error);
+    return NextResponse.json(
+      { error: error.message || 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
