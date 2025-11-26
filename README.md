@@ -71,57 +71,97 @@ organic-app/
 
 ```
 
-## Week 1 Build Plan
+## ✅ Completed Features
 
-### ✅ Repo and Environments
-- [x] Next.js app structure
-- [ ] Vercel deployment
-- [ ] Supabase project setup
-- [ ] Environment variables configuration
-- [x] Telemetry disabled
+### Authentication & User Management
+- [x] Supabase email/password authentication
+- [x] Solana wallet integration (Phantom, Solflare, etc.)
+- [x] Wallet linking with signature verification
+- [x] Role-based access control (admin, council, member, viewer)
+- [x] User profiles with editable fields
+- [x] Profile picture upload to Supabase Storage
+- [x] Avatar display with gradient fallback
+- [x] Social media links (Twitter, Discord)
 
-### 🎨 UI Setup
-- [ ] shadcn/ui components installation
-- [x] Tailwind CSS configuration
-- [ ] React Query setup
-- [x] Zod validation setup
-- [x] ESLint & Prettier configuration
+### Organic ID System
+- [x] Automatic ID assignment to ORG token holders
+- [x] Sequential numbering system
+- [x] Blockchain verification via Solana RPC
+- [x] Balance checking and validation
+- [x] Admin-reserved ID #1
 
-### 🔐 Auth + Wallet Link
-- [ ] Supabase email/password auth
-- [ ] Nonce endpoint for SIWS
-- [ ] Wallet linking functionality
-- [ ] Profile screen (email, wallet, role display)
+### Task Management
+- [x] Full CRUD operations for tasks
+- [x] Interactive Kanban board with 5 columns
+- [x] Drag-and-drop task status updates
+- [x] Task detail pages with comprehensive information
+- [x] Task comments system with real-time updates
+- [x] User assignment modal (admin/council)
+- [x] Task deletion with confirmation (admin only)
+- [x] Task properties: priority, points, labels, due dates
+- [x] Sprint/Epoch assignment
+- [x] Permission-based task management
+- [x] Status workflow: backlog → todo → in_progress → review → done
 
-### 🎫 Organic ID Issue Flow
-- [ ] Holder check endpoint for ORG SPL token
-- [ ] Auto-assign incremental ID to holders
-- [ ] Reserve ID #1 for admin user
+### Proposals & Voting
+- [x] Proposal creation form with validation
+- [x] Proposal listing with filters and search
+- [x] Proposal detail view with full information
+- [x] Token-weighted off-chain voting system
+- [x] Vote casting and tallying
+- [x] Proposal status workflow: draft → active → passed/rejected
+- [x] Discussion/comments on proposals
+- [x] Edit functionality for draft proposals (author/admin)
+- [x] Delete functionality with confirmation (author/admin)
+- [x] Admin controls for proposal lifecycle
 
-### 📝 Proposals MVP
-- [ ] Create proposal
-- [ ] Comment on proposals
-- [ ] List proposals
-- [ ] Proposal detail view
-- [ ] Admin approval to convert to task
-- [ ] RLS and moderation basics
+### Sprint Management
+- [x] Sprint creation and management
+- [x] Sprint listing page
+- [x] Sprint detail pages with task views
+- [x] Active sprint tracking
+- [x] Sprint progress visualization
 
-### 🗳️ Voting MVP
-- [ ] Start vote (create holder snapshots)
-- [ ] Cast vote (hidden voter identity)
-- [ ] Tally view (public results)
-- [ ] Show weight source and block height
+### Infrastructure & UI
+- [x] Next.js 14 App Router setup
+- [x] Tailwind CSS with custom Organic branding
+- [x] Responsive mobile-first design
+- [x] Navigation with role-based menu items
+- [x] Enhanced SSR session handling
+- [x] Middleware for authentication
+- [x] API routes with proper error handling
+- [x] Solana RPC fallback system
+- [x] Environment configuration
+- [x] Cookie-based session management
 
-### ✅ Tasks and Sprints
-- [ ] Convert approved proposal to task
-- [ ] Simple Kanban board
-- [ ] Sprint attachment
-- [ ] Comments on tasks
+## 🚧 In Progress / Planned Features
 
-### 🎯 Polish
-- [ ] In-app notifications
-- [ ] Plausible analytics integration
-- [ ] Theming to match Organic site
+### Advanced Task Features
+- [ ] Task dependencies
+- [ ] Recurring tasks
+- [ ] Task templates
+- [ ] Sprint burndown charts
+- [ ] Sprint capacity planning
+
+### Proposal Enhancements
+- [ ] Proposal templates
+- [ ] Proposal categories/tags
+- [ ] Delegation system
+
+### Treasury & Analytics
+- [ ] Treasury balance display
+- [ ] Transaction history
+- [ ] Budget allocation tracking
+- [ ] Member contribution metrics
+- [ ] DAO activity dashboard
+
+### Communication
+- [ ] In-app notification system
+- [ ] Email notifications
+- [ ] Discord bot integration
+- [ ] Announcement system
+
+For detailed build plan, see [BUILD_PLAN.md](./BUILD_PLAN.md)
 
 ## Getting Started
 
@@ -170,40 +210,55 @@ npm run dev
 
 ### Key Features
 
-#### Authentication
-- Email/password via Supabase Auth
-- Solana wallet linking with Sign-In With Solana (SIWS)
-- Role-based access control (admin, member, viewer)
+#### 🔐 Authentication & Profiles
+- Email/password authentication via Supabase
+- Solana wallet integration and linking
+- Role-based access control (admin, council, member, viewer)
+- Customizable user profiles with avatars
+- Social media integration
 
-#### Organic ID System
+#### 🎫 Organic ID System
 - Automatic ID assignment to ORG token holders
-- Sequential numbering system
-- Blockchain verification
+- Sequential numbering with blockchain verification
+- Real-time balance checking via Solana RPC
+- Admin controls for ID management
 
-#### Proposals & Voting
-- Create and discuss proposals
-- Token-weighted voting
-- Snapshot-based vote tallying
-- Privacy-preserving voter records
+#### 📋 Task Management
+- Interactive Kanban board with drag-and-drop
+- Comprehensive task detail pages
+- Real-time commenting system
+- User assignment and delegation
+- Sprint/epoch organization
+- Priority, points, and label tracking
 
-#### Task Management
-- Convert approved proposals to tasks
-- Kanban board interface
-- Sprint planning
-- Task comments and collaboration
+#### 📝 Proposals & Governance
+- Full proposal lifecycle management
+- Token-weighted voting system
+- Discussion threads and comments
+- Status workflow from draft to execution
+- Edit and delete controls for authors/admins
+- Transparent voting results
+
+#### 🏃 Sprint Planning
+- Sprint creation and management
+- Task-sprint associations
+- Progress tracking and visualization
+- Active sprint monitoring
 
 ## Database Schema
 
-To be implemented in Supabase migrations:
+Implemented in Supabase with Row Level Security:
 
-- `users` - User accounts and profiles
-- `proposals` - DAO proposals
-- `comments` - Comments on proposals/tasks
-- `votes` - Vote records
-- `holder_snapshots` - Token holder snapshots for voting
-- `tasks` - Task management
-- `sprints` - Sprint planning
-- `notifications` - In-app notifications
+- `user_profiles` - User accounts, profiles, and role management
+- `proposals` - DAO proposals with lifecycle tracking
+- `proposal_comments` - Discussion threads on proposals
+- `votes` - Vote records and tallying
+- `tasks` - Task management with priorities and status
+- `task_comments` - Collaboration on tasks
+- `sprints` - Sprint/epoch planning and tracking
+- `leaderboard` - Member contribution rankings
+
+See `supabase/migrations/` for full schema definitions.
 
 ## Contributing
 
