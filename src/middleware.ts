@@ -3,9 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
+    request,
   });
 
   const supabase = createServerClient(
@@ -14,27 +12,36 @@ export async function middleware(request: NextRequest) {
     {
       cookies: {
         getAll() {
-          return request.cookies.getAll();
+          const cookies = request.cookies.getAll();
+          console.log('[Middleware] Incoming cookies:', cookies.map(c => c.name));
+          return cookies;
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
+          console.log('[Middleware] Setting cookies:', cookiesToSet.map(c => c.name));
+          cookiesToSet.forEach(({ name, value, options }) => {
+            request.cookies.set(name, value);
+            response.cookies.set(name, value, {
+              ...options,
+              httpOnly: true,
+              secure: process.env.NODE_ENV === 'production',
+              sameSite: 'lax',
+              path: '/',
+            });
           });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
-          );
         },
       },
     }
   );
 
   // This will refresh session if expired - required for Server Components
-  await supabase.auth.getUser();
+  const { data: { user }, error } = await supabase.auth.getUser();
+
+  console.log('[Middleware] Auth check:', {
+    path: request.nextUrl.pathname,
+    hasUser: !!user,
+    userId: user?.id,
+    error: error?.message
+  });
 
   return response;
 }
