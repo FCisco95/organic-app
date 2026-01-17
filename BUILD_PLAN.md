@@ -4,7 +4,7 @@
 
 ### Phase 1: Foundation (Completed)
 - [x] Authentication system with Supabase
-- [x] Wallet integration (Phantom, Solflare, etc.)
+- [x] Wallet integration (Phantom)
 - [x] Wallet linking and signature verification
 - [x] Organic ID assignment system
 - [x] User profiles with role management
@@ -20,7 +20,7 @@
 - [x] Permission-based task management
 - [x] Status workflow (backlog → todo → in_progress → review → done)
 - [x] Task detail pages with full information
-- [x] Task comments system with real-time updates
+- [x] Task comments system
 - [x] User assignment modal for admin/council
 - [x] Task deletion with confirmation (admin only)
 - [x] Drag-and-drop task status changes
@@ -37,7 +37,7 @@
 - [x] Avatar in navigation bar
 
 ### Phase 4: Navigation & UI (Completed)
-- [x] Proposals page placeholder
+- [x] Proposals navigation entry and routing
 - [x] Navigation with user avatars
 - [x] Organic ID badge display
 - [x] Role-based menu items
@@ -48,7 +48,6 @@
 - [x] Middleware for session management
 - [x] Improved authentication flow
 - [x] Better error handling across API routes
-- [x] Solana RPC fallback system
 - [x] Environment variable configuration
 - [x] Enhanced SSR session handling with debugging
 - [x] Cookie configuration for production environments
@@ -57,23 +56,31 @@
 ## 🚧 In Progress / Next Steps
 
 ### Phase 6: Sprint/Epoch Management
-- [ ] Create sprints page with CRUD operations
-- [ ] Sprint details view with tasks
-- [ ] Sprint timeline and progress tracking
+- [x] Create sprints page with CRUD operations
+- [x] Sprint details view with tasks
+- [x] Sprint date range and progress stats
 - [ ] Sprint capacity planning
 - [ ] Sprint burndown charts
-- [ ] Active sprint indicator
-- [ ] Sprint history and archive
+- [x] Active sprint indicator
+- [x] Sprint history and archive
 
 ### Phase 7: Proposals System (In Progress)
 - [x] Proposal creation form
 - [x] Proposal listing with filters
 - [x] Proposal detail view
-- [x] Voting mechanism (off-chain)
+- [ ] Voting mechanism (off-chain)
 - [x] Proposal status workflow (draft → active → passed/rejected)
 - [x] Discussion/comments on proposals
 - [x] Edit functionality for draft proposals (author/admin)
 - [x] Delete functionality with confirmation (author/admin)
+- [ ] Voting model: token-weighted snapshot (1 ORG = 1 vote)
+- [ ] Voting model: quorum 5–10% circulating supply
+- [ ] Voting model: approval threshold >50% YES (configurable for treasury)
+- [ ] Voting model: 5-day voting window (configurable)
+- [ ] Voting model: optional abstain counts toward quorum
+- [ ] Voting model: proposal threshold (fixed or % supply)
+- [ ] Anti-abuse: one live proposal per proposer + 7-day cooldown
+- [ ] Execution window (3–7 days) + off-chain result handoff
 - [ ] Proposal templates
 - [ ] Proposal categories/tags
 
@@ -92,6 +99,7 @@
 - [ ] Member statistics and contributions
 - [ ] Member onboarding flow
 - [ ] Organic ID minting interface
+- [x] Leaderboard page and API for member rankings
 
 ### Phase 10: Analytics & Reporting
 - [ ] DAO activity dashboard
@@ -118,6 +126,11 @@
 - [ ] Achievement badges
 - [ ] Activity feed
 
+### Phase 13: Wallet Support
+- [ ] Add Solflare wallet adapter
+- [ ] Add Backpack wallet adapter
+- [ ] Add OKX wallet adapter
+
 ## 🔧 Technical Improvements
 
 ### Performance
@@ -135,6 +148,9 @@
 - [ ] CSRF protection
 - [ ] Security headers configuration
 - [ ] Regular dependency updates
+
+### Reliability
+- [ ] Solana RPC fallback/retry handling with timeouts
 
 ### Testing
 - [ ] Unit tests for utility functions
@@ -173,14 +189,15 @@
    - Verify RLS policies working correctly
 
 3. **Sprint/Epoch Management**
-   - Design sprint creation UI
-   - Implement sprint API endpoints
-   - Create sprint list and detail pages
+   - Sprint capacity planning
+   - Sprint burndown charts
 
 4. **Proposal System MVP**
-   - Design proposal creation form
-   - Implement proposal storage
-   - Add basic voting mechanism
+   - Add voting UI and vote persistence
+   - Implement vote tallying rules (token-weighted)
+   - Define proposal threshold and cooldown rules
+   - Implement voting snapshot capture at proposal start
+   - Add quorum + approval threshold evaluation
 
 5. **Member Directory**
    - Create member listing page
@@ -229,8 +246,16 @@
 
 ---
 
-Last Updated: 2025-01-26
+Last Updated: 2026-01-17
 Version: 1.1
+
+## Recent Updates (2026-01-17)
+
+### Plan Accuracy Updates
+- Marked sprint CRUD, detail views, and progress stats as completed
+- Marked proposal voting as pending
+- Added leaderboard completion and Solana RPC fallback task
+- Added proposal voting baseline rules and wallet adapter roadmap
 
 ## Recent Updates (2025-01-26)
 
