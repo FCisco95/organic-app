@@ -3,9 +3,11 @@
 import Link from 'next/link';
 import { useAuth } from '@/features/auth/context';
 import { Navigation } from '@/components/navigation';
+import { useTranslations } from 'next-intl';
 
 export default function Home() {
   const { user, profile, loading } = useAuth();
+  const t = useTranslations('Home');
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -15,7 +17,7 @@ export default function Home() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Welcome to <span className="text-organic-orange">Organic</span>
+            {t('title')} <span className="text-organic-orange">Organic</span>
           </h1>
           <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
             A community coordination platform for the Organic DAO. Propose ideas, vote on
@@ -118,3 +120,4 @@ export default function Home() {
     </main>
   );
 }
+

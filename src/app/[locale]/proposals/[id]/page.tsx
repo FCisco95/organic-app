@@ -75,7 +75,7 @@ export default function ProposalDetailPage() {
         .single();
 
       if (error) throw error;
-      setProposal(data as Proposal);
+      setProposal(data as unknown as Proposal);
       setEditForm({ title: data.title, body: data.body });
     } catch (error) {
       console.error('Error loading proposal:', error);
@@ -104,7 +104,7 @@ export default function ProposalDetailPage() {
         .order('created_at', { ascending: true });
 
       if (error) throw error;
-      setComments(data as Comment[]);
+      setComments(data as unknown as Comment[]);
     } catch (error) {
       console.error('Error loading comments:', error);
     }
@@ -226,7 +226,7 @@ export default function ProposalDetailPage() {
 
       if (error) throw error;
 
-      setProposal(data as Proposal);
+      setProposal(data as unknown as Proposal);
       setIsEditing(false);
       toast.success('Proposal updated successfully');
     } catch (error) {

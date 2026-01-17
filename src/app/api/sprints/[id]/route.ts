@@ -4,9 +4,10 @@ import { createClient } from '@/lib/supabase/server';
 // GET - Fetch a single sprint with its tasks
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const supabase = await createClient();
 
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -19,7 +20,7 @@ export async function GET(
     const { data: sprint, error: sprintError } = await supabase
       .from('sprints')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id as any)
       .single();
 
     if (sprintError || !sprint) {
@@ -45,7 +46,7 @@ export async function GET(
           organic_id
         )
       `)
-      .eq('sprint_id', params.id)
+      .eq('sprint_id', id as any)
       .order('created_at', { ascending: false });
 
     if (tasksError) {
@@ -69,9 +70,10 @@ export async function GET(
 // PATCH - Update a sprint
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const supabase = await createClient();
 
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -84,10 +86,10 @@ export async function PATCH(
     const { data: profile } = await supabase
       .from('user_profiles')
       .select('role')
-      .eq('id', user.id)
+      .eq('id', user.id as any)
       .single();
 
-    if (!profile || !['council', 'admin'].includes(profile.role)) {
+    if (!profile || !['council', 'admin'].includes((profile as any).role)) {
       return NextResponse.json(
         { error: 'Only council and admin members can update sprints' },
         { status: 403 }
@@ -106,7 +108,7 @@ export async function PATCH(
     const { data: sprint, error } = await supabase
       .from('sprints')
       .update(updates)
-      .eq('id', params.id)
+      .eq('id', id as any)
       .select()
       .single();
 
@@ -128,9 +130,10 @@ export async function PATCH(
 // DELETE - Delete a sprint
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const supabase = await createClient();
 
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -143,10 +146,10 @@ export async function DELETE(
     const { data: profile } = await supabase
       .from('user_profiles')
       .select('role')
-      .eq('id', user.id)
+      .eq('id', user.id as any)
       .single();
 
-    if (!profile || profile.role !== 'admin') {
+    if (!profile || (profile as any).role !== 'admin') {
       return NextResponse.json(
         { error: 'Only admin members can delete sprints' },
         { status: 403 }
@@ -156,7 +159,7 @@ export async function DELETE(
     const { error } = await supabase
       .from('sprints')
       .delete()
-      .eq('id', params.id);
+      .eq('id', id as any);
 
     if (error) {
       console.error('Error deleting sprint:', error);

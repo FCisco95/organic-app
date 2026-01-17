@@ -16,8 +16,15 @@ export interface Database {
           wallet_pubkey: string | null;
           role: UserRole;
           email: string;
+          name: string | null;
           avatar_url: string | null;
           bio: string | null;
+          location: string | null;
+          website: string | null;
+          twitter: string | null;
+          discord: string | null;
+          total_points: number | null;
+          tasks_completed: number | null;
           created_at: string;
           updated_at: string;
         };
@@ -27,8 +34,15 @@ export interface Database {
           wallet_pubkey?: string | null;
           role?: UserRole;
           email: string;
+          name?: string | null;
           avatar_url?: string | null;
           bio?: string | null;
+          location?: string | null;
+          website?: string | null;
+          twitter?: string | null;
+          discord?: string | null;
+          total_points?: number | null;
+          tasks_completed?: number | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -38,11 +52,19 @@ export interface Database {
           wallet_pubkey?: string | null;
           role?: UserRole;
           email?: string;
+          name?: string | null;
           avatar_url?: string | null;
           bio?: string | null;
+          location?: string | null;
+          website?: string | null;
+          twitter?: string | null;
+          discord?: string | null;
+          total_points?: number | null;
+          tasks_completed?: number | null;
           created_at?: string;
           updated_at?: string;
         };
+        Relationships: [];
       };
       orgs: {
         Row: {
@@ -75,6 +97,7 @@ export interface Database {
           created_at?: string;
           updated_at?: string;
         };
+        Relationships: [];
       };
       proposals: {
         Row: {
@@ -110,6 +133,7 @@ export interface Database {
           created_at?: string;
           updated_at?: string;
         };
+        Relationships: [];
       };
       votes: {
         Row: {
@@ -139,6 +163,7 @@ export interface Database {
           weight?: number;
           created_at?: string;
         };
+        Relationships: [];
       };
       tasks: {
         Row: {
@@ -180,6 +205,7 @@ export interface Database {
           created_at?: string;
           updated_at?: string;
         };
+        Relationships: [];
       };
       sprints: {
         Row: {
@@ -212,6 +238,7 @@ export interface Database {
           created_at?: string;
           updated_at?: string;
         };
+        Relationships: [];
       };
       comments: {
         Row: {
@@ -247,6 +274,7 @@ export interface Database {
           created_at?: string;
           updated_at?: string;
         };
+        Relationships: [];
       };
       holder_snapshots: {
         Row: {
@@ -276,13 +304,44 @@ export interface Database {
           taken_at?: string;
           created_at?: string;
         };
+        Relationships: [];
+      };
+      task_comments: {
+        Row: {
+          id: string;
+          task_id: string;
+          user_id: string;
+          content: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          task_id: string;
+          user_id: string;
+          content: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          task_id?: string;
+          user_id?: string;
+          content?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
       };
     };
     Views: {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      get_next_organic_id: {
+        Args: Record<string, never>;
+        Returns: number;
+      };
     };
     Enums: {
       user_role: UserRole;

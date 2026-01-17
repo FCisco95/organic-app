@@ -15,6 +15,8 @@ import {
   AlertCircle,
   Circle,
   Timer,
+  X,
+  Save,
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -26,6 +28,13 @@ type Sprint = {
   end_at: string;
   status: 'planning' | 'active' | 'completed';
   created_at: string;
+};
+
+type EditFormData = {
+  name: string;
+  start_at: string;
+  end_at: string;
+  status: 'planning' | 'active' | 'completed';
 };
 
 type Task = {
@@ -56,6 +65,18 @@ export default function SprintDetailPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Edit/Delete state
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [editForm, setEditForm] = useState<EditFormData>({
+    name: '',
+    start_at: '',
+    end_at: '',
+    status: 'planning',
+  });
+
   useEffect(() => {
     if (params.id) {
       fetchSprintDetails();
@@ -77,6 +98,73 @@ export default function SprintDetailPage() {
       console.error('Error fetching sprint details:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const openEditModal = () => {
+    if (sprint) {
+      setEditForm({
+        name: sprint.name,
+        start_at: sprint.start_at.split('T')[0],
+        end_at: sprint.end_at.split('T')[0],
+        status: sprint.status,
+      });
+      setShowEditModal(true);
+    }
+  };
+
+  const handleEditSprint = async () => {
+    if (!sprint) return;
+
+    setIsSaving(true);
+    try {
+      const response = await fetch(`/api/sprints/${sprint.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: editForm.name,
+          start_at: editForm.start_at,
+          end_at: editForm.end_at,
+          status: editForm.status,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSprint(data.sprint);
+        setShowEditModal(false);
+      } else {
+        alert(data.error || 'Failed to update sprint');
+      }
+    } catch (error) {
+      console.error('Error updating sprint:', error);
+      alert('Failed to update sprint');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeleteSprint = async () => {
+    if (!sprint) return;
+
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`/api/sprints/${sprint.id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        router.push('/sprints');
+      } else {
+        const data = await response.json();
+        alert(data.error || 'Failed to delete sprint');
+      }
+    } catch (error) {
+      console.error('Error deleting sprint:', error);
+      alert('Failed to delete sprint');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -180,7 +268,6 @@ export default function SprintDetailPage() {
   const totalTasks = tasks.length;
   const completedTasks = tasks.filter((t) => t.status === 'done').length;
   const inProgressTasks = tasks.filter((t) => t.status === 'in_progress').length;
-  const todoTasks = tasks.filter((t) => t.status === 'todo').length;
   const totalPoints = tasks.reduce((sum, t) => sum + t.points, 0);
   const completedPoints = tasks.filter((t) => t.status === 'done').reduce((sum, t) => sum + t.points, 0);
   const progressPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
@@ -228,8 +315,21 @@ export default function SprintDetailPage() {
                 {sprint.status.charAt(0).toUpperCase() + sprint.status.slice(1)}
               </span>
               {canManageSprint && (
-                <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+                <button
+                  onClick={openEditModal}
+                  className="p-2 text-gray-400 hover:text-organic-orange transition-colors"
+                  title="Edit sprint"
+                >
                   <Edit className="w-5 h-5" />
+                </button>
+              )}
+              {profile?.role === 'admin' && (
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                  title="Delete sprint"
+                >
+                  <Trash2 className="w-5 h-5" />
                 </button>
               )}
             </div>
@@ -378,6 +478,127 @@ export default function SprintDetailPage() {
           )}
         </div>
       </div>
+
+      {/* Edit Sprint Modal */}
+      {showEditModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-xl max-w-md w-full">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+              <h3 className="text-xl font-bold text-gray-900">Edit Sprint</h3>
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Sprint Name
+                </label>
+                <input
+                  type="text"
+                  value={editForm.name}
+                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange transition-colors"
+                  placeholder="Sprint name"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Start Date
+                  </label>
+                  <input
+                    type="date"
+                    value={editForm.start_at}
+                    onChange={(e) => setEditForm({ ...editForm, start_at: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    End Date
+                  </label>
+                  <input
+                    type="date"
+                    value={editForm.end_at}
+                    onChange={(e) => setEditForm({ ...editForm, end_at: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange transition-colors"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Status
+                </label>
+                <select
+                  value={editForm.status}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, status: e.target.value as EditFormData['status'] })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange transition-colors"
+                >
+                  <option value="planning">Planning</option>
+                  <option value="active">Active</option>
+                  <option value="completed">Completed</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="flex gap-3 justify-end px-6 py-4 border-t border-gray-200">
+              <button
+                onClick={() => setShowEditModal(false)}
+                disabled={isSaving}
+                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleEditSprint}
+                disabled={isSaving || !editForm.name || !editForm.start_at || !editForm.end_at}
+                className="flex items-center gap-2 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+              >
+                <Save className="w-4 h-4" />
+                {isSaving ? 'Saving...' : 'Save Changes'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Delete Sprint</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete this sprint? Tasks assigned to this sprint will be
+              unassigned but not deleted. This action cannot be undone.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                disabled={isDeleting}
+                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteSprint}
+                disabled={isDeleting}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+              >
+                {isDeleting ? 'Deleting...' : 'Delete Sprint'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

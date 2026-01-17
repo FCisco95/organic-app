@@ -46,7 +46,7 @@ export async function GET(
           status
         )
       `)
-      .eq('id', id)
+      .eq('id', id as any)
       .single();
 
     if (error || !task) {
@@ -94,7 +94,7 @@ export async function PATCH(
     const { data: task, error } = await supabase
       .from('tasks')
       .update(updates)
-      .eq('id', id)
+      .eq('id', id as any)
       .select(`
         *,
         assignee:user_profiles!tasks_assignee_id_fkey(
@@ -159,10 +159,10 @@ export async function DELETE(
     const { data: profile } = await supabase
       .from('user_profiles')
       .select('role')
-      .eq('id', user.id)
+      .eq('id', user.id as any)
       .single();
 
-    if (!profile || !['council', 'admin'].includes(profile.role)) {
+    if (!profile || !['council', 'admin'].includes((profile as any).role)) {
       return NextResponse.json(
         { error: 'Only council and admin members can delete tasks' },
         { status: 403 }
@@ -172,7 +172,7 @@ export async function DELETE(
     const { error } = await supabase
       .from('tasks')
       .delete()
-      .eq('id', id);
+      .eq('id', id as any);
 
     if (error) {
       console.error('Error deleting task:', error);

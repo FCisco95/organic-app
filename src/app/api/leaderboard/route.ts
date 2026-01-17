@@ -1,6 +1,17 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
+type LeaderboardEntry = {
+  id: string;
+  name: string | null;
+  email: string;
+  organic_id: number | null;
+  avatar_url: string | null;
+  total_points: number | null;
+  tasks_completed: number | null;
+  role: string;
+};
+
 export async function GET() {
   try {
     const supabase = await createClient();
@@ -20,7 +31,8 @@ export async function GET() {
     }
 
     // Add rank to each entry
-    const rankedLeaderboard = leaderboard.map((entry, index) => ({
+    const entries = (leaderboard || []) as LeaderboardEntry[];
+    const rankedLeaderboard = entries.map((entry, index) => ({
       ...entry,
       rank: index + 1,
     }));

@@ -4,19 +4,19 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
+import Image from 'next/image';
 import toast from 'react-hot-toast';
 
-export default function SignUpPage() {
+export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string; username?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const router = useRouter();
   const supabase = createClient();
 
   const validateForm = () => {
-    const newErrors: { email?: string; password?: string; username?: string } = {};
+    const newErrors: { email?: string; password?: string } = {};
 
     if (!email) {
       newErrors.email = 'Email cannot be blank';
@@ -24,16 +24,6 @@ export default function SignUpPage() {
 
     if (!password) {
       newErrors.password = 'Password cannot be blank';
-    } else if (password.length < 8) {
-      newErrors.password = 'Password should be at least 8 characters';
-    }
-
-    if (!username) {
-      newErrors.username = 'Username cannot be blank';
-    } else if (!/^[a-zA-Z0-9-]+$/.test(username)) {
-      newErrors.username = 'Username may only contain alphanumeric characters or single hyphens';
-    } else if (username.startsWith('-') || username.endsWith('-')) {
-      newErrors.username = 'Username cannot begin or end with a hyphen';
     }
 
     setErrors(newErrors);
@@ -50,23 +40,17 @@ export default function SignUpPage() {
     setLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-          data: {
-            username,
-          },
-        },
       });
 
       if (error) throw error;
 
-      toast.success('Check your email to confirm your account!');
-      router.push('/login');
+      toast.success('Logged in successfully!');
+      router.push('/profile');
     } catch (error: any) {
-      toast.error(error.message || 'An error occurred');
+      toast.error(error.message || 'Incorrect email or password');
     } finally {
       setLoading(false);
     }
@@ -76,25 +60,30 @@ export default function SignUpPage() {
     <div className="min-h-screen flex items-center justify-center bg-[#0d1117] p-4">
       <div className="w-full max-w-[340px]">
         {/* Logo */}
-        <div className="text-center mb-4">
-          <Link href="/" className="inline-block">
-            <div className="w-12 h-12 bg-gradient-to-br from-organic-orange to-organic-yellow rounded-lg flex items-center justify-center shadow-sm mx-auto">
-              <span className="text-white font-semibold text-xl">O</span>
-            </div>
+        <div className="text-center mb-6">
+          <Link href="/" className="inline-block group">
+            <Image
+              src="/organic-logo.png"
+              alt="Organic Logo"
+              width={1000}
+              height={335}
+              className="w-full max-w-md transition-transform group-hover:scale-105 mx-auto"
+              priority
+            />
           </Link>
         </div>
 
-        {/* Sign up form */}
+        {/* Sign in form */}
         <div className="bg-[#161b22] rounded-md border border-[#30363d] p-6">
           <h1 className="text-2xl font-light text-white mb-2 text-center">
-            Sign up for Organic
+            Sign in to Organic
           </h1>
 
           <form onSubmit={handleSubmit} className="space-y-4 mt-4">
             {/* Email */}
             <div>
               <label htmlFor="email" className="block text-sm font-normal text-[#c9d1d9] mb-2">
-                Email
+                Email address
               </label>
               <input
                 id="email"
@@ -121,9 +110,14 @@ export default function SignUpPage() {
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-normal text-[#c9d1d9] mb-2">
-                Password
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label htmlFor="password" className="block text-sm font-normal text-[#c9d1d9]">
+                  Password
+                </label>
+                <Link href="/forgot-password" className="text-xs text-[#58a6ff] hover:underline">
+                  Forgot password?
+                </Link>
+              </div>
               <input
                 id="password"
                 type="password"
@@ -136,7 +130,6 @@ export default function SignUpPage() {
                   errors.password ? 'border-[#f85149]' : 'border-[#30363d]'
                 } rounded-md text-white text-sm focus:border-[#1f6feb] focus:ring-1 focus:ring-[#1f6feb] focus:outline-none placeholder-[#6e7681]`}
                 placeholder="Password"
-                minLength={8}
               />
               {errors.password && (
                 <p className="mt-2 text-xs text-[#f85149] flex items-start">
@@ -146,44 +139,6 @@ export default function SignUpPage() {
                   {errors.password}
                 </p>
               )}
-              {!errors.password && (
-                <p className="mt-2 text-xs text-[#7d8590]">
-                  Password should be at least 8 characters including a number and a lowercase letter.
-                </p>
-              )}
-            </div>
-
-            {/* Username */}
-            <div>
-              <label htmlFor="username" className="block text-sm font-normal text-[#c9d1d9] mb-2">
-                Username
-              </label>
-              <input
-                id="username"
-                type="text"
-                value={username}
-                onChange={(e) => {
-                  setUsername(e.target.value);
-                  if (errors.username) setErrors({ ...errors, username: undefined });
-                }}
-                className={`w-full px-3 py-2 bg-[#0d1117] border ${
-                  errors.username ? 'border-[#f85149]' : 'border-[#30363d]'
-                } rounded-md text-white text-sm focus:border-[#1f6feb] focus:ring-1 focus:ring-[#1f6feb] focus:outline-none placeholder-[#6e7681]`}
-                placeholder="Username"
-              />
-              {errors.username && (
-                <p className="mt-2 text-xs text-[#f85149] flex items-start">
-                  <svg className="w-4 h-4 mr-1 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm9.78-2.22-5.5 5.5a.75.75 0 0 1-1.06 0l-2.5-2.5a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L4.75 9.19l4.97-4.97a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z"/>
-                  </svg>
-                  {errors.username}
-                </p>
-              )}
-              {!errors.username && (
-                <p className="mt-2 text-xs text-[#7d8590]">
-                  Username may only contain alphanumeric characters or single hyphens, and cannot begin or end with a hyphen.
-                </p>
-              )}
             </div>
 
             <button
@@ -191,26 +146,17 @@ export default function SignUpPage() {
               disabled={loading}
               className="w-full bg-[#238636] hover:bg-[#2ea043] text-white font-medium py-2 px-4 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
             >
-              {loading ? 'Creating account...' : 'Create account'}
+              {loading ? 'Signing in...' : 'Sign in'}
             </button>
           </form>
-
-          {/* Terms */}
-          <p className="mt-4 text-xs text-[#7d8590] text-center">
-            By creating an account, you agree to the{' '}
-            <Link href="/terms" className="text-[#58a6ff] hover:underline">
-              Terms of Service
-            </Link>
-            . We'll occasionally send you account-related emails.
-          </p>
         </div>
 
-        {/* Sign in link */}
+        {/* Sign up link */}
         <div className="mt-4 text-center border border-[#30363d] rounded-md p-4 bg-[#161b22]">
           <p className="text-sm text-[#c9d1d9]">
-            Already have an account?{' '}
-            <Link href="/login" className="text-[#58a6ff] hover:underline">
-              Sign in
+            New to Organic?{' '}
+            <Link href="/signup" className="text-[#58a6ff] hover:underline">
+              Create an account
             </Link>
           </p>
         </div>

@@ -47,10 +47,10 @@ export async function POST(request: Request) {
     const { data: profile } = await supabase
       .from('user_profiles')
       .select('role')
-      .eq('id', user.id)
+      .eq('id', user.id as any)
       .single();
 
-    if (!profile || !['council', 'admin'].includes(profile.role)) {
+    if (!profile || !['council', 'admin'].includes((profile as any).role)) {
       return NextResponse.json(
         { error: 'Only council and admin members can create sprints' },
         { status: 403 }
@@ -74,7 +74,7 @@ export async function POST(request: Request) {
         start_at,
         end_at,
         status: status || 'planning',
-      })
+      } as any)
       .select()
       .single();
 

@@ -2,6 +2,13 @@ import { NextResponse } from 'next/server';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { isOrgHolder } from '@/lib/solana';
 
+type UserProfile = {
+  id: string;
+  organic_id: number | null;
+  wallet_pubkey: string | null;
+  [key: string]: unknown;
+};
+
 export async function POST(request: Request) {
   try {
     // Get auth token from header
@@ -22,15 +29,17 @@ export async function POST(request: Request) {
     }
 
     // Get user profile
-    const { data: profile, error: profileError } = await supabase
+    const { data: profileData, error: profileError } = await supabase
       .from('user_profiles')
       .select('*')
       .eq('id', user.id as any)
       .maybeSingle();
 
-    if (profileError || !profile) {
+    if (profileError || !profileData) {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
     }
+
+    const profile = profileData as unknown as UserProfile;
 
     // Check if user already has an Organic ID
     if (profile.organic_id) {
@@ -68,7 +77,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Failed to generate Organic ID' }, { status: 500 });
     }
 
-    const organicId = nextIdData as number;
+    const organicId = nextIdData as unknown as number;
 
     // Update user profile with Organic ID and upgrade role to member
     const { error: updateError } = await serviceSupabase

@@ -1,4 +1,4 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { Database } from '@/types/database';
 
@@ -15,7 +15,7 @@ export async function createClient() {
           console.log('[Server Client] Getting cookies:', allCookies.map(c => c.name));
           return allCookies;
         },
-        setAll(cookiesToSet) {
+        setAll(cookiesToSet: { name: string; value: string; options: any }[]) {
           try {
             cookiesToSet.forEach(({ name, value, options }) => {
               console.log('[Server Client] Setting cookie:', name);
@@ -28,7 +28,7 @@ export async function createClient() {
             console.log('[Server Client] Cookie setting failed (expected in Server Components):', error);
           }
         },
-      },
+      } as any,
     }
   );
 }
@@ -39,7 +39,12 @@ export function createServiceClient() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     {
-      cookies: {},
+      cookies: {
+        getAll() {
+          return [];
+        },
+        setAll() {},
+      },
     }
   );
 }

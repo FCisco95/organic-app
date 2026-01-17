@@ -28,7 +28,7 @@ export async function GET(
           avatar_url
         )
       `)
-      .eq('task_id', id)
+      .eq('task_id', id as any)
       .order('created_at', { ascending: true });
 
     if (error) {
@@ -77,7 +77,7 @@ export async function POST(
         task_id: id,
         user_id: user.id,
         content: content.trim(),
-      })
+      } as any)
       .select(`
         *,
         user:user_profiles!task_comments_user_id_fkey(

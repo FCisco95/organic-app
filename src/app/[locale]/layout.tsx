@@ -4,6 +4,7 @@ import './globals.css';
 import { AuthProvider } from '@/features/auth/context';
 import { SolanaWalletProvider } from '@/features/auth/wallet-provider';
 import { Toaster } from 'react-hot-toast';
+import { NextIntlClientProvider, useMessages } from 'next-intl';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -17,18 +18,24 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  params: { locale },
 }: Readonly<{
   children: React.ReactNode;
+  params: { locale: string };
 }>) {
+  const messages = useMessages();
+
   return (
-    <html lang="en">
+    <html lang={locale}>
       <body className={inter.className}>
-        <AuthProvider>
-          <SolanaWalletProvider>
-            {children}
-            <Toaster position="bottom-right" />
-          </SolanaWalletProvider>
-        </AuthProvider>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <AuthProvider>
+            <SolanaWalletProvider>
+              {children}
+              <Toaster position="bottom-right" />
+            </SolanaWalletProvider>
+          </AuthProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

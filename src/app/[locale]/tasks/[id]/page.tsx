@@ -78,6 +78,7 @@ export default function TaskDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { user, profile } = useAuth();
+  const taskId = typeof params.id === 'string' ? params.id : params.id?.[0] ?? '';
 
   const [task, setTask] = useState<Task | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
@@ -106,17 +107,17 @@ export default function TaskDetailPage() {
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
 
   useEffect(() => {
-    if (params.id) {
+    if (taskId) {
       fetchTaskDetails();
       fetchComments();
       fetchMembers();
       fetchSprints();
     }
-  }, [params.id]);
+  }, [taskId]);
 
   const fetchTaskDetails = async () => {
     try {
-      console.log('[Task Detail] Fetching task with ID:', params.id);
+      console.log('[Task Detail] Fetching task with ID:', taskId);
       const supabase = createClient();
 
       // Check if we have a session
@@ -140,22 +141,23 @@ export default function TaskDetailPage() {
             status
           )
         `)
-        .eq('id', params.id)
+        .eq('id', taskId)
         .single();
 
       console.log('[Task Detail] Query result:', { task, error });
 
       if (!error && task) {
         console.log('[Task Detail] Task loaded successfully:', task.title);
-        setTask(task as Task);
+        const typedTask = task as unknown as Task;
+        setTask(typedTask);
         setEditForm({
-          title: task.title,
-          description: task.description || '',
-          status: task.status,
-          priority: task.priority,
-          points: task.points,
-          assignee_id: task.assignee_id || '',
-          sprint_id: task.sprint_id || '',
+          title: typedTask.title,
+          description: typedTask.description || '',
+          status: typedTask.status,
+          priority: typedTask.priority,
+          points: typedTask.points,
+          assignee_id: typedTask.assignee_id || '',
+          sprint_id: typedTask.sprint_id || '',
         });
       } else {
         console.error('[Task Detail] Error fetching task:', error);
@@ -183,11 +185,11 @@ export default function TaskDetailPage() {
             avatar_url
           )
         `)
-        .eq('task_id', params.id)
+        .eq('task_id', taskId)
         .order('created_at', { ascending: true });
 
       if (!error && comments) {
-        setComments(comments as Comment[]);
+        setComments(comments as unknown as Comment[]);
       } else {
         console.error('Error fetching comments:', error);
       }
@@ -226,7 +228,7 @@ export default function TaskDetailPage() {
         .order('start_date', { ascending: false });
 
       if (!error && sprints) {
-        setSprints(sprints as Sprint[]);
+        setSprints(sprints as unknown as Sprint[]);
       } else {
         console.error('Error fetching sprints:', error);
       }
@@ -247,7 +249,7 @@ export default function TaskDetailPage() {
           assignee_id: editForm.assignee_id || null,
           sprint_id: editForm.sprint_id || null,
         })
-        .eq('id', params.id)
+        .eq('id', taskId)
         .select(`
           *,
           assignee:user_profiles!tasks_assignee_id_fkey(
@@ -266,7 +268,7 @@ export default function TaskDetailPage() {
         .single();
 
       if (!error && updatedTask) {
-        setTask(updatedTask as Task);
+        setTask(updatedTask as unknown as Task);
         setIsEditing(false);
       } else {
         console.error('Error saving task:', error);
@@ -291,7 +293,7 @@ export default function TaskDetailPage() {
       const { data: comment, error } = await supabase
         .from('task_comments')
         .insert({
-          task_id: params.id,
+          task_id: taskId,
           user_id: user.id,
           content: newComment.trim(),
         })
@@ -308,7 +310,7 @@ export default function TaskDetailPage() {
         .single();
 
       if (!error && comment) {
-        setComments([...comments, comment as Comment]);
+        setComments([...comments, comment as unknown as Comment]);
         setNewComment('');
       } else {
         console.error('Error posting comment:', error);
@@ -330,7 +332,7 @@ export default function TaskDetailPage() {
       const { data: updatedTask, error } = await supabase
         .from('tasks')
         .update({ assignee_id: assigneeId || null })
-        .eq('id', params.id)
+        .eq('id', taskId)
         .select(`
           *,
           assignee:user_profiles!tasks_assignee_id_fkey(
@@ -349,7 +351,7 @@ export default function TaskDetailPage() {
         .single();
 
       if (!error && updatedTask) {
-        setTask(updatedTask as Task);
+        setTask(updatedTask as unknown as Task);
         setShowAssignModal(false);
         alert(assigneeId ? 'User assigned successfully' : 'User unassigned successfully');
       } else {
@@ -378,7 +380,7 @@ export default function TaskDetailPage() {
       const { error } = await supabase
         .from('tasks')
         .delete()
-        .eq('id', params.id);
+        .eq('id', taskId);
 
       if (error) {
         console.error('Error deleting task:', error);

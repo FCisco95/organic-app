@@ -7,6 +7,7 @@ import { Navigation } from '@/components/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Plus, MessageCircle, Calendar, User } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { ProposalStatus } from '@/types/database';
 
 type Proposal = {
   id: string;
@@ -52,7 +53,7 @@ export default function ProposalsPage() {
         .order('created_at', { ascending: false });
 
       if (filter !== 'all') {
-        query = query.eq('status', filter);
+        query = query.eq('status', filter as ProposalStatus);
       }
 
       const { data, error } = await query;
@@ -75,7 +76,7 @@ export default function ProposalsPage() {
         })
       );
 
-      setProposals(proposalsWithCounts as Proposal[]);
+      setProposals(proposalsWithCounts as unknown as Proposal[]);
     } catch (error) {
       console.error('Error loading proposals:', error);
     } finally {

@@ -126,7 +126,7 @@ export default function TasksPage() {
       const { data, error } = await query;
 
       if (error) throw error;
-      setTasks(data as Task[]);
+      setTasks(data as unknown as Task[]);
     } catch (error) {
       console.error('Error loading tasks:', error);
     } finally {

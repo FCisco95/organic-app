@@ -1,10 +1,58 @@
-import { createServerClient } from '@supabase/ssr';
-import { NextResponse, type NextRequest } from 'next/server';
+import { createServerClient } from '@supabase/ssr'
+import { NextResponse, type NextRequest } from 'next/server'
+
+const locales = ['en', 'pt-PT', 'zh-CN'] as const
+type Locale = (typeof locales)[number]
+
+const defaultLocale: Locale = 'en'
+
+function getLocale(request: NextRequest): Locale {
+  const acceptLanguage = request.headers.get('accept-language') || ''
+  const browserLocales = acceptLanguage
+    .split(',')
+    .map((l) => l.split(';')[0].trim())
+
+  // Check for exact match
+  for (const browserLocale of browserLocales) {
+    if ((locales as readonly string[]).includes(browserLocale)) {
+      return browserLocale as Locale
+    }
+  }
+
+  // Check for language match
+  for (const browserLocale of browserLocales) {
+    const baseLocale = browserLocale.split('-')[0]
+    const matchingLocale = (locales as readonly string[]).find((l) =>
+      l.startsWith(baseLocale)
+    )
+    if (matchingLocale) {
+      return matchingLocale as Locale
+    }
+  }
+
+  return defaultLocale
+}
 
 export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
+
+  // Skip if URL already has a locale prefix
+  const pathnameHasLocale = locales.some(
+    (l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`)
+  )
+
+  if (!pathnameHasLocale) {
+    const locale = getLocale(request)
+    const url = request.nextUrl.clone()
+    url.pathname = `/${locale}${pathname}`
+    return NextResponse.redirect(url)
+  }
+
   let response = NextResponse.next({
-    request,
-  });
+    request: {
+      headers: new Headers(request.headers),
+    },
+  })
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -12,49 +60,25 @@ export async function middleware(request: NextRequest) {
     {
       cookies: {
         getAll() {
-          const cookies = request.cookies.getAll();
-          console.log('[Middleware] Incoming cookies:', cookies.map(c => c.name));
-          return cookies;
+          return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
-          console.log('[Middleware] Setting cookies:', cookiesToSet.map(c => c.name));
           cookiesToSet.forEach(({ name, value, options }) => {
-            request.cookies.set(name, value);
-            response.cookies.set(name, value, {
-              ...options,
-              httpOnly: true,
-              secure: process.env.NODE_ENV === 'production',
-              sameSite: 'lax',
-              path: '/',
-            });
-          });
+            request.cookies.set(name, value)
+            response.cookies.set(name, value, options)
+          })
         },
       },
     }
-  );
+  )
 
-  // This will refresh session if expired - required for Server Components
-  const { data: { user }, error } = await supabase.auth.getUser();
+  await supabase.auth.getUser()
 
-  console.log('[Middleware] Auth check:', {
-    path: request.nextUrl.pathname,
-    hasUser: !!user,
-    userId: user?.id,
-    error: error?.message
-  });
-
-  return response;
+  return response
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * Feel free to modify this pattern to include more paths.
-     */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
-};
+}

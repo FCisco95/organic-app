@@ -16,12 +16,12 @@ export async function GET() {
     }
 
     // Fetch all members with Organic IDs (eligible to be assigned tasks)
-    const { data: assignees, error } = await supabase
+    const { data: assignees, error } = (await supabase
       .from('user_profiles')
       .select('id, email, organic_id, role')
       .not('organic_id', 'is', null)
       .in('role', ['member', 'council', 'admin'])
-      .order('organic_id', { ascending: true });
+      .order('organic_id', { ascending: true })) as any;
 
     if (error) {
       console.error('Error fetching assignees:', error);

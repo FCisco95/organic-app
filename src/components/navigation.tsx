@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/features/auth/context';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { cn } from '@/lib/utils';
+import LocaleSwitcher from './locale-switcher';
 
 export function Navigation() {
   const { user, profile, loading, signOut } = useAuth();
@@ -118,14 +119,18 @@ export function Navigation() {
                 >
                   Sign Out
                 </button>
+                <LocaleSwitcher />
               </>
             ) : (
-              <Link
-                href="/login"
-                className="bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-              >
-                Sign In
-              </Link>
+              <>
+                <Link
+                  href="/login"
+                  className="bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                  Sign In
+                </Link>
+                <LocaleSwitcher />
+              </>
             )}
           </div>
         </div>
