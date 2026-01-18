@@ -2,7 +2,16 @@
 
 Add newest entries at the top.
 
-## 2026-01-18
+## 2026-01-18 (Session 2)
+
+- Fixed i18n locale switching not updating translations
+- Updated `src/app/[locale]/layout.tsx` to use `getMessages()` from `next-intl/server`
+- Added `setRequestLocale()` for proper server-side locale handling
+- Added complete translations for Home and Profile pages (en, pt-PT, zh-CN)
+- Expanded message files with ~100 keys per language
+- Committed and pushed all i18n changes
+
+## 2026-01-18 (Session 1)
 
 - Session opened and closed (no code changes)
 - Verified working tree clean after i18n implementation
