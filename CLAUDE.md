@@ -16,9 +16,9 @@ It enables tasks, proposals, voting, and token-gated features for the Organic DA
 - Docs updated if behavior or flows changed
 
 **This week**
-- Working on: keep updated (auth, wallet linking, tasks, proposals, voting, UI)
-- Next: next 1–2 tasks
-- Blockers: if any
+- Working on: Improving app features and new wallet integrations
+- Next: Enhance wallet connection UX, add multi-wallet support
+- Blockers: none
 
 ## Operating rules
 
@@ -35,13 +35,14 @@ It enables tasks, proposals, voting, and token-gated features for the Organic DA
 
 **Start here**
 - App Router root: `src/app/`
+- Localized pages: `src/app/[locale]/`
 - Global layout: `src/app/layout.tsx`
-- Root page: `src/app/page.tsx`
-- Middleware (auth/session): `src/middleware.ts`
+- Middleware (auth/session/i18n): `src/middleware.ts`
 - Global styles: `src/app/globals.css`
 
 **Core workflows**
 - Auth state + profile: `src/features/auth/`
+- Profile management: `src/features/profile/`
 - Organic ID / wallet linking: `src/features/organic-id/`
 - Tasks: `src/features/tasks/`
 - Proposals: `src/features/proposals/`
@@ -57,7 +58,18 @@ It enables tasks, proposals, voting, and token-gated features for the Organic DA
   - Proposals: `src/components/proposals/`
   - Voting: `src/components/voting/`
   - Sprints: `src/components/sprints/`
+  - Notifications: `src/components/notifications/`
 - Navigation: `src/components/navigation.tsx`
+- Locale switcher: `src/components/locale-switcher.tsx`
+
+**Internationalization (i18n)**
+- i18n config: `src/i18n/`
+- Translation files: `messages/` (en.json, pt-PT.json, zh-CN.json)
+
+**Utilities**
+- Hooks: `src/hooks/`
+- Lib/helpers: `src/lib/`
+- Config: `src/config/`
 
 **API**
 - API routes: `src/app/api/`

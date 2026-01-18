@@ -2,6 +2,19 @@
 
 Add newest entries at the top.
 
+## 2026-01-18 (Session 3)
+
+- Performed folder structure audit
+- Updated CLAUDE.md "This week" section: improving app features and new wallet integrations
+- Updated CLAUDE.md Quick navigation with:
+  - Added `src/app/[locale]/` for localized pages
+  - Added `src/features/profile/` for profile management
+  - Added `src/components/notifications/` to feature UI
+  - Added `src/components/locale-switcher.tsx`
+  - Added new **Internationalization (i18n)** section with `src/i18n/` and `messages/`
+  - Added new **Utilities** section with hooks, lib, and config paths
+  - Updated middleware description to include i18n
+
 ## 2026-01-18 (Session 2)
 
 - Fixed i18n locale switching not updating translations
