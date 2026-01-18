@@ -11,8 +11,10 @@ import { Edit2, Save, X, Upload, MapPin, Globe, Twitter, MessageCircle, Calendar
 import toast from 'react-hot-toast';
 import bs58 from 'bs58';
 import { formatDistanceToNow } from 'date-fns';
+import { useTranslations } from 'next-intl';
 
 export default function ProfilePage() {
+  const t = useTranslations('Profile');
   const { user, profile, loading, refreshProfile } = useAuth();
   const { publicKey, signMessage, connected } = useWallet();
   const router = useRouter();
@@ -83,12 +85,12 @@ export default function ProfilePage() {
 
   const handleLinkWallet = async () => {
     if (!publicKey || !signMessage) {
-      toast.error('Please connect your wallet first');
+      toast.error(t('toastConnectWallet'));
       return;
     }
 
     if (!user) {
-      toast.error('Please sign in first');
+      toast.error(t('toastSignInFirst'));
       return;
     }
 
@@ -99,7 +101,7 @@ export default function ProfilePage() {
       const { data: { session } } = await supabase.auth.getSession();
 
       if (!session?.access_token) {
-        toast.error('Session expired. Please sign in again.');
+        toast.error(t('toastSessionExpired'));
         return;
       }
 
@@ -126,10 +128,10 @@ export default function ProfilePage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to link wallet');
+        throw new Error(data.error || t('toastFailedLinkWallet'));
       }
 
-      toast.success('Wallet linked successfully!');
+      toast.success(t('toastWalletLinked'));
       await refreshProfile();
       await checkTokenBalance();
       router.refresh();
@@ -139,7 +141,7 @@ export default function ProfilePage() {
       }, 500);
     } catch (error: any) {
       console.error('Error linking wallet:', error);
-      toast.error(error.message || 'Failed to link wallet');
+      toast.error(error.message || t('toastFailedLinkWallet'));
     } finally {
       setLinkingWallet(false);
     }
@@ -147,12 +149,12 @@ export default function ProfilePage() {
 
   const handleGetOrganicId = async () => {
     if (!profile?.wallet_pubkey) {
-      toast.error('Please link your wallet first');
+      toast.error(t('toastLinkWalletFirst'));
       return;
     }
 
     if (!user) {
-      toast.error('Please sign in first');
+      toast.error(t('toastSignInFirst'));
       return;
     }
 
@@ -163,7 +165,7 @@ export default function ProfilePage() {
       const { data: { session } } = await supabase.auth.getSession();
 
       if (!session?.access_token) {
-        toast.error('Session expired. Please sign in again.');
+        toast.error(t('toastSessionExpired'));
         return;
       }
 
@@ -180,11 +182,11 @@ export default function ProfilePage() {
         throw new Error(data.error || 'Failed to assign Organic ID');
       }
 
-      toast.success(`Organic ID #${data.organicId} assigned!`);
+      toast.success(t('toastOrganicIdAssigned', { id: data.organicId }));
       await refreshProfile();
     } catch (error: any) {
       console.error('Error getting Organic ID:', error);
-      toast.error(error.message || 'Failed to get Organic ID');
+      toast.error(error.message || t('toastFailedOrganicId'));
     } finally {
       setGettingOrganicId(false);
     }
@@ -194,15 +196,13 @@ export default function ProfilePage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith('image/')) {
-      toast.error('Please select an image file');
+      toast.error(t('toastSelectImage'));
       return;
     }
 
-    // Validate file size (5MB)
     if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image must be less than 5MB');
+      toast.error(t('toastImageTooLarge'));
       return;
     }
 
@@ -210,12 +210,9 @@ export default function ProfilePage() {
 
     try {
       const supabase = createClient();
-
-      // Generate unique filename
       const fileExt = file.name.split('.').pop();
       const fileName = `${user!.id}/${Date.now()}.${fileExt}`;
 
-      // Upload to Supabase Storage
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(fileName, file, {
@@ -223,30 +220,24 @@ export default function ProfilePage() {
           upsert: false,
         });
 
-      if (uploadError) {
-        throw uploadError;
-      }
+      if (uploadError) throw uploadError;
 
-      // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(fileName);
 
-      // Update user profile with new avatar URL
       const { error: updateError } = await supabase
         .from('user_profiles')
         .update({ avatar_url: publicUrl } as any)
         .eq('id', user!.id as any);
 
-      if (updateError) {
-        throw updateError;
-      }
+      if (updateError) throw updateError;
 
-      toast.success('Profile picture updated!');
+      toast.success(t('toastProfilePictureUpdated'));
       await refreshProfile();
     } catch (error: any) {
       console.error('Error uploading avatar:', error);
-      toast.error(error.message || 'Failed to upload image');
+      toast.error(error.message || t('toastFailedUploadImage'));
     } finally {
       setUploading(false);
     }
@@ -271,12 +262,12 @@ export default function ProfilePage() {
 
       if (error) throw error;
 
-      toast.success('Profile updated successfully!');
+      toast.success(t('toastProfileUpdated'));
       setIsEditing(false);
       await refreshProfile();
     } catch (error: any) {
       console.error('Error updating profile:', error);
-      toast.error('Failed to update profile');
+      toast.error(t('toastFailedUpdateProfile'));
     } finally {
       setSaving(false);
     }
@@ -301,7 +292,7 @@ export default function ProfilePage() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="w-12 h-12 border-3 border-organic-orange border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="mt-4 text-sm text-gray-600">Loading your profile...</p>
+          <p className="mt-4 text-sm text-gray-600">{t('loadingProfile')}</p>
         </div>
       </div>
     );
@@ -319,8 +310,8 @@ export default function ProfilePage() {
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
-            <p className="text-sm text-gray-600 mt-1">Manage your account and personal information</p>
+            <h1 className="text-3xl font-bold text-gray-900">{t('pageTitle')}</h1>
+            <p className="text-sm text-gray-600 mt-1">{t('pageSubtitle')}</p>
           </div>
           {!isEditing && (
             <button
@@ -328,7 +319,7 @@ export default function ProfilePage() {
               className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition-colors"
             >
               <Edit2 className="w-4 h-4" />
-              Edit Profile
+              {t('editProfile')}
             </button>
           )}
           {isEditing && (
@@ -338,7 +329,7 @@ export default function ProfilePage() {
                 className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition-colors"
               >
                 <X className="w-4 h-4" />
-                Cancel
+                {t('cancel')}
               </button>
               <button
                 onClick={handleSaveProfile}
@@ -346,7 +337,7 @@ export default function ProfilePage() {
                 className="flex items-center gap-2 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
               >
                 <Save className="w-4 h-4" />
-                {saving ? 'Saving...' : 'Save Changes'}
+                {saving ? t('saving') : t('saveChanges')}
               </button>
             </div>
           )}
@@ -381,7 +372,7 @@ export default function ProfilePage() {
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploading}
                 className="absolute -bottom-1 -right-1 p-2 bg-organic-orange hover:bg-orange-600 text-white rounded-full shadow-lg transition-colors disabled:opacity-50"
-                title="Change profile picture"
+                title={t('changeProfilePicture')}
               >
                 {uploading ? (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -396,40 +387,40 @@ export default function ProfilePage() {
               {isEditing ? (
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-xs font-medium text-gray-500 uppercase mb-1">Name</label>
+                    <label className="block text-xs font-medium text-gray-500 uppercase mb-1">{t('nameLabel')}</label>
                     <input
                       type="text"
                       value={editForm.name}
                       onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                      placeholder="Your name"
+                      placeholder={t('namePlaceholder')}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
                       maxLength={100}
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-500 uppercase mb-1">Bio</label>
+                    <label className="block text-xs font-medium text-gray-500 uppercase mb-1">{t('bioLabel')}</label>
                     <textarea
                       value={editForm.bio}
                       onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
-                      placeholder="Tell us about yourself..."
+                      placeholder={t('bioPlaceholder')}
                       rows={3}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none"
                       maxLength={500}
                     />
-                    <p className="text-xs text-gray-500 mt-1">{editForm.bio.length}/500 characters</p>
+                    <p className="text-xs text-gray-500 mt-1">{editForm.bio.length}/500 {t('characters')}</p>
                   </div>
                 </div>
               ) : (
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900 mb-1">
-                    {profile.name || 'Anonymous User'}
+                    {profile.name || t('anonymousUser')}
                   </h2>
                   <p className="text-sm text-gray-600 mb-3">{profile.email}</p>
                   {profile.bio && (
                     <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{profile.bio}</p>
                   )}
                   {!profile.bio && !isEditing && (
-                    <p className="text-sm text-gray-400 italic">No bio yet. Click Edit Profile to add one!</p>
+                    <p className="text-sm text-gray-400 italic">{t('noBioYet')}</p>
                   )}
                 </div>
               )}
@@ -441,37 +432,37 @@ export default function ProfilePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           {/* Left Column */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Account Details</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('accountDetails')}</h3>
             <div className="space-y-4">
               {/* Organic ID */}
               <div>
-                <label className="block text-xs font-medium text-gray-500 uppercase mb-1">Organic ID</label>
+                <label className="block text-xs font-medium text-gray-500 uppercase mb-1">{t('organicIdLabel')}</label>
                 {profile.organic_id ? (
                   <div className="flex items-center gap-2">
                     <span className="text-2xl font-bold text-organic-orange">#{profile.organic_id}</span>
-                    <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">Verified</span>
+                    <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">{t('verified')}</span>
                   </div>
                 ) : (
-                  <p className="text-sm text-gray-500 italic">Not assigned</p>
+                  <p className="text-sm text-gray-500 italic">{t('notAssigned')}</p>
                 )}
               </div>
 
               {/* Role */}
               <div>
-                <label className="block text-xs font-medium text-gray-500 uppercase mb-1">Role</label>
+                <label className="block text-xs font-medium text-gray-500 uppercase mb-1">{t('roleLabel')}</label>
                 <span className={`inline-flex px-2.5 py-1 rounded-md text-xs font-medium capitalize ${
                   profile.role === 'admin' ? 'bg-purple-100 text-purple-700' :
                   profile.role === 'council' ? 'bg-blue-100 text-blue-700' :
                   profile.role === 'member' ? 'bg-green-100 text-green-700' :
                   'bg-gray-100 text-gray-700'
                 }`}>
-                  {profile.role || 'Guest'}
+                  {profile.role || t('guest')}
                 </span>
               </div>
 
               {/* Member Since */}
               <div>
-                <label className="block text-xs font-medium text-gray-500 uppercase mb-1">Member Since</label>
+                <label className="block text-xs font-medium text-gray-500 uppercase mb-1">{t('memberSince')}</label>
                 <div className="flex items-center gap-2 text-sm text-gray-700">
                   <Calendar className="w-4 h-4" />
                   <span>{formatDistanceToNow(new Date(profile.created_at), { addSuffix: true })}</span>
@@ -482,60 +473,60 @@ export default function ProfilePage() {
 
           {/* Right Column - Social & Contact */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Social & Contact</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('socialContact')}</h3>
             {isEditing ? (
               <div className="space-y-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 uppercase mb-1">Location</label>
+                  <label className="block text-xs font-medium text-gray-500 uppercase mb-1">{t('locationLabel')}</label>
                   <div className="relative">
                     <MapPin className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                     <input
                       type="text"
                       value={editForm.location}
                       onChange={(e) => setEditForm({ ...editForm, location: e.target.value })}
-                      placeholder="City, Country"
+                      placeholder={t('locationPlaceholder')}
                       className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
                       maxLength={100}
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 uppercase mb-1">Website</label>
+                  <label className="block text-xs font-medium text-gray-500 uppercase mb-1">{t('websiteLabel')}</label>
                   <div className="relative">
                     <Globe className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                     <input
                       type="url"
                       value={editForm.website}
                       onChange={(e) => setEditForm({ ...editForm, website: e.target.value })}
-                      placeholder="https://yoursite.com"
+                      placeholder={t('websitePlaceholder')}
                       className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
                       maxLength={200}
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 uppercase mb-1">Twitter/X</label>
+                  <label className="block text-xs font-medium text-gray-500 uppercase mb-1">{t('twitterLabel')}</label>
                   <div className="relative">
                     <Twitter className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                     <input
                       type="text"
                       value={editForm.twitter}
                       onChange={(e) => setEditForm({ ...editForm, twitter: e.target.value })}
-                      placeholder="@username"
+                      placeholder={t('twitterPlaceholder')}
                       className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
                       maxLength={50}
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 uppercase mb-1">Discord</label>
+                  <label className="block text-xs font-medium text-gray-500 uppercase mb-1">{t('discordLabel')}</label>
                   <div className="relative">
                     <MessageCircle className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                     <input
                       type="text"
                       value={editForm.discord}
                       onChange={(e) => setEditForm({ ...editForm, discord: e.target.value })}
-                      placeholder="username#1234"
+                      placeholder={t('discordPlaceholder')}
                       className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
                       maxLength={50}
                     />
@@ -573,7 +564,7 @@ export default function ProfilePage() {
                   </div>
                 )}
                 {!profile.location && !profile.website && !profile.twitter && !profile.discord && !isEditing && (
-                  <p className="text-sm text-gray-400 italic">No social links yet. Click Edit Profile to add some!</p>
+                  <p className="text-sm text-gray-400 italic">{t('noSocialLinksYet')}</p>
                 )}
               </div>
             )}
@@ -582,7 +573,7 @@ export default function ProfilePage() {
 
         {/* Wallet Section */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Solana Wallet</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('solanaWallet')}</h2>
 
           <div className="mb-4">
             <WalletMultiButton />
@@ -590,14 +581,14 @@ export default function ProfilePage() {
 
           {profile.wallet_pubkey && (
             <div className="mb-4">
-              <label className="block text-xs font-medium text-gray-500 uppercase mb-2">Linked Wallet</label>
+              <label className="block text-xs font-medium text-gray-500 uppercase mb-2">{t('linkedWallet')}</label>
               <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
                 <p className="text-xs font-mono text-gray-700 break-all mb-3">
                   {profile.wallet_pubkey}
                 </p>
                 {tokenBalance !== null && (
                   <div className="flex items-center">
-                    <span className="text-xs font-medium text-gray-500 mr-2">$ORG Balance:</span>
+                    <span className="text-xs font-medium text-gray-500 mr-2">{t('orgBalance')}</span>
                     <span className="text-sm font-semibold text-organic-orange">{tokenBalance.toFixed(2)}</span>
                   </div>
                 )}
@@ -611,7 +602,7 @@ export default function ProfilePage() {
               disabled={linkingWallet}
               className="w-full bg-organic-orange hover:bg-orange-600 text-white font-medium py-2.5 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
             >
-              {linkingWallet ? 'Linking Wallet...' : 'Link Wallet to Profile'}
+              {linkingWallet ? t('linkingWallet') : t('linkWalletToProfile')}
             </button>
           )}
         </div>
@@ -619,15 +610,15 @@ export default function ProfilePage() {
         {/* Get Organic ID Section */}
         {profile.wallet_pubkey && !profile.organic_id && (
           <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-lg shadow-sm p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">Get Your Organic ID</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-2">{t('getYourOrganicId')}</h2>
             <p className="text-sm text-gray-600 mb-4">
-              Hold $ORG tokens? Get your unique Organic ID and become a verified member!
+              {t('holdTokensDescription')}
             </p>
 
             {tokenBalance !== null && tokenBalance > 0 && (
               <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
                 <p className="text-sm text-green-700 font-medium">
-                  ✓ You hold {tokenBalance.toFixed(2)} $ORG tokens
+                  ✓ {t('youHoldTokens', { balance: tokenBalance.toFixed(2) })}
                 </p>
               </div>
             )}
@@ -637,7 +628,7 @@ export default function ProfilePage() {
               disabled={gettingOrganicId}
               className="bg-organic-orange hover:bg-orange-600 text-white font-medium py-2.5 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
             >
-              {gettingOrganicId ? 'Verifying...' : 'Get Organic ID'}
+              {gettingOrganicId ? t('verifying') : t('getOrganicId')}
             </button>
           </div>
         )}
@@ -646,10 +637,10 @@ export default function ProfilePage() {
         {profile.organic_id && (
           <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg shadow-sm p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              🎉 You're a verified member!
+              🎉 {t('verifiedMemberTitle')}
             </h3>
             <p className="text-sm text-gray-600">
-              You can now create proposals, vote on decisions, and participate in the Organic DAO.
+              {t('verifiedMemberDescription')}
             </p>
           </div>
         )}
