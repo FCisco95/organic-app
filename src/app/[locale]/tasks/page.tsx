@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/features/auth/context';
-import { Navigation } from '@/components/navigation';
+
 import { createClient } from '@/lib/supabase/client';
 import { Plus, Calendar, User, MoreVertical, AlertCircle, Clock, Tag, Edit2 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 
 type TaskStatus = 'backlog' | 'todo' | 'in_progress' | 'review' | 'done';
 type TaskPriority = 'low' | 'medium' | 'high' | 'critical';
@@ -51,16 +51,17 @@ type Sprint = {
   created_at: string;
 };
 
-const COLUMNS: { id: TaskStatus; title: string; color: string }[] = [
-  { id: 'backlog', title: 'Backlog', color: 'bg-gray-100 border-gray-300' },
-  { id: 'todo', title: 'To Do', color: 'bg-blue-50 border-blue-300' },
-  { id: 'in_progress', title: 'In Progress', color: 'bg-orange-50 border-orange-300' },
-  { id: 'review', title: 'Review', color: 'bg-purple-50 border-purple-300' },
-  { id: 'done', title: 'Done', color: 'bg-green-50 border-green-300' },
+const COLUMNS: { id: TaskStatus; color: string }[] = [
+  { id: 'backlog', color: 'bg-gray-100 border-gray-300' },
+  { id: 'todo', color: 'bg-blue-50 border-blue-300' },
+  { id: 'in_progress', color: 'bg-orange-50 border-orange-300' },
+  { id: 'review', color: 'bg-purple-50 border-purple-300' },
+  { id: 'done', color: 'bg-green-50 border-green-300' },
 ];
 
 export default function TasksPage() {
   const { user, profile } = useAuth();
+  const t = useTranslations('Tasks');
   const [tasks, setTasks] = useState<Task[]>([]);
   const [sprints, setSprints] = useState<Sprint[]>([]);
   const [selectedSprint, setSelectedSprint] = useState<string>('all');
@@ -149,10 +150,10 @@ export default function TasksPage() {
           task.id === taskId ? { ...task, status: newStatus } : task
         )
       );
-      toast.success('Task updated');
+      toast.success(t('toastTaskUpdated'));
     } catch (error) {
       console.error('Error updating task:', error);
-      toast.error('Failed to update task');
+      toast.error(t('toastTaskUpdateFailed'));
     }
   }
 
@@ -178,13 +179,13 @@ export default function TasksPage() {
   if (!user || !profile?.organic_id) {
     return (
       <main className="min-h-screen bg-gray-50">
-        <Navigation />
+  
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            Member Access Required
+            {t('memberAccessTitle')}
           </h1>
           <p className="text-gray-600 mb-6">
-            You need to be a member with an Organic ID to access tasks.
+            {t('memberAccessDescription')}
           </p>
         </div>
       </main>
@@ -193,15 +194,15 @@ export default function TasksPage() {
 
   return (
     <main className="min-h-screen bg-gray-50">
-      <Navigation />
+
 
       <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Task Board</h1>
+            <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
             <p className="text-gray-600 mt-1">
-              Track and manage tasks across epochs
+              {t('subtitle')}
             </p>
           </div>
 
@@ -213,14 +214,14 @@ export default function TasksPage() {
                   className="flex items-center gap-2 bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors"
                 >
                   <Calendar className="w-4 h-4" />
-                  New Epoch
+                  {t('newEpoch')}
                 </button>
                 <button
                   onClick={() => setShowNewTaskModal(true)}
                   className="flex items-center gap-2 bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
                 >
                   <Plus className="w-4 h-4" />
-                  New Task
+                  {t('newTask')}
                 </button>
               </>
             )}
@@ -237,7 +238,7 @@ export default function TasksPage() {
                 : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
             }`}
           >
-            All Tasks
+            {t('allTasks')}
           </button>
           <button
             onClick={() => setSelectedSprint('unassigned')}
@@ -247,7 +248,7 @@ export default function TasksPage() {
                 : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
             }`}
           >
-            No Epoch
+            {t('noEpoch')}
           </button>
           {sprints.map((sprint) => (
             <button
@@ -257,24 +258,24 @@ export default function TasksPage() {
                 selectedSprint === sprint.id
                   ? 'bg-organic-orange text-white'
                   : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
-              }`}
-            >
-              {sprint.name}
-              <span
-                className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
-                  selectedSprint === sprint.id
-                    ? 'bg-white/20 text-white'
-                    : sprint.status === 'active'
-                    ? 'bg-green-100 text-green-700'
-                    : sprint.status === 'planning'
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'bg-gray-100 text-gray-700'
                 }`}
               >
-                {sprint.status}
-              </span>
-            </button>
-          ))}
+                {sprint.name}
+                <span
+                  className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
+                    selectedSprint === sprint.id
+                      ? 'bg-white/20 text-white'
+                      : sprint.status === 'active'
+                      ? 'bg-green-100 text-green-700'
+                      : sprint.status === 'planning'
+                      ? 'bg-blue-100 text-blue-700'
+                      : 'bg-gray-100 text-gray-700'
+                  }`}
+                >
+                  {t(`epochStatus.${sprint.status}`)}
+                </span>
+              </button>
+            ))}
         </div>
 
         {/* Kanban Board */}
@@ -311,10 +312,10 @@ export default function TasksPage() {
                   {/* Column Header */}
                   <div className="mb-4">
                     <h3 className="font-semibold text-gray-900 text-sm uppercase tracking-wide">
-                      {column.title}
+                      {t(`column.${column.id}`)}
                     </h3>
                     <p className="text-xs text-gray-500 mt-1">
-                      {columnTasks.length} {columnTasks.length === 1 ? 'task' : 'tasks'}
+                      {t('columnCount', { count: columnTasks.length })}
                     </p>
                   </div>
 
@@ -378,6 +379,7 @@ function TaskCard({
   isDragging: boolean;
 }) {
   const router = useRouter();
+  const t = useTranslations('Tasks');
   const [showActions, setShowActions] = useState(false);
 
   const getPriorityColor = (priority: TaskPriority | null) => {
@@ -411,7 +413,7 @@ function TaskCard({
           <div className="mb-2">
             <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${getPriorityColor(task.priority)}`}>
               <AlertCircle className="w-3 h-3" />
-              {task.priority}
+              {t(`priority.${task.priority}`)}
             </span>
           </div>
         )}
@@ -444,8 +446,8 @@ function TaskCard({
         {task.due_date && (
           <div className={`flex items-center gap-1 mb-2 text-xs ${isOverdue ? 'text-red-600 font-medium' : 'text-gray-500'}`}>
             <Clock className="w-3 h-3" />
-            Due: {new Date(task.due_date).toLocaleDateString()}
-            {isOverdue && ' (Overdue)'}
+            {t('dueLabel', { date: new Date(task.due_date).toLocaleDateString() })}
+            {isOverdue && ` (${t('overdue')})`}
           </div>
         )}
 
@@ -453,7 +455,7 @@ function TaskCard({
           <div className="flex items-center gap-2">
             {task.points && (
               <span className="px-2 py-0.5 bg-gray-100 text-gray-700 rounded-full font-medium">
-                {task.points}pt
+                {t('pointsShort', { points: task.points })}
               </span>
             )}
             {task.sprints && (
@@ -467,7 +469,7 @@ function TaskCard({
               <User className="w-3 h-3" />
               <span className="text-xs">
                 {task.assignee.organic_id
-                  ? `#${task.assignee.organic_id}`
+                  ? t('assigneeId', { id: task.assignee.organic_id })
                   : task.assignee.email.split('@')[0]}
               </span>
             </div>
@@ -500,10 +502,10 @@ function TaskCard({
                 className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 border-b border-gray-100"
               >
                 <Edit2 className="w-3.5 h-3.5" />
-                Edit Task
+                {t('editTask')}
               </button>
               <div className="py-1">
-                <div className="px-3 py-1 text-xs font-medium text-gray-500 uppercase">Move to</div>
+                <div className="px-3 py-1 text-xs font-medium text-gray-500 uppercase">{t('moveTo')}</div>
                 {COLUMNS.map((col) => (
                   <button
                     key={col.id}
@@ -515,7 +517,7 @@ function TaskCard({
                     }}
                     className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
                   >
-                    {col.title}
+                    {t(`column.${col.id}`)}
                   </button>
                 ))}
               </div>
@@ -537,6 +539,7 @@ function NewTaskModal({
   onSuccess: () => void;
   sprints: Sprint[];
 }) {
+  const t = useTranslations('Tasks');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [points, setPoints] = useState('');
@@ -581,7 +584,7 @@ function NewTaskModal({
     e.preventDefault();
 
     if (!title.trim()) {
-      toast.error('Title is required');
+      toast.error(t('toastTitleRequired'));
       return;
     }
 
@@ -603,11 +606,11 @@ function NewTaskModal({
 
       if (error) throw error;
 
-      toast.success('Task created!');
+      toast.success(t('toastTaskCreated'));
       onSuccess();
     } catch (error) {
       console.error('Error creating task:', error);
-      toast.error('Failed to create task');
+      toast.error(t('toastTaskCreateFailed'));
     } finally {
       setSubmitting(false);
     }
@@ -616,20 +619,20 @@ function NewTaskModal({
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
       <div className="bg-white rounded-lg max-w-2xl w-full p-6 my-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Create New Task</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('createTaskTitle')}</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Title */}
           <div>
             <label className="block text-sm font-medium text-gray-900 mb-1">
-              Title <span className="text-red-500">*</span>
+              {t('labelTitle')} <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
-              placeholder="Task title"
+              placeholder={t('placeholderTitle')}
               required
             />
           </div>
@@ -637,14 +640,14 @@ function NewTaskModal({
           {/* Description */}
           <div>
             <label className="block text-sm font-medium text-gray-900 mb-1">
-              Description
+              {t('labelDescription')}
             </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none"
-              placeholder="Task description (optional)"
+              placeholder={t('placeholderDescription')}
             />
           </div>
 
@@ -652,30 +655,30 @@ function NewTaskModal({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-1">
-                Priority
+                {t('labelPriority')}
               </label>
               <select
                 value={priority}
                 onChange={(e) => setPriority(e.target.value as TaskPriority)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
               >
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-                <option value="critical">Critical</option>
+                <option value="low">{t('priority.low')}</option>
+                <option value="medium">{t('priority.medium')}</option>
+                <option value="high">{t('priority.high')}</option>
+                <option value="critical">{t('priority.critical')}</option>
               </select>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-1">
-                Points
+                {t('labelPoints')}
               </label>
               <input
                 type="number"
                 value={points}
                 onChange={(e) => setPoints(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
-                placeholder="0"
+                placeholder={t('pointsPlaceholder')}
                 min="0"
               />
             </div>
@@ -685,7 +688,7 @@ function NewTaskModal({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-1">
-                Assignee
+                {t('labelAssignee')}
               </label>
               <select
                 value={assigneeId}
@@ -693,10 +696,10 @@ function NewTaskModal({
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
                 disabled={loadingAssignees}
               >
-                <option value="">Unassigned</option>
+                <option value="">{t('unassigned')}</option>
                 {assignees.map((assignee) => (
                   <option key={assignee.id} value={assignee.id}>
-                    {assignee.organic_id ? `#${assignee.organic_id}` : assignee.email}
+                    {assignee.organic_id ? t('assigneeId', { id: assignee.organic_id }) : assignee.email}
                   </option>
                 ))}
               </select>
@@ -704,14 +707,14 @@ function NewTaskModal({
 
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-1">
-                Epoch
+                {t('labelEpoch')}
               </label>
               <select
                 value={sprintId}
                 onChange={(e) => setSprintId(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
               >
-                <option value="">None</option>
+                <option value="">{t('epochNone')}</option>
                 {sprints.map((sprint) => (
                   <option key={sprint.id} value={sprint.id}>
                     {sprint.name}
@@ -724,7 +727,7 @@ function NewTaskModal({
           {/* Due Date */}
           <div>
             <label className="block text-sm font-medium text-gray-900 mb-1">
-              Due Date
+              {t('labelDueDate')}
             </label>
             <input
               type="date"
@@ -737,7 +740,7 @@ function NewTaskModal({
           {/* Labels */}
           <div>
             <label className="block text-sm font-medium text-gray-900 mb-1">
-              Labels
+              {t('labelLabels')}
             </label>
             <div className="flex gap-2 mb-2">
               <input
@@ -751,14 +754,14 @@ function NewTaskModal({
                   }
                 }}
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
-                placeholder="Add a label"
+                placeholder={t('labelPlaceholder')}
               />
               <button
                 type="button"
                 onClick={handleAddLabel}
                 className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors"
               >
-                Add
+                {t('addLabel')}
               </button>
             </div>
             {labels.length > 0 && (
@@ -788,14 +791,14 @@ function NewTaskModal({
               onClick={onClose}
               className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
             >
-              Cancel
+              {t('cancel')}
             </button>
             <button
               type="submit"
               disabled={submitting}
               className="flex-1 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
             >
-              {submitting ? 'Creating...' : 'Create Task'}
+              {submitting ? t('creating') : t('createTask')}
             </button>
           </div>
         </form>
@@ -812,6 +815,7 @@ function NewSprintModal({
   onClose: () => void;
   onSuccess: () => void;
 }) {
+  const t = useTranslations('Tasks');
   const [name, setName] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -821,7 +825,7 @@ function NewSprintModal({
     e.preventDefault();
 
     if (!name.trim() || !startDate || !endDate) {
-      toast.error('All fields are required');
+      toast.error(t('toastAllFieldsRequired'));
       return;
     }
 
@@ -838,11 +842,11 @@ function NewSprintModal({
 
       if (error) throw error;
 
-      toast.success('Epoch created!');
+      toast.success(t('toastEpochCreated'));
       onSuccess();
     } catch (error) {
       console.error('Error creating sprint:', error);
-      toast.error('Failed to create epoch');
+      toast.error(t('toastEpochCreateFailed'));
     } finally {
       setSubmitting(false);
     }
@@ -851,19 +855,19 @@ function NewSprintModal({
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg max-w-lg w-full p-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Create New Epoch</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('createEpochTitle')}</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-900 mb-1">
-              Epoch Name
+              {t('labelEpochName')}
             </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
-              placeholder="e.g., Epoch 1, Q1 2024"
+              placeholder={t('epochNamePlaceholder')}
               required
             />
           </div>
@@ -871,7 +875,7 @@ function NewSprintModal({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-1">
-                Start Date
+                {t('labelStartDate')}
               </label>
               <input
                 type="date"
@@ -884,7 +888,7 @@ function NewSprintModal({
 
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-1">
-                End Date
+                {t('labelEndDate')}
               </label>
               <input
                 type="date"
@@ -902,14 +906,14 @@ function NewSprintModal({
               onClick={onClose}
               className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
             >
-              Cancel
+              {t('cancel')}
             </button>
             <button
               type="submit"
               disabled={submitting}
               className="flex-1 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
             >
-              {submitting ? 'Creating...' : 'Create Epoch'}
+              {submitting ? t('creating') : t('createEpoch')}
             </button>
           </div>
         </form>

@@ -1,13 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import { createClient } from '@/lib/supabase/client';
-import Link from 'next/link';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
+import { useTranslations } from 'next-intl';
 
 export default function LoginPage() {
+  const t = useTranslations('Login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -19,11 +20,11 @@ export default function LoginPage() {
     const newErrors: { email?: string; password?: string } = {};
 
     if (!email) {
-      newErrors.email = 'Email cannot be blank';
+      newErrors.email = t('validationEmailBlank');
     }
 
     if (!password) {
-      newErrors.password = 'Password cannot be blank';
+      newErrors.password = t('validationPasswordBlank');
     }
 
     setErrors(newErrors);
@@ -47,10 +48,10 @@ export default function LoginPage() {
 
       if (error) throw error;
 
-      toast.success('Logged in successfully!');
+      toast.success(t('toastSuccess'));
       router.push('/profile');
     } catch (error: any) {
-      toast.error(error.message || 'Incorrect email or password');
+      toast.error(error.message || t('toastInvalidCredentials'));
     } finally {
       setLoading(false);
     }
@@ -76,14 +77,14 @@ export default function LoginPage() {
         {/* Sign in form */}
         <div className="bg-[#161b22] rounded-md border border-[#30363d] p-6">
           <h1 className="text-2xl font-light text-white mb-2 text-center">
-            Sign in to Organic
+            {t('title')}
           </h1>
 
           <form onSubmit={handleSubmit} className="space-y-4 mt-4">
             {/* Email */}
             <div>
               <label htmlFor="email" className="block text-sm font-normal text-[#c9d1d9] mb-2">
-                Email address
+                {t('emailLabel')}
               </label>
               <input
                 id="email"
@@ -96,7 +97,7 @@ export default function LoginPage() {
                 className={`w-full px-3 py-2 bg-[#0d1117] border ${
                   errors.email ? 'border-[#f85149]' : 'border-[#30363d]'
                 } rounded-md text-white text-sm focus:border-[#1f6feb] focus:ring-1 focus:ring-[#1f6feb] focus:outline-none placeholder-[#6e7681]`}
-                placeholder="you@example.com"
+                placeholder={t('emailPlaceholder')}
               />
               {errors.email && (
                 <p className="mt-2 text-xs text-[#f85149] flex items-start">
@@ -112,10 +113,10 @@ export default function LoginPage() {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <label htmlFor="password" className="block text-sm font-normal text-[#c9d1d9]">
-                  Password
+                  {t('passwordLabel')}
                 </label>
                 <Link href="/forgot-password" className="text-xs text-[#58a6ff] hover:underline">
-                  Forgot password?
+                  {t('forgotPassword')}
                 </Link>
               </div>
               <input
@@ -129,7 +130,7 @@ export default function LoginPage() {
                 className={`w-full px-3 py-2 bg-[#0d1117] border ${
                   errors.password ? 'border-[#f85149]' : 'border-[#30363d]'
                 } rounded-md text-white text-sm focus:border-[#1f6feb] focus:ring-1 focus:ring-[#1f6feb] focus:outline-none placeholder-[#6e7681]`}
-                placeholder="Password"
+                placeholder={t('passwordPlaceholder')}
               />
               {errors.password && (
                 <p className="mt-2 text-xs text-[#f85149] flex items-start">
@@ -146,7 +147,7 @@ export default function LoginPage() {
               disabled={loading}
               className="w-full bg-[#238636] hover:bg-[#2ea043] text-white font-medium py-2 px-4 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
             >
-              {loading ? 'Signing in...' : 'Sign in'}
+              {loading ? t('signingIn') : t('signIn')}
             </button>
           </form>
         </div>
@@ -154,9 +155,9 @@ export default function LoginPage() {
         {/* Sign up link */}
         <div className="mt-4 text-center border border-[#30363d] rounded-md p-4 bg-[#161b22]">
           <p className="text-sm text-[#c9d1d9]">
-            New to Organic?{' '}
+            {t('newToOrganic')}{' '}
             <Link href="/signup" className="text-[#58a6ff] hover:underline">
-              Create an account
+              {t('createAccount')}
             </Link>
           </p>
         </div>

@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
-import { Navigation } from '@/components/navigation';
+
 import { createClient } from '@/lib/supabase/client';
 import { Plus, MessageCircle, Calendar, User } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ProposalStatus } from '@/types/database';
+import { useTranslations } from 'next-intl';
 
 type Proposal = {
   id: string;
@@ -26,6 +27,7 @@ type Proposal = {
 
 export default function ProposalsPage() {
   const { user, profile } = useAuth();
+  const t = useTranslations('Proposals');
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>('all');
@@ -101,19 +103,36 @@ export default function ProposalsPage() {
     }
   };
 
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'draft':
+        return t('statusDraft');
+      case 'submitted':
+        return t('statusSubmitted');
+      case 'approved':
+        return t('statusApproved');
+      case 'rejected':
+        return t('statusRejected');
+      case 'voting':
+        return t('statusVoting');
+      default:
+        return status;
+    }
+  };
+
   const canCreateProposal = profile?.role && ['member', 'council', 'admin'].includes(profile.role);
 
   return (
     <main className="min-h-screen bg-gray-50">
-      <Navigation />
+
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Proposals</h1>
+            <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
             <p className="text-gray-600 mt-1">
-              Submit ideas and vote on proposals for the Organic DAO
+              {t('subtitle')}
             </p>
           </div>
 
@@ -123,7 +142,7 @@ export default function ProposalsPage() {
               className="flex items-center gap-2 bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
-              New Proposal
+              {t('newProposal')}
             </Link>
           )}
         </div>
@@ -140,7 +159,7 @@ export default function ProposalsPage() {
                   : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
               }`}
             >
-              {status.charAt(0).toUpperCase() + status.slice(1)}
+              {status === 'all' ? t('filterAll') : getStatusLabel(status)}
             </button>
           ))}
         </div>
@@ -161,14 +180,14 @@ export default function ProposalsPage() {
           </div>
         ) : proposals.length === 0 ? (
           <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
-            <p className="text-gray-500 mb-4">No proposals found</p>
+            <p className="text-gray-500 mb-4">{t('emptyState')}</p>
             {canCreateProposal && (
               <Link
                 href="/proposals/new"
                 className="inline-flex items-center gap-2 bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
               >
                 <Plus className="w-4 h-4" />
-                Create First Proposal
+                {t('createFirstProposal')}
               </Link>
             )}
           </div>
@@ -191,7 +210,7 @@ export default function ProposalsPage() {
                           proposal.status
                         )}`}
                       >
-                        {proposal.status}
+                        {getStatusLabel(proposal.status)}
                       </span>
                     </div>
 
@@ -204,7 +223,7 @@ export default function ProposalsPage() {
                         <User className="w-4 h-4" />
                         <span>
                           {proposal.user_profiles.organic_id
-                            ? `Organic #${proposal.user_profiles.organic_id}`
+                            ? t('organicId', { id: proposal.user_profiles.organic_id })
                             : proposal.user_profiles.email.split('@')[0]}
                         </span>
                       </div>
@@ -214,7 +233,7 @@ export default function ProposalsPage() {
                       </div>
                       <div className="flex items-center gap-1">
                         <MessageCircle className="w-4 h-4" />
-                        <span>{proposal.comments_count || 0} comments</span>
+                        <span>{t('commentsCount', { count: proposal.comments_count || 0 })}</span>
                       </div>
                     </div>
                   </div>
@@ -228,16 +247,16 @@ export default function ProposalsPage() {
         {!user && (
           <div className="mt-8 bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-lg p-6">
             <h3 className="font-semibold text-gray-900 mb-2">
-              Want to participate?
+              {t('ctaTitle')}
             </h3>
             <p className="text-gray-700 mb-4">
-              Sign in and link your wallet to create proposals and vote on decisions.
+              {t('ctaDescription')}
             </p>
             <Link
               href="/login"
               className="inline-block bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
             >
-              Sign In
+              {t('signIn')}
             </Link>
           </div>
         )}

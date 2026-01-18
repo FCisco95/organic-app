@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/features/auth/context';
-import { Navigation } from '@/components/navigation';
+
 import { Trophy, Medal, Award, User, Star, TrendingUp } from 'lucide-react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 type LeaderboardEntry = {
   id: string;
@@ -20,6 +21,7 @@ type LeaderboardEntry = {
 
 export default function LeaderboardPage() {
   const { user, profile } = useAuth();
+  const t = useTranslations('Leaderboard');
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -67,7 +69,7 @@ export default function LeaderboardPage() {
 
   const getDisplayName = (entry: LeaderboardEntry) => {
     if (entry.name) return entry.name;
-    if (entry.organic_id) return `Organic #${entry.organic_id}`;
+    if (entry.organic_id) return t('organicId', { id: entry.organic_id });
     return entry.email.split('@')[0];
   };
 
@@ -76,7 +78,7 @@ export default function LeaderboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation />
+
 
       <div className="max-w-4xl mx-auto py-8 px-4">
         {/* Header */}
@@ -84,8 +86,8 @@ export default function LeaderboardPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-organic-orange to-organic-yellow rounded-full mb-4">
             <Trophy className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">Leaderboard</h1>
-          <p className="text-gray-600 mt-2">Top contributors ranked by points earned from completed tasks</p>
+          <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
+          <p className="text-gray-600 mt-2">{t('subtitle')}</p>
         </div>
 
         {/* Current User Stats */}
@@ -97,13 +99,15 @@ export default function LeaderboardPage() {
                   <Star className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Your Position</p>
-                  <p className="font-bold text-gray-900">Rank #{currentUserRank.rank}</p>
+                  <p className="text-sm text-gray-600">{t('yourPosition')}</p>
+                  <p className="font-bold text-gray-900">{t('rankLabel', { rank: currentUserRank.rank })}</p>
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-sm text-gray-600">Your Points</p>
-                <p className="font-bold text-organic-orange text-xl">{currentUserRank.total_points} pts</p>
+                <p className="text-sm text-gray-600">{t('yourPoints')}</p>
+                <p className="font-bold text-organic-orange text-xl">
+                  {t('pointsLabel', { points: currentUserRank.total_points })}
+                </p>
               </div>
             </div>
           </div>
@@ -113,23 +117,23 @@ export default function LeaderboardPage() {
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
           {/* Table Header */}
           <div className="grid grid-cols-12 gap-4 px-6 py-4 bg-gray-50 border-b border-gray-200 text-sm font-medium text-gray-500">
-            <div className="col-span-1">Rank</div>
-            <div className="col-span-6">Member</div>
-            <div className="col-span-2 text-center">Tasks</div>
-            <div className="col-span-3 text-right">Points</div>
+            <div className="col-span-1">{t('tableRank')}</div>
+            <div className="col-span-6">{t('tableMember')}</div>
+            <div className="col-span-2 text-center">{t('tableTasks')}</div>
+            <div className="col-span-3 text-right">{t('tablePoints')}</div>
           </div>
 
           {/* Leaderboard Entries */}
           {loading ? (
             <div className="p-8 text-center">
               <div className="w-8 h-8 border-3 border-organic-orange border-t-transparent rounded-full animate-spin mx-auto"></div>
-              <p className="mt-4 text-gray-500">Loading leaderboard...</p>
+              <p className="mt-4 text-gray-500">{t('loading')}</p>
             </div>
           ) : leaderboard.length === 0 ? (
             <div className="p-8 text-center">
               <TrendingUp className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No rankings yet</h3>
-              <p className="text-gray-500">Complete tasks to earn points and appear on the leaderboard!</p>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">{t('emptyTitle')}</h3>
+              <p className="text-gray-500">{t('emptyDescription')}</p>
             </div>
           ) : (
             <div className="divide-y divide-gray-100">
@@ -169,12 +173,14 @@ export default function LeaderboardPage() {
                           {getDisplayName(entry)}
                           {isCurrentUser && (
                             <span className="ml-2 text-xs bg-organic-orange text-white px-2 py-0.5 rounded-full">
-                              You
+                              {t('youBadge')}
                             </span>
                           )}
                         </p>
                         {entry.organic_id && (
-                          <p className="text-sm text-gray-500">Organic #{entry.organic_id}</p>
+                          <p className="text-sm text-gray-500">
+                            {t('organicId', { id: entry.organic_id })}
+                          </p>
                         )}
                       </div>
                     </div>
@@ -182,7 +188,7 @@ export default function LeaderboardPage() {
                     {/* Tasks Completed */}
                     <div className="col-span-2 text-center">
                       <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">
-                        {entry.tasks_completed} tasks
+                        {t('tasksCompleted', { count: entry.tasks_completed })}
                       </span>
                     </div>
 
@@ -194,7 +200,7 @@ export default function LeaderboardPage() {
                         entry.rank === 3 ? 'text-amber-600' :
                         'text-gray-900'
                       }`}>
-                        {entry.total_points} pts
+                        {t('pointsLabel', { points: entry.total_points })}
                       </span>
                     </div>
                   </div>
@@ -206,12 +212,12 @@ export default function LeaderboardPage() {
 
         {/* Info Box */}
         <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h4 className="font-medium text-blue-900 mb-2">How Points Work</h4>
+          <h4 className="font-medium text-blue-900 mb-2">{t('howPointsTitle')}</h4>
           <ul className="text-sm text-blue-700 space-y-1">
-            <li>• Complete assigned tasks to earn points</li>
-            <li>• Each task has a point value based on its complexity</li>
-            <li>• Points are automatically added when tasks are marked as done</li>
-            <li>• Higher points = Higher ranking on the leaderboard</li>
+            <li>{t('howPointsItem1')}</li>
+            <li>{t('howPointsItem2')}</li>
+            <li>{t('howPointsItem3')}</li>
+            <li>{t('howPointsItem4')}</li>
           </ul>
         </div>
       </div>

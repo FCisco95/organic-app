@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
-import { Navigation } from '@/components/navigation';
+
 import {
   Calendar,
   Clock,
@@ -18,8 +19,8 @@ import {
   X,
   Save,
 } from 'lucide-react';
-import Link from 'next/link';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 type Sprint = {
   id: string;
@@ -61,6 +62,7 @@ export default function SprintDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { user, profile } = useAuth();
+  const t = useTranslations('SprintDetail');
   const [sprint, setSprint] = useState<Sprint | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
@@ -135,11 +137,11 @@ export default function SprintDetailPage() {
         setSprint(data.sprint);
         setShowEditModal(false);
       } else {
-        alert(data.error || 'Failed to update sprint');
+        alert(data.error || t('alertUpdateFailed'));
       }
     } catch (error) {
       console.error('Error updating sprint:', error);
-      alert('Failed to update sprint');
+      alert(t('alertUpdateFailed'));
     } finally {
       setIsSaving(false);
     }
@@ -158,11 +160,11 @@ export default function SprintDetailPage() {
         router.push('/sprints');
       } else {
         const data = await response.json();
-        alert(data.error || 'Failed to delete sprint');
+        alert(data.error || t('alertDeleteFailed'));
       }
     } catch (error) {
       console.error('Error deleting sprint:', error);
-      alert('Failed to delete sprint');
+      alert(t('alertDeleteFailed'));
     } finally {
       setIsDeleting(false);
     }
@@ -171,11 +173,11 @@ export default function SprintDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navigation />
+  
         <div className="max-w-7xl mx-auto py-8 px-4">
           <div className="text-center py-12">
             <div className="w-8 h-8 border-3 border-organic-orange border-t-transparent rounded-full animate-spin mx-auto"></div>
-            <p className="mt-4 text-gray-500">Loading sprint details...</p>
+            <p className="mt-4 text-gray-500">{t('loading')}</p>
           </div>
         </div>
       </div>
@@ -185,18 +187,18 @@ export default function SprintDetailPage() {
   if (!sprint) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navigation />
+  
         <div className="max-w-7xl mx-auto py-8 px-4">
           <div className="text-center py-12">
             <AlertCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Sprint not found</h3>
-            <p className="text-gray-500 mb-6">This sprint may have been deleted or does not exist.</p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('notFoundTitle')}</h3>
+            <p className="text-gray-500 mb-6">{t('notFoundDescription')}</p>
             <Link
               href="/sprints"
               className="inline-flex items-center gap-2 text-organic-orange hover:text-orange-600"
             >
               <ArrowLeft className="w-4 h-4" />
-              Back to Sprints
+              {t('backToSprints')}
             </Link>
           </div>
         </div>
@@ -258,9 +260,9 @@ export default function SprintDetailPage() {
   };
 
   const getDisplayName = (assignee: Task['assignee']) => {
-    if (!assignee) return 'Unassigned';
+    if (!assignee) return t('unassigned');
     if (assignee.name) return assignee.name;
-    if (assignee.organic_id) return `Organic #${assignee.organic_id}`;
+    if (assignee.organic_id) return t('organicId', { id: assignee.organic_id });
     return assignee.email.split('@')[0];
   };
 
@@ -276,7 +278,7 @@ export default function SprintDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation />
+
 
       <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         {/* Back Button */}
@@ -285,7 +287,7 @@ export default function SprintDetailPage() {
           className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
         >
           <ArrowLeft className="w-4 h-4" />
-          Back to Sprints
+          {t('backToSprints')}
         </Link>
 
         {/* Sprint Header */}
@@ -312,13 +314,13 @@ export default function SprintDetailPage() {
                   sprint.status
                 )}`}
               >
-                {sprint.status.charAt(0).toUpperCase() + sprint.status.slice(1)}
+                {t(`status.${sprint.status}`)}
               </span>
               {canManageSprint && (
                 <button
                   onClick={openEditModal}
                   className="p-2 text-gray-400 hover:text-organic-orange transition-colors"
-                  title="Edit sprint"
+                  title={t('editSprint')}
                 >
                   <Edit className="w-5 h-5" />
                 </button>
@@ -327,7 +329,7 @@ export default function SprintDetailPage() {
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
                   className="p-2 text-gray-400 hover:text-red-600 transition-colors"
-                  title="Delete sprint"
+                  title={t('deleteSprint')}
                 >
                   <Trash2 className="w-5 h-5" />
                 </button>
@@ -338,7 +340,7 @@ export default function SprintDetailPage() {
           {/* Progress Bar */}
           <div className="mt-6">
             <div className="flex items-center justify-between text-sm mb-2">
-              <span className="font-medium text-gray-700">Overall Progress</span>
+              <span className="font-medium text-gray-700">{t('overallProgress')}</span>
               <span className="font-bold text-gray-900">{progressPercentage}%</span>
             </div>
             <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
@@ -358,7 +360,7 @@ export default function SprintDetailPage() {
                 <Target className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Total Tasks</p>
+                <p className="text-sm text-gray-600">{t('totalTasks')}</p>
                 <p className="text-2xl font-bold text-gray-900">{totalTasks}</p>
               </div>
             </div>
@@ -370,7 +372,7 @@ export default function SprintDetailPage() {
                 <CheckCircle2 className="w-5 h-5 text-green-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Completed</p>
+                <p className="text-sm text-gray-600">{t('completed')}</p>
                 <p className="text-2xl font-bold text-gray-900">{completedTasks}</p>
               </div>
             </div>
@@ -382,7 +384,7 @@ export default function SprintDetailPage() {
                 <Timer className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">In Progress</p>
+                <p className="text-sm text-gray-600">{t('inProgress')}</p>
                 <p className="text-2xl font-bold text-gray-900">{inProgressTasks}</p>
               </div>
             </div>
@@ -394,7 +396,7 @@ export default function SprintDetailPage() {
                 <span className="text-xl font-bold text-organic-orange">★</span>
               </div>
               <div>
-                <p className="text-sm text-gray-600">Points</p>
+                <p className="text-sm text-gray-600">{t('points')}</p>
                 <p className="text-2xl font-bold text-gray-900">
                   {completedPoints}/{totalPoints}
                 </p>
@@ -406,14 +408,14 @@ export default function SprintDetailPage() {
         {/* Tasks List */}
         <div className="bg-white rounded-xl border border-gray-200">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">Sprint Tasks</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t('sprintTasks')}</h2>
           </div>
 
           {tasks.length === 0 ? (
             <div className="p-8 text-center">
               <Target className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No tasks yet</h3>
-              <p className="text-gray-500">Tasks assigned to this sprint will appear here.</p>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">{t('noTasksTitle')}</h3>
+              <p className="text-gray-500">{t('noTasksDescription')}</p>
             </div>
           ) : (
             <div className="divide-y divide-gray-100">
@@ -435,10 +437,10 @@ export default function SprintDetailPage() {
                           )}`}
                         >
                           {getTaskStatusIcon(task.status)}
-                          {task.status.replace('_', ' ')}
+                          {t(`taskStatus.${task.status}`)}
                         </span>
                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getPriorityBadge(task.priority)}`}>
-                          {task.priority}
+                          {t(`priority.${task.priority}`)}
                         </span>
                       </div>
                       {task.description && (
@@ -467,7 +469,7 @@ export default function SprintDetailPage() {
                         )}
                         <span className="flex items-center gap-1">
                           <span className="text-organic-orange">★</span>
-                          {task.points} pts
+                          {t('pointsLabel', { points: task.points })}
                         </span>
                       </div>
                     </div>
@@ -484,7 +486,7 @@ export default function SprintDetailPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-xl max-w-md w-full">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-              <h3 className="text-xl font-bold text-gray-900">Edit Sprint</h3>
+              <h3 className="text-xl font-bold text-gray-900">{t('editSprintTitle')}</h3>
               <button
                 onClick={() => setShowEditModal(false)}
                 className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -496,21 +498,21 @@ export default function SprintDetailPage() {
             <div className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Sprint Name
+                  {t('formName')}
                 </label>
                 <input
                   type="text"
                   value={editForm.name}
                   onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange transition-colors"
-                  placeholder="Sprint name"
+                  placeholder={t('formNamePlaceholder')}
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Start Date
+                    {t('formStartDate')}
                   </label>
                   <input
                     type="date"
@@ -521,7 +523,7 @@ export default function SprintDetailPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    End Date
+                    {t('formEndDate')}
                   </label>
                   <input
                     type="date"
@@ -534,7 +536,7 @@ export default function SprintDetailPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Status
+                  {t('formStatus')}
                 </label>
                 <select
                   value={editForm.status}
@@ -543,9 +545,9 @@ export default function SprintDetailPage() {
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange transition-colors"
                 >
-                  <option value="planning">Planning</option>
-                  <option value="active">Active</option>
-                  <option value="completed">Completed</option>
+                  <option value="planning">{t('status.planning')}</option>
+                  <option value="active">{t('status.active')}</option>
+                  <option value="completed">{t('status.completed')}</option>
                 </select>
               </div>
             </div>
@@ -556,7 +558,7 @@ export default function SprintDetailPage() {
                 disabled={isSaving}
                 className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors disabled:opacity-50"
               >
-                Cancel
+                {t('cancel')}
               </button>
               <button
                 onClick={handleEditSprint}
@@ -564,7 +566,7 @@ export default function SprintDetailPage() {
                 className="flex items-center gap-2 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
               >
                 <Save className="w-4 h-4" />
-                {isSaving ? 'Saving...' : 'Save Changes'}
+                {isSaving ? t('saving') : t('saveChanges')}
               </button>
             </div>
           </div>
@@ -575,10 +577,9 @@ export default function SprintDetailPage() {
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Delete Sprint</h3>
+            <h3 className="text-xl font-bold text-gray-900 mb-4">{t('deleteTitle')}</h3>
             <p className="text-gray-600 mb-6">
-              Are you sure you want to delete this sprint? Tasks assigned to this sprint will be
-              unassigned but not deleted. This action cannot be undone.
+              {t('deleteDescription')}
             </p>
             <div className="flex gap-3 justify-end">
               <button
@@ -586,14 +587,14 @@ export default function SprintDetailPage() {
                 disabled={isDeleting}
                 className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors disabled:opacity-50"
               >
-                Cancel
+                {t('cancel')}
               </button>
               <button
                 onClick={handleDeleteSprint}
                 disabled={isDeleting}
                 className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
               >
-                {isDeleting ? 'Deleting...' : 'Delete Sprint'}
+                {isDeleting ? t('deleting') : t('deleteSprint')}
               </button>
             </div>
           </div>

@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/features/auth/context';
-import { Navigation } from '@/components/navigation';
+
 import { Calendar, Clock, CheckCircle2, Plus, Users, Target, X, AlertCircle } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { useTranslations } from 'next-intl';
 
 type Sprint = {
   id: string;
@@ -34,6 +35,7 @@ type SprintStats = {
 
 export default function SprintsPage() {
   const { user, profile } = useAuth();
+  const t = useTranslations('Sprints');
   const [sprints, setSprints] = useState<Sprint[]>([]);
   const [sprintStats, setSprintStats] = useState<SprintStats>({});
   const [loading, setLoading] = useState(true);
@@ -142,7 +144,7 @@ export default function SprintsPage() {
 
       // Check if user is council or admin
       if (!profile || !['council', 'admin'].includes(profile.role)) {
-        throw new Error('Only council and admin members can create sprints');
+        throw new Error(t('errorOnlyCouncil'));
       }
 
       // Create the sprint directly with Supabase client
@@ -199,14 +201,14 @@ export default function SprintsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation />
+
 
       <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Sprints</h1>
-            <p className="text-gray-600 mt-1">Track current sprint and view sprint history</p>
+            <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
+            <p className="text-gray-600 mt-1">{t('subtitle')}</p>
           </div>
           {canCreateSprint && (
             <button
@@ -214,7 +216,7 @@ export default function SprintsPage() {
               className="flex items-center gap-2 bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition-colors font-medium"
             >
               <Plus className="w-5 h-5" />
-              Create Sprint
+              {t('createSprint')}
             </button>
           )}
         </div>
@@ -222,16 +224,16 @@ export default function SprintsPage() {
         {loading ? (
           <div className="text-center py-12">
             <div className="w-8 h-8 border-3 border-organic-orange border-t-transparent rounded-full animate-spin mx-auto"></div>
-            <p className="mt-4 text-gray-500">Loading sprints...</p>
+            <p className="mt-4 text-gray-500">{t('loading')}</p>
           </div>
         ) : sprints.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
             <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No sprints yet</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('emptyTitle')}</h3>
             <p className="text-gray-500 mb-6">
               {canCreateSprint
-                ? 'Create your first sprint to start tracking development progress'
-                : 'Sprints will appear here once created by council or admin members'}
+                ? t('emptyAdmin')
+                : t('emptyViewer')}
             </p>
             {canCreateSprint && (
               <button
@@ -239,7 +241,7 @@ export default function SprintsPage() {
                 className="inline-flex items-center gap-2 bg-organic-orange hover:bg-orange-600 text-white px-6 py-3 rounded-lg transition-colors font-medium"
               >
                 <Plus className="w-5 h-5" />
-                Create First Sprint
+                {t('createFirstSprint')}
               </button>
             )}
           </div>
@@ -252,7 +254,7 @@ export default function SprintsPage() {
 
               return (
                 <div className="mb-8">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-4">Current Sprint</h2>
+                  <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('currentSprint')}</h2>
                   <Link
                     href={`/sprints/${currentSprint.id}`}
                     className="block bg-gradient-to-br from-organic-orange/5 via-organic-yellow/5 to-white border-2 border-organic-orange/20 rounded-2xl p-8 hover:shadow-xl transition-all group"
@@ -284,14 +286,14 @@ export default function SprintsPage() {
                         }`}
                       >
                         {getStatusIcon(currentSprint.status)}
-                        {currentSprint.status.charAt(0).toUpperCase() + currentSprint.status.slice(1)}
+                        {t(`status.${currentSprint.status}`)}
                       </span>
                     </div>
 
                     {/* Progress Section */}
                     <div className="bg-white/80 backdrop-blur rounded-xl p-6 border border-gray-200">
                       <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm font-medium text-gray-700">Sprint Progress</span>
+                        <span className="text-sm font-medium text-gray-700">{t('progressLabel')}</span>
                         <span className="text-2xl font-bold text-organic-orange">{progress}%</span>
                       </div>
                       <div className="w-full h-4 bg-gray-100 rounded-full overflow-hidden mb-4">
@@ -305,15 +307,15 @@ export default function SprintsPage() {
                       <div className="grid grid-cols-3 gap-4">
                         <div className="text-center">
                           <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
-                          <div className="text-xs text-gray-500">Total Tasks</div>
+                          <div className="text-xs text-gray-500">{t('totalTasks')}</div>
                         </div>
                         <div className="text-center">
                           <div className="text-2xl font-bold text-green-600">{stats.completed}</div>
-                          <div className="text-xs text-gray-500">Completed</div>
+                          <div className="text-xs text-gray-500">{t('completed')}</div>
                         </div>
                         <div className="text-center">
                           <div className="text-2xl font-bold text-blue-600">{stats.inProgress}</div>
-                          <div className="text-xs text-gray-500">In Progress</div>
+                          <div className="text-xs text-gray-500">{t('inProgress')}</div>
                         </div>
                       </div>
                     </div>
@@ -321,7 +323,7 @@ export default function SprintsPage() {
                     {/* View Details Link */}
                     <div className="mt-6 text-center">
                       <span className="inline-flex items-center gap-2 text-organic-orange font-medium group-hover:gap-3 transition-all">
-                        View Sprint Details
+                        {t('viewDetails')}
                         <Target className="w-4 h-4" />
                       </span>
                     </div>
@@ -333,7 +335,7 @@ export default function SprintsPage() {
             {/* Past Sprints */}
             {pastSprints.length > 0 && (
               <div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Past Sprints</h2>
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('pastSprints')}</h2>
                 <div className="space-y-3">
                   {pastSprints.map((sprint) => {
                     const stats = sprintStats[sprint.id] || { total: 0, completed: 0, inProgress: 0, points: 0 };
@@ -365,9 +367,9 @@ export default function SprintsPage() {
                           <div className="flex items-center gap-3">
                             <div className="text-right">
                               <div className="text-sm font-medium text-gray-900">
-                                {stats.completed} / {stats.total} tasks completed
+                                {t('tasksCompleted', { completed: stats.completed, total: stats.total })}
                               </div>
-                              <div className="text-xs text-gray-500">{stats.points} points earned</div>
+                              <div className="text-xs text-gray-500">{t('pointsEarned', { points: stats.points })}</div>
                             </div>
                             <CheckCircle2 className="w-5 h-5 text-green-600" />
                           </div>
@@ -383,7 +385,7 @@ export default function SprintsPage() {
             {!currentSprint && pastSprints.length === 0 && sprints.length > 0 && (
               <div className="text-center py-8 bg-white rounded-xl border border-gray-200">
                 <Target className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-500">All sprints are in planning or active status</p>
+                <p className="text-gray-500">{t('noPastSprints')}</p>
               </div>
             )}
           </>
@@ -396,7 +398,7 @@ export default function SprintsPage() {
           <div className="bg-white rounded-xl max-w-md w-full p-6">
             {/* Modal Header */}
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900">Create New Sprint</h2>
+              <h2 className="text-xl font-bold text-gray-900">{t('modalTitle')}</h2>
               <button
                 onClick={handleCloseModal}
                 className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -418,7 +420,7 @@ export default function SprintsPage() {
               {/* Sprint Name */}
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                  Sprint Name *
+                  {t('formName')}
                 </label>
                 <input
                   type="text"
@@ -426,7 +428,7 @@ export default function SprintsPage() {
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="e.g., Sprint 1, Q1 Development"
+                  placeholder={t('formNamePlaceholder')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange transition-colors"
                 />
               </div>
@@ -434,7 +436,7 @@ export default function SprintsPage() {
               {/* Start Date */}
               <div>
                 <label htmlFor="start_at" className="block text-sm font-medium text-gray-700 mb-1">
-                  Start Date *
+                  {t('formStartDate')}
                 </label>
                 <input
                   type="date"
@@ -449,7 +451,7 @@ export default function SprintsPage() {
               {/* End Date */}
               <div>
                 <label htmlFor="end_at" className="block text-sm font-medium text-gray-700 mb-1">
-                  End Date *
+                  {t('formEndDate')}
                 </label>
                 <input
                   type="date"
@@ -464,7 +466,7 @@ export default function SprintsPage() {
               {/* Status */}
               <div>
                 <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
-                  Status
+                  {t('formStatus')}
                 </label>
                 <select
                   id="status"
@@ -477,9 +479,9 @@ export default function SprintsPage() {
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange transition-colors"
                 >
-                  <option value="planning">Planning</option>
-                  <option value="active">Active</option>
-                  <option value="completed">Completed</option>
+                  <option value="planning">{t('status.planning')}</option>
+                  <option value="active">{t('status.active')}</option>
+                  <option value="completed">{t('status.completed')}</option>
                 </select>
               </div>
 
@@ -491,7 +493,7 @@ export default function SprintsPage() {
                   disabled={submitting}
                   className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium disabled:opacity-50"
                 >
-                  Cancel
+                  {t('cancel')}
                 </button>
                 <button
                   type="submit"
@@ -501,12 +503,12 @@ export default function SprintsPage() {
                   {submitting ? (
                     <>
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      Creating...
+                      {t('creating')}
                     </>
                   ) : (
                     <>
                       <Plus className="w-4 h-4" />
-                      Create Sprint
+                      {t('createSprint')}
                     </>
                   )}
                 </button>

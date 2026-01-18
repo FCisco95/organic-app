@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { Navigation } from '@/components/navigation';
+
 import { createClient } from '@/lib/supabase/client';
 import { Edit2, Save, X, Upload, MapPin, Globe, Twitter, MessageCircle, Calendar } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -304,7 +304,7 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation />
+      
 
       <div className="max-w-4xl mx-auto py-8 px-4">
         {/* Header */}

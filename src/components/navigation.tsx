@@ -1,24 +1,25 @@
 'use client';
 
-import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { Link, usePathname } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { cn } from '@/lib/utils';
 import LocaleSwitcher from './locale-switcher';
+import { useTranslations } from 'next-intl';
 
 export function Navigation() {
   const { user, profile, loading, signOut } = useAuth();
   const pathname = usePathname();
+  const t = useTranslations('Navigation');
 
   const navLinks = [
-    { href: '/', label: 'Home', show: true },
-    { href: '/profile', label: 'Profile', show: !!user },
-    { href: '/proposals', label: 'Proposals', show: !!user },
-    { href: '/tasks', label: 'Tasks', show: !!profile?.organic_id },
-    { href: '/sprints', label: 'Sprints', show: !!profile?.organic_id },
-    { href: '/leaderboard', label: 'Leaderboard', show: !!user },
+    { href: '/', label: t('home'), show: true },
+    { href: '/profile', label: t('profile'), show: !!user },
+    { href: '/proposals', label: t('proposals'), show: !!user },
+    { href: '/tasks', label: t('tasks'), show: !!profile?.organic_id },
+    { href: '/sprints', label: t('sprints'), show: !!profile?.organic_id },
+    { href: '/leaderboard', label: t('leaderboard'), show: !!user },
   ];
 
   return (
@@ -88,7 +89,7 @@ export function Navigation() {
                 <Link
                   href="/profile"
                   className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
-                  title="View Profile"
+                  title={t('viewProfile')}
                 >
                   {profile?.avatar_url ? (
                     <Image
@@ -117,7 +118,7 @@ export function Navigation() {
                   onClick={signOut}
                   className="text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md hover:bg-gray-50 transition-colors"
                 >
-                  Sign Out
+                  {t('signOut')}
                 </button>
                 <LocaleSwitcher />
               </>
@@ -127,7 +128,7 @@ export function Navigation() {
                   href="/login"
                   className="bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
                 >
-                  Sign In
+                  {t('signIn')}
                 </Link>
                 <LocaleSwitcher />
               </>

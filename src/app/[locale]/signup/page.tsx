@@ -1,13 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import { createClient } from '@/lib/supabase/client';
-import Link from 'next/link';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
+import { useTranslations } from 'next-intl';
 
 export default function SignUpPage() {
+  const t = useTranslations('Signup');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
@@ -20,21 +21,21 @@ export default function SignUpPage() {
     const newErrors: { email?: string; password?: string; username?: string } = {};
 
     if (!email) {
-      newErrors.email = 'Email cannot be blank';
+      newErrors.email = t('validationEmailBlank');
     }
 
     if (!password) {
-      newErrors.password = 'Password cannot be blank';
+      newErrors.password = t('validationPasswordBlank');
     } else if (password.length < 8) {
-      newErrors.password = 'Password should be at least 8 characters';
+      newErrors.password = t('validationPasswordShort');
     }
 
     if (!username) {
-      newErrors.username = 'Username cannot be blank';
+      newErrors.username = t('validationUsernameBlank');
     } else if (!/^[a-zA-Z0-9-]+$/.test(username)) {
-      newErrors.username = 'Username may only contain alphanumeric characters or single hyphens';
+      newErrors.username = t('validationUsernamePattern');
     } else if (username.startsWith('-') || username.endsWith('-')) {
-      newErrors.username = 'Username cannot begin or end with a hyphen';
+      newErrors.username = t('validationUsernameHyphen');
     }
 
     setErrors(newErrors);
@@ -64,10 +65,10 @@ export default function SignUpPage() {
 
       if (error) throw error;
 
-      toast.success('Check your email to confirm your account!');
+      toast.success(t('toastSuccess'));
       router.push('/login');
     } catch (error: any) {
-      toast.error(error.message || 'An error occurred');
+      toast.error(error.message || t('toastError'));
     } finally {
       setLoading(false);
     }
@@ -93,14 +94,14 @@ export default function SignUpPage() {
         {/* Sign up form */}
         <div className="bg-[#161b22] rounded-md border border-[#30363d] p-6">
           <h1 className="text-2xl font-light text-white mb-2 text-center">
-            Sign up for Organic
+            {t('title')}
           </h1>
 
           <form onSubmit={handleSubmit} className="space-y-4 mt-4">
             {/* Email */}
             <div>
               <label htmlFor="email" className="block text-sm font-normal text-[#c9d1d9] mb-2">
-                Email
+                {t('emailLabel')}
               </label>
               <input
                 id="email"
@@ -113,7 +114,7 @@ export default function SignUpPage() {
                 className={`w-full px-3 py-2 bg-[#0d1117] border ${
                   errors.email ? 'border-[#f85149]' : 'border-[#30363d]'
                 } rounded-md text-white text-sm focus:border-[#1f6feb] focus:ring-1 focus:ring-[#1f6feb] focus:outline-none placeholder-[#6e7681]`}
-                placeholder="you@example.com"
+                placeholder={t('emailPlaceholder')}
               />
               {errors.email && (
                 <p className="mt-2 text-xs text-[#f85149] flex items-start">
@@ -128,7 +129,7 @@ export default function SignUpPage() {
             {/* Password */}
             <div>
               <label htmlFor="password" className="block text-sm font-normal text-[#c9d1d9] mb-2">
-                Password
+                {t('passwordLabel')}
               </label>
               <input
                 id="password"
@@ -141,7 +142,7 @@ export default function SignUpPage() {
                 className={`w-full px-3 py-2 bg-[#0d1117] border ${
                   errors.password ? 'border-[#f85149]' : 'border-[#30363d]'
                 } rounded-md text-white text-sm focus:border-[#1f6feb] focus:ring-1 focus:ring-[#1f6feb] focus:outline-none placeholder-[#6e7681]`}
-                placeholder="Password"
+                placeholder={t('passwordPlaceholder')}
                 minLength={8}
               />
               {errors.password && (
@@ -154,7 +155,7 @@ export default function SignUpPage() {
               )}
               {!errors.password && (
                 <p className="mt-2 text-xs text-[#7d8590]">
-                  Password should be at least 8 characters including a number and a lowercase letter.
+                  {t('passwordHelp')}
                 </p>
               )}
             </div>
@@ -162,7 +163,7 @@ export default function SignUpPage() {
             {/* Username */}
             <div>
               <label htmlFor="username" className="block text-sm font-normal text-[#c9d1d9] mb-2">
-                Username
+                {t('usernameLabel')}
               </label>
               <input
                 id="username"
@@ -175,7 +176,7 @@ export default function SignUpPage() {
                 className={`w-full px-3 py-2 bg-[#0d1117] border ${
                   errors.username ? 'border-[#f85149]' : 'border-[#30363d]'
                 } rounded-md text-white text-sm focus:border-[#1f6feb] focus:ring-1 focus:ring-[#1f6feb] focus:outline-none placeholder-[#6e7681]`}
-                placeholder="Username"
+                placeholder={t('usernamePlaceholder')}
               />
               {errors.username && (
                 <p className="mt-2 text-xs text-[#f85149] flex items-start">
@@ -187,7 +188,7 @@ export default function SignUpPage() {
               )}
               {!errors.username && (
                 <p className="mt-2 text-xs text-[#7d8590]">
-                  Username may only contain alphanumeric characters or single hyphens, and cannot begin or end with a hyphen.
+                  {t('usernameHelp')}
                 </p>
               )}
             </div>
@@ -197,26 +198,26 @@ export default function SignUpPage() {
               disabled={loading}
               className="w-full bg-[#238636] hover:bg-[#2ea043] text-white font-medium py-2 px-4 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
             >
-              {loading ? 'Creating account...' : 'Create account'}
+              {loading ? t('creatingAccount') : t('createAccount')}
             </button>
           </form>
 
           {/* Terms */}
           <p className="mt-4 text-xs text-[#7d8590] text-center">
-            By creating an account, you agree to the{' '}
+            {t('termsPrefix')}{' '}
             <Link href="/terms" className="text-[#58a6ff] hover:underline">
-              Terms of Service
+              {t('termsLink')}
             </Link>
-            . We'll occasionally send you account-related emails.
+            {t('termsSuffix')}
           </p>
         </div>
 
         {/* Sign in link */}
         <div className="mt-4 text-center border border-[#30363d] rounded-md p-4 bg-[#161b22]">
           <p className="text-sm text-[#c9d1d9]">
-            Already have an account?{' '}
+            {t('alreadyHaveAccount')}{' '}
             <Link href="/login" className="text-[#58a6ff] hover:underline">
-              Sign in
+              {t('signIn')}
             </Link>
           </p>
         </div>

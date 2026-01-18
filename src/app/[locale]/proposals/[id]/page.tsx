@@ -1,14 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useParams } from 'next/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
-import { Navigation } from '@/components/navigation';
+
 import { createClient } from '@/lib/supabase/client';
 import { ArrowLeft, Calendar, User, MessageCircle, CheckCircle, XCircle, Clock, ListTodo, Edit2, Trash2, Save } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import toast from 'react-hot-toast';
+import { useTranslations } from 'next-intl';
 
 type Proposal = {
   id: string;
@@ -39,6 +40,7 @@ export default function ProposalDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { user, profile } = useAuth();
+  const t = useTranslations('ProposalDetail');
   const [proposal, setProposal] = useState<Proposal | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -79,7 +81,7 @@ export default function ProposalDetailPage() {
       setEditForm({ title: data.title, body: data.body });
     } catch (error) {
       console.error('Error loading proposal:', error);
-      toast.error('Failed to load proposal');
+      toast.error(t('toastLoadFailed'));
     } finally {
       setLoading(false);
     }
@@ -114,12 +116,12 @@ export default function ProposalDetailPage() {
     e.preventDefault();
 
     if (!user) {
-      toast.error('You must be signed in to comment');
+      toast.error(t('toastSignInToComment'));
       return;
     }
 
     if (!commentText.trim()) {
-      toast.error('Comment cannot be empty');
+      toast.error(t('toastCommentEmpty'));
       return;
     }
 
@@ -137,11 +139,11 @@ export default function ProposalDetailPage() {
       if (error) throw error;
 
       setCommentText('');
-      toast.success('Comment posted!');
+      toast.success(t('toastCommentPosted'));
       loadComments();
     } catch (error) {
       console.error('Error posting comment:', error);
-      toast.error('Failed to post comment');
+      toast.error(t('toastCommentFailed'));
     } finally {
       setSubmitting(false);
     }
@@ -159,11 +161,11 @@ export default function ProposalDetailPage() {
 
       if (error) throw error;
 
-      toast.success(`Proposal ${newStatus}`);
+      toast.success(t('toastStatusUpdated', { status: getStatusLabel(newStatus) }));
       loadProposal();
     } catch (error) {
       console.error('Error updating proposal:', error);
-      toast.error('Failed to update proposal');
+      toast.error(t('toastUpdateFailed'));
     }
   }
 
@@ -187,17 +189,17 @@ export default function ProposalDetailPage() {
 
       if (error) throw error;
 
-      toast.success('Task created from proposal!');
+      toast.success(t('toastTaskCreated'));
       router.push('/tasks');
     } catch (error) {
       console.error('Error creating task:', error);
-      toast.error('Failed to create task');
+      toast.error(t('toastTaskCreateFailed'));
     }
   }
 
   async function handleSaveEdit() {
     if (!editForm.title.trim() || !editForm.body.trim()) {
-      toast.error('Title and body are required');
+      toast.error(t('toastTitleBodyRequired'));
       return;
     }
 
@@ -228,10 +230,10 @@ export default function ProposalDetailPage() {
 
       setProposal(data as unknown as Proposal);
       setIsEditing(false);
-      toast.success('Proposal updated successfully');
+      toast.success(t('toastUpdated'));
     } catch (error) {
       console.error('Error updating proposal:', error);
-      toast.error('Failed to update proposal');
+      toast.error(t('toastUpdateFailed'));
     } finally {
       setSubmitting(false);
     }
@@ -245,11 +247,11 @@ export default function ProposalDetailPage() {
 
       if (error) throw error;
 
-      toast.success('Proposal deleted successfully');
+      toast.success(t('toastDeleted'));
       router.push('/proposals');
     } catch (error) {
       console.error('Error deleting proposal:', error);
-      toast.error('Failed to delete proposal');
+      toast.error(t('toastDeleteFailed'));
     }
   }
 
@@ -270,10 +272,27 @@ export default function ProposalDetailPage() {
     }
   };
 
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'draft':
+        return t('statusDraft');
+      case 'submitted':
+        return t('statusSubmitted');
+      case 'approved':
+        return t('statusApproved');
+      case 'rejected':
+        return t('statusRejected');
+      case 'voting':
+        return t('statusVoting');
+      default:
+        return status;
+    }
+  };
+
   if (loading) {
     return (
       <main className="min-h-screen bg-gray-50">
-        <Navigation />
+  
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
@@ -288,14 +307,14 @@ export default function ProposalDetailPage() {
   if (!proposal) {
     return (
       <main className="min-h-screen bg-gray-50">
-        <Navigation />
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Proposal not found</h1>
+  
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('notFoundTitle')}</h1>
           <Link
             href="/proposals"
             className="inline-block bg-organic-orange hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
           >
-            Back to Proposals
+            {t('backToProposals')}
           </Link>
         </div>
       </main>
@@ -307,7 +326,7 @@ export default function ProposalDetailPage() {
 
   return (
     <main className="min-h-screen bg-gray-50">
-      <Navigation />
+
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Back Link */}
@@ -316,7 +335,7 @@ export default function ProposalDetailPage() {
           className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
         >
           <ArrowLeft className="w-4 h-4" />
-          Back to Proposals
+          {t('backToProposals')}
         </Link>
 
         {/* Proposal Card */}
@@ -329,7 +348,7 @@ export default function ProposalDetailPage() {
                 value={editForm.title}
                 onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
                 className="text-3xl font-bold text-gray-900 flex-1 border-b-2 border-organic-orange focus:outline-none"
-                placeholder="Proposal title"
+                placeholder={t('titlePlaceholder')}
               />
             ) : (
               <h1 className="text-3xl font-bold text-gray-900 flex-1">{proposal.title}</h1>
@@ -337,7 +356,7 @@ export default function ProposalDetailPage() {
             <div className="flex items-center gap-2">
               <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${statusConfig.color}`}>
                 <StatusIcon className="w-4 h-4" />
-                <span className="capitalize">{proposal.status}</span>
+                <span className="capitalize">{getStatusLabel(proposal.status)}</span>
               </div>
               {(isAuthor || isAdmin) && !isEditing && proposal.status === 'draft' && (
                 <div className="flex gap-2">
@@ -346,14 +365,14 @@ export default function ProposalDetailPage() {
                     className="flex items-center gap-1 px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
                   >
                     <Edit2 className="w-4 h-4" />
-                    Edit
+                    {t('edit')}
                   </button>
                   <button
                     onClick={() => setShowDeleteConfirm(true)}
                     className="flex items-center gap-1 px-3 py-1.5 text-sm bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
-                    Delete
+                    {t('delete')}
                   </button>
                 </div>
               )}
@@ -365,7 +384,7 @@ export default function ProposalDetailPage() {
                     className="flex items-center gap-1 px-3 py-1.5 text-sm bg-organic-orange hover:bg-orange-600 text-white rounded-lg transition-colors disabled:opacity-50"
                   >
                     <Save className="w-4 h-4" />
-                    {submitting ? 'Saving...' : 'Save'}
+                    {submitting ? t('saving') : t('save')}
                   </button>
                   <button
                     onClick={() => {
@@ -376,7 +395,7 @@ export default function ProposalDetailPage() {
                     className="flex items-center gap-1 px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors disabled:opacity-50"
                   >
                     <XCircle className="w-4 h-4" />
-                    Cancel
+                    {t('cancel')}
                   </button>
                 </div>
               )}
@@ -389,7 +408,7 @@ export default function ProposalDetailPage() {
               <User className="w-4 h-4" />
               <span>
                 {proposal.user_profiles.organic_id
-                  ? `Organic #${proposal.user_profiles.organic_id}`
+                  ? t('organicId', { id: proposal.user_profiles.organic_id })
                   : proposal.user_profiles.email.split('@')[0]}
               </span>
             </div>
@@ -399,7 +418,7 @@ export default function ProposalDetailPage() {
             </div>
             <div className="flex items-center gap-1">
               <MessageCircle className="w-4 h-4" />
-              <span>{comments.length} comments</span>
+              <span>{t('commentsCount', { count: comments.length })}</span>
             </div>
           </div>
 
@@ -411,7 +430,7 @@ export default function ProposalDetailPage() {
                 onChange={(e) => setEditForm({ ...editForm, body: e.target.value })}
                 rows={12}
                 className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none text-gray-700"
-                placeholder="Proposal body"
+                placeholder={t('bodyPlaceholder')}
               />
             ) : (
               <p className="text-gray-700 whitespace-pre-wrap">{proposal.body}</p>
@@ -421,28 +440,28 @@ export default function ProposalDetailPage() {
           {/* Admin Actions */}
           {isAdmin && proposal.status === 'submitted' && (
             <div className="mt-6 pt-6 border-t border-gray-200">
-              <p className="text-sm font-medium text-gray-700 mb-3">Council Actions:</p>
+              <p className="text-sm font-medium text-gray-700 mb-3">{t('councilActions')}</p>
               <div className="flex gap-3">
                 <button
                   onClick={() => updateProposalStatus('approved')}
                   className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
                 >
                   <CheckCircle className="w-4 h-4" />
-                  Approve
+                  {t('approve')}
                 </button>
                 <button
                   onClick={() => updateProposalStatus('voting')}
                   className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors"
                 >
                   <MessageCircle className="w-4 h-4" />
-                  Start Voting
+                  {t('startVoting')}
                 </button>
                 <button
                   onClick={() => updateProposalStatus('rejected')}
                   className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors"
                 >
                   <XCircle className="w-4 h-4" />
-                  Reject
+                  {t('reject')}
                 </button>
               </div>
             </div>
@@ -451,16 +470,16 @@ export default function ProposalDetailPage() {
           {/* Create Task from Proposal */}
           {isAdmin && proposal.status === 'approved' && (
             <div className="mt-6 pt-6 border-t border-gray-200">
-              <p className="text-sm font-medium text-gray-700 mb-3">Implementation:</p>
+              <p className="text-sm font-medium text-gray-700 mb-3">{t('implementation')}</p>
               <button
                 onClick={createTaskFromProposal}
                 className="flex items-center gap-2 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
               >
                 <ListTodo className="w-4 h-4" />
-                Create Task from Proposal
+                {t('createTask')}
               </button>
               <p className="text-xs text-gray-500 mt-2">
-                Convert this approved proposal into a task on the task board
+                {t('createTaskHelp')}
               </p>
             </div>
           )}
@@ -469,7 +488,7 @@ export default function ProposalDetailPage() {
         {/* Comments Section */}
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            Comments ({comments.length})
+            {t('commentsTitle', { count: comments.length })}
           </h2>
 
           {/* Comment Form */}
@@ -478,7 +497,7 @@ export default function ProposalDetailPage() {
               <textarea
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
-                placeholder="Share your thoughts..."
+                placeholder={t('commentPlaceholder')}
                 rows={3}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none mb-3"
               />
@@ -487,17 +506,17 @@ export default function ProposalDetailPage() {
                 disabled={submitting || !commentText.trim()}
                 className="px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {submitting ? 'Posting...' : 'Post Comment'}
+                {submitting ? t('posting') : t('postComment')}
               </button>
             </form>
           ) : (
             <div className="mb-6 bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
-              <p className="text-gray-600 mb-3">Sign in to join the discussion</p>
+              <p className="text-gray-600 mb-3">{t('signInToJoin')}</p>
               <Link
                 href="/login"
                 className="inline-block bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
               >
-                Sign In
+                {t('signIn')}
               </Link>
             </div>
           )}
@@ -506,7 +525,7 @@ export default function ProposalDetailPage() {
           <div className="space-y-4">
             {comments.length === 0 ? (
               <p className="text-gray-500 text-center py-8">
-                No comments yet. Be the first to share your thoughts!
+                {t('noComments')}
               </p>
             ) : (
               comments.map((comment) => (
@@ -517,7 +536,7 @@ export default function ProposalDetailPage() {
                   <div className="flex items-center gap-2 mb-2">
                     <span className="font-medium text-gray-900">
                       {comment.user_profiles.organic_id
-                        ? `Organic #${comment.user_profiles.organic_id}`
+                        ? t('organicId', { id: comment.user_profiles.organic_id })
                         : comment.user_profiles.email.split('@')[0]}
                     </span>
                     <span className="text-sm text-gray-500">
@@ -536,16 +555,16 @@ export default function ProposalDetailPage() {
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Delete Proposal</h3>
+            <h3 className="text-xl font-bold text-gray-900 mb-4">{t('deleteTitle')}</h3>
             <p className="text-gray-600 mb-6">
-              Are you sure you want to delete this proposal? This action cannot be undone.
+              {t('deleteDescription')}
             </p>
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
                 className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors"
               >
-                Cancel
+                {t('cancel')}
               </button>
               <button
                 onClick={() => {
@@ -554,7 +573,7 @@ export default function ProposalDetailPage() {
                 }}
                 className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors"
               >
-                Delete Proposal
+                {t('deleteProposal')}
               </button>
             </div>
           </div>

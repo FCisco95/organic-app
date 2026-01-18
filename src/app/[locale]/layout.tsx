@@ -3,8 +3,9 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/features/auth/context';
 import { SolanaWalletProvider } from '@/features/auth/wallet-provider';
-import { Toaster } from 'react-hot-toast';
-import { NextIntlClientProvider, useMessages } from 'next-intl';
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages, setRequestLocale } from 'next-intl/server';
+import { LayoutClient } from '@/components/layout-client';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -16,14 +17,16 @@ export const metadata: Metadata = {
   description: 'DAO governance and task management platform for Organic DAO',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
-  params: { locale },
+  params,
 }: Readonly<{
   children: React.ReactNode;
   params: { locale: string };
 }>) {
-  const messages = useMessages();
+  const { locale } = params;
+  setRequestLocale(locale);
+  const messages = await getMessages();
 
   return (
     <html lang={locale}>
@@ -31,8 +34,7 @@ export default function RootLayout({
         <NextIntlClientProvider locale={locale} messages={messages}>
           <AuthProvider>
             <SolanaWalletProvider>
-              {children}
-              <Toaster position="bottom-right" />
+              <LayoutClient>{children}</LayoutClient>
             </SolanaWalletProvider>
           </AuthProvider>
         </NextIntlClientProvider>
