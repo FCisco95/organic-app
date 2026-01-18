@@ -53,6 +53,13 @@
 - [x] Cookie configuration for production environments
 - [x] Auth callback error handling and redirects
 
+### Phase 5.5: Internationalization (Completed)
+- [x] next-intl integration with locale-based routing
+- [x] Locale middleware for automatic detection
+- [x] Translation files for en, pt-PT, zh-CN (~100 keys each)
+- [x] Locale switcher with accessible dropdown UI
+- [x] All pages migrated to `[locale]` route structure
+
 ## 🚧 In Progress / Next Steps
 
 ### Phase 6: Sprint/Epoch Management
@@ -246,8 +253,21 @@
 
 ---
 
-Last Updated: 2026-01-17
-Version: 1.1
+Last Updated: 2026-01-18
+Version: 1.2
+
+## Recent Updates (2026-01-18)
+
+### Internationalization Complete
+- Added next-intl with locale-based routing ([locale] structure)
+- Created translation files for English, Portuguese, and Chinese
+- Built accessible LanguageSelector dropdown with keyboard navigation
+- Migrated all pages to locale-aware routing
+
+### UI Improvements
+- Added LanguageSelector component with flag emoji display
+- Refactored LocaleSwitcher to use new dropdown component
+- Centralized language metadata in languageConfig
 
 ## Recent Updates (2026-01-17)
 

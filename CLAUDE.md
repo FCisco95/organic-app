@@ -61,6 +61,7 @@ It enables tasks, proposals, voting, and token-gated features for the Organic DA
   - Notifications: `src/components/notifications/`
 - Navigation: `src/components/navigation.tsx`
 - Locale switcher: `src/components/locale-switcher.tsx`
+- Language selector dropdown: `src/components/language-selector.tsx`
 
 **Internationalization (i18n)**
 - i18n config: `src/i18n/`
