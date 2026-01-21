@@ -1,101 +1,113 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file defines how Claude Code should work in this repository.
 
 ## Project snapshot
 
-Organic App is a DAO-style community app for $ORG built with Next.js App Router, Supabase auth, and Solana wallet linking.
-It enables tasks, proposals, voting, and token-gated features for the Organic DAO.
+Organic App is a DAO-style community app for $ORG built with Next.js 14 App Router, Supabase (Postgres + Auth), and Solana wallet linking.
+Core domains: tasks, proposals, voting, sprints, notifications, profiles, Organic ID.
 
-**What “done” means**
+## Definition of done
 
-- Feature works locally (`npm run dev`)
-- Production build passes (`npm run build`)
-- Lint passes (`npm run lint`)
-- Code formatted (`npm run format`)
+A change is done when:
+- Feature works locally: npm run dev
+- Lint passes: npm run lint
+- Build passes for important changes: npm run build
+- Formatting is clean: npm run format
 - No obvious TypeScript issues
-- Docs updated if behavior or flows changed
+- Docs updated if behavior or user flows changed
 
-**This week**
+## Hard rules (never break)
 
-- Working on: Improving app features and new wallet integrations
-- Next: Enhance wallet connection UX, add multi-wallet support
-- Blockers: none
+Security and secrets
+- Never print, log, paste, or expose secrets from .env.local.
+- Never commit secrets, tokens, private keys, or Supabase service role keys.
+- If env vars are missing, ask Cisco and explain what is required.
 
-## Operating rules
-
-- Do NOT edit, log, or expose secrets from `.env.local`. Ask Cisco if env vars are missing.
-- Never commit secrets, tokens, private keys, or service role keys.
-- Prefer small, focused diffs.
-- Ask before large refactors, renames, or folder restructures.
-- If behavior changes, update this file or relevant docs (`BUILD_PLAN.md`).
+Supabase and Solana
 - Do not modify Supabase RLS policies unless explicitly requested.
-- Do not change Solana token verification logic unless explicitly requested.
-- Keep backend logic out of UI components when possible.
+- Do not change token verification or wallet linking logic unless explicitly requested.
+- Any wallet related change must keep signature verification strict.
+
+Change discipline
+- Prefer small focused diffs.
+- Ask before large refactors, renames, moving folders, or changing public APIs.
+- Keep domain logic out of UI components when possible.
+
+## Architecture rules
+
+Separation of concerns
+- UI components: src/components only
+- Domain logic and hooks: src/features
+- Cross cutting utilities: src/lib and src/hooks
+- Route handlers (src/app/api) orchestrate only, no heavy business logic
+
+Data access
+- React Query owns caching and invalidation for client data flows.
+- Zod validates all external input (API requests, forms, query params).
+
+## Workflow for every task
+
+Before coding
+1. Restate goal in 1 sentence.
+2. List assumptions (if any).
+3. Propose a plan (3 to 7 bullets) with file paths.
+
+While coding
+- Make minimal diffs.
+- Prefer adding small helper functions in src/features over stuffing logic in components.
+- Add tests when logic is critical or easy to cover.
+
+After coding
+- Provide commands to verify.
+- Mention any follow ups or risks.
+
+## Output format (required)
+
+Always respond with:
+1) Plan
+2) Changes (what and where)
+3) How to verify (commands + manual checks)
 
 ## Quick navigation
 
-**Start here**
+Start
+- App Router root: src/app/
+- Localized routes: src/app/[locale]/
+- Root layout: src/app/layout.tsx
+- Middleware: src/middleware.ts
+- Global styles: src/app/globals.css
 
-- App Router root: `src/app/`
-- Localized pages: `src/app/[locale]/`
-- Global layout: `src/app/layout.tsx`
-- Middleware (auth/session/i18n): `src/middleware.ts`
-- Global styles: `src/app/globals.css`
+Domains
+- Auth: src/features/auth/
+- Profile: src/features/profile/
+- Organic ID: src/features/organic-id/
+- Tasks: src/features/tasks/
+- Proposals: src/features/proposals/
+- Voting: src/features/voting/
+- Sprints: src/features/sprints/
+- Notifications: src/features/notifications/
 
-**Core workflows**
+UI
+- Shared UI (shadcn): src/components/ui/
+- Feature UI: src/components/{auth,tasks,proposals,voting,sprints,notifications}/
+- Navigation: src/components/navigation.tsx
+- Locale switcher: src/components/locale-switcher.tsx
+- Language selector: src/components/language-selector.tsx
 
-- Auth state + profile: `src/features/auth/`
-- Profile management: `src/features/profile/`
-- Organic ID / wallet linking: `src/features/organic-id/`
-- Tasks: `src/features/tasks/`
-- Proposals: `src/features/proposals/`
-- Voting: `src/features/voting/`
-- Sprints: `src/features/sprints/`
-- Notifications: `src/features/notifications/`
+i18n
+- i18n config: src/i18n/
+- Translations: messages/ (en.json, pt-PT.json, zh-CN.json)
 
-**UI**
-
-- Shared UI primitives (shadcn): `src/components/ui/`
-- Feature UI:
-  - Auth: `src/components/auth/`
-  - Tasks: `src/components/tasks/`
-  - Proposals: `src/components/proposals/`
-  - Voting: `src/components/voting/`
-  - Sprints: `src/components/sprints/`
-  - Notifications: `src/components/notifications/`
-- Navigation: `src/components/navigation.tsx`
-- Locale switcher: `src/components/locale-switcher.tsx`
-- Language selector dropdown: `src/components/language-selector.tsx`
-
-**Internationalization (i18n)**
-
-- i18n config: `src/i18n/`
-- Translation files: `messages/` (en.json, pt-PT.json, zh-CN.json)
-
-**Utilities**
-
-- Hooks: `src/hooks/`
-- Lib/helpers: `src/lib/`
-- Config: `src/config/`
-
-**API**
-
-- API routes: `src/app/api/`
-
-**Database**
-
-- Supabase migrations: `supabase/migrations/`
-- Supabase edge functions (if used): `supabase/functions/`
-- Generated DB types: `src/types/`
-
-## Dev workflow
+API and DB
+- API routes: src/app/api/
+- Migrations: supabase/migrations/
+- Edge functions: supabase/functions/
+- Generated types: src/types/
 
 ## Commands
 
-```bash
-npm run dev      # Start dev server (localhost:3000)
-npm run build    # Production build
-npm run lint     # ESLint
-npm run format   # Prettier
-```
+npm run dev
+npm run lint
+npm run build
+npm run format
