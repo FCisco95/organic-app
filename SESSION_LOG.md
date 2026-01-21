@@ -2,7 +2,7 @@
 
 Add newest entries at the top.
 
-## 2026-01-19
+## 2026-01-21
 
 - Replaced wallet connect UX with a side drawer and nav-only entry point
 - Added wallet change/connect fixes (first-click connect, no blink on change)
