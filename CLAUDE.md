@@ -8,6 +8,7 @@ Organic App is a DAO-style community app for $ORG built with Next.js App Router,
 It enables tasks, proposals, voting, and token-gated features for the Organic DAO.
 
 **What “done” means**
+
 - Feature works locally (`npm run dev`)
 - Production build passes (`npm run build`)
 - Lint passes (`npm run lint`)
@@ -16,6 +17,7 @@ It enables tasks, proposals, voting, and token-gated features for the Organic DA
 - Docs updated if behavior or flows changed
 
 **This week**
+
 - Working on: Improving app features and new wallet integrations
 - Next: Enhance wallet connection UX, add multi-wallet support
 - Blockers: none
@@ -34,6 +36,7 @@ It enables tasks, proposals, voting, and token-gated features for the Organic DA
 ## Quick navigation
 
 **Start here**
+
 - App Router root: `src/app/`
 - Localized pages: `src/app/[locale]/`
 - Global layout: `src/app/layout.tsx`
@@ -41,6 +44,7 @@ It enables tasks, proposals, voting, and token-gated features for the Organic DA
 - Global styles: `src/app/globals.css`
 
 **Core workflows**
+
 - Auth state + profile: `src/features/auth/`
 - Profile management: `src/features/profile/`
 - Organic ID / wallet linking: `src/features/organic-id/`
@@ -51,6 +55,7 @@ It enables tasks, proposals, voting, and token-gated features for the Organic DA
 - Notifications: `src/features/notifications/`
 
 **UI**
+
 - Shared UI primitives (shadcn): `src/components/ui/`
 - Feature UI:
   - Auth: `src/components/auth/`
@@ -64,18 +69,22 @@ It enables tasks, proposals, voting, and token-gated features for the Organic DA
 - Language selector dropdown: `src/components/language-selector.tsx`
 
 **Internationalization (i18n)**
+
 - i18n config: `src/i18n/`
 - Translation files: `messages/` (en.json, pt-PT.json, zh-CN.json)
 
 **Utilities**
+
 - Hooks: `src/hooks/`
 - Lib/helpers: `src/lib/`
 - Config: `src/config/`
 
 **API**
+
 - API routes: `src/app/api/`
 
 **Database**
+
 - Supabase migrations: `supabase/migrations/`
 - Supabase edge functions (if used): `supabase/functions/`
 - Generated DB types: `src/types/`
@@ -89,3 +98,4 @@ npm run dev      # Start dev server (localhost:3000)
 npm run build    # Production build
 npm run lint     # ESLint
 npm run format   # Prettier
+```

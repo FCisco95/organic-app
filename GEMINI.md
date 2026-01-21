@@ -2,13 +2,14 @@
 
 This file defines the project goals, context, and collaboration principles for working on the Organic App.
 
-Gemini should use this file to understand *what we are building*, *how we work*, and *what to optimize for* when proposing changes or writing code.
+Gemini should use this file to understand _what we are building_, _how we work_, and _what to optimize for_ when proposing changes or writing code.
 
 ## Project Goal
 
 Organic App is a DAO-style community application for $ORG built with Next.js, Supabase, and Solana.
 
 The goal is to provide a clean, reliable platform for:
+
 - Community tasks and sprints
 - Proposals and voting
 - Role-based access (admin, council, member)
@@ -68,4 +69,4 @@ The focus is long-term: build solid foundations first, avoid shortcuts that brea
 - Tailwind + shadcn/ui for UI consistency
 - Migrations live in `supabase/migrations/`
 
-This workspace is about building Organic *slowly, correctly, and intentionally*.
+This workspace is about building Organic _slowly, correctly, and intentionally_.

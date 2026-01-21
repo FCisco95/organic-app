@@ -3,6 +3,7 @@
 ## ✅ Completed Features
 
 ### Phase 1: Foundation (Completed)
+
 - [x] Authentication system with Supabase
 - [x] Wallet integration (Phantom)
 - [x] Wallet linking and signature verification
@@ -11,6 +12,7 @@
 - [x] Navigation with role-based access
 
 ### Phase 2: Task Management (Completed)
+
 - [x] Database schema for tasks and sprints
 - [x] Kanban board with drag-and-drop
 - [x] Task CRUD operations
@@ -27,6 +29,7 @@
 - [x] Task cards with quick navigation and actions
 
 ### Phase 3: Enhanced Profiles (Completed)
+
 - [x] Profile picture upload to Supabase Storage
 - [x] Avatar display with gradient fallback
 - [x] Editable profile fields (name, bio, location, website, Twitter, Discord)
@@ -37,6 +40,7 @@
 - [x] Avatar in navigation bar
 
 ### Phase 4: Navigation & UI (Completed)
+
 - [x] Proposals navigation entry and routing
 - [x] Navigation with user avatars
 - [x] Organic ID badge display
@@ -45,6 +49,7 @@
 - [x] Organic branding throughout
 
 ### Phase 5: Infrastructure (Completed)
+
 - [x] Middleware for session management
 - [x] Improved authentication flow
 - [x] Better error handling across API routes
@@ -54,6 +59,7 @@
 - [x] Auth callback error handling and redirects
 
 ### Phase 5.5: Internationalization (Completed)
+
 - [x] next-intl integration with locale-based routing
 - [x] Locale middleware for automatic detection
 - [x] Translation files for en, pt-PT, zh-CN (~100 keys each)
@@ -63,6 +69,7 @@
 ## 🚧 In Progress / Next Steps
 
 ### Phase 6: Sprint/Epoch Management
+
 - [x] Create sprints page with CRUD operations
 - [x] Sprint details view with tasks
 - [x] Sprint date range and progress stats
@@ -72,6 +79,7 @@
 - [x] Sprint history and archive
 
 ### Phase 7: Proposals System (In Progress)
+
 - [x] Proposal creation form
 - [x] Proposal listing with filters
 - [x] Proposal detail view
@@ -92,6 +100,7 @@
 - [ ] Proposal categories/tags
 
 ### Phase 8: Treasury Management
+
 - [ ] Treasury balance display
 - [ ] Transaction history
 - [ ] Budget allocation tracking
@@ -100,6 +109,7 @@
 - [ ] Token distribution management
 
 ### Phase 9: Member Management
+
 - [ ] Member directory with search/filter
 - [ ] Member profiles (public view)
 - [ ] Role assignment UI (admin)
@@ -109,6 +119,7 @@
 - [x] Leaderboard page and API for member rankings
 
 ### Phase 10: Analytics & Reporting
+
 - [ ] DAO activity dashboard
 - [ ] Task completion metrics
 - [ ] Member contribution tracking
@@ -117,6 +128,7 @@
 - [ ] Export functionality
 
 ### Phase 11: Notifications & Communication
+
 - [ ] Email notifications for important events
 - [ ] In-app notification system
 - [ ] Task assignment notifications
@@ -125,6 +137,7 @@
 - [ ] Announcement system
 
 ### Phase 12: Advanced Features
+
 - [ ] Task dependencies
 - [ ] Recurring tasks
 - [ ] Task templates
@@ -134,6 +147,7 @@
 - [ ] Activity feed
 
 ### Phase 13: Wallet Support
+
 - [ ] Add Solflare wallet adapter
 - [ ] Add Backpack wallet adapter
 - [ ] Add OKX wallet adapter
@@ -141,6 +155,7 @@
 ## 🔧 Technical Improvements
 
 ### Performance
+
 - [ ] Implement caching strategy (Redis or similar)
 - [ ] Optimize database queries with indexes
 - [ ] Add pagination to all list views
@@ -149,6 +164,7 @@
 - [ ] Bundle size analysis and reduction
 
 ### Security
+
 - [ ] Rate limiting on API routes
 - [ ] Input sanitization review
 - [ ] SQL injection prevention audit
@@ -157,9 +173,11 @@
 - [ ] Regular dependency updates
 
 ### Reliability
+
 - [ ] Solana RPC fallback/retry handling with timeouts
 
 ### Testing
+
 - [ ] Unit tests for utility functions
 - [ ] Integration tests for API routes
 - [ ] E2E tests for critical flows
@@ -168,6 +186,7 @@
 - [ ] CI/CD pipeline setup
 
 ### Developer Experience
+
 - [ ] API documentation with Swagger/OpenAPI
 - [ ] Component storybook
 - [ ] Development environment setup guide
@@ -176,6 +195,7 @@
 - [ ] Git hooks for linting/testing
 
 ### Deployment & Operations
+
 - [ ] Production deployment checklist
 - [ ] Environment-specific configurations
 - [ ] Monitoring and logging setup (Sentry, LogRocket, etc.)
@@ -214,21 +234,25 @@
 ## 🎯 Milestone Goals
 
 ### Milestone 1: Core Platform (✅ Completed)
+
 - Authentication, profiles, and navigation working
 - Task management fully functional
 - Basic DAO operations supported
 
 ### Milestone 2: Sprint & Proposals (Target: 2 weeks)
+
 - Sprint management operational
 - Proposal system MVP launched
 - Member voting enabled
 
 ### Milestone 3: Treasury & Analytics (Target: 1 month)
+
 - Treasury tracking implemented
 - Basic analytics dashboard
 - Reporting functionality
 
 ### Milestone 4: Production Ready (Target: 6 weeks)
+
 - All security audits complete
 - Testing coverage > 80%
 - Performance optimized
@@ -259,12 +283,14 @@ Version: 1.2
 ## Recent Updates (2026-01-18)
 
 ### Internationalization Complete
+
 - Added next-intl with locale-based routing ([locale] structure)
 - Created translation files for English, Portuguese, and Chinese
 - Built accessible LanguageSelector dropdown with keyboard navigation
 - Migrated all pages to locale-aware routing
 
 ### UI Improvements
+
 - Added LanguageSelector component with flag emoji display
 - Refactored LocaleSwitcher to use new dropdown component
 - Centralized language metadata in languageConfig
@@ -272,6 +298,7 @@ Version: 1.2
 ## Recent Updates (2026-01-17)
 
 ### Plan Accuracy Updates
+
 - Marked sprint CRUD, detail views, and progress stats as completed
 - Marked proposal voting as pending
 - Added leaderboard completion and Solana RPC fallback task
@@ -280,6 +307,7 @@ Version: 1.2
 ## Recent Updates (2025-01-26)
 
 ### Task Management Enhancements
+
 - Added comprehensive task detail pages with comments system
 - Implemented user assignment modal for admin/council members
 - Added task deletion with confirmation modal (admin only)
@@ -287,11 +315,13 @@ Version: 1.2
 - Added quick navigation and action buttons on task cards
 
 ### Proposal System Improvements
+
 - Added inline editing for draft proposals
 - Implemented delete functionality with confirmation
 - Restricted edit/delete to authors and admins for draft proposals only
 
 ### Infrastructure Updates
+
 - Enhanced Supabase SSR session handling with comprehensive logging
 - Fixed middleware cookie configuration for production
 - Improved auth callback error handling and redirects

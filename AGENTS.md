@@ -68,6 +68,7 @@ Do not add or change scripts without approval.
 - Keep functions small and readable
 
 **Naming**
+
 - React components: `PascalCase`
 - Hooks: `useSomething`
 - Feature folders: lowercase or kebab-case (`tasks`, `organic-id`)
@@ -113,6 +114,7 @@ Avoid drive-by refactors or mixed concerns in a single PR.
 - **GEMINI.md** defines project goals and collaboration principles
 
 If instructions conflict:
+
 1. Follow `AGENTS.md`
 2. Then `CLAUDE.md`
 3. Then `GEMINI.md`
