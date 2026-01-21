@@ -148,7 +148,10 @@
 
 ### Phase 13: Wallet Support
 
-- [ ] Add Solflare wallet adapter
+- [x] Add Solflare wallet adapter
+- [x] Add Coinbase wallet adapter
+- [x] Add Ledger wallet adapter
+- [x] Add Torus wallet adapter
 - [ ] Add Backpack wallet adapter
 - [ ] Add OKX wallet adapter
 
@@ -277,7 +280,7 @@
 
 ---
 
-Last Updated: 2026-01-18
+Last Updated: 2026-01-21
 Version: 1.2
 
 ## Recent Updates (2026-01-18)

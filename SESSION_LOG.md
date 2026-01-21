@@ -2,6 +2,18 @@
 
 Add newest entries at the top.
 
+## 2026-01-21 (Session 3)
+
+- Removed React Hook dependency warnings by memoizing async loaders
+- Replaced profile avatar `<img>` with `next/image` to clear lint warning
+- Updated wallet UI translations and aligned Phase 13 wallet adapter status in build plan
+
+## 2026-01-21 (Session 2)
+
+- Localized wallet drawer/connect UI strings across en, pt-PT, and zh-CN
+- Routed wallet UI labels through the Wallet translation namespace
+- Updated BUILD_PLAN Phase 13 wallet adapter status (Solflare/Coinbase/Ledger/Torus)
+
 ## 2026-01-21
 
 - Replaced wallet connect UX with a side drawer and nav-only entry point

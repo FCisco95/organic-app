@@ -1,17 +1,22 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import { Link, usePathname } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { useWallet } from '@solana/wallet-adapter-react';
 import { cn } from '@/lib/utils';
 import LocaleSwitcher from './locale-switcher';
 import { useTranslations } from 'next-intl';
+import { Wallet } from 'lucide-react';
+import { ConnectWalletButton, WalletConnectDrawer } from './wallet';
 
 export function Navigation() {
   const { user, profile, loading, signOut } = useAuth();
   const pathname = usePathname();
   const t = useTranslations('Navigation');
+  const { connected, publicKey, disconnect } = useWallet();
+  const [isWalletDrawerOpen, setIsWalletDrawerOpen] = useState(false);
 
   const navLinks = [
     { href: '/', label: t('home'), show: true },
@@ -73,13 +78,18 @@ export function Navigation() {
                     <span className="text-xs font-medium text-organic-orange">
                       ID #{profile.organic_id}
                     </span>
-                    <span className={cn(
-                      'px-2 py-0.5 rounded-full text-xs font-medium capitalize',
-                      profile.role === 'admin' ? 'bg-purple-100 text-purple-700' :
-                      profile.role === 'council' ? 'bg-blue-100 text-blue-700' :
-                      profile.role === 'member' ? 'bg-green-100 text-green-700' :
-                      'bg-gray-100 text-gray-700'
-                    )}>
+                    <span
+                      className={cn(
+                        'px-2 py-0.5 rounded-full text-xs font-medium capitalize',
+                        profile.role === 'admin'
+                          ? 'bg-purple-100 text-purple-700'
+                          : profile.role === 'council'
+                            ? 'bg-blue-100 text-blue-700'
+                            : profile.role === 'member'
+                              ? 'bg-green-100 text-green-700'
+                              : 'bg-gray-100 text-gray-700'
+                      )}
+                    >
                       {profile.role}
                     </span>
                   </div>
@@ -108,10 +118,31 @@ export function Navigation() {
                   )}
                 </Link>
 
-                {/* Wallet Button */}
+                {/* Wallet Button - Desktop */}
                 <div className="hidden lg:block">
-                  <WalletMultiButton />
+                  <ConnectWalletButton />
                 </div>
+
+                {/* Wallet Button - Mobile */}
+                <button
+                  type="button"
+                  onClick={() => setIsWalletDrawerOpen(true)}
+                  className={cn(
+                    'lg:hidden flex items-center justify-center w-10 h-10 rounded-full transition-colors',
+                    connected
+                      ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                      : 'bg-organic-orange/10 text-organic-orange hover:bg-organic-orange/20'
+                  )}
+                  title={connected ? t('walletConnected') : t('connectWallet')}
+                >
+                  <Wallet className="w-5 h-5" />
+                </button>
+
+                {/* Mobile Wallet Drawer */}
+                <WalletConnectDrawer
+                  isOpen={isWalletDrawerOpen}
+                  onClose={() => setIsWalletDrawerOpen(false)}
+                />
 
                 {/* Sign Out */}
                 <button
@@ -158,6 +189,43 @@ export function Navigation() {
                   </Link>
                 )
             )}
+            {/* Mobile Wallet Section */}
+            <div className="border-t border-gray-200 mt-2 pt-2">
+              {connected ? (
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700">
+                    <Wallet className="w-4 h-4 text-green-600" />
+                    <span className="font-medium">{t('walletConnected')}</span>
+                    <span className="text-xs text-gray-500">
+                      ({publicKey?.toBase58().slice(0, 4)}...{publicKey?.toBase58().slice(-4)})
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsWalletDrawerOpen(true)}
+                    className="flex items-center gap-2 w-full px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+                  >
+                    {t('changeWallet')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => disconnect()}
+                    className="flex items-center gap-2 w-full px-3 py-2 rounded-md text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors"
+                  >
+                    {t('disconnectWallet')}
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setIsWalletDrawerOpen(true)}
+                  className="flex items-center gap-2 w-full px-3 py-2 rounded-md text-sm font-medium bg-organic-orange/10 text-organic-orange hover:bg-organic-orange/20 transition-colors"
+                >
+                  <Wallet className="w-4 h-4" />
+                  {t('connectWallet')}
+                </button>
+              )}
+            </div>
           </div>
         </div>
       )}

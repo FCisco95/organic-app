@@ -4,10 +4,19 @@ import { useEffect, useState, useRef } from 'react';
 import { useRouter } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 
 import { createClient } from '@/lib/supabase/client';
-import { Edit2, Save, X, Upload, MapPin, Globe, Twitter, MessageCircle, Calendar } from 'lucide-react';
+import {
+  Edit2,
+  Save,
+  X,
+  Upload,
+  MapPin,
+  Globe,
+  Twitter,
+  MessageCircle,
+  Calendar,
+} from 'lucide-react';
 import toast from 'react-hot-toast';
 import bs58 from 'bs58';
 import { formatDistanceToNow } from 'date-fns';
@@ -15,10 +24,16 @@ import { useTranslations } from 'next-intl';
 
 export default function ProfilePage() {
   const t = useTranslations('Profile');
+  const tWallet = useTranslations('Wallet');
   const { user, profile, loading, refreshProfile } = useAuth();
   const { publicKey, signMessage, connected } = useWallet();
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const balanceCacheRef = useRef<Map<string, number>>(new Map());
+  const balanceRequestRef = useRef<{ controller: AbortController | null; id: number }>({
+    controller: null,
+    id: 0,
+  });
 
   const [linkingWallet, setLinkingWallet] = useState(false);
   const [gettingOrganicId, setGettingOrganicId] = useState(false);
@@ -26,6 +41,7 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [walletMismatch, setWalletMismatch] = useState(false);
 
   // Edit form states
   const [editForm, setEditForm] = useState({
@@ -58,29 +74,74 @@ export default function ProfilePage() {
     }
   }, [user, loading, router]);
 
-  // Check token balance when wallet is connected
-  useEffect(() => {
-    if (connected && publicKey && profile?.wallet_pubkey) {
-      checkTokenBalance();
+  const fetchTokenBalance = async (walletAddress: string, cacheKey: string) => {
+    if (balanceCacheRef.current.has(cacheKey)) {
+      setTokenBalance(balanceCacheRef.current.get(cacheKey) ?? 0);
+      return;
     }
-  }, [connected, publicKey, profile]);
 
-  const checkTokenBalance = async () => {
-    if (!publicKey) return;
+    balanceRequestRef.current.controller?.abort();
+    const controller = new AbortController();
+    const requestId = balanceRequestRef.current.id + 1;
+    balanceRequestRef.current = { controller, id: requestId };
 
     try {
       const response = await fetch('/api/organic-id/balance', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ walletAddress: publicKey.toBase58() }),
+        body: JSON.stringify({ walletAddress }),
+        signal: controller.signal,
       });
-
       const data = await response.json();
-      setTokenBalance(data.balance || 0);
-    } catch (error) {
+      if (balanceRequestRef.current.id !== requestId) return;
+      const balance = data.balance || 0;
+      balanceCacheRef.current.set(cacheKey, balance);
+      setTokenBalance(balance);
+    } catch (error: any) {
+      if (error?.name === 'AbortError') return;
       console.error('Error checking balance:', error);
-      setTokenBalance(0);
+      if (balanceRequestRef.current.id === requestId) {
+        setTokenBalance(0);
+      }
     }
+  };
+
+  // Check token balance for linked wallet and detect mismatch
+  useEffect(() => {
+    balanceRequestRef.current.controller?.abort();
+    if (!connected || !publicKey || !profile?.wallet_pubkey) {
+      setWalletMismatch(false);
+      return () => {
+        balanceRequestRef.current.controller?.abort();
+      };
+    }
+
+    const connectedAddress = publicKey.toBase58();
+    const isMismatch = connectedAddress !== profile.wallet_pubkey;
+    setWalletMismatch(isMismatch);
+    if (isMismatch) {
+      setTokenBalance(null);
+      return;
+    }
+
+    const cacheKey = `${connectedAddress}|${
+      process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'mainnet-beta'
+    }`;
+    fetchTokenBalance(profile.wallet_pubkey, cacheKey);
+
+    return () => {
+      balanceRequestRef.current.controller?.abort();
+    };
+  }, [connected, publicKey, profile?.wallet_pubkey]);
+
+  const checkTokenBalance = async () => {
+    if (!connected || !publicKey || !profile?.wallet_pubkey) return;
+    const connectedAddress = publicKey.toBase58();
+    if (connectedAddress !== profile.wallet_pubkey) return;
+    const cacheKey = `${connectedAddress}|${
+      process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'mainnet-beta'
+    }`;
+    await fetchTokenBalance(profile.wallet_pubkey, cacheKey);
   };
 
   const handleLinkWallet = async () => {
@@ -98,7 +159,9 @@ export default function ProfilePage() {
 
     try {
       const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
       if (!session?.access_token) {
         toast.error(t('toastSessionExpired'));
@@ -116,7 +179,7 @@ export default function ProfilePage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
+          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
           walletAddress: publicKey.toBase58(),
@@ -162,7 +225,9 @@ export default function ProfilePage() {
 
     try {
       const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
       if (!session?.access_token) {
         toast.error(t('toastSessionExpired'));
@@ -172,7 +237,7 @@ export default function ProfilePage() {
       const response = await fetch('/api/organic-id/assign', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${session.access_token}`
+          Authorization: `Bearer ${session.access_token}`,
         },
       });
 
@@ -213,18 +278,16 @@ export default function ProfilePage() {
       const fileExt = file.name.split('.').pop();
       const fileName = `${user!.id}/${Date.now()}.${fileExt}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(fileName, file, {
-          cacheControl: '3600',
-          upsert: false,
-        });
+      const { error: uploadError } = await supabase.storage.from('avatars').upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: false,
+      });
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(fileName);
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from('avatars').getPublicUrl(fileName);
 
       const { error: updateError } = await supabase
         .from('user_profiles')
@@ -304,8 +367,6 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      
-
       <div className="max-w-4xl mx-auto py-8 px-4">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
@@ -387,7 +448,9 @@ export default function ProfilePage() {
               {isEditing ? (
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-xs font-medium text-gray-500 uppercase mb-1">{t('nameLabel')}</label>
+                    <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
+                      {t('nameLabel')}
+                    </label>
                     <input
                       type="text"
                       value={editForm.name}
@@ -398,7 +461,9 @@ export default function ProfilePage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-500 uppercase mb-1">{t('bioLabel')}</label>
+                    <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
+                      {t('bioLabel')}
+                    </label>
                     <textarea
                       value={editForm.bio}
                       onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
@@ -407,7 +472,9 @@ export default function ProfilePage() {
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none"
                       maxLength={500}
                     />
-                    <p className="text-xs text-gray-500 mt-1">{editForm.bio.length}/500 {t('characters')}</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {editForm.bio.length}/500 {t('characters')}
+                    </p>
                   </div>
                 </div>
               ) : (
@@ -417,7 +484,9 @@ export default function ProfilePage() {
                   </h2>
                   <p className="text-sm text-gray-600 mb-3">{profile.email}</p>
                   {profile.bio && (
-                    <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{profile.bio}</p>
+                    <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+                      {profile.bio}
+                    </p>
                   )}
                   {!profile.bio && !isEditing && (
                     <p className="text-sm text-gray-400 italic">{t('noBioYet')}</p>
@@ -436,11 +505,17 @@ export default function ProfilePage() {
             <div className="space-y-4">
               {/* Organic ID */}
               <div>
-                <label className="block text-xs font-medium text-gray-500 uppercase mb-1">{t('organicIdLabel')}</label>
+                <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
+                  {t('organicIdLabel')}
+                </label>
                 {profile.organic_id ? (
                   <div className="flex items-center gap-2">
-                    <span className="text-2xl font-bold text-organic-orange">#{profile.organic_id}</span>
-                    <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">{t('verified')}</span>
+                    <span className="text-2xl font-bold text-organic-orange">
+                      #{profile.organic_id}
+                    </span>
+                    <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                      {t('verified')}
+                    </span>
                   </div>
                 ) : (
                   <p className="text-sm text-gray-500 italic">{t('notAssigned')}</p>
@@ -449,23 +524,34 @@ export default function ProfilePage() {
 
               {/* Role */}
               <div>
-                <label className="block text-xs font-medium text-gray-500 uppercase mb-1">{t('roleLabel')}</label>
-                <span className={`inline-flex px-2.5 py-1 rounded-md text-xs font-medium capitalize ${
-                  profile.role === 'admin' ? 'bg-purple-100 text-purple-700' :
-                  profile.role === 'council' ? 'bg-blue-100 text-blue-700' :
-                  profile.role === 'member' ? 'bg-green-100 text-green-700' :
-                  'bg-gray-100 text-gray-700'
-                }`}>
+                <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
+                  {t('roleLabel')}
+                </label>
+                <span
+                  className={`inline-flex px-2.5 py-1 rounded-md text-xs font-medium capitalize ${
+                    profile.role === 'admin'
+                      ? 'bg-purple-100 text-purple-700'
+                      : profile.role === 'council'
+                        ? 'bg-blue-100 text-blue-700'
+                        : profile.role === 'member'
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-gray-100 text-gray-700'
+                  }`}
+                >
                   {profile.role || t('guest')}
                 </span>
               </div>
 
               {/* Member Since */}
               <div>
-                <label className="block text-xs font-medium text-gray-500 uppercase mb-1">{t('memberSince')}</label>
+                <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
+                  {t('memberSince')}
+                </label>
                 <div className="flex items-center gap-2 text-sm text-gray-700">
                   <Calendar className="w-4 h-4" />
-                  <span>{formatDistanceToNow(new Date(profile.created_at), { addSuffix: true })}</span>
+                  <span>
+                    {formatDistanceToNow(new Date(profile.created_at), { addSuffix: true })}
+                  </span>
                 </div>
               </div>
             </div>
@@ -477,7 +563,9 @@ export default function ProfilePage() {
             {isEditing ? (
               <div className="space-y-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 uppercase mb-1">{t('locationLabel')}</label>
+                  <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
+                    {t('locationLabel')}
+                  </label>
                   <div className="relative">
                     <MapPin className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                     <input
@@ -491,7 +579,9 @@ export default function ProfilePage() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 uppercase mb-1">{t('websiteLabel')}</label>
+                  <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
+                    {t('websiteLabel')}
+                  </label>
                   <div className="relative">
                     <Globe className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                     <input
@@ -505,7 +595,9 @@ export default function ProfilePage() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 uppercase mb-1">{t('twitterLabel')}</label>
+                  <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
+                    {t('twitterLabel')}
+                  </label>
                   <div className="relative">
                     <Twitter className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                     <input
@@ -519,7 +611,9 @@ export default function ProfilePage() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 uppercase mb-1">{t('discordLabel')}</label>
+                  <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
+                    {t('discordLabel')}
+                  </label>
                   <div className="relative">
                     <MessageCircle className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                     <input
@@ -544,7 +638,12 @@ export default function ProfilePage() {
                 {profile.website && (
                   <div className="flex items-center gap-2 text-sm">
                     <Globe className="w-4 h-4 text-gray-400" />
-                    <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-organic-orange hover:underline">
+                    <a
+                      href={profile.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-organic-orange hover:underline"
+                    >
                       {profile.website.replace(/^https?:\/\//, '')}
                     </a>
                   </div>
@@ -552,7 +651,12 @@ export default function ProfilePage() {
                 {profile.twitter && (
                   <div className="flex items-center gap-2 text-sm">
                     <Twitter className="w-4 h-4 text-gray-400" />
-                    <a href={`https://x.com/${profile.twitter.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="text-organic-orange hover:underline">
+                    <a
+                      href={`https://x.com/${profile.twitter.replace('@', '')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-organic-orange hover:underline"
+                    >
                       {profile.twitter}
                     </a>
                   </div>
@@ -563,9 +667,13 @@ export default function ProfilePage() {
                     <span>{profile.discord}</span>
                   </div>
                 )}
-                {!profile.location && !profile.website && !profile.twitter && !profile.discord && !isEditing && (
-                  <p className="text-sm text-gray-400 italic">{t('noSocialLinksYet')}</p>
-                )}
+                {!profile.location &&
+                  !profile.website &&
+                  !profile.twitter &&
+                  !profile.discord &&
+                  !isEditing && (
+                    <p className="text-sm text-gray-400 italic">{t('noSocialLinksYet')}</p>
+                  )}
               </div>
             )}
           </div>
@@ -575,21 +683,51 @@ export default function ProfilePage() {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('solanaWallet')}</h2>
 
-          <div className="mb-4">
-            <WalletMultiButton />
+          <div className="mb-4 text-sm text-gray-600">
+            {connected && publicKey ? (
+              <span>
+                {tWallet('connectedWalletLabel')}{' '}
+                <span className="font-mono text-gray-800">
+                  {publicKey.toBase58().slice(0, 4)}...{publicKey.toBase58().slice(-4)}
+                </span>
+              </span>
+            ) : (
+              <span>{tWallet('connectWalletFromNav')}</span>
+            )}
           </div>
+
+          {/* Wallet Mismatch Warning */}
+          {walletMismatch && publicKey && profile.wallet_pubkey && (
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+              <p className="text-sm font-medium text-amber-800 mb-1">
+                {t('walletMismatchWarning')}
+              </p>
+              <p className="text-xs text-amber-700">
+                {t('walletMismatchDescription', {
+                  connected: `${publicKey.toBase58().slice(0, 4)}...${publicKey.toBase58().slice(-4)}`,
+                  linked: `${profile.wallet_pubkey.slice(0, 4)}...${profile.wallet_pubkey.slice(-4)}`,
+                })}
+              </p>
+            </div>
+          )}
 
           {profile.wallet_pubkey && (
             <div className="mb-4">
-              <label className="block text-xs font-medium text-gray-500 uppercase mb-2">{t('linkedWallet')}</label>
+              <label className="block text-xs font-medium text-gray-500 uppercase mb-2">
+                {t('linkedWallet')}
+              </label>
               <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
                 <p className="text-xs font-mono text-gray-700 break-all mb-3">
                   {profile.wallet_pubkey}
                 </p>
-                {tokenBalance !== null && (
+                {tokenBalance !== null && connected && publicKey && !walletMismatch && (
                   <div className="flex items-center">
-                    <span className="text-xs font-medium text-gray-500 mr-2">{t('orgBalance')}</span>
-                    <span className="text-sm font-semibold text-organic-orange">{tokenBalance.toFixed(2)}</span>
+                    <span className="text-xs font-medium text-gray-500 mr-2">
+                      {t('orgBalance')}
+                    </span>
+                    <span className="text-sm font-semibold text-organic-orange">
+                      {tokenBalance.toFixed(2)}
+                    </span>
                   </div>
                 )}
               </div>
@@ -611,14 +749,12 @@ export default function ProfilePage() {
         {profile.wallet_pubkey && !profile.organic_id && (
           <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-lg shadow-sm p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-2">{t('getYourOrganicId')}</h2>
-            <p className="text-sm text-gray-600 mb-4">
-              {t('holdTokensDescription')}
-            </p>
+            <p className="text-sm text-gray-600 mb-4">{t('holdTokensDescription')}</p>
 
-            {tokenBalance !== null && tokenBalance > 0 && (
+            {tokenBalance !== null && tokenBalance > 0 && connected && publicKey && !walletMismatch && (
               <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
                 <p className="text-sm text-green-700 font-medium">
-                  ✓ {t('youHoldTokens', { balance: tokenBalance.toFixed(2) })}
+                  ✓ {t('linkedWalletHoldsTokens', { balance: tokenBalance.toFixed(2) })}
                 </p>
               </div>
             )}
@@ -639,9 +775,7 @@ export default function ProfilePage() {
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
               🎉 {t('verifiedMemberTitle')}
             </h3>
-            <p className="text-sm text-gray-600">
-              {t('verifiedMemberDescription')}
-            </p>
+            <p className="text-sm text-gray-600">{t('verifiedMemberDescription')}</p>
           </div>
         )}
       </div>

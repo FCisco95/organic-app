@@ -2,12 +2,14 @@
 
 import { useMemo } from 'react';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
-import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
-import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
+import {
+  PhantomWalletAdapter,
+  SolflareWalletAdapter,
+  CoinbaseWalletAdapter,
+  LedgerWalletAdapter,
+  TorusWalletAdapter,
+} from '@solana/wallet-adapter-wallets';
 import { clusterApiUrl } from '@solana/web3.js';
-
-// Import wallet adapter CSS
-import '@solana/wallet-adapter-react-ui/styles.css';
 
 export function SolanaWalletProvider({ children }: { children: React.ReactNode }) {
   // Configure RPC endpoint
@@ -16,20 +18,24 @@ export function SolanaWalletProvider({ children }: { children: React.ReactNode }
   }, []);
 
   // Configure supported wallets
+  // Note: Many wallets like Backpack, OKX, and others use the Wallet Standard
+  // and will be auto-detected. We only need to explicitly add adapters for
+  // wallets that don't support the standard or need special configuration.
   const wallets = useMemo(
     () => [
       new PhantomWalletAdapter(),
-      // Add more wallets as needed:
-      // new BackpackWalletAdapter(),
-      // new SolflareWalletAdapter(),
+      new SolflareWalletAdapter(),
+      new CoinbaseWalletAdapter(),
+      new LedgerWalletAdapter(),
+      new TorusWalletAdapter(),
     ],
     []
   );
 
   return (
     <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={wallets} autoConnect={false}>
-        <WalletModalProvider>{children}</WalletModalProvider>
+      <WalletProvider wallets={wallets} autoConnect>
+        {children}
       </WalletProvider>
     </ConnectionProvider>
   );
