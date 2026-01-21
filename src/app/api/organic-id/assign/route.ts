@@ -21,11 +21,17 @@ export async function POST(request: Request) {
 
     // Verify the token and get user
     const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser(token);
 
     if (authError || !user) {
       console.error('Auth error:', authError);
-      return NextResponse.json({ error: 'Not authenticated. Please sign in again.' }, { status: 401 });
+      return NextResponse.json(
+        { error: 'Not authenticated. Please sign in again.' },
+        { status: 401 }
+      );
     }
 
     // Get user profile
@@ -68,9 +74,8 @@ export async function POST(request: Request) {
     const serviceSupabase = createServiceClient();
 
     // Get next organic_id using the database function
-    const { data: nextIdData, error: nextIdError } = await serviceSupabase.rpc(
-      'get_next_organic_id'
-    );
+    const { data: nextIdData, error: nextIdError } =
+      await serviceSupabase.rpc('get_next_organic_id');
 
     if (nextIdError) {
       console.error('Error getting next Organic ID:', nextIdError);
@@ -100,9 +105,6 @@ export async function POST(request: Request) {
     });
   } catch (error: any) {
     console.error('Error in assign Organic ID:', error);
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
   }
 }

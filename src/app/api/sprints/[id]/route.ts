@@ -2,15 +2,15 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
 // GET - Fetch a single sprint with its tasks
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const supabase = await createClient();
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
     if (authError || !user) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
@@ -30,7 +30,8 @@ export async function GET(
     // Fetch tasks associated with this sprint
     const { data: tasks, error: tasksError } = await supabase
       .from('tasks')
-      .select(`
+      .select(
+        `
         *,
         assignee:user_profiles!tasks_assignee_id_fkey(
           id,
@@ -45,7 +46,8 @@ export async function GET(
           email,
           organic_id
         )
-      `)
+      `
+      )
       .eq('sprint_id', id as any)
       .order('created_at', { ascending: false });
 
@@ -60,23 +62,20 @@ export async function GET(
     });
   } catch (error: any) {
     console.error('Error in sprint detail route:', error);
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
   }
 }
 
 // PATCH - Update a sprint
-export async function PATCH(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const supabase = await createClient();
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
     if (authError || !user) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
@@ -120,23 +119,20 @@ export async function PATCH(
     return NextResponse.json({ sprint });
   } catch (error: any) {
     console.error('Error in update sprint:', error);
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
   }
 }
 
 // DELETE - Delete a sprint
-export async function DELETE(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const supabase = await createClient();
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
     if (authError || !user) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
@@ -150,10 +146,7 @@ export async function DELETE(
       .single();
 
     if (!profile || (profile as any).role !== 'admin') {
-      return NextResponse.json(
-        { error: 'Only admin members can delete sprints' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'Only admin members can delete sprints' }, { status: 403 });
     }
 
     const { error } = await supabase
@@ -169,9 +162,6 @@ export async function DELETE(
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error('Error in delete sprint:', error);
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
   }
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
 
@@ -32,11 +32,7 @@ export default function ProposalsPage() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>('all');
 
-  useEffect(() => {
-    loadProposals();
-  }, [filter]);
-
-  async function loadProposals() {
+  const loadProposals = useCallback(async () => {
     try {
       setLoading(true);
       const supabase = createClient();
@@ -84,7 +80,11 @@ export default function ProposalsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [filter]);
+
+  useEffect(() => {
+    loadProposals();
+  }, [loadProposals]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -124,16 +124,12 @@ export default function ProposalsPage() {
 
   return (
     <main className="min-h-screen bg-gray-50">
-
-
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
-            <p className="text-gray-600 mt-1">
-              {t('subtitle')}
-            </p>
+            <p className="text-gray-600 mt-1">{t('subtitle')}</p>
           </div>
 
           {canCreateProposal && (
@@ -168,10 +164,7 @@ export default function ProposalsPage() {
         {loading ? (
           <div className="space-y-4">
             {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="bg-white rounded-lg border border-gray-200 p-6 animate-pulse"
-              >
+              <div key={i} className="bg-white rounded-lg border border-gray-200 p-6 animate-pulse">
                 <div className="h-6 bg-gray-200 rounded w-3/4 mb-3"></div>
                 <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
                 <div className="h-4 bg-gray-200 rounded w-2/3"></div>
@@ -214,9 +207,7 @@ export default function ProposalsPage() {
                       </span>
                     </div>
 
-                    <p className="text-gray-600 line-clamp-2 mb-4">
-                      {proposal.body}
-                    </p>
+                    <p className="text-gray-600 line-clamp-2 mb-4">{proposal.body}</p>
 
                     <div className="flex items-center gap-4 text-sm text-gray-500">
                       <div className="flex items-center gap-1">
@@ -229,7 +220,9 @@ export default function ProposalsPage() {
                       </div>
                       <div className="flex items-center gap-1">
                         <Calendar className="w-4 h-4" />
-                        <span>{formatDistanceToNow(new Date(proposal.created_at), { addSuffix: true })}</span>
+                        <span>
+                          {formatDistanceToNow(new Date(proposal.created_at), { addSuffix: true })}
+                        </span>
                       </div>
                       <div className="flex items-center gap-1">
                         <MessageCircle className="w-4 h-4" />
@@ -246,12 +239,8 @@ export default function ProposalsPage() {
         {/* Info Banner */}
         {!user && (
           <div className="mt-8 bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-lg p-6">
-            <h3 className="font-semibold text-gray-900 mb-2">
-              {t('ctaTitle')}
-            </h3>
-            <p className="text-gray-700 mb-4">
-              {t('ctaDescription')}
-            </p>
+            <h3 className="font-semibold text-gray-900 mb-2">{t('ctaTitle')}</h3>
+            <p className="text-gray-700 mb-4">{t('ctaDescription')}</p>
             <Link
               href="/login"
               className="inline-block bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"

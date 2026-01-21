@@ -2,20 +2,20 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
 // GET - Fetch a single task with details
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const supabase = await createClient();
 
     console.log('[Task API] Checking authentication for task:', id);
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     console.log('[Task API] Auth result:', {
       hasUser: !!user,
       userId: user?.id,
-      authError: authError?.message
+      authError: authError?.message,
     });
 
     if (authError || !user) {
@@ -25,7 +25,8 @@ export async function GET(
 
     const { data: task, error } = await supabase
       .from('tasks')
-      .select(`
+      .select(
+        `
         *,
         assignee:user_profiles!tasks_assignee_id_fkey(
           id,
@@ -45,7 +46,8 @@ export async function GET(
           name,
           status
         )
-      `)
+      `
+      )
       .eq('id', id as any)
       .single();
 
@@ -56,23 +58,20 @@ export async function GET(
     return NextResponse.json({ task });
   } catch (error: any) {
     console.error('Error in task detail route:', error);
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
   }
 }
 
 // PATCH - Update a task
-export async function PATCH(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const supabase = await createClient();
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
     if (authError || !user) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
@@ -95,7 +94,8 @@ export async function PATCH(
       .from('tasks')
       .update(updates)
       .eq('id', id as any)
-      .select(`
+      .select(
+        `
         *,
         assignee:user_profiles!tasks_assignee_id_fkey(
           id,
@@ -115,7 +115,8 @@ export async function PATCH(
           name,
           status
         )
-      `)
+      `
+      )
       .single();
 
     if (error) {
@@ -126,28 +127,25 @@ export async function PATCH(
     return NextResponse.json({ task });
   } catch (error: any) {
     console.error('Error in update task:', error);
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
   }
 }
 
 // DELETE - Delete a task
-export async function DELETE(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const supabase = await createClient();
 
     console.log('[Task DELETE] Checking authentication for task:', id);
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     console.log('[Task DELETE] Auth result:', {
       hasUser: !!user,
       userId: user?.id,
-      authError: authError?.message
+      authError: authError?.message,
     });
 
     if (authError || !user) {
@@ -182,9 +180,6 @@ export async function DELETE(
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error('Error in delete task:', error);
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
   }
 }

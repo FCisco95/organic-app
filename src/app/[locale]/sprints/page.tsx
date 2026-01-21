@@ -84,7 +84,9 @@ export default function SprintsPage() {
                 total: tasks.length,
                 completed: tasks.filter((t) => t.status === 'done').length,
                 inProgress: tasks.filter((t) => t.status === 'in_progress').length,
-                points: tasks.filter((t) => t.status === 'done').reduce((sum, t) => sum + (t.points || 0), 0),
+                points: tasks
+                  .filter((t) => t.status === 'done')
+                  .reduce((sum, t) => sum + (t.points || 0), 0),
               };
             }
           }
@@ -196,13 +198,12 @@ export default function SprintsPage() {
   const canCreateSprint = profile?.role === 'admin' || profile?.role === 'council';
 
   // Separate current/active sprint from past sprints
-  const currentSprint = sprints.find((s) => s.status === 'active') || sprints.find((s) => s.status === 'planning');
+  const currentSprint =
+    sprints.find((s) => s.status === 'active') || sprints.find((s) => s.status === 'planning');
   const pastSprints = sprints.filter((s) => s.status === 'completed');
 
   return (
     <div className="min-h-screen bg-gray-50">
-
-
       <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -231,9 +232,7 @@ export default function SprintsPage() {
             <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">{t('emptyTitle')}</h3>
             <p className="text-gray-500 mb-6">
-              {canCreateSprint
-                ? t('emptyAdmin')
-                : t('emptyViewer')}
+              {canCreateSprint ? t('emptyAdmin') : t('emptyViewer')}
             </p>
             {canCreateSprint && (
               <button
@@ -248,89 +247,109 @@ export default function SprintsPage() {
         ) : (
           <>
             {/* Current Sprint Canvas */}
-            {currentSprint && (() => {
-              const stats = sprintStats[currentSprint.id] || { total: 0, completed: 0, inProgress: 0, points: 0 };
-              const progress = stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
+            {currentSprint &&
+              (() => {
+                const stats = sprintStats[currentSprint.id] || {
+                  total: 0,
+                  completed: 0,
+                  inProgress: 0,
+                  points: 0,
+                };
+                const progress =
+                  stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
 
-              return (
-                <div className="mb-8">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('currentSprint')}</h2>
-                  <Link
-                    href={`/sprints/${currentSprint.id}`}
-                    className="block bg-gradient-to-br from-organic-orange/5 via-organic-yellow/5 to-white border-2 border-organic-orange/20 rounded-2xl p-8 hover:shadow-xl transition-all group"
-                  >
-                    {/* Sprint Header */}
-                    <div className="flex items-start justify-between mb-6">
-                      <div>
-                        <h3 className="text-2xl font-bold text-gray-900 group-hover:text-organic-orange transition-colors mb-2">
-                          {currentSprint.name}
-                        </h3>
-                        <div className="flex items-center gap-4 text-sm text-gray-600">
-                          <div className="flex items-center gap-2">
-                            <Calendar className="w-4 h-4 text-organic-orange" />
-                            <span>
-                              {formatDate(currentSprint.start_at)} - {formatDate(currentSprint.end_at)}
-                            </span>
+                return (
+                  <div className="mb-8">
+                    <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                      {t('currentSprint')}
+                    </h2>
+                    <Link
+                      href={`/sprints/${currentSprint.id}`}
+                      className="block bg-gradient-to-br from-organic-orange/5 via-organic-yellow/5 to-white border-2 border-organic-orange/20 rounded-2xl p-8 hover:shadow-xl transition-all group"
+                    >
+                      {/* Sprint Header */}
+                      <div className="flex items-start justify-between mb-6">
+                        <div>
+                          <h3 className="text-2xl font-bold text-gray-900 group-hover:text-organic-orange transition-colors mb-2">
+                            {currentSprint.name}
+                          </h3>
+                          <div className="flex items-center gap-4 text-sm text-gray-600">
+                            <div className="flex items-center gap-2">
+                              <Calendar className="w-4 h-4 text-organic-orange" />
+                              <span>
+                                {formatDate(currentSprint.start_at)} -{' '}
+                                {formatDate(currentSprint.end_at)}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Clock className="w-4 h-4 text-organic-orange" />
+                              <span>
+                                {getDuration(currentSprint.start_at, currentSprint.end_at)}
+                              </span>
+                            </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <Clock className="w-4 h-4 text-organic-orange" />
-                            <span>{getDuration(currentSprint.start_at, currentSprint.end_at)}</span>
+                        </div>
+                        <span
+                          className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border-2 ${
+                            currentSprint.status === 'active'
+                              ? 'bg-green-100 text-green-700 border-green-300'
+                              : 'bg-blue-100 text-blue-700 border-blue-300'
+                          }`}
+                        >
+                          {getStatusIcon(currentSprint.status)}
+                          {t(`status.${currentSprint.status}`)}
+                        </span>
+                      </div>
+
+                      {/* Progress Section */}
+                      <div className="bg-white/80 backdrop-blur rounded-xl p-6 border border-gray-200">
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="text-sm font-medium text-gray-700">
+                            {t('progressLabel')}
+                          </span>
+                          <span className="text-2xl font-bold text-organic-orange">
+                            {progress}%
+                          </span>
+                        </div>
+                        <div className="w-full h-4 bg-gray-100 rounded-full overflow-hidden mb-4">
+                          <div
+                            className="h-full bg-gradient-to-r from-organic-orange to-organic-yellow transition-all"
+                            style={{ width: `${progress}%` }}
+                          ></div>
+                        </div>
+
+                        {/* Stats Grid */}
+                        <div className="grid grid-cols-3 gap-4">
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
+                            <div className="text-xs text-gray-500">{t('totalTasks')}</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-green-600">
+                              {stats.completed}
+                            </div>
+                            <div className="text-xs text-gray-500">{t('completed')}</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-blue-600">
+                              {stats.inProgress}
+                            </div>
+                            <div className="text-xs text-gray-500">{t('inProgress')}</div>
                           </div>
                         </div>
                       </div>
-                      <span
-                        className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border-2 ${
-                          currentSprint.status === 'active'
-                            ? 'bg-green-100 text-green-700 border-green-300'
-                            : 'bg-blue-100 text-blue-700 border-blue-300'
-                        }`}
-                      >
-                        {getStatusIcon(currentSprint.status)}
-                        {t(`status.${currentSprint.status}`)}
-                      </span>
-                    </div>
 
-                    {/* Progress Section */}
-                    <div className="bg-white/80 backdrop-blur rounded-xl p-6 border border-gray-200">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm font-medium text-gray-700">{t('progressLabel')}</span>
-                        <span className="text-2xl font-bold text-organic-orange">{progress}%</span>
+                      {/* View Details Link */}
+                      <div className="mt-6 text-center">
+                        <span className="inline-flex items-center gap-2 text-organic-orange font-medium group-hover:gap-3 transition-all">
+                          {t('viewDetails')}
+                          <Target className="w-4 h-4" />
+                        </span>
                       </div>
-                      <div className="w-full h-4 bg-gray-100 rounded-full overflow-hidden mb-4">
-                        <div
-                          className="h-full bg-gradient-to-r from-organic-orange to-organic-yellow transition-all"
-                          style={{ width: `${progress}%` }}
-                        ></div>
-                      </div>
-
-                      {/* Stats Grid */}
-                      <div className="grid grid-cols-3 gap-4">
-                        <div className="text-center">
-                          <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
-                          <div className="text-xs text-gray-500">{t('totalTasks')}</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-2xl font-bold text-green-600">{stats.completed}</div>
-                          <div className="text-xs text-gray-500">{t('completed')}</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-2xl font-bold text-blue-600">{stats.inProgress}</div>
-                          <div className="text-xs text-gray-500">{t('inProgress')}</div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* View Details Link */}
-                    <div className="mt-6 text-center">
-                      <span className="inline-flex items-center gap-2 text-organic-orange font-medium group-hover:gap-3 transition-all">
-                        {t('viewDetails')}
-                        <Target className="w-4 h-4" />
-                      </span>
-                    </div>
-                  </Link>
-                </div>
-              );
-            })()}
+                    </Link>
+                  </div>
+                );
+              })()}
 
             {/* Past Sprints */}
             {pastSprints.length > 0 && (
@@ -338,7 +357,12 @@ export default function SprintsPage() {
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('pastSprints')}</h2>
                 <div className="space-y-3">
                   {pastSprints.map((sprint) => {
-                    const stats = sprintStats[sprint.id] || { total: 0, completed: 0, inProgress: 0, points: 0 };
+                    const stats = sprintStats[sprint.id] || {
+                      total: 0,
+                      completed: 0,
+                      inProgress: 0,
+                      points: 0,
+                    };
 
                     return (
                       <Link
@@ -367,9 +391,14 @@ export default function SprintsPage() {
                           <div className="flex items-center gap-3">
                             <div className="text-right">
                               <div className="text-sm font-medium text-gray-900">
-                                {t('tasksCompleted', { completed: stats.completed, total: stats.total })}
+                                {t('tasksCompleted', {
+                                  completed: stats.completed,
+                                  total: stats.total,
+                                })}
                               </div>
-                              <div className="text-xs text-gray-500">{t('pointsEarned', { points: stats.points })}</div>
+                              <div className="text-xs text-gray-500">
+                                {t('pointsEarned', { points: stats.points })}
+                              </div>
                             </div>
                             <CheckCircle2 className="w-5 h-5 text-green-600" />
                           </div>

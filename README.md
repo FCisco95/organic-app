@@ -74,6 +74,7 @@ organic-app/
 ## ✅ Completed Features
 
 ### Authentication & User Management
+
 - [x] Supabase email/password authentication
 - [x] Solana wallet integration (Phantom, Solflare, etc.)
 - [x] Wallet linking with signature verification
@@ -84,6 +85,7 @@ organic-app/
 - [x] Social media links (Twitter, Discord)
 
 ### Organic ID System
+
 - [x] Automatic ID assignment to ORG token holders
 - [x] Sequential numbering system
 - [x] Blockchain verification via Solana RPC
@@ -91,6 +93,7 @@ organic-app/
 - [x] Admin-reserved ID #1
 
 ### Task Management
+
 - [x] Full CRUD operations for tasks
 - [x] Interactive Kanban board with 5 columns
 - [x] Drag-and-drop task status updates
@@ -104,6 +107,7 @@ organic-app/
 - [x] Status workflow: backlog → todo → in_progress → review → done
 
 ### Proposals & Voting
+
 - [x] Proposal creation form with validation
 - [x] Proposal listing with filters and search
 - [x] Proposal detail view with full information
@@ -116,6 +120,7 @@ organic-app/
 - [x] Admin controls for proposal lifecycle
 
 ### Sprint Management
+
 - [x] Sprint creation and management
 - [x] Sprint listing page
 - [x] Sprint detail pages with task views
@@ -123,6 +128,7 @@ organic-app/
 - [x] Sprint progress visualization
 
 ### Infrastructure & UI
+
 - [x] Next.js 14 App Router setup
 - [x] Tailwind CSS with custom Organic branding
 - [x] Responsive mobile-first design
@@ -137,6 +143,7 @@ organic-app/
 ## 🚧 In Progress / Planned Features
 
 ### Advanced Task Features
+
 - [ ] Task dependencies
 - [ ] Recurring tasks
 - [ ] Task templates
@@ -144,11 +151,13 @@ organic-app/
 - [ ] Sprint capacity planning
 
 ### Proposal Enhancements
+
 - [ ] Proposal templates
 - [ ] Proposal categories/tags
 - [ ] Delegation system
 
 ### Treasury & Analytics
+
 - [ ] Treasury balance display
 - [ ] Transaction history
 - [ ] Budget allocation tracking
@@ -156,6 +165,7 @@ organic-app/
 - [ ] DAO activity dashboard
 
 ### Communication
+
 - [ ] In-app notification system
 - [ ] Email notifications
 - [ ] Discord bot integration
@@ -175,23 +185,27 @@ For detailed build plan, see [BUILD_PLAN.md](./BUILD_PLAN.md)
 ### Installation
 
 1. Clone the repository
+
 ```bash
 git clone https://github.com/FCisco95/organic-app.git
 cd organic-app
 ```
 
 2. Install dependencies
+
 ```bash
 npm install
 ```
 
 3. Set up environment variables
+
 ```bash
 cp .env.local.example .env.local
 # Edit .env.local with your credentials
 ```
 
 4. Run the development server
+
 ```bash
 npm run dev
 ```
@@ -211,6 +225,7 @@ npm run dev
 ### Key Features
 
 #### 🔐 Authentication & Profiles
+
 - Email/password authentication via Supabase
 - Solana wallet integration and linking
 - Role-based access control (admin, council, member, viewer)
@@ -218,12 +233,14 @@ npm run dev
 - Social media integration
 
 #### 🎫 Organic ID System
+
 - Automatic ID assignment to ORG token holders
 - Sequential numbering with blockchain verification
 - Real-time balance checking via Solana RPC
 - Admin controls for ID management
 
 #### 📋 Task Management
+
 - Interactive Kanban board with drag-and-drop
 - Comprehensive task detail pages
 - Real-time commenting system
@@ -232,6 +249,7 @@ npm run dev
 - Priority, points, and label tracking
 
 #### 📝 Proposals & Governance
+
 - Full proposal lifecycle management
 - Token-weighted voting system
 - Discussion threads and comments
@@ -240,6 +258,7 @@ npm run dev
 - Transparent voting results
 
 #### 🏃 Sprint Planning
+
 - Sprint creation and management
 - Task-sprint associations
 - Progress tracking and visualization

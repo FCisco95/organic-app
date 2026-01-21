@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { Link, useRouter } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
@@ -63,6 +63,7 @@ export default function SprintDetailPage() {
   const router = useRouter();
   const { user, profile } = useAuth();
   const t = useTranslations('SprintDetail');
+  const sprintId = typeof params.id === 'string' ? params.id : params.id?.[0];
   const [sprint, setSprint] = useState<Sprint | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
@@ -79,15 +80,11 @@ export default function SprintDetailPage() {
     status: 'planning',
   });
 
-  useEffect(() => {
-    if (params.id) {
-      fetchSprintDetails();
-    }
-  }, [params.id]);
+  const fetchSprintDetails = useCallback(async () => {
+    if (!sprintId) return;
 
-  const fetchSprintDetails = async () => {
     try {
-      const response = await fetch(`/api/sprints/${params.id}`);
+      const response = await fetch(`/api/sprints/${sprintId}`);
       const data = await response.json();
 
       if (response.ok) {
@@ -101,7 +98,13 @@ export default function SprintDetailPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [sprintId]);
+
+  useEffect(() => {
+    if (sprintId) {
+      fetchSprintDetails();
+    }
+  }, [fetchSprintDetails, sprintId]);
 
   const openEditModal = () => {
     if (sprint) {
@@ -173,7 +176,6 @@ export default function SprintDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-  
         <div className="max-w-7xl mx-auto py-8 px-4">
           <div className="text-center py-12">
             <div className="w-8 h-8 border-3 border-organic-orange border-t-transparent rounded-full animate-spin mx-auto"></div>
@@ -187,7 +189,6 @@ export default function SprintDetailPage() {
   if (!sprint) {
     return (
       <div className="min-h-screen bg-gray-50">
-  
         <div className="max-w-7xl mx-auto py-8 px-4">
           <div className="text-center py-12">
             <AlertCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
@@ -271,15 +272,15 @@ export default function SprintDetailPage() {
   const completedTasks = tasks.filter((t) => t.status === 'done').length;
   const inProgressTasks = tasks.filter((t) => t.status === 'in_progress').length;
   const totalPoints = tasks.reduce((sum, t) => sum + t.points, 0);
-  const completedPoints = tasks.filter((t) => t.status === 'done').reduce((sum, t) => sum + t.points, 0);
+  const completedPoints = tasks
+    .filter((t) => t.status === 'done')
+    .reduce((sum, t) => sum + t.points, 0);
   const progressPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
   const canManageSprint = profile?.role === 'admin' || profile?.role === 'council';
 
   return (
     <div className="min-h-screen bg-gray-50">
-
-
       <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         {/* Back Button */}
         <Link
@@ -439,12 +440,16 @@ export default function SprintDetailPage() {
                           {getTaskStatusIcon(task.status)}
                           {t(`taskStatus.${task.status}`)}
                         </span>
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getPriorityBadge(task.priority)}`}>
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-xs font-medium ${getPriorityBadge(task.priority)}`}
+                        >
                           {t(`priority.${task.priority}`)}
                         </span>
                       </div>
                       {task.description && (
-                        <p className="text-sm text-gray-600 line-clamp-2 mb-2">{task.description}</p>
+                        <p className="text-sm text-gray-600 line-clamp-2 mb-2">
+                          {task.description}
+                        </p>
                       )}
                       <div className="flex items-center gap-4 text-xs text-gray-500">
                         {task.assignee && (
@@ -578,9 +583,7 @@ export default function SprintDetailPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
             <h3 className="text-xl font-bold text-gray-900 mb-4">{t('deleteTitle')}</h3>
-            <p className="text-gray-600 mb-6">
-              {t('deleteDescription')}
-            </p>
+            <p className="text-gray-600 mb-6">{t('deleteDescription')}</p>
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowDeleteConfirm(false)}

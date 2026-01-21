@@ -17,11 +17,7 @@ export async function POST(request: Request) {
     const signatureBuffer = bs58.decode(signature);
     const messageBuffer = new TextEncoder().encode(message);
 
-    const isValid = nacl.sign.detached.verify(
-      messageBuffer,
-      signatureBuffer,
-      publicKey.toBytes()
-    );
+    const isValid = nacl.sign.detached.verify(messageBuffer, signatureBuffer, publicKey.toBytes());
 
     if (!isValid) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
@@ -37,11 +33,17 @@ export async function POST(request: Request) {
 
     // Verify the token and get user
     const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser(token);
 
     if (authError || !user) {
       console.error('Auth error:', authError);
-      return NextResponse.json({ error: 'Not authenticated. Please sign in again.' }, { status: 401 });
+      return NextResponse.json(
+        { error: 'Not authenticated. Please sign in again.' },
+        { status: 401 }
+      );
     }
 
     // Check if wallet is already linked to another account

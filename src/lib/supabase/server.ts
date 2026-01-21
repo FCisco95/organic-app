@@ -12,7 +12,10 @@ export async function createClient() {
       cookies: {
         getAll() {
           const allCookies = cookieStore.getAll();
-          console.log('[Server Client] Getting cookies:', allCookies.map(c => c.name));
+          console.log(
+            '[Server Client] Getting cookies:',
+            allCookies.map((c) => c.name)
+          );
           return allCookies;
         },
         setAll(cookiesToSet: { name: string; value: string; options: any }[]) {
@@ -25,7 +28,10 @@ export async function createClient() {
             // The `setAll` method was called from a Server Component.
             // This can be ignored if you have middleware refreshing
             // user sessions.
-            console.log('[Server Client] Cookie setting failed (expected in Server Components):', error);
+            console.log(
+              '[Server Client] Cookie setting failed (expected in Server Components):',
+              error
+            );
           }
         },
       } as any,

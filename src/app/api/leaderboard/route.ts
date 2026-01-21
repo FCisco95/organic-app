@@ -40,9 +40,6 @@ export async function GET() {
     return NextResponse.json({ leaderboard: rankedLeaderboard });
   } catch (error: any) {
     console.error('Error in leaderboard route:', error);
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
   }
 }

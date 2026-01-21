@@ -18,7 +18,7 @@ export async function GET(request: Request) {
       console.log('[Auth Callback] Session exchanged successfully:', {
         hasUser: !!data.user,
         userId: data.user?.id,
-        hasSession: !!data.session
+        hasSession: !!data.session,
       });
     } catch (error) {
       console.error('[Auth Callback] Exception during session exchange:', error);

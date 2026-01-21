@@ -62,11 +62,8 @@ export default function NewProposalPage() {
   if (!user) {
     return (
       <main className="min-h-screen bg-gray-50">
-  
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            {t('signInTitle')}
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('signInTitle')}</h1>
           <Link
             href="/login"
             className="inline-block bg-organic-orange hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
@@ -81,14 +78,9 @@ export default function NewProposalPage() {
   if (!canCreate) {
     return (
       <main className="min-h-screen bg-gray-50">
-  
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            {t('memberOnlyTitle')}
-          </h1>
-          <p className="text-gray-600 mb-6">
-            {t('memberOnlyDescription')}
-          </p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('memberOnlyTitle')}</h1>
+          <p className="text-gray-600 mb-6">{t('memberOnlyDescription')}</p>
           <Link
             href="/profile"
             className="inline-block bg-organic-orange hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
@@ -102,8 +94,6 @@ export default function NewProposalPage() {
 
   return (
     <main className="min-h-screen bg-gray-50">
-
-
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -115,9 +105,7 @@ export default function NewProposalPage() {
             {t('backToProposals')}
           </Link>
           <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
-          <p className="text-gray-600 mt-1">
-            {t('subtitle')}
-          </p>
+          <p className="text-gray-600 mt-1">{t('subtitle')}</p>
         </div>
 
         {/* Form */}
@@ -125,10 +113,7 @@ export default function NewProposalPage() {
           <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
             {/* Title */}
             <div>
-              <label
-                htmlFor="title"
-                className="block text-sm font-medium text-gray-900 mb-2"
-              >
+              <label htmlFor="title" className="block text-sm font-medium text-gray-900 mb-2">
                 {t('labelTitle')}
               </label>
               <input
@@ -148,10 +133,7 @@ export default function NewProposalPage() {
 
             {/* Body */}
             <div>
-              <label
-                htmlFor="body"
-                className="block text-sm font-medium text-gray-900 mb-2"
-              >
+              <label htmlFor="body" className="block text-sm font-medium text-gray-900 mb-2">
                 {t('labelDescription')}
               </label>
               <textarea
@@ -170,9 +152,7 @@ export default function NewProposalPage() {
 
             {/* Guidelines */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h3 className="font-semibold text-blue-900 mb-2">
-                {t('guidelinesTitle')}
-              </h3>
+              <h3 className="font-semibold text-blue-900 mb-2">{t('guidelinesTitle')}</h3>
               <ul className="text-sm text-blue-800 space-y-1">
                 <li>{t('guideline1')}</li>
                 <li>{t('guideline2')}</li>

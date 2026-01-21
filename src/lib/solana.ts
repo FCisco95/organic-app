@@ -10,7 +10,8 @@ export function getConnection(): Connection {
 // ORG Token mint address
 // Use a function to lazy-load the token mint to avoid module initialization errors
 export function getOrgTokenMint(): PublicKey {
-  const mintAddress = process.env.NEXT_PUBLIC_ORG_TOKEN_MINT || 'DuXugm4oTXrGDopgxgudyhboaf6uUg1GVbJ6jk6qbonk';
+  const mintAddress =
+    process.env.NEXT_PUBLIC_ORG_TOKEN_MINT || 'DuXugm4oTXrGDopgxgudyhboaf6uUg1GVbJ6jk6qbonk';
   return new PublicKey(mintAddress);
 }
 

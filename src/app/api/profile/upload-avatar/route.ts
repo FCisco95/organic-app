@@ -4,11 +4,17 @@ import { createClient } from '@/lib/supabase/server';
 export async function POST(request: Request) {
   try {
     const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
     if (authError) {
       console.error('Auth error:', authError);
-      return NextResponse.json({ error: 'Authentication failed: ' + authError.message }, { status: 401 });
+      return NextResponse.json(
+        { error: 'Authentication failed: ' + authError.message },
+        { status: 401 }
+      );
     }
 
     if (!user) {
@@ -52,13 +58,16 @@ export async function POST(request: Request) {
 
     if (uploadError) {
       console.error('Upload error:', uploadError);
-      return NextResponse.json({ error: 'Failed to upload file: ' + uploadError.message }, { status: 500 });
+      return NextResponse.json(
+        { error: 'Failed to upload file: ' + uploadError.message },
+        { status: 500 }
+      );
     }
 
     // Get public URL
-    const { data: { publicUrl } } = supabase.storage
-      .from('avatars')
-      .getPublicUrl(fileName);
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from('avatars').getPublicUrl(fileName);
 
     // Update user profile with new avatar URL
     const { error: updateError } = await supabase
@@ -68,7 +77,10 @@ export async function POST(request: Request) {
 
     if (updateError) {
       console.error('Profile update error:', updateError);
-      return NextResponse.json({ error: 'Failed to update profile: ' + updateError.message }, { status: 500 });
+      return NextResponse.json(
+        { error: 'Failed to update profile: ' + updateError.message },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({ url: publicUrl });

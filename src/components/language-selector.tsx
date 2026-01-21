@@ -69,8 +69,7 @@ export function LanguageSelector({
         triggerRef.current?.focus();
       } else if (event.key === 'ArrowDown' && isOpen) {
         event.preventDefault();
-        const nextButton =
-          document.activeElement?.nextElementSibling as HTMLButtonElement;
+        const nextButton = document.activeElement?.nextElementSibling as HTMLButtonElement;
         if (nextButton) {
           nextButton.focus();
         } else {
@@ -79,8 +78,7 @@ export function LanguageSelector({
         }
       } else if (event.key === 'ArrowUp' && isOpen) {
         event.preventDefault();
-        const prevButton =
-          document.activeElement?.previousElementSibling as HTMLButtonElement;
+        const prevButton = document.activeElement?.previousElementSibling as HTMLButtonElement;
         if (prevButton) {
           prevButton.focus();
         } else {
@@ -88,7 +86,11 @@ export function LanguageSelector({
           const buttons = dropdownRef.current?.querySelectorAll('button');
           buttons?.[buttons.length - 1]?.focus();
         }
-      } else if (event.key === 'Enter' && isOpen && document.activeElement instanceof HTMLButtonElement) {
+      } else if (
+        event.key === 'Enter' &&
+        isOpen &&
+        document.activeElement instanceof HTMLButtonElement
+      ) {
         (document.activeElement as HTMLButtonElement).click();
       }
     };

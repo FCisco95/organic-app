@@ -6,6 +6,7 @@ import { useAuth } from '@/features/auth/context';
 import { useWallet } from '@solana/wallet-adapter-react';
 
 import { createClient } from '@/lib/supabase/client';
+import Image from 'next/image';
 import {
   Edit2,
   Save,
@@ -411,10 +412,13 @@ export default function ProfilePage() {
             <div className="relative">
               <div className="w-24 h-24 rounded-full overflow-hidden bg-gradient-to-br from-organic-orange to-yellow-400 flex items-center justify-center">
                 {profile.avatar_url ? (
-                  <img
+                  <Image
                     src={profile.avatar_url}
                     alt={profile.name || 'Profile'}
+                    width={96}
+                    height={96}
                     className="w-full h-full object-cover"
+                    unoptimized
                   />
                 ) : (
                   <span className="text-3xl font-bold text-white">

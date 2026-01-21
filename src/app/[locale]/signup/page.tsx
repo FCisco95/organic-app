@@ -13,7 +13,9 @@ export default function SignUpPage() {
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string; username?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string; username?: string }>(
+    {}
+  );
   const router = useRouter();
   const supabase = createClient();
 
@@ -93,9 +95,7 @@ export default function SignUpPage() {
 
         {/* Sign up form */}
         <div className="bg-[#161b22] rounded-md border border-[#30363d] p-6">
-          <h1 className="text-2xl font-light text-white mb-2 text-center">
-            {t('title')}
-          </h1>
+          <h1 className="text-2xl font-light text-white mb-2 text-center">{t('title')}</h1>
 
           <form onSubmit={handleSubmit} className="space-y-4 mt-4">
             {/* Email */}
@@ -118,8 +118,12 @@ export default function SignUpPage() {
               />
               {errors.email && (
                 <p className="mt-2 text-xs text-[#f85149] flex items-start">
-                  <svg className="w-4 h-4 mr-1 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm9.78-2.22-5.5 5.5a.75.75 0 0 1-1.06 0l-2.5-2.5a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L4.75 9.19l4.97-4.97a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z"/>
+                  <svg
+                    className="w-4 h-4 mr-1 mt-0.5 flex-shrink-0"
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm9.78-2.22-5.5 5.5a.75.75 0 0 1-1.06 0l-2.5-2.5a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L4.75 9.19l4.97-4.97a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z" />
                   </svg>
                   {errors.email}
                 </p>
@@ -147,16 +151,18 @@ export default function SignUpPage() {
               />
               {errors.password && (
                 <p className="mt-2 text-xs text-[#f85149] flex items-start">
-                  <svg className="w-4 h-4 mr-1 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm9.78-2.22-5.5 5.5a.75.75 0 0 1-1.06 0l-2.5-2.5a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L4.75 9.19l4.97-4.97a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z"/>
+                  <svg
+                    className="w-4 h-4 mr-1 mt-0.5 flex-shrink-0"
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm9.78-2.22-5.5 5.5a.75.75 0 0 1-1.06 0l-2.5-2.5a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L4.75 9.19l4.97-4.97a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z" />
                   </svg>
                   {errors.password}
                 </p>
               )}
               {!errors.password && (
-                <p className="mt-2 text-xs text-[#7d8590]">
-                  {t('passwordHelp')}
-                </p>
+                <p className="mt-2 text-xs text-[#7d8590]">{t('passwordHelp')}</p>
               )}
             </div>
 
@@ -180,16 +186,18 @@ export default function SignUpPage() {
               />
               {errors.username && (
                 <p className="mt-2 text-xs text-[#f85149] flex items-start">
-                  <svg className="w-4 h-4 mr-1 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm9.78-2.22-5.5 5.5a.75.75 0 0 1-1.06 0l-2.5-2.5a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L4.75 9.19l4.97-4.97a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z"/>
+                  <svg
+                    className="w-4 h-4 mr-1 mt-0.5 flex-shrink-0"
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm9.78-2.22-5.5 5.5a.75.75 0 0 1-1.06 0l-2.5-2.5a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L4.75 9.19l4.97-4.97a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z" />
                   </svg>
                   {errors.username}
                 </p>
               )}
               {!errors.username && (
-                <p className="mt-2 text-xs text-[#7d8590]">
-                  {t('usernameHelp')}
-                </p>
+                <p className="mt-2 text-xs text-[#7d8590]">{t('usernameHelp')}</p>
               )}
             </div>
 

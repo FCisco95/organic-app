@@ -63,6 +63,7 @@ This will install all required packages including Next.js, Supabase, Solana Web3
 ## Step 3: Configure Environment Variables
 
 1. Copy the example environment file:
+
 ```bash
 cp .env.local.example .env.local
 ```
@@ -128,6 +129,7 @@ npx shadcn-ui@latest add form
 ```
 
 Or install all at once:
+
 ```bash
 npx shadcn-ui@latest add button card input label textarea dialog dropdown-menu avatar badge tabs select toast table form
 ```
@@ -220,6 +222,7 @@ You should see the welcome page.
 
 **Problem:** Can't connect to Supabase
 **Solution:**
+
 - Verify API keys in `.env.local`
 - Check Supabase project is active (not paused)
 - Ensure your IP isn't blocked in Supabase settings
@@ -228,6 +231,7 @@ You should see the welcome page.
 
 **Problem:** "new row violates row-level security policy"
 **Solution:**
+
 - Ensure you're logged in
 - Check your user role in `user_profiles` table
 - Verify RLS policies were created correctly
@@ -236,6 +240,7 @@ You should see the welcome page.
 
 **Problem:** Wallet won't connect
 **Solution:**
+
 - Make sure wallet extension is installed
 - Try different wallet adapter
 - Check browser console for errors
@@ -245,6 +250,7 @@ You should see the welcome page.
 
 **Problem:** "Get Organic ID" button doesn't work
 **Solution:**
+
 - Verify wallet is linked
 - Check you actually hold $ORG tokens
 - Verify token mint address is correct
@@ -254,6 +260,7 @@ You should see the welcome page.
 
 **Problem:** `npm run build` fails
 **Solution:**
+
 - Run `npm install` to ensure all deps are installed
 - Check TypeScript errors with `npm run lint`
 - Verify all environment variables are set

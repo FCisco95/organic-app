@@ -1,12 +1,24 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { Link, useRouter } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
 
 import { createClient } from '@/lib/supabase/client';
-import { ArrowLeft, Calendar, User, MessageCircle, CheckCircle, XCircle, Clock, ListTodo, Edit2, Trash2, Save } from 'lucide-react';
+import {
+  ArrowLeft,
+  Calendar,
+  User,
+  MessageCircle,
+  CheckCircle,
+  XCircle,
+  Clock,
+  ListTodo,
+  Edit2,
+  Trash2,
+  Save,
+} from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
@@ -54,12 +66,7 @@ export default function ProposalDetailPage() {
   const isAuthor = user && proposal && user.id === proposal.created_by;
   const isAdmin = profile?.role && ['admin', 'council'].includes(profile.role);
 
-  useEffect(() => {
-    loadProposal();
-    loadComments();
-  }, [proposalId]);
-
-  async function loadProposal() {
+  const loadProposal = useCallback(async () => {
     try {
       const supabase = createClient();
       const { data, error } = await supabase
@@ -85,9 +92,9 @@ export default function ProposalDetailPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [proposalId, t]);
 
-  async function loadComments() {
+  const loadComments = useCallback(async () => {
     try {
       const supabase = createClient();
       const { data, error } = await supabase
@@ -110,7 +117,12 @@ export default function ProposalDetailPage() {
     } catch (error) {
       console.error('Error loading comments:', error);
     }
-  }
+  }, [proposalId]);
+
+  useEffect(() => {
+    loadProposal();
+    loadComments();
+  }, [loadProposal, loadComments]);
 
   async function handleSubmitComment(e: React.FormEvent) {
     e.preventDefault();
@@ -292,7 +304,6 @@ export default function ProposalDetailPage() {
   if (loading) {
     return (
       <main className="min-h-screen bg-gray-50">
-  
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
@@ -307,8 +318,7 @@ export default function ProposalDetailPage() {
   if (!proposal) {
     return (
       <main className="min-h-screen bg-gray-50">
-  
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('notFoundTitle')}</h1>
           <Link
             href="/proposals"
@@ -326,8 +336,6 @@ export default function ProposalDetailPage() {
 
   return (
     <main className="min-h-screen bg-gray-50">
-
-
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Back Link */}
         <Link
@@ -354,7 +362,9 @@ export default function ProposalDetailPage() {
               <h1 className="text-3xl font-bold text-gray-900 flex-1">{proposal.title}</h1>
             )}
             <div className="flex items-center gap-2">
-              <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${statusConfig.color}`}>
+              <div
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${statusConfig.color}`}
+              >
                 <StatusIcon className="w-4 h-4" />
                 <span className="capitalize">{getStatusLabel(proposal.status)}</span>
               </div>
@@ -478,9 +488,7 @@ export default function ProposalDetailPage() {
                 <ListTodo className="w-4 h-4" />
                 {t('createTask')}
               </button>
-              <p className="text-xs text-gray-500 mt-2">
-                {t('createTaskHelp')}
-              </p>
+              <p className="text-xs text-gray-500 mt-2">{t('createTaskHelp')}</p>
             </div>
           )}
         </div>
@@ -524,15 +532,10 @@ export default function ProposalDetailPage() {
           {/* Comments List */}
           <div className="space-y-4">
             {comments.length === 0 ? (
-              <p className="text-gray-500 text-center py-8">
-                {t('noComments')}
-              </p>
+              <p className="text-gray-500 text-center py-8">{t('noComments')}</p>
             ) : (
               comments.map((comment) => (
-                <div
-                  key={comment.id}
-                  className="border-l-4 border-organic-orange/20 pl-4 py-2"
-                >
+                <div key={comment.id} className="border-l-4 border-organic-orange/20 pl-4 py-2">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="font-medium text-gray-900">
                       {comment.user_profiles.organic_id
@@ -556,9 +559,7 @@ export default function ProposalDetailPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
             <h3 className="text-xl font-bold text-gray-900 mb-4">{t('deleteTitle')}</h3>
-            <p className="text-gray-600 mb-6">
-              {t('deleteDescription')}
-            </p>
+            <p className="text-gray-600 mb-6">{t('deleteDescription')}</p>
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowDeleteConfirm(false)}

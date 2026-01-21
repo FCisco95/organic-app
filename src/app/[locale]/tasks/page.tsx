@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/features/auth/context';
 
 import { createClient } from '@/lib/supabase/client';
@@ -72,15 +72,7 @@ export default function TasksPage() {
 
   const canManage = profile?.role && ['member', 'council', 'admin'].includes(profile.role);
 
-  useEffect(() => {
-    loadSprints();
-  }, []);
-
-  useEffect(() => {
-    loadTasks();
-  }, [selectedSprint]);
-
-  async function loadSprints() {
+  const loadSprints = useCallback(async () => {
     try {
       const supabase = createClient();
       const { data, error } = await supabase
@@ -93,9 +85,9 @@ export default function TasksPage() {
     } catch (error) {
       console.error('Error loading sprints:', error);
     }
-  }
+  }, []);
 
-  async function loadTasks() {
+  const loadTasks = useCallback(async () => {
     try {
       setLoading(true);
       const supabase = createClient();
@@ -133,23 +125,24 @@ export default function TasksPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [selectedSprint]);
+
+  useEffect(() => {
+    loadSprints();
+  }, [loadSprints]);
+
+  useEffect(() => {
+    loadTasks();
+  }, [loadTasks]);
 
   async function updateTaskStatus(taskId: string, newStatus: TaskStatus) {
     try {
       const supabase = createClient();
-      const { error } = await supabase
-        .from('tasks')
-        .update({ status: newStatus })
-        .eq('id', taskId);
+      const { error } = await supabase.from('tasks').update({ status: newStatus }).eq('id', taskId);
 
       if (error) throw error;
 
-      setTasks(
-        tasks.map((task) =>
-          task.id === taskId ? { ...task, status: newStatus } : task
-        )
-      );
+      setTasks(tasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task)));
       toast.success(t('toastTaskUpdated'));
     } catch (error) {
       console.error('Error updating task:', error);
@@ -179,14 +172,9 @@ export default function TasksPage() {
   if (!user || !profile?.organic_id) {
     return (
       <main className="min-h-screen bg-gray-50">
-  
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            {t('memberAccessTitle')}
-          </h1>
-          <p className="text-gray-600 mb-6">
-            {t('memberAccessDescription')}
-          </p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('memberAccessTitle')}</h1>
+          <p className="text-gray-600 mb-6">{t('memberAccessDescription')}</p>
         </div>
       </main>
     );
@@ -194,16 +182,12 @@ export default function TasksPage() {
 
   return (
     <main className="min-h-screen bg-gray-50">
-
-
       <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
-            <p className="text-gray-600 mt-1">
-              {t('subtitle')}
-            </p>
+            <p className="text-gray-600 mt-1">{t('subtitle')}</p>
           </div>
 
           <div className="flex gap-3">
@@ -258,34 +242,31 @@ export default function TasksPage() {
                 selectedSprint === sprint.id
                   ? 'bg-organic-orange text-white'
                   : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
-                }`}
-              >
-                {sprint.name}
-                <span
-                  className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
-                    selectedSprint === sprint.id
-                      ? 'bg-white/20 text-white'
-                      : sprint.status === 'active'
+              }`}
+            >
+              {sprint.name}
+              <span
+                className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
+                  selectedSprint === sprint.id
+                    ? 'bg-white/20 text-white'
+                    : sprint.status === 'active'
                       ? 'bg-green-100 text-green-700'
                       : sprint.status === 'planning'
-                      ? 'bg-blue-100 text-blue-700'
-                      : 'bg-gray-100 text-gray-700'
-                  }`}
-                >
-                  {t(`epochStatus.${sprint.status}`)}
-                </span>
-              </button>
-            ))}
+                        ? 'bg-blue-100 text-blue-700'
+                        : 'bg-gray-100 text-gray-700'
+                }`}
+              >
+                {t(`epochStatus.${sprint.status}`)}
+              </span>
+            </button>
+          ))}
         </div>
 
         {/* Kanban Board */}
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {COLUMNS.map((col) => (
-              <div
-                key={col.id}
-                className="bg-white rounded-lg border border-gray-200 p-4"
-              >
+              <div key={col.id} className="bg-white rounded-lg border border-gray-200 p-4">
                 <div className="h-6 bg-gray-200 rounded w-1/2 mb-4 animate-pulse"></div>
                 <div className="space-y-3">
                   {[1, 2].map((i) => (
@@ -411,7 +392,9 @@ function TaskCard({
         {/* Priority Badge */}
         {task.priority && (
           <div className="mb-2">
-            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${getPriorityColor(task.priority)}`}>
+            <span
+              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${getPriorityColor(task.priority)}`}
+            >
               <AlertCircle className="w-3 h-3" />
               {t(`priority.${task.priority}`)}
             </span>
@@ -425,16 +408,17 @@ function TaskCard({
         </div>
 
         {task.description && (
-          <p className="text-xs text-gray-600 mb-2 line-clamp-2">
-            {task.description}
-          </p>
+          <p className="text-xs text-gray-600 mb-2 line-clamp-2">{task.description}</p>
         )}
 
         {/* Labels */}
         {task.labels && task.labels.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-2">
             {task.labels.map((label, idx) => (
-              <span key={idx} className="inline-flex items-center gap-1 px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs">
+              <span
+                key={idx}
+                className="inline-flex items-center gap-1 px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs"
+              >
                 <Tag className="w-3 h-3" />
                 {label}
               </span>
@@ -444,7 +428,9 @@ function TaskCard({
 
         {/* Due Date */}
         {task.due_date && (
-          <div className={`flex items-center gap-1 mb-2 text-xs ${isOverdue ? 'text-red-600 font-medium' : 'text-gray-500'}`}>
+          <div
+            className={`flex items-center gap-1 mb-2 text-xs ${isOverdue ? 'text-red-600 font-medium' : 'text-gray-500'}`}
+          >
             <Clock className="w-3 h-3" />
             {t('dueLabel', { date: new Date(task.due_date).toLocaleDateString() })}
             {isOverdue && ` (${t('overdue')})`}
@@ -505,7 +491,9 @@ function TaskCard({
                 {t('editTask')}
               </button>
               <div className="py-1">
-                <div className="px-3 py-1 text-xs font-medium text-gray-500 uppercase">{t('moveTo')}</div>
+                <div className="px-3 py-1 text-xs font-medium text-gray-500 uppercase">
+                  {t('moveTo')}
+                </div>
                 {COLUMNS.map((col) => (
                   <button
                     key={col.id}
@@ -577,7 +565,7 @@ function NewTaskModal({
   };
 
   const handleRemoveLabel = (labelToRemove: string) => {
-    setLabels(labels.filter(l => l !== labelToRemove));
+    setLabels(labels.filter((l) => l !== labelToRemove));
   };
 
   async function handleSubmit(e: React.FormEvent) {
@@ -699,7 +687,9 @@ function NewTaskModal({
                 <option value="">{t('unassigned')}</option>
                 {assignees.map((assignee) => (
                   <option key={assignee.id} value={assignee.id}>
-                    {assignee.organic_id ? t('assigneeId', { id: assignee.organic_id }) : assignee.email}
+                    {assignee.organic_id
+                      ? t('assigneeId', { id: assignee.organic_id })
+                      : assignee.email}
                   </option>
                 ))}
               </select>
@@ -808,13 +798,7 @@ function NewTaskModal({
 }
 
 // New Sprint Modal Component
-function NewSprintModal({
-  onClose,
-  onSuccess,
-}: {
-  onClose: () => void;
-  onSuccess: () => void;
-}) {
+function NewSprintModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => void }) {
   const t = useTranslations('Tasks');
   const [name, setName] = useState('');
   const [startDate, setStartDate] = useState('');

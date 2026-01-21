@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { Link, useRouter } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
@@ -43,7 +43,7 @@ type Task = {
     id: string;
     name: string;
     status: string;
-    };
+  };
 };
 
 type Comment = {
@@ -80,7 +80,7 @@ export default function TaskDetailPage() {
   const router = useRouter();
   const { user, profile } = useAuth();
   const t = useTranslations('TaskDetail');
-  const taskId = typeof params.id === 'string' ? params.id : params.id?.[0] ?? '';
+  const taskId = typeof params.id === 'string' ? params.id : (params.id?.[0] ?? '');
 
   const [task, setTask] = useState<Task | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
@@ -108,27 +108,21 @@ export default function TaskDetailPage() {
   const [newComment, setNewComment] = useState('');
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
 
-  useEffect(() => {
-    if (taskId) {
-      fetchTaskDetails();
-      fetchComments();
-      fetchMembers();
-      fetchSprints();
-    }
-  }, [taskId]);
-
-  const fetchTaskDetails = async () => {
+  const fetchTaskDetails = useCallback(async () => {
     try {
       console.log('[Task Detail] Fetching task with ID:', taskId);
       const supabase = createClient();
 
       // Check if we have a session
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       console.log('[Task Detail] Session status:', session ? 'authenticated' : 'no session');
 
       const { data: task, error } = await supabase
         .from('tasks')
-        .select(`
+        .select(
+          `
           *,
           assignee:user_profiles!tasks_assignee_id_fkey(
             id,
@@ -142,7 +136,8 @@ export default function TaskDetailPage() {
             name,
             status
           )
-        `)
+        `
+        )
         .eq('id', taskId)
         .single();
 
@@ -169,15 +164,16 @@ export default function TaskDetailPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [taskId]);
 
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     try {
       const supabase = createClient();
 
       const { data: comments, error } = await supabase
         .from('task_comments')
-        .select(`
+        .select(
+          `
           *,
           user:user_profiles(
             id,
@@ -186,7 +182,8 @@ export default function TaskDetailPage() {
             organic_id,
             avatar_url
           )
-        `)
+        `
+        )
         .eq('task_id', taskId)
         .order('created_at', { ascending: true });
 
@@ -198,9 +195,9 @@ export default function TaskDetailPage() {
     } catch (error) {
       console.error('Error fetching comments:', error);
     }
-  };
+  }, [taskId]);
 
-  const fetchMembers = async () => {
+  const fetchMembers = useCallback(async () => {
     try {
       const supabase = createClient();
 
@@ -218,9 +215,9 @@ export default function TaskDetailPage() {
     } catch (error) {
       console.error('Error fetching members:', error);
     }
-  };
+  }, []);
 
-  const fetchSprints = async () => {
+  const fetchSprints = useCallback(async () => {
     try {
       const supabase = createClient();
 
@@ -237,7 +234,16 @@ export default function TaskDetailPage() {
     } catch (error) {
       console.error('Error fetching sprints:', error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (taskId) {
+      fetchTaskDetails();
+      fetchComments();
+      fetchMembers();
+      fetchSprints();
+    }
+  }, [taskId, fetchTaskDetails, fetchComments, fetchMembers, fetchSprints]);
 
   const handleSaveTask = async () => {
     setIsSaving(true);
@@ -252,7 +258,8 @@ export default function TaskDetailPage() {
           sprint_id: editForm.sprint_id || null,
         })
         .eq('id', taskId)
-        .select(`
+        .select(
+          `
           *,
           assignee:user_profiles!tasks_assignee_id_fkey(
             id,
@@ -266,7 +273,8 @@ export default function TaskDetailPage() {
             name,
             status
           )
-        `)
+        `
+        )
         .single();
 
       if (!error && updatedTask) {
@@ -299,7 +307,8 @@ export default function TaskDetailPage() {
           user_id: user.id,
           content: newComment.trim(),
         })
-        .select(`
+        .select(
+          `
           *,
           user:user_profiles!task_comments_user_id_fkey(
             id,
@@ -308,7 +317,8 @@ export default function TaskDetailPage() {
             organic_id,
             avatar_url
           )
-        `)
+        `
+        )
         .single();
 
       if (!error && comment) {
@@ -335,7 +345,8 @@ export default function TaskDetailPage() {
         .from('tasks')
         .update({ assignee_id: assigneeId || null })
         .eq('id', taskId)
-        .select(`
+        .select(
+          `
           *,
           assignee:user_profiles!tasks_assignee_id_fkey(
             id,
@@ -349,7 +360,8 @@ export default function TaskDetailPage() {
             name,
             status
           )
-        `)
+        `
+        )
         .single();
 
       if (!error && updatedTask) {
@@ -379,10 +391,7 @@ export default function TaskDetailPage() {
 
       const supabase = createClient();
 
-      const { error } = await supabase
-        .from('tasks')
-        .delete()
-        .eq('id', taskId);
+      const { error } = await supabase.from('tasks').delete().eq('id', taskId);
 
       if (error) {
         console.error('Error deleting task:', error);
@@ -441,7 +450,6 @@ export default function TaskDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-  
         <div className="max-w-5xl mx-auto py-8 px-4">
           <div className="text-center py-12">
             <div className="w-8 h-8 border-3 border-organic-orange border-t-transparent rounded-full animate-spin mx-auto"></div>
@@ -455,7 +463,6 @@ export default function TaskDetailPage() {
   if (!task) {
     return (
       <div className="min-h-screen bg-gray-50">
-  
         <div className="max-w-5xl mx-auto py-8 px-4">
           <div className="text-center py-12">
             <AlertCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
@@ -472,15 +479,10 @@ export default function TaskDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-
-
       <div className="max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <Link
-            href="/tasks"
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
-          >
+          <Link href="/tasks" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
             <ArrowLeft className="w-4 h-4" />
             {t('backToTasks')}
           </Link>
@@ -523,7 +525,9 @@ export default function TaskDetailPage() {
           {isEditing ? (
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t('labelTitle')}</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t('labelTitle')}
+                </label>
                 <input
                   type="text"
                   value={editForm.title}
@@ -533,7 +537,9 @@ export default function TaskDetailPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t('labelDescription')}</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t('labelDescription')}
+                </label>
                 <textarea
                   value={editForm.description}
                   onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
@@ -544,10 +550,14 @@ export default function TaskDetailPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('labelStatus')}</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {t('labelStatus')}
+                  </label>
                   <select
                     value={editForm.status}
-                    onChange={(e) => setEditForm({ ...editForm, status: e.target.value as Task['status'] })}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, status: e.target.value as Task['status'] })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange"
                   >
                     <option value="backlog">{t('status.backlog')}</option>
@@ -559,10 +569,14 @@ export default function TaskDetailPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('labelPriority')}</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {t('labelPriority')}
+                  </label>
                   <select
                     value={editForm.priority}
-                    onChange={(e) => setEditForm({ ...editForm, priority: e.target.value as Task['priority'] })}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, priority: e.target.value as Task['priority'] })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange"
                   >
                     <option value="low">{t('priority.low')}</option>
@@ -575,18 +589,24 @@ export default function TaskDetailPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('labelPoints')}</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {t('labelPoints')}
+                  </label>
                   <input
                     type="number"
                     min="0"
                     value={editForm.points}
-                    onChange={(e) => setEditForm({ ...editForm, points: parseInt(e.target.value) || 0 })}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, points: parseInt(e.target.value) || 0 })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('labelAssignee')}</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {t('labelAssignee')}
+                  </label>
                   <select
                     value={editForm.assignee_id}
                     onChange={(e) => setEditForm({ ...editForm, assignee_id: e.target.value })}
@@ -603,7 +623,9 @@ export default function TaskDetailPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t('labelSprint')}</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t('labelSprint')}
+                </label>
                 <select
                   value={editForm.sprint_id}
                   onChange={(e) => setEditForm({ ...editForm, sprint_id: e.target.value })}
@@ -647,10 +669,14 @@ export default function TaskDetailPage() {
               </div>
 
               <div className="flex flex-wrap gap-2">
-                <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusBadge(task.status)}`}>
+                <span
+                  className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusBadge(task.status)}`}
+                >
                   {t(`status.${task.status}`)}
                 </span>
-                <span className={`px-3 py-1 rounded-full text-sm font-medium ${getPriorityBadge(task.priority)}`}>
+                <span
+                  className={`px-3 py-1 rounded-full text-sm font-medium ${getPriorityBadge(task.priority)}`}
+                >
                   {t('priorityLabel', { priority: t(`priority.${task.priority}`) })}
                 </span>
                 <span className="px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-700">
@@ -754,8 +780,12 @@ export default function TaskDetailPage() {
                     )}
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="font-medium text-gray-900">{getDisplayName(comment.user)}</span>
-                        <span className="text-xs text-gray-500">{formatDate(comment.created_at)}</span>
+                        <span className="font-medium text-gray-900">
+                          {getDisplayName(comment.user)}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {formatDate(comment.created_at)}
+                        </span>
                       </div>
                       <p className="text-gray-700 whitespace-pre-wrap">{comment.content}</p>
                     </div>
@@ -772,9 +802,7 @@ export default function TaskDetailPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
             <h3 className="text-xl font-bold text-gray-900 mb-4">{t('assignTitle')}</h3>
-            <p className="text-gray-600 mb-4">
-              {t('assignDescription')}
-            </p>
+            <p className="text-gray-600 mb-4">{t('assignDescription')}</p>
 
             <div className="space-y-2 max-h-96 overflow-y-auto mb-6">
               {/* Unassign option */}
@@ -843,9 +871,7 @@ export default function TaskDetailPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
             <h3 className="text-xl font-bold text-gray-900 mb-4">{t('deleteTitle')}</h3>
-            <p className="text-gray-600 mb-6">
-              {t('deleteDescription')}
-            </p>
+            <p className="text-gray-600 mb-6">{t('deleteDescription')}</p>
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowDeleteConfirm(false)}

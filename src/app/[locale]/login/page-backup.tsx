@@ -108,9 +108,7 @@ export default function LoginPage() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent transition-all text-sm"
                 placeholder="••••••••"
               />
-              {!isLogin && (
-                <p className="mt-1.5 text-xs text-gray-500">Minimum 6 characters</p>
-              )}
+              {!isLogin && <p className="mt-1.5 text-xs text-gray-500">Minimum 6 characters</p>}
             </div>
 
             <button
@@ -147,8 +145,8 @@ export default function LoginPage() {
         {!isLogin && (
           <div className="mt-5 bg-orange-50 border border-orange-200 rounded-lg p-4">
             <p className="text-sm text-gray-700">
-              <strong className="font-semibold">Note:</strong> After signing up, you'll receive a verification email. Check
-              your inbox and spam folder.
+              <strong className="font-semibold">Note:</strong> After signing up, you'll receive a
+              verification email. Check your inbox and spam folder.
             </p>
           </div>
         )}

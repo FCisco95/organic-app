@@ -97,6 +97,7 @@ CREATE INDEX idx_tasks_priority ON tasks (priority);
 Fetches all members eligible to be assigned tasks (members with Organic IDs).
 
 **Response:**
+
 ```json
 {
   "assignees": [
@@ -113,16 +114,20 @@ Fetches all members eligible to be assigned tasks (members with Organic IDs).
 ## Permissions
 
 ### Task Creation
+
 - Members, Council, and Admins can create tasks
 
 ### Task Updates
+
 - Council and Admins can update any task
 - Members can update tasks assigned to them
 
 ### Task Deletion
+
 - Only Council and Admins can delete tasks
 
 ### Proposal-to-Task Conversion
+
 - Only Council and Admins can create tasks from proposals
 - Only works on "approved" proposals
 
@@ -179,6 +184,7 @@ Fetches all members eligible to be assigned tasks (members with Organic IDs).
 ### Story Points
 
 Use Fibonacci sequence (1, 2, 3, 5, 8, 13) where:
+
 - 1 = Trivial, < 1 hour
 - 2 = Simple, < half day
 - 3 = Moderate, ~1 day
@@ -189,6 +195,7 @@ Use Fibonacci sequence (1, 2, 3, 5, 8, 13) where:
 ### Labels
 
 Suggested label categories:
+
 - **Type**: `bug`, `feature`, `enhancement`, `documentation`
 - **Area**: `frontend`, `backend`, `smart-contract`, `design`
 - **Status**: `blocked`, `needs-review`, `in-testing`

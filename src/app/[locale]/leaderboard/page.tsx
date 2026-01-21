@@ -50,7 +50,11 @@ export default function LeaderboardPage() {
       case 3:
         return <Award className="w-6 h-6 text-amber-600" />;
       default:
-        return <span className="w-6 h-6 flex items-center justify-center text-gray-500 font-bold">{rank}</span>;
+        return (
+          <span className="w-6 h-6 flex items-center justify-center text-gray-500 font-bold">
+            {rank}
+          </span>
+        );
     }
   };
 
@@ -74,12 +78,10 @@ export default function LeaderboardPage() {
   };
 
   // Find current user's rank
-  const currentUserRank = leaderboard.find(entry => entry.id === user?.id);
+  const currentUserRank = leaderboard.find((entry) => entry.id === user?.id);
 
   return (
     <div className="min-h-screen bg-gray-50">
-
-
       <div className="max-w-4xl mx-auto py-8 px-4">
         {/* Header */}
         <div className="text-center mb-8">
@@ -100,7 +102,9 @@ export default function LeaderboardPage() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">{t('yourPosition')}</p>
-                  <p className="font-bold text-gray-900">{t('rankLabel', { rank: currentUserRank.rank })}</p>
+                  <p className="font-bold text-gray-900">
+                    {t('rankLabel', { rank: currentUserRank.rank })}
+                  </p>
                 </div>
               </div>
               <div className="text-right">
@@ -142,14 +146,12 @@ export default function LeaderboardPage() {
                 return (
                   <div
                     key={entry.id}
-                    className={`grid grid-cols-12 gap-4 px-6 py-4 items-center transition-colors ${
-                      getRankStyle(entry.rank)
-                    } ${isCurrentUser ? 'ring-2 ring-organic-orange ring-inset' : ''}`}
+                    className={`grid grid-cols-12 gap-4 px-6 py-4 items-center transition-colors ${getRankStyle(
+                      entry.rank
+                    )} ${isCurrentUser ? 'ring-2 ring-organic-orange ring-inset' : ''}`}
                   >
                     {/* Rank */}
-                    <div className="col-span-1 flex items-center">
-                      {getRankIcon(entry.rank)}
-                    </div>
+                    <div className="col-span-1 flex items-center">{getRankIcon(entry.rank)}</div>
 
                     {/* Member Info */}
                     <div className="col-span-6 flex items-center gap-3">
@@ -194,12 +196,17 @@ export default function LeaderboardPage() {
 
                     {/* Points */}
                     <div className="col-span-3 text-right">
-                      <span className={`font-bold text-lg ${
-                        entry.rank === 1 ? 'text-yellow-600' :
-                        entry.rank === 2 ? 'text-gray-500' :
-                        entry.rank === 3 ? 'text-amber-600' :
-                        'text-gray-900'
-                      }`}>
+                      <span
+                        className={`font-bold text-lg ${
+                          entry.rank === 1
+                            ? 'text-yellow-600'
+                            : entry.rank === 2
+                              ? 'text-gray-500'
+                              : entry.rank === 3
+                                ? 'text-amber-600'
+                                : 'text-gray-900'
+                        }`}
+                      >
                         {t('pointsLabel', { points: entry.total_points })}
                       </span>
                     </div>
