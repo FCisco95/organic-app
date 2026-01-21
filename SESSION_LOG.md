@@ -2,6 +2,14 @@
 
 Add newest entries at the top.
 
+## 2026-01-19
+
+- Replaced wallet connect UX with a side drawer and nav-only entry point
+- Added wallet change/connect fixes (first-click connect, no blink on change)
+- Added auto-reconnect on locale change and improved wallet mismatch handling
+- Added balance fetching guards, caching, and request cancellation for linked wallets
+- Updated wallet-related translations (en, pt-PT, zh-CN)
+
 ## 2026-01-18 (Session 3)
 
 - Performed folder structure audit
@@ -39,4 +47,3 @@ Add newest entries at the top.
 - Updated middleware for locale detection
 - Modified next.config.js for i18n plugin
 - Updated package.json with next-intl dependency
-
