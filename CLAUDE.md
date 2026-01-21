@@ -7,6 +7,11 @@ This file defines how Claude Code should work in this repository.
 Organic App is a DAO-style community app for $ORG built with Next.js 14 App Router, Supabase (Postgres + Auth), and Solana wallet linking.
 Core domains: tasks, proposals, voting, sprints, notifications, profiles, Organic ID.
 
+## Agents
+Claude agents are defined in: agents/claude.md
+Repo wide agent rules live in: AGENTS.md
+
+
 ## Definition of done
 
 A change is done when:

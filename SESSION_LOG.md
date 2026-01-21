@@ -2,6 +2,15 @@
 
 Add newest entries at the top.
 
+## 2026-01-21 (Session 4)
+
+- Performed code review of auth and wallet system
+- Identified critical issues: nonce not validated server-side, state desync on wallet switch
+- Identified high priority issues: no wallet update flow, race condition in Organic ID assignment
+- Ran pre-commit review on pending documentation changes
+- Added agent configuration files (agents/claude.md, docs/agents-prompts.md)
+- Updated CLAUDE.md with agents section reference
+
 ## 2026-01-21 (Session 3)
 
 - Removed React Hook dependency warnings by memoizing async loaders
