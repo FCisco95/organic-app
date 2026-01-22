@@ -153,8 +153,10 @@
 - [x] Add Ledger wallet adapter
 - [x] Add Torus wallet adapter
 - [x] Fix wallet switching flow (select + connect sequencing)
-- [ ] Add Backpack wallet adapter
-- [ ] Add OKX wallet adapter
+- [x] Add Backpack wallet adapter (Wallet Standard auto-detect)
+- [x] Add OKX wallet adapter (Wallet Standard auto-detect)
+- [x] Add Binance Web3 Wallet adapter (Wallet Standard auto-detect)
+- [x] Add TokenPocket wallet adapter
 
 ## 🔧 Technical Improvements
 

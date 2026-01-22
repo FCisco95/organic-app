@@ -19,6 +19,8 @@ const POPULAR_WALLET_NAMES = [
   'Solflare',
   'Backpack',
   'OKX Wallet',
+  'Binance Web3 Wallet',
+  'TokenPocket',
   'Coinbase Wallet',
   'Ledger',
   'Torus',

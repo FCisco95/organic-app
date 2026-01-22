@@ -9,6 +9,7 @@ import {
   LedgerWalletAdapter,
   TorusWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
+import { TokenPocketWalletAdapter } from '@solana/wallet-adapter-tokenpocket';
 import { clusterApiUrl } from '@solana/web3.js';
 
 export function SolanaWalletProvider({ children }: { children: React.ReactNode }) {
@@ -18,9 +19,10 @@ export function SolanaWalletProvider({ children }: { children: React.ReactNode }
   }, []);
 
   // Configure supported wallets
-  // Note: Many wallets like Backpack, OKX, and others use the Wallet Standard
-  // and will be auto-detected. We only need to explicitly add adapters for
-  // wallets that don't support the standard or need special configuration.
+  // Note: Many wallets like Backpack, OKX, Binance Web3 Wallet, and others use
+  // the Wallet Standard and will be auto-detected. We only need to explicitly
+  // add adapters for wallets that don't support the standard or need special
+  // configuration.
   const wallets = useMemo(
     () => [
       new PhantomWalletAdapter(),
@@ -28,6 +30,7 @@ export function SolanaWalletProvider({ children }: { children: React.ReactNode }
       new CoinbaseWalletAdapter(),
       new LedgerWalletAdapter(),
       new TorusWalletAdapter(),
+      new TokenPocketWalletAdapter(),
     ],
     []
   );
