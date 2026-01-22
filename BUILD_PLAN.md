@@ -152,6 +152,7 @@
 - [x] Add Coinbase wallet adapter
 - [x] Add Ledger wallet adapter
 - [x] Add Torus wallet adapter
+- [x] Fix wallet switching flow (select + connect sequencing)
 - [ ] Add Backpack wallet adapter
 - [ ] Add OKX wallet adapter
 

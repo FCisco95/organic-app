@@ -32,7 +32,7 @@ interface WalletConnectDrawerProps {
 type ViewState = 'main' | 'all' | 'get-started';
 
 export function WalletConnectDrawer({ isOpen, onClose }: WalletConnectDrawerProps) {
-  const { wallets, select, connecting, connected, disconnect, wallet, publicKey } = useWallet();
+  const { wallets, select, connect, connecting, connected, wallet, publicKey } = useWallet();
   const { user, profile, loading: authLoading } = useAuth();
   const router = useRouter();
   const t = useTranslations('Wallet');
@@ -42,6 +42,7 @@ export function WalletConnectDrawer({ isOpen, onClose }: WalletConnectDrawerProp
   const [recentWalletName, setRecentWalletName] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const wasConnectedOnOpenRef = useRef(false);
+  const currentWalletNameRef = useRef<string | null>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const firstFocusableRef = useRef<HTMLButtonElement>(null);
@@ -52,6 +53,10 @@ export function WalletConnectDrawer({ isOpen, onClose }: WalletConnectDrawerProp
       wasConnectedOnOpenRef.current = connected;
     }
   }, [isOpen, connected]);
+
+  useEffect(() => {
+    currentWalletNameRef.current = wallet?.adapter.name ?? null;
+  }, [wallet]);
 
   // Load recent wallet from localStorage
   useEffect(() => {
@@ -119,7 +124,17 @@ export function WalletConnectDrawer({ isOpen, onClose }: WalletConnectDrawerProp
     return availableWallets.filter((w) => w.adapter.name.toLowerCase().includes(query));
   }, [availableWallets, searchQuery]);
 
-  // Handle wallet selection - directly connect using the adapter
+  const waitForWalletSelection = useCallback(async (walletName: string) => {
+    const start = Date.now();
+    while (currentWalletNameRef.current !== walletName) {
+      if (Date.now() - start > 1500) {
+        throw new Error(`Timed out selecting wallet: ${walletName}`);
+      }
+      await new Promise((resolve) => setTimeout(resolve, 25));
+    }
+  }, []);
+
+  // Handle wallet selection and connect via wallet context
   const handleSelectWallet = useCallback(
     async (walletName: string) => {
       const selectedWallet = wallets.find((w) => w.adapter.name === walletName);
@@ -136,18 +151,18 @@ export function WalletConnectDrawer({ isOpen, onClose }: WalletConnectDrawerProp
           return;
         }
 
-        setIsConnecting(true);
-
-        // If already connected, disconnect in the background to preserve user gesture.
-        if (connected && !isSameWallet) {
-          disconnect().catch(() => undefined);
+        if (isConnecting || connecting) {
+          return;
         }
+
+        setIsConnecting(true);
 
         // Select the wallet first so the adapter is current for the app.
         select(walletName as any);
 
-        // Connect directly on the adapter to avoid state timing issues.
-        await selectedWallet.adapter.connect();
+        await waitForWalletSelection(walletName);
+
+        await connect();
 
         // Save to localStorage as recent after successful connection
         if (typeof window !== 'undefined') {
@@ -164,7 +179,7 @@ export function WalletConnectDrawer({ isOpen, onClose }: WalletConnectDrawerProp
         setIsConnecting(false);
       }
     },
-    [wallets, select, connected, disconnect, wallet, onClose]
+    [wallets, select, connect, connected, connecting, isConnecting, waitForWalletSelection, wallet, onClose]
   );
 
   // Keyboard navigation

@@ -15,7 +15,7 @@ interface ConnectWalletButtonProps {
 }
 
 export function ConnectWalletButton({ className, variant = 'default' }: ConnectWalletButtonProps) {
-  const { connected, publicKey, disconnect, wallet } = useWallet();
+  const { connected, publicKey, disconnect, select, wallet } = useWallet();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -37,10 +37,14 @@ export function ConnectWalletButton({ className, variant = 'default' }: ConnectW
     }
   }, [publicKey]);
 
-  const handleDisconnect = useCallback(() => {
-    disconnect();
+  const handleDisconnect = useCallback(async () => {
+    await disconnect();
+    select(null);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('walletName');
+    }
     setShowDropdown(false);
-  }, [disconnect]);
+  }, [disconnect, select]);
 
   const truncatedAddress = publicKey
     ? `${publicKey.toBase58().slice(0, 4)}...${publicKey.toBase58().slice(-4)}`
