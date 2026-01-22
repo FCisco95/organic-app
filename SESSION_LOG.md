@@ -2,6 +2,13 @@
 
 Add newest entries at the top.
 
+## 2026-01-22
+
+- Fixed wallet switch flow by sequencing select -> connect through wallet context
+- Guarded against concurrent connect attempts and cleared walletName on disconnect
+- Added server-side nonce storage/validation for wallet linking
+- Added server/client balance caching to reduce RPC spam
+
 ## 2026-01-21 (Session 4)
 
 - Performed code review of auth and wallet system

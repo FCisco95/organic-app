@@ -178,6 +178,9 @@
 
 ### Reliability
 
+- [x] Server-side balance caching (30s TTL) to prevent RPC 429 errors
+- [x] Client-side balance caching (15s TTL) to reduce API spam
+- [ ] Replace public Solana RPC with paid provider (Helius/QuickNode/Alchemy)
 - [ ] Solana RPC fallback/retry handling with timeouts
 
 ### Testing
@@ -281,8 +284,29 @@
 
 ---
 
-Last Updated: 2026-01-21
-Version: 1.2
+Last Updated: 2026-01-22
+Version: 1.3
+
+## Recent Updates (2026-01-22)
+
+### Security Fix: Nonce Validation
+
+- Added `wallet_nonces` table for server-side nonce storage
+- Updated `/api/auth/nonce` to store nonces with 5-minute TTL
+- Updated `/api/auth/link-wallet` to validate and consume nonces
+- Prevents replay attacks on wallet signature verification
+
+### Performance Fix: Solana RPC Rate Limiting
+
+- Added server-side balance cache (30s TTL) in `/api/organic-id/balance`
+- Added client-side balance cache (15s TTL) in profile page
+- Logs cache hits vs RPC calls for debugging
+- Prevents 429 errors from excessive RPC calls
+
+### Infrastructure TODO
+
+- Replace public Solana RPC with paid provider (Helius/QuickNode/Alchemy)
+- Set `NEXT_PUBLIC_SOLANA_RPC_URL` in `.env.local`
 
 ## Recent Updates (2026-01-18)
 
