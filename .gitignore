@@ -45,3 +45,6 @@ next-env.d.ts
 *:Zone.Identifier
 logo-base64.txt
 .DS_Store
+
+# Supabase local temp
+supabase/.temp/
