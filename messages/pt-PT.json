@@ -29,6 +29,7 @@
     "signOut": "Sair",
     "signIn": "Entrar",
     "viewProfile": "Ver Perfil",
+    "logoAlt": "Logo Organic",
     "connectWallet": "Conectar Carteira",
     "walletConnected": "Carteira Conectada",
     "changeWallet": "Alterar Carteira",
@@ -49,6 +50,7 @@
     "disconnectWalletAction": "Desconectar",
     "drawerTitle": "Conectar Carteira",
     "drawerSubtext": "Conecte sua carteira para acessar o Organic DAO. Seus fundos permanecem sob seu controle. Este app foi auditado por seguranca.",
+    "closeDrawer": "Fechar painel",
     "searchWalletsPlaceholder": "Pesquisar carteiras...",
     "backToPopular": "Voltar as populares",
     "noWalletsFound": "Nenhuma carteira encontrada para \"{query}\"",
@@ -70,6 +72,7 @@
   },
   "Login": {
     "title": "Entrar no Organic",
+    "logoAlt": "Logo Organic",
     "emailLabel": "Endereço de email",
     "emailPlaceholder": "voce@exemplo.com",
     "passwordLabel": "Senha",
@@ -86,6 +89,7 @@
   },
   "Signup": {
     "title": "Criar conta no Organic",
+    "logoAlt": "Logo Organic",
     "emailLabel": "Email",
     "emailPlaceholder": "voce@exemplo.com",
     "passwordLabel": "Senha",
@@ -108,6 +112,36 @@
     "validationUsernamePattern": "O nome de usuário pode conter apenas caracteres alfanuméricos ou hífens simples",
     "validationUsernameHyphen": "O nome de usuário não pode começar ou terminar com um hífen",
     "toastSuccess": "Verifique seu email para confirmar sua conta!",
+    "toastError": "Ocorreu um erro"
+  },
+  "AuthError": {
+    "title": "Erro de autenticação",
+    "description": "Não foi possível concluir o início de sessão. Tente novamente.",
+    "backToLogin": "Voltar ao login",
+    "goHome": "Ir para a página inicial"
+  },
+  "LoginBackup": {
+    "brandName": "Organic DAO",
+    "tagline": "Plataforma de coordenação comunitária",
+    "welcomeBack": "Bem-vindo de volta",
+    "joinOrganic": "Junte-se ao Organic",
+    "signInPrompt": "Entre para acessar sua conta",
+    "createPrompt": "Crie uma conta para começar",
+    "emailLabel": "Email",
+    "emailPlaceholder": "voce@exemplo.com",
+    "passwordLabel": "Senha",
+    "passwordPlaceholder": "••••••••",
+    "minPassword": "Mínimo 6 caracteres",
+    "processing": "Processando...",
+    "signIn": "Entrar",
+    "signUp": "Criar conta",
+    "toggleToSignUp": "Não tem uma conta? Cadastre-se",
+    "toggleToSignIn": "Já tem uma conta? Entre",
+    "backToHome": "Voltar ao início",
+    "noteLabel": "Nota:",
+    "noteBody": "Depois de se cadastrar, você receberá um email de verificação. Verifique sua caixa de entrada e spam.",
+    "toastLoggedIn": "Login realizado com sucesso!",
+    "toastCheckEmail": "Verifique seu email para confirmar sua conta!",
     "toastError": "Ocorreu um erro"
   },
   "Leaderboard": {

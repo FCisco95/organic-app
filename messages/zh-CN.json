@@ -29,6 +29,7 @@
     "signOut": "退出登录",
     "signIn": "登录",
     "viewProfile": "查看个人资料",
+    "logoAlt": "Organic 标志",
     "connectWallet": "连接钱包",
     "walletConnected": "钱包已连接",
     "changeWallet": "更换钱包",
@@ -49,6 +50,7 @@
     "disconnectWalletAction": "断开连接",
     "drawerTitle": "连接钱包",
     "drawerSubtext": "连接钱包以访问 Organic DAO。资金始终由你掌控。本应用已通过安全审计。",
+    "closeDrawer": "关闭抽屉",
     "searchWalletsPlaceholder": "搜索钱包...",
     "backToPopular": "返回热门",
     "noWalletsFound": "未找到与“{query}”匹配的钱包",
@@ -70,6 +72,7 @@
   },
   "Login": {
     "title": "登录 Organic",
+    "logoAlt": "Organic 标志",
     "emailLabel": "电子邮箱",
     "emailPlaceholder": "you@example.com",
     "passwordLabel": "密码",
@@ -86,6 +89,7 @@
   },
   "Signup": {
     "title": "注册 Organic",
+    "logoAlt": "Organic 标志",
     "emailLabel": "电子邮箱",
     "emailPlaceholder": "you@example.com",
     "passwordLabel": "密码",
@@ -108,6 +112,36 @@
     "validationUsernamePattern": "用户名只能包含字母数字或单个连字符",
     "validationUsernameHyphen": "用户名不能以连字符开头或结尾",
     "toastSuccess": "请检查邮箱以确认您的账户！",
+    "toastError": "发生错误"
+  },
+  "AuthError": {
+    "title": "认证出错",
+    "description": "无法完成登录，请重试。",
+    "backToLogin": "返回登录",
+    "goHome": "返回首页"
+  },
+  "LoginBackup": {
+    "brandName": "Organic DAO",
+    "tagline": "社区协作平台",
+    "welcomeBack": "欢迎回来",
+    "joinOrganic": "加入 Organic",
+    "signInPrompt": "登录以访问你的账户",
+    "createPrompt": "创建账户以开始",
+    "emailLabel": "电子邮箱",
+    "emailPlaceholder": "you@example.com",
+    "passwordLabel": "密码",
+    "passwordPlaceholder": "••••••••",
+    "minPassword": "至少 6 个字符",
+    "processing": "处理中...",
+    "signIn": "登录",
+    "signUp": "注册",
+    "toggleToSignUp": "还没有账户？注册",
+    "toggleToSignIn": "已有账户？登录",
+    "backToHome": "返回首页",
+    "noteLabel": "提示：",
+    "noteBody": "注册后你会收到验证邮件。请检查收件箱和垃圾邮件。",
+    "toastLoggedIn": "登录成功！",
+    "toastCheckEmail": "请检查邮箱以确认您的账户！",
     "toastError": "发生错误"
   },
   "Leaderboard": {

@@ -65,7 +65,7 @@ export default function LoginPage() {
           <Link href="/" className="inline-block group">
             <Image
               src="/organic-logo.png"
-              alt="Organic Logo"
+              alt={t('logoAlt')}
               width={1000}
               height={335}
               className="w-full max-w-md transition-transform group-hover:scale-105 mx-auto"

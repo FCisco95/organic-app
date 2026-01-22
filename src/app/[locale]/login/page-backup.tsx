@@ -4,8 +4,10 @@ import { useState } from 'react';
 import { Link, useRouter } from '@/i18n/navigation';
 import { createClient } from '@/lib/supabase/client';
 import toast from 'react-hot-toast';
+import { useTranslations } from 'next-intl';
 
 export default function LoginPage() {
+  const t = useTranslations('LoginBackup');
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -27,7 +29,7 @@ export default function LoginPage() {
 
         if (error) throw error;
 
-        toast.success('Logged in successfully!');
+        toast.success(t('toastLoggedIn'));
         router.push('/profile');
       } else {
         // Sign up
@@ -41,12 +43,12 @@ export default function LoginPage() {
 
         if (error) throw error;
 
-        toast.success('Check your email to confirm your account!');
+        toast.success(t('toastCheckEmail'));
         setEmail('');
         setPassword('');
       }
     } catch (error: any) {
-      toast.error(error.message || 'An error occurred');
+      toast.error(error.message || t('toastError'));
     } finally {
       setLoading(false);
     }
@@ -62,18 +64,18 @@ export default function LoginPage() {
               <span className="text-white font-semibold text-xl">O</span>
             </div>
           </div>
-          <h2 className="text-gray-900 text-2xl font-bold">Organic DAO</h2>
-          <p className="text-gray-600 mt-1 text-sm">Community Coordination Platform</p>
+          <h2 className="text-gray-900 text-2xl font-bold">{t('brandName')}</h2>
+          <p className="text-gray-600 mt-1 text-sm">{t('tagline')}</p>
         </div>
 
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
           {/* Header */}
           <div className="text-center mb-6">
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              {isLogin ? 'Welcome Back' : 'Join Organic'}
+              {isLogin ? t('welcomeBack') : t('joinOrganic')}
             </h1>
             <p className="text-sm text-gray-600">
-              {isLogin ? 'Sign in to access your account' : 'Create an account to get started'}
+              {isLogin ? t('signInPrompt') : t('createPrompt')}
             </p>
           </div>
 
@@ -81,7 +83,7 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
-                Email
+                {t('emailLabel')}
               </label>
               <input
                 id="email"
@@ -90,13 +92,13 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent transition-all text-sm"
-                placeholder="you@example.com"
+                placeholder={t('emailPlaceholder')}
               />
             </div>
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">
-                Password
+                {t('passwordLabel')}
               </label>
               <input
                 id="password"
@@ -106,9 +108,9 @@ export default function LoginPage() {
                 required
                 minLength={6}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent transition-all text-sm"
-                placeholder="••••••••"
+                placeholder={t('passwordPlaceholder')}
               />
-              {!isLogin && <p className="mt-1.5 text-xs text-gray-500">Minimum 6 characters</p>}
+              {!isLogin && <p className="mt-1.5 text-xs text-gray-500">{t('minPassword')}</p>}
             </div>
 
             <button
@@ -116,7 +118,7 @@ export default function LoginPage() {
               disabled={loading}
               className="w-full bg-organic-orange hover:bg-orange-600 text-white font-medium py-2.5 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
             >
-              {loading ? 'Processing...' : isLogin ? 'Sign In' : 'Sign Up'}
+              {loading ? t('processing') : isLogin ? t('signIn') : t('signUp')}
             </button>
           </form>
 
@@ -126,7 +128,7 @@ export default function LoginPage() {
               onClick={() => setIsLogin(!isLogin)}
               className="text-sm text-organic-orange hover:text-orange-600 font-medium transition-colors"
             >
-              {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
+              {isLogin ? t('toggleToSignUp') : t('toggleToSignIn')}
             </button>
           </div>
 
@@ -136,7 +138,7 @@ export default function LoginPage() {
               href="/"
               className="text-sm text-gray-600 hover:text-gray-900 transition-colors inline-flex items-center"
             >
-              <span className="mr-1">←</span> Back to home
+              <span className="mr-1">←</span> {t('backToHome')}
             </Link>
           </div>
         </div>
@@ -145,8 +147,7 @@ export default function LoginPage() {
         {!isLogin && (
           <div className="mt-5 bg-orange-50 border border-orange-200 rounded-lg p-4">
             <p className="text-sm text-gray-700">
-              <strong className="font-semibold">Note:</strong> After signing up, you'll receive a
-              verification email. Check your inbox and spam folder.
+              <strong className="font-semibold">{t('noteLabel')}</strong> {t('noteBody')}
             </p>
           </div>
         )}

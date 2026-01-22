@@ -135,7 +135,7 @@ Fetches all members eligible to be assigned tasks (members with Organic IDs).
 
 ### Creating a Task
 
-1. Navigate to the Task Board (/tasks)
+1. Navigate to the Task Board (`/[locale]/tasks`, for example `/en/tasks`)
 2. Click "New Task" button
 3. Fill in the required and optional fields:
    - Add a clear, descriptive title
@@ -230,8 +230,8 @@ Potential additions for the task system:
 
 1. `supabase/migrations/20250117000000_enhance_tasks.sql` - Database schema
 2. `src/app/api/tasks/assignees/route.ts` - API endpoint for assignees
-3. `src/app/tasks/page.tsx` - Enhanced task board with new fields
-4. `src/app/proposals/[id]/page.tsx` - Added "Create Task" button
+3. `src/app/[locale]/tasks/page.tsx` - Enhanced task board with new fields
+4. `src/app/[locale]/proposals/[id]/page.tsx` - Added "Create Task" button
 
 ### Key Components
 

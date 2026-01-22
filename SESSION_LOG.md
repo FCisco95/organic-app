@@ -2,6 +2,14 @@
 
 Add newest entries at the top.
 
+## 2026-01-23
+
+- Aligned documentation paths with locale-based App Router structure
+- Added localized auth error page and translations (en, pt-PT, zh-CN)
+- Localized remaining hardcoded UI strings and accessibility labels
+- Updated shadcn components config to point at localized globals
+- Ran lint to verify changes (`npm run lint`)
+
 ## 2026-01-22
 
 ### Security: Server-side Nonce Validation

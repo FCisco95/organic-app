@@ -313,7 +313,7 @@ export function WalletConnectDrawer({ isOpen, onClose }: WalletConnectDrawerProp
             type="button"
             onClick={onClose}
             className="p-2 rounded-lg hover:bg-gray-800 transition-colors text-gray-400 hover:text-white"
-            aria-label="Close drawer"
+            aria-label={t('closeDrawer')}
           >
             <X className="w-5 h-5" />
           </button>

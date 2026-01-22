@@ -79,9 +79,9 @@ Always respond with:
 Start
 - App Router root: src/app/
 - Localized routes: src/app/[locale]/
-- Root layout: src/app/layout.tsx
+- Root layout: src/app/[locale]/layout.tsx
 - Middleware: src/middleware.ts
-- Global styles: src/app/globals.css
+- Global styles: src/app/[locale]/globals.css
 
 Domains
 - Auth: src/features/auth/
@@ -95,7 +95,7 @@ Domains
 
 UI
 - Shared UI (shadcn): src/components/ui/
-- Feature UI: src/components/{auth,tasks,proposals,voting,sprints,notifications}/
+- Feature UI: src/components/{auth,notifications,proposals,sprints,tasks,voting,wallet}/
 - Navigation: src/components/navigation.tsx
 - Locale switcher: src/components/locale-switcher.tsx
 - Language selector: src/components/language-selector.tsx
@@ -109,6 +109,11 @@ API and DB
 - Migrations: supabase/migrations/
 - Edge functions: supabase/functions/
 - Generated types: src/types/
+
+Shared libs and assets
+- Supabase clients: src/lib/supabase/
+- Shared utilities: src/lib/utils.ts
+- Public assets: public/assets/
 
 ## Commands
 

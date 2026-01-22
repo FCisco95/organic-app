@@ -22,30 +22,41 @@ A full-stack application for managing DAO proposals, voting, task management, an
 organic-app/
 ├── src/
 │   ├── app/                    # Next.js App Router pages
-│   │   ├── api/               # API routes
-│   │   │   ├── auth/          # Authentication endpoints
-│   │   │   ├── nonce/         # SIWS nonce generation
-│   │   │   ├── organic-id/    # Organic ID issuance
-│   │   │   ├── proposals/     # Proposal CRUD
-│   │   │   ├── voting/        # Voting endpoints
-│   │   │   └── tasks/         # Task management
-│   │   ├── profile/           # User profile page
-│   │   ├── proposals/         # Proposals listing & detail
-│   │   ├── voting/            # Voting interface
-│   │   ├── tasks/             # Task management UI
-│   │   ├── sprints/           # Sprint planning
-│   │   ├── layout.tsx         # Root layout
-│   │   ├── page.tsx           # Home page
-│   │   └── globals.css        # Global styles
+│   │   ├── [locale]/          # Localized routes
+│   │   │   ├── auth/          # Auth pages
+│   │   │   ├── login/         # Login page
+│   │   │   ├── signup/        # Signup page
+│   │   │   ├── profile/       # User profile page
+│   │   │   ├── proposals/     # Proposals listing & detail
+│   │   │   ├── tasks/         # Task management UI
+│   │   │   ├── sprints/       # Sprint planning
+│   │   │   ├── leaderboard/   # Leaderboard page
+│   │   │   ├── layout.tsx     # Root layout
+│   │   │   ├── page.tsx       # Home page
+│   │   │   └── globals.css    # Global styles
+│   │   └── api/               # API routes
+│   │       ├── auth/          # Authentication endpoints
+│   │       ├── leaderboard/   # Leaderboard endpoints
+│   │       ├── nonce/         # SIWS nonce generation
+│   │       ├── organic-id/    # Organic ID issuance
+│   │       ├── profile/       # Profile endpoints
+│   │       ├── proposals/     # Proposal CRUD
+│   │       ├── sprints/       # Sprint endpoints
+│   │       ├── tasks/         # Task management
+│   │       └── voting/        # Voting endpoints
 │   │
 │   ├── components/            # Reusable components
 │   │   ├── ui/               # shadcn/ui components
 │   │   ├── auth/             # Auth components
+│   │   ├── notifications/    # Notification components
 │   │   ├── proposals/        # Proposal components
-│   │   ├── voting/           # Voting components
-│   │   ├── tasks/            # Task components
 │   │   ├── sprints/          # Sprint components
-│   │   └── notifications/    # Notification components
+│   │   ├── tasks/            # Task components
+│   │   ├── voting/           # Voting components
+│   │   ├── wallet/           # Wallet components
+│   │   ├── language-selector.tsx
+│   │   ├── locale-switcher.tsx
+│   │   └── navigation.tsx
 │   │
 │   ├── features/             # Feature-based modules
 │   │   ├── auth/             # Auth logic & hooks
@@ -57,7 +68,11 @@ organic-app/
 │   │   ├── notifications/    # Notification logic
 │   │   └── profile/          # Profile logic
 │   │
+│   ├── i18n/                 # i18n helpers
 │   ├── lib/                  # Utility functions
+│   │   ├── supabase/          # Supabase clients
+│   │   ├── solana.ts          # Solana helpers
+│   │   └── utils.ts           # Shared utilities
 │   ├── hooks/                # Custom React hooks
 │   ├── types/                # TypeScript types
 │   └── config/               # Configuration files
@@ -67,6 +82,7 @@ organic-app/
 │   └── functions/            # Edge functions
 │
 ├── public/                   # Static assets
+│   └── assets/               # Public images
 └── [config files]            # Various configuration files
 
 ```

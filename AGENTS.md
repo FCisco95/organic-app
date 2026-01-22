@@ -8,8 +8,9 @@ Agents must follow these guidelines strictly. When unsure, stop and ask.
 
 - `src/app/`
   - Next.js App Router pages, layouts, and API routes
-  - Route segments: `auth`, `login`, `signup`, `profile`, `tasks`, `proposals`, `voting`, `sprints`, `leaderboard`
-  - Global files: `layout.tsx`, `page.tsx`, `globals.css`
+  - Localized routes live under `src/app/[locale]/` (e.g., `auth`, `login`, `signup`, `profile`, `tasks`, `proposals`, `sprints`, `leaderboard`)
+  - API routes live under `src/app/api/`
+  - Global files: `src/app/[locale]/layout.tsx`, `src/app/[locale]/page.tsx`, `src/app/[locale]/globals.css`
 
 - `src/features/`
   - Feature-first domain logic

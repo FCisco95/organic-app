@@ -99,7 +99,7 @@ NEXT_PUBLIC_PLAUSIBLE_DOMAIN=app.organic-bonk.fun
 
 After you run the app for the first time and create your first user account with the email `organic_community@proton.me`, you'll need to manually set them as admin:
 
-1. Sign up through the app at `/login`
+1. Sign up through the app at `/[locale]/login` (for example, `/en/login`)
 2. Go to Supabase dashboard → **Table Editor** → **user_profiles**
 3. Find your user row
 4. Edit the row:
@@ -146,7 +146,7 @@ You should see the welcome page.
 
 ## Step 7: Test Authentication
 
-1. Go to `/login`
+1. Go to `/[locale]/login` (for example, `/en/login`)
 2. Click "Sign Up"
 3. Enter email and password
 4. Check your email for verification link
@@ -156,7 +156,7 @@ You should see the welcome page.
 ## Step 8: Link Your Wallet (Optional)
 
 1. Install Phantom, Backpack, or Solflare wallet extension
-2. Go to `/profile` after logging in
+2. Go to `/[locale]/profile` after logging in (for example, `/en/profile`)
 3. Click "Connect Wallet"
 4. Approve the connection in your wallet
 5. Sign the message to verify ownership
@@ -165,7 +165,7 @@ You should see the welcome page.
 ## Step 9: Get Organic ID
 
 1. Make sure you hold some $ORG tokens in your wallet
-2. Go to `/profile`
+2. Go to `/[locale]/profile` (for example, `/en/profile`)
 3. Click "Get Organic ID"
 4. The system will check your wallet balance
 5. If you hold tokens, you'll be assigned the next available Organic ID

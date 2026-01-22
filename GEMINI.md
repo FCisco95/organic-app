@@ -63,6 +63,7 @@ The focus is long-term: build solid foundations first, avoid shortcuts that brea
 ## Context to Remember
 
 - Next.js App Router only (`src/app/`)
+- Localized routes live under `src/app/[locale]/`
 - Feature-first structure (`src/features/*`)
 - Supabase for auth + database
 - Solana used only for wallet linking and ORG verification
@@ -70,3 +71,14 @@ The focus is long-term: build solid foundations first, avoid shortcuts that brea
 - Migrations live in `supabase/migrations/`
 
 This workspace is about building Organic _slowly, correctly, and intentionally_.
+
+## Quick Navigation
+
+- App Router root: `src/app/`
+- Localized routes: `src/app/[locale]/`
+- API routes: `src/app/api/`
+- Features: `src/features/`
+- UI components: `src/components/`
+- Shared libs: `src/lib/`
+- i18n helpers: `src/i18n/`
+- Supabase migrations: `supabase/migrations/`

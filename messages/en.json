@@ -29,6 +29,7 @@
     "signOut": "Sign Out",
     "signIn": "Sign In",
     "viewProfile": "View Profile",
+    "logoAlt": "Organic Logo",
     "connectWallet": "Connect Wallet",
     "walletConnected": "Wallet Connected",
     "changeWallet": "Change Wallet",
@@ -49,6 +50,7 @@
     "disconnectWalletAction": "Disconnect",
     "drawerTitle": "Connect Wallet",
     "drawerSubtext": "Connect your wallet to access Organic DAO. Your funds remain in your control. This app has been audited for security.",
+    "closeDrawer": "Close drawer",
     "searchWalletsPlaceholder": "Search wallets...",
     "backToPopular": "Back to popular",
     "noWalletsFound": "No wallets found for \"{query}\"",
@@ -70,6 +72,7 @@
   },
   "Login": {
     "title": "Sign in to Organic",
+    "logoAlt": "Organic Logo",
     "emailLabel": "Email address",
     "emailPlaceholder": "you@example.com",
     "passwordLabel": "Password",
@@ -86,6 +89,7 @@
   },
   "Signup": {
     "title": "Sign up for Organic",
+    "logoAlt": "Organic Logo",
     "emailLabel": "Email",
     "emailPlaceholder": "you@example.com",
     "passwordLabel": "Password",
@@ -108,6 +112,36 @@
     "validationUsernamePattern": "Username may only contain alphanumeric characters or single hyphens",
     "validationUsernameHyphen": "Username cannot begin or end with a hyphen",
     "toastSuccess": "Check your email to confirm your account!",
+    "toastError": "An error occurred"
+  },
+  "AuthError": {
+    "title": "Authentication error",
+    "description": "We could not complete the sign-in. Please try again.",
+    "backToLogin": "Back to login",
+    "goHome": "Go home"
+  },
+  "LoginBackup": {
+    "brandName": "Organic DAO",
+    "tagline": "Community Coordination Platform",
+    "welcomeBack": "Welcome Back",
+    "joinOrganic": "Join Organic",
+    "signInPrompt": "Sign in to access your account",
+    "createPrompt": "Create an account to get started",
+    "emailLabel": "Email",
+    "emailPlaceholder": "you@example.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "••••••••",
+    "minPassword": "Minimum 6 characters",
+    "processing": "Processing...",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "toggleToSignUp": "Don't have an account? Sign up",
+    "toggleToSignIn": "Already have an account? Sign in",
+    "backToHome": "Back to home",
+    "noteLabel": "Note:",
+    "noteBody": "After signing up, you'll receive a verification email. Check your inbox and spam folder.",
+    "toastLoggedIn": "Logged in successfully!",
+    "toastCheckEmail": "Check your email to confirm your account!",
     "toastError": "An error occurred"
   },
   "Leaderboard": {

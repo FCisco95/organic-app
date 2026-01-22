@@ -36,7 +36,7 @@ export function Navigation() {
             <Link href="/" className="flex items-center group">
               <Image
                 src="/organic-logo.png"
-                alt="Organic Logo"
+                alt={t('logoAlt')}
                 width={200}
                 height={67}
                 className="h-16 w-auto transition-transform group-hover:scale-105"
