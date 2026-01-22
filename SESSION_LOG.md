@@ -4,10 +4,26 @@ Add newest entries at the top.
 
 ## 2026-01-22
 
+### Security: Server-side Nonce Validation
+- Created `wallet_nonces` migration with 5-minute TTL and RLS policy
+- Updated `/api/auth/nonce` to store nonces in database
+- Updated `/api/auth/link-wallet` to validate, verify expiry, and consume nonces
+- Added TypeScript types for `wallet_nonces` table
+- Prevents replay attacks on wallet signature verification
+
+### Performance: Solana RPC Caching
+- Added server-side balance cache (30s TTL) in `/api/organic-id/balance`
+- Added client-side balance cache (15s TTL) in profile page
+- Logs cache hits vs RPC calls for debugging
+- Prevents 429 rate limit errors from excessive RPC calls
+
+### Wallet Flow
 - Fixed wallet switch flow by sequencing select -> connect through wallet context
 - Guarded against concurrent connect attempts and cleared walletName on disconnect
-- Added server-side nonce storage/validation for wallet linking
-- Added server/client balance caching to reduce RPC spam
+
+### Documentation
+- Updated BUILD_PLAN.md with reliability tasks and recent updates
+- Added infrastructure TODO: replace public Solana RPC with paid provider
 
 ## 2026-01-21 (Session 4)
 
