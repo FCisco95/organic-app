@@ -1,6 +1,13 @@
 import { NextResponse } from 'next/server';
 import { getTokenBalance } from '@/lib/solana';
 
+// In-memory cache for token balances
+// Key: wallet address, Value: { balance, timestamp }
+const balanceCache = new Map<string, { balance: number; ts: number }>();
+
+// Cache TTL: 30 seconds
+const CACHE_TTL_MS = 30 * 1000;
+
 export async function POST(request: Request) {
   try {
     const { walletAddress } = await request.json();
@@ -9,9 +16,35 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Wallet address is required' }, { status: 400 });
     }
 
+    // Normalize wallet address for consistent caching
+    const cacheKey = walletAddress.trim();
+    const now = Date.now();
+
+    // Check cache first
+    const cached = balanceCache.get(cacheKey);
+    if (cached && now - cached.ts < CACHE_TTL_MS) {
+      console.log(`[Balance API] Cache HIT for ${cacheKey.slice(0, 8)}...`);
+      return NextResponse.json({ balance: cached.balance, cached: true });
+    }
+
+    // Cache miss or expired - fetch from Solana RPC
+    console.log(`[Balance API] Cache MISS for ${cacheKey.slice(0, 8)}... calling RPC`);
     const balance = await getTokenBalance(walletAddress);
 
-    return NextResponse.json({ balance });
+    // Store in cache
+    balanceCache.set(cacheKey, { balance, ts: now });
+
+    // Cleanup old entries periodically (keep cache size bounded)
+    if (balanceCache.size > 1000) {
+      const cutoff = now - CACHE_TTL_MS;
+      for (const [key, value] of balanceCache.entries()) {
+        if (value.ts < cutoff) {
+          balanceCache.delete(key);
+        }
+      }
+    }
+
+    return NextResponse.json({ balance, cached: false });
   } catch (error: any) {
     console.error('Error checking balance:', error);
     return NextResponse.json(

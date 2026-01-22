@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useRouter } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
 import { useWallet } from '@solana/wallet-adapter-react';
@@ -23,6 +23,9 @@ import bs58 from 'bs58';
 import { formatDistanceToNow } from 'date-fns';
 import { useTranslations } from 'next-intl';
 
+// Client-side balance cache TTL (15 seconds)
+const BALANCE_CACHE_TTL_MS = 15 * 1000;
+
 export default function ProfilePage() {
   const t = useTranslations('Profile');
   const tWallet = useTranslations('Wallet');
@@ -30,7 +33,7 @@ export default function ProfilePage() {
   const { publicKey, signMessage, connected } = useWallet();
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const balanceCacheRef = useRef<Map<string, number>>(new Map());
+  const balanceCacheRef = useRef<Map<string, { balance: number; ts: number }>>(new Map());
   const balanceRequestRef = useRef<{ controller: AbortController | null; id: number }>({
     controller: null,
     id: 0,
@@ -75,9 +78,12 @@ export default function ProfilePage() {
     }
   }, [user, loading, router]);
 
-  const fetchTokenBalance = async (walletAddress: string, cacheKey: string) => {
-    if (balanceCacheRef.current.has(cacheKey)) {
-      setTokenBalance(balanceCacheRef.current.get(cacheKey) ?? 0);
+  const fetchTokenBalance = useCallback(async (walletAddress: string, cacheKey: string) => {
+    // Check client-side cache with TTL
+    const cached = balanceCacheRef.current.get(cacheKey);
+    const now = Date.now();
+    if (cached && now - cached.ts < BALANCE_CACHE_TTL_MS) {
+      setTokenBalance(cached.balance);
       return;
     }
 
@@ -96,7 +102,7 @@ export default function ProfilePage() {
       const data = await response.json();
       if (balanceRequestRef.current.id !== requestId) return;
       const balance = data.balance || 0;
-      balanceCacheRef.current.set(cacheKey, balance);
+      balanceCacheRef.current.set(cacheKey, { balance, ts: now });
       setTokenBalance(balance);
     } catch (error: any) {
       if (error?.name === 'AbortError') return;
@@ -105,7 +111,7 @@ export default function ProfilePage() {
         setTokenBalance(0);
       }
     }
-  };
+  }, []);
 
   // Check token balance for linked wallet and detect mismatch
   useEffect(() => {
@@ -133,7 +139,7 @@ export default function ProfilePage() {
     return () => {
       balanceRequestRef.current.controller?.abort();
     };
-  }, [connected, publicKey, profile?.wallet_pubkey]);
+  }, [connected, publicKey, profile?.wallet_pubkey, fetchTokenBalance]);
 
   const checkTokenBalance = async () => {
     if (!connected || !publicKey || !profile?.wallet_pubkey) return;
