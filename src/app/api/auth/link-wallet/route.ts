@@ -1,8 +1,14 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { PublicKey } from '@solana/web3.js';
 import bs58 from 'bs58';
 import nacl from 'tweetnacl';
+
+// Extract nonce from the signed message
+function extractNonceFromMessage(message: string): string | null {
+  const match = message.match(/Nonce:\s*(.+)$/);
+  return match ? match[1].trim() : null;
+}
 
 export async function POST(request: Request) {
   try {
@@ -10,6 +16,37 @@ export async function POST(request: Request) {
 
     if (!walletAddress || !signature || !message) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    // Extract and validate nonce from message
+    const nonce = extractNonceFromMessage(message);
+    if (!nonce) {
+      return NextResponse.json({ error: 'Invalid message format: missing nonce' }, { status: 400 });
+    }
+
+    // Validate nonce against database (using service client to bypass RLS)
+    const serviceClient = createServiceClient();
+    const { data: nonceRecord, error: nonceError } = await serviceClient
+      .from('wallet_nonces')
+      .select('id, expires_at, used_at')
+      .eq('nonce', nonce)
+      .maybeSingle();
+
+    if (nonceError) {
+      console.error('Error checking nonce:', nonceError);
+      return NextResponse.json({ error: 'Failed to validate nonce' }, { status: 500 });
+    }
+
+    if (!nonceRecord) {
+      return NextResponse.json({ error: 'Invalid or expired nonce' }, { status: 401 });
+    }
+
+    if (nonceRecord.used_at) {
+      return NextResponse.json({ error: 'Nonce already used' }, { status: 401 });
+    }
+
+    if (new Date(nonceRecord.expires_at) < new Date()) {
+      return NextResponse.json({ error: 'Nonce expired' }, { status: 401 });
     }
 
     // Verify the signature
@@ -21,6 +58,17 @@ export async function POST(request: Request) {
 
     if (!isValid) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
+    }
+
+    // Mark nonce as used immediately after signature verification
+    const { error: updateNonceError } = await serviceClient
+      .from('wallet_nonces')
+      .update({ used_at: new Date().toISOString() })
+      .eq('id', nonceRecord.id);
+
+    if (updateNonceError) {
+      console.error('Error marking nonce as used:', updateNonceError);
+      // Continue anyway - the nonce validation was successful
     }
 
     // Get auth token from header

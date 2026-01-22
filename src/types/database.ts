@@ -333,12 +333,43 @@ export interface Database {
         };
         Relationships: [];
       };
+      wallet_nonces: {
+        Row: {
+          id: string;
+          nonce: string;
+          user_id: string | null;
+          expires_at: string;
+          used_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          nonce: string;
+          user_id?: string | null;
+          expires_at: string;
+          used_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          nonce?: string;
+          user_id?: string | null;
+          expires_at?: string;
+          used_at?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
     };
     Functions: {
       get_next_organic_id: {
+        Args: Record<string, never>;
+        Returns: number;
+      };
+      cleanup_expired_nonces: {
         Args: Record<string, never>;
         Returns: number;
       };
