@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { Send, Plus, X, Loader2, Link as LinkIcon, FileText, ImageIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -18,6 +19,13 @@ import {
 } from '@/features/tasks';
 import toast from 'react-hot-toast';
 
+const getSubmissionErrorMessage = (error: unknown) => {
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+  return 'Failed to submit work';
+};
+
 interface TaskSubmissionFormProps {
   task: TaskWithRelations;
   onSuccess?: () => void;
@@ -25,30 +33,33 @@ interface TaskSubmissionFormProps {
   className?: string;
 }
 
+type CustomSubmissionInput = z.infer<typeof customSubmissionSchema>;
+
 export function TaskSubmissionForm({
   task,
   onSuccess,
   onCancel,
   className,
 }: TaskSubmissionFormProps) {
-  const taskType = task.task_type;
+  const taskType = task.task_type ?? 'custom';
+  const normalizedTaskType = TASK_TYPE_LABELS[taskType] ? taskType : 'custom';
 
   return (
     <div className={cn('bg-white rounded-lg border border-gray-200 p-6', className)}>
       <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        Submit Work for {TASK_TYPE_LABELS[taskType]} Task
+        Submit Work for {TASK_TYPE_LABELS[normalizedTaskType]} Task
       </h3>
 
-      {taskType === 'development' && (
+      {normalizedTaskType === 'development' && (
         <DevelopmentSubmissionForm task={task} onSuccess={onSuccess} onCancel={onCancel} />
       )}
-      {taskType === 'content' && (
+      {normalizedTaskType === 'content' && (
         <ContentSubmissionForm task={task} onSuccess={onSuccess} onCancel={onCancel} />
       )}
-      {taskType === 'design' && (
+      {normalizedTaskType === 'design' && (
         <DesignSubmissionForm task={task} onSuccess={onSuccess} onCancel={onCancel} />
       )}
-      {taskType === 'custom' && (
+      {normalizedTaskType === 'custom' && (
         <CustomSubmissionForm task={task} onSuccess={onSuccess} onCancel={onCancel} />
       )}
     </div>
@@ -86,7 +97,7 @@ function DevelopmentSubmissionForm({
       toast.success('Submission sent for review!');
       onSuccess?.();
     } catch (error) {
-      toast.error('Failed to submit work');
+      toast.error(getSubmissionErrorMessage(error));
       console.error('Submission error:', error);
     }
   };
@@ -179,7 +190,7 @@ function ContentSubmissionForm({
       toast.success('Submission sent for review!');
       onSuccess?.();
     } catch (error) {
-      toast.error('Failed to submit work');
+      toast.error(getSubmissionErrorMessage(error));
       console.error('Submission error:', error);
     }
   };
@@ -319,7 +330,7 @@ function DesignSubmissionForm({
       toast.success('Submission sent for review!');
       onSuccess?.();
     } catch (error) {
-      toast.error('Failed to submit work');
+      toast.error(getSubmissionErrorMessage(error));
       console.error('Submission error:', error);
     }
   };
@@ -425,21 +436,28 @@ function CustomSubmissionForm({
     register,
     handleSubmit,
     formState: { isSubmitting },
-  } = useForm({
+  } = useForm<CustomSubmissionInput>({
     resolver: zodResolver(customSubmissionSchema),
     defaultValues: {
       submission_type: 'custom' as const,
       description: '',
+      custom_fields: {
+        link: '',
+      },
     },
   });
 
-  const onSubmit = async (data: TaskSubmissionInput) => {
+  const onSubmit = async (data: CustomSubmissionInput) => {
     try {
-      await submitTask.mutateAsync({ taskId: task.id, submission: data });
+      const cleanedSubmission: TaskSubmissionInput = {
+        ...data,
+        custom_fields: data.custom_fields?.link ? data.custom_fields : undefined,
+      };
+      await submitTask.mutateAsync({ taskId: task.id, submission: cleanedSubmission });
       toast.success('Submission sent for review!');
       onSuccess?.();
     } catch (error) {
-      toast.error('Failed to submit work');
+      toast.error(getSubmissionErrorMessage(error));
       console.error('Submission error:', error);
     }
   };
@@ -447,6 +465,19 @@ function CustomSubmissionForm({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <input type="hidden" {...register('submission_type')} value="custom" />
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Work Link</label>
+        <div className="relative">
+          <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            {...register('custom_fields.link')}
+            type="url"
+            placeholder="https://"
+            className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
+          />
+        </div>
+      </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
