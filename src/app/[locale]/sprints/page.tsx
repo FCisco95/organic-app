@@ -3,10 +3,13 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/features/auth/context';
 
-import { Calendar, Clock, CheckCircle2, Plus, Users, Target, X, AlertCircle } from 'lucide-react';
+import { Calendar, Clock, CheckCircle2, Plus, Target, X, AlertCircle } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { useTranslations } from 'next-intl';
+import toast from 'react-hot-toast';
+import { TaskBoard, TaskBoardTask, TaskStatus } from '@/components/tasks/task-board';
+import { useSearchParams } from 'next/navigation';
 
 type Sprint = {
   id: string;
@@ -36,12 +39,17 @@ type SprintStats = {
 export default function SprintsPage() {
   const { user, profile } = useAuth();
   const t = useTranslations('Sprints');
+  const tTasks = useTranslations('Tasks');
+  const searchParams = useSearchParams();
   const [sprints, setSprints] = useState<Sprint[]>([]);
   const [sprintStats, setSprintStats] = useState<SprintStats>({});
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activeView, setActiveView] = useState<'board' | 'list'>('board');
+  const [currentSprintTasks, setCurrentSprintTasks] = useState<TaskBoardTask[]>([]);
+  const [tasksLoading, setTasksLoading] = useState(false);
   const [formData, setFormData] = useState<CreateSprintForm>({
     name: '',
     start_at: '',
@@ -196,11 +204,79 @@ export default function SprintsPage() {
   };
 
   const canCreateSprint = profile?.role === 'admin' || profile?.role === 'council';
+  const canManageTasks = profile?.role && ['member', 'council', 'admin'].includes(profile.role);
 
   // Separate current/active sprint from past sprints
   const currentSprint =
     sprints.find((s) => s.status === 'active') || sprints.find((s) => s.status === 'planning');
   const pastSprints = sprints.filter((s) => s.status === 'completed');
+  const boardTasks = currentSprintTasks.filter((task) => task.status !== 'backlog');
+  const backlogTasks = currentSprintTasks.filter((task) => task.status === 'backlog');
+  useEffect(() => {
+    const view = searchParams.get('view');
+    if (view === 'list') {
+      setActiveView('list');
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    const loadCurrentSprintTasks = async () => {
+      if (!currentSprint) {
+        setCurrentSprintTasks([]);
+        return;
+      }
+
+      setTasksLoading(true);
+      try {
+        const supabase = createClient();
+        const { data, error: tasksError } = await supabase
+          .from('tasks')
+          .select(
+            `
+            *,
+            assignee:user_profiles!tasks_assignee_id_fkey (
+              organic_id,
+              email
+            ),
+            sprints (
+              name
+            )
+          `
+          )
+          .eq('sprint_id', currentSprint.id)
+          .order('created_at', { ascending: false });
+
+        if (tasksError) throw tasksError;
+        setCurrentSprintTasks((data as TaskBoardTask[]) || []);
+      } catch (fetchError) {
+        console.error('Error loading sprint tasks:', fetchError);
+      } finally {
+        setTasksLoading(false);
+      }
+    };
+
+    loadCurrentSprintTasks();
+  }, [currentSprint?.id]);
+
+  const updateTaskStatus = async (taskId: string, newStatus: TaskStatus) => {
+    try {
+      const supabase = createClient();
+      const { error: updateError } = await supabase
+        .from('tasks')
+        .update({ status: newStatus })
+        .eq('id', taskId);
+
+      if (updateError) throw updateError;
+
+      setCurrentSprintTasks((prev) =>
+        prev.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task))
+      );
+      toast.success(tTasks('toastTaskUpdated'));
+    } catch (updateError) {
+      console.error('Error updating task:', updateError);
+      toast.error(tTasks('toastTaskUpdateFailed'));
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -246,176 +322,320 @@ export default function SprintsPage() {
           </div>
         ) : (
           <>
-            {/* Current Sprint Canvas */}
-            {currentSprint &&
-              (() => {
-                const stats = sprintStats[currentSprint.id] || {
-                  total: 0,
-                  completed: 0,
-                  inProgress: 0,
-                  points: 0,
-                };
-                const progress =
-                  stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
+            <div className="flex items-center gap-2 mb-6">
+              <button
+                onClick={() => setActiveView('board')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  activeView === 'board'
+                    ? 'bg-organic-orange text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
+                }`}
+              >
+                {t('currentSprintBoard')}
+              </button>
+              <button
+                onClick={() => setActiveView('list')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  activeView === 'list'
+                    ? 'bg-organic-orange text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
+                }`}
+              >
+                {t('sprintList')}
+              </button>
+            </div>
 
-                return (
-                  <div className="mb-8">
-                    <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                      {t('currentSprint')}
-                    </h2>
+            {activeView === 'board' ? (
+              currentSprint ? (
+                <>
+                  <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="text-xs font-medium text-gray-500">{t('currentSprint')}</p>
+                      <h2 className="text-xl font-semibold text-gray-900">{currentSprint.name}</h2>
+                      <div className="text-sm text-gray-500">
+                        {formatDate(currentSprint.start_at)} - {formatDate(currentSprint.end_at)}
+                      </div>
+                    </div>
                     <Link
                       href={`/sprints/${currentSprint.id}`}
-                      className="block bg-gradient-to-br from-organic-orange/5 via-organic-yellow/5 to-white border-2 border-organic-orange/20 rounded-2xl p-8 hover:shadow-xl transition-all group"
+                      className="inline-flex items-center gap-2 text-organic-orange font-medium hover:text-orange-600"
                     >
-                      {/* Sprint Header */}
-                      <div className="flex items-start justify-between mb-6">
-                        <div>
-                          <h3 className="text-2xl font-bold text-gray-900 group-hover:text-organic-orange transition-colors mb-2">
-                            {currentSprint.name}
-                          </h3>
-                          <div className="flex items-center gap-4 text-sm text-gray-600">
-                            <div className="flex items-center gap-2">
-                              <Calendar className="w-4 h-4 text-organic-orange" />
-                              <span>
-                                {formatDate(currentSprint.start_at)} -{' '}
-                                {formatDate(currentSprint.end_at)}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Clock className="w-4 h-4 text-organic-orange" />
-                              <span>
-                                {getDuration(currentSprint.start_at, currentSprint.end_at)}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        <span
-                          className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border-2 ${
-                            currentSprint.status === 'active'
-                              ? 'bg-green-100 text-green-700 border-green-300'
-                              : 'bg-blue-100 text-blue-700 border-blue-300'
-                          }`}
-                        >
-                          {getStatusIcon(currentSprint.status)}
-                          {t(`status.${currentSprint.status}`)}
-                        </span>
-                      </div>
-
-                      {/* Progress Section */}
-                      <div className="bg-white/80 backdrop-blur rounded-xl p-6 border border-gray-200">
-                        <div className="flex items-center justify-between mb-3">
-                          <span className="text-sm font-medium text-gray-700">
-                            {t('progressLabel')}
-                          </span>
-                          <span className="text-2xl font-bold text-organic-orange">
-                            {progress}%
-                          </span>
-                        </div>
-                        <div className="w-full h-4 bg-gray-100 rounded-full overflow-hidden mb-4">
-                          <div
-                            className="h-full bg-gradient-to-r from-organic-orange to-organic-yellow transition-all"
-                            style={{ width: `${progress}%` }}
-                          ></div>
-                        </div>
-
-                        {/* Stats Grid */}
-                        <div className="grid grid-cols-3 gap-4">
-                          <div className="text-center">
-                            <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
-                            <div className="text-xs text-gray-500">{t('totalTasks')}</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="text-2xl font-bold text-green-600">
-                              {stats.completed}
-                            </div>
-                            <div className="text-xs text-gray-500">{t('completed')}</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="text-2xl font-bold text-blue-600">
-                              {stats.inProgress}
-                            </div>
-                            <div className="text-xs text-gray-500">{t('inProgress')}</div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* View Details Link */}
-                      <div className="mt-6 text-center">
-                        <span className="inline-flex items-center gap-2 text-organic-orange font-medium group-hover:gap-3 transition-all">
-                          {t('viewDetails')}
-                          <Target className="w-4 h-4" />
-                        </span>
-                      </div>
+                      {t('viewDetails')}
+                      <Target className="w-4 h-4" />
                     </Link>
                   </div>
-                );
-              })()}
 
-            {/* Past Sprints */}
-            {pastSprints.length > 0 && (
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('pastSprints')}</h2>
-                <div className="space-y-3">
-                  {pastSprints.map((sprint) => {
-                    const stats = sprintStats[sprint.id] || {
+                  <TaskBoard
+                    tasks={boardTasks}
+                    loading={tasksLoading}
+                    canManage={canManageTasks}
+                    onStatusChange={updateTaskStatus}
+                    excludeStatuses={['backlog']}
+                  />
+
+                  <div className="mt-8 bg-white rounded-xl border border-gray-200">
+                    <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        {tTasks('column.backlog')}
+                      </h3>
+                      <span className="text-sm text-gray-500">
+                        {tTasks('listCount', { count: backlogTasks.length })}
+                      </span>
+                    </div>
+
+                    {tasksLoading ? (
+                      <div className="p-6 space-y-3">
+                        {[1, 2].map((i) => (
+                          <div key={i} className="h-14 bg-gray-100 rounded animate-pulse"></div>
+                        ))}
+                      </div>
+                    ) : backlogTasks.length === 0 ? (
+                      <div className="p-6 text-center text-gray-500">{tTasks('noTasksInView')}</div>
+                    ) : (
+                      <div className="divide-y divide-gray-100">
+                        {backlogTasks.map((task) => {
+                          const isOverdue =
+                            task.due_date &&
+                            new Date(task.due_date) < new Date() &&
+                            task.status !== 'done';
+                          return (
+                            <Link
+                              key={task.id}
+                              href={`/tasks/${task.id}`}
+                              className="block px-6 py-4 hover:bg-gray-50 transition-colors"
+                            >
+                              <div className="flex items-start justify-between gap-4">
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 mb-2 flex-wrap">
+                                    <h4 className="font-medium text-gray-900 hover:text-organic-orange transition-colors">
+                                      {task.title}
+                                    </h4>
+                                    {task.priority && (
+                                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border bg-gray-100 text-gray-700 border-gray-300">
+                                        {tTasks(`priority.${task.priority}`)}
+                                      </span>
+                                    )}
+                                  </div>
+                                  {task.description && (
+                                    <p className="text-sm text-gray-600 line-clamp-2 mb-2">
+                                      {task.description}
+                                    </p>
+                                  )}
+                                  <div className="flex items-center flex-wrap gap-4 text-xs text-gray-500">
+                                    {task.assignee && (
+                                      <span>
+                                        {task.assignee.organic_id
+                                          ? tTasks('assigneeId', {
+                                              id: task.assignee.organic_id,
+                                            })
+                                          : task.assignee.email}
+                                      </span>
+                                    )}
+                                    {task.due_date && (
+                                      <span className={isOverdue ? 'text-red-600 font-medium' : ''}>
+                                        {tTasks('dueLabel', {
+                                          date: new Date(task.due_date).toLocaleDateString(),
+                                        })}
+                                        {isOverdue && ` (${tTasks('overdue')})`}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                                {task.points && (
+                                  <span className="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded-full">
+                                    {tTasks('pointsShort', { points: task.points })}
+                                  </span>
+                                )}
+                              </div>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
+                  <Target className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500">{t('noCurrentSprint')}</p>
+                </div>
+              )
+            ) : (
+              <>
+                {/* Current Sprint Canvas */}
+                {currentSprint &&
+                  (() => {
+                    const stats = sprintStats[currentSprint.id] || {
                       total: 0,
                       completed: 0,
                       inProgress: 0,
                       points: 0,
                     };
+                    const progress =
+                      stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
 
                     return (
-                      <Link
-                        key={sprint.id}
-                        href={`/sprints/${sprint.id}`}
-                        className="block bg-white rounded-lg border border-gray-200 p-5 hover:shadow-md hover:border-gray-300 transition-all group"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <h3 className="text-lg font-semibold text-gray-900 group-hover:text-organic-orange transition-colors mb-1">
-                              {sprint.name}
-                            </h3>
-                            <div className="flex items-center gap-4 text-sm text-gray-500">
-                              <div className="flex items-center gap-1.5">
-                                <Calendar className="w-3.5 h-3.5" />
-                                <span>
-                                  {formatDate(sprint.start_at)} - {formatDate(sprint.end_at)}
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-1.5">
-                                <Clock className="w-3.5 h-3.5" />
-                                <span>{getDuration(sprint.start_at, sprint.end_at)}</span>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <div className="text-right">
-                              <div className="text-sm font-medium text-gray-900">
-                                {t('tasksCompleted', {
-                                  completed: stats.completed,
-                                  total: stats.total,
-                                })}
-                              </div>
-                              <div className="text-xs text-gray-500">
-                                {t('pointsEarned', { points: stats.points })}
+                      <div className="mb-8">
+                        <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                          {t('currentSprint')}
+                        </h2>
+                        <Link
+                          href={`/sprints/${currentSprint.id}`}
+                          className="block bg-gradient-to-br from-organic-orange/5 via-organic-yellow/5 to-white border-2 border-organic-orange/20 rounded-2xl p-8 hover:shadow-xl transition-all group"
+                        >
+                          {/* Sprint Header */}
+                          <div className="flex items-start justify-between mb-6">
+                            <div>
+                              <h3 className="text-2xl font-bold text-gray-900 group-hover:text-organic-orange transition-colors mb-2">
+                                {currentSprint.name}
+                              </h3>
+                              <div className="flex items-center gap-4 text-sm text-gray-600">
+                                <div className="flex items-center gap-2">
+                                  <Calendar className="w-4 h-4 text-organic-orange" />
+                                  <span>
+                                    {formatDate(currentSprint.start_at)} -{' '}
+                                    {formatDate(currentSprint.end_at)}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <Clock className="w-4 h-4 text-organic-orange" />
+                                  <span>
+                                    {getDuration(currentSprint.start_at, currentSprint.end_at)}
+                                  </span>
+                                </div>
                               </div>
                             </div>
-                            <CheckCircle2 className="w-5 h-5 text-green-600" />
+                            <span
+                              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border-2 ${
+                                currentSprint.status === 'active'
+                                  ? 'bg-green-100 text-green-700 border-green-300'
+                                  : 'bg-blue-100 text-blue-700 border-blue-300'
+                              }`}
+                            >
+                              {getStatusIcon(currentSprint.status)}
+                              {t(`status.${currentSprint.status}`)}
+                            </span>
                           </div>
-                        </div>
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
 
-            {/* No Past Sprints Message */}
-            {!currentSprint && pastSprints.length === 0 && sprints.length > 0 && (
-              <div className="text-center py-8 bg-white rounded-xl border border-gray-200">
-                <Target className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-500">{t('noPastSprints')}</p>
-              </div>
+                          {/* Progress Section */}
+                          <div className="bg-white/80 backdrop-blur rounded-xl p-6 border border-gray-200">
+                            <div className="flex items-center justify-between mb-3">
+                              <span className="text-sm font-medium text-gray-700">
+                                {t('progressLabel')}
+                              </span>
+                              <span className="text-2xl font-bold text-organic-orange">
+                                {progress}%
+                              </span>
+                            </div>
+                            <div className="w-full h-4 bg-gray-100 rounded-full overflow-hidden mb-4">
+                              <div
+                                className="h-full bg-gradient-to-r from-organic-orange to-organic-yellow transition-all"
+                                style={{ width: `${progress}%` }}
+                              ></div>
+                            </div>
+
+                            {/* Stats Grid */}
+                            <div className="grid grid-cols-3 gap-4">
+                              <div className="text-center">
+                                <div className="text-2xl font-bold text-gray-900">
+                                  {stats.total}
+                                </div>
+                                <div className="text-xs text-gray-500">{t('totalTasks')}</div>
+                              </div>
+                              <div className="text-center">
+                                <div className="text-2xl font-bold text-green-600">
+                                  {stats.completed}
+                                </div>
+                                <div className="text-xs text-gray-500">{t('completed')}</div>
+                              </div>
+                              <div className="text-center">
+                                <div className="text-2xl font-bold text-blue-600">
+                                  {stats.inProgress}
+                                </div>
+                                <div className="text-xs text-gray-500">{t('inProgress')}</div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* View Details Link */}
+                          <div className="mt-6 text-center">
+                            <span className="inline-flex items-center gap-2 text-organic-orange font-medium group-hover:gap-3 transition-all">
+                              {t('viewDetails')}
+                              <Target className="w-4 h-4" />
+                            </span>
+                          </div>
+                        </Link>
+                      </div>
+                    );
+                  })()}
+
+                {/* Past Sprints */}
+                {pastSprints.length > 0 && (
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('pastSprints')}</h2>
+                    <div className="space-y-3">
+                      {pastSprints.map((sprint) => {
+                        const stats = sprintStats[sprint.id] || {
+                          total: 0,
+                          completed: 0,
+                          inProgress: 0,
+                          points: 0,
+                        };
+
+                        return (
+                          <Link
+                            key={sprint.id}
+                            href={`/sprints/${sprint.id}`}
+                            className="block bg-white rounded-lg border border-gray-200 p-5 hover:shadow-md hover:border-gray-300 transition-all group"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1">
+                                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-organic-orange transition-colors mb-1">
+                                  {sprint.name}
+                                </h3>
+                                <div className="flex items-center gap-4 text-sm text-gray-500">
+                                  <div className="flex items-center gap-1.5">
+                                    <Calendar className="w-3.5 h-3.5" />
+                                    <span>
+                                      {formatDate(sprint.start_at)} - {formatDate(sprint.end_at)}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-1.5">
+                                    <Clock className="w-3.5 h-3.5" />
+                                    <span>{getDuration(sprint.start_at, sprint.end_at)}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <div className="text-right">
+                                  <div className="text-sm font-medium text-gray-900">
+                                    {t('tasksCompleted', {
+                                      completed: stats.completed,
+                                      total: stats.total,
+                                    })}
+                                  </div>
+                                  <div className="text-xs text-gray-500">
+                                    {t('pointsEarned', { points: stats.points })}
+                                  </div>
+                                </div>
+                                <CheckCircle2 className="w-5 h-5 text-green-600" />
+                              </div>
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* No Past Sprints Message */}
+                {!currentSprint && pastSprints.length === 0 && sprints.length > 0 && (
+                  <div className="text-center py-8 bg-white rounded-xl border border-gray-200">
+                    <Target className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                    <p className="text-gray-500">{t('noPastSprints')}</p>
+                  </div>
+                )}
+              </>
             )}
           </>
         )}
