@@ -45,6 +45,11 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
           id,
           name,
           status
+        ),
+        proposal:proposals(
+          id,
+          title,
+          status
         )
       `
       )
@@ -55,7 +60,45 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       return NextResponse.json({ error: 'Task not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ task });
+    // For team tasks, fetch assignees
+    let assignees: unknown[] = [];
+    if ((task as Record<string, unknown>).is_team_task) {
+      const { data: assigneesData } = await supabase
+        .from('task_assignees')
+        .select(
+          `
+          *,
+          user:user_profiles(id, name, email, organic_id, avatar_url)
+        `
+        )
+        .eq('task_id', id);
+      assignees = assigneesData || [];
+    }
+
+    // Fetch submissions
+    const { data: submissions } = await supabase
+      .from('task_submissions')
+      .select(
+        `
+        *,
+        user:user_profiles!task_submissions_user_id_fkey(
+          id, name, email, organic_id, avatar_url
+        ),
+        reviewer:user_profiles!task_submissions_reviewer_id_fkey(
+          id, name, email, organic_id
+        )
+      `
+      )
+      .eq('task_id', id)
+      .order('submitted_at', { ascending: false });
+
+    return NextResponse.json({
+      task: {
+        ...task,
+        assignees,
+        submissions: submissions || [],
+      },
+    });
   } catch (error: any) {
     console.error('Error in task detail route:', error);
     return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
@@ -78,17 +121,37 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     }
 
     const body = await request.json();
-    const { title, description, status, priority, points, assignee_id, sprint_id } = body;
+    const {
+      title,
+      description,
+      status,
+      priority,
+      points,
+      base_points,
+      assignee_id,
+      sprint_id,
+      task_type,
+      is_team_task,
+      max_assignees,
+      due_date,
+      labels,
+    } = body;
 
     // Build update object with only provided fields
-    const updates: any = {};
+    const updates: Record<string, unknown> = {};
     if (title !== undefined) updates.title = title;
     if (description !== undefined) updates.description = description;
     if (status !== undefined) updates.status = status;
     if (priority !== undefined) updates.priority = priority;
     if (points !== undefined) updates.points = points;
+    if (base_points !== undefined) updates.base_points = base_points;
     if (assignee_id !== undefined) updates.assignee_id = assignee_id;
     if (sprint_id !== undefined) updates.sprint_id = sprint_id;
+    if (task_type !== undefined) updates.task_type = task_type;
+    if (is_team_task !== undefined) updates.is_team_task = is_team_task;
+    if (max_assignees !== undefined) updates.max_assignees = max_assignees;
+    if (due_date !== undefined) updates.due_date = due_date;
+    if (labels !== undefined) updates.labels = labels;
 
     const { data: task, error } = await supabase
       .from('tasks')

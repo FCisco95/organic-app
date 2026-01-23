@@ -1,4 +1,5 @@
 # PROJECT_CONTEXT.md
+
 ## Organic Platform
 
 ### 1. Project Overview
@@ -57,6 +58,7 @@ The platform is designed to support multiple community roles, including (but not
 - General contributors
 
 Long-term idea:
+
 - Introduce **learning paths / certifications**
 - Certifications unlock or boost effectiveness in certain task types
 - Certified roles may earn higher point multipliers for relevant work
@@ -68,6 +70,7 @@ Role systems are **not finalized** and expected to evolve.
 ### 5. Current State (Reality Check)
 
 **What exists today:**
+
 - User authentication
 - Organic ID
 - Basic task creation and editing
@@ -77,6 +80,7 @@ Role systems are **not finalized** and expected to evolve.
 - Solana wallet integration exists at a basic level
 
 **What is incomplete or fragile:**
+
 - Task flow logic is not fully tested
 - Proposals → backlog → waves flow is not automated
 - Voting logic needs refinement
@@ -84,6 +88,7 @@ Role systems are **not finalized** and expected to evolve.
 - UI/UX is functional but not polished
 
 **What does NOT exist yet:**
+
 - Automated sprint/wave management
 - AI/agent-based task scoring
 - Revenue distribution logic
@@ -112,6 +117,7 @@ Agents should **not** implement these unless explicitly asked.
 ### 7. Tech Stack (Current & Flexible)
 
 **Current stack:**
+
 - Frontend: Next.js (App Router)
 - Styling: Tailwind CSS
 - Backend: Supabase
@@ -119,6 +125,7 @@ Agents should **not** implement these unless explicitly asked.
 - Auth: Supabase Auth + wallet-based logic
 
 **Notes:**
+
 - UI framework usage (e.g. shadcn) is unclear and open to revision
 - Stack is **not locked**
 - Open to changes if there is strong justification
@@ -150,6 +157,7 @@ UI revamp is explicitly desired.
 ### 10. How Agents Should Work
 
 **Agents are encouraged to:**
+
 - Ask clarifying questions
 - Challenge assumptions respectfully
 - Propose better architectures or flows
@@ -157,6 +165,7 @@ UI revamp is explicitly desired.
 - Improve planning and sequencing
 
 **Agents should avoid:**
+
 - Over-engineering early features
 - Rewriting large parts without discussion
 - Assuming finality in governance rules
@@ -182,4 +191,4 @@ These are areas where agent input is explicitly welcome.
 
 Organic is an early-stage but functioning platform with a strong vision, partial implementation, and many open design decisions. The current priority is **improving structure, flow, UX, and planning**, not rushing features.
 
-The goal is to build the *best possible version* of this system, starting with clarity.
+The goal is to build the _best possible version_ of this system, starting with clarity.

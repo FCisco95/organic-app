@@ -10,6 +10,7 @@
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\""
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "@solana/spl-token": "^0.4.0",
     "@solana/wallet-adapter-base": "^0.9.23",
     "@solana/wallet-adapter-react": "^0.15.35",
@@ -29,6 +30,7 @@
     "next-intl": "^4.7.0",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
+    "react-hook-form": "^7.71.1",
     "react-hot-toast": "^2.4.1",
     "tailwind-merge": "^2.3.0",
     "tweetnacl": "^1.0.3",

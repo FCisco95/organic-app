@@ -2,6 +2,42 @@
 
 Add newest entries at the top.
 
+## 2026-01-23 (Session 2)
+
+### Task Submission System
+
+- Enhanced task detail page with claim/submit workflow
+- Added `ClaimButton` component for users to claim available tasks
+- Added `TaskSubmissionForm` component with type-specific fields (development, content, design, custom)
+- Added submission history display with review status badges
+- Added `TaskReviewPanel` and `QualityRating` components for reviewers
+
+### API Routes
+
+- Created `/api/tasks/[id]/claim` - claim/unclaim tasks (solo and team)
+- Created `/api/tasks/[id]/submissions` - submit work for review
+- Created `/api/submissions/[id]/review` - approve/reject submissions with quality scoring
+- Updated `/api/tasks/[id]` - now returns assignees and submissions
+
+### React Query Integration
+
+- Added `@tanstack/react-query` for client-side data fetching
+- Created `QueryProvider` component wrapping app in layout
+- Added `react-hook-form` + `@hookform/resolvers` for form handling
+- Created task hooks: `useTasks`, `useTask`, `useClaimTask`, `useSubmitTask`, etc.
+
+### Supporting Changes
+
+- Added task feature module: `src/features/tasks/` (hooks, types, schemas, utils)
+- Added 18 new i18n keys for task submissions (en, pt-PT, zh-CN)
+- Extended database types with `task_submissions`, `task_assignees` tables
+- Fixed Zod discriminatedUnion issue with content submission schema
+- Fixed Supabase TypeScript type casting for foreign key relationships
+
+### Migration
+
+- Database migration ready: `supabase/migrations/20250122000001_enhance_task_system.sql`
+
 ## 2026-01-23
 
 - Aligned documentation paths with locale-based App Router structure
@@ -13,6 +49,7 @@ Add newest entries at the top.
 ## 2026-01-22
 
 ### Security: Server-side Nonce Validation
+
 - Created `wallet_nonces` migration with 5-minute TTL and RLS policy
 - Updated `/api/auth/nonce` to store nonces in database
 - Updated `/api/auth/link-wallet` to validate, verify expiry, and consume nonces
@@ -20,16 +57,19 @@ Add newest entries at the top.
 - Prevents replay attacks on wallet signature verification
 
 ### Performance: Solana RPC Caching
+
 - Added server-side balance cache (30s TTL) in `/api/organic-id/balance`
 - Added client-side balance cache (15s TTL) in profile page
 - Logs cache hits vs RPC calls for debugging
 - Prevents 429 rate limit errors from excessive RPC calls
 
 ### Wallet Flow
+
 - Fixed wallet switch flow by sequencing select -> connect through wallet context
 - Guarded against concurrent connect attempts and cleared walletName on disconnect
 
 ### Documentation
+
 - Updated BUILD_PLAN.md with reliability tasks and recent updates
 - Added infrastructure TODO: replace public Solana RPC with paid provider
 

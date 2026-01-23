@@ -18,9 +18,26 @@ import {
   AlertCircle,
   UserPlus,
   Trash2,
+  Clock,
+  CheckCircle,
+  XCircle,
+  ExternalLink,
+  Users,
+  Tag,
 } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
+import { ClaimButton, TeamClaimStatus } from '@/components/tasks/claim-button';
+import { TaskSubmissionForm } from '@/components/tasks/task-submission-form';
+import {
+  useTask,
+  canSubmitTask,
+  TASK_TYPE_LABELS,
+  TaskSubmissionWithReviewer,
+} from '@/features/tasks';
+
+type TaskType = 'development' | 'content' | 'design' | 'custom';
+type ReviewStatus = 'pending' | 'approved' | 'rejected' | 'disputed';
 
 type Task = {
   id: string;
@@ -29,8 +46,16 @@ type Task = {
   status: 'backlog' | 'todo' | 'in_progress' | 'review' | 'done';
   priority: 'low' | 'medium' | 'high' | 'critical';
   points: number;
+  base_points: number | null;
   sprint_id: string | null;
   assignee_id: string | null;
+  task_type: TaskType;
+  is_team_task: boolean;
+  max_assignees: number;
+  due_date: string | null;
+  labels: string[] | null;
+  claimed_at: string | null;
+  completed_at: string | null;
   created_at: string;
   assignee?: {
     id: string;
@@ -44,6 +69,55 @@ type Task = {
     name: string;
     status: string;
   };
+  assignees?: TaskAssigneeWithUser[];
+  submissions?: TaskSubmission[];
+};
+
+type TaskAssigneeWithUser = {
+  id: string;
+  task_id: string;
+  user_id: string;
+  claimed_at: string;
+  user?: {
+    id: string;
+    name: string | null;
+    email: string;
+    organic_id: number | null;
+    avatar_url: string | null;
+  };
+};
+
+type TaskSubmission = {
+  id: string;
+  task_id: string;
+  user_id: string;
+  submission_type: TaskType;
+  pr_link: string | null;
+  content_link: string | null;
+  content_text: string | null;
+  file_urls: string[] | null;
+  description: string | null;
+  review_status: ReviewStatus;
+  quality_score: number | null;
+  reviewer_id: string | null;
+  reviewer_notes: string | null;
+  rejection_reason: string | null;
+  earned_points: number | null;
+  submitted_at: string;
+  reviewed_at: string | null;
+  user?: {
+    id: string;
+    name: string | null;
+    email: string;
+    organic_id: number | null;
+    avatar_url: string | null;
+  };
+  reviewer?: {
+    id: string;
+    name: string | null;
+    email: string;
+    organic_id: number | null;
+  } | null;
 };
 
 type Comment = {
@@ -94,6 +168,7 @@ export default function TaskDetailPage() {
   const [isAssigning, setIsAssigning] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showSubmissionForm, setShowSubmissionForm] = useState(false);
 
   const [editForm, setEditForm] = useState({
     title: '',
@@ -119,7 +194,7 @@ export default function TaskDetailPage() {
       } = await supabase.auth.getSession();
       console.log('[Task Detail] Session status:', session ? 'authenticated' : 'no session');
 
-      const { data: task, error } = await supabase
+      const { data: taskData, error } = await supabase
         .from('tasks')
         .select(
           `
@@ -141,20 +216,59 @@ export default function TaskDetailPage() {
         .eq('id', taskId)
         .single();
 
-      console.log('[Task Detail] Query result:', { task, error });
+      console.log('[Task Detail] Query result:', { taskData, error });
 
-      if (!error && task) {
-        console.log('[Task Detail] Task loaded successfully:', task.title);
-        const typedTask = task as unknown as Task;
-        setTask(typedTask);
+      if (!error && taskData) {
+        console.log('[Task Detail] Task loaded successfully:', taskData.title);
+        const typedTask = taskData as unknown as Task;
+
+        // Fetch assignees for team tasks
+        let assignees: TaskAssigneeWithUser[] = [];
+        if (typedTask.is_team_task) {
+          const { data: assigneesData } = await supabase
+            .from('task_assignees')
+            .select(
+              `
+              *,
+              user:user_profiles(id, name, email, organic_id, avatar_url)
+            `
+            )
+            .eq('task_id', taskId);
+          assignees = (assigneesData ?? []) as unknown as TaskAssigneeWithUser[];
+        }
+
+        // Fetch submissions
+        const { data: submissionsData } = await supabase
+          .from('task_submissions')
+          .select(
+            `
+            *,
+            user:user_profiles!task_submissions_user_id_fkey(
+              id, name, email, organic_id, avatar_url
+            ),
+            reviewer:user_profiles!task_submissions_reviewer_id_fkey(
+              id, name, email, organic_id
+            )
+          `
+          )
+          .eq('task_id', taskId)
+          .order('submitted_at', { ascending: false });
+
+        const fullTask = {
+          ...typedTask,
+          assignees,
+          submissions: (submissionsData ?? []) as unknown as TaskSubmission[],
+        };
+
+        setTask(fullTask);
         setEditForm({
-          title: typedTask.title,
-          description: typedTask.description || '',
-          status: typedTask.status,
-          priority: typedTask.priority,
-          points: typedTask.points,
-          assignee_id: typedTask.assignee_id || '',
-          sprint_id: typedTask.sprint_id || '',
+          title: fullTask.title,
+          description: fullTask.description || '',
+          status: fullTask.status,
+          priority: fullTask.priority,
+          points: fullTask.points,
+          assignee_id: fullTask.assignee_id || '',
+          sprint_id: fullTask.sprint_id || '',
         });
       } else {
         console.error('[Task Detail] Error fetching task:', error);
@@ -682,7 +796,31 @@ export default function TaskDetailPage() {
                 <span className="px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-700">
                   {t('pointsLabel', { points: task.points })}
                 </span>
+                <span className="px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700">
+                  {TASK_TYPE_LABELS[task.task_type]}
+                </span>
+                {task.is_team_task && (
+                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-700">
+                    <Users className="w-3 h-3" />
+                    {t('teamTask')}
+                  </span>
+                )}
               </div>
+
+              {/* Labels */}
+              {task.labels && task.labels.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {task.labels.map((label, idx) => (
+                    <span
+                      key={idx}
+                      className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs"
+                    >
+                      <Tag className="w-3 h-3" />
+                      {label}
+                    </span>
+                  ))}
+                </div>
+              )}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t">
                 <div>
@@ -726,6 +864,78 @@ export default function TaskDetailPage() {
             </div>
           )}
         </div>
+
+        {/* Task Actions - Claim and Submit */}
+        {user && profile?.organic_id && (
+          <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('actions')}</h2>
+
+            <div className="flex flex-wrap gap-3">
+              {/* Claim button - converts task to TaskWithRelations format for the component */}
+              <ClaimButton task={task as any} onSuccess={() => fetchTaskDetails()} />
+
+              {/* Submit work button - show for assigned users when task is in progress */}
+              {(() => {
+                const isAssigned = task.is_team_task
+                  ? task.assignees?.some((a) => a.user_id === user.id)
+                  : task.assignee_id === user.id;
+                const canSubmit = isAssigned && ['in_progress', 'review'].includes(task.status);
+
+                if (canSubmit && !showSubmissionForm) {
+                  return (
+                    <button
+                      onClick={() => setShowSubmissionForm(true)}
+                      className="flex items-center gap-2 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
+                    >
+                      <Send className="w-4 h-4" />
+                      {t('submitWork')}
+                    </button>
+                  );
+                }
+                return null;
+              })()}
+            </div>
+
+            {/* Team task status */}
+            {task.is_team_task && (
+              <div className="mt-4">
+                <TeamClaimStatus task={task as any} />
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Submission Form */}
+        {showSubmissionForm && (
+          <TaskSubmissionForm
+            task={task as any}
+            onSuccess={() => {
+              setShowSubmissionForm(false);
+              fetchTaskDetails();
+            }}
+            onCancel={() => setShowSubmissionForm(false)}
+            className="mb-6"
+          />
+        )}
+
+        {/* Submissions History */}
+        {task.submissions && task.submissions.length > 0 && (
+          <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              {t('submissions')} ({task.submissions.length})
+            </h2>
+
+            <div className="space-y-4">
+              {task.submissions.map((submission) => (
+                <SubmissionCard
+                  key={submission.id}
+                  submission={submission}
+                  getDisplayName={getDisplayName}
+                />
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Comments Section */}
         <div className="bg-white rounded-xl border border-gray-200 p-6">
@@ -891,6 +1101,128 @@ export default function TaskDetailPage() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// Submission Card Component
+function SubmissionCard({
+  submission,
+  getDisplayName,
+}: {
+  submission: TaskSubmission;
+  getDisplayName: (user: any) => string;
+}) {
+  const t = useTranslations('TaskDetail');
+
+  const statusIcon = {
+    pending: <Clock className="w-4 h-4 text-yellow-500" />,
+    approved: <CheckCircle className="w-4 h-4 text-green-500" />,
+    rejected: <XCircle className="w-4 h-4 text-red-500" />,
+    disputed: <AlertCircle className="w-4 h-4 text-purple-500" />,
+  };
+
+  const statusColors = {
+    pending: 'bg-yellow-50 border-yellow-200',
+    approved: 'bg-green-50 border-green-200',
+    rejected: 'bg-red-50 border-red-200',
+    disputed: 'bg-purple-50 border-purple-200',
+  };
+
+  return (
+    <div className={`rounded-lg border p-4 ${statusColors[submission.review_status]}`}>
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-2">
+            {statusIcon[submission.review_status]}
+            <span className="font-medium text-gray-900">
+              {t(`reviewStatus.${submission.review_status}`)}
+            </span>
+            {submission.quality_score && (
+              <span className="text-sm text-gray-500">
+                ({t('qualityScore')}: {submission.quality_score}/5)
+              </span>
+            )}
+          </div>
+
+          <div className="text-sm text-gray-600 mb-2">
+            {t('submittedBy')}{' '}
+            <span className="font-medium">{getDisplayName(submission.user)}</span> {t('on')}{' '}
+            {new Date(submission.submitted_at).toLocaleDateString()}
+          </div>
+
+          {submission.description && (
+            <p className="text-sm text-gray-600 mb-2">{submission.description}</p>
+          )}
+
+          {/* Submission-type specific fields */}
+          {submission.pr_link && (
+            <a
+              href={submission.pr_link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-sm text-organic-orange hover:underline"
+            >
+              <ExternalLink className="w-3 h-3" />
+              {t('viewPullRequest')}
+            </a>
+          )}
+
+          {submission.content_link && (
+            <a
+              href={submission.content_link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-sm text-organic-orange hover:underline ml-2"
+            >
+              <ExternalLink className="w-3 h-3" />
+              {t('viewContent')}
+            </a>
+          )}
+
+          {submission.file_urls && submission.file_urls.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-2">
+              {submission.file_urls.map((url, idx) => (
+                <a
+                  key={idx}
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-sm text-organic-orange hover:underline"
+                >
+                  <ExternalLink className="w-3 h-3" />
+                  {t('file')} {idx + 1}
+                </a>
+              ))}
+            </div>
+          )}
+
+          {/* Reviewer notes */}
+          {submission.reviewer_notes && (
+            <div className="mt-3 pt-3 border-t border-gray-200">
+              <p className="text-sm font-medium text-gray-700">{t('reviewerNotes')}:</p>
+              <p className="text-sm text-gray-600 mt-1">{submission.reviewer_notes}</p>
+            </div>
+          )}
+
+          {/* Rejection reason */}
+          {submission.rejection_reason && (
+            <div className="mt-3 pt-3 border-t border-gray-200">
+              <p className="text-sm font-medium text-red-700">{t('rejectionReason')}:</p>
+              <p className="text-sm text-red-600 mt-1">{submission.rejection_reason}</p>
+            </div>
+          )}
+
+          {/* Earned points */}
+          {submission.earned_points !== null && submission.earned_points > 0 && (
+            <div className="mt-2">
+              <span className="inline-flex items-center px-2 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
+                +{submission.earned_points} {t('pointsEarned')}
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

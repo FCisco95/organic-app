@@ -483,7 +483,26 @@
     "deleteTitle": "删除任务",
     "deleteDescription": "确定要删除此任务吗？此操作无法撤销，并会删除该任务的所有评论。",
     "deleting": "删除中...",
-    "deleteTask": "删除任务"
+    "deleteTask": "删除任务",
+    "actions": "操作",
+    "submitWork": "提交工作",
+    "teamTask": "团队任务",
+    "submissions": "提交记录",
+    "reviewStatus": {
+      "pending": "待审核",
+      "approved": "已批准",
+      "rejected": "已拒绝",
+      "disputed": "有争议"
+    },
+    "qualityScore": "质量",
+    "submittedBy": "提交者",
+    "on": "于",
+    "viewPullRequest": "查看 Pull Request",
+    "viewContent": "查看内容",
+    "file": "文件",
+    "reviewerNotes": "审核备注",
+    "rejectionReason": "拒绝原因",
+    "pointsEarned": "积分获得"
   },
   "Profile": {
     "loadingProfile": "正在加载您的个人资料...",

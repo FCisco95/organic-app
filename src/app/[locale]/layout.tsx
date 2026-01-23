@@ -6,6 +6,7 @@ import { SolanaWalletProvider } from '@/features/auth/wallet-provider';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { LayoutClient } from '@/components/layout-client';
+import { QueryProvider } from '@/components/query-provider';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -32,11 +33,13 @@ export default async function RootLayout({
     <html lang={locale}>
       <body className={inter.className}>
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <AuthProvider>
-            <SolanaWalletProvider>
-              <LayoutClient>{children}</LayoutClient>
-            </SolanaWalletProvider>
-          </AuthProvider>
+          <QueryProvider>
+            <AuthProvider>
+              <SolanaWalletProvider>
+                <LayoutClient>{children}</LayoutClient>
+              </SolanaWalletProvider>
+            </AuthProvider>
+          </QueryProvider>
         </NextIntlClientProvider>
       </body>
     </html>

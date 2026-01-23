@@ -483,7 +483,26 @@
     "deleteTitle": "Excluir tarefa",
     "deleteDescription": "Tem certeza de que deseja excluir esta tarefa? Esta ação não pode ser desfeita e também excluirá todos os comentários associados.",
     "deleting": "Excluindo...",
-    "deleteTask": "Excluir tarefa"
+    "deleteTask": "Excluir tarefa",
+    "actions": "Ações",
+    "submitWork": "Submeter trabalho",
+    "teamTask": "Tarefa de equipa",
+    "submissions": "Submissões",
+    "reviewStatus": {
+      "pending": "Pendente de revisão",
+      "approved": "Aprovada",
+      "rejected": "Rejeitada",
+      "disputed": "Disputada"
+    },
+    "qualityScore": "Qualidade",
+    "submittedBy": "Submetido por",
+    "on": "em",
+    "viewPullRequest": "Ver Pull Request",
+    "viewContent": "Ver conteúdo",
+    "file": "Ficheiro",
+    "reviewerNotes": "Notas do revisor",
+    "rejectionReason": "Motivo da rejeição",
+    "pointsEarned": "pontos ganhos"
   },
   "Profile": {
     "loadingProfile": "Carregando seu perfil...",
