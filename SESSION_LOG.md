@@ -2,6 +2,15 @@
 
 Add newest entries at the top.
 
+## 2026-01-24
+
+- Applied Supabase submission schema in prod and recorded migration
+- Added admin submission review queue page and Tasks header link
+- Adjusted pending submissions fetch to avoid failing joins
+- Fixed submission counts on Tasks page
+- Updated review panel to display custom submission links
+- Removed manual points updates from review API to rely on DB triggers
+
 ## 2026-01-23 (Session 3)
 
 - Restored stashed working changes after undo/redo on Task Detail steps
