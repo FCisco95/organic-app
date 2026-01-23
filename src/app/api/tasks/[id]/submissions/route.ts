@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 
 // Validation schemas
@@ -126,36 +126,67 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     // Get the task
     const { data: task, error: taskError } = await supabase
       .from('tasks')
-      .select('id, task_type, is_team_task, assignee_id, status, base_points, points')
+      .select('id, task_type, status, base_points, points, sprint_id')
       .eq('id', taskId)
       .single();
 
+    let resolvedTask = task;
+    let taskClient = supabase;
+
     if (taskError || !task) {
+      const serviceClient = createServiceClient();
+      const { data: serviceTask } = await serviceClient
+        .from('tasks')
+        .select('id, task_type, status, base_points, points, sprint_id')
+        .eq('id', taskId)
+        .single();
+
+      if (!serviceTask) {
+        return NextResponse.json({ error: 'Task not found' }, { status: 404 });
+      }
+
+      resolvedTask = serviceTask;
+      taskClient = serviceClient;
+    }
+
+    if (!resolvedTask) {
       return NextResponse.json({ error: 'Task not found' }, { status: 404 });
     }
 
-    // Check if user is assigned to this task
-    let isAssigned = false;
-    if (task.is_team_task) {
-      const { data: assignee } = await supabase
-        .from('task_assignees')
-        .select('id')
-        .eq('task_id', taskId)
-        .eq('user_id', user.id)
-        .single();
-      isAssigned = !!assignee;
-    } else {
-      isAssigned = task.assignee_id === user.id;
+    const { data: profile, error: profileError } = await supabase
+      .from('user_profiles')
+      .select('organic_id')
+      .eq('id', user.id)
+      .single();
+
+    if (profileError) {
+      return NextResponse.json({ error: 'Failed to verify Organic ID' }, { status: 500 });
     }
 
-    if (!isAssigned) {
-      return NextResponse.json({ error: 'You are not assigned to this task' }, { status: 403 });
+    if (!profile?.organic_id) {
+      return NextResponse.json({ error: 'Organic ID required to submit work' }, { status: 403 });
     }
 
-    // Check if task is in progress
-    if (!['in_progress', 'review'].includes(task.status)) {
+    if (!resolvedTask.sprint_id) {
       return NextResponse.json(
-        { error: 'Task must be in progress to submit work' },
+        { error: 'Task must be in an active sprint to submit work' },
+        { status: 400 }
+      );
+    }
+
+    const { data: sprint, error: sprintError } = await taskClient
+      .from('sprints')
+      .select('status')
+      .eq('id', resolvedTask.sprint_id)
+      .single();
+
+    if (sprintError) {
+      return NextResponse.json({ error: 'Failed to verify sprint status' }, { status: 500 });
+    }
+
+    if (sprint?.status !== 'active') {
+      return NextResponse.json(
+        { error: 'Task must be in an active sprint to submit work' },
         { status: 400 }
       );
     }
@@ -183,10 +214,12 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       }
     }
 
+    const taskType = resolvedTask.task_type ?? 'custom';
+
     // Verify submission type matches task type
-    if (submissionData.submission_type !== task.task_type) {
+    if (submissionData.submission_type !== taskType) {
       return NextResponse.json(
-        { error: `This task requires a ${task.task_type} submission` },
+        { error: `This task requires a ${taskType} submission` },
         { status: 400 }
       );
     }
@@ -223,8 +256,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: 'Failed to create submission' }, { status: 500 });
     }
 
-    // Update task status to review
-    await supabase.from('tasks').update({ status: 'review' }).eq('id', taskId);
+    // Update task status to review unless already done
+    if (resolvedTask.status !== 'done') {
+      await supabase.from('tasks').update({ status: 'review' }).eq('id', taskId);
+    }
 
     return NextResponse.json({ submission }, { status: 201 });
   } catch (error: unknown) {
