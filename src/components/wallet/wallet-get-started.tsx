@@ -94,9 +94,7 @@ export function WalletGetStarted({ onBack }: WalletGetStartedProps) {
 
       {/* Info */}
       <div className="mt-auto pt-6">
-        <p className="text-gray-500 text-xs text-center leading-relaxed">
-          {t('walletInfoFooter')}
-        </p>
+        <p className="text-gray-500 text-xs text-center leading-relaxed">{t('walletInfoFooter')}</p>
       </div>
     </div>
   );

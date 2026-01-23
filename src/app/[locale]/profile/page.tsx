@@ -761,13 +761,17 @@ export default function ProfilePage() {
             <h2 className="text-lg font-semibold text-gray-900 mb-2">{t('getYourOrganicId')}</h2>
             <p className="text-sm text-gray-600 mb-4">{t('holdTokensDescription')}</p>
 
-            {tokenBalance !== null && tokenBalance > 0 && connected && publicKey && !walletMismatch && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
-                <p className="text-sm text-green-700 font-medium">
-                  ✓ {t('linkedWalletHoldsTokens', { balance: tokenBalance.toFixed(2) })}
-                </p>
-              </div>
-            )}
+            {tokenBalance !== null &&
+              tokenBalance > 0 &&
+              connected &&
+              publicKey &&
+              !walletMismatch && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
+                  <p className="text-sm text-green-700 font-medium">
+                    ✓ {t('linkedWalletHoldsTokens', { balance: tokenBalance.toFixed(2) })}
+                  </p>
+                </div>
+              )}
 
             <button
               onClick={handleGetOrganicId}

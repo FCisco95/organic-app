@@ -584,12 +584,13 @@ function NewTaskModal({
         title: title.trim(),
         description: description.trim() || null,
         points: points ? parseInt(points) : null,
+        base_points: points ? parseInt(points) : null,
         sprint_id: sprintId || null,
         priority,
         assignee_id: assigneeId || null,
         due_date: dueDate || null,
-        labels: labels.length > 0 ? labels : null,
-        status: 'backlog',
+        labels: labels.length > 0 ? labels : [],
+        status: 'backlog' as const,
       });
 
       if (error) throw error;

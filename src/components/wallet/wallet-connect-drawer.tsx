@@ -181,7 +181,17 @@ export function WalletConnectDrawer({ isOpen, onClose }: WalletConnectDrawerProp
         setIsConnecting(false);
       }
     },
-    [wallets, select, connect, connected, connecting, isConnecting, waitForWalletSelection, wallet, onClose]
+    [
+      wallets,
+      select,
+      connect,
+      connected,
+      connecting,
+      isConnecting,
+      waitForWalletSelection,
+      wallet,
+      onClose,
+    ]
   );
 
   // Keyboard navigation
@@ -323,9 +333,7 @@ export function WalletConnectDrawer({ isOpen, onClose }: WalletConnectDrawerProp
 
         {/* Subtext */}
         <div className="px-5 py-3 border-b border-gray-800/50">
-          <p className="text-gray-500 text-xs leading-relaxed">
-            {t('drawerSubtext')}
-          </p>
+          <p className="text-gray-500 text-xs leading-relaxed">{t('drawerSubtext')}</p>
         </div>
 
         {/* Content */}
