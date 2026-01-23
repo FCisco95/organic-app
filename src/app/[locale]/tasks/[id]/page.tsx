@@ -24,6 +24,7 @@ import {
   ExternalLink,
   Users,
   Tag,
+  Heart,
 } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
@@ -155,6 +156,7 @@ export default function TaskDetailPage() {
   const { user, profile } = useAuth();
   const t = useTranslations('TaskDetail');
   const taskId = typeof params.id === 'string' ? params.id : (params.id?.[0] ?? '');
+  const canLike = !!profile?.role && ['member', 'council', 'admin'].includes(profile.role);
 
   const [task, setTask] = useState<Task | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
@@ -169,6 +171,10 @@ export default function TaskDetailPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showSubmissionForm, setShowSubmissionForm] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
+  const [likedByUser, setLikedByUser] = useState(false);
+  const [showAllContributors, setShowAllContributors] = useState(false);
+  const [showContributorsModal, setShowContributorsModal] = useState(false);
 
   const [editForm, setEditForm] = useState({
     title: '',
@@ -280,32 +286,84 @@ export default function TaskDetailPage() {
     }
   }, [taskId]);
 
+  const fetchTaskLikes = useCallback(async () => {
+    try {
+      const supabase = createClient();
+      const { count, error } = await supabase
+        .from('task_likes')
+        .select('*', { count: 'exact', head: true })
+        .eq('task_id', taskId);
+
+      if (error) throw error;
+      setLikeCount(count ?? 0);
+
+      if (user?.id) {
+        const { data: liked, error: likedError } = await supabase
+          .from('task_likes')
+          .select('task_id')
+          .eq('task_id', taskId)
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (likedError) throw likedError;
+        setLikedByUser(!!liked);
+      } else {
+        setLikedByUser(false);
+      }
+    } catch (error) {
+      console.error('Error loading task likes:', error);
+    }
+  }, [taskId, user?.id]);
+
   const fetchComments = useCallback(async () => {
     try {
       const supabase = createClient();
 
-      const { data: comments, error } = await supabase
+      const { data: commentsData, error } = await supabase
         .from('task_comments')
-        .select(
-          `
-          *,
-          user:user_profiles(
-            id,
-            name,
-            email,
-            organic_id,
-            avatar_url
-          )
-        `
-        )
+        .select('id, task_id, user_id, content, created_at, updated_at')
         .eq('task_id', taskId)
-        .order('created_at', { ascending: true });
+        .order('created_at', { ascending: false });
 
-      if (!error && comments) {
-        setComments(comments as unknown as Comment[]);
-      } else {
+      if (error || !commentsData) {
         console.error('Error fetching comments:', error);
+        return;
       }
+
+      const userIds = Array.from(new Set(commentsData.map((comment) => comment.user_id)));
+      if (userIds.length === 0) {
+        setComments([]);
+        return;
+      }
+
+      const { data: profiles, error: profilesError } = await supabase
+        .from('user_profiles')
+        .select('id, name, email, organic_id, avatar_url')
+        .in('id', userIds);
+
+      if (profilesError) {
+        console.error('Error fetching comment profiles:', profilesError);
+      }
+
+      const profileMap = new Map(
+        (profiles ?? []).map((profileItem) => [profileItem.id, profileItem])
+      );
+
+      const hydratedComments = commentsData.map((comment) => {
+        const profileItem = profileMap.get(comment.user_id);
+        return {
+          ...comment,
+          user: profileItem ?? {
+            id: comment.user_id,
+            name: null,
+            email: 'unknown@organic.app',
+            organic_id: null,
+            avatar_url: null,
+          },
+        } as Comment;
+      });
+
+      setComments(hydratedComments);
     } catch (error) {
       console.error('Error fetching comments:', error);
     }
@@ -356,8 +414,9 @@ export default function TaskDetailPage() {
       fetchComments();
       fetchMembers();
       fetchSprints();
+      fetchTaskLikes();
     }
-  }, [taskId, fetchTaskDetails, fetchComments, fetchMembers, fetchSprints]);
+  }, [taskId, fetchTaskDetails, fetchComments, fetchMembers, fetchSprints, fetchTaskLikes]);
 
   const handleSaveTask = async () => {
     setIsSaving(true);
@@ -406,6 +465,54 @@ export default function TaskDetailPage() {
     }
   };
 
+  const handleToggleLike = async () => {
+    if (!user || !canLike) return;
+
+    try {
+      const supabase = createClient();
+      if (likedByUser) {
+        const { error } = await supabase
+          .from('task_likes')
+          .delete()
+          .eq('task_id', taskId)
+          .eq('user_id', user.id);
+
+        if (error) throw error;
+        setLikedByUser(false);
+        setLikeCount((prev) => Math.max(prev - 1, 0));
+      } else {
+        const { error } = await supabase.from('task_likes').insert({
+          task_id: taskId,
+          user_id: user.id,
+        });
+
+        if (error) throw error;
+        setLikedByUser(true);
+        setLikeCount((prev) => prev + 1);
+      }
+    } catch (error) {
+      console.error('Error toggling task like:', error);
+    }
+  };
+
+  const contributors = task?.submissions
+    ? Array.from(
+        task.submissions.reduce((map, submission) => {
+          if (submission.user?.id) {
+            map.set(submission.user.id, submission.user);
+          }
+          return map;
+        }, new Map<string, TaskSubmission['user']>())
+      )
+        .map((entry) => entry[1])
+        .filter((user): user is NonNullable<TaskSubmission['user']> => !!user)
+    : [];
+
+  const getContributorName = (contributor: NonNullable<TaskSubmission['user']>) => {
+    if (contributor.organic_id) return t('organicId', { id: contributor.organic_id });
+    return contributor.name ?? contributor.email;
+  };
+
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newComment.trim() || !user) return;
@@ -421,22 +528,33 @@ export default function TaskDetailPage() {
           user_id: user.id,
           content: newComment.trim(),
         })
-        .select(
-          `
-          *,
-          user:user_profiles!task_comments_user_id_fkey(
-            id,
-            name,
-            email,
-            organic_id,
-            avatar_url
-          )
-        `
-        )
+        .select('id, task_id, user_id, content, created_at, updated_at')
         .single();
 
       if (!error && comment) {
-        setComments([...comments, comment as unknown as Comment]);
+        const commentUser = profile
+          ? {
+              id: profile.id,
+              name: profile.name,
+              email: profile.email ?? user.email ?? 'unknown@organic.app',
+              organic_id: profile.organic_id,
+              avatar_url: profile.avatar_url,
+            }
+          : {
+              id: user.id,
+              name: null,
+              email: user.email ?? 'unknown@organic.app',
+              organic_id: null,
+              avatar_url: null,
+            };
+
+        setComments([
+          {
+            ...(comment as unknown as Comment),
+            user: commentUser,
+          },
+          ...comments,
+        ]);
         setNewComment('');
       } else {
         console.error('Error posting comment:', error);
@@ -776,7 +894,13 @@ export default function TaskDetailPage() {
           ) : (
             <div className="space-y-4">
               <div>
-                <h1 className="text-2xl font-bold text-gray-900 mb-4">{task.title}</h1>
+                <div className="flex flex-wrap items-center gap-3 mb-4">
+                  <h1 className="text-2xl font-bold text-gray-900">{task.title}</h1>
+                  <span className="inline-flex items-center gap-1 text-sm text-gray-500">
+                    <Heart className={`w-4 h-4 ${likedByUser ? 'fill-organic-orange' : ''}`} />
+                    {t('favoritesCount', { count: likeCount })}
+                  </span>
+                </div>
                 {task.description && (
                   <p className="text-gray-600 whitespace-pre-wrap">{task.description}</p>
                 )}
@@ -796,6 +920,20 @@ export default function TaskDetailPage() {
                 <span className="px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-700">
                   {t('pointsLabel', { points: task.points })}
                 </span>
+                <button
+                  type="button"
+                  onClick={handleToggleLike}
+                  disabled={!canLike}
+                  aria-label={likedByUser ? t('likedTask') : t('likeTask')}
+                  className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium border ${
+                    likedByUser
+                      ? 'border-organic-orange text-organic-orange bg-orange-50'
+                      : 'border-gray-200 text-gray-600 bg-white'
+                  } ${canLike ? 'hover:border-organic-orange hover:text-organic-orange' : 'cursor-default'}`}
+                >
+                  <Heart className={`w-4 h-4 ${likedByUser ? 'fill-organic-orange' : ''}`} />
+                  {likeCount}
+                </button>
                 <span className="px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700">
                   {TASK_TYPE_LABELS[task.task_type]}
                 </span>
@@ -805,6 +943,27 @@ export default function TaskDetailPage() {
                     {t('teamTask')}
                   </span>
                 )}
+              </div>
+
+              <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm text-gray-600">
+                <div>
+                  <span className="font-medium text-gray-700">{t('category')}</span>{' '}
+                  {task.labels && task.labels.length > 0 ? task.labels[0] : t('noCategory')}
+                </div>
+                <div>
+                  <span className="font-medium text-gray-700">{t('sprint')}</span>{' '}
+                  {task.sprint ? task.sprint.name : t('noSprint')}
+                </div>
+                <div>
+                  <span className="font-medium text-gray-700">{t('submissions')}</span>{' '}
+                  <button
+                    type="button"
+                    onClick={() => setShowContributorsModal(true)}
+                    className="text-organic-orange hover:text-orange-600"
+                  >
+                    {t('submissionsCount', { count: task.submissions?.length ?? 0 })}
+                  </button>
+                </div>
               </div>
 
               {/* Labels */}
@@ -821,6 +980,37 @@ export default function TaskDetailPage() {
                   ))}
                 </div>
               )}
+
+              <div className="mt-4">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-medium text-gray-700">{t('contributors')}</p>
+                  {contributors.length > 3 && (
+                    <button
+                      type="button"
+                      onClick={() => setShowAllContributors((prev) => !prev)}
+                      className="text-xs text-organic-orange hover:text-orange-600"
+                    >
+                      {showAllContributors ? t('showLess') : t('viewAll')}
+                    </button>
+                  )}
+                </div>
+                {contributors.length === 0 ? (
+                  <p className="text-sm text-gray-500 mt-2">{t('noContributors')}</p>
+                ) : (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {(showAllContributors ? contributors : contributors.slice(0, 3)).map(
+                      (contributor) => (
+                        <span
+                          key={contributor.id}
+                          className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs"
+                        >
+                          {getContributorName(contributor)}
+                        </span>
+                      )
+                    )}
+                  </div>
+                )}
+              </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t">
                 <div>
@@ -1006,6 +1196,41 @@ export default function TaskDetailPage() {
           </div>
         </div>
       </div>
+
+      {showContributorsModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <h3 className="text-xl font-bold text-gray-900 mb-2">
+              {t('contributorsModalTitle')}
+            </h3>
+            <p className="text-sm text-gray-500 mb-4">
+              {t('submissionsCount', { count: task?.submissions?.length ?? 0 })}
+            </p>
+            <div className="max-h-64 overflow-y-auto space-y-2 mb-6">
+              {contributors.length === 0 ? (
+                <p className="text-sm text-gray-500">{t('noContributors')}</p>
+              ) : (
+                contributors.map((contributor) => (
+                  <div
+                    key={contributor.id}
+                    className="px-3 py-2 rounded-md bg-gray-50 text-sm text-gray-700"
+                  >
+                    {getContributorName(contributor)}
+                  </div>
+                ))
+              )}
+            </div>
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowContributorsModal(false)}
+                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors"
+              >
+                {t('cancel')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Assign User Modal */}
       {showAssignModal && (

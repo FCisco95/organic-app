@@ -496,9 +496,16 @@
     "saveChanges": "Save Changes",
     "priorityLabel": "{priority} priority",
     "pointsLabel": "{points} points",
+    "category": "Category",
+    "noCategory": "Uncategorized",
     "assignee": "Assignee",
     "sprint": "Sprint",
     "created": "Created",
+    "contributors": "Contributors",
+    "viewAll": "View all",
+    "showLess": "Show less",
+    "submissionsCount": "{count, plural, one {# submission} other {# submissions}}",
+    "contributorsModalTitle": "Contributors",
     "commentsTitle": "Comments ({count})",
     "commentPlaceholder": "Add a comment...",
     "posting": "Posting...",
@@ -529,7 +536,10 @@
     "file": "File",
     "reviewerNotes": "Reviewer Notes",
     "rejectionReason": "Rejection Reason",
-    "pointsEarned": "points earned"
+    "pointsEarned": "points earned",
+    "likeTask": "Like task",
+    "likedTask": "Unlike task",
+    "favoritesCount": "{count, plural, one {# favorite} other {# favorites}}"
   },
   "Profile": {
     "loadingProfile": "Loading your profile...",

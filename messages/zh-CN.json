@@ -496,9 +496,16 @@
     "saveChanges": "保存更改",
     "priorityLabel": "{priority} 优先级",
     "pointsLabel": "{points} 积分",
+    "category": "分类",
+    "noCategory": "未分类",
     "assignee": "负责人",
     "sprint": "冲刺",
     "created": "创建时间",
+    "contributors": "贡献者",
+    "viewAll": "查看全部",
+    "showLess": "收起",
+    "submissionsCount": "{count, plural, one {# 次提交} other {# 次提交}}",
+    "contributorsModalTitle": "贡献者",
     "commentsTitle": "评论（{count}）",
     "commentPlaceholder": "添加评论...",
     "posting": "发布中...",
@@ -529,7 +536,10 @@
     "file": "文件",
     "reviewerNotes": "审核备注",
     "rejectionReason": "拒绝原因",
-    "pointsEarned": "积分获得"
+    "pointsEarned": "积分获得",
+    "likeTask": "点赞任务",
+    "likedTask": "取消点赞",
+    "favoritesCount": "{count, plural, one {# 个收藏} other {# 个收藏}}"
   },
   "Profile": {
     "loadingProfile": "正在加载您的个人资料...",

@@ -496,9 +496,16 @@
     "saveChanges": "Salvar alterações",
     "priorityLabel": "{priority} prioridade",
     "pointsLabel": "{points} pontos",
+    "category": "Categoria",
+    "noCategory": "Sem categoria",
     "assignee": "Responsável",
     "sprint": "Sprint",
     "created": "Criada",
+    "contributors": "Colaboradores",
+    "viewAll": "Ver todos",
+    "showLess": "Ver menos",
+    "submissionsCount": "{count, plural, one {# submissão} other {# submissões}}",
+    "contributorsModalTitle": "Colaboradores",
     "commentsTitle": "Comentários ({count})",
     "commentPlaceholder": "Adicionar comentário...",
     "posting": "Publicando...",
@@ -529,7 +536,10 @@
     "file": "Ficheiro",
     "reviewerNotes": "Notas do revisor",
     "rejectionReason": "Motivo da rejeição",
-    "pointsEarned": "pontos ganhos"
+    "pointsEarned": "pontos ganhos",
+    "likeTask": "Curtir tarefa",
+    "likedTask": "Remover curtida",
+    "favoritesCount": "{count, plural, one {# favorito} other {# favoritos}}"
   },
   "Profile": {
     "loadingProfile": "Carregando seu perfil...",
