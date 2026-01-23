@@ -111,14 +111,15 @@ organic-app/
 ### Task Management
 
 - [x] Full CRUD operations for tasks
-- [x] Interactive Kanban board with 5 columns
-- [x] Drag-and-drop task status updates
+- [x] Tasks list with tabs (All, Backlog, Active, In Review, Completed)
+- [x] Kanban board scoped to active sprint
+- [x] Drag-and-drop task status updates (sprint board)
 - [x] Task detail pages with comprehensive information
 - [x] Task comments system with real-time updates
 - [x] User assignment modal (admin/council)
 - [x] Task deletion with confirmation (admin only)
 - [x] Task properties: priority, points, labels, due dates
-- [x] Sprint/Epoch assignment
+- [x] Sprint assignment
 - [x] Permission-based task management
 - [x] Status workflow: backlog → todo → in_progress → review → done
 
@@ -257,11 +258,12 @@ npm run dev
 
 #### 📋 Task Management
 
-- Interactive Kanban board with drag-and-drop
+- Tasks list with tabs and filters
+- Kanban board for the active sprint (drag-and-drop)
 - Comprehensive task detail pages
 - Real-time commenting system
 - User assignment and delegation
-- Sprint/epoch organization
+- Sprint organization
 - Priority, points, and label tracking
 
 #### 📝 Proposals & Governance

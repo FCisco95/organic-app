@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Organic DAO now features a comprehensive task management system with advanced features for organizing, tracking, and managing development work. The system uses a Kanban-style board with enhanced metadata and workflow management.
+The Organic DAO task system focuses on transparent execution, with a tabbed Tasks list for backlog and history and a Kanban board scoped to the active sprint only.
 
 ## Features
 
@@ -23,9 +23,9 @@ Tasks can now be created with the following fields:
 - **Due Date** (optional): Set deadlines for task completion
 - **Labels** (optional): Add tags for categorization (e.g., "frontend", "bug", "documentation")
 
-### 2. **Kanban Board**
+### 2. **Kanban Board (Active Sprint Only)**
 
-Five-column board for visualizing task workflow:
+Five-column board for visualizing current sprint workflow:
 
 1. **Backlog**: Unstarted, unscheduled tasks
 2. **To Do**: Tasks ready to be worked on
@@ -52,10 +52,9 @@ Task cards display rich information at a glance:
 
 Organize tasks into time-boxed work periods:
 
-- Create epochs with start and end dates
-- Track epoch status: Planning, Active, or Completed
-- Filter tasks by epoch
-- View unassigned tasks separately
+- Create sprints with start and end dates
+- Track sprint status: Planning, Active, or Completed
+- Filter tasks by sprint
 
 ### 5. **Proposal to Task Conversion**
 
@@ -150,10 +149,9 @@ Fetches all members eligible to be assigned tasks (members with Organic IDs).
 
 ### Managing Tasks
 
-- **Move tasks**: Click the "⋮" menu on a task card and select a new status
-- **Filter by epoch**: Use the epoch selector buttons at the top
-- **View all tasks**: Click "All Tasks" to see across all epochs
-- **View unassigned**: Click "No Epoch" to see tasks not in any epoch
+- **Tabs**: All / Backlog / Active / In Review / Completed
+- **Filters**: Search, category, contributor, sprint, date range
+- **Backlog sorting**: Uses community favorites (likes) first
 
 ### Creating Tasks from Proposals
 
@@ -163,14 +161,14 @@ Fetches all members eligible to be assigned tasks (members with Organic IDs).
 4. The task is created and you're redirected to the task board
 5. Edit the task to add assignee, due date, labels, etc.
 
-### Creating Epochs
+### Creating Sprints
 
 1. Navigate to the Task Board
-2. Click "New Epoch" button
-3. Enter epoch name (e.g., "Epoch 1", "Q1 2024")
+2. Use the Sprints page to create a sprint
+3. Enter sprint name (e.g., "Sprint 1", "Q1 2024")
 4. Set start and end dates
-5. Click "Create Epoch"
-6. Assign tasks to the epoch when creating or editing tasks
+5. Click "Create Sprint"
+6. Assign tasks to the sprint when creating or editing tasks
 
 ## Best Practices
 

@@ -71,6 +71,7 @@
 ### Phase 6: Sprint/Epoch Management
 
 - [x] Create sprints page with CRUD operations
+- [x] Current sprint board/list views
 - [x] Sprint details view with tasks
 - [x] Sprint date range and progress stats
 - [ ] Sprint capacity planning

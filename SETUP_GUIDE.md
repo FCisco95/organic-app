@@ -35,14 +35,14 @@ This will install all required packages including Next.js, Supabase, Solana Web3
    - `anon public` key → This is your `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `service_role` key → This is your `SUPABASE_SERVICE_ROLE_KEY` (keep secret!)
 
-### Run Database Migration
+### Run Database Migrations
 
 1. In Supabase dashboard, go to **SQL Editor**
 2. Click **New Query**
-3. Copy the entire contents of `supabase/migrations/20250101000000_initial_schema.sql`
-4. Paste into the SQL editor
-5. Click **Run** (green play button)
-6. You should see "Success. No rows returned"
+3. Apply migrations in order from `supabase/migrations/` (oldest to newest)
+4. Copy the entire contents of each `.sql` file into the SQL editor
+5. Click **Run** (green play button) for each migration
+6. You should see "Success. No rows returned" after each run
 
 ### Verify Database Setup
 
@@ -56,6 +56,10 @@ This will install all required packages including Next.js, Supabase, Solana Web3
    - sprints
    - comments
    - holder_snapshots
+   - task_submissions
+   - task_assignees
+   - task_comments
+   - task_likes
 
 3. Go to **Authentication** → **Policies**
 4. Verify that RLS is enabled on all tables

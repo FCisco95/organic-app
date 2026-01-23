@@ -126,7 +126,7 @@ Agents should **not** implement these unless explicitly asked.
 
 **Notes:**
 
-- UI framework usage (e.g. shadcn) is unclear and open to revision
+- shadcn/ui is in use for UI primitives
 - Stack is **not locked**
 - Open to changes if there is strong justification
 - Preference is for simplicity, security, and maintainability
