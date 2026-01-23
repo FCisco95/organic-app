@@ -84,17 +84,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
     const basePoints = task?.base_points || task?.points || 0;
 
-    // Calculate earned points (using quality multiplier)
-    const qualityMultipliers: Record<number, number> = {
-      1: 0.2,
-      2: 0.4,
-      3: 0.6,
-      4: 0.8,
-      5: 1.0,
-    };
-    const earnedPoints =
-      action === 'approve' ? Math.floor(basePoints * (qualityMultipliers[quality_score] || 0)) : 0;
-
     // Update submission
     const { data: updatedSubmission, error: updateError } = await supabase
       .from('task_submissions')
@@ -104,8 +93,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         reviewer_notes: reviewer_notes || null,
         review_status: action === 'approve' ? 'approved' : 'rejected',
         rejection_reason: action === 'reject' ? rejection_reason : null,
-        earned_points: earnedPoints,
-        reviewed_at: new Date().toISOString(),
       })
       .eq('id', submissionId)
       .select()
@@ -116,29 +103,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: 'Failed to review submission' }, { status: 500 });
     }
 
-    // If approved, update user points and task status
+    // If approved, update task status
     if (action === 'approve') {
-      // Update user points manually
-      if (earnedPoints > 0) {
-        // Get current points
-        const { data: currentProfile } = await supabase
-          .from('user_profiles')
-          .select('total_points, tasks_completed')
-          .eq('id', submission.user_id)
-          .single();
-
-        const currentPoints = currentProfile?.total_points || 0;
-        const currentTasksCompleted = currentProfile?.tasks_completed || 0;
-
-        await supabase
-          .from('user_profiles')
-          .update({
-            total_points: currentPoints + earnedPoints,
-            tasks_completed: currentTasksCompleted + 1,
-          })
-          .eq('id', submission.user_id);
-      }
-
       // For solo tasks, mark as done
       if (task && !task.is_team_task) {
         await supabase.from('tasks').update({ status: 'done' }).eq('id', submission.task_id);
@@ -147,7 +113,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
     return NextResponse.json({
       submission: updatedSubmission,
-      earned_points: earnedPoints,
     });
   } catch (error: unknown) {
     console.error('Error reviewing submission:', error);
