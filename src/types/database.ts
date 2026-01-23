@@ -240,6 +240,24 @@ export interface Database {
         };
         Relationships: [];
       };
+      task_likes: {
+        Row: {
+          task_id: string;
+          user_id: string;
+          created_at: string | null;
+        };
+        Insert: {
+          task_id: string;
+          user_id: string;
+          created_at?: string | null;
+        };
+        Update: {
+          task_id?: string;
+          user_id?: string;
+          created_at?: string | null;
+        };
+        Relationships: [];
+      };
       task_submissions: {
         Row: {
           id: string;

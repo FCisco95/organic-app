@@ -367,6 +367,13 @@
       "active": "Active",
       "completed": "Completed"
     },
+    "tab": {
+      "all": "All",
+      "backlog": "Backlog",
+      "active": "Active",
+      "review": "In Review",
+      "completed": "Completed"
+    },
     "column": {
       "backlog": "Backlog",
       "todo": "To Do",
@@ -375,6 +382,26 @@
       "done": "Done"
     },
     "columnCount": "{count, plural, one {# task} other {# tasks}}",
+    "backlogTab": "Backlog",
+    "activeSprintTab": "Active Sprint",
+    "noTasksInView": "No tasks to show here",
+    "listCount": "{count, plural, one {# task} other {# tasks}}",
+    "filters": "Filters",
+    "search": "Search",
+    "searchPlaceholder": "Title or description",
+    "categoryFilter": "Category",
+    "allCategories": "All categories",
+    "contributorFilter": "Contributor",
+    "allContributors": "All contributors",
+    "sprintFilter": "Sprint",
+    "allSprints": "All sprints",
+    "dateFrom": "From",
+    "dateTo": "To",
+    "unknownContributor": "Unknown",
+    "sprintUnknown": "Unknown sprint",
+    "likeTask": "Like task",
+    "likedTask": "Unlike task",
+    "backlogSortHint": "Backlog is sorted by community favorites first.",
     "priority": {
       "low": "Low",
       "medium": "Medium",

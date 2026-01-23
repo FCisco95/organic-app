@@ -367,6 +367,13 @@
       "active": "进行中",
       "completed": "已完成"
     },
+    "tab": {
+      "all": "全部",
+      "backlog": "待办池",
+      "active": "进行中",
+      "review": "评审中",
+      "completed": "已完成"
+    },
     "column": {
       "backlog": "待办池",
       "todo": "待办",
@@ -375,6 +382,26 @@
       "done": "已完成"
     },
     "columnCount": "{count, plural, one {# 个任务} other {# 个任务}}",
+    "backlogTab": "待办池",
+    "activeSprintTab": "当前冲刺",
+    "noTasksInView": "这里暂无任务",
+    "listCount": "{count, plural, one {# 个任务} other {# 个任务}}",
+    "filters": "筛选",
+    "search": "搜索",
+    "searchPlaceholder": "标题或描述",
+    "categoryFilter": "分类",
+    "allCategories": "全部分类",
+    "contributorFilter": "贡献者",
+    "allContributors": "所有贡献者",
+    "sprintFilter": "冲刺",
+    "allSprints": "所有冲刺",
+    "dateFrom": "起始",
+    "dateTo": "结束",
+    "unknownContributor": "未知",
+    "sprintUnknown": "未知冲刺",
+    "likeTask": "点赞任务",
+    "likedTask": "取消点赞",
+    "backlogSortHint": "待办池按社区点赞优先排序。",
     "priority": {
       "low": "低",
       "medium": "中",

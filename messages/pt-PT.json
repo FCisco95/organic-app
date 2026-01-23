@@ -367,6 +367,13 @@
       "active": "Ativa",
       "completed": "Concluída"
     },
+    "tab": {
+      "all": "Todas",
+      "backlog": "Backlog",
+      "active": "Ativas",
+      "review": "Em revisão",
+      "completed": "Concluídas"
+    },
     "column": {
       "backlog": "Backlog",
       "todo": "A fazer",
@@ -375,6 +382,26 @@
       "done": "Concluída"
     },
     "columnCount": "{count, plural, one {# tarefa} other {# tarefas}}",
+    "backlogTab": "Backlog",
+    "activeSprintTab": "Sprint ativa",
+    "noTasksInView": "Nenhuma tarefa para mostrar aqui",
+    "listCount": "{count, plural, one {# tarefa} other {# tarefas}}",
+    "filters": "Filtros",
+    "search": "Buscar",
+    "searchPlaceholder": "Título ou descrição",
+    "categoryFilter": "Categoria",
+    "allCategories": "Todas as categorias",
+    "contributorFilter": "Colaborador",
+    "allContributors": "Todos os colaboradores",
+    "sprintFilter": "Sprint",
+    "allSprints": "Todas as sprints",
+    "dateFrom": "De",
+    "dateTo": "Até",
+    "unknownContributor": "Desconhecido",
+    "sprintUnknown": "Sprint desconhecida",
+    "likeTask": "Curtir tarefa",
+    "likedTask": "Remover curtida",
+    "backlogSortHint": "O backlog é ordenado pelas favoritas da comunidade primeiro.",
     "priority": {
       "low": "Baixa",
       "medium": "Média",

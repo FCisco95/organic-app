@@ -4,13 +4,14 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/features/auth/context';
 
 import { createClient } from '@/lib/supabase/client';
-import { Plus, Calendar, User, MoreVertical, AlertCircle, Clock, Tag, Edit2 } from 'lucide-react';
+import { Plus, AlertCircle, Clock, Tag, User, Heart } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { Link, useRouter } from '@/i18n/navigation';
+import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 
 type TaskStatus = 'backlog' | 'todo' | 'in_progress' | 'review' | 'done';
 type TaskPriority = 'low' | 'medium' | 'high' | 'critical';
+type TaskTab = 'all' | 'backlog' | 'active' | 'review' | 'completed';
 
 type Task = {
   id: string;
@@ -35,6 +36,16 @@ type Task = {
   } | null;
 };
 
+type TaskSubmissionSummary = {
+  task_id: string;
+  user: {
+    id: string;
+    name: string | null;
+    email: string;
+    organic_id: number | null;
+  } | null;
+};
+
 type Assignee = {
   id: string;
   email: string;
@@ -51,26 +62,27 @@ type Sprint = {
   created_at: string;
 };
 
-const COLUMNS: { id: TaskStatus; color: string }[] = [
-  { id: 'backlog', color: 'bg-gray-100 border-gray-300' },
-  { id: 'todo', color: 'bg-blue-50 border-blue-300' },
-  { id: 'in_progress', color: 'bg-orange-50 border-orange-300' },
-  { id: 'review', color: 'bg-purple-50 border-purple-300' },
-  { id: 'done', color: 'bg-green-50 border-green-300' },
-];
-
 export default function TasksPage() {
   const { user, profile } = useAuth();
   const t = useTranslations('Tasks');
   const [tasks, setTasks] = useState<Task[]>([]);
   const [sprints, setSprints] = useState<Sprint[]>([]);
-  const [selectedSprint, setSelectedSprint] = useState<string>('all');
+  const [activeView, setActiveView] = useState<TaskTab>('all');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [contributorFilter, setContributorFilter] = useState('all');
+  const [sprintFilter, setSprintFilter] = useState('all');
+  const [searchFilter, setSearchFilter] = useState('');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
   const [loading, setLoading] = useState(true);
   const [showNewTaskModal, setShowNewTaskModal] = useState(false);
-  const [showNewSprintModal, setShowNewSprintModal] = useState(false);
-  const [draggedTask, setDraggedTask] = useState<Task | null>(null);
+  const [submissions, setSubmissions] = useState<TaskSubmissionSummary[]>([]);
+  const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
+  const [likedTasks, setLikedTasks] = useState<Record<string, boolean>>({});
 
-  const canManage = profile?.role && ['member', 'council', 'admin'].includes(profile.role);
+  const isOrgMember = !!profile?.organic_id;
+  const canManage = profile?.role === 'admin';
+  const canLike = !!profile?.role && ['member', 'council', 'admin'].includes(profile.role);
 
   const loadSprints = useCallback(async () => {
     try {
@@ -108,14 +120,6 @@ export default function TasksPage() {
         )
         .order('created_at', { ascending: false });
 
-      if (selectedSprint !== 'all') {
-        if (selectedSprint === 'unassigned') {
-          query = query.is('sprint_id', null);
-        } else {
-          query = query.eq('sprint_id', selectedSprint);
-        }
-      }
-
       const { data, error } = await query;
 
       if (error) throw error;
@@ -125,7 +129,53 @@ export default function TasksPage() {
     } finally {
       setLoading(false);
     }
-  }, [selectedSprint]);
+  }, []);
+
+  const loadSubmissions = useCallback(async () => {
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from('task_submissions')
+        .select(
+          `
+          task_id,
+          user:user_profiles!task_submissions_user_id_fkey(
+            id, name, email, organic_id
+          )
+        `
+        );
+
+      if (error) throw error;
+      setSubmissions((data ?? []) as unknown as TaskSubmissionSummary[]);
+    } catch (error) {
+      console.error('Error loading submissions:', error);
+    }
+  }, []);
+
+  const loadLikes = useCallback(async () => {
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase.from('task_likes').select('task_id, user_id');
+
+      if (error) throw error;
+
+      const counts: Record<string, number> = {};
+      const liked: Record<string, boolean> = {};
+      (data ?? []).forEach((like) => {
+        const taskId = (like as { task_id: string }).task_id;
+        const userId = (like as { user_id: string }).user_id;
+        counts[taskId] = (counts[taskId] ?? 0) + 1;
+        if (user?.id && userId === user.id) {
+          liked[taskId] = true;
+        }
+      });
+
+      setLikeCounts(counts);
+      setLikedTasks(liked);
+    } catch (error) {
+      console.error('Error loading task likes:', error);
+    }
+  }, [user?.id]);
 
   useEffect(() => {
     loadSprints();
@@ -135,233 +185,55 @@ export default function TasksPage() {
     loadTasks();
   }, [loadTasks]);
 
-  async function updateTaskStatus(taskId: string, newStatus: TaskStatus) {
-    try {
-      const supabase = createClient();
-      const { error } = await supabase.from('tasks').update({ status: newStatus }).eq('id', taskId);
+  useEffect(() => {
+    loadSubmissions();
+    loadLikes();
+  }, [loadSubmissions, loadLikes]);
 
-      if (error) throw error;
-
-      setTasks(tasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task)));
-      toast.success(t('toastTaskUpdated'));
-    } catch (error) {
-      console.error('Error updating task:', error);
-      toast.error(t('toastTaskUpdateFailed'));
-    }
-  }
-
-  const handleDragStart = (task: Task) => {
-    setDraggedTask(task);
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (status: TaskStatus) => {
-    if (draggedTask && draggedTask.status !== status) {
-      updateTaskStatus(draggedTask.id, status);
-    }
-    setDraggedTask(null);
-  };
-
-  const getTasksByStatus = (status: TaskStatus) => {
-    return tasks.filter((task) => task.status === status);
-  };
-
-  if (!user || !profile?.organic_id) {
-    return (
-      <main className="min-h-screen bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('memberAccessTitle')}</h1>
-          <p className="text-gray-600 mb-6">{t('memberAccessDescription')}</p>
-        </div>
-      </main>
-    );
-  }
-
-  return (
-    <main className="min-h-screen bg-gray-50">
-      <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
-            <p className="text-gray-600 mt-1">{t('subtitle')}</p>
-          </div>
-
-          <div className="flex gap-3">
-            {canManage && (
-              <>
-                <button
-                  onClick={() => setShowNewSprintModal(true)}
-                  className="flex items-center gap-2 bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors"
-                >
-                  <Calendar className="w-4 h-4" />
-                  {t('newEpoch')}
-                </button>
-                <button
-                  onClick={() => setShowNewTaskModal(true)}
-                  className="flex items-center gap-2 bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-                >
-                  <Plus className="w-4 h-4" />
-                  {t('newTask')}
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Epoch Selector */}
-        <div className="mb-6 flex gap-2 overflow-x-auto pb-2">
-          <button
-            onClick={() => setSelectedSprint('all')}
-            className={`px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap transition-colors ${
-              selectedSprint === 'all'
-                ? 'bg-organic-orange text-white'
-                : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
-            }`}
-          >
-            {t('allTasks')}
-          </button>
-          <button
-            onClick={() => setSelectedSprint('unassigned')}
-            className={`px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap transition-colors ${
-              selectedSprint === 'unassigned'
-                ? 'bg-organic-orange text-white'
-                : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
-            }`}
-          >
-            {t('noEpoch')}
-          </button>
-          {sprints.map((sprint) => (
-            <button
-              key={sprint.id}
-              onClick={() => setSelectedSprint(sprint.id)}
-              className={`px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap transition-colors ${
-                selectedSprint === sprint.id
-                  ? 'bg-organic-orange text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
-              }`}
-            >
-              {sprint.name}
-              <span
-                className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
-                  selectedSprint === sprint.id
-                    ? 'bg-white/20 text-white'
-                    : sprint.status === 'active'
-                      ? 'bg-green-100 text-green-700'
-                      : sprint.status === 'planning'
-                        ? 'bg-blue-100 text-blue-700'
-                        : 'bg-gray-100 text-gray-700'
-                }`}
-              >
-                {t(`epochStatus.${sprint.status}`)}
-              </span>
-            </button>
-          ))}
-        </div>
-
-        {/* Kanban Board */}
-        {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {COLUMNS.map((col) => (
-              <div key={col.id} className="bg-white rounded-lg border border-gray-200 p-4">
-                <div className="h-6 bg-gray-200 rounded w-1/2 mb-4 animate-pulse"></div>
-                <div className="space-y-3">
-                  {[1, 2].map((i) => (
-                    <div key={i} className="h-24 bg-gray-100 rounded animate-pulse"></div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {COLUMNS.map((column) => {
-              const columnTasks = getTasksByStatus(column.id);
-              const isDropTarget = draggedTask && draggedTask.status !== column.id;
-              return (
-                <div
-                  key={column.id}
-                  className={`rounded-lg border-2 p-4 ${column.color} min-h-[500px] transition-all ${
-                    isDropTarget ? 'ring-2 ring-organic-orange ring-offset-2 scale-[1.02]' : ''
-                  }`}
-                  onDragOver={handleDragOver}
-                  onDrop={() => handleDrop(column.id)}
-                >
-                  {/* Column Header */}
-                  <div className="mb-4">
-                    <h3 className="font-semibold text-gray-900 text-sm uppercase tracking-wide">
-                      {t(`column.${column.id}`)}
-                    </h3>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {t('columnCount', { count: columnTasks.length })}
-                    </p>
-                  </div>
-
-                  {/* Tasks */}
-                  <div className="space-y-3">
-                    {columnTasks.map((task) => (
-                      <TaskCard
-                        key={task.id}
-                        task={task}
-                        onStatusChange={updateTaskStatus}
-                        onDragStart={handleDragStart}
-                        canManage={canManage}
-                        isDragging={draggedTask?.id === task.id}
-                      />
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      {/* Modals */}
-      {showNewTaskModal && (
-        <NewTaskModal
-          onClose={() => setShowNewTaskModal(false)}
-          onSuccess={() => {
-            setShowNewTaskModal(false);
-            loadTasks();
-          }}
-          sprints={sprints}
-        />
-      )}
-
-      {showNewSprintModal && (
-        <NewSprintModal
-          onClose={() => setShowNewSprintModal(false)}
-          onSuccess={() => {
-            setShowNewSprintModal(false);
-            loadSprints();
-          }}
-        />
-      )}
-    </main>
+  const currentSprint =
+    sprints.find((s) => s.status === 'active') || sprints.find((s) => s.status === 'planning');
+  const tabOptions: TaskTab[] = ['all', 'backlog', 'active', 'review', 'completed'];
+  const visibleTabs = isOrgMember ? tabOptions : tabOptions.filter((tab) => tab !== 'backlog');
+  const categoryOptions = Array.from(new Set(tasks.flatMap((task) => task.labels ?? []))).sort(
+    (a, b) => a.localeCompare(b)
   );
-}
+  const contributorOptions = Array.from(
+    submissions.reduce((map, submission) => {
+      if (submission.user?.id) {
+        map.set(submission.user.id, submission.user);
+      }
+      return map;
+    }, new Map<string, TaskSubmissionSummary['user']>())
+  )
+    .map((entry) => entry[1])
+    .filter((user): user is NonNullable<TaskSubmissionSummary['user']> => !!user)
+    .sort((a, b) => {
+      const nameA = a.name ?? a.email;
+      const nameB = b.name ?? b.email;
+      return nameA.localeCompare(nameB);
+    });
+  const taskContributorMap = submissions.reduce<Record<string, string[]>>((acc, submission) => {
+    if (!submission.user?.id) return acc;
+    acc[submission.task_id] = acc[submission.task_id] ?? [];
+    if (!acc[submission.task_id].includes(submission.user.id)) {
+      acc[submission.task_id].push(submission.user.id);
+    }
+    return acc;
+  }, {});
 
-// Task Card Component
-function TaskCard({
-  task,
-  onStatusChange,
-  onDragStart,
-  canManage,
-  isDragging,
-}: {
-  task: Task;
-  onStatusChange: (taskId: string, status: TaskStatus) => void;
-  onDragStart: (task: Task) => void;
-  canManage: boolean | undefined;
-  isDragging: boolean;
-}) {
-  const router = useRouter();
-  const t = useTranslations('Tasks');
-  const [showActions, setShowActions] = useState(false);
+  useEffect(() => {
+    if (!isOrgMember && activeView === 'backlog') {
+      setActiveView('active');
+    }
+  }, [activeView, isOrgMember]);
+
+  useEffect(() => {
+    if ((activeView === 'active' || activeView === 'review') && currentSprint) {
+      if (sprintFilter === 'all') {
+        setSprintFilter(currentSprint.id);
+      }
+    }
+  }, [activeView, currentSprint, sprintFilter]);
 
   const getPriorityColor = (priority: TaskPriority | null) => {
     switch (priority) {
@@ -378,142 +250,415 @@ function TaskCard({
     }
   };
 
-  const isOverdue = task.due_date && new Date(task.due_date) < new Date() && task.status !== 'done';
+  const getAssigneeLabel = (assignee: Task['assignee']) => {
+    if (!assignee) return t('unassigned');
+    return assignee.organic_id ? t('assigneeId', { id: assignee.organic_id }) : assignee.email;
+  };
+
+  const getContributorLabel = (user: TaskSubmissionSummary['user']) => {
+    if (!user) return t('unknownContributor');
+    if (user.organic_id) return t('assigneeId', { id: user.organic_id });
+    return user.name ?? user.email;
+  };
+
+  const tabStatusMap: Record<TaskTab, TaskStatus[]> = {
+    all: ['backlog', 'todo', 'in_progress', 'review', 'done'],
+    backlog: ['backlog'],
+    active: ['todo', 'in_progress'],
+    review: ['review'],
+    completed: ['done'],
+  };
+
+  const isVisibleToNonOrg = (status: TaskStatus) =>
+    ['todo', 'in_progress', 'review', 'done'].includes(status);
+
+  const parseDate = (value: string | null) => (value ? new Date(value) : null);
+
+  const applyFilters = (source: Task[], tab: TaskTab) => {
+    return source
+      .filter((task) => {
+        const matchesSearch =
+          searchFilter.trim().length === 0 ||
+          task.title.toLowerCase().includes(searchFilter.toLowerCase()) ||
+          (task.description ?? '').toLowerCase().includes(searchFilter.toLowerCase());
+        const matchesCategory =
+          categoryFilter === 'all' || (task.labels ?? []).includes(categoryFilter);
+        const matchesContributor =
+          contributorFilter === 'all' ||
+          (taskContributorMap[task.id] ?? []).includes(contributorFilter);
+        const matchesSprint = sprintFilter === 'all' || task.sprint_id === sprintFilter;
+
+        const dateTarget =
+          tab === 'completed'
+            ? parseDate(task.completed_at) ?? parseDate(task.updated_at)
+            : parseDate(task.updated_at) ?? parseDate(task.created_at);
+
+        const fromDate = dateFrom ? new Date(dateFrom) : null;
+        const toDate = dateTo ? new Date(`${dateTo}T23:59:59.999`) : null;
+        const matchesDate =
+          !dateTarget ||
+          ((!fromDate || dateTarget >= fromDate) && (!toDate || dateTarget <= toDate));
+
+        return (
+          matchesSearch &&
+          matchesCategory &&
+          matchesContributor &&
+          matchesSprint &&
+          matchesDate
+        );
+      })
+      .sort((a, b) => {
+        const activityA = parseDate(a.updated_at)?.getTime() ?? 0;
+        const activityB = parseDate(b.updated_at)?.getTime() ?? 0;
+
+        if (tab === 'completed') {
+          const completedA = parseDate(a.completed_at)?.getTime() ?? activityA;
+          const completedB = parseDate(b.completed_at)?.getTime() ?? activityB;
+          return completedB - completedA;
+        }
+
+        if (tab === 'backlog') {
+          const likesA = likeCounts[a.id] ?? 0;
+          const likesB = likeCounts[b.id] ?? 0;
+          if (likesB !== likesA) return likesB - likesA;
+        }
+
+        return activityB - activityA;
+      });
+  };
+
+  const getTabTasks = (tab: TaskTab) => {
+    const filteredByStatus = tasks.filter((task) => tabStatusMap[tab].includes(task.status));
+    const visibleByRole = isOrgMember
+      ? filteredByStatus
+      : filteredByStatus.filter((task) => isVisibleToNonOrg(task.status));
+
+    const nonOrgScoped = !isOrgMember
+      ? visibleByRole.filter((task) => {
+          if (['todo', 'in_progress', 'review'].includes(task.status)) {
+            return !currentSprint || task.sprint_id === currentSprint.id;
+          }
+          return true;
+        })
+      : visibleByRole;
+
+    return applyFilters(nonOrgScoped, tab);
+  };
+
+  const tabTasks = getTabTasks(activeView);
+
+  const handleToggleLike = async (taskId: string) => {
+    if (!user || !canLike) return;
+
+    const supabase = createClient();
+    const isLiked = likedTasks[taskId];
+
+    try {
+      if (isLiked) {
+        const { error } = await supabase
+          .from('task_likes')
+          .delete()
+          .eq('task_id', taskId)
+          .eq('user_id', user.id);
+
+        if (error) throw error;
+        setLikedTasks((prev) => ({ ...prev, [taskId]: false }));
+        setLikeCounts((prev) => ({ ...prev, [taskId]: Math.max((prev[taskId] ?? 1) - 1, 0) }));
+      } else {
+        const { error } = await supabase.from('task_likes').insert({
+          task_id: taskId,
+          user_id: user.id,
+        });
+
+        if (error) throw error;
+        setLikedTasks((prev) => ({ ...prev, [taskId]: true }));
+        setLikeCounts((prev) => ({ ...prev, [taskId]: (prev[taskId] ?? 0) + 1 }));
+      }
+    } catch (error) {
+      console.error('Error toggling task like:', error);
+    }
+  };
+
+  async function updateTaskStatus(taskId: string, newStatus: TaskStatus) {
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.from('tasks').update({ status: newStatus }).eq('id', taskId);
+
+      if (error) throw error;
+
+      setTasks(tasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task)));
+      toast.success(t('toastTaskUpdated'));
+    } catch (error) {
+      console.error('Error updating task:', error);
+      toast.error(t('toastTaskUpdateFailed'));
+    }
+  }
 
   return (
-    <div
-      draggable={canManage}
-      onDragStart={() => onDragStart(task)}
-      className={`bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all group relative ${
-        isDragging ? 'opacity-50 scale-95' : ''
-      } ${canManage ? 'cursor-move' : ''}`}
-    >
-      <Link href={`/tasks/${task.id}`} className="block p-3">
-        {/* Priority Badge */}
-        {task.priority && (
-          <div className="mb-2">
-            <span
-              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${getPriorityColor(task.priority)}`}
+    <main className="min-h-screen bg-gray-50">
+      <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
+            <p className="text-gray-600 mt-1">{t('subtitle')}</p>
+          </div>
+
+          <div className="flex gap-3">
+            {canManage && (
+              <button
+                onClick={() => setShowNewTaskModal(true)}
+                className="flex items-center gap-2 bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                {t('newTask')}
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div className="mb-6 flex gap-2 overflow-x-auto pb-2">
+          {visibleTabs.map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveView(tab)}
+              className={`px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap transition-colors ${
+                activeView === tab
+                  ? 'bg-organic-orange text-white'
+                  : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
+              }`}
             >
-              <AlertCircle className="w-3 h-3" />
-              {t(`priority.${task.priority}`)}
+              {t(`tab.${tab}`)}
+            </button>
+          ))}
+        </div>
+        {activeView === 'backlog' && (
+          <p className="mb-4 text-xs text-gray-500">{t('backlogSortHint')}</p>
+        )}
+
+        {/* Filters */}
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="text-sm font-medium text-gray-700">{t('filters')}</div>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:flex-wrap">
+            <label className="flex items-center gap-2 text-sm text-gray-600">
+              {t('search')}
+              <input
+                type="search"
+                value={searchFilter}
+                onChange={(e) => setSearchFilter(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+                placeholder={t('searchPlaceholder')}
+              />
+            </label>
+            <label className="flex items-center gap-2 text-sm text-gray-600">
+              {t('categoryFilter')}
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+              >
+                <option value="all">{t('allCategories')}</option>
+                {categoryOptions.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="flex items-center gap-2 text-sm text-gray-600">
+              {t('contributorFilter')}
+              <select
+                value={contributorFilter}
+                onChange={(e) => setContributorFilter(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+              >
+                <option value="all">{t('allContributors')}</option>
+                {contributorOptions.map((contributor) => (
+                  <option key={contributor.id} value={contributor.id}>
+                    {getContributorLabel(contributor)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="flex items-center gap-2 text-sm text-gray-600">
+              {t('sprintFilter')}
+              <select
+                value={sprintFilter}
+                onChange={(e) => setSprintFilter(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+              >
+                <option value="all">{t('allSprints')}</option>
+                {sprints.map((sprint) => (
+                  <option key={sprint.id} value={sprint.id}>
+                    {sprint.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="flex items-center gap-2 text-sm text-gray-600">
+              {t('dateFrom')}
+              <input
+                type="date"
+                value={dateFrom}
+                onChange={(e) => setDateFrom(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+              />
+            </label>
+            <label className="flex items-center gap-2 text-sm text-gray-600">
+              {t('dateTo')}
+              <input
+                type="date"
+                value={dateTo}
+                onChange={(e) => setDateTo(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+              />
+            </label>
+          </div>
+        </div>
+
+        {/* Task List */}
+        <div className="bg-white rounded-xl border border-gray-200">
+          <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900">
+                {t(`tab.${activeView}`)}
+              </h2>
+              {sprintFilter !== 'all' && (
+                <p className="text-sm text-gray-500">
+                  {sprints.find((sprint) => sprint.id === sprintFilter)?.name ??
+                    t('sprintUnknown')}
+                </p>
+              )}
+            </div>
+            <span className="text-sm text-gray-500">
+              {t('listCount', { count: tabTasks.length })}
             </span>
           </div>
-        )}
 
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <h4 className="font-medium text-gray-900 text-sm line-clamp-2 flex-1 group-hover:text-organic-orange transition-colors">
-            {task.title}
-          </h4>
-        </div>
-
-        {task.description && (
-          <p className="text-xs text-gray-600 mb-2 line-clamp-2">{task.description}</p>
-        )}
-
-        {/* Labels */}
-        {task.labels && task.labels.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-2">
-            {task.labels.map((label, idx) => (
-              <span
-                key={idx}
-                className="inline-flex items-center gap-1 px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs"
-              >
-                <Tag className="w-3 h-3" />
-                {label}
-              </span>
-            ))}
-          </div>
-        )}
-
-        {/* Due Date */}
-        {task.due_date && (
-          <div
-            className={`flex items-center gap-1 mb-2 text-xs ${isOverdue ? 'text-red-600 font-medium' : 'text-gray-500'}`}
-          >
-            <Clock className="w-3 h-3" />
-            {t('dueLabel', { date: new Date(task.due_date).toLocaleDateString() })}
-            {isOverdue && ` (${t('overdue')})`}
-          </div>
-        )}
-
-        <div className="flex items-center justify-between text-xs">
-          <div className="flex items-center gap-2">
-            {task.points && (
-              <span className="px-2 py-0.5 bg-gray-100 text-gray-700 rounded-full font-medium">
-                {t('pointsShort', { points: task.points })}
-              </span>
-            )}
-            {task.sprints && (
-              <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full">
-                {task.sprints.name}
-              </span>
-            )}
-          </div>
-          {task.assignee && (
-            <div className="flex items-center gap-1 text-gray-500">
-              <User className="w-3 h-3" />
-              <span className="text-xs">
-                {task.assignee.organic_id
-                  ? t('assigneeId', { id: task.assignee.organic_id })
-                  : task.assignee.email.split('@')[0]}
-              </span>
+          {loading ? (
+            <div className="p-6 space-y-3">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-16 bg-gray-100 rounded animate-pulse"></div>
+              ))}
             </div>
-          )}
-        </div>
-      </Link>
-
-      {/* Quick Status Change Menu - positioned absolutely */}
-      {canManage && (
-        <div className="absolute top-2 right-2 z-10">
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setShowActions(!showActions);
-            }}
-            className="text-gray-400 hover:text-gray-600 p-1 bg-white rounded hover:bg-gray-50"
-          >
-            <MoreVertical className="w-4 h-4" />
-          </button>
-          {showActions && (
-            <div className="absolute right-0 mt-1 w-40 bg-white rounded-lg shadow-lg border border-gray-200 py-1">
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setShowActions(false);
-                  router.push(`/tasks/${task.id}`);
-                }}
-                className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 border-b border-gray-100"
-              >
-                <Edit2 className="w-3.5 h-3.5" />
-                {t('editTask')}
-              </button>
-              <div className="py-1">
-                <div className="px-3 py-1 text-xs font-medium text-gray-500 uppercase">
-                  {t('moveTo')}
-                </div>
-                {COLUMNS.map((col) => (
-                  <button
-                    key={col.id}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      onStatusChange(task.id, col.id);
-                      setShowActions(false);
-                    }}
-                    className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
+          ) : tabTasks.length === 0 ? (
+            <div className="p-8 text-center text-gray-500">{t('noTasksInView')}</div>
+          ) : (
+            <div className="divide-y divide-gray-100">
+              {tabTasks.map((task) => {
+                const isOverdue =
+                  task.due_date && new Date(task.due_date) < new Date() && task.status !== 'done';
+                return (
+                  <Link
+                    key={task.id}
+                    href={`/tasks/${task.id}`}
+                    className="block px-6 py-4 hover:bg-gray-50 transition-colors"
                   >
-                    {t(`column.${col.id}`)}
-                  </button>
-                ))}
-              </div>
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-2 flex-wrap">
+                          <h3 className="font-medium text-gray-900 hover:text-organic-orange transition-colors">
+                            {task.title}
+                          </h3>
+                          {task.priority && (
+                            <span
+                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${getPriorityColor(task.priority)}`}
+                            >
+                              <AlertCircle className="w-3 h-3" />
+                              {t(`priority.${task.priority}`)}
+                            </span>
+                          )}
+                          {task.sprints && (
+                            <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs">
+                              {task.sprints.name}
+                            </span>
+                          )}
+                        </div>
+                        {task.description && (
+                          <p className="text-sm text-gray-600 line-clamp-2 mb-2">
+                            {task.description}
+                          </p>
+                        )}
+                        <div className="flex items-center flex-wrap gap-4 text-xs text-gray-500">
+                          {task.assignee && (
+                            <div className="flex items-center gap-1">
+                              <User className="w-3 h-3" />
+                              <span>{getAssigneeLabel(task.assignee)}</span>
+                            </div>
+                          )}
+                          {task.due_date && (
+                            <div
+                              className={`flex items-center gap-1 ${isOverdue ? 'text-red-600 font-medium' : ''}`}
+                            >
+                              <Clock className="w-3 h-3" />
+                              {t('dueLabel', {
+                                date: new Date(task.due_date).toLocaleDateString(),
+                              })}
+                              {isOverdue && ` (${t('overdue')})`}
+                            </div>
+                          )}
+                          {task.labels && task.labels.length > 0 && (
+                            <div className="flex items-center gap-1">
+                              <Tag className="w-3 h-3" />
+                              <span>{task.labels.join(', ')}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {task.points && (
+                          <span className="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded-full">
+                            {t('pointsShort', { points: task.points })}
+                          </span>
+                        )}
+                        <button
+                          type="button"
+                          onClick={(event) => {
+                            event.preventDefault();
+                            handleToggleLike(task.id);
+                          }}
+                          disabled={!canLike}
+                          aria-label={
+                            likedTasks[task.id] ? t('likedTask') : t('likeTask')
+                          }
+                          className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full border ${
+                            likedTasks[task.id]
+                              ? 'border-organic-orange text-organic-orange bg-orange-50'
+                              : 'border-gray-200 text-gray-500 bg-white'
+                          } ${canLike ? 'hover:border-organic-orange hover:text-organic-orange' : 'cursor-default'}`}
+                        >
+                          <Heart
+                            className={`w-3.5 h-3.5 ${
+                              likedTasks[task.id] ? 'fill-organic-orange' : ''
+                            }`}
+                          />
+                          {likeCounts[task.id] ?? 0}
+                        </button>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           )}
         </div>
+      </div>
+
+      {/* Modals */}
+      {showNewTaskModal && (
+        <NewTaskModal
+          onClose={() => setShowNewTaskModal(false)}
+          onSuccess={() => {
+            setShowNewTaskModal(false);
+            loadTasks();
+          }}
+          sprints={sprints}
+          userId={user?.id ?? null}
+        />
       )}
-    </div>
+
+    </main>
   );
 }
 
@@ -522,10 +667,12 @@ function NewTaskModal({
   onClose,
   onSuccess,
   sprints,
+  userId,
 }: {
   onClose: () => void;
   onSuccess: () => void;
   sprints: Sprint[];
+  userId: string | null;
 }) {
   const t = useTranslations('Tasks');
   const [title, setTitle] = useState('');
@@ -577,6 +724,11 @@ function NewTaskModal({
     }
 
     try {
+      if (!userId) {
+        toast.error(t('toastTaskCreateFailed'));
+        return;
+      }
+
       setSubmitting(true);
       const supabase = createClient();
 
@@ -584,12 +736,8 @@ function NewTaskModal({
         title: title.trim(),
         description: description.trim() || null,
         points: points ? parseInt(points) : null,
-        base_points: points ? parseInt(points) : null,
         sprint_id: sprintId || null,
-        priority,
         assignee_id: assigneeId || null,
-        due_date: dueDate || null,
-        labels: labels.length > 0 ? labels : [],
         status: 'backlog' as const,
       });
 
@@ -598,8 +746,13 @@ function NewTaskModal({
       toast.success(t('toastTaskCreated'));
       onSuccess();
     } catch (error) {
+      const supabaseError = error as { message?: string };
+      const message =
+        error instanceof Error
+          ? error.message
+          : supabaseError?.message ?? t('toastTaskCreateFailed');
       console.error('Error creating task:', error);
-      toast.error(t('toastTaskCreateFailed'));
+      toast.error(message);
     } finally {
       setSubmitting(false);
     }
@@ -790,115 +943,6 @@ function NewTaskModal({
               className="flex-1 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
             >
               {submitting ? t('creating') : t('createTask')}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
-
-// New Sprint Modal Component
-function NewSprintModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => void }) {
-  const t = useTranslations('Tasks');
-  const [name, setName] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-
-    if (!name.trim() || !startDate || !endDate) {
-      toast.error(t('toastAllFieldsRequired'));
-      return;
-    }
-
-    try {
-      setSubmitting(true);
-      const supabase = createClient();
-
-      const { error } = await supabase.from('sprints').insert({
-        name: name.trim(),
-        start_at: startDate,
-        end_at: endDate,
-        status: 'planning',
-      });
-
-      if (error) throw error;
-
-      toast.success(t('toastEpochCreated'));
-      onSuccess();
-    } catch (error) {
-      console.error('Error creating sprint:', error);
-      toast.error(t('toastEpochCreateFailed'));
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
-  return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-lg w-full p-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('createEpochTitle')}</h2>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-900 mb-1">
-              {t('labelEpochName')}
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
-              placeholder={t('epochNamePlaceholder')}
-              required
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-1">
-                {t('labelStartDate')}
-              </label>
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-1">
-                {t('labelEndDate')}
-              </label>
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
-                required
-              />
-            </div>
-          </div>
-
-          <div className="flex gap-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
-            >
-              {t('cancel')}
-            </button>
-            <button
-              type="submit"
-              disabled={submitting}
-              className="flex-1 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
-            >
-              {submitting ? t('creating') : t('createEpoch')}
             </button>
           </div>
         </form>
