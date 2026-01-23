@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/features/auth/context';
 
 import { Calendar, Clock, CheckCircle2, Plus, Target, X, AlertCircle } from 'lucide-react';
@@ -49,7 +49,13 @@ export default function SprintsPage() {
   const [error, setError] = useState<string | null>(null);
   const [activeView, setActiveView] = useState<'board' | 'list'>('board');
   const [currentSprintTasks, setCurrentSprintTasks] = useState<TaskBoardTask[]>([]);
+  const [backlogTasks, setBacklogTasks] = useState<TaskBoardTask[]>([]);
   const [tasksLoading, setTasksLoading] = useState(false);
+  const [selectedBacklogIds, setSelectedBacklogIds] = useState<string[]>([]);
+  const [isMoving, setIsMoving] = useState(false);
+  const [commentCounts, setCommentCounts] = useState<Record<string, number>>({});
+  const [submissionCounts, setSubmissionCounts] = useState<Record<string, number>>({});
+  const [contributorCounts, setContributorCounts] = useState<Record<string, number>>({});
   const [formData, setFormData] = useState<CreateSprintForm>({
     name: '',
     start_at: '',
@@ -204,14 +210,30 @@ export default function SprintsPage() {
   };
 
   const canCreateSprint = profile?.role === 'admin' || profile?.role === 'council';
-  const canManageTasks = profile?.role && ['member', 'council', 'admin'].includes(profile.role);
+  const canManageTasks = profile?.role === 'admin';
 
   // Separate current/active sprint from past sprints
   const currentSprint =
     sprints.find((s) => s.status === 'active') || sprints.find((s) => s.status === 'planning');
   const pastSprints = sprints.filter((s) => s.status === 'completed');
   const boardTasks = currentSprintTasks.filter((task) => task.status !== 'backlog');
-  const backlogTasks = currentSprintTasks.filter((task) => task.status === 'backlog');
+  const canAssignToSprint = profile?.role === 'admin' && currentSprint?.status === 'planning';
+  const activityCountsMap = useMemo(() => {
+    const ids = new Set([
+      ...currentSprintTasks.map((task) => task.id),
+      ...backlogTasks.map((task) => task.id),
+    ]);
+    const map: Record<string, { comments: number; submissions: number; contributors: number }> =
+      {};
+    ids.forEach((id) => {
+      map[id] = {
+        comments: commentCounts[id] ?? 0,
+        submissions: submissionCounts[id] ?? 0,
+        contributors: contributorCounts[id] ?? 0,
+      };
+    });
+    return map;
+  }, [backlogTasks, commentCounts, contributorCounts, currentSprintTasks, submissionCounts]);
   useEffect(() => {
     const view = searchParams.get('view');
     if (view === 'list') {
@@ -220,16 +242,59 @@ export default function SprintsPage() {
   }, [searchParams]);
 
   useEffect(() => {
-    const loadCurrentSprintTasks = async () => {
-      if (!currentSprint) {
-        setCurrentSprintTasks([]);
-        return;
-      }
+    setSelectedBacklogIds([]);
+  }, [currentSprint?.id, profile?.role]);
 
+  useEffect(() => {
+    const loadTasks = async () => {
       setTasksLoading(true);
       try {
         const supabase = createClient();
-        const { data, error: tasksError } = await supabase
+
+        let sprintTasks: TaskBoardTask[] = [];
+        if (currentSprint) {
+          const { data, error: tasksError } = await supabase
+            .from('tasks')
+            .select(
+              `
+              *,
+              assignee:user_profiles!tasks_assignee_id_fkey (
+                organic_id,
+                email
+              ),
+              sprints (
+                name
+              )
+            `
+            )
+            .eq('sprint_id', currentSprint.id)
+            .order('created_at', { ascending: false });
+
+          if (tasksError) throw tasksError;
+          sprintTasks = (data as unknown as TaskBoardTask[]) || [];
+          const backlogInSprint = sprintTasks.filter((task) => task.status === 'backlog');
+
+          if (backlogInSprint.length > 0 && profile?.role === 'admin') {
+            const backlogIds = backlogInSprint.map((task) => task.id);
+            const { error: normalizeError } = await supabase
+              .from('tasks')
+              .update({ status: 'todo' })
+              .in('id', backlogIds);
+
+            if (normalizeError) throw normalizeError;
+            setCurrentSprintTasks(
+              sprintTasks.map((task) =>
+                backlogIds.includes(task.id) ? { ...task, status: 'todo' } : task
+              )
+            );
+          } else {
+            setCurrentSprintTasks(sprintTasks);
+          }
+        } else {
+          setCurrentSprintTasks([]);
+        }
+
+        const { data: backlogData, error: backlogError } = await supabase
           .from('tasks')
           .select(
             `
@@ -243,11 +308,77 @@ export default function SprintsPage() {
             )
           `
           )
-          .eq('sprint_id', currentSprint.id)
+          .eq('status', 'backlog')
+          .is('sprint_id', null)
           .order('created_at', { ascending: false });
 
-        if (tasksError) throw tasksError;
-        setCurrentSprintTasks((data as TaskBoardTask[]) || []);
+        if (backlogError) throw backlogError;
+        const backlogList = (backlogData as unknown as TaskBoardTask[]) || [];
+        setBacklogTasks(backlogList);
+
+        const allTaskIds = [
+          ...new Set([
+            ...sprintTasks.map((task) => task.id),
+            ...backlogList.map((task) => task.id),
+          ]),
+        ];
+
+        if (allTaskIds.length > 0) {
+          const [{ data: commentsData, error: commentsError }, { data: submissionsData, error: submissionsError }] =
+            await Promise.all([
+              supabase.from('task_comments').select('task_id').in('task_id', allTaskIds),
+              supabase
+                .from('task_submissions')
+                .select('task_id, user_id')
+                .in('task_id', allTaskIds),
+            ]);
+
+          if (commentsError) throw commentsError;
+          if (submissionsError) throw submissionsError;
+
+          const nextCommentCounts = (commentsData ?? []).reduce<Record<string, number>>(
+            (acc, row) => {
+              const taskId = (row as { task_id: string }).task_id;
+              acc[taskId] = (acc[taskId] ?? 0) + 1;
+              return acc;
+            },
+            {}
+          );
+
+          const nextSubmissionCounts = (submissionsData ?? []).reduce<Record<string, number>>(
+            (acc, row) => {
+              const taskId = (row as { task_id: string }).task_id;
+              acc[taskId] = (acc[taskId] ?? 0) + 1;
+              return acc;
+            },
+            {}
+          );
+
+          const contributorMap = (submissionsData ?? []).reduce<Record<string, Set<string>>>(
+            (acc, row) => {
+              const entry = row as { task_id: string; user_id: string };
+              acc[entry.task_id] = acc[entry.task_id] ?? new Set<string>();
+              acc[entry.task_id].add(entry.user_id);
+              return acc;
+            },
+            {}
+          );
+
+          setCommentCounts(nextCommentCounts);
+          setSubmissionCounts(nextSubmissionCounts);
+          setContributorCounts(
+            Object.fromEntries(
+              Object.entries(contributorMap).map(([taskId, userSet]) => [
+                taskId,
+                userSet.size,
+              ])
+            )
+          );
+        } else {
+          setCommentCounts({});
+          setSubmissionCounts({});
+          setContributorCounts({});
+        }
       } catch (fetchError) {
         console.error('Error loading sprint tasks:', fetchError);
       } finally {
@@ -255,10 +386,94 @@ export default function SprintsPage() {
       }
     };
 
-    loadCurrentSprintTasks();
-  }, [currentSprint?.id]);
+    loadTasks();
+  }, [currentSprint, profile?.role]);
+
+  const assignTasksToSprint = async (taskIds: string[]) => {
+    if (!currentSprint || taskIds.length === 0) return;
+    setIsMoving(true);
+    try {
+      const supabase = createClient();
+      const { error: updateError } = await supabase
+        .from('tasks')
+        .update({ sprint_id: currentSprint.id, status: 'todo' })
+        .in('id', taskIds);
+
+      if (updateError) throw updateError;
+
+      const movedTasks = backlogTasks
+        .filter((task) => taskIds.includes(task.id))
+        .map((task) => ({
+          ...task,
+          sprint_id: currentSprint.id,
+          status: 'todo' as TaskStatus,
+          sprints: { name: currentSprint.name },
+        }));
+
+      setBacklogTasks((prev) => prev.filter((task) => !taskIds.includes(task.id)));
+      setCurrentSprintTasks((prev) => [...movedTasks, ...prev]);
+      setSelectedBacklogIds([]);
+      toast.success(tTasks('toastTaskUpdated'));
+    } catch (moveError) {
+      console.error('Error moving tasks to sprint:', moveError);
+      toast.error(tTasks('toastTaskUpdateFailed'));
+    } finally {
+      setIsMoving(false);
+    }
+  };
+
+  const handleMoveSelected = async () => {
+    if (!canAssignToSprint) return;
+    await assignTasksToSprint(selectedBacklogIds);
+  };
+
+  const handleDropToSprint = async (taskId: string) => {
+    if (!canAssignToSprint) return;
+    const isBacklogTask = backlogTasks.some((task) => task.id === taskId);
+    if (!isBacklogTask) return;
+    await assignTasksToSprint([taskId]);
+  };
+
+  const handleDropToBacklog = async (taskId: string) => {
+    if (!canManageTasks) return;
+    const sprintTask = currentSprintTasks.find((task) => task.id === taskId);
+    if (!sprintTask) return;
+
+    setIsMoving(true);
+    try {
+      const supabase = createClient();
+      const { error: updateError } = await supabase
+        .from('tasks')
+        .update({ sprint_id: null, status: 'backlog' })
+        .eq('id', taskId);
+
+      if (updateError) throw updateError;
+
+      setCurrentSprintTasks((prev) => prev.filter((task) => task.id !== taskId));
+      setBacklogTasks((prev) => [
+        { ...sprintTask, sprint_id: null, status: 'backlog', sprints: null },
+        ...prev.filter((task) => task.id !== taskId),
+      ]);
+      toast.success(tTasks('toastTaskUpdated'));
+    } catch (moveError) {
+      console.error('Error moving task to backlog:', moveError);
+      toast.error(tTasks('toastTaskUpdateFailed'));
+    } finally {
+      setIsMoving(false);
+    }
+  };
+
+  const getActivityCounts = (taskId: string) => ({
+    comments: commentCounts[taskId] ?? 0,
+    submissions: submissionCounts[taskId] ?? 0,
+    contributors: contributorCounts[taskId] ?? 0,
+  });
 
   const updateTaskStatus = async (taskId: string, newStatus: TaskStatus) => {
+    if (newStatus === 'backlog') {
+      await handleDropToBacklog(taskId);
+      return;
+    }
     try {
       const supabase = createClient();
       const { error: updateError } = await supabase
@@ -370,18 +585,50 @@ export default function SprintsPage() {
                     loading={tasksLoading}
                     canManage={canManageTasks}
                     onStatusChange={updateTaskStatus}
+                    onExternalDrop={handleDropToSprint}
+                    moveTargets={['backlog', 'todo', 'in_progress', 'review', 'done']}
+                    activityCounts={activityCountsMap}
                     excludeStatuses={['backlog']}
                   />
 
-                  <div className="mt-8 bg-white rounded-xl border border-gray-200">
+                  <div
+                    className="mt-8 bg-white rounded-xl border border-gray-200"
+                    onDragOver={(event) => {
+                      if (!canManageTasks) return;
+                      event.preventDefault();
+                    }}
+                    onDrop={(event) => {
+                      if (!canManageTasks) return;
+                      const taskId =
+                        event.dataTransfer.getData('text/task-id') ||
+                        event.dataTransfer.getData('text/plain');
+                      if (taskId) {
+                        handleDropToBacklog(taskId);
+                      }
+                    }}
+                  >
                     <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
                       <h3 className="text-lg font-semibold text-gray-900">
                         {tTasks('column.backlog')}
                       </h3>
-                      <span className="text-sm text-gray-500">
-                        {tTasks('listCount', { count: backlogTasks.length })}
-                      </span>
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm text-gray-500">
+                          {tTasks('listCount', { count: backlogTasks.length })}
+                        </span>
+                        {canAssignToSprint && (
+                          <button
+                            onClick={handleMoveSelected}
+                            disabled={selectedBacklogIds.length === 0 || isMoving}
+                            className="px-3 py-1.5 text-xs font-medium rounded-lg bg-organic-orange text-white hover:bg-orange-600 transition-colors disabled:opacity-50"
+                          >
+                            {isMoving ? t('movingToSprint') : t('moveToSprint')}
+                          </button>
+                        )}
+                      </div>
                     </div>
+                    {canAssignToSprint && (
+                      <p className="px-6 pt-4 text-xs text-gray-500">{t('planningBacklogHint')}</p>
+                    )}
 
                     {tasksLoading ? (
                       <div className="p-6 space-y-3">
@@ -392,24 +639,63 @@ export default function SprintsPage() {
                     ) : backlogTasks.length === 0 ? (
                       <div className="p-6 text-center text-gray-500">{tTasks('noTasksInView')}</div>
                     ) : (
-                      <div className="divide-y divide-gray-100">
+                      <div
+                        className="divide-y divide-gray-100"
+                        onDragOver={(event) => {
+                          if (!canManageTasks) return;
+                          event.preventDefault();
+                        }}
+                        onDrop={(event) => {
+                          if (!canManageTasks) return;
+                          const taskId =
+                            event.dataTransfer.getData('text/task-id') ||
+                            event.dataTransfer.getData('text/plain');
+                          if (taskId) {
+                            handleDropToBacklog(taskId);
+                          }
+                        }}
+                      >
                         {backlogTasks.map((task) => {
                           const isOverdue =
                             task.due_date &&
                             new Date(task.due_date) < new Date() &&
                             task.status !== 'done';
                           return (
-                            <Link
+                            <div
                               key={task.id}
-                              href={`/tasks/${task.id}`}
-                              className="block px-6 py-4 hover:bg-gray-50 transition-colors"
+                              draggable={canAssignToSprint}
+                              onDragStart={(event) => {
+                                event.dataTransfer.setData('text/task-id', task.id);
+                                event.dataTransfer.effectAllowed = 'move';
+                              }}
+                              className={`px-6 py-4 hover:bg-gray-50 transition-colors ${
+                                canAssignToSprint ? 'cursor-move' : ''
+                              }`}
                             >
-                              <div className="flex items-start justify-between gap-4">
+                              <div className="flex items-start gap-3">
+                                {canAssignToSprint && (
+                                  <input
+                                    type="checkbox"
+                                    className="mt-1 h-4 w-4 rounded border-gray-300 text-organic-orange focus:ring-organic-orange"
+                                    checked={selectedBacklogIds.includes(task.id)}
+                                    onChange={(event) => {
+                                      const isChecked = event.target.checked;
+                                      setSelectedBacklogIds((prev) =>
+                                        isChecked
+                                          ? [...prev, task.id]
+                                          : prev.filter((id) => id !== task.id)
+                                      );
+                                    }}
+                                  />
+                                )}
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center gap-2 mb-2 flex-wrap">
-                                    <h4 className="font-medium text-gray-900 hover:text-organic-orange transition-colors">
+                                    <Link
+                                      href={`/tasks/${task.id}`}
+                                      className="font-medium text-gray-900 hover:text-organic-orange transition-colors"
+                                    >
                                       {task.title}
-                                    </h4>
+                                    </Link>
                                     {task.priority && (
                                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border bg-gray-100 text-gray-700 border-gray-300">
                                         {tTasks(`priority.${task.priority}`)}
@@ -440,6 +726,18 @@ export default function SprintsPage() {
                                       </span>
                                     )}
                                   </div>
+                                  <div className="flex items-center gap-4 text-xs text-gray-400 mt-2">
+                                    {(() => {
+                                      const activity = getActivityCounts(task.id);
+                                      return (
+                                        <>
+                                          <span>💬 {activity.comments}</span>
+                                          <span>📤 {activity.submissions}</span>
+                                          <span>👥 {activity.contributors}</span>
+                                        </>
+                                      );
+                                    })()}
+                                  </div>
                                 </div>
                                 {task.points && (
                                   <span className="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded-full">
@@ -447,7 +745,7 @@ export default function SprintsPage() {
                                   </span>
                                 )}
                               </div>
-                            </Link>
+                            </div>
                           );
                         })}
                       </div>

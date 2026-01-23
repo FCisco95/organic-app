@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import type { DragEvent } from 'react';
 import { Link, useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { AlertCircle, Clock, Edit2, MoreVertical, Tag, User } from 'lucide-react';
@@ -44,33 +45,52 @@ export function TaskBoard({
   loading,
   canManage,
   onStatusChange,
+  onExternalDrop,
+  moveTargets,
+  activityCounts,
   excludeStatuses = [],
 }: {
   tasks: TaskBoardTask[];
   loading: boolean;
   canManage?: boolean;
   onStatusChange: (taskId: string, status: TaskStatus) => void;
+  onExternalDrop?: (taskId: string, status: TaskStatus) => void;
+  moveTargets?: TaskStatus[];
+  activityCounts?: Record<string, { comments: number; submissions: number; contributors: number }>;
   excludeStatuses?: TaskStatus[];
 }) {
   const t = useTranslations('Tasks');
   const [draggedTask, setDraggedTask] = useState<TaskBoardTask | null>(null);
   const visibleColumns = COLUMNS.filter((column) => !excludeStatuses.includes(column.id));
+  const availableStatuses = moveTargets ?? visibleColumns.map((column) => column.id);
   const gridClass =
     visibleColumns.length === 4
       ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
       : 'grid-cols-1 md:grid-cols-3 lg:grid-cols-5';
 
-  const handleDragStart = (task: TaskBoardTask) => {
+  const handleDragStart = (task: TaskBoardTask, event: DragEvent) => {
     setDraggedTask(task);
+    event.dataTransfer.setData('text/task-id', task.id);
+    event.dataTransfer.effectAllowed = 'move';
   };
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
   };
 
-  const handleDrop = (status: TaskStatus) => {
+  const handleDrop = (status: TaskStatus, event: DragEvent) => {
     if (draggedTask && draggedTask.status !== status) {
       onStatusChange(draggedTask.id, status);
+      setDraggedTask(null);
+      return;
+    }
+    if (!draggedTask && onExternalDrop) {
+      const taskId =
+        event.dataTransfer.getData('text/task-id') ||
+        event.dataTransfer.getData('text/plain');
+      if (taskId) {
+        onExternalDrop(taskId, status);
+      }
     }
     setDraggedTask(null);
   };
@@ -108,7 +128,7 @@ export function TaskBoard({
               isDropTarget ? 'ring-2 ring-organic-orange ring-offset-2 scale-[1.02]' : ''
             }`}
             onDragOver={handleDragOver}
-            onDrop={() => handleDrop(column.id)}
+            onDrop={(event) => handleDrop(column.id, event)}
           >
             <div className="mb-4">
               <h3 className="font-semibold text-gray-900 text-sm uppercase tracking-wide">
@@ -128,6 +148,8 @@ export function TaskBoard({
                   onDragStart={handleDragStart}
                   canManage={canManage}
                   isDragging={draggedTask?.id === task.id}
+                  availableStatuses={availableStatuses}
+                  activityCounts={activityCounts?.[task.id]}
                 />
               ))}
             </div>
@@ -144,12 +166,16 @@ function TaskCard({
   onDragStart,
   canManage,
   isDragging,
+  availableStatuses,
+  activityCounts,
 }: {
   task: TaskBoardTask;
   onStatusChange: (taskId: string, status: TaskStatus) => void;
-  onDragStart: (task: TaskBoardTask) => void;
+  onDragStart: (task: TaskBoardTask, event: DragEvent) => void;
   canManage?: boolean;
   isDragging: boolean;
+  availableStatuses: TaskStatus[];
+  activityCounts?: { comments: number; submissions: number; contributors: number };
 }) {
   const router = useRouter();
   const t = useTranslations('Tasks');
@@ -171,11 +197,12 @@ function TaskCard({
   };
 
   const isOverdue = task.due_date && new Date(task.due_date) < new Date() && task.status !== 'done';
+  const activity = activityCounts ?? { comments: 0, submissions: 0, contributors: 0 };
 
   return (
     <div
       draggable={canManage}
-      onDragStart={() => onDragStart(task)}
+      onDragStart={(event) => onDragStart(task, event)}
       className={`bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all group relative ${
         isDragging ? 'opacity-50 scale-95' : ''
       } ${canManage ? 'cursor-move' : ''}`}
@@ -250,6 +277,12 @@ function TaskCard({
             </div>
           )}
         </div>
+
+        <div className="flex items-center gap-3 text-xs text-gray-400 mt-2">
+          <span>💬 {activity.comments}</span>
+          <span>📤 {activity.submissions}</span>
+          <span>👥 {activity.contributors}</span>
+        </div>
       </Link>
 
       {canManage && (
@@ -282,18 +315,18 @@ function TaskCard({
                 <div className="px-3 py-1 text-xs font-medium text-gray-500 uppercase">
                   {t('moveTo')}
                 </div>
-                {COLUMNS.map((col) => (
+                {availableStatuses.map((status) => (
                   <button
-                    key={col.id}
+                    key={status}
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      onStatusChange(task.id, col.id);
+                      onStatusChange(task.id, status);
                       setShowActions(false);
                     }}
                     className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
                   >
-                    {t(`column.${col.id}`)}
+                    {t(`column.${status}`)}
                   </button>
                 ))}
               </div>
