@@ -11,7 +11,6 @@ import {
   TASK_PRIORITY_COLORS,
   REVIEW_STATUS_COLORS,
   CLAIMABLE_STATUSES,
-  IN_PROGRESS_STATUSES,
 } from './types';
 
 /**
@@ -118,24 +117,14 @@ export function canClaimTask(
  */
 export function canSubmitTask(
   task: TaskWithRelations,
-  userId: string
+  userHasOrganicId: boolean
 ): { canSubmit: boolean; reason?: string } {
-  // For solo tasks, user must be the assignee
-  if (!task.is_team_task) {
-    if (task.assignee_id !== userId) {
-      return { canSubmit: false, reason: 'You are not assigned to this task' };
-    }
-  } else {
-    // For team tasks, user must be in assignees list
-    const isAssigned = task.assignees?.some((a) => a.user_id === userId);
-    if (!isAssigned) {
-      return { canSubmit: false, reason: 'You are not assigned to this task' };
-    }
+  if (!userHasOrganicId) {
+    return { canSubmit: false, reason: 'You need an Organic ID to submit work' };
   }
 
-  // Task must be in progress or review status
-  if (!IN_PROGRESS_STATUSES.includes(task.status)) {
-    return { canSubmit: false, reason: 'Task must be in progress to submit' };
+  if (!task.sprint?.status || task.sprint.status !== 'active') {
+    return { canSubmit: false, reason: 'Task must be in an active sprint to submit' };
   }
 
   return { canSubmit: true };

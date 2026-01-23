@@ -157,6 +157,7 @@ export default function TaskDetailPage() {
   const t = useTranslations('TaskDetail');
   const taskId = typeof params.id === 'string' ? params.id : (params.id?.[0] ?? '');
   const canLike = !!profile?.role && ['member', 'council', 'admin'].includes(profile.role);
+  const standardLabels = ['📣 Growth', '🎨 Design', '💻 Dev', '🧠 Research'];
 
   const [task, setTask] = useState<Task | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
@@ -175,6 +176,9 @@ export default function TaskDetailPage() {
   const [likedByUser, setLikedByUser] = useState(false);
   const [showAllContributors, setShowAllContributors] = useState(false);
   const [showContributorsModal, setShowContributorsModal] = useState(false);
+  const submitEligibility = task
+    ? canSubmitTask(task as any, Boolean(profile?.organic_id))
+    : { canSubmit: false };
 
   const [editForm, setEditForm] = useState({
     title: '',
@@ -184,10 +188,33 @@ export default function TaskDetailPage() {
     points: 0,
     assignee_id: '',
     sprint_id: '',
+    labels: [] as string[],
   });
+  const [labelInput, setLabelInput] = useState('');
 
   const [newComment, setNewComment] = useState('');
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const handleAddLabel = () => {
+    const nextLabel = labelInput.trim();
+    if (!nextLabel || editForm.labels.includes(nextLabel)) {
+      setLabelInput('');
+      return;
+    }
+    setEditForm({ ...editForm, labels: [...editForm.labels, nextLabel] });
+    setLabelInput('');
+  };
+
+  const handleToggleLabel = (label: string) => {
+    if (editForm.labels.includes(label)) {
+      setEditForm({ ...editForm, labels: editForm.labels.filter((item) => item !== label) });
+    } else {
+      setEditForm({ ...editForm, labels: [...editForm.labels, label] });
+    }
+  };
+
+  const handleRemoveLabel = (labelToRemove: string) => {
+    setEditForm({ ...editForm, labels: editForm.labels.filter((item) => item !== labelToRemove) });
+  };
 
   const fetchTaskDetails = useCallback(async () => {
     try {
@@ -275,6 +302,7 @@ export default function TaskDetailPage() {
           points: fullTask.points,
           assignee_id: fullTask.assignee_id || '',
           sprint_id: fullTask.sprint_id || '',
+          labels: fullTask.labels ?? [],
         });
       } else {
         console.error('[Task Detail] Error fetching task:', error);
@@ -396,7 +424,7 @@ export default function TaskDetailPage() {
       const { data: sprints, error } = await supabase
         .from('sprints')
         .select('id, name, status')
-        .order('start_date', { ascending: false });
+        .order('start_at', { ascending: false });
 
       if (!error && sprints) {
         setSprints(sprints as unknown as Sprint[]);
@@ -422,13 +450,17 @@ export default function TaskDetailPage() {
     setIsSaving(true);
     try {
       const supabase = createClient();
+      const normalizedSprintId = editForm.status === 'backlog' ? null : editForm.sprint_id || null;
+      const normalizedStatus =
+        editForm.status === 'backlog' && editForm.sprint_id ? 'todo' : editForm.status;
 
       const { data: updatedTask, error } = await supabase
         .from('tasks')
         .update({
           ...editForm,
           assignee_id: editForm.assignee_id || null,
-          sprint_id: editForm.sprint_id || null,
+          sprint_id: normalizedSprintId,
+          status: normalizedStatus,
         })
         .eq('id', taskId)
         .select(
@@ -787,9 +819,14 @@ export default function TaskDetailPage() {
                   </label>
                   <select
                     value={editForm.status}
-                    onChange={(e) =>
-                      setEditForm({ ...editForm, status: e.target.value as Task['status'] })
-                    }
+                    onChange={(e) => {
+                      const nextStatus = e.target.value as Task['status'];
+                      setEditForm({
+                        ...editForm,
+                        status: nextStatus,
+                        sprint_id: nextStatus === 'backlog' ? '' : editForm.sprint_id,
+                      });
+                    }}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange"
                   >
                     <option value="backlog">{t('status.backlog')}</option>
@@ -860,7 +897,16 @@ export default function TaskDetailPage() {
                 </label>
                 <select
                   value={editForm.sprint_id}
-                  onChange={(e) => setEditForm({ ...editForm, sprint_id: e.target.value })}
+                  onChange={(e) => {
+                    const nextSprintId = e.target.value;
+                    setEditForm({
+                      ...editForm,
+                      sprint_id: nextSprintId,
+                      status:
+                        nextSprintId && editForm.status === 'backlog' ? 'todo' : editForm.status,
+                    });
+                  }}
+                  disabled={editForm.status === 'backlog'}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange"
                 >
                   <option value="">{t('noSprint')}</option>
@@ -870,6 +916,69 @@ export default function TaskDetailPage() {
                     </option>
                   ))}
                 </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t('labelLabels')}
+                </label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {standardLabels.map((label) => (
+                    <button
+                      key={label}
+                      type="button"
+                      onClick={() => handleToggleLabel(label)}
+                      className={`px-2 py-1 rounded-md text-xs font-medium border transition-colors ${
+                        editForm.labels.includes(label)
+                          ? 'border-organic-orange bg-orange-50 text-organic-orange'
+                          : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex gap-2 mb-2">
+                  <input
+                    type="text"
+                    value={labelInput}
+                    onChange={(e) => setLabelInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddLabel();
+                      }
+                    }}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange"
+                    placeholder={t('labelPlaceholder')}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddLabel}
+                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors"
+                  >
+                    {t('addLabel')}
+                  </button>
+                </div>
+                {editForm.labels.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {editForm.labels.map((label) => (
+                      <span
+                        key={label}
+                        className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-700 rounded-md text-sm"
+                      >
+                        {label}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveLabel(label)}
+                          className="text-purple-500 hover:text-purple-700"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="flex gap-3 pt-4">
@@ -1065,25 +1174,15 @@ export default function TaskDetailPage() {
               <ClaimButton task={task as any} onSuccess={() => fetchTaskDetails()} />
 
               {/* Submit work button - show for assigned users when task is in progress */}
-              {(() => {
-                const isAssigned = task.is_team_task
-                  ? task.assignees?.some((a) => a.user_id === user.id)
-                  : task.assignee_id === user.id;
-                const canSubmit = isAssigned && ['in_progress', 'review'].includes(task.status);
-
-                if (canSubmit && !showSubmissionForm) {
-                  return (
-                    <button
-                      onClick={() => setShowSubmissionForm(true)}
-                      className="flex items-center gap-2 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
-                    >
-                      <Send className="w-4 h-4" />
-                      {t('submitWork')}
-                    </button>
-                  );
-                }
-                return null;
-              })()}
+              {submitEligibility.canSubmit && !showSubmissionForm && (
+                <button
+                  onClick={() => setShowSubmissionForm(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
+                >
+                  <Send className="w-4 h-4" />
+                  {t('submitWork')}
+                </button>
+              )}
             </div>
 
             {/* Team task status */}
