@@ -218,22 +218,38 @@ export function usePendingReviewSubmissions() {
   return useQuery({
     queryKey: taskKeys.pendingReview(),
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: submissions, error } = await supabase
         .from('task_submissions')
-        .select(
-          `
-          *,
-          user:user_profiles!task_submissions_user_id_fkey(
-            id, name, email, organic_id, avatar_url
-          ),
-          task:tasks(id, title, task_type, base_points)
-        `
-        )
+        .select('*')
         .eq('review_status', 'pending')
         .order('submitted_at', { ascending: true });
 
       if (error) throw error;
-      return data;
+      if (!submissions || submissions.length === 0) return [];
+
+      const userIds = Array.from(new Set(submissions.map((s) => s.user_id)));
+      const taskIds = Array.from(new Set(submissions.map((s) => s.task_id)));
+
+      const [{ data: users, error: userError }, { data: tasks, error: taskError }] =
+        await Promise.all([
+          supabase
+            .from('user_profiles')
+            .select('id, name, email, organic_id, avatar_url')
+            .in('id', userIds),
+          supabase.from('tasks').select('id, title, task_type, base_points').in('id', taskIds),
+        ]);
+
+      if (userError) throw userError;
+      if (taskError) throw taskError;
+
+      const userMap = new Map((users ?? []).map((user) => [user.id, user]));
+      const taskMap = new Map((tasks ?? []).map((task) => [task.id, task]));
+
+      return submissions.map((submission) => ({
+        ...submission,
+        user: userMap.get(submission.user_id) ?? null,
+        task: taskMap.get(submission.task_id) ?? null,
+      }));
     },
   });
 }

@@ -453,6 +453,19 @@
     "labelEndDate": "End Date",
     "createEpoch": "Create Epoch"
   },
+  "ReviewQueue": {
+    "title": "Submission review queue",
+    "subtitle": "Review pending task submissions",
+    "loading": "Loading submissions...",
+    "loadError": "Failed to load submissions.",
+    "accessDeniedTitle": "Access restricted",
+    "accessDeniedDescription": "Only admin and council members can review submissions.",
+    "backToTasks": "Back to tasks",
+    "emptyTitle": "No submissions to review",
+    "emptyDescription": "You're all caught up.",
+    "taskLabel": "Task",
+    "pendingCount": "{count, plural, one {# pending submission} other {# pending submissions}}"
+  },
   "TaskDetail": {
     "alertUpdateTaskFailed": "Failed to update task",
     "alertSaveTaskFailed": "Failed to save task",

@@ -453,6 +453,19 @@
     "labelEndDate": "结束日期",
     "createEpoch": "创建周期"
   },
+  "ReviewQueue": {
+    "title": "提交审核队列",
+    "subtitle": "审核待处理的任务提交",
+    "loading": "正在加载提交...",
+    "loadError": "加载提交失败。",
+    "accessDeniedTitle": "访问受限",
+    "accessDeniedDescription": "仅管理员和理事会成员可以审核提交。",
+    "backToTasks": "返回任务",
+    "emptyTitle": "暂无需要审核的提交",
+    "emptyDescription": "目前没有待处理内容。",
+    "taskLabel": "任务",
+    "pendingCount": "{count, plural, one {# 条待审核提交} other {# 条待审核提交}}"
+  },
   "TaskDetail": {
     "alertUpdateTaskFailed": "更新任务失败",
     "alertSaveTaskFailed": "保存任务失败",

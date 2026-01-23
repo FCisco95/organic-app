@@ -453,6 +453,19 @@
     "labelEndDate": "Data de término",
     "createEpoch": "Criar época"
   },
+  "ReviewQueue": {
+    "title": "Fila de revisão de submissões",
+    "subtitle": "Reveja submissões de tarefas pendentes",
+    "loading": "A carregar submissões...",
+    "loadError": "Falha ao carregar submissões.",
+    "accessDeniedTitle": "Acesso restrito",
+    "accessDeniedDescription": "Apenas admins e membros do conselho podem rever submissões.",
+    "backToTasks": "Voltar às tarefas",
+    "emptyTitle": "Sem submissões para rever",
+    "emptyDescription": "Está tudo em dia.",
+    "taskLabel": "Tarefa",
+    "pendingCount": "{count, plural, one {# submissão pendente} other {# submissões pendentes}}"
+  },
   "TaskDetail": {
     "alertUpdateTaskFailed": "Falha ao atualizar tarefa",
     "alertSaveTaskFailed": "Falha ao salvar tarefa",

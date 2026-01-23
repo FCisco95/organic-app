@@ -15,6 +15,7 @@ import {
   Eye,
   ThumbsUp,
   Share2,
+  Link as LinkIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -363,6 +364,11 @@ function SubmissionContent({
   compact?: boolean;
 }) {
   const type = submission.submission_type;
+  const customFields = submission.custom_fields as Record<
+    string,
+    string | number | boolean | null
+  > | null;
+  const customLink = customFields && typeof customFields.link === 'string' ? customFields.link : null;
 
   return (
     <div className="space-y-3">
@@ -455,6 +461,35 @@ function SubmissionContent({
             <p className="mt-2 text-sm text-gray-600">
               <strong>Revision Notes:</strong> {submission.revision_notes}
             </p>
+          )}
+        </div>
+      )}
+
+      {/* Custom */}
+      {type === 'custom' && (
+        <div>
+          {customLink && (
+            <a
+              href={customLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium"
+            >
+              <LinkIcon className="w-4 h-4" />
+              View Submission
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          )}
+          {!compact && customFields && (
+            <div className="mt-2 text-sm text-gray-600 space-y-1">
+              {Object.entries(customFields)
+                .filter(([key, value]) => key !== 'link' && value !== null && value !== '')
+                .map(([key, value]) => (
+                  <p key={key}>
+                    <strong className="capitalize">{key}:</strong> {String(value)}
+                  </p>
+                ))}
+            </div>
           )}
         </div>
       )}
