@@ -366,6 +366,7 @@
     "subtitle": "Track and manage tasks across epochs",
     "newEpoch": "New Epoch",
     "newTask": "New Task",
+    "reviewQueue": "Review queue",
     "allTasks": "All Tasks",
     "noEpoch": "No Epoch",
     "epochStatus": {
@@ -376,8 +377,7 @@
     "tab": {
       "all": "All",
       "backlog": "Backlog",
-      "active": "Active",
-      "review": "In Review",
+      "activeSprint": "Active Sprint",
       "completed": "Completed"
     },
     "column": {
@@ -391,6 +391,7 @@
     "backlogTab": "Backlog",
     "activeSprintTab": "Active Sprint",
     "noTasksInView": "No tasks to show here",
+    "noActiveSprint": "No active sprint yet. Create one to see tasks here.",
     "listCount": "{count, plural, one {# task} other {# tasks}}",
     "filters": "Filters",
     "search": "Search",

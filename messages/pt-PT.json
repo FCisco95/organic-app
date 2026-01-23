@@ -366,6 +366,7 @@
     "subtitle": "Acompanhe e gerencie tarefas entre épocas",
     "newEpoch": "Nova época",
     "newTask": "Nova tarefa",
+    "reviewQueue": "Fila de revisão",
     "allTasks": "Todas as tarefas",
     "noEpoch": "Sem época",
     "epochStatus": {
@@ -376,8 +377,7 @@
     "tab": {
       "all": "Todas",
       "backlog": "Backlog",
-      "active": "Ativas",
-      "review": "Em revisão",
+      "activeSprint": "Sprint ativa",
       "completed": "Concluídas"
     },
     "column": {
@@ -391,6 +391,7 @@
     "backlogTab": "Backlog",
     "activeSprintTab": "Sprint ativa",
     "noTasksInView": "Nenhuma tarefa para mostrar aqui",
+    "noActiveSprint": "Nenhuma sprint ativa ainda. Crie uma para ver tarefas aqui.",
     "listCount": "{count, plural, one {# tarefa} other {# tarefas}}",
     "filters": "Filtros",
     "search": "Buscar",

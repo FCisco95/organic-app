@@ -366,6 +366,7 @@
     "subtitle": "跨周期跟踪与管理任务",
     "newEpoch": "新周期",
     "newTask": "新建任务",
+    "reviewQueue": "审核队列",
     "allTasks": "全部任务",
     "noEpoch": "无周期",
     "epochStatus": {
@@ -376,8 +377,7 @@
     "tab": {
       "all": "全部",
       "backlog": "待办池",
-      "active": "进行中",
-      "review": "评审中",
+      "activeSprint": "当前冲刺",
       "completed": "已完成"
     },
     "column": {
@@ -391,6 +391,7 @@
     "backlogTab": "待办池",
     "activeSprintTab": "当前冲刺",
     "noTasksInView": "这里暂无任务",
+    "noActiveSprint": "当前没有进行中的冲刺。创建一个后在这里查看任务。",
     "listCount": "{count, plural, one {# 个任务} other {# 个任务}}",
     "filters": "筛选",
     "search": "搜索",

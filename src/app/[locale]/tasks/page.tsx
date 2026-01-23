@@ -11,7 +11,7 @@ import { useTranslations } from 'next-intl';
 
 type TaskStatus = 'backlog' | 'todo' | 'in_progress' | 'review' | 'done';
 type TaskPriority = 'low' | 'medium' | 'high' | 'critical';
-type TaskTab = 'all' | 'backlog' | 'active' | 'review' | 'completed';
+type TaskTab = 'all' | 'backlog' | 'activeSprint' | 'completed';
 
 type Task = {
   id: string;
@@ -65,6 +65,7 @@ type Sprint = {
 export default function TasksPage() {
   const { user, profile } = useAuth();
   const t = useTranslations('Tasks');
+  const standardLabels = ['📣 Growth', '🎨 Design', '💻 Dev', '🧠 Research'];
   const [tasks, setTasks] = useState<Task[]>([]);
   const [sprints, setSprints] = useState<Sprint[]>([]);
   const [activeView, setActiveView] = useState<TaskTab>('all');
@@ -79,9 +80,13 @@ export default function TasksPage() {
   const [submissions, setSubmissions] = useState<TaskSubmissionSummary[]>([]);
   const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
   const [likedTasks, setLikedTasks] = useState<Record<string, boolean>>({});
+  const [commentCounts, setCommentCounts] = useState<Record<string, number>>({});
+  const [submissionCounts, setSubmissionCounts] = useState<Record<string, number>>({});
+  const [contributorCounts, setContributorCounts] = useState<Record<string, number>>({});
 
   const isOrgMember = !!profile?.organic_id;
   const canManage = profile?.role === 'admin';
+  const canReview = !!profile?.role && ['admin', 'council'].includes(profile.role);
   const canLike = !!profile?.role && ['member', 'council', 'admin'].includes(profile.role);
 
   const loadSprints = useCallback(async () => {
@@ -134,21 +139,58 @@ export default function TasksPage() {
   const loadSubmissions = useCallback(async () => {
     try {
       const supabase = createClient();
-      const { data, error } = await supabase
+      const { data: submissionRows, error } = await supabase
         .from('task_submissions')
-        .select(
-          `
-          task_id,
-          user:user_profiles!task_submissions_user_id_fkey(
-            id, name, email, organic_id
-          )
-        `
-        );
+        .select('task_id, user_id');
 
       if (error) throw error;
-      setSubmissions((data ?? []) as unknown as TaskSubmissionSummary[]);
+
+      const userIds = Array.from(
+        new Set((submissionRows ?? []).map((row) => row.user_id).filter(Boolean))
+      );
+      const { data: users, error: usersError } = userIds.length
+        ? await supabase
+            .from('user_profiles')
+            .select('id, name, email, organic_id')
+            .in('id', userIds)
+        : { data: [], error: null };
+
+      if (usersError) throw usersError;
+
+      const userMap = new Map((users ?? []).map((user) => [user.id, user]));
+      const summaries = (submissionRows ?? []).map((row) => ({
+        task_id: row.task_id,
+        user: userMap.get(row.user_id) ?? null,
+      }));
+
+      setSubmissions(summaries as TaskSubmissionSummary[]);
     } catch (error) {
       console.error('Error loading submissions:', error);
+    }
+  }, []);
+
+  const loadCommentCounts = useCallback(async (taskIds: string[]) => {
+    if (taskIds.length === 0) {
+      setCommentCounts({});
+      return;
+    }
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from('task_comments')
+        .select('task_id')
+        .in('task_id', taskIds);
+
+      if (error) throw error;
+
+      const counts = (data ?? []).reduce<Record<string, number>>((acc, row) => {
+        const taskId = (row as { task_id: string }).task_id;
+        acc[taskId] = (acc[taskId] ?? 0) + 1;
+        return acc;
+      }, {});
+      setCommentCounts(counts);
+    } catch (error) {
+      console.error('Error loading comment counts:', error);
     }
   }, []);
 
@@ -186,17 +228,52 @@ export default function TasksPage() {
   }, [loadTasks]);
 
   useEffect(() => {
+    const taskIds = tasks.map((task) => task.id);
+    loadCommentCounts(taskIds);
+  }, [loadCommentCounts, tasks]);
+
+  useEffect(() => {
     loadSubmissions();
     loadLikes();
   }, [loadSubmissions, loadLikes]);
 
+  useEffect(() => {
+    const submissionCountMap = submissions.reduce<Record<string, number>>((acc, submission) => {
+      acc[submission.task_id] = (acc[submission.task_id] ?? 0) + 1;
+      return acc;
+    }, {});
+    const contributorCountMap = submissions.reduce<Record<string, Set<string>>>((acc, submission) => {
+      if (!submission.user?.id) return acc;
+      acc[submission.task_id] = acc[submission.task_id] ?? new Set<string>();
+      acc[submission.task_id].add(submission.user.id);
+      return acc;
+    }, {});
+
+    setSubmissionCounts(submissionCountMap);
+    setContributorCounts(
+      Object.fromEntries(
+        Object.entries(contributorCountMap).map(([taskId, userSet]) => [
+          taskId,
+          userSet.size,
+        ])
+      )
+    );
+  }, [submissions]);
+
   const currentSprint =
     sprints.find((s) => s.status === 'active') || sprints.find((s) => s.status === 'planning');
-  const tabOptions: TaskTab[] = ['all', 'backlog', 'active', 'review', 'completed'];
+  const tabOptions: TaskTab[] = ['all', 'backlog', 'activeSprint', 'completed'];
   const visibleTabs = isOrgMember ? tabOptions : tabOptions.filter((tab) => tab !== 'backlog');
-  const categoryOptions = Array.from(new Set(tasks.flatMap((task) => task.labels ?? []))).sort(
-    (a, b) => a.localeCompare(b)
-  );
+  const categoryOptions = [
+    ...standardLabels,
+    ...Array.from(
+      new Set(
+        tasks
+          .flatMap((task) => task.labels ?? [])
+          .filter((label) => !standardLabels.includes(label))
+      )
+    ).sort((a, b) => a.localeCompare(b)),
+  ];
   const contributorOptions = Array.from(
     submissions.reduce((map, submission) => {
       if (submission.user?.id) {
@@ -223,17 +300,9 @@ export default function TasksPage() {
 
   useEffect(() => {
     if (!isOrgMember && activeView === 'backlog') {
-      setActiveView('active');
+      setActiveView('all');
     }
   }, [activeView, isOrgMember]);
-
-  useEffect(() => {
-    if ((activeView === 'active' || activeView === 'review') && currentSprint) {
-      if (sprintFilter === 'all') {
-        setSprintFilter(currentSprint.id);
-      }
-    }
-  }, [activeView, currentSprint, sprintFilter]);
 
   const getPriorityColor = (priority: TaskPriority | null) => {
     switch (priority) {
@@ -264,8 +333,7 @@ export default function TasksPage() {
   const tabStatusMap: Record<TaskTab, TaskStatus[]> = {
     all: ['backlog', 'todo', 'in_progress', 'review', 'done'],
     backlog: ['backlog'],
-    active: ['todo', 'in_progress'],
-    review: ['review'],
+    activeSprint: ['todo', 'in_progress', 'review', 'done'],
     completed: ['done'],
   };
 
@@ -286,12 +354,17 @@ export default function TasksPage() {
         const matchesContributor =
           contributorFilter === 'all' ||
           (taskContributorMap[task.id] ?? []).includes(contributorFilter);
-        const matchesSprint = sprintFilter === 'all' || task.sprint_id === sprintFilter;
+        const matchesSprint =
+          tab === 'backlog'
+            ? task.sprint_id === null
+            : tab === 'activeSprint'
+              ? !!currentSprint && task.sprint_id === currentSprint.id
+              : sprintFilter === 'all' || task.sprint_id === sprintFilter;
 
         const dateTarget =
           tab === 'completed'
-            ? parseDate(task.completed_at) ?? parseDate(task.updated_at)
-            : parseDate(task.updated_at) ?? parseDate(task.created_at);
+            ? parseDate(task.completed_at) ?? parseDate(task.created_at)
+            : parseDate(task.created_at);
 
         const fromDate = dateFrom ? new Date(dateFrom) : null;
         const toDate = dateTo ? new Date(`${dateTo}T23:59:59.999`) : null;
@@ -308,8 +381,8 @@ export default function TasksPage() {
         );
       })
       .sort((a, b) => {
-        const activityA = parseDate(a.updated_at)?.getTime() ?? 0;
-        const activityB = parseDate(b.updated_at)?.getTime() ?? 0;
+        const activityA = parseDate(a.created_at)?.getTime() ?? 0;
+        const activityB = parseDate(b.created_at)?.getTime() ?? 0;
 
         if (tab === 'completed') {
           const completedA = parseDate(a.completed_at)?.getTime() ?? activityA;
@@ -333,19 +406,16 @@ export default function TasksPage() {
       ? filteredByStatus
       : filteredByStatus.filter((task) => isVisibleToNonOrg(task.status));
 
-    const nonOrgScoped = !isOrgMember
-      ? visibleByRole.filter((task) => {
-          if (['todo', 'in_progress', 'review'].includes(task.status)) {
-            return !currentSprint || task.sprint_id === currentSprint.id;
-          }
-          return true;
-        })
-      : visibleByRole;
-
-    return applyFilters(nonOrgScoped, tab);
+    return applyFilters(visibleByRole, tab);
   };
 
   const tabTasks = getTabTasks(activeView);
+
+  const getActivityCounts = (taskId: string) => ({
+    comments: commentCounts[taskId] ?? 0,
+    submissions: submissionCounts[taskId] ?? 0,
+    contributors: contributorCounts[taskId] ?? 0,
+  });
 
   const handleToggleLike = async (taskId: string) => {
     if (!user || !canLike) return;
@@ -405,6 +475,14 @@ export default function TasksPage() {
           </div>
 
           <div className="flex gap-3">
+            {canReview && (
+              <Link
+                href="/admin/submissions"
+                className="flex items-center gap-2 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors hover:bg-gray-50"
+              >
+                {t('reviewQueue')}
+              </Link>
+            )}
             {canManage && (
               <button
                 onClick={() => setShowNewTaskModal(true)}
@@ -543,7 +621,11 @@ export default function TasksPage() {
               ))}
             </div>
           ) : tabTasks.length === 0 ? (
-            <div className="p-8 text-center text-gray-500">{t('noTasksInView')}</div>
+            <div className="p-8 text-center text-gray-500">
+              {activeView === 'activeSprint' && !currentSprint
+                ? t('noActiveSprint')
+                : t('noTasksInView')}
+            </div>
           ) : (
             <div className="divide-y divide-gray-100">
               {tabTasks.map((task) => {
@@ -604,6 +686,18 @@ export default function TasksPage() {
                               <span>{task.labels.join(', ')}</span>
                             </div>
                           )}
+                        </div>
+                        <div className="flex items-center gap-4 text-xs text-gray-400">
+                          {(() => {
+                            const activity = getActivityCounts(task.id);
+                            return (
+                              <>
+                                <span>💬 {activity.comments}</span>
+                                <span>📤 {activity.submissions}</span>
+                                <span>👥 {activity.contributors}</span>
+                              </>
+                            );
+                          })()}
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
@@ -688,6 +782,8 @@ function NewTaskModal({
   const [loadingAssignees, setLoadingAssignees] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
+  const standardLabels = ['📣 Growth', '🎨 Design', '💻 Dev', '🧠 Research'];
+
   // Load assignees
   useEffect(() => {
     async function fetchAssignees() {
@@ -705,9 +801,18 @@ function NewTaskModal({
   }, []);
 
   const handleAddLabel = () => {
-    if (labelInput.trim() && !labels.includes(labelInput.trim())) {
-      setLabels([...labels, labelInput.trim()]);
-      setLabelInput('');
+    const nextLabel = labelInput.trim();
+    if (nextLabel && !labels.includes(nextLabel)) {
+      setLabels([...labels, nextLabel]);
+    }
+    setLabelInput('');
+  };
+
+  const handleToggleLabel = (label: string) => {
+    if (labels.includes(label)) {
+      setLabels(labels.filter((item) => item !== label));
+    } else {
+      setLabels([...labels, label]);
     }
   };
 
@@ -738,6 +843,9 @@ function NewTaskModal({
         points: points ? parseInt(points) : null,
         sprint_id: sprintId || null,
         assignee_id: assigneeId || null,
+        priority,
+        due_date: dueDate || null,
+        labels,
         status: 'backlog' as const,
       });
 
@@ -886,6 +994,22 @@ function NewTaskModal({
             <label className="block text-sm font-medium text-gray-900 mb-1">
               {t('labelLabels')}
             </label>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {standardLabels.map((label) => (
+                <button
+                  key={label}
+                  type="button"
+                  onClick={() => handleToggleLabel(label)}
+                  className={`px-2 py-1 rounded-md text-xs font-medium border transition-colors ${
+                    labels.includes(label)
+                      ? 'border-organic-orange bg-orange-50 text-organic-orange'
+                      : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
             <div className="flex gap-2 mb-2">
               <input
                 type="text"
