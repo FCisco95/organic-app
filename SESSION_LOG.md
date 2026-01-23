@@ -2,6 +2,12 @@
 
 Add newest entries at the top.
 
+## 2026-01-24
+
+- Restored stashed working changes after undo/redo on Task Detail steps
+- Audited pending diffs across Tasks, Sprints, i18n, and task likes/migration files
+- Fixed comment fetching to avoid broken relationship join and ensure newest-first ordering
+
 ## 2026-01-23 (Session 2)
 
 ### Task Submission System
