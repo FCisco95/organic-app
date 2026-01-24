@@ -10,6 +10,31 @@ type LeaderboardEntry = {
   total_points: number | null;
   tasks_completed: number | null;
   role: string;
+  rank: number | null;
+};
+
+type LeaderboardRow = LeaderboardEntry & {
+  dense_rank?: number | null;
+};
+
+const ensureRanks = (entries: LeaderboardRow[]) => {
+  if (entries.length === 0) return entries;
+
+  const hasAnyRank = entries.some((entry) => entry.rank != null);
+  if (hasAnyRank) return entries;
+
+  let lastPoints: number | null = null;
+  let lastRank = 0;
+
+  return entries.map((entry, index) => {
+    const points = entry.total_points ?? 0;
+    if (lastPoints === null || points < lastPoints) {
+      lastRank = index + 1;
+      lastPoints = points;
+    }
+
+    return { ...entry, rank: lastRank };
+  });
 };
 
 export async function GET() {
@@ -19,27 +44,24 @@ export async function GET() {
     // Fetch leaderboard data directly from user_profiles
     // ordered by total_points descending
     const { data: leaderboard, error } = await supabase
-      .from('user_profiles')
-      .select('id, name, email, organic_id, avatar_url, total_points, tasks_completed, role')
+      .from('leaderboard_view' as unknown as 'user_profiles')
+      .select(
+        'id, name, email, organic_id, avatar_url, total_points, tasks_completed, role, rank, dense_rank'
+      )
       .not('organic_id', 'is', null)
       .order('total_points', { ascending: false })
       .limit(100);
 
     if (error) {
-      console.error('Error fetching leaderboard:', error);
       return NextResponse.json({ error: 'Failed to fetch leaderboard' }, { status: 500 });
     }
 
-    // Add rank to each entry
-    const entries = (leaderboard || []) as LeaderboardEntry[];
-    const rankedLeaderboard = entries.map((entry, index) => ({
-      ...entry,
-      rank: index + 1,
-    }));
+    const normalized = ensureRanks((leaderboard || []) as LeaderboardRow[]);
 
-    return NextResponse.json({ leaderboard: rankedLeaderboard });
-  } catch (error: any) {
-    console.error('Error in leaderboard route:', error);
-    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+    return NextResponse.json({
+      leaderboard: normalized as LeaderboardEntry[],
+    });
+  } catch {
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
