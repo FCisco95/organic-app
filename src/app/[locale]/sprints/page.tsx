@@ -4,13 +4,15 @@ import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/features/auth/context';
 import { Sprint, SprintFormData, SprintStats } from '@/features/tasks';
 
-import { Calendar, Clock, CheckCircle2, Plus, Target, X, AlertCircle } from 'lucide-react';
-import { Link } from '@/i18n/navigation';
+import { Calendar, Plus } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
-import { TaskBoard, TaskBoardTask, TaskStatus } from '@/components/tasks/task-board';
+import { TaskBoardTask, TaskStatus } from '@/components/tasks/task-board';
 import { useSearchParams } from 'next/navigation';
+import { SprintCreateModal } from '@/components/sprints/sprint-create-modal';
+import { SprintBoardView } from '@/components/sprints/sprint-board-view';
+import { SprintListView } from '@/components/sprints/sprint-list-view';
 
 export default function SprintsPage() {
   const { user, profile } = useAuth();
@@ -93,26 +95,6 @@ export default function SprintsPage() {
       console.error('Error fetching sprints:', error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const getStatusBadge = (status: string) => {
-    const styles = {
-      planning: 'bg-blue-100 text-blue-700 border-blue-200',
-      active: 'bg-green-100 text-green-700 border-green-200',
-      completed: 'bg-gray-100 text-gray-700 border-gray-200',
-    };
-    return styles[status as keyof typeof styles] || styles.planning;
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'active':
-        return <Target className="w-4 h-4" />;
-      case 'completed':
-        return <CheckCircle2 className="w-4 h-4" />;
-      default:
-        return <Clock className="w-4 h-4" />;
     }
   };
 
@@ -337,7 +319,7 @@ export default function SprintsPage() {
             ),
             sprints (
               name
-            )
+            )}
           `
           )
           .eq('status', 'backlog')
@@ -592,709 +574,58 @@ export default function SprintsPage() {
             </div>
 
             {activeView === 'board' ? (
-              selectedSprint ? (
-                <>
-                  <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                    <div className="flex flex-col gap-2">
-                      <label className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-                        {t('assignToSprint')}
-                      </label>
-                      <div className="flex flex-wrap items-center gap-3">
-                        <select
-                          value={selectedSprint?.id ?? ''}
-                          onChange={(event) => setSelectedSprintId(event.target.value)}
-                          className="min-w-[220px] rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:border-organic-orange focus:ring-2 focus:ring-organic-orange"
-                        >
-                          {activeSprint && (
-                            <option value={activeSprint.id}>
-                              {t('activeSprintOption', { name: activeSprint.name })}
-                            </option>
-                          )}
-                          {planningSprints.length > 0 && (
-                            <optgroup label={t('planningSprintGroup')}>
-                              {planningSprints.map((sprint) => (
-                                <option key={sprint.id} value={sprint.id}>
-                                  {sprint.name}
-                                </option>
-                              ))}
-                            </optgroup>
-                          )}
-                        </select>
-                        {selectedSprint.status === 'planning' && (
-                          <span className="inline-flex items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700">
-                            {t('planningMode')}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    {canCreateSprint && planningSprints.length === 0 && !activeSprint && (
-                      <button
-                        onClick={() => setShowCreateModal(true)}
-                        className="inline-flex items-center gap-2 rounded-lg border border-organic-orange px-4 py-2 text-sm font-medium text-organic-orange hover:bg-orange-50"
-                      >
-                        <Plus className="h-4 w-4" />
-                        {t('createSprint')}
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <p className="text-xs font-medium text-gray-500">{t('selectedSprint')}</p>
-                      <h2 className="text-xl font-semibold text-gray-900">{selectedSprint.name}</h2>
-                      <div className="text-sm text-gray-500">
-                        {formatDate(selectedSprint.start_at)} - {formatDate(selectedSprint.end_at)}
-                      </div>
-                      <div className="text-sm text-gray-500 mt-1">
-                        {selectedSprint.capacity_points != null
-                          ? t('capacityValue', {
-                              used: currentSprintPoints,
-                              capacity: selectedSprint.capacity_points,
-                            })
-                          : t('capacityUncapped', { used: currentSprintPoints })}
-                      </div>
-                      {selectedSprint.capacity_points != null && (
-                        <div className="mt-2 h-2 w-full max-w-xs rounded-full bg-gray-100 overflow-hidden">
-                          <div
-                            className="h-full bg-organic-orange"
-                            style={{
-                              width: `${getCapacityPercent(
-                                currentSprintPoints,
-                                selectedSprint.capacity_points
-                              )}%`,
-                            }}
-                          ></div>
-                        </div>
-                      )}
-                    </div>
-                    <Link
-                      href={`/sprints/${selectedSprint.id}`}
-                      className="inline-flex items-center gap-2 text-organic-orange font-medium hover:text-orange-600"
-                    >
-                      {t('viewDetails')}
-                      <Target className="w-4 h-4" />
-                    </Link>
-                  </div>
-
-                  <TaskBoard
-                    tasks={boardTasks}
-                    loading={tasksLoading}
-                    canManage={canAssignToSprint}
-                    onStatusChange={updateTaskStatus}
-                    onExternalDrop={handleDropToSprint}
-                    moveTargets={['backlog', 'todo', 'in_progress', 'review', 'done']}
-                    activityCounts={activityCountsMap}
-                    excludeStatuses={['backlog']}
-                  />
-
-                  <div
-                    className="mt-8 bg-white rounded-xl border border-gray-200"
-                    onDragOver={(event) => {
-                      if (!canAssignToSprint) return;
-                      event.preventDefault();
-                    }}
-                    onDrop={(event) => {
-                      if (!canAssignToSprint) return;
-                      const taskId =
-                        event.dataTransfer.getData('text/task-id') ||
-                        event.dataTransfer.getData('text/plain');
-                      if (taskId) {
-                        handleDropToBacklog(taskId);
-                      }
-                    }}
-                  >
-                    <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-                      <h3 className="text-lg font-semibold text-gray-900">
-                        {tTasks('column.backlog')}
-                      </h3>
-                      <div className="flex items-center gap-3">
-                        <span className="text-sm text-gray-500">
-                          {tTasks('listCount', { count: backlogTasks.length })}
-                        </span>
-                        {canAssignToSprint && (
-                          <button
-                            onClick={handleMoveSelected}
-                            disabled={selectedBacklogIds.length === 0 || isMoving}
-                            className="px-3 py-1.5 text-xs font-medium rounded-lg bg-organic-orange text-white hover:bg-orange-600 transition-colors disabled:opacity-50"
-                          >
-                            {isMoving ? t('movingToSprint') : t('moveToSprint')}
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                    {canAssignToSprint && (
-                      <p className="px-6 pt-4 text-xs text-gray-500">
-                        {t('planningBacklogHint')}
-                      </p>
-                    )}
-
-                    {tasksLoading ? (
-                      <div className="p-6 space-y-3">
-                        {[1, 2].map((i) => (
-                          <div key={i} className="h-14 bg-gray-100 rounded animate-pulse"></div>
-                        ))}
-                      </div>
-                    ) : backlogTasks.length === 0 ? (
-                      <div className="p-6 text-center text-gray-500">{tTasks('noTasksInView')}</div>
-                    ) : (
-                      <div
-                        className="divide-y divide-gray-100"
-                        onDragOver={(event) => {
-                          if (!canAssignToSprint) return;
-                          event.preventDefault();
-                        }}
-                        onDrop={(event) => {
-                          if (!canAssignToSprint) return;
-                          const taskId =
-                            event.dataTransfer.getData('text/task-id') ||
-                            event.dataTransfer.getData('text/plain');
-                          if (taskId) {
-                            handleDropToBacklog(taskId);
-                          }
-                        }}
-                      >
-                        {backlogTasks.map((task) => {
-                          const isOverdue =
-                            task.due_date &&
-                            new Date(task.due_date) < new Date() &&
-                            task.status !== 'done';
-                          return (
-                            <div
-                              key={task.id}
-                              draggable={canAssignToSprint}
-                              onDragStart={(event) => {
-                                event.dataTransfer.setData('text/task-id', task.id);
-                                event.dataTransfer.effectAllowed = 'move';
-                              }}
-                              className={`px-6 py-4 hover:bg-gray-50 transition-colors ${
-                                canAssignToSprint ? 'cursor-move' : ''
-                              }`}
-                            >
-                              <div className="flex items-start gap-3">
-                                {canAssignToSprint && (
-                                  <input
-                                    type="checkbox"
-                                    className="mt-1 h-4 w-4 rounded border-gray-300 text-organic-orange focus:ring-organic-orange"
-                                    checked={selectedBacklogIds.includes(task.id)}
-                                    onChange={(event) => {
-                                      const isChecked = event.target.checked;
-                                      setSelectedBacklogIds((prev) =>
-                                        isChecked
-                                          ? [...prev, task.id]
-                                          : prev.filter((id) => id !== task.id)
-                                      );
-                                    }}
-                                  />
-                                )}
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-center gap-2 mb-2 flex-wrap">
-                                    <Link
-                                      href={`/tasks/${task.id}`}
-                                      className="font-medium text-gray-900 hover:text-organic-orange transition-colors"
-                                    >
-                                      {task.title}
-                                    </Link>
-                                    {task.priority && (
-                                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border bg-gray-100 text-gray-700 border-gray-300">
-                                        {tTasks(`priority.${task.priority}`)}
-                                      </span>
-                                    )}
-                                  </div>
-                                  {task.description && (
-                                    <p className="text-sm text-gray-600 line-clamp-2 mb-2">
-                                      {task.description}
-                                    </p>
-                                  )}
-                                  <div className="flex items-center flex-wrap gap-4 text-xs text-gray-500">
-                                    {task.assignee && (
-                                      <span>
-                                        {task.assignee.organic_id
-                                          ? tTasks('assigneeId', {
-                                              id: task.assignee.organic_id,
-                                            })
-                                          : task.assignee.email}
-                                      </span>
-                                    )}
-                                    {task.due_date && (
-                                      <span className={isOverdue ? 'text-red-600 font-medium' : ''}>
-                                        {tTasks('dueLabel', {
-                                          date: new Date(task.due_date).toLocaleDateString(),
-                                        })}
-                                        {isOverdue && ` (${tTasks('overdue')})`}
-                                      </span>
-                                    )}
-                                  </div>
-                                  <div className="flex items-center gap-4 text-xs text-gray-400 mt-2">
-                                    {(() => {
-                                      const activity = getActivityCounts(task.id);
-                                      return (
-                                        <>
-                                          <span>💬 {activity.comments}</span>
-                                          <span>📤 {activity.submissions}</span>
-                                          <span>👥 {activity.contributors}</span>
-                                        </>
-                                      );
-                                    })()}
-                                  </div>
-                                </div>
-                                {task.points && (
-                                  <span className="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded-full">
-                                    {tTasks('pointsShort', { points: task.points })}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                </>
-              ) : (
-                <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
-                  <Target className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                  <p className="text-gray-500">{t('noActiveOrUpcoming')}</p>
-                  {canCreateSprint && (
-                    <button
-                      onClick={() => setShowCreateModal(true)}
-                      className="mt-4 inline-flex items-center gap-2 bg-organic-orange hover:bg-orange-600 text-white px-5 py-2 rounded-lg transition-colors font-medium"
-                    >
-                      <Plus className="w-4 h-4" />
-                      {t('createSprint')}
-                    </button>
-                  )}
-                </div>
-              )
+              <SprintBoardView
+                selectedSprint={selectedSprint}
+                selectedSprintId={selectedSprintId}
+                activeSprint={activeSprint}
+                planningSprints={planningSprints}
+                canCreateSprint={canCreateSprint}
+                canAssignToSprint={canAssignToSprint}
+                boardTasks={boardTasks}
+                backlogTasks={backlogTasks}
+                tasksLoading={tasksLoading}
+                selectedBacklogIds={selectedBacklogIds}
+                isMoving={isMoving}
+                currentSprintPoints={currentSprintPoints}
+                activityCounts={activityCountsMap}
+                onSelectSprintId={setSelectedSprintId}
+                onOpenCreate={() => setShowCreateModal(true)}
+                onMoveSelected={handleMoveSelected}
+                onToggleBacklogSelect={(taskId, checked) =>
+                  setSelectedBacklogIds((prev) =>
+                    checked ? [...prev, taskId] : prev.filter((id) => id !== taskId)
+                  )
+                }
+                onDropToSprint={handleDropToSprint}
+                onDropToBacklog={handleDropToBacklog}
+                onStatusChange={updateTaskStatus}
+                getCapacityPercent={getCapacityPercent}
+                formatDate={formatDate}
+              />
             ) : (
-              <>
-                {/* Active Sprint */}
-                {activeSprint ? (
-                  (() => {
-                    const stats = sprintStats[activeSprint.id] || {
-                      total: 0,
-                      completed: 0,
-                      inProgress: 0,
-                      points: 0,
-                      totalPoints: 0,
-                    };
-                    const progress =
-                      stats.totalPoints > 0
-                        ? Math.round((stats.points / stats.totalPoints) * 100)
-                        : stats.total > 0
-                          ? Math.round((stats.completed / stats.total) * 100)
-                          : 0;
-
-                    return (
-                      <div className="mb-8">
-                        <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                          {t('currentSprint')}
-                        </h2>
-                        <Link
-                          href={`/sprints/${activeSprint.id}`}
-                          className="block bg-gradient-to-br from-organic-orange/5 via-organic-yellow/5 to-white border-2 border-organic-orange/20 rounded-2xl p-8 hover:shadow-xl transition-all group"
-                        >
-                          {/* Sprint Header */}
-                          <div className="flex items-start justify-between mb-6">
-                            <div>
-                              <h3 className="text-2xl font-bold text-gray-900 group-hover:text-organic-orange transition-colors mb-2">
-                                {activeSprint.name}
-                              </h3>
-                              <div className="flex items-center gap-4 text-sm text-gray-600">
-                                <div className="flex items-center gap-2">
-                                  <Calendar className="w-4 h-4 text-organic-orange" />
-                                  <span>
-                                    {formatDate(activeSprint.start_at)} -{' '}
-                                    {formatDate(activeSprint.end_at)}
-                                  </span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <Clock className="w-4 h-4 text-organic-orange" />
-                                  <span>
-                                    {getDuration(activeSprint.start_at, activeSprint.end_at)}
-                                  </span>
-                                </div>
-                              </div>
-                              <div className="text-sm text-gray-600 mt-2">
-                                {activeSprint.capacity_points != null
-                                  ? t('capacityValue', {
-                                      used: stats.totalPoints,
-                                      capacity: activeSprint.capacity_points,
-                                    })
-                                  : t('capacityUncapped', { used: stats.totalPoints })}
-                              </div>
-                              {activeSprint.capacity_points != null && (
-                                <div className="mt-2 h-2 w-full max-w-xs rounded-full bg-white/80 overflow-hidden border border-gray-200">
-                                  <div
-                                    className="h-full bg-organic-orange"
-                                    style={{
-                                      width: `${getCapacityPercent(
-                                        stats.totalPoints,
-                                        activeSprint.capacity_points
-                                      )}%`,
-                                    }}
-                                  ></div>
-                                </div>
-                              )}
-                            </div>
-                            <span
-                              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border-2 ${
-                                activeSprint.status === 'active'
-                                  ? 'bg-green-100 text-green-700 border-green-300'
-                                  : 'bg-blue-100 text-blue-700 border-blue-300'
-                              }`}
-                            >
-                              {getStatusIcon(activeSprint.status)}
-                              {t(`status.${activeSprint.status}`)}
-                            </span>
-                          </div>
-
-                          {/* Progress Section */}
-                          <div className="bg-white/80 backdrop-blur rounded-xl p-6 border border-gray-200">
-                            <div className="flex items-center justify-between mb-3">
-                              <span className="text-sm font-medium text-gray-700">
-                                {t('progressLabel')}
-                              </span>
-                              <span className="text-2xl font-bold text-organic-orange">
-                                {progress}%
-                              </span>
-                            </div>
-                            <div className="w-full h-4 bg-gray-100 rounded-full overflow-hidden mb-4">
-                              <div
-                                className="h-full bg-gradient-to-r from-organic-orange to-organic-yellow transition-all"
-                                style={{ width: `${progress}%` }}
-                              ></div>
-                            </div>
-
-                            {/* Stats Grid */}
-                            <div className="grid grid-cols-3 gap-4">
-                              <div className="text-center">
-                                <div className="text-2xl font-bold text-gray-900">
-                                  {stats.total}
-                                </div>
-                                <div className="text-xs text-gray-500">{t('totalTasks')}</div>
-                              </div>
-                              <div className="text-center">
-                                <div className="text-2xl font-bold text-green-600">
-                                  {stats.completed}
-                                </div>
-                                <div className="text-xs text-gray-500">{t('completed')}</div>
-                              </div>
-                              <div className="text-center">
-                                <div className="text-2xl font-bold text-blue-600">
-                                  {stats.inProgress}
-                                </div>
-                                <div className="text-xs text-gray-500">{t('inProgress')}</div>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* View Details Link */}
-                          <div className="mt-6 text-center">
-                            <span className="inline-flex items-center gap-2 text-organic-orange font-medium group-hover:gap-3 transition-all">
-                              {t('viewDetails')}
-                              <Target className="w-4 h-4" />
-                            </span>
-                          </div>
-                        </Link>
-                      </div>
-                    );
-                  })()
-                ) : (
-                  <div className="mb-8 text-center py-10 bg-white rounded-xl border border-gray-200">
-                    <Target className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500">{t('noActiveSprint')}</p>
-                  </div>
-                )}
-
-                {/* Upcoming Sprints */}
-                <div className="mb-8">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                    {t('upcomingSprints')}
-                  </h2>
-                  {planningSprints.length === 0 ? (
-                    <div className="text-center py-8 bg-white rounded-xl border border-gray-200">
-                      <Target className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                      <p className="text-gray-500">{t('noUpcomingSprints')}</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      {planningSprints.map((sprint) => {
-                        const stats = sprintStats[sprint.id] || {
-                          total: 0,
-                          completed: 0,
-                          inProgress: 0,
-                          points: 0,
-                          totalPoints: 0,
-                        };
-                        const percent = getCompletionPercent(stats);
-
-                        return (
-                          <Link
-                            key={sprint.id}
-                            href={`/sprints/${sprint.id}`}
-                            className="block bg-white rounded-lg border border-gray-200 p-5 hover:shadow-md hover:border-gray-300 transition-all group"
-                          >
-                            <div className="flex items-center justify-between">
-                              <div className="flex-1">
-                                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-organic-orange transition-colors mb-1">
-                                  {sprint.name}
-                                </h3>
-                                <div className="flex items-center gap-4 text-sm text-gray-500">
-                                  <div className="flex items-center gap-1.5">
-                                    <Calendar className="w-3.5 h-3.5" />
-                                    <span>
-                                      {formatDate(sprint.start_at)} - {formatDate(sprint.end_at)}
-                                    </span>
-                                  </div>
-                                  <div className="flex items-center gap-1.5">
-                                    <Clock className="w-3.5 h-3.5" />
-                                    <span>{getDuration(sprint.start_at, sprint.end_at)}</span>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-3">
-                                <div className="text-right">
-                                  <div className="text-sm font-medium text-gray-900">
-                                    {t('pointsProgress', {
-                                      done: stats.points,
-                                      total: stats.totalPoints,
-                                    })}
-                                  </div>
-                                  <div className="text-xs text-gray-500">
-                                    {t('completionPercent', { percent })}
-                                  </div>
-                                </div>
-                                <Clock className="w-5 h-5 text-blue-600" />
-                              </div>
-                            </div>
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-
-                {/* Past Sprints */}
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('pastSprints')}</h2>
-                  {pastSprints.length === 0 ? (
-                    <div className="text-center py-8 bg-white rounded-xl border border-gray-200">
-                      <Target className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                      <p className="text-gray-500">{t('noPastSprints')}</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      {pastSprints.map((sprint) => {
-                        const stats = sprintStats[sprint.id] || {
-                          total: 0,
-                          completed: 0,
-                          inProgress: 0,
-                          points: 0,
-                          totalPoints: 0,
-                        };
-                        const percent = getCompletionPercent(stats);
-
-                        return (
-                          <Link
-                            key={sprint.id}
-                            href={`/sprints/${sprint.id}`}
-                            className="block bg-white rounded-lg border border-gray-200 p-5 hover:shadow-md hover:border-gray-300 transition-all group"
-                          >
-                            <div className="flex items-center justify-between">
-                              <div className="flex-1">
-                                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-organic-orange transition-colors mb-1">
-                                  {sprint.name}
-                                </h3>
-                                <div className="flex items-center gap-4 text-sm text-gray-500">
-                                  <div className="flex items-center gap-1.5">
-                                    <Calendar className="w-3.5 h-3.5" />
-                                    <span>
-                                      {formatDate(sprint.start_at)} - {formatDate(sprint.end_at)}
-                                    </span>
-                                  </div>
-                                  <div className="flex items-center gap-1.5">
-                                    <Clock className="w-3.5 h-3.5" />
-                                    <span>{getDuration(sprint.start_at, sprint.end_at)}</span>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-3">
-                                <div className="text-right">
-                                  <div className="text-sm font-medium text-gray-900">
-                                    {t('pointsProgress', {
-                                      done: stats.points,
-                                      total: stats.totalPoints,
-                                    })}
-                                  </div>
-                                  <div className="text-xs text-gray-500">
-                                    {t('completionPercent', { percent })}
-                                  </div>
-                                </div>
-                                <CheckCircle2 className="w-5 h-5 text-green-600" />
-                              </div>
-                            </div>
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              </>
+              <SprintListView
+                activeSprint={activeSprint}
+                planningSprints={planningSprints}
+                pastSprints={pastSprints}
+                sprintStats={sprintStats}
+                formatDate={formatDate}
+                getDuration={getDuration}
+                getCompletionPercent={getCompletionPercent}
+              />
             )}
           </>
         )}
       </div>
 
-      {/* Create Sprint Modal */}
-      {showCreateModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-md w-full p-6">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900">{t('modalTitle')}</h2>
-              <button
-                onClick={handleCloseModal}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Error Message */}
-            {error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2">
-                <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-red-700">{error}</p>
-              </div>
-            )}
-
-            {/* Form */}
-            <form onSubmit={handleCreateSprint} className="space-y-4">
-              {/* Sprint Name */}
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                  {t('formName')}
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  required
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder={t('formNamePlaceholder')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange transition-colors"
-                />
-              </div>
-
-              {/* Start Date */}
-              <div>
-                <label htmlFor="start_at" className="block text-sm font-medium text-gray-700 mb-1">
-                  {t('formStartDate')}
-                </label>
-                <input
-                  type="date"
-                  id="start_at"
-                  required
-                  value={formData.start_at}
-                  onChange={(e) => setFormData({ ...formData, start_at: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange transition-colors"
-                />
-              </div>
-
-              {/* End Date */}
-              <div>
-                <label htmlFor="end_at" className="block text-sm font-medium text-gray-700 mb-1">
-                  {t('formEndDate')}
-                </label>
-                <input
-                  type="date"
-                  id="end_at"
-                  required
-                  value={formData.end_at}
-                  onChange={(e) => setFormData({ ...formData, end_at: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange transition-colors"
-                />
-              </div>
-
-              {/* Status */}
-              <div>
-                <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
-                  {t('formStatus')}
-                </label>
-                <select
-                  id="status"
-                  value={formData.status}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      status: e.target.value as 'planning' | 'active' | 'completed',
-                    })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange transition-colors"
-                >
-                  <option value="planning">{t('status.planning')}</option>
-                  <option value="active">{t('status.active')}</option>
-                  <option value="completed">{t('status.completed')}</option>
-                  </select>
-                </div>
-
-              {/* Capacity */}
-              <div>
-                <label
-                  htmlFor="capacity_points"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  {t('formCapacity')}
-                </label>
-                <input
-                  type="number"
-                  id="capacity_points"
-                  min="0"
-                  value={formData.capacity_points}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      capacity_points: e.target.value,
-                    })
-                  }
-                  placeholder={t('formCapacityPlaceholder')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange transition-colors"
-                />
-                <p className="mt-1 text-xs text-gray-500">{t('formCapacityHelper')}</p>
-              </div>
-
-              {/* Form Actions */}
-              <div className="flex gap-3 pt-4">
-                <button
-                  type="button"
-                  onClick={handleCloseModal}
-                  disabled={submitting}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium disabled:opacity-50"
-                >
-                  {t('cancel')}
-                </button>
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="flex-1 bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                >
-                  {submitting ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      {t('creating')}
-                    </>
-                  ) : (
-                    <>
-                      <Plus className="w-4 h-4" />
-                      {t('createSprint')}
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <SprintCreateModal
+        open={showCreateModal}
+        error={error}
+        submitting={submitting}
+        formData={formData}
+        onChange={setFormData}
+        onClose={handleCloseModal}
+        onSubmit={handleCreateSprint}
+      />
     </div>
   );
 }

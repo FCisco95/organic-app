@@ -21,14 +21,12 @@ export async function GET() {
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.error('Error fetching sprints:', error);
       return NextResponse.json({ error: 'Failed to fetch sprints' }, { status: 500 });
     }
 
     return NextResponse.json({ sprints });
-  } catch (error: any) {
-    console.error('Error in sprints route:', error);
-    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -50,10 +48,11 @@ export async function POST(request: Request) {
     const { data: profile } = await supabase
       .from('user_profiles')
       .select('role')
-      .eq('id', user.id as any)
+      .eq('id', user.id)
       .single();
 
-    if (!profile || !['council', 'admin'].includes((profile as any).role)) {
+    const role = profile?.role;
+    if (role !== 'council' && role !== 'admin') {
       return NextResponse.json(
         { error: 'Only council and admin members can create sprints' },
         { status: 403 }
@@ -78,18 +77,16 @@ export async function POST(request: Request) {
         end_at,
         status: status || 'planning',
         capacity_points: capacity_points ?? null,
-      } as any)
+      })
       .select()
       .single();
 
     if (error) {
-      console.error('Error creating sprint:', error);
       return NextResponse.json({ error: 'Failed to create sprint' }, { status: 500 });
     }
 
     return NextResponse.json({ sprint });
-  } catch (error: any) {
-    console.error('Error in create sprint:', error);
-    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
