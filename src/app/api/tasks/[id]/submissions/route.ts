@@ -96,15 +96,12 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     const { data: submissions, error } = await query;
 
     if (error) {
-      console.error('Error fetching submissions:', error);
       return NextResponse.json({ error: 'Failed to fetch submissions' }, { status: 500 });
     }
 
     return NextResponse.json({ submissions });
-  } catch (error: unknown) {
-    console.error('Error in submissions GET:', error);
-    const message = error instanceof Error ? error.message : 'Internal server error';
-    return NextResponse.json({ error: message }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -252,7 +249,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       .single();
 
     if (insertError) {
-      console.error('Error creating submission:', insertError);
       return NextResponse.json({ error: 'Failed to create submission' }, { status: 500 });
     }
 
@@ -262,9 +258,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     }
 
     return NextResponse.json({ submission }, { status: 201 });
-  } catch (error: unknown) {
-    console.error('Error in submissions POST:', error);
-    const message = error instanceof Error ? error.message : 'Internal server error';
-    return NextResponse.json({ error: message }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

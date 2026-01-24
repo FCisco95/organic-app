@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
-import { TaskWithRelations, TaskSubmissionWithReviewer, TaskAssigneeWithUser } from './types';
+import { TaskAssigneeWithUser, TaskSubmissionWithReviewer, TaskWithRelations } from './types';
 import {
   CreateTaskInput,
   UpdateTaskInput,
@@ -101,50 +101,35 @@ export function useTask(taskId: string) {
           assignee:user_profiles!tasks_assignee_id_fkey(
             id, name, email, organic_id, avatar_url
           ),
-          sprint:sprints(id, name, status)
+          sprint:sprints(id, name, status),
+          assignees:task_assignees(
+            *,
+            user:user_profiles(id, name, email, organic_id, avatar_url)
+          ),
+          submissions:task_submissions(
+            *,
+            user:user_profiles!task_submissions_user_id_fkey(
+              id, name, email, organic_id, avatar_url
+            ),
+            reviewer:user_profiles!task_submissions_reviewer_id_fkey(
+              id, name, email, organic_id
+            )
+          )
         `
         )
         .eq('id', taskId)
+        .order('submitted_at', { ascending: false, foreignTable: 'task_submissions' })
         .single();
 
       if (error) throw error;
 
-      // Fetch assignees for team tasks
-      let assignees: TaskAssigneeWithUser[] = [];
-      if ((data as Record<string, unknown>).is_team_task) {
-        const { data: assigneesData } = await supabase
-          .from('task_assignees')
-          .select(
-            `
-            *,
-            user:user_profiles(id, name, email, organic_id, avatar_url)
-          `
-          )
-          .eq('task_id', taskId);
-        assignees = (assigneesData ?? []) as unknown as TaskAssigneeWithUser[];
-      }
-
-      // Fetch submissions
-      const { data: submissionsData } = await supabase
-        .from('task_submissions')
-        .select(
-          `
-          *,
-          user:user_profiles!task_submissions_user_id_fkey(
-            id, name, email, organic_id, avatar_url
-          ),
-          reviewer:user_profiles!task_submissions_reviewer_id_fkey(
-            id, name, email, organic_id
-          )
-        `
-        )
-        .eq('task_id', taskId)
-        .order('submitted_at', { ascending: false });
+      const task = data as unknown as TaskWithRelations;
+      const assignees = task.is_team_task ? task.assignees ?? [] : [];
 
       return {
-        ...data,
+        ...task,
         assignees,
-        submissions: (submissionsData ?? []) as unknown as TaskSubmissionWithReviewer[],
+        submissions: task.submissions ?? [],
       } as unknown as TaskWithRelations;
     },
     enabled: !!taskId,
@@ -176,7 +161,7 @@ export function useMyTasks(userId: string) {
       if (soloError) throw soloError;
 
       // Fetch team tasks where user is an assignee
-      const { data: teamAssignments, error: teamError } = await supabase
+      const { data: teamAssignments, error: teamError } = (await supabase
         .from('task_assignees')
         .select(
           `
@@ -186,15 +171,16 @@ export function useMyTasks(userId: string) {
           )
         `
         )
-        .eq('user_id', userId);
+        .eq('user_id', userId)) as unknown as {
+        data: { task: TaskWithRelations | null }[] | null;
+        error: Error | null;
+      };
 
       if (teamError) throw teamError;
 
       const teamTasks = (teamAssignments ?? [])
-        .map((a) => a.task)
-        .filter(
-          (t) => t !== null && (t as any).status !== 'done'
-        ) as unknown as TaskWithRelations[];
+        .map((assignment) => assignment.task as TaskWithRelations | null)
+        .filter((task): task is TaskWithRelations => !!task && task.status !== 'done');
 
       return [...(soloTasks ?? []), ...teamTasks] as unknown as TaskWithRelations[];
     },

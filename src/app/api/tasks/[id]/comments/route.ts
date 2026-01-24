@@ -30,7 +30,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         )
       `
       )
-      .eq('task_id', id as any)
+      .eq('task_id', id)
       .order('created_at', { ascending: true });
 
     if (error) {
@@ -39,9 +39,10 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     }
 
     return NextResponse.json({ comments });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error in comments route:', error);
-    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+    const message = error instanceof Error ? error.message : 'Internal server error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
@@ -73,7 +74,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         task_id: id,
         user_id: user.id,
         content: content.trim(),
-      } as any)
+      })
       .select(
         `
         *,
@@ -94,8 +95,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     }
 
     return NextResponse.json({ comment });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error in create comment:', error);
-    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+    const message = error instanceof Error ? error.message : 'Internal server error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

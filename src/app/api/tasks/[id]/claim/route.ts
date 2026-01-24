@@ -79,7 +79,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       });
 
       if (insertError) {
-        console.error('Error claiming task:', insertError);
         return NextResponse.json({ error: 'Failed to claim task' }, { status: 500 });
       }
 
@@ -107,16 +106,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         .eq('id', taskId);
 
       if (updateError) {
-        console.error('Error claiming task:', updateError);
         return NextResponse.json({ error: 'Failed to claim task' }, { status: 500 });
       }
     }
 
     return NextResponse.json({ success: true, message: 'Task claimed successfully' });
-  } catch (error: unknown) {
-    console.error('Error claiming task:', error);
-    const message = error instanceof Error ? error.message : 'Internal server error';
-    return NextResponse.json({ error: message }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -163,7 +159,6 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
         .eq('user_id', user.id);
 
       if (deleteError) {
-        console.error('Error unclaiming task:', deleteError);
         return NextResponse.json({ error: 'Failed to unclaim task' }, { status: 500 });
       }
 
@@ -194,15 +189,12 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
         .eq('id', taskId);
 
       if (updateError) {
-        console.error('Error unclaiming task:', updateError);
         return NextResponse.json({ error: 'Failed to unclaim task' }, { status: 500 });
       }
     }
 
     return NextResponse.json({ success: true, message: 'Task unclaimed' });
-  } catch (error: unknown) {
-    console.error('Error unclaiming task:', error);
-    const message = error instanceof Error ? error.message : 'Internal server error';
-    return NextResponse.json({ error: message }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

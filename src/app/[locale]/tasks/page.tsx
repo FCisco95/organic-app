@@ -6,17 +6,18 @@ import {
   TaskTab,
   TaskListItem,
   TaskSubmissionSummary,
-  Assignee,
   Sprint,
   TaskPriority,
   TaskStatus,
 } from '@/features/tasks';
 
 import { createClient } from '@/lib/supabase/client';
-import { Plus, AlertCircle, Clock, Tag, User, Heart } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { Plus } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
+import { TaskFiltersBar } from '@/components/tasks/task-filters-bar';
+import { TaskListSection } from '@/components/tasks/task-list-section';
+import { TaskNewModal } from '@/components/tasks/task-new-modal';
 
 export default function TasksPage() {
   const { user, profile } = useAuth();
@@ -401,29 +402,6 @@ export default function TasksPage() {
     }
   };
 
-  async function updateTaskStatus(taskId: string, newStatus: TaskStatus) {
-    try {
-      const supabase = createClient();
-      const completedAt = newStatus === 'done' ? new Date().toISOString() : null;
-      const { error } = await supabase
-        .from('tasks')
-        .update({ status: newStatus, completed_at: completedAt })
-        .eq('id', taskId);
-
-      if (error) throw error;
-
-      setTasks(
-        tasks.map((task) =>
-          task.id === taskId ? { ...task, status: newStatus, completed_at: completedAt } : task
-        )
-      );
-      toast.success(t('toastTaskUpdated'));
-    } catch (error) {
-      console.error('Error updating task:', error);
-      toast.error(t('toastTaskUpdateFailed'));
-    }
-  }
-
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -475,228 +453,45 @@ export default function TasksPage() {
           <p className="mb-4 text-xs text-gray-500">{t('backlogSortHint')}</p>
         )}
 
-        {/* Filters */}
-        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="text-sm font-medium text-gray-700">{t('filters')}</div>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:flex-wrap">
-            <label className="flex items-center gap-2 text-sm text-gray-600">
-              {t('search')}
-              <input
-                type="search"
-                value={searchFilter}
-                onChange={(e) => setSearchFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
-                placeholder={t('searchPlaceholder')}
-              />
-            </label>
-            <label className="flex items-center gap-2 text-sm text-gray-600">
-              {t('categoryFilter')}
-              <select
-                value={categoryFilter}
-                onChange={(e) => setCategoryFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
-              >
-                <option value="all">{t('allCategories')}</option>
-                {categoryOptions.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="flex items-center gap-2 text-sm text-gray-600">
-              {t('contributorFilter')}
-              <select
-                value={contributorFilter}
-                onChange={(e) => setContributorFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
-              >
-                <option value="all">{t('allContributors')}</option>
-                {contributorOptions.map((contributor) => (
-                  <option key={contributor.id} value={contributor.id}>
-                    {getContributorLabel(contributor)}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="flex items-center gap-2 text-sm text-gray-600">
-              {t('sprintFilter')}
-              <select
-                value={sprintFilter}
-                onChange={(e) => setSprintFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
-              >
-                <option value="all">{t('allSprints')}</option>
-                {sprints.map((sprint) => (
-                  <option key={sprint.id} value={sprint.id}>
-                    {sprint.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="flex items-center gap-2 text-sm text-gray-600">
-              {t('dateFrom')}
-              <input
-                type="date"
-                value={dateFrom}
-                onChange={(e) => setDateFrom(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
-              />
-            </label>
-            <label className="flex items-center gap-2 text-sm text-gray-600">
-              {t('dateTo')}
-              <input
-                type="date"
-                value={dateTo}
-                onChange={(e) => setDateTo(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
-              />
-            </label>
-          </div>
-        </div>
+        <TaskFiltersBar
+          searchFilter={searchFilter}
+          onSearchChange={setSearchFilter}
+          categoryFilter={categoryFilter}
+          onCategoryChange={setCategoryFilter}
+          categoryOptions={categoryOptions}
+          contributorFilter={contributorFilter}
+          onContributorChange={setContributorFilter}
+          contributorOptions={contributorOptions}
+          sprintFilter={sprintFilter}
+          onSprintChange={setSprintFilter}
+          sprints={sprints}
+          dateFrom={dateFrom}
+          onDateFromChange={setDateFrom}
+          dateTo={dateTo}
+          onDateToChange={setDateTo}
+          getContributorLabel={getContributorLabel}
+        />
 
-        {/* Task List */}
-        <div className="bg-white rounded-xl border border-gray-200">
-          <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900">{t(`tab.${activeView}`)}</h2>
-              {sprintFilter !== 'all' && (
-                <p className="text-sm text-gray-500">
-                  {sprints.find((sprint) => sprint.id === sprintFilter)?.name ?? t('sprintUnknown')}
-                </p>
-              )}
-            </div>
-            <span className="text-sm text-gray-500">
-              {t('listCount', { count: tabTasks.length })}
-            </span>
-          </div>
-
-          {loading ? (
-            <div className="p-6 space-y-3">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="h-16 bg-gray-100 rounded animate-pulse"></div>
-              ))}
-            </div>
-          ) : tabTasks.length === 0 ? (
-            <div className="p-8 text-center text-gray-500">
-              {activeView === 'activeSprint' && !currentSprint
-                ? t('noActiveSprint')
-                : t('noTasksInView')}
-            </div>
-          ) : (
-            <div className="divide-y divide-gray-100">
-              {tabTasks.map((task) => {
-                const isOverdue =
-                  task.due_date && new Date(task.due_date) < new Date() && task.status !== 'done';
-                return (
-                  <Link
-                    key={task.id}
-                    href={`/tasks/${task.id}`}
-                    className="block px-6 py-4 hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-2 flex-wrap">
-                          <h3 className="font-medium text-gray-900 hover:text-organic-orange transition-colors">
-                            {task.title}
-                          </h3>
-                          {task.priority && (
-                            <span
-                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${getPriorityColor(task.priority)}`}
-                            >
-                              <AlertCircle className="w-3 h-3" />
-                              {t(`priority.${task.priority}`)}
-                            </span>
-                          )}
-                          {task.sprints && (
-                            <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs">
-                              {task.sprints.name}
-                            </span>
-                          )}
-                        </div>
-                        {task.description && (
-                          <p className="text-sm text-gray-600 line-clamp-2 mb-2">
-                            {task.description}
-                          </p>
-                        )}
-                        <div className="flex items-center flex-wrap gap-4 text-xs text-gray-500">
-                          {task.assignee && (
-                            <div className="flex items-center gap-1">
-                              <User className="w-3 h-3" />
-                              <span>{getAssigneeLabel(task.assignee)}</span>
-                            </div>
-                          )}
-                          {task.due_date && (
-                            <div
-                              className={`flex items-center gap-1 ${isOverdue ? 'text-red-600 font-medium' : ''}`}
-                            >
-                              <Clock className="w-3 h-3" />
-                              {t('dueLabel', {
-                                date: new Date(task.due_date).toLocaleDateString(),
-                              })}
-                              {isOverdue && ` (${t('overdue')})`}
-                            </div>
-                          )}
-                          {task.labels && task.labels.length > 0 && (
-                            <div className="flex items-center gap-1">
-                              <Tag className="w-3 h-3" />
-                              <span>{task.labels.join(', ')}</span>
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-4 text-xs text-gray-400">
-                          {(() => {
-                            const activity = getActivityCounts(task.id);
-                            return (
-                              <>
-                                <span>💬 {activity.comments}</span>
-                                <span>📤 {activity.submissions}</span>
-                                <span>👥 {activity.contributors}</span>
-                              </>
-                            );
-                          })()}
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {task.points && (
-                          <span className="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded-full">
-                            {t('pointsShort', { points: task.points })}
-                          </span>
-                        )}
-                        <button
-                          type="button"
-                          onClick={(event) => {
-                            event.preventDefault();
-                            handleToggleLike(task.id);
-                          }}
-                          disabled={!canLike}
-                          aria-label={likedTasks[task.id] ? t('likedTask') : t('likeTask')}
-                          className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full border ${
-                            likedTasks[task.id]
-                              ? 'border-organic-orange text-organic-orange bg-orange-50'
-                              : 'border-gray-200 text-gray-500 bg-white'
-                          } ${canLike ? 'hover:border-organic-orange hover:text-organic-orange' : 'cursor-default'}`}
-                        >
-                          <Heart
-                            className={`w-3.5 h-3.5 ${
-                              likedTasks[task.id] ? 'fill-organic-orange' : ''
-                            }`}
-                          />
-                          {likeCounts[task.id] ?? 0}
-                        </button>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          )}
-        </div>
+        <TaskListSection
+          activeView={activeView}
+          sprintFilter={sprintFilter}
+          sprints={sprints}
+          currentSprint={currentSprint}
+          loading={loading}
+          tasks={tabTasks}
+          canLike={canLike}
+          likedTasks={likedTasks}
+          likeCounts={likeCounts}
+          getPriorityColor={getPriorityColor}
+          getAssigneeLabel={getAssigneeLabel}
+          getActivityCounts={getActivityCounts}
+          onToggleLike={handleToggleLike}
+        />
       </div>
 
       {/* Modals */}
       {showNewTaskModal && (
-        <NewTaskModal
+        <TaskNewModal
           onClose={() => setShowNewTaskModal(false)}
           onSuccess={() => {
             setShowNewTaskModal(false);
@@ -707,324 +502,5 @@ export default function TasksPage() {
         />
       )}
     </main>
-  );
-}
-
-// New Task Modal Component
-function NewTaskModal({
-  onClose,
-  onSuccess,
-  sprints,
-  userId,
-}: {
-  onClose: () => void;
-  onSuccess: () => void;
-  sprints: Sprint[];
-  userId: string | null;
-}) {
-  const t = useTranslations('Tasks');
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [points, setPoints] = useState('');
-  const [sprintId, setSprintId] = useState('');
-  const [priority, setPriority] = useState<TaskPriority>('medium');
-  const [assigneeId, setAssigneeId] = useState('');
-  const [dueDate, setDueDate] = useState('');
-  const [labelInput, setLabelInput] = useState('');
-  const [labels, setLabels] = useState<string[]>([]);
-  const [assignees, setAssignees] = useState<Assignee[]>([]);
-  const [loadingAssignees, setLoadingAssignees] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-
-  const standardLabels = ['📣 Growth', '🎨 Design', '💻 Dev', '🧠 Research'];
-
-  // Load assignees
-  useEffect(() => {
-    async function fetchAssignees() {
-      try {
-        const response = await fetch('/api/tasks/assignees');
-        const data = await response.json();
-        setAssignees(data.assignees || []);
-      } catch (error) {
-        console.error('Error fetching assignees:', error);
-      } finally {
-        setLoadingAssignees(false);
-      }
-    }
-    fetchAssignees();
-  }, []);
-
-  const handleAddLabel = () => {
-    const nextLabel = labelInput.trim();
-    if (nextLabel && !labels.includes(nextLabel)) {
-      setLabels([...labels, nextLabel]);
-    }
-    setLabelInput('');
-  };
-
-  const handleToggleLabel = (label: string) => {
-    if (labels.includes(label)) {
-      setLabels(labels.filter((item) => item !== label));
-    } else {
-      setLabels([...labels, label]);
-    }
-  };
-
-  const handleRemoveLabel = (labelToRemove: string) => {
-    setLabels(labels.filter((l) => l !== labelToRemove));
-  };
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-
-    if (!title.trim()) {
-      toast.error(t('toastTitleRequired'));
-      return;
-    }
-
-    try {
-      if (!userId) {
-        toast.error(t('toastTaskCreateFailed'));
-        return;
-      }
-
-      setSubmitting(true);
-      const supabase = createClient();
-
-      const { error } = await supabase.from('tasks').insert({
-        title: title.trim(),
-        description: description.trim() || null,
-        points: points ? parseInt(points) : null,
-        sprint_id: sprintId || null,
-        assignee_id: assigneeId || null,
-        priority,
-        due_date: dueDate || null,
-        labels,
-        status: 'backlog' as const,
-      });
-
-      if (error) throw error;
-
-      toast.success(t('toastTaskCreated'));
-      onSuccess();
-    } catch (error) {
-      const supabaseError = error as { message?: string };
-      const message =
-        error instanceof Error
-          ? error.message
-          : (supabaseError?.message ?? t('toastTaskCreateFailed'));
-      console.error('Error creating task:', error);
-      toast.error(message);
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
-  return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div className="bg-white rounded-lg max-w-2xl w-full p-6 my-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('createTaskTitle')}</h2>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Title */}
-          <div>
-            <label className="block text-sm font-medium text-gray-900 mb-1">
-              {t('labelTitle')} <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
-              placeholder={t('placeholderTitle')}
-              required
-            />
-          </div>
-
-          {/* Description */}
-          <div>
-            <label className="block text-sm font-medium text-gray-900 mb-1">
-              {t('labelDescription')}
-            </label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none"
-              placeholder={t('placeholderDescription')}
-            />
-          </div>
-
-          {/* Priority and Points Row */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-1">
-                {t('labelPriority')}
-              </label>
-              <select
-                value={priority}
-                onChange={(e) => setPriority(e.target.value as TaskPriority)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
-              >
-                <option value="low">{t('priority.low')}</option>
-                <option value="medium">{t('priority.medium')}</option>
-                <option value="high">{t('priority.high')}</option>
-                <option value="critical">{t('priority.critical')}</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-1">
-                {t('labelPoints')}
-              </label>
-              <input
-                type="number"
-                value={points}
-                onChange={(e) => setPoints(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
-                placeholder={t('pointsPlaceholder')}
-                min="0"
-              />
-            </div>
-          </div>
-
-          {/* Assignee and Epoch Row */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-1">
-                {t('labelAssignee')}
-              </label>
-              <select
-                value={assigneeId}
-                onChange={(e) => setAssigneeId(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
-                disabled={loadingAssignees}
-              >
-                <option value="">{t('unassigned')}</option>
-                {assignees.map((assignee) => (
-                  <option key={assignee.id} value={assignee.id}>
-                    {assignee.organic_id
-                      ? t('assigneeId', { id: assignee.organic_id })
-                      : assignee.email}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-1">
-                {t('labelEpoch')}
-              </label>
-              <select
-                value={sprintId}
-                onChange={(e) => setSprintId(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
-              >
-                <option value="">{t('epochNone')}</option>
-                {sprints.map((sprint) => (
-                  <option key={sprint.id} value={sprint.id}>
-                    {sprint.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Due Date */}
-          <div>
-            <label className="block text-sm font-medium text-gray-900 mb-1">
-              {t('labelDueDate')}
-            </label>
-            <input
-              type="date"
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
-            />
-          </div>
-
-          {/* Labels */}
-          <div>
-            <label className="block text-sm font-medium text-gray-900 mb-1">
-              {t('labelLabels')}
-            </label>
-            <div className="flex flex-wrap gap-2 mb-2">
-              {standardLabels.map((label) => (
-                <button
-                  key={label}
-                  type="button"
-                  onClick={() => handleToggleLabel(label)}
-                  className={`px-2 py-1 rounded-md text-xs font-medium border transition-colors ${
-                    labels.includes(label)
-                      ? 'border-organic-orange bg-orange-50 text-organic-orange'
-                      : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-            <div className="flex gap-2 mb-2">
-              <input
-                type="text"
-                value={labelInput}
-                onChange={(e) => setLabelInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleAddLabel();
-                  }
-                }}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
-                placeholder={t('labelPlaceholder')}
-              />
-              <button
-                type="button"
-                onClick={handleAddLabel}
-                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors"
-              >
-                {t('addLabel')}
-              </button>
-            </div>
-            {labels.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {labels.map((label) => (
-                  <span
-                    key={label}
-                    className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-700 rounded-md text-sm"
-                  >
-                    {label}
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveLabel(label)}
-                      className="text-purple-500 hover:text-purple-700"
-                    >
-                      ×
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div className="flex gap-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
-            >
-              {t('cancel')}
-            </button>
-            <button
-              type="submit"
-              disabled={submitting}
-              className="flex-1 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
-            >
-              {submitting ? t('creating') : t('createTask')}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
   );
 }
