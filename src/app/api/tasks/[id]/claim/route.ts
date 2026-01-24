@@ -86,7 +86,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       // Update task status to in_progress if still in backlog/todo
       await supabase
         .from('tasks')
-        .update({ status: 'in_progress' })
+        .update({ status: 'in_progress', completed_at: null })
         .eq('id', taskId)
         .in('status', ['backlog', 'todo']);
     } else {
@@ -102,6 +102,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
           assignee_id: user.id,
           claimed_at: new Date().toISOString(),
           status: 'in_progress',
+          completed_at: null,
         })
         .eq('id', taskId);
 
@@ -174,7 +175,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
 
       // If no assignees left, set status back to todo
       if (count === 0) {
-        await supabase.from('tasks').update({ status: 'todo' }).eq('id', taskId);
+        await supabase.from('tasks').update({ status: 'todo', completed_at: null }).eq('id', taskId);
       }
     } else {
       // Solo task: clear assignee
@@ -188,6 +189,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
           assignee_id: null,
           claimed_at: null,
           status: 'todo',
+          completed_at: null,
         })
         .eq('id', taskId);
 

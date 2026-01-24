@@ -404,11 +404,19 @@ export default function TasksPage() {
   async function updateTaskStatus(taskId: string, newStatus: TaskStatus) {
     try {
       const supabase = createClient();
-      const { error } = await supabase.from('tasks').update({ status: newStatus }).eq('id', taskId);
+      const completedAt = newStatus === 'done' ? new Date().toISOString() : null;
+      const { error } = await supabase
+        .from('tasks')
+        .update({ status: newStatus, completed_at: completedAt })
+        .eq('id', taskId);
 
       if (error) throw error;
 
-      setTasks(tasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task)));
+      setTasks(
+        tasks.map((task) =>
+          task.id === taskId ? { ...task, status: newStatus, completed_at: completedAt } : task
+        )
+      );
       toast.success(t('toastTaskUpdated'));
     } catch (error) {
       console.error('Error updating task:', error);

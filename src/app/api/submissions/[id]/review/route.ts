@@ -107,7 +107,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     if (action === 'approve') {
       // For solo tasks, mark as done
       if (task && !task.is_team_task) {
-        await supabase.from('tasks').update({ status: 'done' }).eq('id', submission.task_id);
+        await supabase
+          .from('tasks')
+          .update({ status: 'done', completed_at: new Date().toISOString() })
+          .eq('id', submission.task_id);
       }
     }
 

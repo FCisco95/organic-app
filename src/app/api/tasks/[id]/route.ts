@@ -141,7 +141,10 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     const updates: Record<string, unknown> = {};
     if (title !== undefined) updates.title = title;
     if (description !== undefined) updates.description = description;
-    if (status !== undefined) updates.status = status;
+    if (status !== undefined) {
+      updates.status = status;
+      updates.completed_at = status === 'done' ? new Date().toISOString() : null;
+    }
     if (priority !== undefined) updates.priority = priority;
     if (points !== undefined) updates.points = points;
     if (base_points !== undefined) updates.base_points = base_points;
