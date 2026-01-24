@@ -98,7 +98,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       .eq('proposal_id', proposalId);
 
     if (votesError) {
-      console.error('Error fetching votes:', votesError);
       return NextResponse.json({ error: 'Failed to fetch votes' }, { status: 500 });
     }
 
@@ -180,7 +179,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       .single();
 
     if (updateError) {
-      console.error('Error updating proposal:', updateError);
       return NextResponse.json({ error: 'Failed to finalize voting' }, { status: 500 });
     }
 
@@ -209,8 +207,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         participation_percentage: totalSupply > 0 ? (totalVotes / totalSupply) * 100 : 0,
       },
     });
-  } catch (error) {
-    console.error('Error finalizing voting:', error);
+  } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

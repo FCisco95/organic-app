@@ -56,7 +56,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       .single();
 
     if (configError) {
-      console.error('Error fetching voting config:', configError);
       return NextResponse.json({ error: 'Failed to fetch voting config' }, { status: 500 });
     }
 
@@ -96,7 +95,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     // Capture token holder snapshot
-    console.log('Capturing token holder snapshot...');
     const holders = await getAllTokenHolders();
 
     if (holders.length === 0) {
@@ -127,7 +125,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       .insert(snapshotInserts);
 
     if (snapshotError) {
-      console.error('Error inserting snapshots:', snapshotError);
       return NextResponse.json({ error: 'Failed to capture snapshot' }, { status: 500 });
     }
 
@@ -148,7 +145,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       .single();
 
     if (updateError) {
-      console.error('Error updating proposal:', updateError);
       return NextResponse.json({ error: 'Failed to update proposal' }, { status: 500 });
     }
 
@@ -162,8 +158,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       },
       voting_ends_at: votingEndsAt.toISOString(),
     });
-  } catch (error) {
-    console.error('Error starting voting:', error);
+  } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

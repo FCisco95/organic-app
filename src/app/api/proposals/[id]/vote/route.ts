@@ -133,7 +133,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         .single();
 
       if (updateError) {
-        console.error('Error updating vote:', updateError);
         return NextResponse.json({ error: 'Failed to update vote' }, { status: 500 });
       }
 
@@ -152,7 +151,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         .single();
 
       if (insertError) {
-        console.error('Error creating vote:', insertError);
         return NextResponse.json({ error: 'Failed to cast vote' }, { status: 500 });
       }
 
@@ -168,8 +166,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         created_at: vote.created_at,
       },
     });
-  } catch (error) {
-    console.error('Error casting vote:', error);
+  } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -202,7 +199,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       .maybeSingle();
 
     if (voteError) {
-      console.error('Error fetching vote:', voteError);
       return NextResponse.json({ error: 'Failed to fetch vote' }, { status: 500 });
     }
 
@@ -230,8 +226,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       voting_weight: votingWeight,
       can_vote: votingWeight > 0,
     });
-  } catch (error) {
-    console.error('Error fetching vote:', error);
+  } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
