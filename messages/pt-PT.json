@@ -253,6 +253,7 @@
     "councilActions": "Ações do conselho:",
     "approve": "Aprovar",
     "startVoting": "Iniciar votação",
+    "startVotingLabel": "Ou iniciar votação ponderada por tokens:",
     "reject": "Rejeitar",
     "implementation": "Implementação:",
     "createTask": "Criar tarefa a partir da proposta",
@@ -623,6 +624,66 @@
     "walletMismatchWarning": "A carteira conectada difere da carteira vinculada",
     "walletMismatchDescription": "Conectada: {connected} | Vinculada: {linked}. O saldo exibido é da sua carteira vinculada.",
     "linkedWalletHoldsTokens": "Sua carteira vinculada possui {balance} tokens $ORG"
+  },
+  "Voting": {
+    "title": "Votação Ponderada por Tokens",
+    "status": {
+      "notStarted": "Não Iniciada",
+      "votingOpen": "Votação Aberta",
+      "votingClosed": "Votação Encerrada",
+      "passed": "Aprovada",
+      "failed": "Rejeitada",
+      "quorumNotMet": "Quórum Não Atingido"
+    },
+    "vote": {
+      "yes": "Sim",
+      "no": "Não",
+      "abstain": "Abstenção"
+    },
+    "result": {
+      "passed": "Proposta Aprovada",
+      "failed": "Proposta Rejeitada",
+      "quorum_not_met": "Quórum Não Atingido",
+      "votingEnded": "A votação foi encerrada"
+    },
+    "stats": {
+      "participation": "Participação",
+      "totalVoters": "Total de Votantes",
+      "totalVotes": "Total de Votos",
+      "quorum": "Quórum",
+      "quorumMet": "Atingido",
+      "quorumNotMet": "Não Atingido"
+    },
+    "signInToVote": "Entre para votar nesta proposta",
+    "linkWalletToVote": "Vincule sua carteira para votar",
+    "noTokensAtSnapshot": "Você não possuía tokens $ORG no momento da captura",
+    "yourVotingPower": "Seu Poder de Voto",
+    "youVoted": "Você votou: {vote}",
+    "toast": {
+      "voteCast": "Voto registrado com sucesso!",
+      "voteUpdated": "Voto atualizado com sucesso!",
+      "voteFailed": "Falha ao registrar voto",
+      "votingStarted": "Votação iniciada com sucesso!",
+      "startFailed": "Falha ao iniciar votação",
+      "votingFinalized": "Votação finalizada com sucesso!",
+      "finalizeFailed": "Falha ao finalizar votação"
+    },
+    "admin": {
+      "startDescription": "Iniciar votação ponderada por tokens nesta proposta. Uma captura de todos os detentores de tokens será realizada.",
+      "startVoting": "Iniciar Votação",
+      "starting": "Iniciando...",
+      "votingDuration": "A votação durará {days} dias",
+      "finalizeVoting": "Finalizar Votação",
+      "finalizing": "Finalizando...",
+      "votingStillOpen": "O período de votação ainda não terminou. Você pode forçar a finalização, mas isso não é recomendado.",
+      "finalizeTitle": "Finalizar Votação",
+      "finalizeDescription": "Isso calculará o resultado final e encerrará a votação permanentemente.",
+      "finalizeEarlyWarning": "Aviso: O período de votação não terminou. Tem certeza de que deseja finalizar antecipadamente?",
+      "confirmFinalize": "Finalizar"
+    },
+    "common": {
+      "cancel": "Cancelar"
+    }
   },
   "common": {
     "loading": "Carregando...",

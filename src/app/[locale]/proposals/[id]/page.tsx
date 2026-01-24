@@ -22,20 +22,10 @@ import {
 import { formatDistanceToNow } from 'date-fns';
 import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
+import { ProposalWithVoting, getVotingStatus } from '@/features/voting';
+import { VotingPanel, VoteResults, AdminVotingControls } from '@/components/voting';
 
-type Proposal = {
-  id: string;
-  title: string;
-  body: string;
-  status: 'draft' | 'submitted' | 'approved' | 'rejected' | 'voting';
-  created_by: string;
-  created_at: string;
-  updated_at: string;
-  user_profiles: {
-    organic_id: number | null;
-    email: string;
-  };
-};
+type Proposal = ProposalWithVoting;
 
 type Comment = {
   id: string;
@@ -76,7 +66,8 @@ export default function ProposalDetailPage() {
           *,
           user_profiles!proposals_created_by_fkey (
             organic_id,
-            email
+            email,
+            wallet_pubkey
           )
         `
         )
@@ -447,24 +438,17 @@ export default function ProposalDetailPage() {
             )}
           </div>
 
-          {/* Admin Actions */}
+          {/* Admin Actions - Submitted Proposals */}
           {isAdmin && proposal.status === 'submitted' && (
             <div className="mt-6 pt-6 border-t border-gray-200">
               <p className="text-sm font-medium text-gray-700 mb-3">{t('councilActions')}</p>
-              <div className="flex gap-3">
+              <div className="flex flex-wrap gap-3">
                 <button
                   onClick={() => updateProposalStatus('approved')}
                   className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
                 >
                   <CheckCircle className="w-4 h-4" />
                   {t('approve')}
-                </button>
-                <button
-                  onClick={() => updateProposalStatus('voting')}
-                  className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  {t('startVoting')}
                 </button>
                 <button
                   onClick={() => updateProposalStatus('rejected')}
@@ -474,6 +458,26 @@ export default function ProposalDetailPage() {
                   {t('reject')}
                 </button>
               </div>
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <p className="text-sm font-medium text-gray-700 mb-3">{t('startVotingLabel')}</p>
+                <AdminVotingControls
+                  proposal={proposal}
+                  onVotingStarted={loadProposal}
+                  onVotingFinalized={loadProposal}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Admin Actions - Voting Proposals */}
+          {isAdmin && proposal.status === 'voting' && (
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <p className="text-sm font-medium text-gray-700 mb-3">{t('councilActions')}</p>
+              <AdminVotingControls
+                proposal={proposal}
+                onVotingStarted={loadProposal}
+                onVotingFinalized={loadProposal}
+              />
             </div>
           )}
 
@@ -492,6 +496,20 @@ export default function ProposalDetailPage() {
             </div>
           )}
         </div>
+
+        {/* Voting Panel - Show during voting */}
+        {proposal.status === 'voting' && (
+          <div className="mb-6">
+            <VotingPanel proposal={proposal} />
+          </div>
+        )}
+
+        {/* Vote Results - Show after voting has ended with a result */}
+        {proposal.result && (
+          <div className="mb-6">
+            <VoteResults proposal={proposal} />
+          </div>
+        )}
 
         {/* Comments Section */}
         <div className="bg-white rounded-lg border border-gray-200 p-6">

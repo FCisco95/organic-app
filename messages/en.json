@@ -253,6 +253,7 @@
     "councilActions": "Council Actions:",
     "approve": "Approve",
     "startVoting": "Start Voting",
+    "startVotingLabel": "Or start token-weighted voting:",
     "reject": "Reject",
     "implementation": "Implementation:",
     "createTask": "Create Task from Proposal",
@@ -623,6 +624,66 @@
     "walletMismatchWarning": "Connected wallet differs from linked wallet",
     "walletMismatchDescription": "Connected: {connected} | Linked: {linked}. Balance shown is for your linked wallet.",
     "linkedWalletHoldsTokens": "Your linked wallet holds {balance} $ORG tokens"
+  },
+  "Voting": {
+    "title": "Token-Weighted Voting",
+    "status": {
+      "notStarted": "Not Started",
+      "votingOpen": "Voting Open",
+      "votingClosed": "Voting Closed",
+      "passed": "Passed",
+      "failed": "Failed",
+      "quorumNotMet": "Quorum Not Met"
+    },
+    "vote": {
+      "yes": "Yes",
+      "no": "No",
+      "abstain": "Abstain"
+    },
+    "result": {
+      "passed": "Proposal Passed",
+      "failed": "Proposal Failed",
+      "quorum_not_met": "Quorum Not Met",
+      "votingEnded": "Voting has ended"
+    },
+    "stats": {
+      "participation": "Participation",
+      "totalVoters": "Total Voters",
+      "totalVotes": "Total Votes",
+      "quorum": "Quorum",
+      "quorumMet": "Met",
+      "quorumNotMet": "Not Met"
+    },
+    "signInToVote": "Sign in to vote on this proposal",
+    "linkWalletToVote": "Link your wallet to vote",
+    "noTokensAtSnapshot": "You did not hold $ORG tokens at the time of the snapshot",
+    "yourVotingPower": "Your Voting Power",
+    "youVoted": "You voted: {vote}",
+    "toast": {
+      "voteCast": "Vote cast successfully!",
+      "voteUpdated": "Vote updated successfully!",
+      "voteFailed": "Failed to cast vote",
+      "votingStarted": "Voting started successfully!",
+      "startFailed": "Failed to start voting",
+      "votingFinalized": "Voting finalized successfully!",
+      "finalizeFailed": "Failed to finalize voting"
+    },
+    "admin": {
+      "startDescription": "Start token-weighted voting on this proposal. A snapshot of all token holders will be captured.",
+      "startVoting": "Start Voting",
+      "starting": "Starting...",
+      "votingDuration": "Voting will last {days} days",
+      "finalizeVoting": "Finalize Voting",
+      "finalizing": "Finalizing...",
+      "votingStillOpen": "Voting period has not ended yet. You can force finalize, but this is not recommended.",
+      "finalizeTitle": "Finalize Voting",
+      "finalizeDescription": "This will calculate the final result and close voting permanently.",
+      "finalizeEarlyWarning": "Warning: Voting period has not ended. Are you sure you want to finalize early?",
+      "confirmFinalize": "Finalize"
+    },
+    "common": {
+      "cancel": "Cancel"
+    }
   },
   "common": {
     "loading": "Loading...",

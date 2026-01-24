@@ -5,6 +5,7 @@ export type ProposalStatus = 'draft' | 'submitted' | 'approved' | 'rejected' | '
 export type TaskStatus = 'backlog' | 'todo' | 'in_progress' | 'review' | 'done';
 export type SprintStatus = 'planning' | 'active' | 'completed';
 export type VoteValue = 'yes' | 'no' | 'abstain';
+export type ProposalResult = 'passed' | 'failed' | 'quorum_not_met';
 export type TaskType = 'development' | 'content' | 'design' | 'custom';
 export type ReviewStatus = 'pending' | 'approved' | 'rejected' | 'disputed';
 export type TaskPriority = 'low' | 'medium' | 'high' | 'critical';
@@ -111,6 +112,13 @@ export interface Database {
           status: ProposalStatus;
           created_by: string;
           closes_at: string | null;
+          voting_starts_at: string | null;
+          voting_ends_at: string | null;
+          snapshot_taken_at: string | null;
+          total_circulating_supply: number | null;
+          quorum_required: number | null;
+          approval_threshold: number | null;
+          result: ProposalResult | null;
           created_at: string;
           updated_at: string;
         };
@@ -122,6 +130,13 @@ export interface Database {
           status?: ProposalStatus;
           created_by: string;
           closes_at?: string | null;
+          voting_starts_at?: string | null;
+          voting_ends_at?: string | null;
+          snapshot_taken_at?: string | null;
+          total_circulating_supply?: number | null;
+          quorum_required?: number | null;
+          approval_threshold?: number | null;
+          result?: ProposalResult | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -133,6 +148,13 @@ export interface Database {
           status?: ProposalStatus;
           created_by?: string;
           closes_at?: string | null;
+          voting_starts_at?: string | null;
+          voting_ends_at?: string | null;
+          snapshot_taken_at?: string | null;
+          total_circulating_supply?: number | null;
+          quorum_required?: number | null;
+          approval_threshold?: number | null;
+          result?: ProposalResult | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -513,6 +535,48 @@ export interface Database {
         };
         Relationships: [];
       };
+      voting_config: {
+        Row: {
+          id: string;
+          org_id: string | null;
+          quorum_percentage: number;
+          approval_threshold: number;
+          voting_duration_days: number;
+          proposal_threshold_org: number;
+          proposer_cooldown_days: number;
+          max_live_proposals: number;
+          abstain_counts_toward_quorum: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          org_id?: string | null;
+          quorum_percentage?: number;
+          approval_threshold?: number;
+          voting_duration_days?: number;
+          proposal_threshold_org?: number;
+          proposer_cooldown_days?: number;
+          max_live_proposals?: number;
+          abstain_counts_toward_quorum?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          org_id?: string | null;
+          quorum_percentage?: number;
+          approval_threshold?: number;
+          voting_duration_days?: number;
+          proposal_threshold_org?: number;
+          proposer_cooldown_days?: number;
+          max_live_proposals?: number;
+          abstain_counts_toward_quorum?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -530,6 +594,7 @@ export interface Database {
     Enums: {
       user_role: UserRole;
       proposal_status: ProposalStatus;
+      proposal_result: ProposalResult;
       task_status: TaskStatus;
       sprint_status: SprintStatus;
       vote_value: VoteValue;

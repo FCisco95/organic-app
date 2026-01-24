@@ -1,0 +1,301 @@
+'use client';
+
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { createClient } from '@/lib/supabase/client';
+import {
+  VoteTally,
+  VoteResults,
+  UserVote,
+  VotingConfig,
+  ProposalWithVoting,
+} from './types';
+import { CastVoteInput, StartVotingInput, FinalizeVotingInput } from './schemas';
+
+// Query keys
+export const votingKeys = {
+  all: ['voting'] as const,
+  config: () => [...votingKeys.all, 'config'] as const,
+  proposals: () => [...votingKeys.all, 'proposals'] as const,
+  proposal: (id: string) => [...votingKeys.proposals(), id] as const,
+  results: (proposalId: string) => [...votingKeys.all, 'results', proposalId] as const,
+  userVote: (proposalId: string, userId: string) =>
+    [...votingKeys.all, 'user-vote', proposalId, userId] as const,
+  snapshot: (proposalId: string) => [...votingKeys.all, 'snapshot', proposalId] as const,
+};
+
+/**
+ * Fetch voting configuration
+ */
+export function useVotingConfig() {
+  const supabase = createClient();
+
+  return useQuery({
+    queryKey: votingKeys.config(),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('voting_config')
+        .select('*')
+        .limit(1)
+        .single();
+
+      if (error) throw error;
+      return data as VotingConfig;
+    },
+  });
+}
+
+/**
+ * Fetch proposal with voting info
+ */
+export function useProposalWithVoting(proposalId: string) {
+  const supabase = createClient();
+
+  return useQuery({
+    queryKey: votingKeys.proposal(proposalId),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('proposals')
+        .select(
+          `
+          *,
+          user_profiles!proposals_created_by_fkey (
+            organic_id,
+            email,
+            wallet_pubkey
+          )
+        `
+        )
+        .eq('id', proposalId)
+        .single();
+
+      if (error) throw error;
+      return data as unknown as ProposalWithVoting;
+    },
+    enabled: !!proposalId,
+  });
+}
+
+/**
+ * Fetch vote results for a proposal
+ */
+export function useVoteResults(proposalId: string) {
+  return useQuery({
+    queryKey: votingKeys.results(proposalId),
+    queryFn: async () => {
+      const response = await fetch(`/api/proposals/${proposalId}/results`);
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to fetch vote results');
+      }
+      return response.json() as Promise<VoteResults>;
+    },
+    enabled: !!proposalId,
+    refetchInterval: 30000, // Refresh every 30 seconds during voting
+  });
+}
+
+/**
+ * Fetch current user's vote for a proposal
+ */
+export function useUserVote(proposalId: string, userId: string | undefined) {
+  const supabase = createClient();
+
+  return useQuery({
+    queryKey: votingKeys.userVote(proposalId, userId || ''),
+    queryFn: async () => {
+      if (!userId) return null;
+
+      const { data, error } = await supabase
+        .from('votes')
+        .select('id, value, weight, created_at')
+        .eq('proposal_id', proposalId)
+        .eq('voter_id', userId)
+        .maybeSingle();
+
+      if (error) throw error;
+      return data as UserVote | null;
+    },
+    enabled: !!proposalId && !!userId,
+  });
+}
+
+/**
+ * Fetch user's voting weight from snapshot
+ */
+export function useUserVotingWeight(proposalId: string, walletPubkey: string | undefined) {
+  const supabase = createClient();
+
+  return useQuery({
+    queryKey: [...votingKeys.snapshot(proposalId), walletPubkey],
+    queryFn: async () => {
+      if (!walletPubkey) return 0;
+
+      const { data, error } = await supabase
+        .from('holder_snapshots')
+        .select('balance_ui')
+        .eq('proposal_id', proposalId)
+        .eq('wallet_pubkey', walletPubkey)
+        .maybeSingle();
+
+      if (error) throw error;
+      return data?.balance_ui || 0;
+    },
+    enabled: !!proposalId && !!walletPubkey,
+  });
+}
+
+/**
+ * Start voting on a proposal (admin only)
+ */
+export function useStartVoting() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      proposalId,
+      input,
+    }: {
+      proposalId: string;
+      input?: StartVotingInput;
+    }) => {
+      const response = await fetch(`/api/proposals/${proposalId}/start-voting`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input || {}),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to start voting');
+      }
+
+      return response.json();
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: votingKeys.proposal(variables.proposalId) });
+      queryClient.invalidateQueries({ queryKey: votingKeys.results(variables.proposalId) });
+    },
+  });
+}
+
+/**
+ * Cast a vote on a proposal
+ */
+export function useCastVote() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      proposalId,
+      input,
+    }: {
+      proposalId: string;
+      input: CastVoteInput;
+    }) => {
+      const response = await fetch(`/api/proposals/${proposalId}/vote`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to cast vote');
+      }
+
+      return response.json();
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: votingKeys.results(variables.proposalId) });
+      // Invalidate user vote queries - the user ID will be refetched
+      queryClient.invalidateQueries({
+        queryKey: votingKeys.all,
+        predicate: (query) =>
+          query.queryKey[0] === 'voting' &&
+          query.queryKey[1] === 'user-vote' &&
+          query.queryKey[2] === variables.proposalId,
+      });
+    },
+  });
+}
+
+/**
+ * Finalize voting on a proposal (admin only)
+ */
+export function useFinalizeVoting() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      proposalId,
+      input,
+    }: {
+      proposalId: string;
+      input?: FinalizeVotingInput;
+    }) => {
+      const response = await fetch(`/api/proposals/${proposalId}/finalize`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input || {}),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to finalize voting');
+      }
+
+      return response.json();
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: votingKeys.proposal(variables.proposalId) });
+      queryClient.invalidateQueries({ queryKey: votingKeys.results(variables.proposalId) });
+    },
+  });
+}
+
+/**
+ * Calculate time remaining for voting
+ */
+export function useVotingTimeRemaining(votingEndsAt: string | null) {
+  return useQuery({
+    queryKey: ['voting-time-remaining', votingEndsAt],
+    queryFn: () => {
+      if (!votingEndsAt) return null;
+
+      const now = new Date();
+      const end = new Date(votingEndsAt);
+      const diff = end.getTime() - now.getTime();
+
+      if (diff <= 0) return 0;
+      return diff;
+    },
+    enabled: !!votingEndsAt,
+    refetchInterval: 1000, // Update every second
+  });
+}
+
+/**
+ * Format time remaining in human-readable format
+ */
+export function formatTimeRemaining(ms: number | null | undefined): string {
+  if (ms === null || ms === undefined || ms <= 0) return 'Voting ended';
+
+  const seconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (days > 0) {
+    const remainingHours = hours % 24;
+    return `${days}d ${remainingHours}h remaining`;
+  }
+  if (hours > 0) {
+    const remainingMinutes = minutes % 60;
+    return `${hours}h ${remainingMinutes}m remaining`;
+  }
+  if (minutes > 0) {
+    const remainingSeconds = seconds % 60;
+    return `${minutes}m ${remainingSeconds}s remaining`;
+  }
+  return `${seconds}s remaining`;
+}

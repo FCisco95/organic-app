@@ -253,6 +253,7 @@
     "councilActions": "理事会操作：",
     "approve": "通过",
     "startVoting": "开始投票",
+    "startVotingLabel": "或启动代币加权投票:",
     "reject": "拒绝",
     "implementation": "实施：",
     "createTask": "从提案创建任务",
@@ -623,6 +624,66 @@
     "walletMismatchWarning": "已连接的钱包与已关联的钱包不同",
     "walletMismatchDescription": "已连接：{connected} | 已关联：{linked}。显示的余额为您已关联钱包的余额。",
     "linkedWalletHoldsTokens": "您已关联的钱包持有 {balance} 个 $ORG 代币"
+  },
+  "Voting": {
+    "title": "代币加权投票",
+    "status": {
+      "notStarted": "未开始",
+      "votingOpen": "投票进行中",
+      "votingClosed": "投票已结束",
+      "passed": "已通过",
+      "failed": "未通过",
+      "quorumNotMet": "未达法定人数"
+    },
+    "vote": {
+      "yes": "赞成",
+      "no": "反对",
+      "abstain": "弃权"
+    },
+    "result": {
+      "passed": "提案已通过",
+      "failed": "提案未通过",
+      "quorum_not_met": "未达法定人数",
+      "votingEnded": "投票已结束"
+    },
+    "stats": {
+      "participation": "参与率",
+      "totalVoters": "总投票人数",
+      "totalVotes": "总票数",
+      "quorum": "法定人数",
+      "quorumMet": "已达到",
+      "quorumNotMet": "未达到"
+    },
+    "signInToVote": "登录以对此提案投票",
+    "linkWalletToVote": "关联您的钱包以投票",
+    "noTokensAtSnapshot": "您在快照时未持有 $ORG 代币",
+    "yourVotingPower": "您的投票权重",
+    "youVoted": "您投票了: {vote}",
+    "toast": {
+      "voteCast": "投票成功！",
+      "voteUpdated": "投票已更新！",
+      "voteFailed": "投票失败",
+      "votingStarted": "投票已成功开始！",
+      "startFailed": "开始投票失败",
+      "votingFinalized": "投票已成功结束！",
+      "finalizeFailed": "结束投票失败"
+    },
+    "admin": {
+      "startDescription": "开始对此提案进行代币加权投票。将捕获所有代币持有者的快照。",
+      "startVoting": "开始投票",
+      "starting": "启动中...",
+      "votingDuration": "投票将持续 {days} 天",
+      "finalizeVoting": "结束投票",
+      "finalizing": "结束中...",
+      "votingStillOpen": "投票期限尚未结束。您可以强制结束，但不建议这样做。",
+      "finalizeTitle": "结束投票",
+      "finalizeDescription": "这将计算最终结果并永久关闭投票。",
+      "finalizeEarlyWarning": "警告：投票期限尚未结束。确定要提前结束吗？",
+      "confirmFinalize": "结束"
+    },
+    "common": {
+      "cancel": "取消"
+    }
   },
   "common": {
     "loading": "加载中...",
