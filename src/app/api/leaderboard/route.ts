@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { Database } from '@/types/database';
+
+type LeaderboardRow = Database['public']['Views']['leaderboard_view']['Row'];
 
 type LeaderboardEntry = {
   id: string;
@@ -11,10 +14,6 @@ type LeaderboardEntry = {
   tasks_completed: number | null;
   role: string;
   rank: number | null;
-};
-
-type LeaderboardRow = LeaderboardEntry & {
-  dense_rank?: number | null;
 };
 
 const ensureRanks = (entries: LeaderboardRow[]) => {
@@ -41,10 +40,10 @@ export async function GET() {
   try {
     const supabase = await createClient();
 
-    // Fetch leaderboard data directly from user_profiles
-    // ordered by total_points descending
+    // Fetch leaderboard data from the leaderboard_view
+    // which includes pre-computed rank and dense_rank
     const { data: leaderboard, error } = await supabase
-      .from('leaderboard_view' as unknown as 'user_profiles')
+      .from('leaderboard_view')
       .select(
         'id, name, email, organic_id, avatar_url, total_points, tasks_completed, role, rank, dense_rank'
       )
@@ -56,10 +55,28 @@ export async function GET() {
       return NextResponse.json({ error: 'Failed to fetch leaderboard' }, { status: 500 });
     }
 
-    const normalized = ensureRanks((leaderboard || []) as LeaderboardRow[]);
+    const normalized = ensureRanks(leaderboard || []);
+
+    // Map to LeaderboardEntry (filter out nulls for required fields)
+    const result: LeaderboardEntry[] = normalized
+      .filter(
+        (row): row is LeaderboardRow & { id: string; email: string } =>
+          row.id !== null && row.email !== null
+      )
+      .map((row) => ({
+        id: row.id,
+        name: row.name,
+        email: row.email,
+        organic_id: row.organic_id,
+        avatar_url: row.avatar_url,
+        total_points: row.total_points,
+        tasks_completed: row.tasks_completed,
+        role: row.role ?? 'guest',
+        rank: row.rank,
+      }));
 
     return NextResponse.json({
-      leaderboard: normalized as LeaderboardEntry[],
+      leaderboard: result,
     });
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
