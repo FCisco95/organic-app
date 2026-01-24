@@ -43,6 +43,7 @@ export default function SprintDetailPage() {
     start_at: '',
     end_at: '',
     status: 'planning',
+    capacity_points: '',
   });
 
   const fetchSprintDetails = useCallback(async () => {
@@ -78,6 +79,7 @@ export default function SprintDetailPage() {
         start_at: sprint.start_at.split('T')[0],
         end_at: sprint.end_at.split('T')[0],
         status: sprint.status,
+        capacity_points: sprint.capacity_points == null ? '' : String(sprint.capacity_points),
       });
       setShowEditModal(true);
     }
@@ -96,6 +98,7 @@ export default function SprintDetailPage() {
           start_at: editForm.start_at,
           end_at: editForm.end_at,
           status: editForm.status,
+          capacity_points: editForm.capacity_points ? Number(editForm.capacity_points) : null,
         }),
       });
 
@@ -236,13 +239,68 @@ export default function SprintDetailPage() {
   const totalTasks = tasks.length;
   const completedTasks = tasks.filter((t) => t.status === 'done').length;
   const inProgressTasks = tasks.filter((t) => t.status === 'in_progress').length;
-  const totalPoints = tasks.reduce((sum, t) => sum + t.points, 0);
+  const totalPoints = tasks.reduce((sum, t) => sum + (t.points || 0), 0);
   const completedPoints = tasks
     .filter((t) => t.status === 'done')
-    .reduce((sum, t) => sum + t.points, 0);
+    .reduce((sum, t) => sum + (t.points || 0), 0);
   const progressPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
   const canManageSprint = profile?.role === 'admin' || profile?.role === 'council';
+  const capacityUsedLabel =
+    sprint.capacity_points != null
+      ? t('capacityValue', {
+          used: totalPoints,
+          capacity: sprint.capacity_points,
+        })
+      : t('capacityUncapped', { used: totalPoints });
+
+  const normalizeDate = (date: Date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const burndownDays = (() => {
+    const start = normalizeDate(new Date(sprint.start_at));
+    const end = normalizeDate(new Date(sprint.end_at));
+    const days: Date[] = [];
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      days.push(new Date(d));
+    }
+    return days;
+  })();
+
+  const burndownActual = burndownDays.map((day) => {
+    const completedPointsByDay = tasks
+      .filter((task) => task.status === 'done')
+      .reduce((sum, task) => {
+        const completedDate = task.completed_at || task.updated_at;
+        if (!completedDate) return sum;
+        const completedDay = normalizeDate(new Date(completedDate));
+        if (completedDay <= day) {
+          return sum + (task.points || 0);
+        }
+        return sum;
+      }, 0);
+    return Math.max(totalPoints - completedPointsByDay, 0);
+  });
+
+  const burndownIdeal = burndownDays.map((_, index) => {
+    if (burndownDays.length <= 1) return totalPoints;
+    const ratio = index / (burndownDays.length - 1);
+    return Math.max(Math.round(totalPoints * (1 - ratio)), 0);
+  });
+
+  const chartWidth = 640;
+  const chartHeight = 220;
+  const chartPadding = 24;
+  const chartMax = Math.max(totalPoints, 1);
+  const scaleX = (index: number) => {
+    if (burndownDays.length <= 1) return chartPadding;
+    const usableWidth = chartWidth - chartPadding * 2;
+    return chartPadding + (usableWidth * index) / (burndownDays.length - 1);
+  };
+  const scaleY = (value: number) => {
+    const usableHeight = chartHeight - chartPadding * 2;
+    return chartPadding + usableHeight * (1 - value / chartMax);
+  };
+  const buildPolyline = (values: number[]) =>
+    values.map((value, index) => `${scaleX(index)},${scaleY(value)}`).join(' ');
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -273,6 +331,7 @@ export default function SprintDetailPage() {
                   <span>{getDuration(sprint.start_at, sprint.end_at)}</span>
                 </div>
               </div>
+              <div className="text-sm text-gray-500 mt-2">{capacityUsedLabel}</div>
             </div>
             <div className="flex items-center gap-3">
               <span
@@ -319,7 +378,7 @@ export default function SprintDetailPage() {
         </div>
 
         {/* Sprint Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
           <div className="bg-white rounded-lg border border-gray-200 p-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -369,6 +428,79 @@ export default function SprintDetailPage() {
               </div>
             </div>
           </div>
+
+          <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                <Target className="w-5 h-5 text-gray-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">{t('capacity')}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {sprint.capacity_points != null ? sprint.capacity_points : t('uncapped')}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Burndown Chart */}
+        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">{t('burndownTitle')}</h2>
+            <div className="flex items-center gap-4 text-xs text-gray-500">
+              <span className="inline-flex items-center gap-2">
+                <span className="w-3 h-0.5 bg-gray-300 block"></span>
+                {t('burndownIdeal')}
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <span className="w-3 h-0.5 bg-organic-orange block"></span>
+                {t('burndownActual')}
+              </span>
+            </div>
+          </div>
+          {totalPoints === 0 ? (
+            <div className="text-sm text-gray-500">{t('burndownEmpty')}</div>
+          ) : (
+            <div className="w-full overflow-x-auto">
+              <svg
+                viewBox={`0 0 ${chartWidth} ${chartHeight}`}
+                className="w-full h-56"
+                role="img"
+                aria-label={t('burndownChartLabel')}
+              >
+                <rect x="0" y="0" width={chartWidth} height={chartHeight} fill="#ffffff" />
+                <line
+                  x1={chartPadding}
+                  y1={chartPadding}
+                  x2={chartPadding}
+                  y2={chartHeight - chartPadding}
+                  stroke="#e5e7eb"
+                  strokeWidth="1"
+                />
+                <line
+                  x1={chartPadding}
+                  y1={chartHeight - chartPadding}
+                  x2={chartWidth - chartPadding}
+                  y2={chartHeight - chartPadding}
+                  stroke="#e5e7eb"
+                  strokeWidth="1"
+                />
+                <polyline
+                  fill="none"
+                  stroke="#d1d5db"
+                  strokeWidth="2"
+                  points={buildPolyline(burndownIdeal)}
+                />
+                <polyline
+                  fill="none"
+                  stroke="#f97316"
+                  strokeWidth="3"
+                  points={buildPolyline(burndownActual)}
+                />
+              </svg>
+            </div>
+          )}
         </div>
 
         {/* Tasks List */}
@@ -439,7 +571,7 @@ export default function SprintDetailPage() {
                         )}
                         <span className="flex items-center gap-1">
                           <span className="text-organic-orange">★</span>
-                          {t('pointsLabel', { points: task.points })}
+                          {t('pointsLabel', { points: task.points ?? 0 })}
                         </span>
                       </div>
                     </div>
@@ -519,6 +651,21 @@ export default function SprintDetailPage() {
                   <option value="active">{t('status.active')}</option>
                   <option value="completed">{t('status.completed')}</option>
                 </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t('formCapacity')}
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={editForm.capacity_points}
+                  onChange={(e) => setEditForm({ ...editForm, capacity_points: e.target.value })}
+                  placeholder={t('formCapacityPlaceholder')}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange transition-colors"
+                />
+                <p className="mt-1 text-xs text-gray-500">{t('formCapacityHelper')}</p>
               </div>
             </div>
 

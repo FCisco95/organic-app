@@ -29,6 +29,7 @@ export default function SprintsPage() {
   const [tasksLoading, setTasksLoading] = useState(false);
   const [selectedBacklogIds, setSelectedBacklogIds] = useState<string[]>([]);
   const [isMoving, setIsMoving] = useState(false);
+  const [selectedSprintId, setSelectedSprintId] = useState<string | null>(null);
   const [commentCounts, setCommentCounts] = useState<Record<string, number>>({});
   const [submissionCounts, setSubmissionCounts] = useState<Record<string, number>>({});
   const [contributorCounts, setContributorCounts] = useState<Record<string, number>>({});
@@ -37,6 +38,7 @@ export default function SprintsPage() {
     start_at: '',
     end_at: '',
     status: 'planning',
+    capacity_points: '',
   });
 
   useEffect(() => {
@@ -70,13 +72,16 @@ export default function SprintsPage() {
               .eq('sprint_id', sprint.id);
 
             if (tasks) {
+              const totalPoints = tasks.reduce((sum, task) => sum + (task.points || 0), 0);
+              const completedPoints = tasks
+                .filter((task) => task.status === 'done')
+                .reduce((sum, task) => sum + (task.points || 0), 0);
               stats[sprint.id] = {
                 total: tasks.length,
                 completed: tasks.filter((t) => t.status === 'done').length,
                 inProgress: tasks.filter((t) => t.status === 'in_progress').length,
-                points: tasks
-                  .filter((t) => t.status === 'done')
-                  .reduce((sum, t) => sum + (t.points || 0), 0),
+                points: completedPoints,
+                totalPoints,
               };
             }
           }
@@ -126,6 +131,21 @@ export default function SprintsPage() {
     return `${days} days`;
   };
 
+  const getCapacityPercent = (used: number, capacity: number | null) => {
+    if (capacity === null || capacity <= 0) return 0;
+    return Math.min(100, Math.round((used / capacity) * 100));
+  };
+
+  const getCompletionPercent = (stats: SprintStats[string]) => {
+    if (stats.totalPoints > 0) {
+      return Math.round((stats.points / stats.totalPoints) * 100);
+    }
+    if (stats.total > 0) {
+      return Math.round((stats.completed / stats.total) * 100);
+    }
+    return 0;
+  };
+
   const handleCreateSprint = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -147,6 +167,7 @@ export default function SprintsPage() {
           start_at: formData.start_at,
           end_at: formData.end_at,
           status: formData.status || 'planning',
+          capacity_points: formData.capacity_points ? Number(formData.capacity_points) : null,
         })
         .select()
         .single();
@@ -162,6 +183,7 @@ export default function SprintsPage() {
         start_at: '',
         end_at: '',
         status: 'planning',
+        capacity_points: '',
       });
       setShowCreateModal(false);
 
@@ -182,18 +204,43 @@ export default function SprintsPage() {
       start_at: '',
       end_at: '',
       status: 'planning',
+      capacity_points: '',
     });
   };
 
   const canCreateSprint = profile?.role === 'admin' || profile?.role === 'council';
-  const canManageTasks = profile?.role === 'admin';
 
-  // Separate current/active sprint from past sprints
-  const currentSprint =
-    sprints.find((s) => s.status === 'active') || sprints.find((s) => s.status === 'planning');
-  const pastSprints = sprints.filter((s) => s.status === 'completed');
+  const activeSprint = useMemo(() => sprints.find((s) => s.status === 'active'), [sprints]);
+  const planningSprints = useMemo(
+    () =>
+      sprints
+        .filter((s) => s.status === 'planning')
+        .sort((a, b) => new Date(a.start_at).getTime() - new Date(b.start_at).getTime()),
+    [sprints]
+  );
+  const pastSprints = useMemo(
+    () =>
+      sprints
+        .filter((s) => s.status === 'completed')
+        .sort((a, b) => new Date(b.end_at).getTime() - new Date(a.end_at).getTime()),
+    [sprints]
+  );
+
+  const selectedSprint = useMemo(() => {
+    if (selectedSprintId) {
+      return sprints.find((sprint) => sprint.id === selectedSprintId) ?? null;
+    }
+    return activeSprint ?? planningSprints[0] ?? null;
+  }, [activeSprint, planningSprints, selectedSprintId, sprints]);
+
   const boardTasks = currentSprintTasks.filter((task) => task.status !== 'backlog');
-  const canAssignToSprint = profile?.role === 'admin' && currentSprint?.status === 'planning';
+  const canAssignToSprint = Boolean(
+    profile?.role === 'admin' && selectedSprint?.status !== 'completed'
+  );
+  const currentSprintPoints = useMemo(
+    () => currentSprintTasks.reduce((sum, task) => sum + (task.points || 0), 0),
+    [currentSprintTasks]
+  );
   const activityCountsMap = useMemo(() => {
     const ids = new Set([
       ...currentSprintTasks.map((task) => task.id),
@@ -218,7 +265,17 @@ export default function SprintsPage() {
 
   useEffect(() => {
     setSelectedBacklogIds([]);
-  }, [currentSprint?.id, profile?.role]);
+  }, [selectedSprint?.id, profile?.role]);
+
+  useEffect(() => {
+    if (!sprints.length) return;
+    const selectionStillExists = selectedSprintId
+      ? sprints.some((sprint) => sprint.id === selectedSprintId)
+      : false;
+    if (selectionStillExists) return;
+    const nextDefault = activeSprint?.id ?? planningSprints[0]?.id ?? null;
+    setSelectedSprintId(nextDefault);
+  }, [activeSprint?.id, planningSprints, selectedSprintId, sprints]);
 
   useEffect(() => {
     const loadTasks = async () => {
@@ -227,7 +284,7 @@ export default function SprintsPage() {
         const supabase = createClient();
 
         let sprintTasks: TaskBoardTask[] = [];
-        if (currentSprint) {
+        if (selectedSprint) {
           const { data, error: tasksError } = await supabase
             .from('tasks')
             .select(
@@ -242,7 +299,7 @@ export default function SprintsPage() {
               )
             `
             )
-            .eq('sprint_id', currentSprint.id)
+            .eq('sprint_id', selectedSprint.id)
             .order('created_at', { ascending: false });
 
           if (tasksError) throw tasksError;
@@ -358,16 +415,16 @@ export default function SprintsPage() {
     };
 
     loadTasks();
-  }, [currentSprint, profile?.role]);
+  }, [profile?.role, selectedSprint]);
 
   const assignTasksToSprint = async (taskIds: string[]) => {
-    if (!currentSprint || taskIds.length === 0) return;
+    if (!selectedSprint || taskIds.length === 0) return;
     setIsMoving(true);
     try {
       const supabase = createClient();
       const { error: updateError } = await supabase
         .from('tasks')
-        .update({ sprint_id: currentSprint.id, status: 'todo' })
+        .update({ sprint_id: selectedSprint.id, status: 'todo' })
         .in('id', taskIds);
 
       if (updateError) throw updateError;
@@ -376,9 +433,9 @@ export default function SprintsPage() {
         .filter((task) => taskIds.includes(task.id))
         .map((task) => ({
           ...task,
-          sprint_id: currentSprint.id,
+          sprint_id: selectedSprint.id,
           status: 'todo' as TaskStatus,
-          sprints: { name: currentSprint.name },
+          sprints: { name: selectedSprint.name },
         }));
 
       setBacklogTasks((prev) => prev.filter((task) => !taskIds.includes(task.id)));
@@ -406,7 +463,7 @@ export default function SprintsPage() {
   };
 
   const handleDropToBacklog = async (taskId: string) => {
-    if (!canManageTasks) return;
+    if (!canAssignToSprint) return;
     const sprintTask = currentSprintTasks.find((task) => task.id === taskId);
     if (!sprintTask) return;
 
@@ -415,7 +472,7 @@ export default function SprintsPage() {
       const supabase = createClient();
       const { error: updateError } = await supabase
         .from('tasks')
-        .update({ sprint_id: null, status: 'backlog' })
+        .update({ sprint_id: null, status: 'backlog', completed_at: null })
         .eq('id', taskId);
 
       if (updateError) throw updateError;
@@ -449,7 +506,10 @@ export default function SprintsPage() {
       const supabase = createClient();
       const { error: updateError } = await supabase
         .from('tasks')
-        .update({ status: newStatus })
+        .update({
+          status: newStatus,
+          completed_at: newStatus === 'done' ? new Date().toISOString() : null,
+        })
         .eq('id', taskId);
 
       if (updateError) throw updateError;
@@ -532,18 +592,83 @@ export default function SprintsPage() {
             </div>
 
             {activeView === 'board' ? (
-              currentSprint ? (
+              selectedSprint ? (
                 <>
-                  <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <p className="text-xs font-medium text-gray-500">{t('currentSprint')}</p>
-                      <h2 className="text-xl font-semibold text-gray-900">{currentSprint.name}</h2>
-                      <div className="text-sm text-gray-500">
-                        {formatDate(currentSprint.start_at)} - {formatDate(currentSprint.end_at)}
+                  <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                    <div className="flex flex-col gap-2">
+                      <label className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                        {t('assignToSprint')}
+                      </label>
+                      <div className="flex flex-wrap items-center gap-3">
+                        <select
+                          value={selectedSprint?.id ?? ''}
+                          onChange={(event) => setSelectedSprintId(event.target.value)}
+                          className="min-w-[220px] rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:border-organic-orange focus:ring-2 focus:ring-organic-orange"
+                        >
+                          {activeSprint && (
+                            <option value={activeSprint.id}>
+                              {t('activeSprintOption', { name: activeSprint.name })}
+                            </option>
+                          )}
+                          {planningSprints.length > 0 && (
+                            <optgroup label={t('planningSprintGroup')}>
+                              {planningSprints.map((sprint) => (
+                                <option key={sprint.id} value={sprint.id}>
+                                  {sprint.name}
+                                </option>
+                              ))}
+                            </optgroup>
+                          )}
+                        </select>
+                        {selectedSprint.status === 'planning' && (
+                          <span className="inline-flex items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700">
+                            {t('planningMode')}
+                          </span>
+                        )}
                       </div>
                     </div>
+                    {canCreateSprint && planningSprints.length === 0 && !activeSprint && (
+                      <button
+                        onClick={() => setShowCreateModal(true)}
+                        className="inline-flex items-center gap-2 rounded-lg border border-organic-orange px-4 py-2 text-sm font-medium text-organic-orange hover:bg-orange-50"
+                      >
+                        <Plus className="h-4 w-4" />
+                        {t('createSprint')}
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="text-xs font-medium text-gray-500">{t('selectedSprint')}</p>
+                      <h2 className="text-xl font-semibold text-gray-900">{selectedSprint.name}</h2>
+                      <div className="text-sm text-gray-500">
+                        {formatDate(selectedSprint.start_at)} - {formatDate(selectedSprint.end_at)}
+                      </div>
+                      <div className="text-sm text-gray-500 mt-1">
+                        {selectedSprint.capacity_points != null
+                          ? t('capacityValue', {
+                              used: currentSprintPoints,
+                              capacity: selectedSprint.capacity_points,
+                            })
+                          : t('capacityUncapped', { used: currentSprintPoints })}
+                      </div>
+                      {selectedSprint.capacity_points != null && (
+                        <div className="mt-2 h-2 w-full max-w-xs rounded-full bg-gray-100 overflow-hidden">
+                          <div
+                            className="h-full bg-organic-orange"
+                            style={{
+                              width: `${getCapacityPercent(
+                                currentSprintPoints,
+                                selectedSprint.capacity_points
+                              )}%`,
+                            }}
+                          ></div>
+                        </div>
+                      )}
+                    </div>
                     <Link
-                      href={`/sprints/${currentSprint.id}`}
+                      href={`/sprints/${selectedSprint.id}`}
                       className="inline-flex items-center gap-2 text-organic-orange font-medium hover:text-orange-600"
                     >
                       {t('viewDetails')}
@@ -554,7 +679,7 @@ export default function SprintsPage() {
                   <TaskBoard
                     tasks={boardTasks}
                     loading={tasksLoading}
-                    canManage={canManageTasks}
+                    canManage={canAssignToSprint}
                     onStatusChange={updateTaskStatus}
                     onExternalDrop={handleDropToSprint}
                     moveTargets={['backlog', 'todo', 'in_progress', 'review', 'done']}
@@ -565,11 +690,11 @@ export default function SprintsPage() {
                   <div
                     className="mt-8 bg-white rounded-xl border border-gray-200"
                     onDragOver={(event) => {
-                      if (!canManageTasks) return;
+                      if (!canAssignToSprint) return;
                       event.preventDefault();
                     }}
                     onDrop={(event) => {
-                      if (!canManageTasks) return;
+                      if (!canAssignToSprint) return;
                       const taskId =
                         event.dataTransfer.getData('text/task-id') ||
                         event.dataTransfer.getData('text/plain');
@@ -598,7 +723,9 @@ export default function SprintsPage() {
                       </div>
                     </div>
                     {canAssignToSprint && (
-                      <p className="px-6 pt-4 text-xs text-gray-500">{t('planningBacklogHint')}</p>
+                      <p className="px-6 pt-4 text-xs text-gray-500">
+                        {t('planningBacklogHint')}
+                      </p>
                     )}
 
                     {tasksLoading ? (
@@ -613,11 +740,11 @@ export default function SprintsPage() {
                       <div
                         className="divide-y divide-gray-100"
                         onDragOver={(event) => {
-                          if (!canManageTasks) return;
+                          if (!canAssignToSprint) return;
                           event.preventDefault();
                         }}
                         onDrop={(event) => {
-                          if (!canManageTasks) return;
+                          if (!canAssignToSprint) return;
                           const taskId =
                             event.dataTransfer.getData('text/task-id') ||
                             event.dataTransfer.getData('text/plain');
@@ -726,22 +853,36 @@ export default function SprintsPage() {
               ) : (
                 <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
                   <Target className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                  <p className="text-gray-500">{t('noCurrentSprint')}</p>
+                  <p className="text-gray-500">{t('noActiveOrUpcoming')}</p>
+                  {canCreateSprint && (
+                    <button
+                      onClick={() => setShowCreateModal(true)}
+                      className="mt-4 inline-flex items-center gap-2 bg-organic-orange hover:bg-orange-600 text-white px-5 py-2 rounded-lg transition-colors font-medium"
+                    >
+                      <Plus className="w-4 h-4" />
+                      {t('createSprint')}
+                    </button>
+                  )}
                 </div>
               )
             ) : (
               <>
-                {/* Current Sprint Canvas */}
-                {currentSprint &&
+                {/* Active Sprint */}
+                {activeSprint ? (
                   (() => {
-                    const stats = sprintStats[currentSprint.id] || {
+                    const stats = sprintStats[activeSprint.id] || {
                       total: 0,
                       completed: 0,
                       inProgress: 0,
                       points: 0,
+                      totalPoints: 0,
                     };
                     const progress =
-                      stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
+                      stats.totalPoints > 0
+                        ? Math.round((stats.points / stats.totalPoints) * 100)
+                        : stats.total > 0
+                          ? Math.round((stats.completed / stats.total) * 100)
+                          : 0;
 
                     return (
                       <div className="mb-8">
@@ -749,40 +890,61 @@ export default function SprintsPage() {
                           {t('currentSprint')}
                         </h2>
                         <Link
-                          href={`/sprints/${currentSprint.id}`}
+                          href={`/sprints/${activeSprint.id}`}
                           className="block bg-gradient-to-br from-organic-orange/5 via-organic-yellow/5 to-white border-2 border-organic-orange/20 rounded-2xl p-8 hover:shadow-xl transition-all group"
                         >
                           {/* Sprint Header */}
                           <div className="flex items-start justify-between mb-6">
                             <div>
                               <h3 className="text-2xl font-bold text-gray-900 group-hover:text-organic-orange transition-colors mb-2">
-                                {currentSprint.name}
+                                {activeSprint.name}
                               </h3>
                               <div className="flex items-center gap-4 text-sm text-gray-600">
                                 <div className="flex items-center gap-2">
                                   <Calendar className="w-4 h-4 text-organic-orange" />
                                   <span>
-                                    {formatDate(currentSprint.start_at)} -{' '}
-                                    {formatDate(currentSprint.end_at)}
+                                    {formatDate(activeSprint.start_at)} -{' '}
+                                    {formatDate(activeSprint.end_at)}
                                   </span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                   <Clock className="w-4 h-4 text-organic-orange" />
                                   <span>
-                                    {getDuration(currentSprint.start_at, currentSprint.end_at)}
+                                    {getDuration(activeSprint.start_at, activeSprint.end_at)}
                                   </span>
                                 </div>
                               </div>
+                              <div className="text-sm text-gray-600 mt-2">
+                                {activeSprint.capacity_points != null
+                                  ? t('capacityValue', {
+                                      used: stats.totalPoints,
+                                      capacity: activeSprint.capacity_points,
+                                    })
+                                  : t('capacityUncapped', { used: stats.totalPoints })}
+                              </div>
+                              {activeSprint.capacity_points != null && (
+                                <div className="mt-2 h-2 w-full max-w-xs rounded-full bg-white/80 overflow-hidden border border-gray-200">
+                                  <div
+                                    className="h-full bg-organic-orange"
+                                    style={{
+                                      width: `${getCapacityPercent(
+                                        stats.totalPoints,
+                                        activeSprint.capacity_points
+                                      )}%`,
+                                    }}
+                                  ></div>
+                                </div>
+                              )}
                             </div>
                             <span
                               className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border-2 ${
-                                currentSprint.status === 'active'
+                                activeSprint.status === 'active'
                                   ? 'bg-green-100 text-green-700 border-green-300'
                                   : 'bg-blue-100 text-blue-700 border-blue-300'
                               }`}
                             >
-                              {getStatusIcon(currentSprint.status)}
-                              {t(`status.${currentSprint.status}`)}
+                              {getStatusIcon(activeSprint.status)}
+                              {t(`status.${activeSprint.status}`)}
                             </span>
                           </div>
 
@@ -836,20 +998,35 @@ export default function SprintsPage() {
                         </Link>
                       </div>
                     );
-                  })()}
+                  })()
+                ) : (
+                  <div className="mb-8 text-center py-10 bg-white rounded-xl border border-gray-200">
+                    <Target className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                    <p className="text-gray-500">{t('noActiveSprint')}</p>
+                  </div>
+                )}
 
-                {/* Past Sprints */}
-                {pastSprints.length > 0 && (
-                  <div>
-                    <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('pastSprints')}</h2>
+                {/* Upcoming Sprints */}
+                <div className="mb-8">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                    {t('upcomingSprints')}
+                  </h2>
+                  {planningSprints.length === 0 ? (
+                    <div className="text-center py-8 bg-white rounded-xl border border-gray-200">
+                      <Target className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                      <p className="text-gray-500">{t('noUpcomingSprints')}</p>
+                    </div>
+                  ) : (
                     <div className="space-y-3">
-                      {pastSprints.map((sprint) => {
+                      {planningSprints.map((sprint) => {
                         const stats = sprintStats[sprint.id] || {
                           total: 0,
                           completed: 0,
                           inProgress: 0,
                           points: 0,
+                          totalPoints: 0,
                         };
+                        const percent = getCompletionPercent(stats);
 
                         return (
                           <Link
@@ -878,13 +1055,79 @@ export default function SprintsPage() {
                               <div className="flex items-center gap-3">
                                 <div className="text-right">
                                   <div className="text-sm font-medium text-gray-900">
-                                    {t('tasksCompleted', {
-                                      completed: stats.completed,
-                                      total: stats.total,
+                                    {t('pointsProgress', {
+                                      done: stats.points,
+                                      total: stats.totalPoints,
                                     })}
                                   </div>
                                   <div className="text-xs text-gray-500">
-                                    {t('pointsEarned', { points: stats.points })}
+                                    {t('completionPercent', { percent })}
+                                  </div>
+                                </div>
+                                <Clock className="w-5 h-5 text-blue-600" />
+                              </div>
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                {/* Past Sprints */}
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('pastSprints')}</h2>
+                  {pastSprints.length === 0 ? (
+                    <div className="text-center py-8 bg-white rounded-xl border border-gray-200">
+                      <Target className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                      <p className="text-gray-500">{t('noPastSprints')}</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {pastSprints.map((sprint) => {
+                        const stats = sprintStats[sprint.id] || {
+                          total: 0,
+                          completed: 0,
+                          inProgress: 0,
+                          points: 0,
+                          totalPoints: 0,
+                        };
+                        const percent = getCompletionPercent(stats);
+
+                        return (
+                          <Link
+                            key={sprint.id}
+                            href={`/sprints/${sprint.id}`}
+                            className="block bg-white rounded-lg border border-gray-200 p-5 hover:shadow-md hover:border-gray-300 transition-all group"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1">
+                                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-organic-orange transition-colors mb-1">
+                                  {sprint.name}
+                                </h3>
+                                <div className="flex items-center gap-4 text-sm text-gray-500">
+                                  <div className="flex items-center gap-1.5">
+                                    <Calendar className="w-3.5 h-3.5" />
+                                    <span>
+                                      {formatDate(sprint.start_at)} - {formatDate(sprint.end_at)}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-1.5">
+                                    <Clock className="w-3.5 h-3.5" />
+                                    <span>{getDuration(sprint.start_at, sprint.end_at)}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <div className="text-right">
+                                  <div className="text-sm font-medium text-gray-900">
+                                    {t('pointsProgress', {
+                                      done: stats.points,
+                                      total: stats.totalPoints,
+                                    })}
+                                  </div>
+                                  <div className="text-xs text-gray-500">
+                                    {t('completionPercent', { percent })}
                                   </div>
                                 </div>
                                 <CheckCircle2 className="w-5 h-5 text-green-600" />
@@ -894,16 +1137,8 @@ export default function SprintsPage() {
                         );
                       })}
                     </div>
-                  </div>
-                )}
-
-                {/* No Past Sprints Message */}
-                {!currentSprint && pastSprints.length === 0 && sprints.length > 0 && (
-                  <div className="text-center py-8 bg-white rounded-xl border border-gray-200">
-                    <Target className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500">{t('noPastSprints')}</p>
-                  </div>
-                )}
+                  )}
+                </div>
               </>
             )}
           </>
@@ -1000,7 +1235,32 @@ export default function SprintsPage() {
                   <option value="planning">{t('status.planning')}</option>
                   <option value="active">{t('status.active')}</option>
                   <option value="completed">{t('status.completed')}</option>
-                </select>
+                  </select>
+                </div>
+
+              {/* Capacity */}
+              <div>
+                <label
+                  htmlFor="capacity_points"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  {t('formCapacity')}
+                </label>
+                <input
+                  type="number"
+                  id="capacity_points"
+                  min="0"
+                  value={formData.capacity_points}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      capacity_points: e.target.value,
+                    })
+                  }
+                  placeholder={t('formCapacityPlaceholder')}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange transition-colors"
+                />
+                <p className="mt-1 text-xs text-gray-500">{t('formCapacityHelper')}</p>
               </div>
 
               {/* Form Actions */}
