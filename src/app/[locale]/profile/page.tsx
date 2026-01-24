@@ -130,10 +130,11 @@ export default function ProfilePage() {
         const totalSubmissions = totalSubmissionsResponse.count || 0;
         const approvedSubmissions = approvedSubmissionsResponse.count || 0;
         const votes = votesResponse.count || 0;
-        const pointsEarned = (approvedSubmissionsResponse.data || []).reduce(
-          (total, submission) => total + (submission.earned_points || 0),
-          0
-        );
+        const pointsEarned =
+          (approvedSubmissionsResponse.data as { earned_points: number | null }[] | null)?.reduce(
+            (total, submission) => total + (submission.earned_points || 0),
+            0
+          ) || 0;
 
         setStats({
           totalSubmissions,
@@ -375,8 +376,8 @@ export default function ProfilePage() {
 
       const { error: updateError } = await supabase
         .from('user_profiles')
-        .update({ avatar_url: publicUrl } as any)
-        .eq('id', user!.id as any);
+        .update({ avatar_url: publicUrl })
+        .eq('id', user!.id);
 
       if (updateError) throw updateError;
 
@@ -710,7 +711,9 @@ export default function ProfilePage() {
                 <div className="flex items-center gap-2 text-sm text-gray-700">
                   <Calendar className="w-4 h-4" />
                   <span>
-                    {formatDistanceToNow(new Date(profile.created_at), { addSuffix: true })}
+                    {profile.created_at
+                      ? formatDistanceToNow(new Date(profile.created_at), { addSuffix: true })
+                      : t('unknown')}
                   </span>
                 </div>
               </div>
