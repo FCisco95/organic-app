@@ -10,7 +10,6 @@ export async function POST(request: Request) {
     } = await supabase.auth.getUser();
 
     if (authError) {
-      console.error('Auth error:', authError);
       return NextResponse.json(
         { error: 'Authentication failed: ' + authError.message },
         { status: 401 }
@@ -18,7 +17,6 @@ export async function POST(request: Request) {
     }
 
     if (!user) {
-      console.error('No user found in session');
       return NextResponse.json({ error: 'Not authenticated - no user session' }, { status: 401 });
     }
 
@@ -57,7 +55,6 @@ export async function POST(request: Request) {
       });
 
     if (uploadError) {
-      console.error('Upload error:', uploadError);
       return NextResponse.json(
         { error: 'Failed to upload file: ' + uploadError.message },
         { status: 500 }
@@ -72,11 +69,10 @@ export async function POST(request: Request) {
     // Update user profile with new avatar URL
     const { error: updateError } = await supabase
       .from('user_profiles')
-      .update({ avatar_url: publicUrl } as any)
-      .eq('id', user.id as any);
+      .update({ avatar_url: publicUrl })
+      .eq('id', user.id);
 
     if (updateError) {
-      console.error('Profile update error:', updateError);
       return NextResponse.json(
         { error: 'Failed to update profile: ' + updateError.message },
         { status: 500 }
@@ -84,8 +80,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ url: publicUrl });
-  } catch (error: any) {
-    console.error('Error in upload-avatar:', error);
-    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
