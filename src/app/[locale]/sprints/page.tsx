@@ -137,7 +137,7 @@ export default function SprintsPage() {
       const supabase = createClient();
 
       // Check if user is council or admin
-      if (!profile || !['council', 'admin'].includes(profile.role)) {
+      if (!profile || !profile.role || !['council', 'admin'].includes(profile.role)) {
         throw new Error(t('errorOnlyCouncil'));
       }
 

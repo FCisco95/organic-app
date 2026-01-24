@@ -78,7 +78,7 @@ export default function SprintDetailPage() {
         name: sprint.name,
         start_at: sprint.start_at.split('T')[0],
         end_at: sprint.end_at.split('T')[0],
-        status: sprint.status,
+        status: sprint.status ?? 'planning',
         capacity_points: sprint.capacity_points == null ? '' : String(sprint.capacity_points),
       });
       setShowEditModal(true);
@@ -254,7 +254,8 @@ export default function SprintDetailPage() {
         })
       : t('capacityUncapped', { used: totalPoints });
 
-  const normalizeDate = (date: Date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const normalizeDate = (date: Date) =>
+    new Date(date.getFullYear(), date.getMonth(), date.getDate());
   const burndownDays = (() => {
     const start = normalizeDate(new Date(sprint.start_at));
     const end = normalizeDate(new Date(sprint.end_at));
@@ -336,10 +337,10 @@ export default function SprintDetailPage() {
             <div className="flex items-center gap-3">
               <span
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border ${getStatusBadge(
-                  sprint.status
+                  sprint.status ?? 'planning'
                 )}`}
               >
-                {t(`status.${sprint.status}`)}
+                {t(`status.${sprint.status ?? 'planning'}`)}
               </span>
               {canManageSprint && (
                 <button

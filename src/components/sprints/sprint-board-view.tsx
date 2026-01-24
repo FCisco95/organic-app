@@ -6,7 +6,10 @@ import { Link } from '@/i18n/navigation';
 import { TaskBoard, TaskBoardTask, TaskStatus } from '@/components/tasks/task-board';
 import type { Sprint } from '@/features/tasks';
 
-type ActivityCounts = Record<string, { comments: number; submissions: number; contributors: number }>;
+type ActivityCounts = Record<
+  string,
+  { comments: number; submissions: number; contributors: number }
+>;
 
 type SprintBoardViewProps = {
   selectedSprint: Sprint | null;

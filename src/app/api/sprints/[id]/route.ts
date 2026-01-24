@@ -144,10 +144,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
       return NextResponse.json({ error: 'Only admin members can delete sprints' }, { status: 403 });
     }
 
-    const { error } = await supabase
-      .from('sprints')
-      .delete()
-      .eq('id', id);
+    const { error } = await supabase.from('sprints').delete().eq('id', id);
 
     if (error) {
       return NextResponse.json({ error: 'Failed to delete sprint' }, { status: 500 });
