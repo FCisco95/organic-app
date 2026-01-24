@@ -30,7 +30,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       .eq('id', user.id)
       .single();
 
-    if (profileError || !profile || !['admin', 'council'].includes(profile.role)) {
+    if (profileError || !profile || !profile.role || !['admin', 'council'].includes(profile.role)) {
       return NextResponse.json(
         { error: 'Only admin or council members can finalize voting' },
         { status: 403 }
@@ -71,10 +71,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     // Check if already finalized
     if (proposal.result) {
-      return NextResponse.json(
-        { error: 'Voting has already been finalized' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Voting has already been finalized' }, { status: 400 });
     }
 
     // Check if voting period has ended (unless force is true)

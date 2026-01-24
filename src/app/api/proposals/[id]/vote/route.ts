@@ -47,19 +47,18 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     // Check if user is a member
-    if (!['member', 'council', 'admin'].includes(profile.role)) {
+    if (!profile.role || !['member', 'council', 'admin'].includes(profile.role)) {
       return NextResponse.json(
-        { error: 'Only members can vote. Link your wallet and hold $ORG tokens to become a member.' },
+        {
+          error: 'Only members can vote. Link your wallet and hold $ORG tokens to become a member.',
+        },
         { status: 403 }
       );
     }
 
     // Check if user has linked wallet
     if (!profile.wallet_pubkey) {
-      return NextResponse.json(
-        { error: 'You must link a wallet to vote' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'You must link a wallet to vote' }, { status: 400 });
     }
 
     // Check if proposal is in voting status
@@ -74,19 +73,13 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     if (proposal.status !== 'voting') {
-      return NextResponse.json(
-        { error: 'Voting is not open for this proposal' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Voting is not open for this proposal' }, { status: 400 });
     }
 
     // Check if voting period is still open
     const now = new Date();
     if (proposal.voting_ends_at && new Date(proposal.voting_ends_at) < now) {
-      return NextResponse.json(
-        { error: 'Voting period has ended' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Voting period has ended' }, { status: 400 });
     }
 
     // Get user's voting weight from snapshot
@@ -107,10 +100,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const weight = snapshot.balance_ui;
 
     if (weight <= 0) {
-      return NextResponse.json(
-        { error: 'You must hold $ORG tokens to vote' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'You must hold $ORG tokens to vote' }, { status: 403 });
     }
 
     // Check if user already voted

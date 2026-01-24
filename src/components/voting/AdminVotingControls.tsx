@@ -105,9 +105,10 @@ export function AdminVotingControls({
           disabled={finalizeVotingMutation.isPending}
           className={`
             flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50
-            ${canFinalize
-              ? 'bg-orange-600 hover:bg-orange-700 text-white'
-              : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+            ${
+              canFinalize
+                ? 'bg-orange-600 hover:bg-orange-700 text-white'
+                : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
             }
           `}
         >
@@ -123,9 +124,7 @@ export function AdminVotingControls({
         {showFinalizeConfirm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
-                {t('admin.finalizeTitle')}
-              </h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">{t('admin.finalizeTitle')}</h3>
               <p className="text-gray-600 mb-4">
                 {canFinalize ? t('admin.finalizeDescription') : t('admin.finalizeEarlyWarning')}
               </p>

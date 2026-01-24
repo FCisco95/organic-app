@@ -30,7 +30,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       .eq('id', user.id)
       .single();
 
-    if (profileError || !profile || !['admin', 'council'].includes(profile.role)) {
+    if (profileError || !profile || !profile.role || !['admin', 'council'].includes(profile.role)) {
       return NextResponse.json(
         { error: 'Only admin or council members can start voting' },
         { status: 403 }
@@ -59,8 +59,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       return NextResponse.json({ error: 'Failed to fetch voting config' }, { status: 500 });
     }
 
-    const votingDurationDays =
-      parseResult.data.voting_duration_days || config.voting_duration_days;
+    const votingDurationDays = parseResult.data.voting_duration_days || config.voting_duration_days;
 
     // Check if proposal exists and is in 'submitted' status
     const { data: proposal, error: proposalError } = await supabase

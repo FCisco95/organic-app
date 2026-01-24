@@ -2,13 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
-import {
-  VoteTally,
-  VoteResults,
-  UserVote,
-  VotingConfig,
-  ProposalWithVoting,
-} from './types';
+import { VoteTally, VoteResults, UserVote, VotingConfig, ProposalWithVoting } from './types';
 import { CastVoteInput, StartVotingInput, FinalizeVotingInput } from './schemas';
 
 // Query keys
@@ -32,11 +26,7 @@ export function useVotingConfig() {
   return useQuery({
     queryKey: votingKeys.config(),
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('voting_config')
-        .select('*')
-        .limit(1)
-        .single();
+      const { data, error } = await supabase.from('voting_config').select('*').limit(1).single();
 
       if (error) throw error;
       return data as VotingConfig;
@@ -151,13 +141,7 @@ export function useStartVoting() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      proposalId,
-      input,
-    }: {
-      proposalId: string;
-      input?: StartVotingInput;
-    }) => {
+    mutationFn: async ({ proposalId, input }: { proposalId: string; input?: StartVotingInput }) => {
       const response = await fetch(`/api/proposals/${proposalId}/start-voting`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -185,13 +169,7 @@ export function useCastVote() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      proposalId,
-      input,
-    }: {
-      proposalId: string;
-      input: CastVoteInput;
-    }) => {
+    mutationFn: async ({ proposalId, input }: { proposalId: string; input: CastVoteInput }) => {
       const response = await fetch(`/api/proposals/${proposalId}/vote`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

@@ -35,7 +35,10 @@ export function VotingPanel({ proposal }: VotingPanelProps) {
 
   const { data: results, isLoading: resultsLoading } = useVoteResults(proposal.id);
   const { data: userVote, isLoading: userVoteLoading } = useUserVote(proposal.id, user?.id);
-  const { data: votingWeight } = useUserVotingWeight(proposal.id, profile?.wallet_pubkey || undefined);
+  const { data: votingWeight } = useUserVotingWeight(
+    proposal.id,
+    profile?.wallet_pubkey || undefined
+  );
   const { data: timeRemaining } = useVotingTimeRemaining(proposal.voting_ends_at);
   const castVoteMutation = useCastVote();
 
@@ -54,9 +57,7 @@ export function VotingPanel({ proposal }: VotingPanelProps) {
         input: { value },
       });
 
-      toast.success(
-        userVote ? t('toast.voteUpdated') : t('toast.voteCast')
-      );
+      toast.success(userVote ? t('toast.voteUpdated') : t('toast.voteCast'));
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t('toast.voteFailed'));
     } finally {
@@ -153,7 +154,8 @@ export function VotingPanel({ proposal }: VotingPanelProps) {
               <div className="flex items-center justify-between text-sm mb-1">
                 <span className="text-gray-700">{t('vote.yes')}</span>
                 <span className="text-gray-900 font-medium">
-                  {results.yes_percentage.toFixed(1)}% ({formatVotingWeight(results.tally.yes_votes)})
+                  {results.yes_percentage.toFixed(1)}% (
+                  {formatVotingWeight(results.tally.yes_votes)})
                 </span>
               </div>
               <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
@@ -185,7 +187,8 @@ export function VotingPanel({ proposal }: VotingPanelProps) {
               <div className="flex items-center justify-between text-sm mb-1">
                 <span className="text-gray-700">{t('vote.abstain')}</span>
                 <span className="text-gray-900 font-medium">
-                  {results.abstain_percentage.toFixed(1)}% ({formatVotingWeight(results.tally.abstain_votes)})
+                  {results.abstain_percentage.toFixed(1)}% (
+                  {formatVotingWeight(results.tally.abstain_votes)})
                 </span>
               </div>
               <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
@@ -211,9 +214,13 @@ export function VotingPanel({ proposal }: VotingPanelProps) {
             </div>
             <div>
               <span className="text-gray-500">{t('stats.quorum')}</span>
-              <p className={`font-semibold ${results.quorum_met ? 'text-green-600' : 'text-yellow-600'}`}>
+              <p
+                className={`font-semibold ${results.quorum_met ? 'text-green-600' : 'text-yellow-600'}`}
+              >
                 {results.quorum_percentage.toFixed(2)}%
-                {results.quorum_met ? ' ✓' : ` / ${proposal.quorum_required ? (proposal.quorum_required / (proposal.total_circulating_supply || 1) * 100).toFixed(0) : 5}%`}
+                {results.quorum_met
+                  ? ' ✓'
+                  : ` / ${proposal.quorum_required ? ((proposal.quorum_required / (proposal.total_circulating_supply || 1)) * 100).toFixed(0) : 5}%`}
               </p>
             </div>
             <div>

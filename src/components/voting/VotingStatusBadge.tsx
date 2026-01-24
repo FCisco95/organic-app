@@ -10,41 +10,39 @@ interface VotingStatusBadgeProps {
   className?: string;
 }
 
-const STATUS_CONFIG: Record<
-  VotingStatus,
-  { color: string; icon: typeof Clock; labelKey: string }
-> = {
-  not_started: {
-    color: 'bg-gray-100 text-gray-700',
-    icon: Clock,
-    labelKey: 'notStarted',
-  },
-  voting_open: {
-    color: 'bg-purple-100 text-purple-700',
-    icon: Vote,
-    labelKey: 'votingOpen',
-  },
-  voting_closed: {
-    color: 'bg-yellow-100 text-yellow-700',
-    icon: AlertCircle,
-    labelKey: 'votingClosed',
-  },
-  finalized_passed: {
-    color: 'bg-green-100 text-green-700',
-    icon: CheckCircle,
-    labelKey: 'passed',
-  },
-  finalized_failed: {
-    color: 'bg-red-100 text-red-700',
-    icon: XCircle,
-    labelKey: 'failed',
-  },
-  finalized_quorum_not_met: {
-    color: 'bg-yellow-100 text-yellow-700',
-    icon: AlertCircle,
-    labelKey: 'quorumNotMet',
-  },
-};
+const STATUS_CONFIG: Record<VotingStatus, { color: string; icon: typeof Clock; labelKey: string }> =
+  {
+    not_started: {
+      color: 'bg-gray-100 text-gray-700',
+      icon: Clock,
+      labelKey: 'notStarted',
+    },
+    voting_open: {
+      color: 'bg-purple-100 text-purple-700',
+      icon: Vote,
+      labelKey: 'votingOpen',
+    },
+    voting_closed: {
+      color: 'bg-yellow-100 text-yellow-700',
+      icon: AlertCircle,
+      labelKey: 'votingClosed',
+    },
+    finalized_passed: {
+      color: 'bg-green-100 text-green-700',
+      icon: CheckCircle,
+      labelKey: 'passed',
+    },
+    finalized_failed: {
+      color: 'bg-red-100 text-red-700',
+      icon: XCircle,
+      labelKey: 'failed',
+    },
+    finalized_quorum_not_met: {
+      color: 'bg-yellow-100 text-yellow-700',
+      icon: AlertCircle,
+      labelKey: 'quorumNotMet',
+    },
+  };
 
 export function VotingStatusBadge({
   proposal,

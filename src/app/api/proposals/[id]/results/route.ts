@@ -94,7 +94,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const noPercentage = yesNoTotal > 0 ? (tally.no_votes / yesNoTotal) * 100 : 0;
 
     // Abstain percentage of total votes
-    const abstainPercentage = tally.total_votes > 0 ? (tally.abstain_votes / tally.total_votes) * 100 : 0;
+    const abstainPercentage =
+      tally.total_votes > 0 ? (tally.abstain_votes / tally.total_votes) * 100 : 0;
 
     // Participation percentage
     const participationPercentage = totalSupply > 0 ? (tally.total_votes / totalSupply) * 100 : 0;
@@ -102,7 +103,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     // Check if voting is still open
     const now = new Date();
     const votingEndsAt = proposal.voting_ends_at ? new Date(proposal.voting_ends_at) : null;
-    const isVotingOpen = proposal.status === 'voting' && votingEndsAt !== null && now < votingEndsAt;
+    const isVotingOpen =
+      proposal.status === 'voting' && votingEndsAt !== null && now < votingEndsAt;
 
     // Calculate time remaining
     const timeRemainingMs =

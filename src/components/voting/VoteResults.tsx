@@ -59,9 +59,7 @@ export function VoteResults({ proposal }: VoteResultsProps) {
       <div className="flex items-center gap-3 mb-4">
         <Icon className={`w-8 h-8 ${config.color}`} />
         <div>
-          <h3 className={`text-xl font-bold ${config.color}`}>
-            {t(`result.${proposal.result}`)}
-          </h3>
+          <h3 className={`text-xl font-bold ${config.color}`}>{t(`result.${proposal.result}`)}</h3>
           <p className="text-sm text-gray-600">{t('result.votingEnded')}</p>
         </div>
       </div>
@@ -136,7 +134,9 @@ export function VoteResults({ proposal }: VoteResultsProps) {
             </div>
             <div>
               <span className="text-gray-600">{t('stats.quorum')}</span>
-              <p className={`font-semibold ${results.quorum_met ? 'text-green-600' : 'text-yellow-600'}`}>
+              <p
+                className={`font-semibold ${results.quorum_met ? 'text-green-600' : 'text-yellow-600'}`}
+              >
                 {results.quorum_met ? t('stats.quorumMet') : t('stats.quorumNotMet')}
               </p>
             </div>
