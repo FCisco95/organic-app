@@ -66,7 +66,7 @@ export async function isOrgHolder(walletAddress: string): Promise<boolean> {
 
 /**
  * Get all token holders for ORG token (for snapshots)
- * This is a heavy operation and should be cached
+ * Uses getParsedProgramAccounts for efficient single-call fetching
  */
 export async function getAllTokenHolders(
   mintAddress: PublicKey = ORG_TOKEN_MINT
@@ -74,8 +74,8 @@ export async function getAllTokenHolders(
   try {
     const connection = getConnection();
 
-    // Get all token accounts for this mint
-    const accounts = await connection.getProgramAccounts(TOKEN_PROGRAM_ID, {
+    // Get all parsed token accounts for this mint in a single RPC call
+    const accounts = await connection.getParsedProgramAccounts(TOKEN_PROGRAM_ID, {
       filters: [
         {
           dataSize: 165, // Size of token account
@@ -89,20 +89,19 @@ export async function getAllTokenHolders(
       ],
     });
 
-    const holders: Array<{ address: string; balance: number }> = [];
+    const holderBalances = new Map<string, number>();
 
     for (const account of accounts) {
       try {
-        const parsedInfo = await connection.getParsedAccountInfo(account.pubkey);
-        if (parsedInfo.value?.data && 'parsed' in parsedInfo.value.data) {
-          const tokenData = parsedInfo.value.data.parsed.info;
-          const balance = tokenData.tokenAmount.uiAmount;
+        const data = account.account.data;
+        if ('parsed' in data) {
+          const tokenData = data.parsed.info;
+          const balance = tokenData.tokenAmount?.uiAmount;
 
           if (balance && balance > 0) {
-            holders.push({
-              address: tokenData.owner,
-              balance,
-            });
+            const owner = tokenData.owner as string;
+            const previous = holderBalances.get(owner) || 0;
+            holderBalances.set(owner, previous + balance);
           }
         }
       } catch (err) {
@@ -110,7 +109,10 @@ export async function getAllTokenHolders(
       }
     }
 
-    return holders;
+    return Array.from(holderBalances.entries()).map(([address, balance]) => ({
+      address,
+      balance,
+    }));
   } catch (error) {
     console.error('Error fetching all token holders:', error);
     return [];
