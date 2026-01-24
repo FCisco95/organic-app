@@ -2,6 +2,15 @@
 
 Add newest entries at the top.
 
+## 2026-01-24 (Voting + Profile Stats + E2E)
+
+- Added voting system migration, API routes, feature/types, and UI components
+- Highlighted live voting proposals on the proposals list
+- Fixed token holder snapshot dedupe for Solana snapshots
+- Added profile activity stats (total/approved submissions, contributions, points earned) with tooltips
+- Widened profile page container slightly for layout breathing room
+- Added Playwright E2E scaffolding and a profile stats test
+
 ## 2026-01-24 (Sprint Type Consolidation)
 
 - Added sprint-specific types to `src/features/tasks/types.ts`:
