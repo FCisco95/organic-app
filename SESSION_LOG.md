@@ -2,22 +2,32 @@
 
 Add newest entries at the top.
 
-## 2026-01-24 (Leaderboard Recovery + Migration)
+## 2026-01-24 (Session 1: Workspace Audit + Type Consolidation)
 
-- Leaderboard: traced missing ranks to absent `leaderboard_view` in Supabase
-- API: added fallback ranking and ordered by `total_points`
-- Database: created migration to recreate `leaderboard_view` with rank fields and grants
-- Review: flagged build/runtime risks in local changes
+- Repository health check: completed full workspace scan and audit
+- Repository health check: lint passed with zero errors
+- Repository health check: build passed (dynamic routes render as expected)
+- Cleanup: removed orphaned backup file `src/app/[locale]/login/page-backup.tsx`
+- Type consolidation: centralized task-related types in `src/features/tasks/types.ts`
+- Type consolidation: added `Sprint`, `SprintStatus`, `UserProfile`, `TaskTab`, `Assignee`, `TaskListItem`, `TaskSubmissionSummary`, `TaskComment`, `Member`
+- Type consolidation: updated `src/app/[locale]/tasks/page.tsx` to import from `@/features/tasks`
+- Type consolidation: updated `src/app/[locale]/tasks/[id]/page.tsx` to import from `@/features/tasks`
+- Type consolidation: removed duplicate type definitions from both tasks pages
+- Type consolidation: fixed null-coalescing for `task.points` in UI displays
+- Sprint type consolidation: added `SprintFormData`, `SprintStats`, `SprintTask` to `src/features/tasks/types.ts`
+- Sprint type consolidation: updated `src/app/[locale]/sprints/page.tsx` to import from `@/features/tasks`
+- Sprint type consolidation: updated `src/app/[locale]/sprints/[id]/page.tsx` to import from `@/features/tasks`
+- Sprint type consolidation: removed ~60 lines of duplicate type definitions from sprint pages
+- Docs: added Workspace Health Summary section to `CLAUDE.md` (known issues, do-not-do list, human confirmations)
+- Docs: updated `README.md` project structure (feature scaffolding)
+- Docs: updated `BUILD_PLAN.md` version to 1.4
+- Findings: confirmed 6 empty feature directories as intentional scaffolding
+- Findings: confirmed 6 empty component directories as intentional scaffolding
+- Findings: documented large page components (1000+ lines) needing product approval to refactor
+- Findings: documented API routes containing business logic (larger refactor needed)
+- Tests: confirmed no automated tests; future work documented in `BUILD_PLAN.md`
 
-## 2026-01-25 (Sprint Planning + Burndown)
-
-- Added sprint capacity column + types and API support
-- Added sprint planning dropdown with active/upcoming/past sections and capacity summaries
-- Added burndown chart on sprint detail with points-based remaining work
-- Set task completed_at when moving tasks to done across UI and APIs
-- Updated sprint-related copy across en, pt-PT, zh-CN
-
-## 2026-01-24 (Voting + Profile Stats + E2E)
+## 2026-01-24 (Session 2: Voting + Profile Stats + E2E)
 
 - Added voting system migration, API routes, feature/types, and UI components
 - Highlighted live voting proposals on the proposals list
@@ -26,57 +36,17 @@ Add newest entries at the top.
 - Widened profile page container slightly for layout breathing room
 - Added Playwright E2E scaffolding and a profile stats test
 
-## 2026-01-24 (Sprint Type Consolidation)
+## 2026-01-24/2026-01-25 (Session 3: Leaderboard + Sprint Planning)
 
-- Added sprint-specific types to `src/features/tasks/types.ts`:
-  - `SprintFormData` (for create/edit forms)
-  - `SprintStats` (for sprint statistics)
-  - `SprintTask` (task with assignee for sprint detail view)
-- Updated `src/app/[locale]/sprints/page.tsx` to import from `@/features/tasks`
-- Updated `src/app/[locale]/sprints/[id]/page.tsx` to import from `@/features/tasks`
-- Removed ~60 lines of duplicate type definitions from sprint pages
-
-## 2026-01-24 (Workspace Audit + Type Consolidation)
-
-### Repository Health Check
-
-- Performed full workspace scan and audit
-- Lint check: passed with zero errors
-- Build check: passed (dynamic routes render as expected)
-
-### Cleanup
-
-- Removed orphaned backup file: `src/app/[locale]/login/page-backup.tsx`
-
-### Type Consolidation
-
-- Centralized task-related types in `src/features/tasks/types.ts`
-- Added new types: `Sprint`, `SprintStatus`, `UserProfile`, `TaskTab`, `Assignee`, `TaskListItem`, `TaskSubmissionSummary`, `TaskComment`, `Member`
-- Updated `src/app/[locale]/tasks/page.tsx` to import types from `@/features/tasks`
-- Updated `src/app/[locale]/tasks/[id]/page.tsx` to import types from `@/features/tasks`
-- Removed duplicate type definitions from both page components
-- Fixed null-coalescing for `task.points` in UI displays
-
-### Documentation Updates
-
-- Added Workspace Health Summary section to CLAUDE.md
-  - Known issues documented (empty scaffolding, type duplication, large pages)
-  - What agents must NOT do (premature refactors)
-  - Areas needing human confirmation
-- Updated README.md project structure (clarified feature scaffolding)
-- Updated BUILD_PLAN.md version to 1.4
-
-### Key Findings (No Changes Made)
-
-- 6 empty feature directories: intentional scaffolding for future work
-- 6 empty component directories: intentional scaffolding
-- Large page components (1000+ lines): documented, needs product approval to refactor
-- API routes contain business logic: documented, larger refactor needed
-
-### No Test Files
-
-- Project has no automated tests yet
-- Test infrastructure documented as future work in BUILD_PLAN.md
+- Leaderboard: traced missing ranks to absent `leaderboard_view` in Supabase
+- Leaderboard: added API fallback ranking and ordered by `total_points`
+- Leaderboard: created migration to recreate `leaderboard_view` with rank fields and grants
+- Review: flagged build/runtime risks in local changes
+- Sprints: added sprint capacity column + types and API support
+- Sprints: added sprint planning dropdown with active/upcoming/past sections and capacity summaries
+- Sprints: added burndown chart on sprint detail with points-based remaining work
+- Sprints: set task `completed_at` when moving tasks to done across UI and APIs
+- Sprints: updated sprint-related copy across en, pt-PT, zh-CN
 
 ## 2026-01-23 (Session 4)
 
