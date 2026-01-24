@@ -86,8 +86,7 @@ export function TaskBoard({
     }
     if (!draggedTask && onExternalDrop) {
       const taskId =
-        event.dataTransfer.getData('text/task-id') ||
-        event.dataTransfer.getData('text/plain');
+        event.dataTransfer.getData('text/task-id') || event.dataTransfer.getData('text/plain');
       if (taskId) {
         onExternalDrop(taskId, status);
       }

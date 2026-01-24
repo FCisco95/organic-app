@@ -223,8 +223,7 @@ export default function SprintsPage() {
       ...currentSprintTasks.map((task) => task.id),
       ...backlogTasks.map((task) => task.id),
     ]);
-    const map: Record<string, { comments: number; submissions: number; contributors: number }> =
-      {};
+    const map: Record<string, { comments: number; submissions: number; contributors: number }> = {};
     ids.forEach((id) => {
       map[id] = {
         comments: commentCounts[id] ?? 0,
@@ -324,14 +323,13 @@ export default function SprintsPage() {
         ];
 
         if (allTaskIds.length > 0) {
-          const [{ data: commentsData, error: commentsError }, { data: submissionsData, error: submissionsError }] =
-            await Promise.all([
-              supabase.from('task_comments').select('task_id').in('task_id', allTaskIds),
-              supabase
-                .from('task_submissions')
-                .select('task_id, user_id')
-                .in('task_id', allTaskIds),
-            ]);
+          const [
+            { data: commentsData, error: commentsError },
+            { data: submissionsData, error: submissionsError },
+          ] = await Promise.all([
+            supabase.from('task_comments').select('task_id').in('task_id', allTaskIds),
+            supabase.from('task_submissions').select('task_id, user_id').in('task_id', allTaskIds),
+          ]);
 
           if (commentsError) throw commentsError;
           if (submissionsError) throw submissionsError;
@@ -368,10 +366,7 @@ export default function SprintsPage() {
           setSubmissionCounts(nextSubmissionCounts);
           setContributorCounts(
             Object.fromEntries(
-              Object.entries(contributorMap).map(([taskId, userSet]) => [
-                taskId,
-                userSet.size,
-              ])
+              Object.entries(contributorMap).map(([taskId, userSet]) => [taskId, userSet.size])
             )
           );
         } else {

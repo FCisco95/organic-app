@@ -1,7 +1,18 @@
-import { Database, TaskType, TaskStatus, TaskPriority, ReviewStatus } from '@/types/database';
+import {
+  Database,
+  TaskType,
+  TaskStatus,
+  TaskPriority,
+  ReviewStatus,
+  SprintStatus,
+} from '@/types/database';
 
 // Base database types
 export type Task = Database['public']['Tables']['tasks']['Row'];
+export type Sprint = Database['public']['Tables']['sprints']['Row'];
+export type SprintInsert = Database['public']['Tables']['sprints']['Insert'];
+export type SprintUpdate = Database['public']['Tables']['sprints']['Update'];
+export type UserProfile = Database['public']['Tables']['user_profiles']['Row'];
 export type TaskInsert = Database['public']['Tables']['tasks']['Insert'];
 export type TaskUpdate = Database['public']['Tables']['tasks']['Update'];
 
@@ -13,7 +24,66 @@ export type TaskAssignee = Database['public']['Tables']['task_assignees']['Row']
 export type TaskAssigneeInsert = Database['public']['Tables']['task_assignees']['Insert'];
 
 // Re-export enums for convenience
-export type { TaskType, TaskStatus, TaskPriority, ReviewStatus };
+export type { TaskType, TaskStatus, TaskPriority, ReviewStatus, SprintStatus };
+
+// UI-specific types
+export type TaskTab = 'all' | 'backlog' | 'activeSprint' | 'completed';
+
+// Assignee type (user eligible for task assignment)
+export interface Assignee {
+  id: string;
+  email: string;
+  name?: string | null;
+  organic_id: number | null;
+  role: string;
+}
+
+// Task list item (used in task list views with minimal relations)
+export interface TaskListItem extends Task {
+  assignee?: {
+    organic_id: number | null;
+    email: string;
+  } | null;
+  sprints?: {
+    name: string;
+  } | null;
+}
+
+// Task submission summary (used in task list for contributor display)
+export interface TaskSubmissionSummary {
+  task_id: string;
+  user: {
+    id: string;
+    name: string | null;
+    email: string;
+    organic_id: number | null;
+  } | null;
+}
+
+// Task comment with user relation
+export interface TaskComment {
+  id: string;
+  task_id: string;
+  user_id: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
+  user: {
+    id: string;
+    name: string | null;
+    email: string;
+    organic_id: number | null;
+    avatar_url: string | null;
+  };
+}
+
+// Simple member type (for dropdowns/selects)
+export interface Member {
+  id: string;
+  name: string | null;
+  email: string;
+  organic_id: number | null;
+}
 
 // Extended types with relations
 export interface TaskWithRelations extends Task {

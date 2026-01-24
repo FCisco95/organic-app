@@ -287,8 +287,8 @@
 
 ---
 
-Last Updated: 2026-01-22
-Version: 1.3
+Last Updated: 2026-01-24
+Version: 1.4
 
 ## Recent Updates (2026-01-22)
 

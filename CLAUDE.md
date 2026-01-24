@@ -152,3 +152,50 @@ npm run dev
 npm run lint
 npm run build
 npm run format
+
+## Workspace Health Summary (Last audit: 2026-01-24)
+
+### What's Solid
+
+- Lint passes with zero errors/warnings
+- React Query properly centralized in `src/features/tasks/hooks.ts`
+- Zod schemas separated in `src/features/tasks/schemas.ts`
+- Barrel exports enable clean imports (`@/features/tasks`)
+- Migration files well-organized and timestamped
+- i18n implementation complete (en, pt-PT, zh-CN)
+- Wallet security: nonce validation with 5-minute TTL
+- RPC caching prevents 429 rate limit errors
+
+### Known Issues
+
+**Empty scaffolding directories** (intentional placeholders for future work):
+
+- `src/features/{notifications,organic-id,profile,proposals,sprints,voting}/`
+- `src/components/{auth,notifications,proposals,sprints,ui,voting}/`
+
+**Type duplication**: Task/Sprint types defined locally in page components instead of importing from `@/features/tasks/types.ts`. Future work should consolidate.
+
+**Large page components** (maintainability concern):
+
+- `src/app/[locale]/tasks/[id]/page.tsx` - 1500+ lines
+- `src/app/[locale]/tasks/page.tsx` - 1000+ lines
+- `src/app/[locale]/sprints/page.tsx` - 1000+ lines
+
+**Console logging**: API routes contain debug console.log statements. Consider removing for production.
+
+**Unsafe type casting**: Some API routes use `as any` to bypass TypeScript. Should be addressed with proper Supabase typing.
+
+### What Agents Must NOT Do
+
+- Do not remove empty feature/component directories - they are planned scaffolding
+- Do not refactor large page components without explicit approval
+- Do not move business logic from API routes without a migration plan
+- Do not consolidate type definitions without testing all consumers
+- Do not remove console.log statements without confirming logging strategy
+
+### Areas Needing Human Confirmation
+
+- Voting system implementation (Phase 7 in BUILD_PLAN)
+- API route refactoring to service layer pattern
+- Type consolidation across page components
+- Replace public Solana RPC with paid provider (infrastructure)

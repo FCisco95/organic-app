@@ -2,6 +2,48 @@
 
 Add newest entries at the top.
 
+## 2026-01-24 (Workspace Audit + Type Consolidation)
+
+### Repository Health Check
+
+- Performed full workspace scan and audit
+- Lint check: passed with zero errors
+- Build check: passed (dynamic routes render as expected)
+
+### Cleanup
+
+- Removed orphaned backup file: `src/app/[locale]/login/page-backup.tsx`
+
+### Type Consolidation
+
+- Centralized task-related types in `src/features/tasks/types.ts`
+- Added new types: `Sprint`, `SprintStatus`, `UserProfile`, `TaskTab`, `Assignee`, `TaskListItem`, `TaskSubmissionSummary`, `TaskComment`, `Member`
+- Updated `src/app/[locale]/tasks/page.tsx` to import types from `@/features/tasks`
+- Updated `src/app/[locale]/tasks/[id]/page.tsx` to import types from `@/features/tasks`
+- Removed duplicate type definitions from both page components
+- Fixed null-coalescing for `task.points` in UI displays
+
+### Documentation Updates
+
+- Added Workspace Health Summary section to CLAUDE.md
+  - Known issues documented (empty scaffolding, type duplication, large pages)
+  - What agents must NOT do (premature refactors)
+  - Areas needing human confirmation
+- Updated README.md project structure (clarified feature scaffolding)
+- Updated BUILD_PLAN.md version to 1.4
+
+### Key Findings (No Changes Made)
+
+- 6 empty feature directories: intentional scaffolding for future work
+- 6 empty component directories: intentional scaffolding
+- Large page components (1000+ lines): documented, needs product approval to refactor
+- API routes contain business logic: documented, larger refactor needed
+
+### No Test Files
+
+- Project has no automated tests yet
+- Test infrastructure documented as future work in BUILD_PLAN.md
+
 ## 2026-01-23 (Session 4)
 
 - Applied Supabase submission schema in prod and recorded migration

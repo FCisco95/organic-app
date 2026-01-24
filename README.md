@@ -59,14 +59,9 @@ organic-app/
 │   │   └── navigation.tsx
 │   │
 │   ├── features/             # Feature-based modules
-│   │   ├── auth/             # Auth logic & hooks
-│   │   ├── organic-id/       # Organic ID logic
-│   │   ├── proposals/        # Proposal logic
-│   │   ├── voting/           # Voting logic
-│   │   ├── tasks/            # Task logic
-│   │   ├── sprints/          # Sprint logic
-│   │   ├── notifications/    # Notification logic
-│   │   └── profile/          # Profile logic
+│   │   ├── auth/             # Auth context & wallet provider
+│   │   ├── tasks/            # Task hooks, types, schemas, utils (fully implemented)
+│   │   └── [scaffolding]/    # organic-id, proposals, voting, sprints, notifications, profile (planned)
 │   │
 │   ├── i18n/                 # i18n helpers
 │   ├── lib/                  # Utility functions

@@ -368,7 +368,8 @@ function SubmissionContent({
     string,
     string | number | boolean | null
   > | null;
-  const customLink = customFields && typeof customFields.link === 'string' ? customFields.link : null;
+  const customLink =
+    customFields && typeof customFields.link === 'string' ? customFields.link : null;
 
   return (
     <div className="space-y-3">

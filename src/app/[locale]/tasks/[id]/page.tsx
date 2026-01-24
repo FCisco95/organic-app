@@ -4,6 +4,18 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { Link, useRouter } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
+import {
+  useTask,
+  canSubmitTask,
+  TASK_TYPE_LABELS,
+  TaskSubmissionWithReviewer,
+  TaskWithRelations,
+  TaskAssigneeWithUser,
+  TaskComment,
+  Member,
+  TaskType,
+  ReviewStatus,
+} from '@/features/tasks';
 
 import { createClient } from '@/lib/supabase/client';
 import {
@@ -30,120 +42,11 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { ClaimButton, TeamClaimStatus } from '@/components/tasks/claim-button';
 import { TaskSubmissionForm } from '@/components/tasks/task-submission-form';
-import {
-  useTask,
-  canSubmitTask,
-  TASK_TYPE_LABELS,
-  TaskSubmissionWithReviewer,
-} from '@/features/tasks';
 
-type TaskType = 'development' | 'content' | 'design' | 'custom';
-type ReviewStatus = 'pending' | 'approved' | 'rejected' | 'disputed';
+// Local type alias for the task shape used in this page
+type Task = TaskWithRelations;
 
-type Task = {
-  id: string;
-  title: string;
-  description: string | null;
-  status: 'backlog' | 'todo' | 'in_progress' | 'review' | 'done';
-  priority: 'low' | 'medium' | 'high' | 'critical';
-  points: number;
-  base_points: number | null;
-  sprint_id: string | null;
-  assignee_id: string | null;
-  task_type: TaskType;
-  is_team_task: boolean;
-  max_assignees: number;
-  due_date: string | null;
-  labels: string[] | null;
-  claimed_at: string | null;
-  completed_at: string | null;
-  created_at: string;
-  assignee?: {
-    id: string;
-    name: string | null;
-    email: string;
-    organic_id: number | null;
-    avatar_url: string | null;
-  };
-  sprint?: {
-    id: string;
-    name: string;
-    status: string;
-  };
-  assignees?: TaskAssigneeWithUser[];
-  submissions?: TaskSubmission[];
-};
-
-type TaskAssigneeWithUser = {
-  id: string;
-  task_id: string;
-  user_id: string;
-  claimed_at: string;
-  user?: {
-    id: string;
-    name: string | null;
-    email: string;
-    organic_id: number | null;
-    avatar_url: string | null;
-  };
-};
-
-type TaskSubmission = {
-  id: string;
-  task_id: string;
-  user_id: string;
-  submission_type: TaskType;
-  pr_link: string | null;
-  content_link: string | null;
-  content_text: string | null;
-  file_urls: string[] | null;
-  description: string | null;
-  review_status: ReviewStatus;
-  quality_score: number | null;
-  reviewer_id: string | null;
-  reviewer_notes: string | null;
-  rejection_reason: string | null;
-  earned_points: number | null;
-  submitted_at: string;
-  reviewed_at: string | null;
-  user?: {
-    id: string;
-    name: string | null;
-    email: string;
-    organic_id: number | null;
-    avatar_url: string | null;
-  };
-  reviewer?: {
-    id: string;
-    name: string | null;
-    email: string;
-    organic_id: number | null;
-  } | null;
-};
-
-type Comment = {
-  id: string;
-  task_id: string;
-  user_id: string;
-  content: string;
-  created_at: string;
-  updated_at: string;
-  user: {
-    id: string;
-    name: string | null;
-    email: string;
-    organic_id: number | null;
-    avatar_url: string | null;
-  };
-};
-
-type Member = {
-  id: string;
-  name: string | null;
-  email: string;
-  organic_id: number | null;
-};
-
+// Sprint type for edit form
 type Sprint = {
   id: string;
   name: string;
@@ -160,7 +63,7 @@ export default function TaskDetailPage() {
   const standardLabels = ['📣 Growth', '🎨 Design', '💻 Dev', '🧠 Research'];
 
   const [task, setTask] = useState<Task | null>(null);
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [comments, setComments] = useState<TaskComment[]>([]);
   const [members, setMembers] = useState<Member[]>([]);
   const [sprints, setSprints] = useState<Sprint[]>([]);
 
@@ -290,7 +193,7 @@ export default function TaskDetailPage() {
         const fullTask = {
           ...typedTask,
           assignees,
-          submissions: (submissionsData ?? []) as unknown as TaskSubmission[],
+          submissions: (submissionsData ?? []) as unknown as TaskSubmissionWithReviewer[],
         };
 
         setTask(fullTask);
@@ -299,7 +202,7 @@ export default function TaskDetailPage() {
           description: fullTask.description || '',
           status: fullTask.status,
           priority: fullTask.priority,
-          points: fullTask.points,
+          points: fullTask.points ?? 0,
           assignee_id: fullTask.assignee_id || '',
           sprint_id: fullTask.sprint_id || '',
           labels: fullTask.labels ?? [],
@@ -388,7 +291,7 @@ export default function TaskDetailPage() {
             organic_id: null,
             avatar_url: null,
           },
-        } as Comment;
+        } as TaskComment;
       });
 
       setComments(hydratedComments);
@@ -534,13 +437,13 @@ export default function TaskDetailPage() {
             map.set(submission.user.id, submission.user);
           }
           return map;
-        }, new Map<string, TaskSubmission['user']>())
+        }, new Map<string, TaskSubmissionWithReviewer['user']>())
       )
         .map((entry) => entry[1])
-        .filter((user): user is NonNullable<TaskSubmission['user']> => !!user)
+        .filter((user): user is NonNullable<TaskSubmissionWithReviewer['user']> => !!user)
     : [];
 
-  const getContributorName = (contributor: NonNullable<TaskSubmission['user']>) => {
+  const getContributorName = (contributor: NonNullable<TaskSubmissionWithReviewer['user']>) => {
     if (contributor.organic_id) return t('organicId', { id: contributor.organic_id });
     return contributor.name ?? contributor.email;
   };
@@ -582,7 +485,7 @@ export default function TaskDetailPage() {
 
         setComments([
           {
-            ...(comment as unknown as Comment),
+            ...(comment as unknown as TaskComment),
             user: commentUser,
           },
           ...comments,
@@ -1027,7 +930,7 @@ export default function TaskDetailPage() {
                   {t('priorityLabel', { priority: t(`priority.${task.priority}`) })}
                 </span>
                 <span className="px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-700">
-                  {t('pointsLabel', { points: task.points })}
+                  {t('pointsLabel', { points: task.points ?? 0 })}
                 </span>
                 <button
                   type="button"
@@ -1299,9 +1202,7 @@ export default function TaskDetailPage() {
       {showContributorsModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-2">
-              {t('contributorsModalTitle')}
-            </h3>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">{t('contributorsModalTitle')}</h3>
             <p className="text-sm text-gray-500 mb-4">
               {t('submissionsCount', { count: task?.submissions?.length ?? 0 })}
             </p>
@@ -1434,7 +1335,7 @@ function SubmissionCard({
   submission,
   getDisplayName,
 }: {
-  submission: TaskSubmission;
+  submission: TaskSubmissionWithReviewer;
   getDisplayName: (user: any) => string;
 }) {
   const t = useTranslations('TaskDetail');

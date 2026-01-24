@@ -2,6 +2,15 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/features/auth/context';
+import {
+  TaskTab,
+  TaskListItem,
+  TaskSubmissionSummary,
+  Assignee,
+  Sprint,
+  TaskPriority,
+  TaskStatus,
+} from '@/features/tasks';
 
 import { createClient } from '@/lib/supabase/client';
 import { Plus, AlertCircle, Clock, Tag, User, Heart } from 'lucide-react';
@@ -9,64 +18,11 @@ import toast from 'react-hot-toast';
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 
-type TaskStatus = 'backlog' | 'todo' | 'in_progress' | 'review' | 'done';
-type TaskPriority = 'low' | 'medium' | 'high' | 'critical';
-type TaskTab = 'all' | 'backlog' | 'activeSprint' | 'completed';
-
-type Task = {
-  id: string;
-  title: string;
-  description: string | null;
-  status: TaskStatus;
-  priority: TaskPriority | null;
-  points: number | null;
-  assignee_id: string | null;
-  sprint_id: string | null;
-  proposal_id: string | null;
-  due_date: string | null;
-  labels: string[] | null;
-  created_at: string;
-  completed_at: string | null;
-  assignee?: {
-    organic_id: number | null;
-    email: string;
-  } | null;
-  sprints?: {
-    name: string;
-  } | null;
-};
-
-type TaskSubmissionSummary = {
-  task_id: string;
-  user: {
-    id: string;
-    name: string | null;
-    email: string;
-    organic_id: number | null;
-  } | null;
-};
-
-type Assignee = {
-  id: string;
-  email: string;
-  organic_id: number | null;
-  role: string;
-};
-
-type Sprint = {
-  id: string;
-  name: string;
-  start_at: string;
-  end_at: string;
-  status: 'planning' | 'active' | 'completed';
-  created_at: string;
-};
-
 export default function TasksPage() {
   const { user, profile } = useAuth();
   const t = useTranslations('Tasks');
   const standardLabels = ['📣 Growth', '🎨 Design', '💻 Dev', '🧠 Research'];
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<TaskListItem[]>([]);
   const [sprints, setSprints] = useState<Sprint[]>([]);
   const [activeView, setActiveView] = useState<TaskTab>('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -128,7 +84,7 @@ export default function TasksPage() {
       const { data, error } = await query;
 
       if (error) throw error;
-      setTasks(data as unknown as Task[]);
+      setTasks(data as unknown as TaskListItem[]);
     } catch (error) {
       console.error('Error loading tasks:', error);
     } finally {
@@ -242,20 +198,20 @@ export default function TasksPage() {
       acc[submission.task_id] = (acc[submission.task_id] ?? 0) + 1;
       return acc;
     }, {});
-    const contributorCountMap = submissions.reduce<Record<string, Set<string>>>((acc, submission) => {
-      if (!submission.user?.id) return acc;
-      acc[submission.task_id] = acc[submission.task_id] ?? new Set<string>();
-      acc[submission.task_id].add(submission.user.id);
-      return acc;
-    }, {});
+    const contributorCountMap = submissions.reduce<Record<string, Set<string>>>(
+      (acc, submission) => {
+        if (!submission.user?.id) return acc;
+        acc[submission.task_id] = acc[submission.task_id] ?? new Set<string>();
+        acc[submission.task_id].add(submission.user.id);
+        return acc;
+      },
+      {}
+    );
 
     setSubmissionCounts(submissionCountMap);
     setContributorCounts(
       Object.fromEntries(
-        Object.entries(contributorCountMap).map(([taskId, userSet]) => [
-          taskId,
-          userSet.size,
-        ])
+        Object.entries(contributorCountMap).map(([taskId, userSet]) => [taskId, userSet.size])
       )
     );
   }, [submissions]);
@@ -319,7 +275,7 @@ export default function TasksPage() {
     }
   };
 
-  const getAssigneeLabel = (assignee: Task['assignee']) => {
+  const getAssigneeLabel = (assignee: TaskListItem['assignee']) => {
     if (!assignee) return t('unassigned');
     return assignee.organic_id ? t('assigneeId', { id: assignee.organic_id }) : assignee.email;
   };
@@ -342,7 +298,7 @@ export default function TasksPage() {
 
   const parseDate = (value: string | null) => (value ? new Date(value) : null);
 
-  const applyFilters = (source: Task[], tab: TaskTab) => {
+  const applyFilters = (source: TaskListItem[], tab: TaskTab) => {
     return source
       .filter((task) => {
         const matchesSearch =
@@ -363,7 +319,7 @@ export default function TasksPage() {
 
         const dateTarget =
           tab === 'completed'
-            ? parseDate(task.completed_at) ?? parseDate(task.created_at)
+            ? (parseDate(task.completed_at) ?? parseDate(task.created_at))
             : parseDate(task.created_at);
 
         const fromDate = dateFrom ? new Date(dateFrom) : null;
@@ -373,11 +329,7 @@ export default function TasksPage() {
           ((!fromDate || dateTarget >= fromDate) && (!toDate || dateTarget <= toDate));
 
         return (
-          matchesSearch &&
-          matchesCategory &&
-          matchesContributor &&
-          matchesSprint &&
-          matchesDate
+          matchesSearch && matchesCategory && matchesContributor && matchesSprint && matchesDate
         );
       })
       .sort((a, b) => {
@@ -599,13 +551,10 @@ export default function TasksPage() {
         <div className="bg-white rounded-xl border border-gray-200">
           <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">
-                {t(`tab.${activeView}`)}
-              </h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t(`tab.${activeView}`)}</h2>
               {sprintFilter !== 'all' && (
                 <p className="text-sm text-gray-500">
-                  {sprints.find((sprint) => sprint.id === sprintFilter)?.name ??
-                    t('sprintUnknown')}
+                  {sprints.find((sprint) => sprint.id === sprintFilter)?.name ?? t('sprintUnknown')}
                 </p>
               )}
             </div>
@@ -713,9 +662,7 @@ export default function TasksPage() {
                             handleToggleLike(task.id);
                           }}
                           disabled={!canLike}
-                          aria-label={
-                            likedTasks[task.id] ? t('likedTask') : t('likeTask')
-                          }
+                          aria-label={likedTasks[task.id] ? t('likedTask') : t('likeTask')}
                           className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full border ${
                             likedTasks[task.id]
                               ? 'border-organic-orange text-organic-orange bg-orange-50'
@@ -751,7 +698,6 @@ export default function TasksPage() {
           userId={user?.id ?? null}
         />
       )}
-
     </main>
   );
 }
@@ -858,7 +804,7 @@ function NewTaskModal({
       const message =
         error instanceof Error
           ? error.message
-          : supabaseError?.message ?? t('toastTaskCreateFailed');
+          : (supabaseError?.message ?? t('toastTaskCreateFailed'));
       console.error('Error creating task:', error);
       toast.error(message);
     } finally {
