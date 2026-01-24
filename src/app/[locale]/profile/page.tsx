@@ -17,6 +17,7 @@ import {
   Twitter,
   MessageCircle,
   Calendar,
+  Info,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import bs58 from 'bs58';
@@ -46,6 +47,13 @@ export default function ProfilePage() {
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [walletMismatch, setWalletMismatch] = useState(false);
+  const [statsLoading, setStatsLoading] = useState(false);
+  const [stats, setStats] = useState({
+    totalSubmissions: 0,
+    approvedSubmissions: 0,
+    contributions: 0,
+    pointsEarned: 0,
+  });
 
   // Edit form states
   const [editForm, setEditForm] = useState({
@@ -77,6 +85,75 @@ export default function ProfilePage() {
       router.push('/login');
     }
   }, [user, loading, router]);
+
+  useEffect(() => {
+    if (!user) return;
+    let isActive = true;
+
+    const loadStats = async () => {
+      setStatsLoading(true);
+      try {
+        const supabase = createClient();
+        const [totalSubmissionsResponse, approvedSubmissionsResponse, votesResponse] =
+          await Promise.all([
+            supabase
+              .from('task_submissions')
+              .select('*', { count: 'exact', head: true })
+              .eq('user_id', user.id),
+            supabase
+              .from('task_submissions')
+              .select('earned_points', { count: 'exact' })
+              .eq('user_id', user.id)
+              .eq('review_status', 'approved'),
+            supabase
+              .from('votes')
+              .select('*', { count: 'exact', head: true })
+              .eq('voter_id', user.id),
+          ]);
+
+        if (totalSubmissionsResponse.error) {
+          console.error('Error loading total submission count:', totalSubmissionsResponse.error);
+        }
+
+        if (approvedSubmissionsResponse.error) {
+          console.error(
+            'Error loading approved submission count:',
+            approvedSubmissionsResponse.error
+          );
+        }
+
+        if (votesResponse.error) {
+          console.error('Error loading vote count:', votesResponse.error);
+        }
+
+        if (!isActive) return;
+        const totalSubmissions = totalSubmissionsResponse.count || 0;
+        const approvedSubmissions = approvedSubmissionsResponse.count || 0;
+        const votes = votesResponse.count || 0;
+        const pointsEarned = (approvedSubmissionsResponse.data || []).reduce(
+          (total, submission) => total + (submission.earned_points || 0),
+          0
+        );
+
+        setStats({
+          totalSubmissions,
+          approvedSubmissions,
+          contributions: totalSubmissions + votes,
+          pointsEarned,
+        });
+      } catch (error) {
+        console.error('Error loading profile stats:', error);
+      } finally {
+        if (isActive) setStatsLoading(false);
+      }
+    };
+
+    loadStats();
+
+    return () => {
+      isActive = false;
+    };
+  }, [user]);
 
   const fetchTokenBalance = useCallback(async (walletAddress: string, cacheKey: string) => {
     // Check client-side cache with TTL
@@ -372,9 +449,11 @@ export default function ProfilePage() {
     return null;
   }
 
+  const formatStat = (value: number) => value.toLocaleString();
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto py-8 px-4">
+      <div className="max-w-5xl mx-auto py-8 px-4">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
@@ -503,6 +582,77 @@ export default function ProfilePage() {
                   )}
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('statsTitle')}</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="relative rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+              <button
+                type="button"
+                className="absolute right-2 top-2 text-gray-400 hover:text-gray-600"
+                title={t('totalSubmissionsHelp')}
+                aria-label={t('totalSubmissionsHelp')}
+              >
+                <Info className="h-3.5 w-3.5" />
+              </button>
+              <p className="text-xs font-medium uppercase text-gray-500">
+                {t('totalSubmissionsLabel')}
+              </p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {statsLoading ? '—' : formatStat(stats.totalSubmissions)}
+              </p>
+            </div>
+            <div className="relative rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+              <button
+                type="button"
+                className="absolute right-2 top-2 text-gray-400 hover:text-gray-600"
+                title={t('approvedSubmissionsHelp')}
+                aria-label={t('approvedSubmissionsHelp')}
+              >
+                <Info className="h-3.5 w-3.5" />
+              </button>
+              <p className="text-xs font-medium uppercase text-gray-500">
+                {t('approvedSubmissionsLabel')}
+              </p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {statsLoading ? '—' : formatStat(stats.approvedSubmissions)}
+              </p>
+            </div>
+            <div className="relative rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+              <button
+                type="button"
+                className="absolute right-2 top-2 text-gray-400 hover:text-gray-600"
+                title={t('contributionsHelp')}
+                aria-label={t('contributionsHelp')}
+              >
+                <Info className="h-3.5 w-3.5" />
+              </button>
+              <p className="text-xs font-medium uppercase text-gray-500">
+                {t('contributionsLabel')}
+              </p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {statsLoading ? '—' : formatStat(stats.contributions)}
+              </p>
+            </div>
+            <div className="relative rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+              <button
+                type="button"
+                className="absolute right-2 top-2 text-gray-400 hover:text-gray-600"
+                title={t('pointsEarnedHelp')}
+                aria-label={t('pointsEarnedHelp')}
+              >
+                <Info className="h-3.5 w-3.5" />
+              </button>
+              <p className="text-xs font-medium uppercase text-gray-500">
+                {t('pointsEarnedLabel')}
+              </p>
+              <p className="text-2xl font-semibold text-organic-orange">
+                {statsLoading ? '—' : formatStat(stats.pointsEarned)}
+              </p>
             </div>
           </div>
         </div>
