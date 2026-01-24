@@ -2,6 +2,13 @@
 
 Add newest entries at the top.
 
+## 2026-01-24 (Leaderboard Recovery + Migration)
+
+- Diagnosed missing leaderboard data to a missing `leaderboard_view` in Supabase
+- Added API fallback ranking and ordering by `total_points`
+- Created a migration to recreate `leaderboard_view` with rank fields and grants
+- Reviewed local changes and surfaced build/runtime risks
+
 ## 2026-01-25 (Sprint Planning + Burndown)
 
 - Added sprint capacity column + types and API support
