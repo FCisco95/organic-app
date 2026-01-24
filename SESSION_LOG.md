@@ -2,6 +2,16 @@
 
 Add newest entries at the top.
 
+## 2026-01-24 (Sprint Type Consolidation)
+
+- Added sprint-specific types to `src/features/tasks/types.ts`:
+  - `SprintFormData` (for create/edit forms)
+  - `SprintStats` (for sprint statistics)
+  - `SprintTask` (task with assignee for sprint detail view)
+- Updated `src/app/[locale]/sprints/page.tsx` to import from `@/features/tasks`
+- Updated `src/app/[locale]/sprints/[id]/page.tsx` to import from `@/features/tasks`
+- Removed ~60 lines of duplicate type definitions from sprint pages
+
 ## 2026-01-24 (Workspace Audit + Type Consolidation)
 
 ### Repository Health Check

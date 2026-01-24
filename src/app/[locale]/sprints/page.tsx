@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/features/auth/context';
+import { Sprint, SprintFormData, SprintStats } from '@/features/tasks';
 
 import { Calendar, Clock, CheckCircle2, Plus, Target, X, AlertCircle } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
@@ -10,31 +11,6 @@ import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
 import { TaskBoard, TaskBoardTask, TaskStatus } from '@/components/tasks/task-board';
 import { useSearchParams } from 'next/navigation';
-
-type Sprint = {
-  id: string;
-  name: string;
-  start_at: string;
-  end_at: string;
-  status: 'planning' | 'active' | 'completed';
-  created_at: string;
-};
-
-type CreateSprintForm = {
-  name: string;
-  start_at: string;
-  end_at: string;
-  status: 'planning' | 'active' | 'completed';
-};
-
-type SprintStats = {
-  [sprintId: string]: {
-    total: number;
-    completed: number;
-    inProgress: number;
-    points: number;
-  };
-};
 
 export default function SprintsPage() {
   const { user, profile } = useAuth();
@@ -56,7 +32,7 @@ export default function SprintsPage() {
   const [commentCounts, setCommentCounts] = useState<Record<string, number>>({});
   const [submissionCounts, setSubmissionCounts] = useState<Record<string, number>>({});
   const [contributorCounts, setContributorCounts] = useState<Record<string, number>>({});
-  const [formData, setFormData] = useState<CreateSprintForm>({
+  const [formData, setFormData] = useState<SprintFormData>({
     name: '',
     start_at: '',
     end_at: '',

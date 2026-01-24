@@ -29,6 +29,45 @@ export type { TaskType, TaskStatus, TaskPriority, ReviewStatus, SprintStatus };
 // UI-specific types
 export type TaskTab = 'all' | 'backlog' | 'activeSprint' | 'completed';
 
+// Sprint form data (for create/edit modals)
+export interface SprintFormData {
+  name: string;
+  start_at: string;
+  end_at: string;
+  status: SprintStatus;
+}
+
+// Sprint statistics (keyed by sprint ID)
+export interface SprintStats {
+  [sprintId: string]: {
+    total: number;
+    completed: number;
+    inProgress: number;
+    points: number;
+  };
+}
+
+// Task with assignee for sprint detail view
+export interface SprintTask {
+  id: string;
+  title: string;
+  description: string | null;
+  status: 'todo' | 'in_progress' | 'done';
+  priority: 'low' | 'medium' | 'high';
+  points: number;
+  sprint_id: string | null;
+  assignee_id: string | null;
+  created_by: string;
+  created_at: string;
+  assignee?: {
+    id: string;
+    name: string | null;
+    email: string;
+    organic_id: number | null;
+    avatar_url: string | null;
+  };
+}
+
 // Assignee type (user eligible for task assignment)
 export interface Assignee {
   id: string;

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { Link, useRouter } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
+import { Sprint, SprintFormData, SprintTask } from '@/features/tasks';
 
 import {
   Calendar,
@@ -22,42 +23,6 @@ import {
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
-type Sprint = {
-  id: string;
-  name: string;
-  start_at: string;
-  end_at: string;
-  status: 'planning' | 'active' | 'completed';
-  created_at: string;
-};
-
-type EditFormData = {
-  name: string;
-  start_at: string;
-  end_at: string;
-  status: 'planning' | 'active' | 'completed';
-};
-
-type Task = {
-  id: string;
-  title: string;
-  description: string | null;
-  status: 'todo' | 'in_progress' | 'done';
-  priority: 'low' | 'medium' | 'high';
-  points: number;
-  sprint_id: string | null;
-  assignee_id: string | null;
-  created_by: string;
-  created_at: string;
-  assignee?: {
-    id: string;
-    name: string | null;
-    email: string;
-    organic_id: number | null;
-    avatar_url: string | null;
-  };
-};
-
 export default function SprintDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -65,7 +30,7 @@ export default function SprintDetailPage() {
   const t = useTranslations('SprintDetail');
   const sprintId = typeof params.id === 'string' ? params.id : params.id?.[0];
   const [sprint, setSprint] = useState<Sprint | null>(null);
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<SprintTask[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Edit/Delete state
@@ -73,7 +38,7 @@ export default function SprintDetailPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [editForm, setEditForm] = useState<EditFormData>({
+  const [editForm, setEditForm] = useState<SprintFormData>({
     name: '',
     start_at: '',
     end_at: '',
@@ -260,7 +225,7 @@ export default function SprintDetailPage() {
     return `${days} days`;
   };
 
-  const getDisplayName = (assignee: Task['assignee']) => {
+  const getDisplayName = (assignee: SprintTask['assignee']) => {
     if (!assignee) return t('unassigned');
     if (assignee.name) return assignee.name;
     if (assignee.organic_id) return t('organicId', { id: assignee.organic_id });
@@ -546,7 +511,7 @@ export default function SprintDetailPage() {
                 <select
                   value={editForm.status}
                   onChange={(e) =>
-                    setEditForm({ ...editForm, status: e.target.value as EditFormData['status'] })
+                    setEditForm({ ...editForm, status: e.target.value as SprintFormData['status'] })
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange transition-colors"
                 >
