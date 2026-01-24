@@ -41,24 +41,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .maybeSingle();
 
         if (error) {
-          console.error('Error fetching profile:', error);
           throw error;
         }
 
         if (data) {
-          console.log('Profile fetched:', {
-            id: data.id,
-            email: data.email,
-            wallet_pubkey: data.wallet_pubkey,
-            organic_id: data.organic_id,
-          });
           setProfile(data);
         } else {
-          console.warn('No profile found for user:', userId);
           setProfile(null);
         }
-      } catch (error) {
-        console.error('Error fetching profile:', error);
+      } catch {
         setProfile(null);
       }
     },

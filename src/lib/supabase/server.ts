@@ -1,4 +1,5 @@
 import { createServerClient } from '@supabase/ssr';
+import type { CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { Database } from '@/types/database';
 
@@ -11,30 +12,20 @@ export async function createClient() {
     {
       cookies: {
         getAll() {
-          const allCookies = cookieStore.getAll();
-          console.log(
-            '[Server Client] Getting cookies:',
-            allCookies.map((c) => c.name)
-          );
-          return allCookies;
+          return cookieStore.getAll();
         },
-        setAll(cookiesToSet: { name: string; value: string; options: any }[]) {
+        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
           try {
             cookiesToSet.forEach(({ name, value, options }) => {
-              console.log('[Server Client] Setting cookie:', name);
               cookieStore.set(name, value, options);
             });
-          } catch (error) {
+          } catch {
             // The `setAll` method was called from a Server Component.
             // This can be ignored if you have middleware refreshing
             // user sessions.
-            console.log(
-              '[Server Client] Cookie setting failed (expected in Server Components):',
-              error
-            );
           }
         },
-      } as any,
+      },
     }
   );
 }

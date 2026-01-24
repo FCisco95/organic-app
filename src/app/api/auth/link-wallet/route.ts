@@ -33,7 +33,6 @@ export async function POST(request: Request) {
       .maybeSingle();
 
     if (nonceError) {
-      console.error('Error checking nonce:', nonceError);
       return NextResponse.json({ error: 'Failed to validate nonce' }, { status: 500 });
     }
 
@@ -66,10 +65,7 @@ export async function POST(request: Request) {
       .update({ used_at: new Date().toISOString() })
       .eq('id', nonceRecord.id);
 
-    if (updateNonceError) {
-      console.error('Error marking nonce as used:', updateNonceError);
-      // Continue anyway - the nonce validation was successful
-    }
+    // Continue even if marking nonce fails - validation was successful
 
     // Get auth token from header
     const authHeader = request.headers.get('authorization');
@@ -87,7 +83,6 @@ export async function POST(request: Request) {
     } = await supabase.auth.getUser(token);
 
     if (authError || !user) {
-      console.error('Auth error:', authError);
       return NextResponse.json(
         { error: 'Not authenticated. Please sign in again.' },
         { status: 401 }
@@ -99,7 +94,7 @@ export async function POST(request: Request) {
       .from('user_profiles')
       .select('id')
       .eq('wallet_pubkey', walletAddress)
-      .neq('id', user.id as any)
+      .neq('id', user.id)
       .maybeSingle();
 
     if (existingProfile) {
@@ -112,17 +107,15 @@ export async function POST(request: Request) {
     // Link wallet to user profile
     const { error: updateError } = await supabase
       .from('user_profiles')
-      .update({ wallet_pubkey: walletAddress } as any)
-      .eq('id', user.id as any);
+      .update({ wallet_pubkey: walletAddress })
+      .eq('id', user.id);
 
     if (updateError) {
-      console.error('Error updating profile:', updateError);
       return NextResponse.json({ error: 'Failed to link wallet' }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, walletAddress });
-  } catch (error: any) {
-    console.error('Error in link-wallet:', error);
-    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

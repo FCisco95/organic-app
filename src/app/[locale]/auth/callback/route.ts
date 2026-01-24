@@ -14,20 +14,12 @@ export async function GET(request: Request) {
   if (code) {
     try {
       const supabase = await createClient();
-      const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+      const { error } = await supabase.auth.exchangeCodeForSession(code);
 
       if (error) {
-        console.error('[Auth Callback] Error exchanging code for session:', error);
         return NextResponse.redirect(new URL(`${basePath}/auth/error`, requestUrl.origin));
       }
-
-      console.log('[Auth Callback] Session exchanged successfully:', {
-        hasUser: !!data.user,
-        userId: data.user?.id,
-        hasSession: !!data.session,
-      });
-    } catch (error) {
-      console.error('[Auth Callback] Exception during session exchange:', error);
+    } catch {
       return NextResponse.redirect(new URL(`${basePath}/auth/error`, requestUrl.origin));
     }
   }
