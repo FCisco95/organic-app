@@ -2,6 +2,14 @@
 
 Add newest entries at the top.
 
+## 2026-01-25 (Sprint Planning + Burndown)
+
+- Added sprint capacity column + types and API support
+- Added sprint planning dropdown with active/upcoming/past sections and capacity summaries
+- Added burndown chart on sprint detail with points-based remaining work
+- Set task completed_at when moving tasks to done across UI and APIs
+- Updated sprint-related copy across en, pt-PT, zh-CN
+
 ## 2026-01-24 (Voting + Profile Stats + E2E)
 
 - Added voting system migration, API routes, feature/types, and UI components
