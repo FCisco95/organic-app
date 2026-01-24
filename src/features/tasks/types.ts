@@ -35,6 +35,7 @@ export interface SprintFormData {
   start_at: string;
   end_at: string;
   status: SprintStatus;
+  capacity_points: string;
 }
 
 // Sprint statistics (keyed by sprint ID)
@@ -44,6 +45,7 @@ export interface SprintStats {
     completed: number;
     inProgress: number;
     points: number;
+    totalPoints: number;
   };
 }
 
@@ -54,11 +56,13 @@ export interface SprintTask {
   description: string | null;
   status: 'todo' | 'in_progress' | 'done';
   priority: 'low' | 'medium' | 'high';
-  points: number;
+  points: number | null;
   sprint_id: string | null;
   assignee_id: string | null;
   created_by: string;
   created_at: string;
+  updated_at: string;
+  completed_at: string | null;
   assignee?: {
     id: string;
     name: string | null;

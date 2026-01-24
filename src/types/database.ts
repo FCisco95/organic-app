@@ -390,6 +390,7 @@ export interface Database {
           start_at: string;
           end_at: string;
           status: SprintStatus;
+          capacity_points: number | null;
           created_at: string;
           updated_at: string;
         };
@@ -400,6 +401,7 @@ export interface Database {
           start_at: string;
           end_at: string;
           status?: SprintStatus;
+          capacity_points?: number | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -410,6 +412,7 @@ export interface Database {
           start_at?: string;
           end_at?: string;
           status?: SprintStatus;
+          capacity_points?: number | null;
           created_at?: string;
           updated_at?: string;
         };
