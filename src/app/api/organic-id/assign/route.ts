@@ -27,7 +27,6 @@ export async function POST(request: Request) {
     } = await supabase.auth.getUser(token);
 
     if (authError || !user) {
-      console.error('Auth error:', authError);
       return NextResponse.json(
         { error: 'Not authenticated. Please sign in again.' },
         { status: 401 }
@@ -38,7 +37,7 @@ export async function POST(request: Request) {
     const { data: profileData, error: profileError } = await supabase
       .from('user_profiles')
       .select('*')
-      .eq('id', user.id as any)
+      .eq('id', user.id)
       .maybeSingle();
 
     if (profileError || !profileData) {
@@ -78,7 +77,6 @@ export async function POST(request: Request) {
       await serviceSupabase.rpc('get_next_organic_id');
 
     if (nextIdError) {
-      console.error('Error getting next Organic ID:', nextIdError);
       return NextResponse.json({ error: 'Failed to generate Organic ID' }, { status: 500 });
     }
 
@@ -90,11 +88,10 @@ export async function POST(request: Request) {
       .update({
         organic_id: organicId,
         role: 'member',
-      } as any)
-      .eq('id', user.id as any);
+      })
+      .eq('id', user.id);
 
     if (updateError) {
-      console.error('Error updating profile with Organic ID:', updateError);
       return NextResponse.json({ error: 'Failed to assign Organic ID' }, { status: 500 });
     }
 
@@ -103,8 +100,7 @@ export async function POST(request: Request) {
       organicId,
       message: `Organic ID #${organicId} assigned successfully!`,
     });
-  } catch (error: any) {
-    console.error('Error in assign Organic ID:', error);
-    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

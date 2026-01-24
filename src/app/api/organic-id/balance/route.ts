@@ -23,12 +23,10 @@ export async function POST(request: Request) {
     // Check cache first
     const cached = balanceCache.get(cacheKey);
     if (cached && now - cached.ts < CACHE_TTL_MS) {
-      console.log(`[Balance API] Cache HIT for ${cacheKey.slice(0, 8)}...`);
       return NextResponse.json({ balance: cached.balance, cached: true });
     }
 
     // Cache miss or expired - fetch from Solana RPC
-    console.log(`[Balance API] Cache MISS for ${cacheKey.slice(0, 8)}... calling RPC`);
     const balance = await getTokenBalance(walletAddress);
 
     // Store in cache
@@ -45,11 +43,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ balance, cached: false });
-  } catch (error: any) {
-    console.error('Error checking balance:', error);
-    return NextResponse.json(
-      { error: error.message || 'Failed to check balance' },
-      { status: 500 }
-    );
+  } catch {
+    return NextResponse.json({ error: 'Failed to check balance' }, { status: 500 });
   }
 }
