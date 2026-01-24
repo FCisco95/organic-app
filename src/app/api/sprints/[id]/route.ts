@@ -96,13 +96,14 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     }
 
     const body = await request.json();
-    const { name, start_at, end_at, status } = body;
+    const { name, start_at, end_at, status, capacity_points } = body;
 
     const updates: any = {};
     if (name !== undefined) updates.name = name;
     if (start_at !== undefined) updates.start_at = start_at;
     if (end_at !== undefined) updates.end_at = end_at;
     if (status !== undefined) updates.status = status;
+    if (capacity_points !== undefined) updates.capacity_points = capacity_points;
 
     const { data: sprint, error } = await supabase
       .from('sprints')
