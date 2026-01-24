@@ -85,7 +85,7 @@ export function canClaimTask(
   }
 
   // Task must be in a claimable status
-  if (!CLAIMABLE_STATUSES.includes(task.status)) {
+  if (!task.status || !CLAIMABLE_STATUSES.includes(task.status)) {
     return { canClaim: false, reason: 'This task is not available for claiming' };
   }
 
@@ -99,7 +99,7 @@ export function canClaimTask(
 
   // For team tasks, check assignee count
   const currentAssignees = task.assignees?.length ?? 0;
-  if (currentAssignees >= task.max_assignees) {
+  if (currentAssignees >= (task.max_assignees ?? 1)) {
     return { canClaim: false, reason: 'This task has reached maximum assignees' };
   }
 
@@ -186,7 +186,7 @@ export function getTaskProgress(task: TaskWithRelations): number {
     return task.status === 'done' ? 100 : 0;
   }
 
-  const totalAssignees = task.max_assignees;
+  const totalAssignees = task.max_assignees ?? 1;
   const completedSubmissions =
     task.submissions?.filter((s) => s.review_status === 'approved').length ?? 0;
 
@@ -208,7 +208,8 @@ export function groupTasksByStatus(
   };
 
   for (const task of tasks) {
-    grouped[task.status].push(task);
+    const status = task.status ?? 'backlog';
+    grouped[status].push(task);
   }
 
   return grouped;
@@ -225,7 +226,9 @@ export function sortTasksByPriority(tasks: TaskWithRelations[]): TaskWithRelatio
     low: 3,
   };
 
-  return [...tasks].sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+  return [...tasks].sort(
+    (a, b) => priorityOrder[a.priority ?? 'medium'] - priorityOrder[b.priority ?? 'medium']
+  );
 }
 
 /**

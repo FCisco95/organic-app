@@ -217,10 +217,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
       );
     }
 
-    const { error } = await supabase
-      .from('tasks')
-      .delete()
-      .eq('id', id);
+    const { error } = await supabase.from('tasks').delete().eq('id', id);
 
     if (error) {
       return NextResponse.json({ error: 'Failed to delete task' }, { status: 500 });

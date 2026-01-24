@@ -39,7 +39,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     }
 
     // Check if task is claimable
-    if (!['backlog', 'todo'].includes(task.status)) {
+    if (!task.status || !['backlog', 'todo'].includes(task.status)) {
       return NextResponse.json(
         { error: 'This task is not available for claiming' },
         { status: 400 }
@@ -53,7 +53,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         .select('*', { count: 'exact', head: true })
         .eq('task_id', taskId);
 
-      if ((count || 0) >= task.max_assignees) {
+      if ((count || 0) >= (task.max_assignees ?? 1)) {
         return NextResponse.json(
           { error: 'This task has reached maximum assignees' },
           { status: 400 }
@@ -143,7 +143,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     }
 
     // Don't allow unclaiming tasks that are already in review or done
-    if (['review', 'done'].includes(task.status)) {
+    if (task.status && ['review', 'done'].includes(task.status)) {
       return NextResponse.json(
         { error: 'Cannot unclaim a task in review or already completed' },
         { status: 400 }
@@ -170,7 +170,10 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
 
       // If no assignees left, set status back to todo
       if (count === 0) {
-        await supabase.from('tasks').update({ status: 'todo', completed_at: null }).eq('id', taskId);
+        await supabase
+          .from('tasks')
+          .update({ status: 'todo', completed_at: null })
+          .eq('id', taskId);
       }
     } else {
       // Solo task: clear assignee

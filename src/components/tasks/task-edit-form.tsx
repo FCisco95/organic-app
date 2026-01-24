@@ -84,7 +84,7 @@ export function TaskEditForm({
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">{t('labelStatus')}</label>
           <select
-            value={editForm.status}
+            value={editForm.status ?? 'backlog'}
             onChange={(e) => {
               const nextStatus = e.target.value as Task['status'];
               onChange({
@@ -108,7 +108,7 @@ export function TaskEditForm({
             {t('labelPriority')}
           </label>
           <select
-            value={editForm.priority}
+            value={editForm.priority ?? 'medium'}
             onChange={(e) =>
               onChange({ ...editForm, priority: e.target.value as Task['priority'] })
             }
@@ -129,9 +129,7 @@ export function TaskEditForm({
             type="number"
             min="0"
             value={editForm.points}
-            onChange={(e) =>
-              onChange({ ...editForm, points: parseInt(e.target.value, 10) || 0 })
-            }
+            onChange={(e) => onChange({ ...editForm, points: parseInt(e.target.value, 10) || 0 })}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange"
           />
         </div>

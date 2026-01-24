@@ -63,19 +63,21 @@ export function TaskDetailSummary({
             {t('favoritesCount', { count: likeCount })}
           </span>
         </div>
-        {task.description && <p className="text-gray-600 whitespace-pre-wrap">{task.description}</p>}
+        {task.description && (
+          <p className="text-gray-600 whitespace-pre-wrap">{task.description}</p>
+        )}
       </div>
 
       <div className="flex flex-wrap gap-2">
         <span
-          className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusBadge(task.status)}`}
+          className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusBadge(task.status ?? 'backlog')}`}
         >
-          {t(`status.${task.status}`)}
+          {t(`status.${task.status ?? 'backlog'}`)}
         </span>
         <span
-          className={`px-3 py-1 rounded-full text-sm font-medium ${getPriorityBadge(task.priority)}`}
+          className={`px-3 py-1 rounded-full text-sm font-medium ${getPriorityBadge(task.priority ?? 'medium')}`}
         >
-          {t('priorityLabel', { priority: t(`priority.${task.priority}`) })}
+          {t('priorityLabel', { priority: t(`priority.${task.priority ?? 'medium'}`) })}
         </span>
         <span className="px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-700">
           {t('pointsLabel', { points: task.points ?? 0 })}
@@ -95,7 +97,7 @@ export function TaskDetailSummary({
           {likeCount}
         </button>
         <span className="px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700">
-          {TASK_TYPE_LABELS[task.task_type]}
+          {TASK_TYPE_LABELS[task.task_type ?? 'custom']}
         </span>
         {task.is_team_task && (
           <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-700">
@@ -204,7 +206,7 @@ export function TaskDetailSummary({
           <p className="text-sm text-gray-600 mb-1">{t('created')}</p>
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4 text-gray-400" />
-            <span className="text-sm">{formatDate(task.created_at)}</span>
+            <span className="text-sm">{task.created_at ? formatDate(task.created_at) : '-'}</span>
           </div>
         </div>
       </div>

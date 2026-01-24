@@ -116,7 +116,7 @@ export function TeamClaimStatus({ task, className }: TeamClaimStatusProps) {
   if (!task.is_team_task) return null;
 
   const currentAssignees = task.assignees?.length ?? 0;
-  const maxAssignees = task.max_assignees;
+  const maxAssignees = task.max_assignees ?? 1;
   const percentage = (currentAssignees / maxAssignees) * 100;
 
   return (

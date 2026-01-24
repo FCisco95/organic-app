@@ -242,7 +242,6 @@ export default function TaskDetailPage() {
         .select('id, name, email, organic_id, avatar_url')
         .in('id', userIds);
 
-
       const profileMap = new Map(
         (profiles ?? []).map((profileItem) => [profileItem.id, profileItem])
       );

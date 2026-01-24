@@ -354,10 +354,12 @@ export default function TasksPage() {
   };
 
   const getTabTasks = (tab: TaskTab) => {
-    const filteredByStatus = tasks.filter((task) => tabStatusMap[tab].includes(task.status));
+    const filteredByStatus = tasks.filter(
+      (task) => task.status && tabStatusMap[tab].includes(task.status)
+    );
     const visibleByRole = isOrgMember
       ? filteredByStatus
-      : filteredByStatus.filter((task) => isVisibleToNonOrg(task.status));
+      : filteredByStatus.filter((task) => task.status && isVisibleToNonOrg(task.status));
 
     return applyFilters(visibleByRole, tab);
   };

@@ -1,13 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import {
-  AlertCircle,
-  CheckCircle,
-  Clock,
-  ExternalLink,
-  XCircle,
-} from 'lucide-react';
+import { AlertCircle, CheckCircle, Clock, ExternalLink, XCircle } from 'lucide-react';
 import type { TaskSubmissionWithReviewer } from '@/features/tasks';
 
 type TaskSubmissionsSectionProps = {
@@ -65,15 +59,15 @@ function SubmissionCard({
     disputed: 'bg-purple-50 border-purple-200',
   };
 
+  const reviewStatus = submission.review_status ?? 'pending';
+
   return (
-    <div className={`rounded-lg border p-4 ${statusColors[submission.review_status]}`}>
+    <div className={`rounded-lg border p-4 ${statusColors[reviewStatus]}`}>
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
-            {statusIcon[submission.review_status]}
-            <span className="font-medium text-gray-900">
-              {t(`reviewStatus.${submission.review_status}`)}
-            </span>
+            {statusIcon[reviewStatus]}
+            <span className="font-medium text-gray-900">{t(`reviewStatus.${reviewStatus}`)}</span>
             {submission.quality_score && (
               <span className="text-sm text-gray-500">
                 ({t('qualityScore')}: {submission.quality_score}/5)
@@ -82,8 +76,9 @@ function SubmissionCard({
           </div>
 
           <div className="text-sm text-gray-600 mb-2">
-            {t('submittedBy')} <span className="font-medium">{getDisplayName(submission.user)}</span>{' '}
-            {t('on')} {new Date(submission.submitted_at).toLocaleDateString()}
+            {t('submittedBy')}{' '}
+            <span className="font-medium">{getDisplayName(submission.user)}</span> {t('on')}{' '}
+            {submission.submitted_at ? new Date(submission.submitted_at).toLocaleDateString() : '-'}
           </div>
 
           {submission.description && (

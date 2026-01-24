@@ -124,7 +124,7 @@ export function useTask(taskId: string) {
       if (error) throw error;
 
       const task = data as unknown as TaskWithRelations;
-      const assignees = task.is_team_task ? task.assignees ?? [] : [];
+      const assignees = task.is_team_task ? (task.assignees ?? []) : [];
 
       return {
         ...task,

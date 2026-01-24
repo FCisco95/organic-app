@@ -102,9 +102,7 @@ export function TaskListSection({
                       )}
                     </div>
                     {task.description && (
-                      <p className="text-sm text-gray-600 line-clamp-2 mb-2">
-                        {task.description}
-                      </p>
+                      <p className="text-sm text-gray-600 line-clamp-2 mb-2">{task.description}</p>
                     )}
                     <div className="flex items-center flex-wrap gap-4 text-xs text-gray-500">
                       {task.assignee && (

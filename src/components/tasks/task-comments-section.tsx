@@ -80,9 +80,7 @@ export function TaskCommentsSection({
                     <span className="font-medium text-gray-900">
                       {getDisplayName(comment.user)}
                     </span>
-                    <span className="text-xs text-gray-500">
-                      {formatDate(comment.created_at)}
-                    </span>
+                    <span className="text-xs text-gray-500">{formatDate(comment.created_at)}</span>
                   </div>
                   <p className="text-gray-700 whitespace-pre-wrap">{comment.content}</p>
                 </div>

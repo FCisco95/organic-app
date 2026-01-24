@@ -173,7 +173,7 @@ function SubmissionReviewCard({
               </p>
               <p className="text-xs text-gray-500 flex items-center gap-1">
                 <Clock className="w-3 h-3" />
-                {new Date(submission.submitted_at).toLocaleString()}
+                {submission.submitted_at ? new Date(submission.submitted_at).toLocaleString() : '-'}
               </p>
             </div>
           </div>
@@ -302,11 +302,14 @@ function SubmissionHistoryCard({ submission }: { submission: TaskSubmissionWithR
                     : submission.user?.email)}
               </p>
               <p className="text-xs text-gray-500">
-                Submitted {new Date(submission.submitted_at).toLocaleDateString()}
+                Submitted{' '}
+                {submission.submitted_at
+                  ? new Date(submission.submitted_at).toLocaleDateString()
+                  : '-'}
               </p>
             </div>
           </div>
-          <ReviewStatusBadge status={submission.review_status} />
+          <ReviewStatusBadge status={submission.review_status ?? 'pending'} />
         </div>
       </div>
 
