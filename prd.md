@@ -16,8 +16,7 @@
 
 Current issues with the Organic platform:
 
-- **Low engagement**: Members aren't participating actively
-- **Unclear rewards**: Points don't translate to tangible value
+
 - **UX friction**: App hasn't launched, needs polish and completeness
 - **Missing features**: Task flow, voting, sprint management incomplete
 - **No differentiation**: Nothing that makes the community stand out long-term
