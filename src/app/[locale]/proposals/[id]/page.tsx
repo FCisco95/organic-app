@@ -24,6 +24,7 @@ import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
 import { ProposalWithVoting, getVotingStatus } from '@/features/voting';
 import { VotingPanel, VoteResults, AdminVotingControls } from '@/components/voting';
+import { PageContainer } from '@/components/layout';
 
 type Proposal = ProposalWithVoting;
 
@@ -294,31 +295,27 @@ export default function ProposalDetailPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-gray-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
-            <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
-            <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-          </div>
+      <PageContainer width="narrow">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
+          <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+          <div className="h-4 bg-gray-200 rounded w-5/6"></div>
         </div>
-      </main>
+      </PageContainer>
     );
   }
 
   if (!proposal) {
     return (
-      <main className="min-h-screen bg-gray-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('notFoundTitle')}</h1>
-          <Link
-            href="/proposals"
-            className="inline-block bg-organic-orange hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-          >
-            {t('backToProposals')}
-          </Link>
-        </div>
-      </main>
+      <PageContainer width="narrow" className="text-center py-10">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('notFoundTitle')}</h1>
+        <Link
+          href="/proposals"
+          className="inline-block bg-organic-orange hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+        >
+          {t('backToProposals')}
+        </Link>
+      </PageContainer>
     );
   }
 
@@ -326,8 +323,7 @@ export default function ProposalDetailPage() {
   const StatusIcon = statusConfig.icon;
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <PageContainer width="narrow">
         {/* Back Link */}
         <Link
           href="/proposals"
@@ -570,7 +566,6 @@ export default function ProposalDetailPage() {
             )}
           </div>
         </div>
-      </div>
 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
@@ -598,6 +593,6 @@ export default function ProposalDetailPage() {
           </div>
         </div>
       )}
-    </main>
+    </PageContainer>
   );
 }

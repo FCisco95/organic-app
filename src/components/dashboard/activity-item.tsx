@@ -2,21 +2,24 @@
 
 import { ActivityEvent, ActivityEventType } from '@/features/activity';
 import { useTranslations } from 'next-intl';
+import { cn } from '@/lib/utils';
 
-const EVENT_ICONS: Record<ActivityEventType, string> = {
-  task_created: '📋',
-  task_status_changed: '🔄',
-  task_completed: '✅',
-  task_deleted: '🗑️',
-  submission_created: '📤',
-  submission_reviewed: '📝',
-  comment_created: '💬',
-  comment_deleted: '🗑️',
-  proposal_created: '📝',
-  proposal_status_changed: '🔄',
-  proposal_deleted: '🗑️',
-  vote_cast: '🗳️',
+const EVENT_CONFIG: Record<ActivityEventType, { icon: string; tint: string }> = {
+  task_created: { icon: '📋', tint: 'bg-blue-50 ring-blue-100/60' },
+  task_status_changed: { icon: '🔄', tint: 'bg-amber-50 ring-amber-100/60' },
+  task_completed: { icon: '✅', tint: 'bg-green-50 ring-green-100/60' },
+  task_deleted: { icon: '🗑️', tint: 'bg-red-50 ring-red-100/60' },
+  submission_created: { icon: '📤', tint: 'bg-violet-50 ring-violet-100/60' },
+  submission_reviewed: { icon: '📝', tint: 'bg-indigo-50 ring-indigo-100/60' },
+  comment_created: { icon: '💬', tint: 'bg-sky-50 ring-sky-100/60' },
+  comment_deleted: { icon: '🗑️', tint: 'bg-red-50 ring-red-100/60' },
+  proposal_created: { icon: '📝', tint: 'bg-orange-50 ring-orange-100/60' },
+  proposal_status_changed: { icon: '🔄', tint: 'bg-amber-50 ring-amber-100/60' },
+  proposal_deleted: { icon: '🗑️', tint: 'bg-red-50 ring-red-100/60' },
+  vote_cast: { icon: '🗳️', tint: 'bg-emerald-50 ring-emerald-100/60' },
 };
+
+const FALLBACK = { icon: '📌', tint: 'bg-gray-50 ring-gray-100/60' };
 
 function formatTimeAgo(dateStr: string): string {
   const now = Date.now();
@@ -29,9 +32,15 @@ function formatTimeAgo(dateStr: string): string {
   return `${Math.floor(diffSec / 86400)}d`;
 }
 
-export function ActivityItem({ event }: { event: ActivityEvent }) {
+export function ActivityItem({
+  event,
+  isLast = false,
+}: {
+  event: ActivityEvent;
+  isLast?: boolean;
+}) {
   const t = useTranslations('dashboard.activity');
-  const icon = EVENT_ICONS[event.event_type] || '📌';
+  const config = EVENT_CONFIG[event.event_type] || FALLBACK;
   const actorName = event.actor?.organic_id
     ? `Organic #${event.actor.organic_id}`
     : event.actor?.name || 'Someone';
@@ -42,17 +51,28 @@ export function ActivityItem({ event }: { event: ActivityEvent }) {
   try {
     description = t(messageKey, { actor: actorName, title });
   } catch {
-    // Fallback if translation key missing
     description = `${actorName} — ${event.event_type.replace(/_/g, ' ')}${title ? `: ${title}` : ''}`;
   }
 
   return (
-    <div className="flex items-start gap-3 py-2.5 px-1">
-      <span className="text-base mt-0.5 flex-shrink-0">{icon}</span>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm text-gray-700 leading-snug truncate">{description}</p>
-      </div>
-      <span className="text-xs text-gray-400 flex-shrink-0 mt-0.5">
+    <div
+      className={cn(
+        'flex items-center gap-3 py-3',
+        !isLast && 'border-b border-gray-50'
+      )}
+    >
+      <span
+        className={cn(
+          'flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-sm ring-1',
+          config.tint
+        )}
+      >
+        {config.icon}
+      </span>
+      <p className="flex-1 min-w-0 text-[13px] text-gray-600 leading-snug truncate">
+        {description}
+      </p>
+      <span className="shrink-0 text-[11px] tabular-nums text-gray-300/80">
         {formatTimeAgo(event.created_at)}
       </span>
     </div>

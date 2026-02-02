@@ -18,6 +18,7 @@ import { useTranslations } from 'next-intl';
 import { TaskFiltersBar } from '@/components/tasks/task-filters-bar';
 import { TaskListSection } from '@/components/tasks/task-list-section';
 import { TaskNewModal } from '@/components/tasks/task-new-modal';
+import { PageContainer } from '@/components/layout';
 
 export default function TasksPage() {
   const { user, profile } = useAuth();
@@ -405,8 +406,7 @@ export default function TasksPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <PageContainer width="wide">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <div>
@@ -489,7 +489,6 @@ export default function TasksPage() {
           getActivityCounts={getActivityCounts}
           onToggleLike={handleToggleLike}
         />
-      </div>
 
       {/* Modals */}
       {showNewTaskModal && (
@@ -503,6 +502,6 @@ export default function TasksPage() {
           userId={user?.id ?? null}
         />
       )}
-    </main>
+    </PageContainer>
   );
 }

@@ -6,6 +6,7 @@ import { useAuth } from '@/features/auth/context';
 import { Trophy, Medal, Award, User, Star, TrendingUp } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
+import { PageContainer } from '@/components/layout';
 
 type LeaderboardEntry = {
   id: string;
@@ -81,8 +82,7 @@ export default function LeaderboardPage() {
   const currentUserRank = leaderboard.find((entry) => entry.id === user?.id);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto py-8 px-4">
+    <PageContainer width="narrow">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-organic-orange to-organic-yellow rounded-full mb-4">
@@ -227,7 +227,6 @@ export default function LeaderboardPage() {
             <li>{t('howPointsItem4')}</li>
           </ul>
         </div>
-      </div>
-    </div>
+    </PageContainer>
   );
 }

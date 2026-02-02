@@ -25,6 +25,7 @@ import { TaskCommentsSection } from '@/components/tasks/task-comments-section';
 import { TaskSubmissionsSection } from '@/components/tasks/task-submissions-section';
 import { TaskEditForm } from '@/components/tasks/task-edit-form';
 import { TaskDetailSummary } from '@/components/tasks/task-detail-summary';
+import { PageContainer } from '@/components/layout';
 
 // Local type alias for the task shape used in this page
 type Task = TaskWithRelations;
@@ -565,37 +566,32 @@ export default function TaskDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-5xl mx-auto py-8 px-4">
-          <div className="text-center py-12">
-            <div className="w-8 h-8 border-3 border-organic-orange border-t-transparent rounded-full animate-spin mx-auto"></div>
-            <p className="mt-4 text-gray-500">{t('loading')}</p>
-          </div>
+      <PageContainer>
+        <div className="text-center py-12">
+          <div className="w-8 h-8 border-3 border-organic-orange border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="mt-4 text-gray-500">{t('loading')}</p>
         </div>
-      </div>
+      </PageContainer>
     );
   }
 
   if (!task) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-5xl mx-auto py-8 px-4">
-          <div className="text-center py-12">
-            <AlertCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('notFoundTitle')}</h3>
-            <Link href="/tasks" className="text-organic-orange hover:text-orange-600">
-              <ArrowLeft className="w-4 h-4 inline mr-2" />
-              {t('backToTasks')}
-            </Link>
-          </div>
+      <PageContainer>
+        <div className="text-center py-12">
+          <AlertCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">{t('notFoundTitle')}</h3>
+          <Link href="/tasks" className="text-organic-orange hover:text-orange-600">
+            <ArrowLeft className="w-4 h-4 inline mr-2" />
+            {t('backToTasks')}
+          </Link>
         </div>
-      </div>
+      </PageContainer>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <PageContainer>
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <Link href="/tasks" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
@@ -731,7 +727,6 @@ export default function TaskDetailPage() {
           getDisplayName={getDisplayName}
           formatDate={formatDate}
         />
-      </div>
 
       <TaskContributorsModal
         open={showContributorsModal}
@@ -756,6 +751,6 @@ export default function TaskDetailPage() {
         onCancel={() => setShowDeleteConfirm(false)}
         onConfirm={handleDeleteTask}
       />
-    </div>
+    </PageContainer>
   );
 }

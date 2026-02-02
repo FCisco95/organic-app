@@ -9,6 +9,7 @@ import { Plus, MessageCircle, Calendar, User } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ProposalStatus } from '@/types/database';
 import { useTranslations } from 'next-intl';
+import { PageContainer } from '@/components/layout';
 
 type Proposal = {
   id: string;
@@ -124,8 +125,7 @@ export default function ProposalsPage() {
   const canCreateProposal = profile?.role && ['member', 'council', 'admin'].includes(profile.role);
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <PageContainer>
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
@@ -284,7 +284,6 @@ export default function ProposalsPage() {
             </Link>
           </div>
         )}
-      </div>
-    </main>
+    </PageContainer>
   );
 }

@@ -13,6 +13,7 @@ import { useSearchParams } from 'next/navigation';
 import { SprintCreateModal } from '@/components/sprints/sprint-create-modal';
 import { SprintBoardView } from '@/components/sprints/sprint-board-view';
 import { SprintListView } from '@/components/sprints/sprint-list-view';
+import { PageContainer } from '@/components/layout';
 
 export default function SprintsPage() {
   const { user, profile } = useAuth();
@@ -507,8 +508,7 @@ export default function SprintsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <PageContainer width="wide">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -615,7 +615,6 @@ export default function SprintsPage() {
             )}
           </>
         )}
-      </div>
 
       <SprintCreateModal
         open={showCreateModal}
@@ -626,6 +625,6 @@ export default function SprintsPage() {
         onClose={handleCloseModal}
         onSubmit={handleCreateSprint}
       />
-    </div>
+    </PageContainer>
   );
 }

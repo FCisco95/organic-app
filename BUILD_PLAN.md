@@ -46,6 +46,7 @@
 - [x] Organic ID badge display
 - [x] Role-based menu items
 - [x] Mobile responsive navigation
+- [x] App shell with collapsible sidebar + top bar
 - [x] Organic branding throughout
 
 ### Phase 5: Infrastructure (Completed)

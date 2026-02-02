@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
+import { PageContainer } from '@/components/layout';
 
 export default function SprintDetailPage() {
   const params = useParams();
@@ -143,21 +144,18 @@ export default function SprintDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto py-8 px-4">
-          <div className="text-center py-12">
-            <div className="w-8 h-8 border-3 border-organic-orange border-t-transparent rounded-full animate-spin mx-auto"></div>
-            <p className="mt-4 text-gray-500">{t('loading')}</p>
-          </div>
+      <PageContainer width="wide">
+        <div className="text-center py-12">
+          <div className="w-8 h-8 border-3 border-organic-orange border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="mt-4 text-gray-500">{t('loading')}</p>
         </div>
-      </div>
+      </PageContainer>
     );
   }
 
   if (!sprint) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto py-8 px-4">
+      <PageContainer width="wide">
           <div className="text-center py-12">
             <AlertCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">{t('notFoundTitle')}</h3>
@@ -170,8 +168,7 @@ export default function SprintDetailPage() {
               {t('backToSprints')}
             </Link>
           </div>
-        </div>
-      </div>
+      </PageContainer>
     );
   }
 
@@ -304,8 +301,7 @@ export default function SprintDetailPage() {
     values.map((value, index) => `${scaleX(index)},${scaleY(value)}`).join(' ');
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <PageContainer width="wide">
         {/* Back Button */}
         <Link
           href="/sprints"
@@ -582,7 +578,6 @@ export default function SprintDetailPage() {
             </div>
           )}
         </div>
-      </div>
 
       {/* Edit Sprint Modal */}
       {showEditModal && (
@@ -716,6 +711,6 @@ export default function SprintDetailPage() {
           </div>
         </div>
       )}
-    </div>
+    </PageContainer>
   );
 }

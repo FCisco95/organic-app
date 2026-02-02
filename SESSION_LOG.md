@@ -2,6 +2,17 @@
 
 Add newest entries at the top.
 
+## 2026-02-02 (Session: UI Improvements + Sidebar)
+
+- Added app shell with desktop sidebar, mobile sidebar sheet, and top bar for global navigation
+- Added sidebar state provider with persisted collapse state
+- Introduced `PageContainer` layout helper and applied consistent page widths across core routes
+- Refreshed home page hero, feature cards, and dashboard section layout
+- Restyled stats/activity dashboard components for the updated UI language
+- Updated global theme tokens (sidebar palette, accent, background) and Tailwind color mapping
+- Added shadcn/ui primitives (avatar, badge, dropdown-menu, sheet, scroll-area, tooltip, etc.)
+- Wired layout client to use the new app shell instead of legacy navigation
+
 ## 2026-01-24 (Session 1: Workspace Audit + Type Consolidation)
 
 - Repository health check: completed full workspace scan and audit

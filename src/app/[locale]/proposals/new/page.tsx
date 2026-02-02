@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase/client';
 import { ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
+import { PageContainer } from '@/components/layout';
 
 export default function NewProposalPage() {
   const router = useRouter();
@@ -61,40 +62,35 @@ export default function NewProposalPage() {
 
   if (!user) {
     return (
-      <main className="min-h-screen bg-gray-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('signInTitle')}</h1>
-          <Link
-            href="/login"
-            className="inline-block bg-organic-orange hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-          >
-            {t('signInCta')}
-          </Link>
-        </div>
-      </main>
+      <PageContainer width="narrow" className="text-center py-10">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('signInTitle')}</h1>
+        <Link
+          href="/login"
+          className="inline-block bg-organic-orange hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+        >
+          {t('signInCta')}
+        </Link>
+      </PageContainer>
     );
   }
 
   if (!canCreate) {
     return (
-      <main className="min-h-screen bg-gray-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('memberOnlyTitle')}</h1>
-          <p className="text-gray-600 mb-6">{t('memberOnlyDescription')}</p>
-          <Link
-            href="/profile"
-            className="inline-block bg-organic-orange hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-          >
-            {t('goToProfile')}
-          </Link>
-        </div>
-      </main>
+      <PageContainer width="narrow" className="text-center py-10">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('memberOnlyTitle')}</h1>
+        <p className="text-gray-600 mb-6">{t('memberOnlyDescription')}</p>
+        <Link
+          href="/profile"
+          className="inline-block bg-organic-orange hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+        >
+          {t('goToProfile')}
+        </Link>
+      </PageContainer>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <PageContainer width="narrow">
         {/* Header */}
         <div className="mb-8">
           <Link
@@ -193,7 +189,6 @@ export default function NewProposalPage() {
             <li>{t('nextStep4')}</li>
           </ul>
         </div>
-      </div>
-    </main>
+    </PageContainer>
   );
 }

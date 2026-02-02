@@ -23,6 +23,7 @@ import toast from 'react-hot-toast';
 import bs58 from 'bs58';
 import { formatDistanceToNow } from 'date-fns';
 import { useTranslations } from 'next-intl';
+import { PageContainer } from '@/components/layout';
 
 // Client-side balance cache TTL (15 seconds)
 const BALANCE_CACHE_TTL_MS = 15 * 1000;
@@ -453,8 +454,7 @@ export default function ProfilePage() {
   const formatStat = (value: number) => value.toLocaleString();
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-5xl mx-auto py-8 px-4">
+    <PageContainer>
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
@@ -945,7 +945,6 @@ export default function ProfilePage() {
             <p className="text-sm text-gray-600">{t('verifiedMemberDescription')}</p>
           </div>
         )}
-      </div>
-    </div>
+    </PageContainer>
   );
 }

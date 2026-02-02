@@ -125,6 +125,7 @@ UI
 
 - Shared UI (shadcn): src/components/ui/
 - Feature UI: src/components/{auth,dashboard,notifications,proposals,sprints,tasks,voting,wallet}/
+- App shell + navigation: src/components/layout/
 - Navigation: src/components/navigation.tsx
 - Locale switcher: src/components/locale-switcher.tsx
 - Language selector: src/components/language-selector.tsx
@@ -153,6 +154,23 @@ npm run dev
 npm run lint
 npm run build
 npm run format
+
+## UI Shell + Sidebar (added 2026-02-02)
+
+### What was built
+
+- App shell with desktop sidebar, mobile sheet navigation, and top bar
+- Sidebar collapse state persisted in localStorage
+- Page container helper for consistent page widths
+- Updated global theme tokens for sidebar palette + accent colors
+- Dashboard components restyled to match new layout
+
+### Key files
+
+- `src/components/layout/` — AppShell, Sidebar, MobileSidebar, TopBar, PageContainer, context
+- `src/components/layout-client.tsx` — uses AppShell instead of legacy Navigation
+- `src/app/[locale]/globals.css` — theme tokens incl. sidebar
+- `tailwind.config.ts` — sidebar color mappings
 
 ## Activity Dashboard & Live Feed (added 2026-02-01)
 

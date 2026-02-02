@@ -1,14 +1,13 @@
 'use client';
 
-import { Navigation } from './navigation';
+import { AppShell } from './layout';
 import { Toaster } from 'react-hot-toast';
 
 export function LayoutClient({ children }: { children: React.ReactNode }) {
   return (
-    <>
-      <Navigation />
+    <AppShell>
       {children}
       <Toaster position="bottom-right" />
-    </>
+    </AppShell>
   );
 }
