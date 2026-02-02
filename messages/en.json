@@ -725,6 +725,31 @@
       "cancel": "Cancel"
     }
   },
+  "dashboard": {
+    "stats": {
+      "totalUsers": "Total Users",
+      "orgHolders": "$ORG Holders",
+      "orgPrice": "$ORG Price",
+      "tasksCompleted": "Tasks Completed",
+      "activeProposals": "Active Proposals"
+    },
+    "activity": {
+      "title": "Recent Activity",
+      "task_created": "{actor} created task: {title}",
+      "task_completed": "{actor} completed task: {title}",
+      "task_deleted": "{actor} deleted task: {title}",
+      "task_status_changed": "{actor} updated task: {title}",
+      "submission_created": "{actor} submitted work on: {title}",
+      "submission_reviewed": "{actor} reviewed submission on: {title}",
+      "comment_created": "{actor} commented on: {title}",
+      "comment_deleted": "{actor} deleted a comment on: {title}",
+      "proposal_created": "{actor} created proposal: {title}",
+      "proposal_status_changed": "{actor} updated proposal: {title}",
+      "proposal_deleted": "{actor} deleted proposal: {title}",
+      "vote_cast": "{actor} voted on: {title}",
+      "empty": "No activity yet"
+    }
+  },
   "common": {
     "loading": "Loading...",
     "save": "Save",

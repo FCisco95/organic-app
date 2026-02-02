@@ -118,12 +118,13 @@ Domains
 - Proposals: src/features/proposals/
 - Voting: src/features/voting/
 - Sprints: src/features/sprints/
+- Activity: src/features/activity/
 - Notifications: src/features/notifications/
 
 UI
 
 - Shared UI (shadcn): src/components/ui/
-- Feature UI: src/components/{auth,notifications,proposals,sprints,tasks,voting,wallet}/
+- Feature UI: src/components/{auth,dashboard,notifications,proposals,sprints,tasks,voting,wallet}/
 - Navigation: src/components/navigation.tsx
 - Locale switcher: src/components/locale-switcher.tsx
 - Language selector: src/components/language-selector.tsx
@@ -153,6 +154,44 @@ npm run lint
 npm run build
 npm run format
 
+## Activity Dashboard & Live Feed (added 2026-02-01)
+
+### What was built
+
+Live activity dashboard on the homepage with DAO stats and a real-time activity feed visible to all visitors.
+
+**App code (done, lint+build pass):**
+
+- `src/features/activity/` — types, Zod schemas, React Query hooks with Supabase Realtime subscription
+- `src/app/api/stats/route.ts` — DAO stats (users, holders, tasks completed, active proposals, $ORG price via Jupiter). 60s server-side cache.
+- `src/app/api/activity/route.ts` — Activity feed with cursor pagination, joins actor profile info.
+- `src/components/dashboard/stats-bar.tsx` — Horizontal stat cards grid
+- `src/components/dashboard/activity-feed.tsx` — Scrollable feed with loading/empty states
+- `src/components/dashboard/activity-item.tsx` — Single feed entry with emoji icon, actor name, relative timestamp
+- `src/app/[locale]/page.tsx` — StatsBar + ActivityFeed added below feature cards
+- `messages/{en,pt-PT,zh-CN}.json` — `dashboard.stats.*` and `dashboard.activity.*` keys
+- `src/types/database.ts` — `activity_log` table + `activity_event_type` enum added manually (needs regen after migration)
+
+**Migration (needs to be applied to Supabase):**
+
+- `supabase/migrations/20260201000000_create_activity_log.sql`
+
+### What to do next
+
+1. **Apply the migration** — Run the SQL in `supabase/migrations/20260201000000_create_activity_log.sql` against the Supabase database (via SQL Editor or `supabase db push`). This creates:
+   - `activity_event_type` enum (12 events including deletes)
+   - `activity_log` table with indexes, RLS (public read), Realtime publication
+   - 11 trigger functions on `tasks`, `task_submissions`, `task_comments`, `proposals`, `votes` (INSERT, UPDATE, DELETE as appropriate)
+2. **Regenerate types** — After migration is applied, run `npx supabase gen types typescript --project-id <project-id> > src/types/database.ts` then re-add the convenience aliases at the top. The manual type additions will be replaced by generated ones.
+3. **Test end-to-end** — Create a task, check activity_log has an entry, verify the homepage feed shows it in real-time.
+4. **Verify stats** — Check that the stats bar numbers match actual DB counts and that the $ORG price loads from Jupiter.
+
+### Risks
+
+- Jupiter API may rate-limit or be slow — cached with 60s TTL, shows "—" on failure
+- Realtime requires `activity_log` added to `supabase_realtime` publication (handled in migration)
+- Delete triggers: `actor_id` uses the row's owner (assignee/creator/commenter) since the actual deleter isn't available in a trigger context
+
 ## Workspace Health Summary (Last audit: 2026-01-24)
 
 ### What's Solid
@@ -172,6 +211,8 @@ npm run format
 
 - `src/features/{notifications,organic-id,profile,proposals,sprints,voting}/`
 - `src/components/{auth,notifications,proposals,sprints,ui,voting}/`
+
+**Pending migration**: `supabase/migrations/20260201000000_create_activity_log.sql` needs to be applied to Supabase before the activity dashboard works. See "Activity Dashboard & Live Feed" section above.
 
 **Type duplication**: Task/Sprint types defined locally in page components instead of importing from `@/features/tasks/types.ts`. Future work should consolidate.
 

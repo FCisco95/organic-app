@@ -1,0 +1,60 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+.yarn/
+.yarn-cache/
+
+# Next.js build artifacts
+.next/
+out/
+dist/
+build/
+
+# Logs & runtime noise
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files (never useful for planning)
+.env
+.env.*
+!.env.example
+
+# Test artifacts
+playwright-report/
+test-results/
+coverage/
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Large or noisy docs (Claude does NOT need these by default)
+docs/
+messages/
+SESSION_LOG.md
+
+# Agent / automation output (often large)
+agents/**/runs/
+agents/**/outputs/
+
+# Generated public assets
+public/generated/
+public/assets/
+
+# Supabase generated files (migrations can be huge)
+supabase/.temp/
+supabase/.branches/
+
+# Git internals
+.git/
+.gitignore
+
+# Lockfiles (Claude almost never needs these unless asked)
+package-lock.json
+pnpm-lock.yaml
+yarn.lock

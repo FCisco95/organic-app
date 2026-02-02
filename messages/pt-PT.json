@@ -725,6 +725,31 @@
       "cancel": "Cancelar"
     }
   },
+  "dashboard": {
+    "stats": {
+      "totalUsers": "Total de Utilizadores",
+      "orgHolders": "Detentores de $ORG",
+      "orgPrice": "Preço $ORG",
+      "tasksCompleted": "Tarefas Concluídas",
+      "activeProposals": "Propostas Ativas"
+    },
+    "activity": {
+      "title": "Atividade Recente",
+      "task_created": "{actor} criou tarefa: {title}",
+      "task_completed": "{actor} concluiu tarefa: {title}",
+      "task_deleted": "{actor} eliminou tarefa: {title}",
+      "task_status_changed": "{actor} atualizou tarefa: {title}",
+      "submission_created": "{actor} submeteu trabalho em: {title}",
+      "submission_reviewed": "{actor} reviu submissão em: {title}",
+      "comment_created": "{actor} comentou em: {title}",
+      "comment_deleted": "{actor} eliminou um comentário em: {title}",
+      "proposal_created": "{actor} criou proposta: {title}",
+      "proposal_status_changed": "{actor} atualizou proposta: {title}",
+      "proposal_deleted": "{actor} eliminou proposta: {title}",
+      "vote_cast": "{actor} votou em: {title}",
+      "empty": "Sem atividade ainda"
+    }
+  },
   "common": {
     "loading": "Carregando...",
     "save": "Salvar",

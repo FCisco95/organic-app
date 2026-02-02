@@ -2,6 +2,8 @@
 
 import { Link } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
+import { StatsBar } from '@/components/dashboard/stats-bar';
+import { ActivityFeed } from '@/components/dashboard/activity-feed';
 
 import { useTranslations } from 'next-intl';
 
@@ -84,6 +86,12 @@ export default function Home() {
             <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('organicIdTitle')}</h3>
             <p className="text-sm text-gray-600">{t('organicIdDescription')}</p>
           </div>
+        </div>
+
+        {/* Dashboard Stats & Activity */}
+        <div className="mt-16 space-y-6">
+          <StatsBar />
+          <ActivityFeed />
         </div>
 
         {/* Additional Info */}
