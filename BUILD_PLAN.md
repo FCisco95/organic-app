@@ -105,10 +105,12 @@
 
 - [ ] Treasury balance display
 - [ ] Transaction history
+- [ ] Rolling treasury model (no fixed budgets per sprint)
 - [ ] Budget allocation tracking
 - [ ] Spending proposals
-- [ ] Multi-sig wallet integration
+- [ ] Multi-sig wallet integration (Squads or similar)
 - [ ] Token distribution management
+- [ ] Spending analytics
 
 ### Phase 9: Member Management
 
@@ -118,6 +120,7 @@
 - [ ] Member statistics and contributions
 - [ ] Member onboarding flow
 - [ ] Organic ID minting interface
+- [ ] Organic ID eligibility threshold config
 - [x] Leaderboard page and API for member rankings
 
 ### Phase 10: Analytics & Reporting
@@ -144,9 +147,6 @@
 - [ ] Recurring tasks
 - [ ] Task templates
 - [ ] Proposal delegation
-- [ ] Reputation system
-- [ ] Achievement badges
-- [ ] Activity feed
 
 ### Phase 13: Wallet Support
 
@@ -159,6 +159,41 @@
 - [x] Add OKX wallet adapter (Wallet Standard auto-detect)
 - [x] Add Binance Web3 Wallet adapter (Wallet Standard auto-detect)
 - [x] Add TokenPocket wallet adapter
+
+### Phase 14: Reputation & Gamification
+
+- [ ] XP and level progression system (11 tiers)
+- [ ] Reputation tiers with unlocks (voting power, task access, roles)
+- [ ] Level/badge display on profiles
+- [ ] Achievement system (milestones, roles, activity)
+- [ ] Streak tracking (daily/weekly activity)
+- [ ] Level-up animations and achievement popups
+- [ ] Visible progress bars for level advancement
+
+### Phase 15: Rewards & Distribution
+
+- [ ] Point-to-token conversion (threshold-based claiming)
+- [ ] Epoch pool distribution (fixed pool per sprint)
+- [ ] Manual distribution tooling (admin)
+- [ ] Treasury-linked rewards reporting
+
+### Phase 16: Dispute Resolution
+
+- [ ] Arbitration queue for disputed tasks
+- [ ] High-rep arbitrators and escalation path (Council → Admin)
+
+### Phase 17: Integrations (Future)
+
+- [ ] Discord bot (notifications, role sync)
+- [ ] Twitter/X engagement verification
+- [ ] GitHub contribution tracking
+- [ ] On-chain data verification (holdings/activity)
+
+### Phase 18: Platform Expansion (Future)
+
+- [ ] White-label / multi-tenant support
+- [ ] Custom branding and domain per tenant
+- [ ] Open-core vs premium feature split
 
 ## 🔧 Technical Improvements
 
@@ -187,6 +222,13 @@
 - [ ] Replace public Solana RPC with paid provider (Helius/QuickNode/Alchemy)
 - [ ] Solana RPC fallback/retry handling with timeouts
 
+### Data & Schema
+
+- [ ] Task quality scores table
+- [ ] Reputation/XP tracking tables
+- [ ] Achievements table
+- [ ] Activity streak tracking
+- [ ] Point balances ledger
 ### Testing
 
 - [ ] Unit tests for utility functions
@@ -213,6 +255,54 @@
 - [ ] Database backup strategy
 - [ ] Disaster recovery plan
 - [ ] Performance monitoring (Vercel Analytics, etc.)
+
+## 🚀 Deployment Week Checklist (7-Day Plan)
+
+### Day 1 — Production Readiness Baseline
+
+- [ ] Validate all required env vars for local/staging/prod
+- [ ] Confirm Supabase RLS policies for public read endpoints (activity, stats)
+- [ ] Add/gate rate limiting for sensitive API routes (auth, voting, submissions)
+- [ ] Remove or gate debug logs in API routes
+
+### Day 2 — Critical Flows QA + Fixes
+
+- [ ] Auth → Profile → Wallet link → Organic ID flow
+- [ ] Tasks flow: create → claim → submit → review → points
+- [ ] Proposals flow: create → vote → finalize → create task from proposal
+- [ ] Activity feed realtime + stats accuracy
+
+### Day 3 — Performance & Stability
+
+- [ ] Add/verify indexes for heavy read tables (tasks, proposals, activity_log)
+- [ ] Ensure list endpoints support pagination (tasks/proposals/activity)
+- [ ] Review API responses for N+1 queries; batch/join where needed
+
+### Day 4 — Security & Data Integrity
+
+- [ ] Confirm Zod validation on all API routes
+- [ ] Verify role checks for admin/council endpoints
+- [ ] Re-verify wallet signature verification + nonce handling
+
+### Day 5 — UX Polish + Mobile
+
+- [ ] Fix layout regressions after sidebar changes
+- [ ] Confirm mobile nav works across all localized routes
+- [ ] Tighten error/empty states (activity feed, stats, lists)
+
+### Day 6 — Deployment Dry Run
+
+- [ ] Run `npm run lint` and `npm run build`
+- [ ] Deploy Vercel preview and smoke test
+- [ ] Verify Supabase redirect URLs + Site URL
+- [ ] Validate activity feed/stats in staging (Jupiter price, realtime)
+
+### Day 7 — Final Launch Checklist
+
+- [ ] Confirm prod env vars are set
+- [ ] Confirm migrations applied
+- [ ] Confirm admin role seeded and working
+- [ ] Launch and monitor logs/errors
 
 ## 📋 Immediate Next Tasks (Priority Order)
 

@@ -183,7 +183,7 @@ organic-app/
 - [ ] Discord bot integration
 - [ ] Announcement system
 
-For detailed build plan, see [BUILD_PLAN.md](./BUILD_PLAN.md)
+For detailed build plan and roadmap ideas, see [BUILD_PLAN.md](./BUILD_PLAN.md)
 
 ## Getting Started
 

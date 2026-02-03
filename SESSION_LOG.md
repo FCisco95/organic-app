@@ -12,6 +12,7 @@ Add newest entries at the top.
 - Updated global theme tokens (sidebar palette, accent, background) and Tailwind color mapping
 - Added shadcn/ui primitives (avatar, badge, dropdown-menu, sheet, scroll-area, tooltip, etc.)
 - Wired layout client to use the new app shell instead of legacy navigation
+- Docs: consolidated PRD ideas into `BUILD_PLAN.md` and removed `prd.md`
 
 ## 2026-01-24 (Session 1: Workspace Audit + Type Consolidation)
 
