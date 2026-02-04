@@ -10,15 +10,7 @@ import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ConnectWalletButton } from '@/components/wallet';
-import {
-  Home,
-  CheckSquare,
-  Zap,
-  Vote,
-  Trophy,
-  User,
-  LogOut,
-} from 'lucide-react';
+import { Home, CheckSquare, Zap, Vote, Trophy, User, LogOut } from 'lucide-react';
 
 export function MobileSidebar() {
   const { user, profile, signOut } = useAuth();
@@ -35,8 +27,7 @@ export function MobileSidebar() {
     { href: '/profile', labelKey: 'profile', icon: User, show: !!user },
   ];
 
-  const isActive = (href: string) =>
-    href === '/' ? pathname === '/' : pathname.startsWith(href);
+  const isActive = (href: string) => (href === '/' ? pathname === '/' : pathname.startsWith(href));
 
   return (
     <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>

@@ -407,88 +407,88 @@ export default function TasksPage() {
 
   return (
     <PageContainer width="wide">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
-            <p className="text-gray-600 mt-1">{t('subtitle')}</p>
-          </div>
-
-          <div className="flex gap-3">
-            {canReview && (
-              <Link
-                href="/admin/submissions"
-                className="flex items-center gap-2 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors hover:bg-gray-50"
-              >
-                {t('reviewQueue')}
-              </Link>
-            )}
-            {canManage && (
-              <button
-                onClick={() => setShowNewTaskModal(true)}
-                className="flex items-center gap-2 bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                {t('newTask')}
-              </button>
-            )}
-          </div>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
+          <p className="text-gray-600 mt-1">{t('subtitle')}</p>
         </div>
 
-        {/* Tabs */}
-        <div className="mb-6 flex gap-2 overflow-x-auto pb-2">
-          {visibleTabs.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveView(tab)}
-              className={`px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap transition-colors ${
-                activeView === tab
-                  ? 'bg-organic-orange text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
-              }`}
+        <div className="flex gap-3">
+          {canReview && (
+            <Link
+              href="/admin/submissions"
+              className="flex items-center gap-2 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors hover:bg-gray-50"
             >
-              {t(`tab.${tab}`)}
+              {t('reviewQueue')}
+            </Link>
+          )}
+          {canManage && (
+            <button
+              onClick={() => setShowNewTaskModal(true)}
+              className="flex items-center gap-2 bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              {t('newTask')}
             </button>
-          ))}
+          )}
         </div>
-        {activeView === 'backlog' && (
-          <p className="mb-4 text-xs text-gray-500">{t('backlogSortHint')}</p>
-        )}
+      </div>
 
-        <TaskFiltersBar
-          searchFilter={searchFilter}
-          onSearchChange={setSearchFilter}
-          categoryFilter={categoryFilter}
-          onCategoryChange={setCategoryFilter}
-          categoryOptions={categoryOptions}
-          contributorFilter={contributorFilter}
-          onContributorChange={setContributorFilter}
-          contributorOptions={contributorOptions}
-          sprintFilter={sprintFilter}
-          onSprintChange={setSprintFilter}
-          sprints={sprints}
-          dateFrom={dateFrom}
-          onDateFromChange={setDateFrom}
-          dateTo={dateTo}
-          onDateToChange={setDateTo}
-          getContributorLabel={getContributorLabel}
-        />
+      {/* Tabs */}
+      <div className="mb-6 flex gap-2 overflow-x-auto pb-2">
+        {visibleTabs.map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveView(tab)}
+            className={`px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap transition-colors ${
+              activeView === tab
+                ? 'bg-organic-orange text-white'
+                : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
+            }`}
+          >
+            {t(`tab.${tab}`)}
+          </button>
+        ))}
+      </div>
+      {activeView === 'backlog' && (
+        <p className="mb-4 text-xs text-gray-500">{t('backlogSortHint')}</p>
+      )}
 
-        <TaskListSection
-          activeView={activeView}
-          sprintFilter={sprintFilter}
-          sprints={sprints}
-          currentSprint={currentSprint}
-          loading={loading}
-          tasks={tabTasks}
-          canLike={canLike}
-          likedTasks={likedTasks}
-          likeCounts={likeCounts}
-          getPriorityColor={getPriorityColor}
-          getAssigneeLabel={getAssigneeLabel}
-          getActivityCounts={getActivityCounts}
-          onToggleLike={handleToggleLike}
-        />
+      <TaskFiltersBar
+        searchFilter={searchFilter}
+        onSearchChange={setSearchFilter}
+        categoryFilter={categoryFilter}
+        onCategoryChange={setCategoryFilter}
+        categoryOptions={categoryOptions}
+        contributorFilter={contributorFilter}
+        onContributorChange={setContributorFilter}
+        contributorOptions={contributorOptions}
+        sprintFilter={sprintFilter}
+        onSprintChange={setSprintFilter}
+        sprints={sprints}
+        dateFrom={dateFrom}
+        onDateFromChange={setDateFrom}
+        dateTo={dateTo}
+        onDateToChange={setDateTo}
+        getContributorLabel={getContributorLabel}
+      />
+
+      <TaskListSection
+        activeView={activeView}
+        sprintFilter={sprintFilter}
+        sprints={sprints}
+        currentSprint={currentSprint}
+        loading={loading}
+        tasks={tabTasks}
+        canLike={canLike}
+        likedTasks={likedTasks}
+        likeCounts={likeCounts}
+        getPriorityColor={getPriorityColor}
+        getAssigneeLabel={getAssigneeLabel}
+        getActivityCounts={getActivityCounts}
+        onToggleLike={handleToggleLike}
+      />
 
       {/* Modals */}
       {showNewTaskModal && (

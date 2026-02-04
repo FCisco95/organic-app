@@ -153,19 +153,9 @@ Live activity dashboard on the homepage with DAO stats and a real-time activity 
 - `messages/{en,pt-PT,zh-CN}.json` — `dashboard.stats.*` and `dashboard.activity.*` keys
 - `src/types/database.ts` — `activity_log` table + `activity_event_type` enum added manually (needs regen after migration)
 
-**Migration (needs to be applied to Supabase):**
-
-- `supabase/migrations/20260201000000_create_activity_log.sql`
-
 ### What to do next
 
-1. **Apply the migration** — Run the SQL in `supabase/migrations/20260201000000_create_activity_log.sql` against the Supabase database (via SQL Editor or `supabase db push`). This creates:
-   - `activity_event_type` enum (12 events including deletes)
-   - `activity_log` table with indexes, RLS (public read), Realtime publication
-   - 11 trigger functions on `tasks`, `task_submissions`, `task_comments`, `proposals`, `votes` (INSERT, UPDATE, DELETE as appropriate)
-2. **Regenerate types** — After migration is applied, run `npx supabase gen types typescript --project-id <project-id> > src/types/database.ts` then re-add the convenience aliases at the top. The manual type additions will be replaced by generated ones.
-3. **Test end-to-end** — Create a task, check activity_log has an entry, verify the homepage feed shows it in real-time.
-4. **Verify stats** — Check that the stats bar numbers match actual DB counts and that the $ORG price loads from Jupiter.
+Plan next steps
 
 ### Risks
 

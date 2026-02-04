@@ -2,7 +2,7 @@
 
 import { AlertCircle, Plus, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import type { SprintFormData } from '@/features/tasks';
+import type { SprintFormData } from '@/features/sprints';
 
 type SprintCreateModalProps = {
   open: boolean;
@@ -57,6 +57,20 @@ export function SprintCreateModal({
               onChange={(e) => onChange({ ...formData, name: e.target.value })}
               placeholder={t('formNamePlaceholder')}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange transition-colors"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="goal" className="block text-sm font-medium text-gray-700 mb-1">
+              {t('formGoal')}
+            </label>
+            <textarea
+              id="goal"
+              rows={2}
+              value={formData.goal}
+              onChange={(e) => onChange({ ...formData, goal: e.target.value })}
+              placeholder={t('formGoalPlaceholder')}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange transition-colors resize-none"
             />
           </div>
 

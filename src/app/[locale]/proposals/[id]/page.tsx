@@ -324,248 +324,248 @@ export default function ProposalDetailPage() {
 
   return (
     <PageContainer width="narrow">
-        {/* Back Link */}
-        <Link
-          href="/proposals"
-          className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          {t('backToProposals')}
-        </Link>
+      {/* Back Link */}
+      <Link
+        href="/proposals"
+        className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        {t('backToProposals')}
+      </Link>
 
-        {/* Proposal Card */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-          {/* Header */}
-          <div className="flex items-start justify-between gap-4 mb-4">
-            {isEditing ? (
-              <input
-                type="text"
-                value={editForm.title}
-                onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
-                className="text-3xl font-bold text-gray-900 flex-1 border-b-2 border-organic-orange focus:outline-none"
-                placeholder={t('titlePlaceholder')}
-              />
-            ) : (
-              <h1 className="text-3xl font-bold text-gray-900 flex-1">{proposal.title}</h1>
-            )}
-            <div className="flex items-center gap-2">
-              <div
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${statusConfig.color}`}
-              >
-                <StatusIcon className="w-4 h-4" />
-                <span className="capitalize">{getStatusLabel(proposal.status)}</span>
-              </div>
-              {(isAuthor || isAdmin) && !isEditing && proposal.status === 'draft' && (
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setIsEditing(true)}
-                    className="flex items-center gap-1 px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
-                  >
-                    <Edit2 className="w-4 h-4" />
-                    {t('edit')}
-                  </button>
-                  <button
-                    onClick={() => setShowDeleteConfirm(true)}
-                    className="flex items-center gap-1 px-3 py-1.5 text-sm bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    {t('delete')}
-                  </button>
-                </div>
-              )}
-              {isEditing && (
-                <div className="flex gap-2">
-                  <button
-                    onClick={handleSaveEdit}
-                    disabled={submitting}
-                    className="flex items-center gap-1 px-3 py-1.5 text-sm bg-organic-orange hover:bg-orange-600 text-white rounded-lg transition-colors disabled:opacity-50"
-                  >
-                    <Save className="w-4 h-4" />
-                    {submitting ? t('saving') : t('save')}
-                  </button>
-                  <button
-                    onClick={() => {
-                      setIsEditing(false);
-                      setEditForm({ title: proposal.title, body: proposal.body });
-                    }}
-                    disabled={submitting}
-                    className="flex items-center gap-1 px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors disabled:opacity-50"
-                  >
-                    <XCircle className="w-4 h-4" />
-                    {t('cancel')}
-                  </button>
-                </div>
-              )}
+      {/* Proposal Card */}
+      <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+        {/* Header */}
+        <div className="flex items-start justify-between gap-4 mb-4">
+          {isEditing ? (
+            <input
+              type="text"
+              value={editForm.title}
+              onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+              className="text-3xl font-bold text-gray-900 flex-1 border-b-2 border-organic-orange focus:outline-none"
+              placeholder={t('titlePlaceholder')}
+            />
+          ) : (
+            <h1 className="text-3xl font-bold text-gray-900 flex-1">{proposal.title}</h1>
+          )}
+          <div className="flex items-center gap-2">
+            <div
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${statusConfig.color}`}
+            >
+              <StatusIcon className="w-4 h-4" />
+              <span className="capitalize">{getStatusLabel(proposal.status)}</span>
             </div>
-          </div>
-
-          {/* Meta Info */}
-          <div className="flex items-center gap-4 text-sm text-gray-500 mb-6 pb-6 border-b border-gray-200">
-            <div className="flex items-center gap-1">
-              <User className="w-4 h-4" />
-              <span>
-                {proposal.user_profiles.organic_id
-                  ? t('organicId', { id: proposal.user_profiles.organic_id })
-                  : proposal.user_profiles.email.split('@')[0]}
-              </span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Calendar className="w-4 h-4" />
-              <span>{formatDistanceToNow(new Date(proposal.created_at), { addSuffix: true })}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <MessageCircle className="w-4 h-4" />
-              <span>{t('commentsCount', { count: comments.length })}</span>
-            </div>
-          </div>
-
-          {/* Body */}
-          <div className="prose max-w-none">
-            {isEditing ? (
-              <textarea
-                value={editForm.body}
-                onChange={(e) => setEditForm({ ...editForm, body: e.target.value })}
-                rows={12}
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none text-gray-700"
-                placeholder={t('bodyPlaceholder')}
-              />
-            ) : (
-              <p className="text-gray-700 whitespace-pre-wrap">{proposal.body}</p>
-            )}
-          </div>
-
-          {/* Admin Actions - Submitted Proposals */}
-          {isAdmin && proposal.status === 'submitted' && (
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <p className="text-sm font-medium text-gray-700 mb-3">{t('councilActions')}</p>
-              <div className="flex flex-wrap gap-3">
+            {(isAuthor || isAdmin) && !isEditing && proposal.status === 'draft' && (
+              <div className="flex gap-2">
                 <button
-                  onClick={() => updateProposalStatus('approved')}
-                  className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
+                  onClick={() => setIsEditing(true)}
+                  className="flex items-center gap-1 px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
                 >
-                  <CheckCircle className="w-4 h-4" />
-                  {t('approve')}
+                  <Edit2 className="w-4 h-4" />
+                  {t('edit')}
                 </button>
                 <button
-                  onClick={() => updateProposalStatus('rejected')}
-                  className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors"
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="flex items-center gap-1 px-3 py-1.5 text-sm bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition-colors"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  {t('delete')}
+                </button>
+              </div>
+            )}
+            {isEditing && (
+              <div className="flex gap-2">
+                <button
+                  onClick={handleSaveEdit}
+                  disabled={submitting}
+                  className="flex items-center gap-1 px-3 py-1.5 text-sm bg-organic-orange hover:bg-orange-600 text-white rounded-lg transition-colors disabled:opacity-50"
+                >
+                  <Save className="w-4 h-4" />
+                  {submitting ? t('saving') : t('save')}
+                </button>
+                <button
+                  onClick={() => {
+                    setIsEditing(false);
+                    setEditForm({ title: proposal.title, body: proposal.body });
+                  }}
+                  disabled={submitting}
+                  className="flex items-center gap-1 px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors disabled:opacity-50"
                 >
                   <XCircle className="w-4 h-4" />
-                  {t('reject')}
+                  {t('cancel')}
                 </button>
               </div>
-              <div className="mt-4 pt-4 border-t border-gray-100">
-                <p className="text-sm font-medium text-gray-700 mb-3">{t('startVotingLabel')}</p>
-                <AdminVotingControls
-                  proposal={proposal}
-                  onVotingStarted={loadProposal}
-                  onVotingFinalized={loadProposal}
-                />
-              </div>
-            </div>
-          )}
+            )}
+          </div>
+        </div>
 
-          {/* Admin Actions - Voting Proposals */}
-          {isAdmin && proposal.status === 'voting' && (
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <p className="text-sm font-medium text-gray-700 mb-3">{t('councilActions')}</p>
+        {/* Meta Info */}
+        <div className="flex items-center gap-4 text-sm text-gray-500 mb-6 pb-6 border-b border-gray-200">
+          <div className="flex items-center gap-1">
+            <User className="w-4 h-4" />
+            <span>
+              {proposal.user_profiles.organic_id
+                ? t('organicId', { id: proposal.user_profiles.organic_id })
+                : proposal.user_profiles.email.split('@')[0]}
+            </span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Calendar className="w-4 h-4" />
+            <span>{formatDistanceToNow(new Date(proposal.created_at), { addSuffix: true })}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <MessageCircle className="w-4 h-4" />
+            <span>{t('commentsCount', { count: comments.length })}</span>
+          </div>
+        </div>
+
+        {/* Body */}
+        <div className="prose max-w-none">
+          {isEditing ? (
+            <textarea
+              value={editForm.body}
+              onChange={(e) => setEditForm({ ...editForm, body: e.target.value })}
+              rows={12}
+              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none text-gray-700"
+              placeholder={t('bodyPlaceholder')}
+            />
+          ) : (
+            <p className="text-gray-700 whitespace-pre-wrap">{proposal.body}</p>
+          )}
+        </div>
+
+        {/* Admin Actions - Submitted Proposals */}
+        {isAdmin && proposal.status === 'submitted' && (
+          <div className="mt-6 pt-6 border-t border-gray-200">
+            <p className="text-sm font-medium text-gray-700 mb-3">{t('councilActions')}</p>
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={() => updateProposalStatus('approved')}
+                className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
+              >
+                <CheckCircle className="w-4 h-4" />
+                {t('approve')}
+              </button>
+              <button
+                onClick={() => updateProposalStatus('rejected')}
+                className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors"
+              >
+                <XCircle className="w-4 h-4" />
+                {t('reject')}
+              </button>
+            </div>
+            <div className="mt-4 pt-4 border-t border-gray-100">
+              <p className="text-sm font-medium text-gray-700 mb-3">{t('startVotingLabel')}</p>
               <AdminVotingControls
                 proposal={proposal}
                 onVotingStarted={loadProposal}
                 onVotingFinalized={loadProposal}
               />
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Create Task from Proposal */}
-          {isAdmin && proposal.status === 'approved' && (
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <p className="text-sm font-medium text-gray-700 mb-3">{t('implementation')}</p>
-              <button
-                onClick={createTaskFromProposal}
-                className="flex items-center gap-2 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
-              >
-                <ListTodo className="w-4 h-4" />
-                {t('createTask')}
-              </button>
-              <p className="text-xs text-gray-500 mt-2">{t('createTaskHelp')}</p>
-            </div>
-          )}
+        {/* Admin Actions - Voting Proposals */}
+        {isAdmin && proposal.status === 'voting' && (
+          <div className="mt-6 pt-6 border-t border-gray-200">
+            <p className="text-sm font-medium text-gray-700 mb-3">{t('councilActions')}</p>
+            <AdminVotingControls
+              proposal={proposal}
+              onVotingStarted={loadProposal}
+              onVotingFinalized={loadProposal}
+            />
+          </div>
+        )}
+
+        {/* Create Task from Proposal */}
+        {isAdmin && proposal.status === 'approved' && (
+          <div className="mt-6 pt-6 border-t border-gray-200">
+            <p className="text-sm font-medium text-gray-700 mb-3">{t('implementation')}</p>
+            <button
+              onClick={createTaskFromProposal}
+              className="flex items-center gap-2 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
+            >
+              <ListTodo className="w-4 h-4" />
+              {t('createTask')}
+            </button>
+            <p className="text-xs text-gray-500 mt-2">{t('createTaskHelp')}</p>
+          </div>
+        )}
+      </div>
+
+      {/* Voting Panel - Show during voting */}
+      {proposal.status === 'voting' && (
+        <div className="mb-6">
+          <VotingPanel proposal={proposal} />
         </div>
+      )}
 
-        {/* Voting Panel - Show during voting */}
-        {proposal.status === 'voting' && (
-          <div className="mb-6">
-            <VotingPanel proposal={proposal} />
+      {/* Vote Results - Show after voting has ended with a result */}
+      {proposal.result && (
+        <div className="mb-6">
+          <VoteResults proposal={proposal} />
+        </div>
+      )}
+
+      {/* Comments Section */}
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">
+          {t('commentsTitle', { count: comments.length })}
+        </h2>
+
+        {/* Comment Form */}
+        {user ? (
+          <form onSubmit={handleSubmitComment} className="mb-6">
+            <textarea
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+              placeholder={t('commentPlaceholder')}
+              rows={3}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none mb-3"
+            />
+            <button
+              type="submit"
+              disabled={submitting || !commentText.trim()}
+              className="px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {submitting ? t('posting') : t('postComment')}
+            </button>
+          </form>
+        ) : (
+          <div className="mb-6 bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
+            <p className="text-gray-600 mb-3">{t('signInToJoin')}</p>
+            <Link
+              href="/login"
+              className="inline-block bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+            >
+              {t('signIn')}
+            </Link>
           </div>
         )}
 
-        {/* Vote Results - Show after voting has ended with a result */}
-        {proposal.result && (
-          <div className="mb-6">
-            <VoteResults proposal={proposal} />
-          </div>
-        )}
-
-        {/* Comments Section */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            {t('commentsTitle', { count: comments.length })}
-          </h2>
-
-          {/* Comment Form */}
-          {user ? (
-            <form onSubmit={handleSubmitComment} className="mb-6">
-              <textarea
-                value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
-                placeholder={t('commentPlaceholder')}
-                rows={3}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none mb-3"
-              />
-              <button
-                type="submit"
-                disabled={submitting || !commentText.trim()}
-                className="px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {submitting ? t('posting') : t('postComment')}
-              </button>
-            </form>
+        {/* Comments List */}
+        <div className="space-y-4">
+          {comments.length === 0 ? (
+            <p className="text-gray-500 text-center py-8">{t('noComments')}</p>
           ) : (
-            <div className="mb-6 bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
-              <p className="text-gray-600 mb-3">{t('signInToJoin')}</p>
-              <Link
-                href="/login"
-                className="inline-block bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-              >
-                {t('signIn')}
-              </Link>
-            </div>
-          )}
-
-          {/* Comments List */}
-          <div className="space-y-4">
-            {comments.length === 0 ? (
-              <p className="text-gray-500 text-center py-8">{t('noComments')}</p>
-            ) : (
-              comments.map((comment) => (
-                <div key={comment.id} className="border-l-4 border-organic-orange/20 pl-4 py-2">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="font-medium text-gray-900">
-                      {comment.user_profiles.organic_id
-                        ? t('organicId', { id: comment.user_profiles.organic_id })
-                        : comment.user_profiles.email.split('@')[0]}
-                    </span>
-                    <span className="text-sm text-gray-500">
-                      {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
-                    </span>
-                  </div>
-                  <p className="text-gray-700 whitespace-pre-wrap">{comment.body}</p>
+            comments.map((comment) => (
+              <div key={comment.id} className="border-l-4 border-organic-orange/20 pl-4 py-2">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="font-medium text-gray-900">
+                    {comment.user_profiles.organic_id
+                      ? t('organicId', { id: comment.user_profiles.organic_id })
+                      : comment.user_profiles.email.split('@')[0]}
+                  </span>
+                  <span className="text-sm text-gray-500">
+                    {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
+                  </span>
                 </div>
-              ))
-            )}
-          </div>
+                <p className="text-gray-700 whitespace-pre-wrap">{comment.body}</p>
+              </div>
+            ))
+          )}
         </div>
+      </div>
 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (

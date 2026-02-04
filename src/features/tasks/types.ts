@@ -7,11 +7,18 @@ import {
   SprintStatus,
 } from '@/types/database';
 
+// Re-export sprint types from their new home for backward compatibility
+export type {
+  Sprint,
+  SprintInsert,
+  SprintUpdate,
+  SprintFormData,
+  SprintStats,
+  SprintTask,
+} from '@/features/sprints/types';
+
 // Base database types
 export type Task = Database['public']['Tables']['tasks']['Row'];
-export type Sprint = Database['public']['Tables']['sprints']['Row'];
-export type SprintInsert = Database['public']['Tables']['sprints']['Insert'];
-export type SprintUpdate = Database['public']['Tables']['sprints']['Update'];
 export type UserProfile = Database['public']['Tables']['user_profiles']['Row'];
 export type TaskInsert = Database['public']['Tables']['tasks']['Insert'];
 export type TaskUpdate = Database['public']['Tables']['tasks']['Update'];
@@ -28,49 +35,6 @@ export type { TaskType, TaskStatus, TaskPriority, ReviewStatus, SprintStatus };
 
 // UI-specific types
 export type TaskTab = 'all' | 'backlog' | 'activeSprint' | 'completed';
-
-// Sprint form data (for create/edit modals)
-export interface SprintFormData {
-  name: string;
-  start_at: string;
-  end_at: string;
-  status: SprintStatus;
-  capacity_points: string;
-}
-
-// Sprint statistics (keyed by sprint ID)
-export interface SprintStats {
-  [sprintId: string]: {
-    total: number;
-    completed: number;
-    inProgress: number;
-    points: number;
-    totalPoints: number;
-  };
-}
-
-// Task with assignee for sprint detail view
-export interface SprintTask {
-  id: string;
-  title: string;
-  description: string | null;
-  status: 'todo' | 'in_progress' | 'done';
-  priority: 'low' | 'medium' | 'high';
-  points: number | null;
-  sprint_id: string | null;
-  assignee_id: string | null;
-  created_by: string;
-  created_at: string;
-  updated_at: string;
-  completed_at: string | null;
-  assignee?: {
-    id: string;
-    name: string | null;
-    email: string;
-    organic_id: number | null;
-    avatar_url: string | null;
-  };
-}
 
 // Assignee type (user eligible for task assignment)
 export interface Assignee {

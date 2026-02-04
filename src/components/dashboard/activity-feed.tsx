@@ -13,9 +13,7 @@ export function ActivityFeed() {
       <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
         <h3 className="text-sm font-semibold text-gray-900">{t('title')}</h3>
         {!isLoading && events && events.length > 0 && (
-          <span className="text-[11px] font-medium text-gray-300">
-            {events.length} events
-          </span>
+          <span className="text-[11px] font-medium text-gray-300">{events.length} events</span>
         )}
       </div>
 

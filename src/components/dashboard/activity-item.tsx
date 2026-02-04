@@ -55,12 +55,7 @@ export function ActivityItem({
   }
 
   return (
-    <div
-      className={cn(
-        'flex items-center gap-3 py-3',
-        !isLast && 'border-b border-gray-50'
-      )}
-    >
+    <div className={cn('flex items-center gap-3 py-3', !isLast && 'border-b border-gray-50')}>
       <span
         className={cn(
           'flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-sm ring-1',

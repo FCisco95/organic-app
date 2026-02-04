@@ -126,164 +126,162 @@ export default function ProposalsPage() {
 
   return (
     <PageContainer>
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
-            <p className="text-gray-600 mt-1">{t('subtitle')}</p>
-          </div>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
+          <p className="text-gray-600 mt-1">{t('subtitle')}</p>
+        </div>
 
+        {canCreateProposal && (
+          <Link
+            href="/proposals/new"
+            className="flex items-center gap-2 bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            {t('newProposal')}
+          </Link>
+        )}
+      </div>
+
+      {/* Filter Tabs */}
+      <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+        {['all', 'submitted', 'voting', 'approved', 'rejected'].map((status) => (
+          <button
+            key={status}
+            onClick={() => setFilter(status)}
+            className={`px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap transition-colors ${
+              filter === status
+                ? 'bg-organic-orange text-white'
+                : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
+            }`}
+          >
+            {status === 'all' ? t('filterAll') : getStatusLabel(status)}
+          </button>
+        ))}
+      </div>
+
+      {/* Proposals List */}
+      {loading ? (
+        <div className="space-y-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="bg-white rounded-lg border border-gray-200 p-6 animate-pulse">
+              <div className="h-6 bg-gray-200 rounded w-3/4 mb-3"></div>
+              <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+              <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+            </div>
+          ))}
+        </div>
+      ) : proposals.length === 0 ? (
+        <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
+          <p className="text-gray-500 mb-4">{t('emptyState')}</p>
           {canCreateProposal && (
             <Link
               href="/proposals/new"
-              className="flex items-center gap-2 bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+              className="inline-flex items-center gap-2 bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
-              {t('newProposal')}
+              {t('createFirstProposal')}
             </Link>
           )}
         </div>
+      ) : (
+        <div className="space-y-4">
+          {proposals.map((proposal) => {
+            const isVoting = proposal.status === 'voting';
+            const votingEndsAt = proposal.voting_ends_at ? new Date(proposal.voting_ends_at) : null;
+            const votingEndsLabel = votingEndsAt
+              ? formatDistanceToNow(votingEndsAt, { addSuffix: true })
+              : t('votingOpen');
 
-        {/* Filter Tabs */}
-        <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-          {['all', 'submitted', 'voting', 'approved', 'rejected'].map((status) => (
-            <button
-              key={status}
-              onClick={() => setFilter(status)}
-              className={`px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap transition-colors ${
-                filter === status
-                  ? 'bg-organic-orange text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
-              }`}
-            >
-              {status === 'all' ? t('filterAll') : getStatusLabel(status)}
-            </button>
-          ))}
-        </div>
-
-        {/* Proposals List */}
-        {loading ? (
-          <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white rounded-lg border border-gray-200 p-6 animate-pulse">
-                <div className="h-6 bg-gray-200 rounded w-3/4 mb-3"></div>
-                <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
-                <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-              </div>
-            ))}
-          </div>
-        ) : proposals.length === 0 ? (
-          <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
-            <p className="text-gray-500 mb-4">{t('emptyState')}</p>
-            {canCreateProposal && (
+            return (
               <Link
-                href="/proposals/new"
-                className="inline-flex items-center gap-2 bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                key={proposal.id}
+                href={`/proposals/${proposal.id}`}
+                className={`block rounded-lg border p-6 transition-shadow ${
+                  isVoting
+                    ? 'relative overflow-hidden border-2 border-orange-400 bg-gradient-to-r from-orange-50 to-yellow-50 hover:shadow-lg'
+                    : 'bg-white border-gray-200 hover:shadow-md'
+                }`}
               >
-                <Plus className="w-4 h-4" />
-                {t('createFirstProposal')}
-              </Link>
-            )}
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {proposals.map((proposal) => {
-              const isVoting = proposal.status === 'voting';
-              const votingEndsAt = proposal.voting_ends_at
-                ? new Date(proposal.voting_ends_at)
-                : null;
-              const votingEndsLabel = votingEndsAt
-                ? formatDistanceToNow(votingEndsAt, { addSuffix: true })
-                : t('votingOpen');
-
-              return (
-                <Link
-                  key={proposal.id}
-                  href={`/proposals/${proposal.id}`}
-                  className={`block rounded-lg border p-6 transition-shadow ${
-                    isVoting
-                      ? 'relative overflow-hidden border-2 border-orange-400 bg-gradient-to-r from-orange-50 to-yellow-50 hover:shadow-lg'
-                      : 'bg-white border-gray-200 hover:shadow-md'
-                  }`}
-                >
-                  {isVoting && (
-                    <div className="absolute -right-10 -top-10 h-24 w-24 rounded-full bg-orange-200/70 blur-2xl"></div>
-                  )}
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 className="text-xl font-semibold text-gray-900 truncate">
-                          {proposal.title}
-                        </h3>
-                        {isVoting && (
-                          <span className="inline-flex items-center gap-2 rounded-full bg-orange-600 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">
-                            <span className="relative flex h-2 w-2">
-                              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75"></span>
-                              <span className="relative inline-flex h-2 w-2 rounded-full bg-white"></span>
-                            </span>
-                            {t('liveVoting')}
+                {isVoting && (
+                  <div className="absolute -right-10 -top-10 h-24 w-24 rounded-full bg-orange-200/70 blur-2xl"></div>
+                )}
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-2">
+                      <h3 className="text-xl font-semibold text-gray-900 truncate">
+                        {proposal.title}
+                      </h3>
+                      {isVoting && (
+                        <span className="inline-flex items-center gap-2 rounded-full bg-orange-600 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">
+                          <span className="relative flex h-2 w-2">
+                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75"></span>
+                            <span className="relative inline-flex h-2 w-2 rounded-full bg-white"></span>
                           </span>
-                        )}
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${getStatusColor(
-                            proposal.status
-                          )}`}
-                        >
-                          {getStatusLabel(proposal.status)}
+                          {t('liveVoting')}
+                        </span>
+                      )}
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${getStatusColor(
+                          proposal.status
+                        )}`}
+                      >
+                        {getStatusLabel(proposal.status)}
+                      </span>
+                    </div>
+
+                    <p className="text-gray-600 line-clamp-2 mb-4">{proposal.body}</p>
+
+                    <div className="flex items-center gap-4 text-sm text-gray-500">
+                      <div className="flex items-center gap-1">
+                        <User className="w-4 h-4" />
+                        <span>
+                          {proposal.user_profiles.organic_id
+                            ? t('organicId', { id: proposal.user_profiles.organic_id })
+                            : proposal.user_profiles.email.split('@')[0]}
                         </span>
                       </div>
-
-                      <p className="text-gray-600 line-clamp-2 mb-4">{proposal.body}</p>
-
-                      <div className="flex items-center gap-4 text-sm text-gray-500">
-                        <div className="flex items-center gap-1">
-                          <User className="w-4 h-4" />
-                          <span>
-                            {proposal.user_profiles.organic_id
-                              ? t('organicId', { id: proposal.user_profiles.organic_id })
-                              : proposal.user_profiles.email.split('@')[0]}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Calendar className="w-4 h-4" />
-                          <span>
-                            {formatDistanceToNow(new Date(proposal.created_at), {
-                              addSuffix: true,
-                            })}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <MessageCircle className="w-4 h-4" />
-                          <span>{t('commentsCount', { count: proposal.comments_count || 0 })}</span>
-                        </div>
-                        {isVoting && (
-                          <div className="flex items-center gap-1 font-semibold text-orange-700">
-                            <Calendar className="w-4 h-4" />
-                            <span>{t('votingEndsIn', { time: votingEndsLabel })}</span>
-                          </div>
-                        )}
+                      <div className="flex items-center gap-1">
+                        <Calendar className="w-4 h-4" />
+                        <span>
+                          {formatDistanceToNow(new Date(proposal.created_at), {
+                            addSuffix: true,
+                          })}
+                        </span>
                       </div>
+                      <div className="flex items-center gap-1">
+                        <MessageCircle className="w-4 h-4" />
+                        <span>{t('commentsCount', { count: proposal.comments_count || 0 })}</span>
+                      </div>
+                      {isVoting && (
+                        <div className="flex items-center gap-1 font-semibold text-orange-700">
+                          <Calendar className="w-4 h-4" />
+                          <span>{t('votingEndsIn', { time: votingEndsLabel })}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
-                </Link>
-              );
-            })}
-          </div>
-        )}
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      )}
 
-        {/* Info Banner */}
-        {!user && (
-          <div className="mt-8 bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-lg p-6">
-            <h3 className="font-semibold text-gray-900 mb-2">{t('ctaTitle')}</h3>
-            <p className="text-gray-700 mb-4">{t('ctaDescription')}</p>
-            <Link
-              href="/login"
-              className="inline-block bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-            >
-              {t('signIn')}
-            </Link>
-          </div>
-        )}
+      {/* Info Banner */}
+      {!user && (
+        <div className="mt-8 bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-lg p-6">
+          <h3 className="font-semibold text-gray-900 mb-2">{t('ctaTitle')}</h3>
+          <p className="text-gray-700 mb-4">{t('ctaDescription')}</p>
+          <Link
+            href="/login"
+            className="inline-block bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+          >
+            {t('signIn')}
+          </Link>
+        </div>
+      )}
     </PageContainer>
   );
 }

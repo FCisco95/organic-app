@@ -455,496 +455,488 @@ export default function ProfilePage() {
 
   return (
     <PageContainer>
-        {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">{t('pageTitle')}</h1>
-            <p className="text-sm text-gray-600 mt-1">{t('pageSubtitle')}</p>
-          </div>
-          {!isEditing && (
+      {/* Header */}
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">{t('pageTitle')}</h1>
+          <p className="text-sm text-gray-600 mt-1">{t('pageSubtitle')}</p>
+        </div>
+        {!isEditing && (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition-colors"
+          >
+            <Edit2 className="w-4 h-4" />
+            {t('editProfile')}
+          </button>
+        )}
+        {isEditing && (
+          <div className="flex gap-2">
             <button
-              onClick={() => setIsEditing(true)}
+              onClick={handleCancelEdit}
               className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition-colors"
             >
-              <Edit2 className="w-4 h-4" />
-              {t('editProfile')}
+              <X className="w-4 h-4" />
+              {t('cancel')}
             </button>
-          )}
-          {isEditing && (
-            <div className="flex gap-2">
-              <button
-                onClick={handleCancelEdit}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition-colors"
-              >
-                <X className="w-4 h-4" />
-                {t('cancel')}
-              </button>
-              <button
-                onClick={handleSaveProfile}
-                disabled={saving}
-                className="flex items-center gap-2 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
-              >
-                <Save className="w-4 h-4" />
-                {saving ? t('saving') : t('saveChanges')}
-              </button>
-            </div>
-          )}
-        </div>
+            <button
+              onClick={handleSaveProfile}
+              disabled={saving}
+              className="flex items-center gap-2 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+            >
+              <Save className="w-4 h-4" />
+              {saving ? t('saving') : t('saveChanges')}
+            </button>
+          </div>
+        )}
+      </div>
 
-        {/* Profile Header Card */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <div className="flex items-start gap-6">
-            {/* Avatar */}
-            <div className="relative">
-              <div className="w-24 h-24 rounded-full overflow-hidden bg-gradient-to-br from-organic-orange to-yellow-400 flex items-center justify-center">
-                {profile.avatar_url ? (
-                  <Image
-                    src={profile.avatar_url}
-                    alt={profile.name || 'Profile'}
-                    width={96}
-                    height={96}
-                    className="w-full h-full object-cover"
-                    unoptimized
-                  />
-                ) : (
-                  <span className="text-3xl font-bold text-white">
-                    {(profile.name || profile.email).charAt(0).toUpperCase()}
-                  </span>
-                )}
-              </div>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleAvatarUpload}
-                className="hidden"
-              />
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                disabled={uploading}
-                className="absolute -bottom-1 -right-1 p-2 bg-organic-orange hover:bg-orange-600 text-white rounded-full shadow-lg transition-colors disabled:opacity-50"
-                title={t('changeProfilePicture')}
-              >
-                {uploading ? (
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                ) : (
-                  <Upload className="w-4 h-4" />
-                )}
-              </button>
-            </div>
-
-            {/* Basic Info */}
-            <div className="flex-1">
-              {isEditing ? (
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
-                      {t('nameLabel')}
-                    </label>
-                    <input
-                      type="text"
-                      value={editForm.name}
-                      onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                      placeholder={t('namePlaceholder')}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
-                      maxLength={100}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
-                      {t('bioLabel')}
-                    </label>
-                    <textarea
-                      value={editForm.bio}
-                      onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
-                      placeholder={t('bioPlaceholder')}
-                      rows={3}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none"
-                      maxLength={500}
-                    />
-                    <p className="text-xs text-gray-500 mt-1">
-                      {editForm.bio.length}/500 {t('characters')}
-                    </p>
-                  </div>
-                </div>
+      {/* Profile Header Card */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <div className="flex items-start gap-6">
+          {/* Avatar */}
+          <div className="relative">
+            <div className="w-24 h-24 rounded-full overflow-hidden bg-gradient-to-br from-organic-orange to-yellow-400 flex items-center justify-center">
+              {profile.avatar_url ? (
+                <Image
+                  src={profile.avatar_url}
+                  alt={profile.name || 'Profile'}
+                  width={96}
+                  height={96}
+                  className="w-full h-full object-cover"
+                  unoptimized
+                />
               ) : (
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-1">
-                    {profile.name || t('anonymousUser')}
-                  </h2>
-                  <p className="text-sm text-gray-600 mb-3">{profile.email}</p>
-                  {profile.bio && (
-                    <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
-                      {profile.bio}
-                    </p>
-                  )}
-                  {!profile.bio && !isEditing && (
-                    <p className="text-sm text-gray-400 italic">{t('noBioYet')}</p>
-                  )}
-                </div>
+                <span className="text-3xl font-bold text-white">
+                  {(profile.name || profile.email).charAt(0).toUpperCase()}
+                </span>
               )}
             </div>
-          </div>
-        </div>
-
-        {/* Stats */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('statsTitle')}</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="relative rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
-              <button
-                type="button"
-                className="absolute right-2 top-2 text-gray-400 hover:text-gray-600"
-                title={t('totalSubmissionsHelp')}
-                aria-label={t('totalSubmissionsHelp')}
-              >
-                <Info className="h-3.5 w-3.5" />
-              </button>
-              <p className="text-xs font-medium uppercase text-gray-500">
-                {t('totalSubmissionsLabel')}
-              </p>
-              <p className="text-2xl font-semibold text-gray-900">
-                {statsLoading ? '—' : formatStat(stats.totalSubmissions)}
-              </p>
-            </div>
-            <div className="relative rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
-              <button
-                type="button"
-                className="absolute right-2 top-2 text-gray-400 hover:text-gray-600"
-                title={t('approvedSubmissionsHelp')}
-                aria-label={t('approvedSubmissionsHelp')}
-              >
-                <Info className="h-3.5 w-3.5" />
-              </button>
-              <p className="text-xs font-medium uppercase text-gray-500">
-                {t('approvedSubmissionsLabel')}
-              </p>
-              <p className="text-2xl font-semibold text-gray-900">
-                {statsLoading ? '—' : formatStat(stats.approvedSubmissions)}
-              </p>
-            </div>
-            <div className="relative rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
-              <button
-                type="button"
-                className="absolute right-2 top-2 text-gray-400 hover:text-gray-600"
-                title={t('contributionsHelp')}
-                aria-label={t('contributionsHelp')}
-              >
-                <Info className="h-3.5 w-3.5" />
-              </button>
-              <p className="text-xs font-medium uppercase text-gray-500">
-                {t('contributionsLabel')}
-              </p>
-              <p className="text-2xl font-semibold text-gray-900">
-                {statsLoading ? '—' : formatStat(stats.contributions)}
-              </p>
-            </div>
-            <div className="relative rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
-              <button
-                type="button"
-                className="absolute right-2 top-2 text-gray-400 hover:text-gray-600"
-                title={t('pointsEarnedHelp')}
-                aria-label={t('pointsEarnedHelp')}
-              >
-                <Info className="h-3.5 w-3.5" />
-              </button>
-              <p className="text-xs font-medium uppercase text-gray-500">
-                {t('pointsEarnedLabel')}
-              </p>
-              <p className="text-2xl font-semibold text-organic-orange">
-                {statsLoading ? '—' : formatStat(stats.pointsEarned)}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Account Details */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          {/* Left Column */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('accountDetails')}</h3>
-            <div className="space-y-4">
-              {/* Organic ID */}
-              <div>
-                <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
-                  {t('organicIdLabel')}
-                </label>
-                {profile.organic_id ? (
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl font-bold text-organic-orange">
-                      #{profile.organic_id}
-                    </span>
-                    <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">
-                      {t('verified')}
-                    </span>
-                  </div>
-                ) : (
-                  <p className="text-sm text-gray-500 italic">{t('notAssigned')}</p>
-                )}
-              </div>
-
-              {/* Role */}
-              <div>
-                <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
-                  {t('roleLabel')}
-                </label>
-                <span
-                  className={`inline-flex px-2.5 py-1 rounded-md text-xs font-medium capitalize ${
-                    profile.role === 'admin'
-                      ? 'bg-purple-100 text-purple-700'
-                      : profile.role === 'council'
-                        ? 'bg-blue-100 text-blue-700'
-                        : profile.role === 'member'
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-gray-100 text-gray-700'
-                  }`}
-                >
-                  {profile.role || t('guest')}
-                </span>
-              </div>
-
-              {/* Member Since */}
-              <div>
-                <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
-                  {t('memberSince')}
-                </label>
-                <div className="flex items-center gap-2 text-sm text-gray-700">
-                  <Calendar className="w-4 h-4" />
-                  <span>
-                    {profile.created_at
-                      ? formatDistanceToNow(new Date(profile.created_at), { addSuffix: true })
-                      : t('unknown')}
-                  </span>
-                </div>
-              </div>
-            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarUpload}
+              className="hidden"
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="absolute -bottom-1 -right-1 p-2 bg-organic-orange hover:bg-orange-600 text-white rounded-full shadow-lg transition-colors disabled:opacity-50"
+              title={t('changeProfilePicture')}
+            >
+              {uploading ? (
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                <Upload className="w-4 h-4" />
+              )}
+            </button>
           </div>
 
-          {/* Right Column - Social & Contact */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('socialContact')}</h3>
+          {/* Basic Info */}
+          <div className="flex-1">
             {isEditing ? (
               <div className="space-y-3">
                 <div>
                   <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
-                    {t('locationLabel')}
+                    {t('nameLabel')}
                   </label>
-                  <div className="relative">
-                    <MapPin className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                    <input
-                      type="text"
-                      value={editForm.location}
-                      onChange={(e) => setEditForm({ ...editForm, location: e.target.value })}
-                      placeholder={t('locationPlaceholder')}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
-                      maxLength={100}
-                    />
-                  </div>
+                  <input
+                    type="text"
+                    value={editForm.name}
+                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                    placeholder={t('namePlaceholder')}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
+                    maxLength={100}
+                  />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
-                    {t('websiteLabel')}
+                    {t('bioLabel')}
                   </label>
-                  <div className="relative">
-                    <Globe className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                    <input
-                      type="url"
-                      value={editForm.website}
-                      onChange={(e) => setEditForm({ ...editForm, website: e.target.value })}
-                      placeholder={t('websitePlaceholder')}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
-                      maxLength={200}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
-                    {t('twitterLabel')}
-                  </label>
-                  <div className="relative">
-                    <Twitter className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                    <input
-                      type="text"
-                      value={editForm.twitter}
-                      onChange={(e) => setEditForm({ ...editForm, twitter: e.target.value })}
-                      placeholder={t('twitterPlaceholder')}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
-                      maxLength={50}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
-                    {t('discordLabel')}
-                  </label>
-                  <div className="relative">
-                    <MessageCircle className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                    <input
-                      type="text"
-                      value={editForm.discord}
-                      onChange={(e) => setEditForm({ ...editForm, discord: e.target.value })}
-                      placeholder={t('discordPlaceholder')}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
-                      maxLength={50}
-                    />
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {profile.location && (
-                  <div className="flex items-center gap-2 text-sm text-gray-700">
-                    <MapPin className="w-4 h-4 text-gray-400" />
-                    <span>{profile.location}</span>
-                  </div>
-                )}
-                {profile.website && (
-                  <div className="flex items-center gap-2 text-sm">
-                    <Globe className="w-4 h-4 text-gray-400" />
-                    <a
-                      href={profile.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-organic-orange hover:underline"
-                    >
-                      {profile.website.replace(/^https?:\/\//, '')}
-                    </a>
-                  </div>
-                )}
-                {profile.twitter && (
-                  <div className="flex items-center gap-2 text-sm">
-                    <Twitter className="w-4 h-4 text-gray-400" />
-                    <a
-                      href={`https://x.com/${profile.twitter.replace('@', '')}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-organic-orange hover:underline"
-                    >
-                      {profile.twitter}
-                    </a>
-                  </div>
-                )}
-                {profile.discord && (
-                  <div className="flex items-center gap-2 text-sm text-gray-700">
-                    <MessageCircle className="w-4 h-4 text-gray-400" />
-                    <span>{profile.discord}</span>
-                  </div>
-                )}
-                {!profile.location &&
-                  !profile.website &&
-                  !profile.twitter &&
-                  !profile.discord &&
-                  !isEditing && (
-                    <p className="text-sm text-gray-400 italic">{t('noSocialLinksYet')}</p>
-                  )}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Wallet Section */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('solanaWallet')}</h2>
-
-          <div className="mb-4 text-sm text-gray-600">
-            {connected && publicKey ? (
-              <span>
-                {tWallet('connectedWalletLabel')}{' '}
-                <span className="font-mono text-gray-800">
-                  {publicKey.toBase58().slice(0, 4)}...{publicKey.toBase58().slice(-4)}
-                </span>
-              </span>
-            ) : (
-              <span>{tWallet('connectWalletFromNav')}</span>
-            )}
-          </div>
-
-          {/* Wallet Mismatch Warning */}
-          {walletMismatch && publicKey && profile.wallet_pubkey && (
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
-              <p className="text-sm font-medium text-amber-800 mb-1">
-                {t('walletMismatchWarning')}
-              </p>
-              <p className="text-xs text-amber-700">
-                {t('walletMismatchDescription', {
-                  connected: `${publicKey.toBase58().slice(0, 4)}...${publicKey.toBase58().slice(-4)}`,
-                  linked: `${profile.wallet_pubkey.slice(0, 4)}...${profile.wallet_pubkey.slice(-4)}`,
-                })}
-              </p>
-            </div>
-          )}
-
-          {profile.wallet_pubkey && (
-            <div className="mb-4">
-              <label className="block text-xs font-medium text-gray-500 uppercase mb-2">
-                {t('linkedWallet')}
-              </label>
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
-                <p className="text-xs font-mono text-gray-700 break-all mb-3">
-                  {profile.wallet_pubkey}
-                </p>
-                {tokenBalance !== null && connected && publicKey && !walletMismatch && (
-                  <div className="flex items-center">
-                    <span className="text-xs font-medium text-gray-500 mr-2">
-                      {t('orgBalance')}
-                    </span>
-                    <span className="text-sm font-semibold text-organic-orange">
-                      {tokenBalance.toFixed(2)}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {connected && publicKey && !profile.wallet_pubkey && (
-            <button
-              onClick={handleLinkWallet}
-              disabled={linkingWallet}
-              className="w-full bg-organic-orange hover:bg-orange-600 text-white font-medium py-2.5 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-            >
-              {linkingWallet ? t('linkingWallet') : t('linkWalletToProfile')}
-            </button>
-          )}
-        </div>
-
-        {/* Get Organic ID Section */}
-        {profile.wallet_pubkey && !profile.organic_id && (
-          <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-lg shadow-sm p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">{t('getYourOrganicId')}</h2>
-            <p className="text-sm text-gray-600 mb-4">{t('holdTokensDescription')}</p>
-
-            {tokenBalance !== null &&
-              tokenBalance > 0 &&
-              connected &&
-              publicKey &&
-              !walletMismatch && (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
-                  <p className="text-sm text-green-700 font-medium">
-                    ✓ {t('linkedWalletHoldsTokens', { balance: tokenBalance.toFixed(2) })}
+                  <textarea
+                    value={editForm.bio}
+                    onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
+                    placeholder={t('bioPlaceholder')}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none"
+                    maxLength={500}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    {editForm.bio.length}/500 {t('characters')}
                   </p>
                 </div>
-              )}
+              </div>
+            ) : (
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-1">
+                  {profile.name || t('anonymousUser')}
+                </h2>
+                <p className="text-sm text-gray-600 mb-3">{profile.email}</p>
+                {profile.bio && (
+                  <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+                    {profile.bio}
+                  </p>
+                )}
+                {!profile.bio && !isEditing && (
+                  <p className="text-sm text-gray-400 italic">{t('noBioYet')}</p>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
 
+      {/* Stats */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('statsTitle')}</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="relative rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
             <button
-              onClick={handleGetOrganicId}
-              disabled={gettingOrganicId}
-              className="bg-organic-orange hover:bg-orange-600 text-white font-medium py-2.5 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+              type="button"
+              className="absolute right-2 top-2 text-gray-400 hover:text-gray-600"
+              title={t('totalSubmissionsHelp')}
+              aria-label={t('totalSubmissionsHelp')}
             >
-              {gettingOrganicId ? t('verifying') : t('getOrganicId')}
+              <Info className="h-3.5 w-3.5" />
             </button>
+            <p className="text-xs font-medium uppercase text-gray-500">
+              {t('totalSubmissionsLabel')}
+            </p>
+            <p className="text-2xl font-semibold text-gray-900">
+              {statsLoading ? '—' : formatStat(stats.totalSubmissions)}
+            </p>
+          </div>
+          <div className="relative rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+            <button
+              type="button"
+              className="absolute right-2 top-2 text-gray-400 hover:text-gray-600"
+              title={t('approvedSubmissionsHelp')}
+              aria-label={t('approvedSubmissionsHelp')}
+            >
+              <Info className="h-3.5 w-3.5" />
+            </button>
+            <p className="text-xs font-medium uppercase text-gray-500">
+              {t('approvedSubmissionsLabel')}
+            </p>
+            <p className="text-2xl font-semibold text-gray-900">
+              {statsLoading ? '—' : formatStat(stats.approvedSubmissions)}
+            </p>
+          </div>
+          <div className="relative rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+            <button
+              type="button"
+              className="absolute right-2 top-2 text-gray-400 hover:text-gray-600"
+              title={t('contributionsHelp')}
+              aria-label={t('contributionsHelp')}
+            >
+              <Info className="h-3.5 w-3.5" />
+            </button>
+            <p className="text-xs font-medium uppercase text-gray-500">{t('contributionsLabel')}</p>
+            <p className="text-2xl font-semibold text-gray-900">
+              {statsLoading ? '—' : formatStat(stats.contributions)}
+            </p>
+          </div>
+          <div className="relative rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+            <button
+              type="button"
+              className="absolute right-2 top-2 text-gray-400 hover:text-gray-600"
+              title={t('pointsEarnedHelp')}
+              aria-label={t('pointsEarnedHelp')}
+            >
+              <Info className="h-3.5 w-3.5" />
+            </button>
+            <p className="text-xs font-medium uppercase text-gray-500">{t('pointsEarnedLabel')}</p>
+            <p className="text-2xl font-semibold text-organic-orange">
+              {statsLoading ? '—' : formatStat(stats.pointsEarned)}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Account Details */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        {/* Left Column */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('accountDetails')}</h3>
+          <div className="space-y-4">
+            {/* Organic ID */}
+            <div>
+              <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
+                {t('organicIdLabel')}
+              </label>
+              {profile.organic_id ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl font-bold text-organic-orange">
+                    #{profile.organic_id}
+                  </span>
+                  <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                    {t('verified')}
+                  </span>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500 italic">{t('notAssigned')}</p>
+              )}
+            </div>
+
+            {/* Role */}
+            <div>
+              <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
+                {t('roleLabel')}
+              </label>
+              <span
+                className={`inline-flex px-2.5 py-1 rounded-md text-xs font-medium capitalize ${
+                  profile.role === 'admin'
+                    ? 'bg-purple-100 text-purple-700'
+                    : profile.role === 'council'
+                      ? 'bg-blue-100 text-blue-700'
+                      : profile.role === 'member'
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-gray-100 text-gray-700'
+                }`}
+              >
+                {profile.role || t('guest')}
+              </span>
+            </div>
+
+            {/* Member Since */}
+            <div>
+              <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
+                {t('memberSince')}
+              </label>
+              <div className="flex items-center gap-2 text-sm text-gray-700">
+                <Calendar className="w-4 h-4" />
+                <span>
+                  {profile.created_at
+                    ? formatDistanceToNow(new Date(profile.created_at), { addSuffix: true })
+                    : t('unknown')}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column - Social & Contact */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('socialContact')}</h3>
+          {isEditing ? (
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
+                  {t('locationLabel')}
+                </label>
+                <div className="relative">
+                  <MapPin className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    value={editForm.location}
+                    onChange={(e) => setEditForm({ ...editForm, location: e.target.value })}
+                    placeholder={t('locationPlaceholder')}
+                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
+                    maxLength={100}
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
+                  {t('websiteLabel')}
+                </label>
+                <div className="relative">
+                  <Globe className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="url"
+                    value={editForm.website}
+                    onChange={(e) => setEditForm({ ...editForm, website: e.target.value })}
+                    placeholder={t('websitePlaceholder')}
+                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
+                    maxLength={200}
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
+                  {t('twitterLabel')}
+                </label>
+                <div className="relative">
+                  <Twitter className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    value={editForm.twitter}
+                    onChange={(e) => setEditForm({ ...editForm, twitter: e.target.value })}
+                    placeholder={t('twitterPlaceholder')}
+                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
+                    maxLength={50}
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
+                  {t('discordLabel')}
+                </label>
+                <div className="relative">
+                  <MessageCircle className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    value={editForm.discord}
+                    onChange={(e) => setEditForm({ ...editForm, discord: e.target.value })}
+                    placeholder={t('discordPlaceholder')}
+                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
+                    maxLength={50}
+                  />
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {profile.location && (
+                <div className="flex items-center gap-2 text-sm text-gray-700">
+                  <MapPin className="w-4 h-4 text-gray-400" />
+                  <span>{profile.location}</span>
+                </div>
+              )}
+              {profile.website && (
+                <div className="flex items-center gap-2 text-sm">
+                  <Globe className="w-4 h-4 text-gray-400" />
+                  <a
+                    href={profile.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-organic-orange hover:underline"
+                  >
+                    {profile.website.replace(/^https?:\/\//, '')}
+                  </a>
+                </div>
+              )}
+              {profile.twitter && (
+                <div className="flex items-center gap-2 text-sm">
+                  <Twitter className="w-4 h-4 text-gray-400" />
+                  <a
+                    href={`https://x.com/${profile.twitter.replace('@', '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-organic-orange hover:underline"
+                  >
+                    {profile.twitter}
+                  </a>
+                </div>
+              )}
+              {profile.discord && (
+                <div className="flex items-center gap-2 text-sm text-gray-700">
+                  <MessageCircle className="w-4 h-4 text-gray-400" />
+                  <span>{profile.discord}</span>
+                </div>
+              )}
+              {!profile.location &&
+                !profile.website &&
+                !profile.twitter &&
+                !profile.discord &&
+                !isEditing && (
+                  <p className="text-sm text-gray-400 italic">{t('noSocialLinksYet')}</p>
+                )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Wallet Section */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('solanaWallet')}</h2>
+
+        <div className="mb-4 text-sm text-gray-600">
+          {connected && publicKey ? (
+            <span>
+              {tWallet('connectedWalletLabel')}{' '}
+              <span className="font-mono text-gray-800">
+                {publicKey.toBase58().slice(0, 4)}...{publicKey.toBase58().slice(-4)}
+              </span>
+            </span>
+          ) : (
+            <span>{tWallet('connectWalletFromNav')}</span>
+          )}
+        </div>
+
+        {/* Wallet Mismatch Warning */}
+        {walletMismatch && publicKey && profile.wallet_pubkey && (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+            <p className="text-sm font-medium text-amber-800 mb-1">{t('walletMismatchWarning')}</p>
+            <p className="text-xs text-amber-700">
+              {t('walletMismatchDescription', {
+                connected: `${publicKey.toBase58().slice(0, 4)}...${publicKey.toBase58().slice(-4)}`,
+                linked: `${profile.wallet_pubkey.slice(0, 4)}...${profile.wallet_pubkey.slice(-4)}`,
+              })}
+            </p>
           </div>
         )}
 
-        {/* Success Message */}
-        {profile.organic_id && (
-          <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg shadow-sm p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              🎉 {t('verifiedMemberTitle')}
-            </h3>
-            <p className="text-sm text-gray-600">{t('verifiedMemberDescription')}</p>
+        {profile.wallet_pubkey && (
+          <div className="mb-4">
+            <label className="block text-xs font-medium text-gray-500 uppercase mb-2">
+              {t('linkedWallet')}
+            </label>
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+              <p className="text-xs font-mono text-gray-700 break-all mb-3">
+                {profile.wallet_pubkey}
+              </p>
+              {tokenBalance !== null && connected && publicKey && !walletMismatch && (
+                <div className="flex items-center">
+                  <span className="text-xs font-medium text-gray-500 mr-2">{t('orgBalance')}</span>
+                  <span className="text-sm font-semibold text-organic-orange">
+                    {tokenBalance.toFixed(2)}
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
         )}
+
+        {connected && publicKey && !profile.wallet_pubkey && (
+          <button
+            onClick={handleLinkWallet}
+            disabled={linkingWallet}
+            className="w-full bg-organic-orange hover:bg-orange-600 text-white font-medium py-2.5 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+          >
+            {linkingWallet ? t('linkingWallet') : t('linkWalletToProfile')}
+          </button>
+        )}
+      </div>
+
+      {/* Get Organic ID Section */}
+      {profile.wallet_pubkey && !profile.organic_id && (
+        <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-lg shadow-sm p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-2">{t('getYourOrganicId')}</h2>
+          <p className="text-sm text-gray-600 mb-4">{t('holdTokensDescription')}</p>
+
+          {tokenBalance !== null &&
+            tokenBalance > 0 &&
+            connected &&
+            publicKey &&
+            !walletMismatch && (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
+                <p className="text-sm text-green-700 font-medium">
+                  ✓ {t('linkedWalletHoldsTokens', { balance: tokenBalance.toFixed(2) })}
+                </p>
+              </div>
+            )}
+
+          <button
+            onClick={handleGetOrganicId}
+            disabled={gettingOrganicId}
+            className="bg-organic-orange hover:bg-orange-600 text-white font-medium py-2.5 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+          >
+            {gettingOrganicId ? t('verifying') : t('getOrganicId')}
+          </button>
+        </div>
+      )}
+
+      {/* Success Message */}
+      {profile.organic_id && (
+        <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg shadow-sm p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            🎉 {t('verifiedMemberTitle')}
+          </h3>
+          <p className="text-sm text-gray-600">{t('verifiedMemberDescription')}</p>
+        </div>
+      )}
     </PageContainer>
   );
 }

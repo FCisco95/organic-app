@@ -91,104 +91,104 @@ export default function NewProposalPage() {
 
   return (
     <PageContainer width="narrow">
-        {/* Header */}
-        <div className="mb-8">
-          <Link
-            href="/proposals"
-            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            {t('backToProposals')}
-          </Link>
-          <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
-          <p className="text-gray-600 mt-1">{t('subtitle')}</p>
-        </div>
+      {/* Header */}
+      <div className="mb-8">
+        <Link
+          href="/proposals"
+          className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          {t('backToProposals')}
+        </Link>
+        <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
+        <p className="text-gray-600 mt-1">{t('subtitle')}</p>
+      </div>
 
-        {/* Form */}
-        <form onSubmit={(e) => handleSubmit(e, 'submitted')}>
-          <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
-            {/* Title */}
-            <div>
-              <label htmlFor="title" className="block text-sm font-medium text-gray-900 mb-2">
-                {t('labelTitle')}
-              </label>
-              <input
-                type="text"
-                id="title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder={t('placeholderTitle')}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
-                maxLength={200}
-                required
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                {t('charactersCount', { count: title.length, max: 200 })}
-              </p>
-            </div>
-
-            {/* Body */}
-            <div>
-              <label htmlFor="body" className="block text-sm font-medium text-gray-900 mb-2">
-                {t('labelDescription')}
-              </label>
-              <textarea
-                id="body"
-                value={body}
-                onChange={(e) => setBody(e.target.value)}
-                placeholder={t('placeholderDescription')}
-                rows={12}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none"
-                required
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                {t('charactersCountNoMax', { count: body.length })}
-              </p>
-            </div>
-
-            {/* Guidelines */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h3 className="font-semibold text-blue-900 mb-2">{t('guidelinesTitle')}</h3>
-              <ul className="text-sm text-blue-800 space-y-1">
-                <li>{t('guideline1')}</li>
-                <li>{t('guideline2')}</li>
-                <li>{t('guideline3')}</li>
-                <li>{t('guideline4')}</li>
-                <li>{t('guideline5')}</li>
-              </ul>
-            </div>
-
-            {/* Actions */}
-            <div className="flex flex-col sm:flex-row gap-3">
-              <button
-                type="button"
-                onClick={(e) => handleSubmit(e as any, 'draft')}
-                disabled={submitting}
-                className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {t('saveDraft')}
-              </button>
-              <button
-                type="submit"
-                disabled={submitting}
-                className="flex-1 px-6 py-3 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {submitting ? t('submitting') : t('submitProposal')}
-              </button>
-            </div>
+      {/* Form */}
+      <form onSubmit={(e) => handleSubmit(e, 'submitted')}>
+        <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
+          {/* Title */}
+          <div>
+            <label htmlFor="title" className="block text-sm font-medium text-gray-900 mb-2">
+              {t('labelTitle')}
+            </label>
+            <input
+              type="text"
+              id="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder={t('placeholderTitle')}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
+              maxLength={200}
+              required
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              {t('charactersCount', { count: title.length, max: 200 })}
+            </p>
           </div>
-        </form>
 
-        {/* Info */}
-        <div className="mt-6 bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-lg p-6">
-          <h3 className="font-semibold text-gray-900 mb-2">{t('nextTitle')}</h3>
-          <ul className="text-sm text-gray-700 space-y-2">
-            <li>{t('nextStep1')}</li>
-            <li>{t('nextStep2')}</li>
-            <li>{t('nextStep3')}</li>
-            <li>{t('nextStep4')}</li>
-          </ul>
+          {/* Body */}
+          <div>
+            <label htmlFor="body" className="block text-sm font-medium text-gray-900 mb-2">
+              {t('labelDescription')}
+            </label>
+            <textarea
+              id="body"
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              placeholder={t('placeholderDescription')}
+              rows={12}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none"
+              required
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              {t('charactersCountNoMax', { count: body.length })}
+            </p>
+          </div>
+
+          {/* Guidelines */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h3 className="font-semibold text-blue-900 mb-2">{t('guidelinesTitle')}</h3>
+            <ul className="text-sm text-blue-800 space-y-1">
+              <li>{t('guideline1')}</li>
+              <li>{t('guideline2')}</li>
+              <li>{t('guideline3')}</li>
+              <li>{t('guideline4')}</li>
+              <li>{t('guideline5')}</li>
+            </ul>
+          </div>
+
+          {/* Actions */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button
+              type="button"
+              onClick={(e) => handleSubmit(e as any, 'draft')}
+              disabled={submitting}
+              className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {t('saveDraft')}
+            </button>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="flex-1 px-6 py-3 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {submitting ? t('submitting') : t('submitProposal')}
+            </button>
+          </div>
         </div>
+      </form>
+
+      {/* Info */}
+      <div className="mt-6 bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-lg p-6">
+        <h3 className="font-semibold text-gray-900 mb-2">{t('nextTitle')}</h3>
+        <ul className="text-sm text-gray-700 space-y-2">
+          <li>{t('nextStep1')}</li>
+          <li>{t('nextStep2')}</li>
+          <li>{t('nextStep3')}</li>
+          <li>{t('nextStep4')}</li>
+        </ul>
+      </div>
     </PageContainer>
   );
 }

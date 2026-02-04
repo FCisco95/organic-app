@@ -26,9 +26,7 @@ export default function Home() {
           </h1>
 
           {/* Subtitle */}
-          <p className="mt-4 text-lg text-gray-500 leading-relaxed max-w-lg">
-            {t('description')}
-          </p>
+          <p className="mt-4 text-lg text-gray-500 leading-relaxed max-w-lg">{t('description')}</p>
 
           {/* CTAs — unauthenticated */}
           {!user && (
@@ -83,11 +81,13 @@ export default function Home() {
 
       {/* Feature cards */}
       <section className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        {([
-          { emoji: '📝', titleKey: 'proposalsTitle', descKey: 'proposalsDescription' },
-          { emoji: '✅', titleKey: 'tasksTitle', descKey: 'tasksDescription' },
-          { emoji: '🎫', titleKey: 'organicIdTitle', descKey: 'organicIdDescription' },
-        ] as const).map((card) => (
+        {(
+          [
+            { emoji: '📝', titleKey: 'proposalsTitle', descKey: 'proposalsDescription' },
+            { emoji: '✅', titleKey: 'tasksTitle', descKey: 'tasksDescription' },
+            { emoji: '🎫', titleKey: 'organicIdTitle', descKey: 'organicIdDescription' },
+          ] as const
+        ).map((card) => (
           <div
             key={card.titleKey}
             className="group relative rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200/70 transition-all duration-200 hover:shadow-lg hover:ring-orange-200/60 hover:-translate-y-0.5"
@@ -98,9 +98,7 @@ export default function Home() {
             <h3 className="text-base font-semibold text-gray-900 tracking-tight">
               {t(card.titleKey)}
             </h3>
-            <p className="mt-1.5 text-sm leading-relaxed text-gray-500">
-              {t(card.descKey)}
-            </p>
+            <p className="mt-1.5 text-sm leading-relaxed text-gray-500">{t(card.descKey)}</p>
           </div>
         ))}
       </section>

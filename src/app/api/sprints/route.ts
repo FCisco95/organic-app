@@ -60,7 +60,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { name, start_at, end_at, status, capacity_points } = body;
+    const { name, start_at, end_at, status, capacity_points, goal } = body;
 
     if (!name || !start_at || !end_at) {
       return NextResponse.json(
@@ -77,6 +77,7 @@ export async function POST(request: Request) {
         end_at,
         status: status || 'planning',
         capacity_points: capacity_points ?? null,
+        goal: goal || null,
       })
       .select()
       .single();

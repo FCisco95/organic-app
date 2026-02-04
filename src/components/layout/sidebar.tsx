@@ -6,22 +6,9 @@ import { useAuth } from '@/features/auth/context';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { useSidebar } from './sidebar-context';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import {
-  Home,
-  CheckSquare,
-  Zap,
-  Vote,
-  Trophy,
-  User,
-  LogOut,
-} from 'lucide-react';
+import { Home, CheckSquare, Zap, Vote, Trophy, User, LogOut } from 'lucide-react';
 
 interface NavItem {
   href: string;
@@ -48,8 +35,7 @@ export function Sidebar() {
     { href: '/profile', labelKey: 'profile', icon: User, show: !!user },
   ];
 
-  const isActive = (href: string) =>
-    href === '/' ? pathname === '/' : pathname.startsWith(href);
+  const isActive = (href: string) => (href === '/' ? pathname === '/' : pathname.startsWith(href));
 
   return (
     <aside
@@ -59,7 +45,9 @@ export function Sidebar() {
       )}
     >
       {/* Logo */}
-      <div className={cn('flex items-center h-20 px-3', collapsed ? 'justify-center' : 'gap-3 px-4')}>
+      <div
+        className={cn('flex items-center h-20 px-3', collapsed ? 'justify-center' : 'gap-3 px-4')}
+      >
         <Link href="/" className="flex items-center gap-3">
           <Image
             src="/organic-logo.png"
@@ -119,11 +107,7 @@ export function Sidebar() {
                 )
             )}
             {user && (
-              <SignOutButton
-                label={t('signOut')}
-                collapsed={collapsed}
-                onSignOut={signOut}
-              />
+              <SignOutButton label={t('signOut')} collapsed={collapsed} onSignOut={signOut} />
             )}
           </nav>
         </TooltipProvider>

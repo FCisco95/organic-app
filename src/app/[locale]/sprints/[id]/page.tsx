@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import { Link, useRouter } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
-import { Sprint, SprintFormData, SprintTask } from '@/features/tasks';
+import { Sprint, SprintFormData, SprintTask, SprintSnapshot } from '@/features/sprints';
+import { useStartSprint, useCompleteSprint } from '@/features/sprints';
 
 import {
   Calendar,
@@ -19,19 +20,26 @@ import {
   Timer,
   X,
   Save,
+  Play,
 } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
+import toast from 'react-hot-toast';
 import { PageContainer } from '@/components/layout';
+import { SprintSnapshotCard } from '@/components/sprints/sprint-snapshot-card';
+import { SprintStartDialog } from '@/components/sprints/sprint-start-dialog';
+import { SprintCompleteDialog } from '@/components/sprints/sprint-complete-dialog';
 
 export default function SprintDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { user, profile } = useAuth();
   const t = useTranslations('SprintDetail');
+  const tSprints = useTranslations('Sprints');
   const sprintId = typeof params.id === 'string' ? params.id : params.id?.[0];
   const [sprint, setSprint] = useState<Sprint | null>(null);
   const [tasks, setTasks] = useState<SprintTask[]>([]);
+  const [snapshot, setSnapshot] = useState<SprintSnapshot | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Edit/Delete state
@@ -45,7 +53,15 @@ export default function SprintDetailPage() {
     end_at: '',
     status: 'planning',
     capacity_points: '',
+    goal: '',
   });
+
+  // Lifecycle dialogs
+  const [showStartDialog, setShowStartDialog] = useState(false);
+  const [showCompleteDialog, setShowCompleteDialog] = useState(false);
+  const [planningSprints, setPlanningSprints] = useState<Sprint[]>([]);
+  const startSprintMutation = useStartSprint();
+  const completeSprintMutation = useCompleteSprint();
 
   const fetchSprintDetails = useCallback(async () => {
     if (!sprintId) return;
@@ -57,6 +73,7 @@ export default function SprintDetailPage() {
       if (response.ok) {
         setSprint(data.sprint);
         setTasks(data.tasks || []);
+        setSnapshot(data.snapshot || null);
       } else {
         console.error('Error fetching sprint:', data.error);
       }
@@ -73,6 +90,22 @@ export default function SprintDetailPage() {
     }
   }, [fetchSprintDetails, sprintId]);
 
+  // Fetch planning sprints for complete dialog
+  useEffect(() => {
+    const fetchPlanningSprints = async () => {
+      try {
+        const response = await fetch('/api/sprints');
+        const data = await response.json();
+        if (response.ok) {
+          setPlanningSprints((data.sprints || []).filter((s: Sprint) => s.status === 'planning'));
+        }
+      } catch {
+        // ignore
+      }
+    };
+    fetchPlanningSprints();
+  }, []);
+
   const openEditModal = () => {
     if (sprint) {
       setEditForm({
@@ -81,6 +114,7 @@ export default function SprintDetailPage() {
         end_at: sprint.end_at.split('T')[0],
         status: sprint.status ?? 'planning',
         capacity_points: sprint.capacity_points == null ? '' : String(sprint.capacity_points),
+        goal: sprint.goal ?? '',
       });
       setShowEditModal(true);
     }
@@ -98,8 +132,8 @@ export default function SprintDetailPage() {
           name: editForm.name,
           start_at: editForm.start_at,
           end_at: editForm.end_at,
-          status: editForm.status,
           capacity_points: editForm.capacity_points ? Number(editForm.capacity_points) : null,
+          goal: editForm.goal || null,
         }),
       });
 
@@ -142,6 +176,56 @@ export default function SprintDetailPage() {
     }
   };
 
+  // Lifecycle handlers
+  const handleStartSprint = async () => {
+    if (!sprint) return;
+    try {
+      await startSprintMutation.mutateAsync(sprint.id);
+      setShowStartDialog(false);
+      toast.success(tSprints('startSprintButton'));
+      await fetchSprintDetails();
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
+
+  const handleCompleteSprint = async (
+    incompleteAction: 'backlog' | 'next_sprint',
+    nextSprintId?: string
+  ) => {
+    if (!sprint) return;
+    try {
+      await completeSprintMutation.mutateAsync({
+        sprintId: sprint.id,
+        incompleteAction,
+        nextSprintId,
+      });
+      setShowCompleteDialog(false);
+      toast.success(tSprints('completeSprintButton'));
+      await fetchSprintDetails();
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
+
+  const completeStats = useMemo(() => {
+    const total = tasks.length;
+    const done = tasks.filter((t) => t.status === 'done').length;
+    const incomplete = total - done;
+    const totalPts = tasks.reduce((sum, t) => sum + (t.points || 0), 0);
+    const donePts = tasks
+      .filter((t) => t.status === 'done')
+      .reduce((sum, t) => sum + (t.points || 0), 0);
+    return {
+      totalTasks: total,
+      completedTasks: done,
+      incompleteTasks: incomplete,
+      totalPoints: totalPts,
+      completedPoints: donePts,
+      completionRate: total > 0 ? Number(((done / total) * 100).toFixed(1)) : 0,
+    };
+  }, [tasks]);
+
   if (loading) {
     return (
       <PageContainer width="wide">
@@ -156,18 +240,18 @@ export default function SprintDetailPage() {
   if (!sprint) {
     return (
       <PageContainer width="wide">
-          <div className="text-center py-12">
-            <AlertCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('notFoundTitle')}</h3>
-            <p className="text-gray-500 mb-6">{t('notFoundDescription')}</p>
-            <Link
-              href="/sprints"
-              className="inline-flex items-center gap-2 text-organic-orange hover:text-orange-600"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              {t('backToSprints')}
-            </Link>
-          </div>
+        <div className="text-center py-12">
+          <AlertCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">{t('notFoundTitle')}</h3>
+          <p className="text-gray-500 mb-6">{t('notFoundDescription')}</p>
+          <Link
+            href="/sprints"
+            className="inline-flex items-center gap-2 text-organic-orange hover:text-orange-600"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            {t('backToSprints')}
+          </Link>
+        </div>
       </PageContainer>
     );
   }
@@ -302,282 +386,308 @@ export default function SprintDetailPage() {
 
   return (
     <PageContainer width="wide">
-        {/* Back Button */}
-        <Link
-          href="/sprints"
-          className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          {t('backToSprints')}
-        </Link>
+      {/* Back Button */}
+      <Link
+        href="/sprints"
+        className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        {t('backToSprints')}
+      </Link>
 
-        {/* Sprint Header */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex-1">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{sprint.name}</h1>
-              <div className="flex items-center gap-4 text-sm text-gray-600">
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-gray-400" />
-                  <span>
-                    {formatDate(sprint.start_at)} - {formatDate(sprint.end_at)}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-gray-400" />
-                  <span>{getDuration(sprint.start_at, sprint.end_at)}</span>
-                </div>
+      {/* Sprint Header */}
+      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex-1">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">{sprint.name}</h1>
+            {sprint.goal && <p className="text-gray-600 mb-3">{sprint.goal}</p>}
+            <div className="flex items-center gap-4 text-sm text-gray-600">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-gray-400" />
+                <span>
+                  {formatDate(sprint.start_at)} - {formatDate(sprint.end_at)}
+                </span>
               </div>
-              <div className="text-sm text-gray-500 mt-2">{capacityUsedLabel}</div>
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4 text-gray-400" />
+                <span>{getDuration(sprint.start_at, sprint.end_at)}</span>
+              </div>
             </div>
-            <div className="flex items-center gap-3">
-              <span
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border ${getStatusBadge(
-                  sprint.status ?? 'planning'
-                )}`}
+            <div className="text-sm text-gray-500 mt-2">{capacityUsedLabel}</div>
+          </div>
+          <div className="flex items-center gap-3">
+            <span
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border ${getStatusBadge(
+                sprint.status ?? 'planning'
+              )}`}
+            >
+              {t(`status.${sprint.status ?? 'planning'}`)}
+            </span>
+            {canManageSprint && sprint.status === 'planning' && (
+              <button
+                onClick={() => setShowStartDialog(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors"
+                title={t('startSprint')}
               >
-                {t(`status.${sprint.status ?? 'planning'}`)}
-              </span>
-              {canManageSprint && (
-                <button
-                  onClick={openEditModal}
-                  className="p-2 text-gray-400 hover:text-organic-orange transition-colors"
-                  title={t('editSprint')}
-                >
-                  <Edit className="w-5 h-5" />
-                </button>
-              )}
-              {profile?.role === 'admin' && (
-                <button
-                  onClick={() => setShowDeleteConfirm(true)}
-                  className="p-2 text-gray-400 hover:text-red-600 transition-colors"
-                  title={t('deleteSprint')}
-                >
-                  <Trash2 className="w-5 h-5" />
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Progress Bar */}
-          <div className="mt-6">
-            <div className="flex items-center justify-between text-sm mb-2">
-              <span className="font-medium text-gray-700">{t('overallProgress')}</span>
-              <span className="font-bold text-gray-900">{progressPercentage}%</span>
-            </div>
-            <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-organic-orange to-organic-yellow transition-all"
-                style={{ width: `${progressPercentage}%` }}
-              ></div>
-            </div>
-          </div>
-        </div>
-
-        {/* Sprint Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Target className="w-5 h-5 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">{t('totalTasks')}</p>
-                <p className="text-2xl font-bold text-gray-900">{totalTasks}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                <CheckCircle2 className="w-5 h-5 text-green-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">{t('completed')}</p>
-                <p className="text-2xl font-bold text-gray-900">{completedTasks}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Timer className="w-5 h-5 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">{t('inProgress')}</p>
-                <p className="text-2xl font-bold text-gray-900">{inProgressTasks}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-organic-orange/10 rounded-lg flex items-center justify-center">
-                <span className="text-xl font-bold text-organic-orange">★</span>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">{t('points')}</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {completedPoints}/{totalPoints}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                <Target className="w-5 h-5 text-gray-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">{t('capacity')}</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {sprint.capacity_points != null ? sprint.capacity_points : t('uncapped')}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Burndown Chart */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">{t('burndownTitle')}</h2>
-            <div className="flex items-center gap-4 text-xs text-gray-500">
-              <span className="inline-flex items-center gap-2">
-                <span className="w-3 h-0.5 bg-gray-300 block"></span>
-                {t('burndownIdeal')}
-              </span>
-              <span className="inline-flex items-center gap-2">
-                <span className="w-3 h-0.5 bg-organic-orange block"></span>
-                {t('burndownActual')}
-              </span>
-            </div>
-          </div>
-          {totalPoints === 0 ? (
-            <div className="text-sm text-gray-500">{t('burndownEmpty')}</div>
-          ) : (
-            <div className="w-full overflow-x-auto">
-              <svg
-                viewBox={`0 0 ${chartWidth} ${chartHeight}`}
-                className="w-full h-56"
-                role="img"
-                aria-label={t('burndownChartLabel')}
+                <Play className="w-4 h-4" />
+                {t('startSprint')}
+              </button>
+            )}
+            {canManageSprint && sprint.status === 'active' && (
+              <button
+                onClick={() => setShowCompleteDialog(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
+                title={t('completeSprint')}
               >
-                <rect x="0" y="0" width={chartWidth} height={chartHeight} fill="#ffffff" />
-                <line
-                  x1={chartPadding}
-                  y1={chartPadding}
-                  x2={chartPadding}
-                  y2={chartHeight - chartPadding}
-                  stroke="#e5e7eb"
-                  strokeWidth="1"
-                />
-                <line
-                  x1={chartPadding}
-                  y1={chartHeight - chartPadding}
-                  x2={chartWidth - chartPadding}
-                  y2={chartHeight - chartPadding}
-                  stroke="#e5e7eb"
-                  strokeWidth="1"
-                />
-                <polyline
-                  fill="none"
-                  stroke="#d1d5db"
-                  strokeWidth="2"
-                  points={buildPolyline(burndownIdeal)}
-                />
-                <polyline
-                  fill="none"
-                  stroke="#f97316"
-                  strokeWidth="3"
-                  points={buildPolyline(burndownActual)}
-                />
-              </svg>
-            </div>
-          )}
+                <CheckCircle2 className="w-4 h-4" />
+                {t('completeSprint')}
+              </button>
+            )}
+            {canManageSprint && sprint.status !== 'completed' && (
+              <button
+                onClick={openEditModal}
+                className="p-2 text-gray-400 hover:text-organic-orange transition-colors"
+                title={t('editSprint')}
+              >
+                <Edit className="w-5 h-5" />
+              </button>
+            )}
+            {profile?.role === 'admin' && (
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                title={t('deleteSprint')}
+              >
+                <Trash2 className="w-5 h-5" />
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Tasks List */}
-        <div className="bg-white rounded-xl border border-gray-200">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">{t('sprintTasks')}</h2>
+        {/* Progress Bar */}
+        <div className="mt-6">
+          <div className="flex items-center justify-between text-sm mb-2">
+            <span className="font-medium text-gray-700">{t('overallProgress')}</span>
+            <span className="font-bold text-gray-900">{progressPercentage}%</span>
           </div>
+          <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-organic-orange to-organic-yellow transition-all"
+              style={{ width: `${progressPercentage}%` }}
+            ></div>
+          </div>
+        </div>
+      </div>
 
-          {tasks.length === 0 ? (
-            <div className="p-8 text-center">
-              <Target className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">{t('noTasksTitle')}</h3>
-              <p className="text-gray-500">{t('noTasksDescription')}</p>
+      {/* Snapshot for completed sprints */}
+      {sprint.status === 'completed' && snapshot && (
+        <div className="mb-6">
+          <SprintSnapshotCard snapshot={snapshot} />
+        </div>
+      )}
+
+      {/* Sprint Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+              <Target className="w-5 h-5 text-blue-600" />
             </div>
-          ) : (
-            <div className="divide-y divide-gray-100">
-              {tasks.map((task) => (
-                <Link
-                  key={task.id}
-                  href={`/tasks/${task.id}`}
-                  className="block px-6 py-4 hover:bg-gray-50 transition-colors"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 className="font-medium text-gray-900 hover:text-organic-orange transition-colors">
-                          {task.title}
-                        </h3>
-                        <span
-                          className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${getTaskStatusBadge(
-                            task.status
-                          )}`}
-                        >
-                          {getTaskStatusIcon(task.status)}
-                          {t(`taskStatus.${task.status}`)}
-                        </span>
-                        <span
-                          className={`px-2 py-0.5 rounded-full text-xs font-medium ${getPriorityBadge(task.priority)}`}
-                        >
-                          {t(`priority.${task.priority}`)}
-                        </span>
-                      </div>
-                      {task.description && (
-                        <p className="text-sm text-gray-600 line-clamp-2 mb-2">
-                          {task.description}
-                        </p>
+            <div>
+              <p className="text-sm text-gray-600">{t('totalTasks')}</p>
+              <p className="text-2xl font-bold text-gray-900">{totalTasks}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+              <CheckCircle2 className="w-5 h-5 text-green-600" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">{t('completed')}</p>
+              <p className="text-2xl font-bold text-gray-900">{completedTasks}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+              <Timer className="w-5 h-5 text-blue-600" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">{t('inProgress')}</p>
+              <p className="text-2xl font-bold text-gray-900">{inProgressTasks}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-organic-orange/10 rounded-lg flex items-center justify-center">
+              <span className="text-xl font-bold text-organic-orange">★</span>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">{t('points')}</p>
+              <p className="text-2xl font-bold text-gray-900">
+                {completedPoints}/{totalPoints}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+              <Target className="w-5 h-5 text-gray-600" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">{t('capacity')}</p>
+              <p className="text-2xl font-bold text-gray-900">
+                {sprint.capacity_points != null ? sprint.capacity_points : t('uncapped')}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Burndown Chart */}
+      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-gray-900">{t('burndownTitle')}</h2>
+          <div className="flex items-center gap-4 text-xs text-gray-500">
+            <span className="inline-flex items-center gap-2">
+              <span className="w-3 h-0.5 bg-gray-300 block"></span>
+              {t('burndownIdeal')}
+            </span>
+            <span className="inline-flex items-center gap-2">
+              <span className="w-3 h-0.5 bg-organic-orange block"></span>
+              {t('burndownActual')}
+            </span>
+          </div>
+        </div>
+        {totalPoints === 0 ? (
+          <div className="text-sm text-gray-500">{t('burndownEmpty')}</div>
+        ) : (
+          <div className="w-full overflow-x-auto">
+            <svg
+              viewBox={`0 0 ${chartWidth} ${chartHeight}`}
+              className="w-full h-56"
+              role="img"
+              aria-label={t('burndownChartLabel')}
+            >
+              <rect x="0" y="0" width={chartWidth} height={chartHeight} fill="#ffffff" />
+              <line
+                x1={chartPadding}
+                y1={chartPadding}
+                x2={chartPadding}
+                y2={chartHeight - chartPadding}
+                stroke="#e5e7eb"
+                strokeWidth="1"
+              />
+              <line
+                x1={chartPadding}
+                y1={chartHeight - chartPadding}
+                x2={chartWidth - chartPadding}
+                y2={chartHeight - chartPadding}
+                stroke="#e5e7eb"
+                strokeWidth="1"
+              />
+              <polyline
+                fill="none"
+                stroke="#d1d5db"
+                strokeWidth="2"
+                points={buildPolyline(burndownIdeal)}
+              />
+              <polyline
+                fill="none"
+                stroke="#f97316"
+                strokeWidth="3"
+                points={buildPolyline(burndownActual)}
+              />
+            </svg>
+          </div>
+        )}
+      </div>
+
+      {/* Tasks List */}
+      <div className="bg-white rounded-xl border border-gray-200">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-900">{t('sprintTasks')}</h2>
+        </div>
+
+        {tasks.length === 0 ? (
+          <div className="p-8 text-center">
+            <Target className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('noTasksTitle')}</h3>
+            <p className="text-gray-500">{t('noTasksDescription')}</p>
+          </div>
+        ) : (
+          <div className="divide-y divide-gray-100">
+            {tasks.map((task) => (
+              <Link
+                key={task.id}
+                href={`/tasks/${task.id}`}
+                className="block px-6 py-4 hover:bg-gray-50 transition-colors"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-2">
+                      <h3 className="font-medium text-gray-900 hover:text-organic-orange transition-colors">
+                        {task.title}
+                      </h3>
+                      <span
+                        className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${getTaskStatusBadge(
+                          task.status
+                        )}`}
+                      >
+                        {getTaskStatusIcon(task.status)}
+                        {t(`taskStatus.${task.status}`)}
+                      </span>
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-xs font-medium ${getPriorityBadge(task.priority)}`}
+                      >
+                        {t(`priority.${task.priority}`)}
+                      </span>
+                    </div>
+                    {task.description && (
+                      <p className="text-sm text-gray-600 line-clamp-2 mb-2">{task.description}</p>
+                    )}
+                    <div className="flex items-center gap-4 text-xs text-gray-500">
+                      {task.assignee && (
+                        <div className="flex items-center gap-2">
+                          {task.assignee.avatar_url ? (
+                            <Image
+                              src={task.assignee.avatar_url}
+                              alt={getDisplayName(task.assignee)}
+                              width={20}
+                              height={20}
+                              className="rounded-full"
+                            />
+                          ) : (
+                            <div className="w-5 h-5 rounded-full bg-gradient-to-br from-organic-orange to-organic-yellow flex items-center justify-center">
+                              <span className="text-white text-xs font-bold">
+                                {getDisplayName(task.assignee)[0].toUpperCase()}
+                              </span>
+                            </div>
+                          )}
+                          <span>{getDisplayName(task.assignee)}</span>
+                        </div>
                       )}
-                      <div className="flex items-center gap-4 text-xs text-gray-500">
-                        {task.assignee && (
-                          <div className="flex items-center gap-2">
-                            {task.assignee.avatar_url ? (
-                              <Image
-                                src={task.assignee.avatar_url}
-                                alt={getDisplayName(task.assignee)}
-                                width={20}
-                                height={20}
-                                className="rounded-full"
-                              />
-                            ) : (
-                              <div className="w-5 h-5 rounded-full bg-gradient-to-br from-organic-orange to-organic-yellow flex items-center justify-center">
-                                <span className="text-white text-xs font-bold">
-                                  {getDisplayName(task.assignee)[0].toUpperCase()}
-                                </span>
-                              </div>
-                            )}
-                            <span>{getDisplayName(task.assignee)}</span>
-                          </div>
-                        )}
-                        <span className="flex items-center gap-1">
-                          <span className="text-organic-orange">★</span>
-                          {t('pointsLabel', { points: task.points ?? 0 })}
-                        </span>
-                      </div>
+                      <span className="flex items-center gap-1">
+                        <span className="text-organic-orange">★</span>
+                        {t('pointsLabel', { points: task.points ?? 0 })}
+                      </span>
                     </div>
                   </div>
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Edit Sprint Modal */}
       {showEditModal && (
@@ -607,6 +717,19 @@ export default function SprintDetailPage() {
                 />
               </div>
 
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t('formGoal')}
+                </label>
+                <textarea
+                  rows={2}
+                  value={editForm.goal}
+                  onChange={(e) => setEditForm({ ...editForm, goal: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange transition-colors resize-none"
+                  placeholder={t('formGoalPlaceholder')}
+                />
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -630,23 +753,6 @@ export default function SprintDetailPage() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange transition-colors"
                   />
                 </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t('formStatus')}
-                </label>
-                <select
-                  value={editForm.status}
-                  onChange={(e) =>
-                    setEditForm({ ...editForm, status: e.target.value as SprintFormData['status'] })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange transition-colors"
-                >
-                  <option value="planning">{t('status.planning')}</option>
-                  <option value="active">{t('status.active')}</option>
-                  <option value="completed">{t('status.completed')}</option>
-                </select>
               </div>
 
               <div>
@@ -710,6 +816,31 @@ export default function SprintDetailPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Start Sprint Dialog */}
+      {showStartDialog && sprint && (
+        <SprintStartDialog
+          open={showStartDialog}
+          sprint={sprint}
+          taskCount={tasks.length}
+          loading={startSprintMutation.isPending}
+          onClose={() => setShowStartDialog(false)}
+          onConfirm={handleStartSprint}
+        />
+      )}
+
+      {/* Complete Sprint Dialog */}
+      {showCompleteDialog && sprint && (
+        <SprintCompleteDialog
+          open={showCompleteDialog}
+          sprint={sprint}
+          stats={completeStats}
+          planningSprints={planningSprints}
+          loading={completeSprintMutation.isPending}
+          onClose={() => setShowCompleteDialog(false)}
+          onConfirm={handleCompleteSprint}
+        />
       )}
     </PageContainer>
   );

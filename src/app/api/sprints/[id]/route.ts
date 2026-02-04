@@ -52,9 +52,21 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       .eq('sprint_id', id)
       .order('created_at', { ascending: false });
 
+    // For completed sprints, also return the snapshot
+    let snapshot = null;
+    if (sprint.status === 'completed') {
+      const { data: snapshotData } = await supabase
+        .from('sprint_snapshots')
+        .select('*')
+        .eq('sprint_id', id)
+        .single();
+      snapshot = snapshotData;
+    }
+
     return NextResponse.json({
       sprint,
       tasks: tasks || [],
+      snapshot,
     });
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
@@ -92,7 +104,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     }
 
     const body = await request.json();
-    const { name, start_at, end_at, status, capacity_points } = body;
+    const { name, start_at, end_at, status, capacity_points, goal } = body;
 
     const updates: Database['public']['Tables']['sprints']['Update'] = {};
     if (name !== undefined) updates.name = name;
@@ -100,6 +112,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     if (end_at !== undefined) updates.end_at = end_at;
     if (status !== undefined) updates.status = status;
     if (capacity_points !== undefined) updates.capacity_points = capacity_points;
+    if (goal !== undefined) updates.goal = goal;
 
     const { data: sprint, error } = await supabase
       .from('sprints')

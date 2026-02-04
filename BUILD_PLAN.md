@@ -229,6 +229,7 @@
 - [ ] Achievements table
 - [ ] Activity streak tracking
 - [ ] Point balances ledger
+
 ### Testing
 
 - [ ] Unit tests for utility functions
