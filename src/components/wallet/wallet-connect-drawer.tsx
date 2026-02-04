@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletReadyState } from '@solana/wallet-adapter-base';
 import { X, Search, ChevronRight } from 'lucide-react';
@@ -294,9 +295,9 @@ export function WalletConnectDrawer({ isOpen, onClose }: WalletConnectDrawerProp
     !!connectedAddress && !!profile?.wallet_pubkey && profile.wallet_pubkey === connectedAddress;
   const showLinkCta = !!user && !authLoading && connected && connectedAddress && !isLinked;
 
-  return (
+  const content = (
     <div
-      className="fixed inset-0 z-[100] flex justify-end"
+      className="fixed inset-0 z-[200] flex justify-end"
       onClick={handleBackdropClick}
       role="dialog"
       aria-modal="true"
@@ -495,4 +496,10 @@ export function WalletConnectDrawer({ isOpen, onClose }: WalletConnectDrawerProp
       </div>
     </div>
   );
+
+  if (typeof document === 'undefined') {
+    return content;
+  }
+
+  return createPortal(content, document.body);
 }
