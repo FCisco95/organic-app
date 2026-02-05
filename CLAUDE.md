@@ -163,16 +163,58 @@ Plan next steps
 - Realtime requires `activity_log` added to `supabase_realtime` publication (handled in migration)
 - Delete triggers: `actor_id` uses the row's owner (assignee/creator/commenter) since the actual deleter isn't available in a trigger context
 
-## Workspace Health Summary (Last audit: 2026-01-24)
+## Proposals System (added 2026-02-05)
+
+### What was built
+
+Full proposals feature domain with structured sections, multi-step wizard, and admin workflow.
+
+**Feature domain** (`src/features/proposals/`):
+- Types: `Proposal`, `ProposalListItem`, `ProposalWithRelations`, `ProposalComment`
+- Schemas: Zod validation for creation (per-step wizard), comments, status updates
+- Hooks: React Query hooks for CRUD, comments, status changes, with query key factory pattern
+- Barrel export via `index.ts`
+
+**UI components** (`src/components/proposals/`):
+- `ProposalWizard` — 4-step wizard with per-step validation, edit mode via `?edit=ID`
+- `ProposalSections` — structured sections in single container, legacy body fallback
+- `ProposalCard` — list item with badges
+- `CategoryBadge`, `StatusBadge` — reusable badge components
+
+**API routes** (`src/app/api/proposals/`):
+- CRUD: `route.ts` (list+create), `[id]/route.ts` (get+update+delete)
+- Comments: `[id]/comments/route.ts`
+- Status: `[id]/status/route.ts` (admin transitions)
+
+**Database**: Migration `20260205000000_proposals_structured_sections.sql` adds `proposal_category` enum, structured columns (category, summary, motivation, solution, budget, timeline), composite indexes, and missing DELETE RLS policies.
+
+**i18n**: `ProposalWizard` and `ProposalDetail` namespaces across all 3 languages.
+
+### Key patterns
+
+- 5 categories: feature, governance, treasury, community, development
+- Permission gate: `profile.organic_id IS NOT NULL` (any verified member can create)
+- Legacy compat: `body` column always populated from concatenated sections
+- Edit flow: `/proposals/new?edit=ID` reuses ProposalWizard with fetched `initialData`
+- Voting integration: existing `@/features/voting` hooks and `@/components/voting` components are wired in the detail page
+
+### What to do next
+
+- Wire up voting mechanism (off-chain) — the UI hooks and admin controls exist but need the full voting flow
+- Anti-abuse rules (one live proposal per proposer, cooldown)
+- Proposal templates
+
+## Workspace Health Summary (Last audit: 2026-02-05)
 
 ### What's Solid
 
 - Lint passes with zero errors/warnings
-- React Query properly centralized in `src/features/tasks/hooks.ts`
-- Zod schemas separated in `src/features/tasks/schemas.ts`
-- Barrel exports enable clean imports (`@/features/tasks`)
+- React Query properly centralized in `src/features/tasks/hooks.ts` and `src/features/proposals/hooks.ts`
+- Zod schemas separated in `src/features/tasks/schemas.ts` and `src/features/proposals/schemas.ts`
+- Barrel exports enable clean imports (`@/features/tasks`, `@/features/proposals`)
+- Proposals feature domain fully built: types, schemas, hooks, UI components, API routes
 - Migration files well-organized and timestamped
-- i18n implementation complete (en, pt-PT, zh-CN)
+- i18n implementation complete (en, pt-PT, zh-CN) — now includes ProposalWizard and ProposalDetail namespaces
 - Wallet security: nonce validation with 5-minute TTL
 - RPC caching prevents 429 rate limit errors
 
@@ -180,8 +222,8 @@ Plan next steps
 
 **Empty scaffolding directories** (intentional placeholders for future work):
 
-- `src/features/{notifications,organic-id,profile,proposals,sprints,voting}/`
-- `src/components/{auth,notifications,proposals,sprints,voting}/`
+- `src/features/{notifications,organic-id,profile,sprints}/`
+- `src/components/{auth,notifications,sprints}/`
 
 **Pending migration**: `supabase/migrations/20260201000000_create_activity_log.sql` needs to be applied to Supabase before the activity dashboard works. See "Activity Dashboard & Live Feed" section above.
 

@@ -82,14 +82,24 @@
 
 ### Phase 7: Proposals System (In Progress)
 
-- [x] Proposal creation form
-- [x] Proposal listing with filters
-- [x] Proposal detail view
-- [ ] Voting mechanism (off-chain)
-- [x] Proposal status workflow (draft → active → passed/rejected)
+- [x] Proposal creation form (multi-step wizard with per-step Zod validation)
+- [x] Proposal listing with filters (status + category dropdowns)
+- [x] Proposal detail view (structured sections, admin panel, comments)
+- [x] Proposal status workflow (draft → submitted → approved/rejected/voting)
 - [x] Discussion/comments on proposals
-- [x] Edit functionality for draft proposals (author/admin)
+- [x] Edit functionality for draft proposals (author/admin, reuses wizard)
 - [x] Delete functionality with confirmation (author/admin)
+- [x] Proposal categories (feature, governance, treasury, community, development)
+- [x] Structured sections: summary, motivation, solution, budget, timeline (separate DB columns)
+- [x] Category + status badge components (CategoryBadge, StatusBadge)
+- [x] ProposalCard list component with category colors
+- [x] Feature domain: types, schemas, hooks, barrel export (`src/features/proposals/`)
+- [x] API routes: CRUD, comments, status changes (`src/app/api/proposals/`)
+- [x] Database migration: proposal_category enum, structured columns, DELETE RLS policies
+- [x] i18n: ProposalWizard + ProposalDetail namespaces across en, pt-PT, zh-CN
+- [x] Legacy backward compat: body column always populated from concatenated sections
+- [x] Detail page UI revamp: removed gradient header, sections in single container with higher contrast
+- [ ] Voting mechanism (off-chain)
 - [ ] Voting model: token-weighted snapshot (1 ORG = 1 vote)
 - [ ] Voting model: quorum 5–10% circulating supply
 - [ ] Voting model: approval threshold >50% YES (configurable for treasury)
@@ -99,7 +109,6 @@
 - [ ] Anti-abuse: one live proposal per proposer + 7-day cooldown
 - [ ] Execution window (3–7 days) + off-chain result handoff
 - [ ] Proposal templates
-- [ ] Proposal categories/tags
 
 ### Phase 8: Treasury Management
 

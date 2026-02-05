@@ -8,6 +8,7 @@ export type SprintStatus = Database['public']['Enums']['sprint_status'];
 export type VoteValue = Database['public']['Enums']['vote_value'];
 export type TaskType = Database['public']['Enums']['task_type'];
 export type ReviewStatus = Database['public']['Enums']['review_status'];
+export type ProposalCategory = 'feature' | 'governance' | 'treasury' | 'community' | 'development';
 export type TaskPriority = Database['public']['Enums']['task_priority'];
 export type ActivityEventType = Database['public']['Enums']['activity_event_type'];
 export type ProposalResult = 'passed' | 'failed' | 'quorum_not_met';
@@ -205,15 +206,21 @@ export type Database = {
         Row: {
           approval_threshold: number | null;
           body: string;
+          budget: string | null;
+          category: ProposalCategory | null;
           closes_at: string | null;
           created_at: string | null;
           created_by: string;
           id: string;
+          motivation: string | null;
           org_id: string | null;
           quorum_required: number | null;
           result: string | null;
           snapshot_taken_at: string | null;
+          solution: string | null;
           status: Database['public']['Enums']['proposal_status'] | null;
+          summary: string | null;
+          timeline: string | null;
           title: string;
           total_circulating_supply: number | null;
           updated_at: string | null;
@@ -223,15 +230,21 @@ export type Database = {
         Insert: {
           approval_threshold?: number | null;
           body: string;
+          budget?: string | null;
+          category?: ProposalCategory | null;
           closes_at?: string | null;
           created_at?: string | null;
           created_by: string;
           id?: string;
+          motivation?: string | null;
           org_id?: string | null;
           quorum_required?: number | null;
           result?: string | null;
           snapshot_taken_at?: string | null;
+          solution?: string | null;
           status?: Database['public']['Enums']['proposal_status'] | null;
+          summary?: string | null;
+          timeline?: string | null;
           title: string;
           total_circulating_supply?: number | null;
           updated_at?: string | null;
@@ -241,15 +254,21 @@ export type Database = {
         Update: {
           approval_threshold?: number | null;
           body?: string;
+          budget?: string | null;
+          category?: ProposalCategory | null;
           closes_at?: string | null;
           created_at?: string | null;
           created_by?: string;
           id?: string;
+          motivation?: string | null;
           org_id?: string | null;
           quorum_required?: number | null;
           result?: string | null;
           snapshot_taken_at?: string | null;
+          solution?: string | null;
           status?: Database['public']['Enums']['proposal_status'] | null;
+          summary?: string | null;
+          timeline?: string | null;
           title?: string;
           total_circulating_supply?: number | null;
           updated_at?: string | null;
@@ -943,6 +962,7 @@ export type Database = {
         | 'proposal_status_changed'
         | 'proposal_deleted'
         | 'vote_cast';
+      proposal_category: 'feature' | 'governance' | 'treasury' | 'community' | 'development';
       proposal_status: 'draft' | 'submitted' | 'approved' | 'rejected' | 'voting';
       review_status: 'pending' | 'approved' | 'rejected' | 'disputed';
       sprint_status: 'planning' | 'active' | 'completed';
@@ -1090,6 +1110,7 @@ export const Constants = {
         'proposal_deleted',
         'vote_cast',
       ],
+      proposal_category: ['feature', 'governance', 'treasury', 'community', 'development'],
       proposal_status: ['draft', 'submitted', 'approved', 'rejected', 'voting'],
       review_status: ['pending', 'approved', 'rejected', 'disputed'],
       sprint_status: ['planning', 'active', 'completed'],

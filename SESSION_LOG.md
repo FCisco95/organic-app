@@ -2,6 +2,58 @@
 
 Add newest entries at the top.
 
+## 2026-02-05 (Session: Proposals System Revamp)
+
+### Proposals Feature Domain
+
+- Created `src/features/proposals/` — types, Zod schemas, React Query hooks, barrel export
+- Types: `Proposal`, `ProposalListItem`, `ProposalWithRelations`, `ProposalComment`, category/status metadata maps
+- Schemas: `createProposalSchema` with per-step wizard validation, `commentSchema`, `statusUpdateSchema`
+- Hooks: `useProposals` (with status + category filters), `useProposal`, `useProposalComments`, `useCreateProposal`, `useUpdateProposal`, `useDeleteProposal`, `useUpdateProposalStatus`, `useAddComment`
+
+### Proposals UI Components
+
+- Created `src/components/proposals/` — CategoryBadge, StatusBadge, ProposalCard, ProposalSections, ProposalWizard
+- ProposalWizard: 4-step wizard (category+title → problem+solution → budget+timeline → review), per-step Zod validation, edit mode via `?edit=ID`
+- ProposalSections: renders structured sections (summary, motivation, solution, budget, timeline) inside a single container with dividers; legacy body fallback for old proposals
+- ProposalCard: list item with category badge, status badge, author, timestamp, comment count
+
+### Proposals API Routes
+
+- `src/app/api/proposals/route.ts` — GET (list with status/category filters) + POST (create, Zod validated)
+- `src/app/api/proposals/[id]/route.ts` — GET (detail with author profile) + PATCH (update draft) + DELETE
+- `src/app/api/proposals/[id]/comments/route.ts` — GET + POST
+- `src/app/api/proposals/[id]/status/route.ts` — PATCH (admin/council status transitions)
+
+### Database
+
+- Migration: `20260205000000_proposals_structured_sections.sql`
+  - Added `proposal_category` enum (feature, governance, treasury, community, development)
+  - Added structured columns: category, summary, motivation, solution, budget, timeline
+  - Added composite indexes for filtering
+  - Added missing DELETE RLS policies (authors for drafts, admins for any)
+- Updated `src/types/database.ts` with new columns, enum, and constants
+
+### Pages Revamped
+
+- `proposals/page.tsx` — refactored to use ProposalCard component + React Query hooks, added category filter dropdown
+- `proposals/new/page.tsx` — refactored to use ProposalWizard component, supports edit mode
+- `proposals/[id]/page.tsx` — refactored to use ProposalSections component, removed gradient header and outer card ring, sections in single container with higher contrast labels
+
+### i18n
+
+- Added `ProposalWizard` namespace (~45 keys) across en, pt-PT, zh-CN
+- Added `ProposalDetail` section keys (sectionSummary, sectionMotivation, etc.)
+- Added `Proposals` category filter keys (filterCategory, categoryAll, etc.)
+
+### Detail Page UI Iteration
+
+- Removed category gradient fade from header
+- Removed outer card ring/shadow border
+- Sections consolidated into single bordered container with `divide-y` dividers
+- Section headings upgraded to `text-base font-semibold text-gray-900` for stronger contrast
+- Section content set to `text-gray-500 text-sm` for visual hierarchy
+
 ## 2026-02-02 (Session: UI Improvements + Sidebar)
 
 - Added app shell with desktop sidebar, mobile sidebar sheet, and top bar for global navigation
