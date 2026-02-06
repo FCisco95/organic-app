@@ -75,8 +75,8 @@
 - [x] Current sprint board/list views
 - [x] Sprint details view with tasks
 - [x] Sprint date range and progress stats
-- [ ] Sprint capacity planning
-- [ ] Sprint burndown charts
+- [x] Sprint capacity planning
+- [x] Sprint burndown charts
 - [x] Active sprint indicator
 - [x] Sprint history and archive
 
@@ -99,12 +99,12 @@
 - [x] i18n: ProposalWizard + ProposalDetail namespaces across en, pt-PT, zh-CN
 - [x] Legacy backward compat: body column always populated from concatenated sections
 - [x] Detail page UI revamp: removed gradient header, sections in single container with higher contrast
-- [ ] Voting mechanism (off-chain)
-- [ ] Voting model: token-weighted snapshot (1 ORG = 1 vote)
-- [ ] Voting model: quorum 5–10% circulating supply
-- [ ] Voting model: approval threshold >50% YES (configurable for treasury)
-- [ ] Voting model: 5-day voting window (configurable)
-- [ ] Voting model: optional abstain counts toward quorum
+- [x] Voting mechanism (off-chain)
+- [x] Voting model: token-weighted snapshot (1 ORG = 1 vote)
+- [x] Voting model: quorum 5–10% circulating supply
+- [x] Voting model: approval threshold >50% YES (configurable for treasury)
+- [x] Voting model: 5-day voting window (configurable)
+- [x] Voting model: optional abstain counts toward quorum
 - [ ] Voting model: proposal threshold (fixed or % supply)
 - [ ] Anti-abuse: one live proposal per proposer + 7-day cooldown
 - [ ] Execution window (3–7 days) + off-chain result handoff
@@ -327,15 +327,12 @@
    - Verify RLS policies working correctly
 
 3. **Sprint/Epoch Management**
-   - Sprint capacity planning
-   - Sprint burndown charts
+   - Validate capacity + burndown calculations with real sprint data
 
 4. **Proposal System MVP**
-   - Add voting UI and vote persistence
-   - Implement vote tallying rules (token-weighted)
-   - Define proposal threshold and cooldown rules
-   - Implement voting snapshot capture at proposal start
-   - Add quorum + approval threshold evaluation
+   - Enforce proposal threshold and cooldown rules
+   - Add proposal templates
+   - Define execution window + off-chain result handoff
 
 5. **Member Directory**
    - Create member listing page
