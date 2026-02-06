@@ -26,6 +26,7 @@
     "tasks": "任务",
     "sprints": "冲刺",
     "leaderboard": "排行榜",
+    "analytics": "数据分析",
     "signOut": "退出登录",
     "signIn": "登录",
     "viewProfile": "查看个人资料",
@@ -850,6 +851,41 @@
       "vote_cast": "{actor} 投票了：{title}",
       "empty": "暂无活动"
     }
+  },
+  "Analytics": {
+    "title": "数据分析",
+    "description": "社区指标、活动趋势和治理洞察",
+    "kpi": {
+      "totalUsers": "总用户数",
+      "orgHolders": "{symbol} 持有者",
+      "orgPrice": "{symbol} 价格",
+      "marketCap": "市值",
+      "tasksCompleted": "已完成任务",
+      "activeProposals": "活跃提案"
+    },
+    "sections": {
+      "governance": "治理"
+    },
+    "charts": {
+      "activityTrends": "活动趋势",
+      "activityTrendsDesc": "过去30天的每日活动",
+      "tasks": "任务",
+      "governance": "治理",
+      "comments": "评论",
+      "memberGrowth": "成员增长",
+      "memberGrowthDesc": "12个月累计成员数",
+      "totalMembers": "总成员数",
+      "taskCompletions": "任务完成情况",
+      "taskCompletionsDesc": "12周内每周完成的任务",
+      "completed": "已完成",
+      "proposalsByCategory": "按类别划分的提案",
+      "votingParticipation": "投票参与",
+      "votes": "{count, plural, one {# 票} other {# 票}}",
+      "yes": "赞成",
+      "no": "反对",
+      "abstain": "弃权"
+    },
+    "empty": "暂无可用数据"
   },
   "common": {
     "loading": "加载中...",

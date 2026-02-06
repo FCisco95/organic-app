@@ -929,7 +929,39 @@ export type Database = {
       };
       check_quorum_met: { Args: { p_proposal_id: string }; Returns: boolean };
       cleanup_expired_nonces: { Args: never; Returns: number };
+      get_activity_trends: {
+        Args: { days?: number };
+        Returns: {
+          day: string;
+          task_events: number;
+          governance_events: number;
+          comment_events: number;
+        }[];
+      };
+      get_member_growth: {
+        Args: { months?: number };
+        Returns: {
+          month: string;
+          new_members: number;
+          cumulative_members: number;
+        }[];
+      };
       get_next_organic_id: { Args: never; Returns: number };
+      get_proposals_by_category: {
+        Args: Record<string, never>;
+        Returns: {
+          category: string;
+          count: number;
+        }[];
+      };
+      get_task_completions: {
+        Args: { weeks?: number };
+        Returns: {
+          week: string;
+          completed_count: number;
+          total_points: number;
+        }[];
+      };
       get_user_voting_weight: {
         Args: { p_proposal_id: string; p_wallet_pubkey: string };
         Returns: number;
@@ -945,6 +977,17 @@ export type Database = {
           total_votes: number;
           yes_count: number;
           yes_votes: number;
+        }[];
+      };
+      get_voting_participation: {
+        Args: { result_limit?: number };
+        Returns: {
+          proposal_id: string;
+          proposal_title: string;
+          vote_count: number;
+          yes_votes: number;
+          no_votes: number;
+          abstain_votes: number;
         }[];
       };
     };

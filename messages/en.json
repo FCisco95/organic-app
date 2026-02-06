@@ -26,6 +26,7 @@
     "tasks": "Tasks",
     "sprints": "Sprints",
     "leaderboard": "Leaderboard",
+    "analytics": "Analytics",
     "signOut": "Sign Out",
     "signIn": "Sign In",
     "viewProfile": "View Profile",
@@ -850,6 +851,41 @@
       "vote_cast": "{actor} voted on: {title}",
       "empty": "No activity yet"
     }
+  },
+  "Analytics": {
+    "title": "Analytics",
+    "description": "Community metrics, activity trends, and governance insights",
+    "kpi": {
+      "totalUsers": "Total Users",
+      "orgHolders": "{symbol} Holders",
+      "orgPrice": "{symbol} Price",
+      "marketCap": "Market Cap",
+      "tasksCompleted": "Tasks Completed",
+      "activeProposals": "Active Proposals"
+    },
+    "sections": {
+      "governance": "Governance"
+    },
+    "charts": {
+      "activityTrends": "Activity Trends",
+      "activityTrendsDesc": "Daily activity over the last 30 days",
+      "tasks": "Tasks",
+      "governance": "Governance",
+      "comments": "Comments",
+      "memberGrowth": "Member Growth",
+      "memberGrowthDesc": "Cumulative members over 12 months",
+      "totalMembers": "Total Members",
+      "taskCompletions": "Task Completions",
+      "taskCompletionsDesc": "Weekly completed tasks over 12 weeks",
+      "completed": "Completed",
+      "proposalsByCategory": "Proposals by Category",
+      "votingParticipation": "Voting Participation",
+      "votes": "{count, plural, one {# vote} other {# votes}}",
+      "yes": "Yes",
+      "no": "No",
+      "abstain": "Abstain"
+    },
+    "empty": "No data available yet"
   },
   "common": {
     "loading": "Loading...",

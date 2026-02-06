@@ -2,6 +2,68 @@
 
 Add newest entries at the top.
 
+## 2026-02-06 (Session: Analytics Dashboard — Phase 10)
+
+### New dependency
+
+- Installed `recharts` for chart components
+
+### Token config (SaaS prep)
+
+- Created `src/config/token.ts` — `TOKEN_CONFIG` object with env var fallbacks, `calculateMarketCap()` helper
+
+### Analytics feature domain
+
+- Created `src/features/analytics/` — types, Zod schemas, React Query hook (`useAnalytics`), barrel export
+- Follows same pattern as `src/features/activity/`
+
+### Analytics API route
+
+- Created `src/app/api/analytics/route.ts` — single GET endpoint with 60s in-memory cache
+- Fetches KPIs (users, holders, tasks, proposals, price, market cap) + 5 RPC aggregations in parallel
+
+### Database
+
+- Migration `20260206000000_analytics_functions.sql` — 5 Postgres RPC functions:
+  - `get_activity_trends(days)` — daily event counts by category (task/governance/comment)
+  - `get_member_growth(months)` — monthly new + cumulative member counts
+  - `get_task_completions(weeks)` — weekly completed tasks + points
+  - `get_proposals_by_category()` — proposal count per category
+  - `get_voting_participation(result_limit)` — last N voted proposals with vote breakdowns
+- Migration applied to Supabase
+- Updated `src/types/database.ts` with 5 new RPC function type signatures
+
+### Analytics UI components
+
+- Created `src/components/analytics/` with 7 components:
+  - `chart-card.tsx` — reusable card wrapper with title, description, loading skeleton
+  - `kpi-cards.tsx` — 6 stat cards in responsive grid (2→3→6 cols)
+  - `activity-trend-chart.tsx` — stacked area chart (30-day daily totals)
+  - `member-growth-chart.tsx` — area chart with gradient fill (12-month cumulative)
+  - `task-completion-chart.tsx` — bar chart (12-week completions)
+  - `proposal-category-chart.tsx` — donut chart with legend (category distribution)
+  - `voting-participation-list.tsx` — card list with vote bars (last 10 voted proposals)
+
+### Analytics page
+
+- Created `src/app/[locale]/analytics/page.tsx` — public page, no auth required
+- Layout: KPI cards → activity trends → community grid (member growth + task completions) → governance grid (proposals by category + voting participation)
+
+### Navigation
+
+- Added Analytics link to sidebar and mobile sidebar (position 2, after Home)
+- Icon: `BarChart3` from lucide-react, `show: true` (public)
+
+### i18n
+
+- Added `Analytics` namespace (~30 keys) across en.json, pt-PT.json, zh-CN.json
+- Added `analytics` key to `Navigation` namespace in all 3 locales
+
+### Verification
+
+- `npm run lint` — zero errors/warnings
+- `npm run build` — compiles cleanly
+
 ## 2026-02-05 (Session: Proposals System Revamp)
 
 ### Proposals Feature Domain

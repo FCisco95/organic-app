@@ -134,9 +134,16 @@
 
 ### Phase 10: Analytics & Reporting
 
-- [ ] DAO activity dashboard
-- [ ] Task completion metrics
-- [ ] Member contribution tracking
+- [x] DAO activity dashboard (public analytics page at `/analytics`)
+- [x] Task completion metrics (weekly bar chart, 12-week window)
+- [x] Member contribution tracking (member growth area chart, 12-month cumulative)
+- [x] Activity trends (30-day stacked area chart: tasks, governance, comments)
+- [x] Proposal category distribution (donut chart)
+- [x] Voting participation overview (last 10 voted proposals with vote breakdown)
+- [x] KPI cards (users, holders, price, market cap, tasks completed, active proposals)
+- [x] Token config for SaaS readiness (`src/config/token.ts`)
+- [x] Recharts integration for all chart components
+- [x] 5 Postgres RPC functions for server-side aggregations
 - [ ] Treasury analytics
 - [ ] Proposal success rates
 - [ ] Export functionality
@@ -385,8 +392,8 @@
 
 ---
 
-Last Updated: 2026-01-24
-Version: 1.4
+Last Updated: 2026-02-06
+Version: 1.5
 
 ## Recent Updates (2026-01-22)
 

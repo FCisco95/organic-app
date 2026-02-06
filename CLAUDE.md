@@ -83,12 +83,13 @@ Domains
 - Voting: `src/features/voting/`
 - Sprints: `src/features/sprints/`
 - Activity: `src/features/activity/`
+- Analytics: `src/features/analytics/`
 - Notifications: `src/features/notifications/`
 
 UI
 
 - Shared UI (shadcn): `src/components/ui/`
-- Feature UI: `src/components/{auth,dashboard,notifications,proposals,sprints,tasks,voting,wallet}/`
+- Feature UI: `src/components/{analytics,auth,dashboard,notifications,proposals,sprints,tasks,voting,wallet}/`
 - App shell + navigation: `src/components/layout/`
 - Locale switcher: `src/components/locale-switcher.tsx`
 - Language selector: `src/components/language-selector.tsx`
@@ -204,14 +205,39 @@ Full proposals feature domain with structured sections, multi-step wizard, and a
 - Anti-abuse rules (one live proposal per proposer, cooldown)
 - Proposal templates
 
-## Workspace Health Summary (Last audit: 2026-02-05)
+## Analytics Dashboard (added 2026-02-06)
+
+### What was built
+
+Public analytics page at `/[locale]/analytics` with KPI cards, time-series charts (Recharts), and governance metrics.
+
+**Token config** (`src/config/token.ts`):
+- SaaS-ready config with env var fallbacks (`NEXT_PUBLIC_TOKEN_SYMBOL`, `NEXT_PUBLIC_ORG_TOKEN_MINT`, etc.)
+- `calculateMarketCap(price)` helper
+
+**Feature domain** (`src/features/analytics/`):
+- Types, Zod schemas, `useAnalytics()` React Query hook (60s stale/refetch), barrel export
+
+**API route** (`src/app/api/analytics/route.ts`):
+- Single GET endpoint with 60s in-memory cache, parallel fetching of KPIs + 5 RPC aggregations
+
+**Database**: Migration `20260206000000_analytics_functions.sql` — 5 Postgres RPC functions for aggregations (activity trends, member growth, task completions, proposals by category, voting participation). Applied to Supabase.
+
+**UI components** (`src/components/analytics/`):
+- `chart-card.tsx`, `kpi-cards.tsx`, `activity-trend-chart.tsx`, `member-growth-chart.tsx`, `task-completion-chart.tsx`, `proposal-category-chart.tsx`, `voting-participation-list.tsx`
+
+**Navigation**: Analytics link added to sidebar + mobile sidebar (public, position 2 after Home, BarChart3 icon).
+
+**i18n**: `Analytics` namespace across all 3 languages.
+
+## Workspace Health Summary (Last audit: 2026-02-06)
 
 ### What's Solid
 
 - Lint passes with zero errors/warnings
-- React Query properly centralized in `src/features/tasks/hooks.ts` and `src/features/proposals/hooks.ts`
-- Zod schemas separated in `src/features/tasks/schemas.ts` and `src/features/proposals/schemas.ts`
-- Barrel exports enable clean imports (`@/features/tasks`, `@/features/proposals`)
+- React Query properly centralized in `src/features/tasks/hooks.ts`, `src/features/proposals/hooks.ts`, and `src/features/analytics/hooks.ts`
+- Zod schemas separated in `src/features/tasks/schemas.ts`, `src/features/proposals/schemas.ts`, and `src/features/analytics/schemas.ts`
+- Barrel exports enable clean imports (`@/features/tasks`, `@/features/proposals`, `@/features/analytics`)
 - Proposals feature domain fully built: types, schemas, hooks, UI components, API routes
 - Migration files well-organized and timestamped
 - i18n implementation complete (en, pt-PT, zh-CN) — now includes ProposalWizard and ProposalDetail namespaces
