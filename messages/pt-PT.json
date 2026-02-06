@@ -27,6 +27,7 @@
     "sprints": "Sprints",
     "leaderboard": "Ranking",
     "analytics": "Analíticas",
+    "treasury": "Tesouraria",
     "signOut": "Sair",
     "signIn": "Entrar",
     "viewProfile": "Ver Perfil",
@@ -886,6 +887,40 @@
       "abstain": "Abstenção"
     },
     "empty": "Sem dados disponíveis ainda"
+  },
+  "Treasury": {
+    "heroTitle": "Tesouraria da DAO",
+    "heroDescription": "A tesouraria da DAO Organic financia iniciativas comunitárias, desenvolvimento e crescimento do ecossistema. Todos os gastos requerem aprovação de governança através do sistema de propostas.",
+    "principleSecurityTitle": "Custódia Segura",
+    "principleSecurityDesc": "Multi-sig planejado para lançamento",
+    "principleGovernanceTitle": "Governança Comunitária",
+    "principleGovernanceDesc": "Gastos via propostas e votos",
+    "principleTransparencyTitle": "Totalmente Transparente",
+    "principleTransparencyDesc": "Todas as transações on-chain",
+    "walletLabel": "Carteira da Tesouraria",
+    "copyAddress": "Copiar endereço",
+    "copied": "Copiado!",
+    "viewOnSolscan": "Ver no Solscan",
+    "totalValue": "Valor Total da Tesouraria",
+    "solBalance": "Saldo SOL",
+    "orgBalance": "Saldo {symbol}",
+    "allocationTitle": "Alocação de Fundos",
+    "allocationDesc": "Como os fundos da tesouraria estão distribuídos",
+    "allocation": {
+      "development": "Desenvolvimento",
+      "community": "Recompensas Comunitárias",
+      "operations": "Operações",
+      "reserve": "Reserva Estratégica"
+    },
+    "transactionsTitle": "Transações Recentes",
+    "transactionsDesc": "Atividade on-chain mais recente",
+    "noTransactions": "Nenhuma transação recente encontrada",
+    "colSignature": "Tx",
+    "colType": "Tipo",
+    "colAmount": "Valor",
+    "colDate": "Data",
+    "txUnknown": "Chamada de Contrato",
+    "disclaimer": "Saldos e transações são obtidos em tempo real da blockchain Solana. As percentagens de alocação são metas e podem diferir dos valores reais."
   },
   "common": {
     "loading": "Carregando...",

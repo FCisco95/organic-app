@@ -230,14 +230,49 @@ Public analytics page at `/[locale]/analytics` with KPI cards, time-series chart
 
 **i18n**: `Analytics` namespace across all 3 languages.
 
+## Treasury Dashboard (added 2026-02-06)
+
+### What was built
+
+Public treasury page at `/[locale]/treasury` with live on-chain balances, allocation chart, transaction history, and explainer hero.
+
+**Token config** (`src/config/token.ts`):
+- `treasuryWallet` hardcoded (`CuBV7VVq3zSrh1wf5SZCp36JqpFRCGJHvV7he6K8SDJ1`), swappable later
+- `TREASURY_ALLOCATIONS` array with 4 categories (development 40%, community 25%, operations 20%, reserve 15%)
+
+**Feature domain** (`src/features/treasury/`):
+- Types, Zod schemas, `useTreasury()` React Query hook (60s stale/refetch), barrel export
+
+**API route** (`src/app/api/treasury/route.ts`):
+- Single GET endpoint with 60s in-memory cache
+- Parallel fetches: SOL balance, $ORG balance, SOL price (Jupiter), $ORG price (Jupiter), recent transactions (Solana RPC)
+- Transaction parsing: SOL transfers, token transfers, direction detection
+
+**UI components** (`src/components/treasury/`):
+- `treasury-hero.tsx` — Dark hero with principles (security, governance, transparency), wallet address with copy + Solscan link
+- `balance-cards.tsx` — 3 cards: total USD, SOL balance, $ORG balance
+- `allocation-chart.tsx` — Recharts donut chart with legend, reuses `ChartCard`
+- `transaction-table.tsx` — Recent transactions with type icons, amounts, Solscan links
+
+**Navigation**: Treasury link added to sidebar + mobile sidebar (public, Wallet icon, position 3 after Analytics).
+
+**i18n**: `Treasury` namespace across all 3 languages + `treasury` navigation key.
+
+### What to do next
+
+- Multi-sig wallet integration (Squads or similar)
+- Spending proposals tied to proposal system
+- Spending analytics
+- Replace hardcoded wallet address with env var when multi-sig is ready
+
 ## Workspace Health Summary (Last audit: 2026-02-06)
 
 ### What's Solid
 
 - Lint passes with zero errors/warnings
-- React Query properly centralized in `src/features/tasks/hooks.ts`, `src/features/proposals/hooks.ts`, and `src/features/analytics/hooks.ts`
-- Zod schemas separated in `src/features/tasks/schemas.ts`, `src/features/proposals/schemas.ts`, and `src/features/analytics/schemas.ts`
-- Barrel exports enable clean imports (`@/features/tasks`, `@/features/proposals`, `@/features/analytics`)
+- React Query properly centralized in `src/features/tasks/hooks.ts`, `src/features/proposals/hooks.ts`, `src/features/analytics/hooks.ts`, and `src/features/treasury/hooks.ts`
+- Zod schemas separated in `src/features/tasks/schemas.ts`, `src/features/proposals/schemas.ts`, `src/features/analytics/schemas.ts`, and `src/features/treasury/schemas.ts`
+- Barrel exports enable clean imports (`@/features/tasks`, `@/features/proposals`, `@/features/analytics`, `@/features/treasury`)
 - Proposals feature domain fully built: types, schemas, hooks, UI components, API routes
 - Migration files well-organized and timestamped
 - i18n implementation complete (en, pt-PT, zh-CN) — now includes ProposalWizard and ProposalDetail namespaces

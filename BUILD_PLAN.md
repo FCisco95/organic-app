@@ -110,13 +110,19 @@
 - [ ] Execution window (3–7 days) + off-chain result handoff
 - [ ] Proposal templates
 
-### Phase 8: Treasury Management
+### Phase 8: Treasury Management (In Progress)
 
-- [ ] Treasury balance display
-- [ ] Transaction history
-- [ ] Rolling treasury model (no fixed budgets per sprint)
-- [ ] Budget allocation tracking
-- [ ] Spending proposals
+- [x] Treasury dashboard page (`/treasury`) with public access
+- [x] Live SOL + $ORG balance cards from on-chain data (Jupiter price API)
+- [x] Fund allocation donut chart (Recharts) with configurable categories
+- [x] Recent on-chain transaction history (last 20 txs via Solana RPC)
+- [x] Professional hero section with principles, wallet address, Solscan link
+- [x] Feature domain: types, schemas, hooks, barrel export (`src/features/treasury/`)
+- [x] API route with 60s cache (`src/app/api/treasury/route.ts`)
+- [x] Navigation link in sidebar + mobile sidebar (Wallet icon, public)
+- [x] i18n: Treasury namespace across en, pt-PT, zh-CN
+- [x] Treasury wallet hardcoded in `src/config/token.ts` (swappable)
+- [ ] Spending proposals (via existing proposal system)
 - [ ] Multi-sig wallet integration (Squads or similar)
 - [ ] Token distribution management
 - [ ] Spending analytics

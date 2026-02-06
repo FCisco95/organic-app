@@ -27,6 +27,7 @@
     "sprints": "Sprints",
     "leaderboard": "Leaderboard",
     "analytics": "Analytics",
+    "treasury": "Treasury",
     "signOut": "Sign Out",
     "signIn": "Sign In",
     "viewProfile": "View Profile",
@@ -886,6 +887,40 @@
       "abstain": "Abstain"
     },
     "empty": "No data available yet"
+  },
+  "Treasury": {
+    "heroTitle": "DAO Treasury",
+    "heroDescription": "The Organic DAO treasury funds community initiatives, development, and ecosystem growth. All spending requires governance approval through the proposal system.",
+    "principleSecurityTitle": "Secure Custody",
+    "principleSecurityDesc": "Multi-sig planned for launch",
+    "principleGovernanceTitle": "Community Governed",
+    "principleGovernanceDesc": "Spending via proposals & votes",
+    "principleTransparencyTitle": "Fully Transparent",
+    "principleTransparencyDesc": "All transactions on-chain",
+    "walletLabel": "Treasury Wallet",
+    "copyAddress": "Copy address",
+    "copied": "Copied!",
+    "viewOnSolscan": "View on Solscan",
+    "totalValue": "Total Treasury Value",
+    "solBalance": "SOL Balance",
+    "orgBalance": "{symbol} Balance",
+    "allocationTitle": "Fund Allocation",
+    "allocationDesc": "How treasury funds are earmarked",
+    "allocation": {
+      "development": "Development",
+      "community": "Community Rewards",
+      "operations": "Operations",
+      "reserve": "Strategic Reserve"
+    },
+    "transactionsTitle": "Recent Transactions",
+    "transactionsDesc": "Latest on-chain activity",
+    "noTransactions": "No recent transactions found",
+    "colSignature": "Tx",
+    "colType": "Type",
+    "colAmount": "Amount",
+    "colDate": "Date",
+    "txUnknown": "Contract Call",
+    "disclaimer": "Balances and transactions are fetched live from the Solana blockchain. Allocation percentages are targets and may differ from actual holdings."
   },
   "common": {
     "loading": "Loading...",

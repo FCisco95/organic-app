@@ -27,6 +27,7 @@
     "sprints": "冲刺",
     "leaderboard": "排行榜",
     "analytics": "数据分析",
+    "treasury": "财务",
     "signOut": "退出登录",
     "signIn": "登录",
     "viewProfile": "查看个人资料",
@@ -886,6 +887,40 @@
       "abstain": "弃权"
     },
     "empty": "暂无可用数据"
+  },
+  "Treasury": {
+    "heroTitle": "DAO 财务",
+    "heroDescription": "Organic DAO 财务资助社区活动、开发和生态系统增长。所有支出需要通过提案系统获得治理批准。",
+    "principleSecurityTitle": "安全托管",
+    "principleSecurityDesc": "计划上线多签钱包",
+    "principleGovernanceTitle": "社区治理",
+    "principleGovernanceDesc": "通过提案和投票支出",
+    "principleTransparencyTitle": "完全透明",
+    "principleTransparencyDesc": "所有交易链上可查",
+    "walletLabel": "财务钱包",
+    "copyAddress": "复制地址",
+    "copied": "已复制！",
+    "viewOnSolscan": "在 Solscan 查看",
+    "totalValue": "财务总价值",
+    "solBalance": "SOL 余额",
+    "orgBalance": "{symbol} 余额",
+    "allocationTitle": "资金分配",
+    "allocationDesc": "财务资金的分配方式",
+    "allocation": {
+      "development": "开发",
+      "community": "社区奖励",
+      "operations": "运营",
+      "reserve": "战略储备"
+    },
+    "transactionsTitle": "近期交易",
+    "transactionsDesc": "最新链上活动",
+    "noTransactions": "未找到近期交易",
+    "colSignature": "交易",
+    "colType": "类型",
+    "colAmount": "金额",
+    "colDate": "日期",
+    "txUnknown": "合约调用",
+    "disclaimer": "余额和交易数据实时从 Solana 区块链获取。分配百分比为目标值，可能与实际持有量不同。"
   },
   "common": {
     "loading": "加载中...",
