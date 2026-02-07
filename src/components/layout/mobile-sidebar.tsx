@@ -10,7 +10,7 @@ import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ConnectWalletButton } from '@/components/wallet';
-import { Home, BarChart3, Wallet, CheckSquare, Zap, Vote, Trophy, User, LogOut } from 'lucide-react';
+import { Home, BarChart3, Wallet, Users, CheckSquare, Zap, Vote, Trophy, Settings, User, LogOut } from 'lucide-react';
 
 export function MobileSidebar() {
   const { user, profile, signOut } = useAuth();
@@ -18,14 +18,18 @@ export function MobileSidebar() {
   const t = useTranslations('Navigation');
   const { mobileOpen, setMobileOpen } = useSidebar();
 
+  const isAdminOrCouncil = profile?.role === 'admin' || profile?.role === 'council';
+
   const navItems = [
     { href: '/', labelKey: 'home', icon: Home, show: true },
     { href: '/analytics', labelKey: 'analytics', icon: BarChart3, show: true },
     { href: '/treasury', labelKey: 'treasury', icon: Wallet, show: true },
+    { href: '/members', labelKey: 'members', icon: Users, show: !!user },
     { href: '/tasks', labelKey: 'tasks', icon: CheckSquare, show: !!profile?.organic_id },
     { href: '/sprints', labelKey: 'sprints', icon: Zap, show: !!profile?.organic_id },
     { href: '/proposals', labelKey: 'proposals', icon: Vote, show: !!user },
     { href: '/leaderboard', labelKey: 'leaderboard', icon: Trophy, show: !!user },
+    { href: '/admin/settings', labelKey: 'settings', icon: Settings, show: !!isAdminOrCouncil },
     { href: '/profile', labelKey: 'profile', icon: User, show: !!user },
   ];
 

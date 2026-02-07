@@ -172,32 +172,59 @@ export type Database = {
       orgs: {
         Row: {
           created_at: string | null;
+          default_sprint_capacity: number;
+          default_sprint_duration_days: number;
           description: string | null;
           id: string;
           logo_url: string | null;
           name: string;
+          organic_id_threshold: number | null;
           slug: string;
           theme: Json | null;
+          token_decimals: number;
+          token_mint: string | null;
+          token_symbol: string;
+          token_total_supply: number;
+          treasury_allocations: Json;
+          treasury_wallet: string | null;
           updated_at: string | null;
         };
         Insert: {
           created_at?: string | null;
+          default_sprint_capacity?: number;
+          default_sprint_duration_days?: number;
           description?: string | null;
           id?: string;
           logo_url?: string | null;
           name: string;
+          organic_id_threshold?: number | null;
           slug: string;
           theme?: Json | null;
+          token_decimals?: number;
+          token_mint?: string | null;
+          token_symbol?: string;
+          token_total_supply?: number;
+          treasury_allocations?: Json;
+          treasury_wallet?: string | null;
           updated_at?: string | null;
         };
         Update: {
           created_at?: string | null;
+          default_sprint_capacity?: number;
+          default_sprint_duration_days?: number;
           description?: string | null;
           id?: string;
           logo_url?: string | null;
           name?: string;
+          organic_id_threshold?: number | null;
           slug?: string;
           theme?: Json | null;
+          token_decimals?: number;
+          token_mint?: string | null;
+          token_symbol?: string;
+          token_total_supply?: number;
+          treasury_allocations?: Json;
+          treasury_wallet?: string | null;
           updated_at?: string | null;
         };
         Relationships: [];
@@ -207,7 +234,7 @@ export type Database = {
           approval_threshold: number | null;
           body: string;
           budget: string | null;
-          category: ProposalCategory | null;
+          category: Database['public']['Enums']['proposal_category'] | null;
           closes_at: string | null;
           created_at: string | null;
           created_by: string;
@@ -231,7 +258,7 @@ export type Database = {
           approval_threshold?: number | null;
           body: string;
           budget?: string | null;
-          category?: ProposalCategory | null;
+          category?: Database['public']['Enums']['proposal_category'] | null;
           closes_at?: string | null;
           created_at?: string | null;
           created_by: string;
@@ -255,7 +282,7 @@ export type Database = {
           approval_threshold?: number | null;
           body?: string;
           budget?: string | null;
-          category?: ProposalCategory | null;
+          category?: Database['public']['Enums']['proposal_category'] | null;
           closes_at?: string | null;
           created_at?: string | null;
           created_by?: string;
@@ -721,6 +748,7 @@ export type Database = {
           location: string | null;
           name: string | null;
           organic_id: number | null;
+          profile_visible: boolean;
           role: Database['public']['Enums']['user_role'] | null;
           tasks_completed: number;
           total_points: number;
@@ -739,6 +767,7 @@ export type Database = {
           location?: string | null;
           name?: string | null;
           organic_id?: number | null;
+          profile_visible?: boolean;
           role?: Database['public']['Enums']['user_role'] | null;
           tasks_completed?: number;
           total_points?: number;
@@ -757,6 +786,7 @@ export type Database = {
           location?: string | null;
           name?: string | null;
           organic_id?: number | null;
+          profile_visible?: boolean;
           role?: Database['public']['Enums']['user_role'] | null;
           tasks_completed?: number;
           total_points?: number;
@@ -932,23 +962,23 @@ export type Database = {
       get_activity_trends: {
         Args: { days?: number };
         Returns: {
-          day: string;
-          task_events: number;
-          governance_events: number;
           comment_events: number;
+          day: string;
+          governance_events: number;
+          task_events: number;
         }[];
       };
       get_member_growth: {
         Args: { months?: number };
         Returns: {
+          cumulative_members: number;
           month: string;
           new_members: number;
-          cumulative_members: number;
         }[];
       };
       get_next_organic_id: { Args: never; Returns: number };
       get_proposals_by_category: {
-        Args: Record<string, never>;
+        Args: never;
         Returns: {
           category: string;
           count: number;
@@ -957,9 +987,9 @@ export type Database = {
       get_task_completions: {
         Args: { weeks?: number };
         Returns: {
-          week: string;
           completed_count: number;
           total_points: number;
+          week: string;
         }[];
       };
       get_user_voting_weight: {
@@ -982,12 +1012,12 @@ export type Database = {
       get_voting_participation: {
         Args: { result_limit?: number };
         Returns: {
+          abstain_votes: number;
+          no_votes: number;
           proposal_id: string;
           proposal_title: string;
           vote_count: number;
           yes_votes: number;
-          no_votes: number;
-          abstain_votes: number;
         }[];
       };
     };
@@ -1045,7 +1075,8 @@ export type Tables<
     ? R
     : never
   : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
-    ? (DefaultSchema['Tables'] & DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
+    ? (DefaultSchema['Tables'] &
+        DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R;
       }
       ? R

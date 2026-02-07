@@ -1,3 +1,4 @@
+// Static fallbacks — used when DB is unreachable or on the client side.
 export const TOKEN_CONFIG = {
   symbol: process.env.NEXT_PUBLIC_TOKEN_SYMBOL ?? '$ORG',
   mint: process.env.NEXT_PUBLIC_ORG_TOKEN_MINT ?? '',
@@ -12,6 +13,15 @@ export const TREASURY_ALLOCATIONS = [
   { key: 'operations', percentage: 20, color: '#3b82f6' },
   { key: 'reserve', percentage: 15, color: '#a855f7' },
 ] as const;
+
+export interface OrgConfig {
+  symbol: string;
+  mint: string;
+  decimals: number;
+  totalSupply: number;
+  treasuryWallet: string;
+  treasuryAllocations: { key: string; percentage: number; color: string }[];
+}
 
 /**
  * Calculate market cap from price using the configured total supply.
