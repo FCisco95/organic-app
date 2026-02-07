@@ -84,12 +84,15 @@ Domains
 - Sprints: `src/features/sprints/`
 - Activity: `src/features/activity/`
 - Analytics: `src/features/analytics/`
+- Treasury: `src/features/treasury/`
+- Members: `src/features/members/`
+- Settings: `src/features/settings/`
 - Notifications: `src/features/notifications/`
 
 UI
 
 - Shared UI (shadcn): `src/components/ui/`
-- Feature UI: `src/components/{analytics,auth,dashboard,notifications,proposals,sprints,tasks,voting,wallet}/`
+- Feature UI: `src/components/{analytics,auth,dashboard,members,notifications,proposals,settings,sprints,tasks,voting,wallet}/`
 - App shell + navigation: `src/components/layout/`
 - Locale switcher: `src/components/locale-switcher.tsx`
 - Language selector: `src/components/language-selector.tsx`
@@ -265,17 +268,73 @@ Public treasury page at `/[locale]/treasury` with live on-chain balances, alloca
 - Spending analytics
 - Replace hardcoded wallet address with env var when multi-sig is ready
 
-## Workspace Health Summary (Last audit: 2026-02-06)
+## Member Management & Admin Settings (added 2026-02-07)
+
+### What was built
+
+Member directory with privacy controls, centralized admin settings with 6 configuration tabs, and DB-driven org config for SaaS readiness.
+
+**Database**: Migration `20260207000000_org_config_and_member_privacy.sql`:
+- Extended `orgs` table with token config (symbol, mint, decimals, total_supply), treasury config (wallet, allocations JSONB), sprint defaults (capacity, duration), organic_id_threshold
+- Added `profile_visible BOOLEAN DEFAULT true` to `user_profiles`
+- Seeded initial "Organic" org row with current hardcoded values
+- Linked `voting_config` to org, added member directory indexes, admin RLS for profile updates
+
+**Feature domains**:
+- `src/features/members/` — types, schemas, hooks (`useMembers`, `useMember`, `useUpdatePrivacy`, `useUpdateMemberRole`), barrel export
+- `src/features/settings/` — types, schemas (per-tab Zod validation with 100% allocation refinement), hooks (`useOrganization`, `useUpdateOrganization`), barrel export
+
+**API routes**:
+- `src/app/api/members/route.ts` — list with search/filter/pagination
+- `src/app/api/members/[id]/route.ts` — single member detail, respects privacy
+- `src/app/api/members/privacy/route.ts` — toggle own visibility
+- `src/app/api/settings/route.ts` — GET org+voting config, PATCH admin-only
+- `src/app/api/settings/members/[id]/role/route.ts` — role assignment, admin-only, prevents self-change
+
+**UI components**:
+- `src/components/members/` — `member-card.tsx`, `member-filters.tsx`, `member-grid.tsx`
+- `src/components/settings/` — `settings-tabs.tsx`, `settings-field.tsx`, `general-tab.tsx`, `token-tab.tsx`, `treasury-tab.tsx`, `governance-tab.tsx`, `sprints-tab.tsx`, `members-tab.tsx`
+
+**Pages**:
+- `src/app/[locale]/members/page.tsx` — searchable/filterable member grid with pagination
+- `src/app/[locale]/members/[id]/page.tsx` — member profile with privacy-aware rendering
+- `src/app/[locale]/admin/settings/page.tsx` — admin settings with 6 tabs (General, Token, Treasury, Governance, Sprints, Members)
+
+**Token config refactor**:
+- `src/config/token.ts` — static config + `OrgConfig` interface + `calculateMarketCap()` (client-safe)
+- `src/config/token.server.ts` — `getOrgConfig()` with 60s cache, reads from DB, falls back to static config (server-only)
+
+**Navigation**: Members in main nav (Users icon, gated on auth), Settings in bottom nav (Settings icon, gated on admin/council).
+
+**i18n**: `Members` and `Settings` namespaces across all 3 languages.
+
+### Key patterns
+
+- Privacy model: `profile_visible` boolean — private members appear in directory but profiles are not clickable
+- Access control: Admin has full access, Council has read-only view with notice badge
+- Settings tabs: General, Token, Treasury (dynamic allocation rows), Governance, Sprints, Members (role management)
+- DB-driven config: `orgs` table stores all configurable values, `getOrgConfig()` reads with cache + static fallback
+- Role management: Admin can assign roles (admin/council/member/guest), cannot change own role
+
+### What to do next
+
+- Multi-sig wallet integration for treasury settings
+- Profile edit page for users to update their own bio/social links
+- Spending proposals linked to treasury tab
+- Anti-abuse: rate limiting on privacy toggles
+
+## Workspace Health Summary (Last audit: 2026-02-07)
 
 ### What's Solid
 
 - Lint passes with zero errors/warnings
-- React Query properly centralized in `src/features/tasks/hooks.ts`, `src/features/proposals/hooks.ts`, `src/features/analytics/hooks.ts`, and `src/features/treasury/hooks.ts`
-- Zod schemas separated in `src/features/tasks/schemas.ts`, `src/features/proposals/schemas.ts`, `src/features/analytics/schemas.ts`, and `src/features/treasury/schemas.ts`
-- Barrel exports enable clean imports (`@/features/tasks`, `@/features/proposals`, `@/features/analytics`, `@/features/treasury`)
+- React Query properly centralized in `src/features/{tasks,proposals,analytics,treasury,members,settings}/hooks.ts`
+- Zod schemas separated in `src/features/{tasks,proposals,analytics,treasury,members,settings}/schemas.ts`
+- Barrel exports enable clean imports (`@/features/tasks`, `@/features/proposals`, `@/features/analytics`, `@/features/treasury`, `@/features/members`, `@/features/settings`)
 - Proposals feature domain fully built: types, schemas, hooks, UI components, API routes
+- Members + Settings feature domains fully built with admin/council access control
 - Migration files well-organized and timestamped
-- i18n implementation complete (en, pt-PT, zh-CN) — now includes ProposalWizard and ProposalDetail namespaces
+- i18n implementation complete (en, pt-PT, zh-CN) — includes ProposalWizard, ProposalDetail, Members, and Settings namespaces
 - Wallet security: nonce validation with 5-minute TTL
 - RPC caching prevents 429 rate limit errors
 

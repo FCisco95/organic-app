@@ -67,9 +67,7 @@
 - [x] Locale switcher with accessible dropdown UI
 - [x] All pages migrated to `[locale]` route structure
 
-## 🚧 In Progress / Next Steps
-
-### Phase 6: Sprint/Epoch Management
+### Phase 6: Sprint/Epoch Management (Completed)
 
 - [x] Create sprints page with CRUD operations
 - [x] Current sprint board/list views
@@ -79,6 +77,8 @@
 - [x] Sprint burndown charts
 - [x] Active sprint indicator
 - [x] Sprint history and archive
+
+## 🚧 In Progress / Next Steps
 
 ### Phase 7: Proposals System (In Progress)
 
@@ -127,16 +127,24 @@
 - [ ] Token distribution management
 - [ ] Spending analytics
 
-### Phase 9: Member Management
+### Phase 9: Member Management & Admin Settings (Completed)
 
-- [ ] Member directory with search/filter
-- [ ] Member profiles (public view)
-- [ ] Role assignment UI (admin)
-- [ ] Member statistics and contributions
+- [x] Member directory with search/filter (role chips, pagination, search by name/email)
+- [x] Member profiles (public view, privacy-aware rendering)
+- [x] Member privacy controls (users toggle `profile_visible`, private profiles show locked state)
+- [x] Role assignment UI (admin-only, prevents self-role-change)
+- [x] Member statistics and contributions (points, tasks completed)
+- [x] Admin settings page with 6 tabs (General, Token, Treasury, Governance, Sprints, Members)
+- [x] DB-driven org config: extended `orgs` table with token/treasury/sprint/governance config
+- [x] Token config refactor: `token.ts` (client-safe) + `token.server.ts` (server-only `getOrgConfig()` with 60s cache)
+- [x] Feature domains: `src/features/members/` + `src/features/settings/` (types, schemas, hooks, barrel exports)
+- [x] API routes: members CRUD + privacy, settings GET/PATCH, role assignment
+- [x] i18n: Members + Settings namespaces across en, pt-PT, zh-CN
+- [x] Navigation: Members in main nav (Users icon), Settings in bottom nav (gear icon, admin/council only)
+- [x] Council read-only access with badge notice
+- [x] Leaderboard page and API for member rankings
 - [ ] Member onboarding flow
 - [ ] Organic ID minting interface
-- [ ] Organic ID eligibility threshold config
-- [x] Leaderboard page and API for member rankings
 
 ### Phase 10: Analytics & Reporting
 
@@ -347,10 +355,10 @@
    - Add proposal templates
    - Define execution window + off-chain result handoff
 
-5. **Member Directory**
-   - Create member listing page
-   - Add search and filter capabilities
-   - Implement public profile views
+5. **Member Directory** (✅ Completed)
+   - Member listing with search, role filters, pagination
+   - Public profile views with privacy controls
+   - Admin settings with 6 configuration tabs
 
 ## 🎯 Milestone Goals
 
@@ -398,8 +406,8 @@
 
 ---
 
-Last Updated: 2026-02-06
-Version: 1.5
+Last Updated: 2026-02-07
+Version: 1.6
 
 ## Recent Updates (2026-01-22)
 
@@ -419,8 +427,31 @@ Version: 1.5
 
 ### Infrastructure TODO
 
-- Replace public Solana RPC with paid provider (Helius/QuickNode/Alchemy)
 - Set `NEXT_PUBLIC_SOLANA_RPC_URL` in `.env.local`
+
+## Recent Updates (2026-02-07)
+
+### Member Management & Admin Settings (Phase 9)
+
+- Added member directory at `/members` with search, role filters, pagination
+- Added member profile pages at `/members/[id]` with privacy-aware rendering
+- Added admin settings at `/admin/settings` with 6 tabs: General, Token, Treasury, Governance, Sprints, Members
+- Extended `orgs` table with token/treasury/sprint config (DB-driven, SaaS-ready)
+- Added `profile_visible` to user profiles for privacy control
+- Created `src/features/members/` and `src/features/settings/` feature domains
+- Added 5 API routes: members list/detail/privacy, settings CRUD, role assignment
+- Refactored token config: `token.ts` (client-safe) + `token.server.ts` (server-only with DB reads)
+- Full i18n: Members + Settings namespaces across en, pt-PT, zh-CN
+
+## Recent Updates (2026-02-06)
+
+### Treasury Management (Phase 8)
+
+- Added public treasury dashboard at `/treasury`
+- Added balance cards, allocation chart, and recent transactions
+- Added treasury API route with 60s cache and price fetches
+- Added treasury feature domain (types, schemas, hooks)
+- Added nav link + i18n keys for treasury
 
 ## Recent Updates (2026-01-18)
 

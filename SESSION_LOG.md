@@ -2,6 +2,65 @@
 
 Add newest entries at the top.
 
+## 2026-02-07 (Session: Member Management & Admin Settings — Phase 9)
+
+### Database
+
+- Migration `20260207000000_org_config_and_member_privacy.sql` — applied to Supabase
+  - Extended `orgs` table with token config (symbol, mint, decimals, total_supply), treasury config (wallet, allocations JSONB), sprint defaults, organic_id_threshold
+  - Added `profile_visible BOOLEAN DEFAULT true` to `user_profiles`
+  - Seeded initial "Organic" org row with current hardcoded values
+  - Linked `voting_config` to org, added indexes, admin RLS for profile updates
+- Regenerated `src/types/database.ts` from Supabase
+
+### Feature domains
+
+- Created `src/features/members/` — types, schemas, hooks (`useMembers`, `useMember`, `useUpdatePrivacy`, `useUpdateMemberRole`), barrel export
+- Created `src/features/settings/` — types, schemas (per-tab Zod validation), hooks (`useOrganization`, `useUpdateOrganization`), barrel export
+
+### API routes
+
+- `src/app/api/members/route.ts` — list with search/filter/pagination
+- `src/app/api/members/[id]/route.ts` — single member detail, respects privacy
+- `src/app/api/members/privacy/route.ts` — toggle own visibility
+- `src/app/api/settings/route.ts` — GET org+voting config, PATCH admin-only
+- `src/app/api/settings/members/[id]/role/route.ts` — role assignment, admin-only
+
+### UI components
+
+- Created `src/components/members/` — member-card, member-filters, member-grid
+- Created `src/components/settings/` — settings-tabs, settings-field, general-tab, token-tab, treasury-tab, governance-tab, sprints-tab, members-tab
+
+### Pages
+
+- `src/app/[locale]/members/page.tsx` — searchable/filterable member directory with pagination
+- `src/app/[locale]/members/[id]/page.tsx` — member profile with privacy-aware rendering
+- `src/app/[locale]/admin/settings/page.tsx` — admin settings with 6 tabs (General, Token, Treasury, Governance, Sprints, Members)
+
+### Token config refactor
+
+- `src/config/token.ts` — kept client-safe (static config + `OrgConfig` interface + `calculateMarketCap`)
+- `src/config/token.server.ts` — new server-only file with `getOrgConfig()` (DB reads with 60s cache, static fallback)
+
+### Navigation
+
+- Updated sidebar + mobile sidebar: Members in main nav (Users icon), Settings in bottom section (gear icon, admin/council only)
+
+### i18n
+
+- Added Members + Settings namespaces across en.json, pt-PT.json, zh-CN.json
+- Added `members` and `settings` navigation keys
+
+### Documentation
+
+- Updated CLAUDE.md with Phase 9 section and health summary
+- Updated BUILD_PLAN.md: Phase 9 marked completed, version 1.6, recent updates added
+
+### Verification
+
+- Lint: zero errors/warnings
+- Build: passes successfully
+
 ## 2026-02-06 (Session: Analytics Dashboard — Phase 10)
 
 ### New dependency
