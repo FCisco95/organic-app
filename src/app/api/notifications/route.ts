@@ -28,38 +28,66 @@ export async function GET(request: NextRequest) {
 
     const { category, unread, cursor, limit } = parsed.data;
 
-    // Build query
-    let query = supabase
-      .from('notifications')
-      .select('*', { count: 'exact' })
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-      .limit(limit);
-
-    if (category) {
-      query = query.eq('category', category);
-    }
-
-    if (unread) {
-      query = query.eq('read', false);
-    }
-
+    // Resolve cursor timestamp once (shared by both paths)
+    let cursorTimestamp: string | null = null;
     if (cursor) {
       const cursorNotif = await supabase
         .from('notifications')
         .select('created_at')
         .eq('id', cursor)
         .single();
-      if (cursorNotif.data) {
-        query = query.lt('created_at', cursorNotif.data.created_at);
+      cursorTimestamp = cursorNotif.data?.created_at ?? null;
+    }
+
+    // Try query with batch join first; fall back to simple query if
+    // batching migration hasn't been applied yet.
+    let rows: Record<string, unknown>[] = [];
+    let total = 0;
+    let useBatchJoin = false;
+
+    // Attempt: batched query
+    {
+      let q = supabase
+        .from('notifications')
+        .select('*, notification_batches(count, first_event_at, last_event_at)', {
+          count: 'exact',
+        })
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (category) q = q.eq('category', category);
+      if (unread) q = q.eq('read', false);
+      if (cursorTimestamp) q = q.lt('created_at', cursorTimestamp);
+
+      const result = await q;
+      if (!result.error && result.data) {
+        rows = result.data as unknown as Record<string, unknown>[];
+        total = result.count ?? 0;
+        useBatchJoin = true;
       }
     }
 
-    const { data: notifications, count, error } = await query;
+    // Fallback: simple query without batch join
+    if (!useBatchJoin) {
+      let q = supabase
+        .from('notifications')
+        .select('*', { count: 'exact' })
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(limit);
 
-    if (error) {
-      console.error('Notifications query error:', error);
-      return NextResponse.json({ error: 'Failed to fetch notifications' }, { status: 500 });
+      if (category) q = q.eq('category', category);
+      if (unread) q = q.eq('read', false);
+      if (cursorTimestamp) q = q.lt('created_at', cursorTimestamp);
+
+      const result = await q;
+      if (result.error) {
+        console.error('Notifications query error:', result.error);
+        return NextResponse.json({ error: 'Failed to fetch notifications' }, { status: 500 });
+      }
+      rows = (result.data ?? []) as unknown as Record<string, unknown>[];
+      total = result.count ?? 0;
     }
 
     // Get unread count (always, for the badge)
@@ -72,7 +100,9 @@ export async function GET(request: NextRequest) {
     // Fetch actor info for notifications
     const actorIds = [
       ...new Set(
-        (notifications ?? []).map((n) => n.actor_id).filter((id): id is string => id !== null)
+        rows
+          .map((n) => n.actor_id as string | null)
+          .filter((id): id is string => id !== null)
       ),
     ];
 
@@ -91,14 +121,30 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const enriched = (notifications ?? []).map((n) => ({
-      ...n,
-      actor: n.actor_id ? (actorMap[n.actor_id] ?? null) : null,
-    }));
+    const enriched = rows.map((n) => {
+      const batchData = useBatchJoin
+        ? (n.notification_batches as {
+            count: number;
+            first_event_at: string;
+            last_event_at: string;
+          } | null)
+        : null;
+
+      const { notification_batches: _batch, ...rest } = n;
+      const actorId = n.actor_id as string | null;
+
+      return {
+        ...rest,
+        actor: actorId ? (actorMap[actorId] ?? null) : null,
+        batch_count: batchData?.count ?? null,
+        batch_first_at: batchData?.first_event_at ?? null,
+        batch_last_at: batchData?.last_event_at ?? null,
+      };
+    });
 
     return NextResponse.json({
       notifications: enriched,
-      total: count ?? 0,
+      total,
       unread_count: unreadCount ?? 0,
     });
   } catch (err) {

@@ -775,7 +775,9 @@
     "toastFailedUpdateProfile": "Falha ao atualizar perfil",
     "walletMismatchWarning": "A carteira conectada difere da carteira vinculada",
     "walletMismatchDescription": "Conectada: {connected} | Vinculada: {linked}. O saldo exibido é da sua carteira vinculada.",
-    "linkedWalletHoldsTokens": "Sua carteira vinculada possui {balance} tokens $ORG"
+    "linkedWalletHoldsTokens": "Sua carteira vinculada possui {balance} tokens $ORG",
+    "notificationPreferencesTitle": "Preferências de Notificação",
+    "notificationPreferencesDescription": "Escolha quais categorias você quer receber e como."
   },
   "Voting": {
     "title": "Votação Ponderada por Tokens",
@@ -1072,6 +1074,8 @@
     "empty": "Ainda sem notificações",
     "emptyPage": "Tudo em dia!",
     "emptyPageHint": "Siga tarefas e propostas para receber notificações sobre atualizações.",
+    "loadMore": "Carregar mais",
+    "loadingMore": "Carregando...",
     "someone": "Alguém",
     "untitled": "Sem título",
     "follow": "Seguir",
@@ -1085,13 +1089,17 @@
       "taskCompleted": "completou \"{title}\"",
       "taskDeleted": "eliminou a tarefa \"{title}\"",
       "submissionCreated": "submeteu trabalho em \"{title}\"",
+      "submissionBatch": "{count} novas submissões em \"{title}\"",
       "submissionReviewed": "avaliou submissão de \"{title}\" ({status})",
       "commentCreated": "comentou em \"{title}\"",
+      "commentBatch": "{count} novos comentários em \"{title}\"",
       "commentDeleted": "removeu um comentário de \"{title}\"",
       "proposalCreated": "criou proposta \"{title}\"",
       "proposalStatusChanged": "alterou \"{title}\" para {status}",
       "proposalDeleted": "eliminou proposta \"{title}\"",
-      "voteCast": "votou em \"{title}\""
+      "voteCast": "votou em \"{title}\"",
+      "votingReminder24h": "a votação termina em 24 horas para \"{title}\"",
+      "votingReminder1h": "a votação termina em 1 hora para \"{title}\""
     },
     "preferences": {
       "title": "Preferências de Notificações",

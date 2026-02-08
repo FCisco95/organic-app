@@ -42,6 +42,7 @@ export function NotificationItem({ notification, onClick, compact }: Notificatio
   const actorName = notification.actor?.name || t('someone');
   const title = (notification.metadata?.title as string) || t('untitled');
   const icon = EVENT_ICONS[notification.event_type];
+  const batchCount = notification.batch_count ?? 0;
 
   const getActionText = () => {
     switch (notification.event_type) {
@@ -56,12 +57,18 @@ export function NotificationItem({ notification, onClick, compact }: Notificatio
       case 'task_deleted':
         return t('events.taskDeleted', { title });
       case 'submission_created':
+        if (batchCount > 1) {
+          return t('events.submissionBatch', { title, count: batchCount });
+        }
         return t('events.submissionCreated', { title });
       case 'submission_reviewed': {
         const reviewStatus = notification.metadata?.review_status as string;
         return t('events.submissionReviewed', { title, status: reviewStatus || '?' });
       }
       case 'comment_created':
+        if (batchCount > 1) {
+          return t('events.commentBatch', { title, count: batchCount });
+        }
         return t('events.commentCreated', { title });
       case 'comment_deleted':
         return t('events.commentDeleted', { title });
@@ -75,6 +82,10 @@ export function NotificationItem({ notification, onClick, compact }: Notificatio
         return t('events.proposalDeleted', { title });
       case 'vote_cast':
         return t('events.voteCast', { title });
+      case 'voting_reminder_24h':
+        return t('events.votingReminder24h', { title });
+      case 'voting_reminder_1h':
+        return t('events.votingReminder1h', { title });
       default:
         return title;
     }

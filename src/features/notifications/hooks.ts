@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import type {
@@ -15,6 +15,8 @@ export const notificationKeys = {
   all: ['notifications'] as const,
   list: (filters?: { category?: string; unread?: boolean }) =>
     [...notificationKeys.all, 'list', filters] as const,
+  infinite: (filters?: { category?: string; unread?: boolean }) =>
+    [...notificationKeys.all, 'infinite', filters] as const,
   unreadCount: () => [...notificationKeys.all, 'unread-count'] as const,
   preferences: () => [...notificationKeys.all, 'preferences'] as const,
   follows: () => [...notificationKeys.all, 'follows'] as const,
@@ -91,6 +93,34 @@ export function useNotifications(filters?: { category?: NotificationCategory; un
           queryClient.setQueryData<number>(notificationKeys.unreadCount(), (old) => (old ?? 0) + 1);
         }
       )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'notifications',
+          filter: `user_id=eq.${userId}`,
+        },
+        (payload) => {
+          const updatedNotification = payload.new as Notification;
+
+          if (updatedNotification.user_id !== userId) return;
+
+          queryClient.setQueryData<NotificationsResponse>(notificationKeys.list(filters), (old) => {
+            if (!old) return old;
+            const index = old.notifications.findIndex((n) => n.id === updatedNotification.id);
+            if (index === -1) return old;
+            const notifications = [...old.notifications];
+            notifications[index] = { ...notifications[index], ...updatedNotification };
+            notifications.sort(
+              (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+            );
+            return { ...old, notifications };
+          });
+
+          queryClient.invalidateQueries({ queryKey: notificationKeys.unreadCount() });
+        }
+      )
       .subscribe();
 
     return () => {
@@ -99,6 +129,36 @@ export function useNotifications(filters?: { category?: NotificationCategory; un
   }, [supabase, queryClient, filters, userId]);
 
   return query;
+}
+
+export function useNotificationsInfinite(filters?: {
+  category?: NotificationCategory;
+  unread?: boolean;
+  limit?: number;
+}) {
+  const limit = filters?.limit ?? 20;
+
+  return useInfiniteQuery<NotificationsResponse, Error, { pages: NotificationsResponse[]; pageParams: (string | undefined)[] }, readonly unknown[], string | undefined>({
+    queryKey: notificationKeys.infinite(filters),
+    queryFn: async ({ pageParam }): Promise<NotificationsResponse> => {
+      const params = new URLSearchParams();
+      if (filters?.category) params.set('category', filters.category);
+      if (filters?.unread !== undefined) params.set('unread', String(filters.unread));
+      if (pageParam) params.set('cursor', pageParam);
+      params.set('limit', String(limit));
+      const res = await fetch(`/api/notifications?${params.toString()}`);
+      if (!res.ok) throw new Error('Failed to fetch notifications');
+      return res.json();
+    },
+    initialPageParam: undefined,
+    getNextPageParam: (lastPage, allPages) => {
+      const loadedCount = allPages.reduce((acc, page) => acc + page.notifications.length, 0);
+      if (loadedCount >= lastPage.total) return undefined;
+      const last = lastPage.notifications[lastPage.notifications.length - 1];
+      return last?.id;
+    },
+    staleTime: 15_000,
+  });
 }
 
 export function useUnreadCount() {

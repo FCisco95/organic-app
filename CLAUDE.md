@@ -390,14 +390,23 @@ In-app notification system with follow/subscribe model, auto-follow triggers, re
 - Fan-out: Postgres trigger on `activity_log` INSERT → notifications for followers (server-side, no client involvement)
 - Real-time: Supabase Realtime subscription on `notifications` table updates bell count + list instantly
 - Preferences: 5 categories x 2 channels (in_app, email), seeded on first access, COALESCE defaults to true
-- Category mapping: `get_notification_category()` PG function maps 13 event types → 5 categories
+- Category mapping: `get_notification_category()` PG function maps 15 event types → 5 categories
 - Subject resolution: `resolve_follow_target()` maps activity subjects (comment, submission, vote) → parent entity (task, proposal)
+- Smart batching: `comment_created` and `submission_created` aggregated into summary notifications within 15-min windows
+- Voting reminders: Edge Function `send-voting-reminders` inserts deduplicated reminder notifications (24h + 1h before close)
+
+### Key files (batching + reminders)
+
+- `supabase/migrations/20260208050000_notifications_batching_and_reminders.sql` — batch tables, dedupe index, updated trigger + category function
+- `supabase/functions/send-voting-reminders/index.ts` — Deno Edge Function for reminder delivery
+- `tsconfig.json` — `supabase/functions` excluded from Next.js compilation
 
 ### What to do next
 
-- Email digests via Resend (Phase 11b)
+- Deploy Edge Function and schedule via cron (`crontab: */15 * * * *` or Supabase scheduled trigger)
+- Apply migration `20260208050000_notifications_batching_and_reminders.sql` to Supabase
+- Email digests via Resend (Phase 11.7)
 - Integrate `FollowButton` into task detail and proposal detail pages
-- Telegram bot integration (Phase 11c)
 - Notification cleanup cron (delete > 90 days old)
 
 ## Workspace Health Summary (Last audit: 2026-02-08)

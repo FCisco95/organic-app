@@ -10,7 +10,9 @@ export type ActivityEventType =
   | 'proposal_created'
   | 'proposal_status_changed'
   | 'proposal_deleted'
-  | 'vote_cast';
+  | 'vote_cast'
+  | 'voting_reminder_24h'
+  | 'voting_reminder_1h';
 
 export interface ActivityEvent {
   id: string;

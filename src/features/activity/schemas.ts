@@ -15,6 +15,8 @@ export const activityEventSchema = z.object({
     'proposal_status_changed',
     'proposal_deleted',
     'vote_cast',
+    'voting_reminder_24h',
+    'voting_reminder_1h',
   ]),
   actor_id: z.string().uuid().nullable(),
   subject_type: z.string(),

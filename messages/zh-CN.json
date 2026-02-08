@@ -775,7 +775,9 @@
     "toastFailedUpdateProfile": "更新个人资料失败",
     "walletMismatchWarning": "已连接的钱包与已关联的钱包不同",
     "walletMismatchDescription": "已连接：{connected} | 已关联：{linked}。显示的余额为您已关联钱包的余额。",
-    "linkedWalletHoldsTokens": "您已关联的钱包持有 {balance} 个 $ORG 代币"
+    "linkedWalletHoldsTokens": "您已关联的钱包持有 {balance} 个 $ORG 代币",
+    "notificationPreferencesTitle": "通知偏好设置",
+    "notificationPreferencesDescription": "选择您想接收的类别以及接收方式。"
   },
   "Voting": {
     "title": "代币加权投票",
@@ -1072,6 +1074,8 @@
     "empty": "暂无通知",
     "emptyPage": "已全部阅读！",
     "emptyPageHint": "关注任务和提案以接收更新通知。",
+    "loadMore": "加载更多",
+    "loadingMore": "正在加载...",
     "someone": "某人",
     "untitled": "无标题",
     "follow": "关注",
@@ -1085,13 +1089,17 @@
       "taskCompleted": "完成了「{title}」",
       "taskDeleted": "删除了任务「{title}」",
       "submissionCreated": "提交了「{title}」的工作",
+      "submissionBatch": "「{title}」有 {count} 条新提交",
       "submissionReviewed": "审核了「{title}」的提交（{status}）",
       "commentCreated": "评论了「{title}」",
+      "commentBatch": "「{title}」有 {count} 条新评论",
       "commentDeleted": "删除了「{title}」的评论",
       "proposalCreated": "创建了提案「{title}」",
       "proposalStatusChanged": "将「{title}」更改为 {status}",
       "proposalDeleted": "删除了提案「{title}」",
-      "voteCast": "在「{title}」上投票"
+      "voteCast": "在「{title}」上投票",
+      "votingReminder24h": "「{title}」的投票将在 24 小时后结束",
+      "votingReminder1h": "「{title}」的投票将在 1 小时后结束"
     },
     "preferences": {
       "title": "通知偏好设置",

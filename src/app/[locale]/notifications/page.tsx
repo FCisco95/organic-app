@@ -8,7 +8,11 @@ import { cn } from '@/lib/utils';
 import { PageContainer } from '@/components/layout';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useNotifications, useMarkRead, useMarkAllRead } from '@/features/notifications/hooks';
+import {
+  useNotificationsInfinite,
+  useMarkRead,
+  useMarkAllRead,
+} from '@/features/notifications/hooks';
 import type { Notification, NotificationCategory } from '@/features/notifications/types';
 import { NOTIFICATION_CATEGORIES } from '@/features/notifications/types';
 import {
@@ -26,12 +30,13 @@ export default function NotificationsPage() {
   const [showPrefs, setShowPrefs] = useState(false);
 
   const filters = activeTab === 'all' ? undefined : { category: activeTab as NotificationCategory };
-  const { data, isLoading } = useNotifications(filters);
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useNotificationsInfinite(filters);
   const markRead = useMarkRead();
   const markAllRead = useMarkAllRead();
 
-  const notifications = data?.notifications ?? [];
-  const unreadCount = data?.unread_count ?? 0;
+  const notifications = data?.pages.flatMap((page) => page.notifications) ?? [];
+  const unreadCount = data?.pages[0]?.unread_count ?? 0;
 
   const handleNotificationClick = (notification: Notification) => {
     if (!notification.read) {
@@ -131,15 +136,28 @@ export default function NotificationsPage() {
           <p className="text-xs text-muted-foreground/60 mt-1">{t('emptyPageHint')}</p>
         </div>
       ) : (
-        <div className="space-y-0.5">
-          {notifications.map((notification) => (
-            <NotificationItem
-              key={notification.id}
-              notification={notification}
-              onClick={handleNotificationClick}
-            />
-          ))}
-        </div>
+        <>
+          <div className="space-y-0.5">
+            {notifications.map((notification) => (
+              <NotificationItem
+                key={notification.id}
+                notification={notification}
+                onClick={handleNotificationClick}
+              />
+            ))}
+          </div>
+          {hasNextPage && (
+            <div className="flex justify-center pt-4">
+              <Button
+                variant="outline"
+                onClick={() => fetchNextPage()}
+                disabled={isFetchingNextPage}
+              >
+                {isFetchingNextPage ? t('loadingMore') : t('loadMore')}
+              </Button>
+            </div>
+          )}
+        </>
       )}
     </PageContainer>
   );

@@ -24,6 +24,7 @@ import bs58 from 'bs58';
 import { formatDistanceToNow } from 'date-fns';
 import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
+import { NotificationPreferences } from '@/components/notifications/notification-preferences';
 
 // Client-side balance cache TTL (15 seconds)
 const BALANCE_CACHE_TTL_MS = 15 * 1000;
@@ -898,6 +899,15 @@ export default function ProfilePage() {
             {linkingWallet ? t('linkingWallet') : t('linkWalletToProfile')}
           </button>
         )}
+      </div>
+
+      {/* Notification Preferences */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">
+          {t('notificationPreferencesTitle')}
+        </h2>
+        <p className="text-sm text-gray-600 mb-4">{t('notificationPreferencesDescription')}</p>
+        <NotificationPreferences />
       </div>
 
       {/* Get Organic ID Section */}

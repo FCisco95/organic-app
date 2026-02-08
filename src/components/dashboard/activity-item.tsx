@@ -17,6 +17,8 @@ const EVENT_CONFIG: Record<ActivityEventType, { icon: string; tint: string }> = 
   proposal_status_changed: { icon: '🔄', tint: 'bg-amber-50 ring-amber-100/60' },
   proposal_deleted: { icon: '🗑️', tint: 'bg-red-50 ring-red-100/60' },
   vote_cast: { icon: '🗳️', tint: 'bg-emerald-50 ring-emerald-100/60' },
+  voting_reminder_24h: { icon: '⏰', tint: 'bg-amber-50 ring-amber-100/60' },
+  voting_reminder_1h: { icon: '⏰', tint: 'bg-amber-50 ring-amber-100/60' },
 };
 
 const FALLBACK = { icon: '📌', tint: 'bg-gray-50 ring-gray-100/60' };

@@ -16,6 +16,9 @@ export interface Notification {
   read: boolean;
   read_at: string | null;
   created_at: string;
+  batch_count?: number | null;
+  batch_first_at?: string | null;
+  batch_last_at?: string | null;
   actor?: {
     id: string;
     name: string | null;
@@ -75,4 +78,6 @@ export const EVENT_ICONS: Record<ActivityEventType, string> = {
   proposal_status_changed: '🔄',
   proposal_deleted: '🗑️',
   vote_cast: '🗳️',
+  voting_reminder_24h: '⏰',
+  voting_reminder_1h: '⏰',
 };

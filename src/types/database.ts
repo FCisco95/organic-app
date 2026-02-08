@@ -1170,7 +1170,9 @@ export type Database = {
         | 'proposal_created'
         | 'proposal_status_changed'
         | 'proposal_deleted'
-        | 'vote_cast';
+        | 'vote_cast'
+        | 'voting_reminder_24h'
+        | 'voting_reminder_1h';
       notification_category: 'tasks' | 'proposals' | 'voting' | 'comments' | 'system';
       proposal_category: 'feature' | 'governance' | 'treasury' | 'community' | 'development';
       proposal_status: 'draft' | 'submitted' | 'approved' | 'rejected' | 'voting';
@@ -1319,6 +1321,8 @@ export const Constants = {
         'proposal_status_changed',
         'proposal_deleted',
         'vote_cast',
+        'voting_reminder_24h',
+        'voting_reminder_1h',
       ],
       notification_category: ['tasks', 'proposals', 'voting', 'comments', 'system'],
       proposal_category: ['feature', 'governance', 'treasury', 'community', 'development'],

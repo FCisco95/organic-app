@@ -6,8 +6,8 @@
 
 - [x] Authentication system with Supabase
 - [x] Wallet integration (Phantom)
-- [x] Wallet linking and signature verification
-- [x] Organic ID assignment system
+- [x] Wallet linking and signature verification (nonce-protected via `wallet_nonces`)
+- [x] Organic ID assignment system with server-side token holder verification
 - [x] User profiles with role management
 - [x] Navigation with role-based access
 
@@ -164,13 +164,124 @@
 
 ### Phase 11: Notifications & Communication
 
-- [ ] Email notifications for important events
-- [ ] In-app notification system
-- [ ] Task assignment notifications
-- [ ] Proposal voting reminders
-- [ ] Discord bot integration
-- [ ] Telegram bot integration
-- [ ] Announcement system
+#### 11.1 Core notification system (in-app)
+
+- [x] Centralized notification system built on top of `activity_log`
+- [x] User-specific notifications table with read / unread state
+- [x] Real-time delivery using Supabase Realtime
+- [x] Notification bell in TopBar with unread counter
+- [x] Notification dropdown panel (recent activity)
+- [x] Full notifications page with category filters
+- [x] Pagination for notifications list (Load more via cursor API)
+- [x] Mark as read (single + bulk)
+- [x] Deep-link navigation to source (task, proposal, comment, submission, vote)
+
+#### 11.2 Notification categories & events
+
+- [x] Task events
+  - task created
+  - task status changed
+  - task completed
+  - task deleted
+  - submission created / reviewed
+
+- [x] Proposal events
+  - proposal created
+  - proposal status changed
+  - proposal deleted
+
+- [x] Voting events: vote cast
+- [x] Voting period ending reminders (24h + 1h before close)
+
+- [x] Comment events
+  - comment created
+  - comment deleted
+
+- [ ] System events (extensible)
+  - role changes
+  - org-level announcements
+
+#### 11.3 Follow / subscription model
+
+- [x] Follow / unfollow tasks
+- [x] Follow / unfollow proposals
+- [x] Auto-follow rules
+  - creator auto-follows
+  - assignee auto-follows
+  - voter auto-follows
+  - commenter auto-follows
+- [x] Notifications only sent to followers (non-global events)
+- [x] Follow button on task & proposal detail pages
+
+#### 11.4 Notification preferences
+
+- [x] Per-category notification preferences
+- [x] Channel-level toggles
+  - in-app
+  - email
+- [x] Default preferences seeded on first access
+- [x] Preferences editable from notifications page
+- [x] Preferences editable from user settings (profile page)
+
+#### 11.5 Smart batching (high-volume events)
+
+- [x] Batch tables: `notification_batches`, `notification_batch_events` with RLS
+- [x] 15-minute time-window aggregation for `comment_created` and `submission_created`
+- [x] Summary notification per batch (single row in `notifications`, updated in-place)
+- [x] Raw events preserved in `notification_batch_events` for auditability
+- [x] Batch count + timestamps joined in API response (`batch_count`, `batch_first_at`, `batch_last_at`)
+- [x] UI displays batched copy (e.g., "3 new comments on X")
+- [x] Realtime UPDATE subscription refreshes batched notifications in-place
+
+#### 11.6 Voting reminders
+
+- [x] Edge Function `send-voting-reminders` (Deno, service-role key)
+- [x] Two reminder windows: 24h and 1h before `voting_ends_at`
+- [x] Tolerance windows (30min for 24h, 10min for 1h) for cron scheduling
+- [x] Idempotent inserts via `dedupe_key` unique index on `notifications`
+- [x] Respects per-user voting notification preferences
+- [x] `voting_reminder_24h` and `voting_reminder_1h` event types added to `activity_event_type` enum
+- [x] `get_notification_category()` maps both to `voting` category
+- [x] Reminder icons and i18n copy (EN, PT, ZH) for both windows
+
+#### 11.7 Email notifications (digest-based)
+
+- [ ] Email delivery via Resend
+- [ ] Daily email digest (no per-event spam)
+- [ ] Digest respects user preferences
+- [ ] Email templates built with React Email
+- [ ] Scheduled job / Edge Function for sending digests
+
+#### 11.8 Announcements
+
+- [ ] System-wide announcements (admin / org level)
+- [ ] Announcements delivered in-app
+- [ ] Announcements optionally included in email digests
+- [ ] Not tied to follow model (broadcast events)
+
+#### 11.9 Explicitly out of scope (this phase)
+
+- [ ] Discord bot integration (planned later)
+- [ ] Telegram bot integration (planned later)
+- [ ] SMS / push notifications
+
+#### 11.10 UX & quality requirements
+
+- [x] Zero notification spam (follow-based delivery + batching)
+- [x] Real-time UX with graceful fallback
+- [x] Mobile-friendly notification panel
+- [x] i18n support (EN / PT / ZH)
+- [x] Clear empty states and onboarding hints
+
+#### 11.11 Verification & acceptance
+
+- [x] Real-time unread counter updates
+- [x] Notifications respect follow + preference rules
+- [x] No cross-user data leaks (RLS enforced)
+- [ ] Email digests sent only when relevant
+- [x] All notifications link to valid sources
+- [x] Batched notifications show correct count and update in real-time
+- [x] Voting reminders are idempotent (no duplicates on re-run)
 
 ### Phase 12: Advanced Features
 
@@ -402,13 +513,13 @@
 - [Supabase Documentation](https://supabase.com/docs)
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Solana Web3.js](https://solana-labs.github.io/solana-web3.js/)
-- [React DnD](https://react-dnd.github.io/react-dnd/)
+- [React DnD](https://react-dnd.github.io/)
 - [TailwindCSS](https://tailwindcss.com/docs)
 
 ---
 
-Last Updated: 2026-02-07
-Version: 1.6
+Last Updated: 2026-02-08
+Version: 1.8.0
 
 ## Recent Updates (2026-01-22)
 
@@ -429,6 +540,42 @@ Version: 1.6
 ### Infrastructure TODO
 
 - Set `NEXT_PUBLIC_SOLANA_RPC_URL` in `.env.local`
+
+## Recent Updates (2026-02-08)
+
+### Notifications System (Phase 11.1–11.4)
+
+- Added `user_follows`, `notifications`, and `notification_preferences` tables + RLS and realtime
+- Added fan-out trigger on `activity_log` + auto-follow triggers for tasks, proposals, votes, comments
+- Added notifications API routes (list, mark read, preferences, follow)
+- Added UI: bell dropdown, notifications page, preferences panel, follow button
+- Added React Query hooks + i18n strings for notifications
+- Added notifications pagination (cursor-based Load more) and profile preferences section
+
+### Notification Batching & Voting Reminders (Phase 11.5–11.6)
+
+- Added `notification_batches` + `notification_batch_events` tables with RLS
+- Added `batch_id` and `dedupe_key` columns to `notifications` table
+- Updated `notify_followers()` trigger: 15-minute batching window for `comment_created` and `submission_created`
+- Summary notification per batch (single row, updated in-place on subsequent events)
+- Raw events stored in `notification_batch_events` for auditability
+- Added `voting_reminder_24h` and `voting_reminder_1h` event types to `activity_event_type` enum
+- Updated `get_notification_category()` to map reminders to `voting` category
+- Created Edge Function `supabase/functions/send-voting-reminders/index.ts` (Deno)
+  - Queries proposals in `voting` status with `voting_ends_at` in 24h/1h windows
+  - Idempotent upsert via `dedupe_key` unique index
+  - Respects user notification preferences
+- API: notifications route joins `notification_batches` for `batch_count`/`batch_first_at`/`batch_last_at`
+- UI: `NotificationItem` shows batched copy ("3 new comments on X") and reminder text
+- Realtime: added UPDATE subscription to refresh batched notifications in-place
+- i18n: `commentBatch`, `submissionBatch`, `votingReminder24h`, `votingReminder1h` across EN, PT, ZH
+- Excluded `supabase/functions/` from Next.js tsconfig to prevent Deno import errors in build
+
+### Verification & Organic ID Flow
+
+- Nonce-based SIWS wallet linking (`/api/auth/nonce`, `/api/auth/link-wallet`) with replay protection
+- Organic ID assignment endpoint with ORG holder verification + member role upgrade
+- Profile page flow for wallet linking and Organic ID claim
 
 ## Recent Updates (2026-02-07)
 

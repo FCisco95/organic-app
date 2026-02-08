@@ -775,7 +775,9 @@
     "toastFailedUpdateProfile": "Failed to update profile",
     "walletMismatchWarning": "Connected wallet differs from linked wallet",
     "walletMismatchDescription": "Connected: {connected} | Linked: {linked}. Balance shown is for your linked wallet.",
-    "linkedWalletHoldsTokens": "Your linked wallet holds {balance} $ORG tokens"
+    "linkedWalletHoldsTokens": "Your linked wallet holds {balance} $ORG tokens",
+    "notificationPreferencesTitle": "Notification Preferences",
+    "notificationPreferencesDescription": "Choose which categories you want to hear about and how."
   },
   "Voting": {
     "title": "Token-Weighted Voting",
@@ -1072,6 +1074,8 @@
     "empty": "No notifications yet",
     "emptyPage": "All caught up!",
     "emptyPageHint": "Follow tasks and proposals to get notified about updates.",
+    "loadMore": "Load more",
+    "loadingMore": "Loading...",
     "someone": "Someone",
     "untitled": "Untitled",
     "follow": "Follow",
@@ -1085,13 +1089,17 @@
       "taskCompleted": "completed \"{title}\"",
       "taskDeleted": "deleted task \"{title}\"",
       "submissionCreated": "submitted work on \"{title}\"",
+      "submissionBatch": "{count} new submissions on \"{title}\"",
       "submissionReviewed": "reviewed submission for \"{title}\" ({status})",
       "commentCreated": "commented on \"{title}\"",
+      "commentBatch": "{count} new comments on \"{title}\"",
       "commentDeleted": "removed a comment on \"{title}\"",
       "proposalCreated": "created proposal \"{title}\"",
       "proposalStatusChanged": "changed \"{title}\" to {status}",
       "proposalDeleted": "deleted proposal \"{title}\"",
-      "voteCast": "voted on \"{title}\""
+      "voteCast": "voted on \"{title}\"",
+      "votingReminder24h": "voting ends in 24 hours for \"{title}\"",
+      "votingReminder1h": "voting ends in 1 hour for \"{title}\""
     },
     "preferences": {
       "title": "Notification Preferences",
