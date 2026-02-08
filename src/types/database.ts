@@ -740,12 +740,14 @@ export type Database = {
           labels: string[] | null;
           max_assignees: number | null;
           org_id: string | null;
+          parent_task_id: string | null;
           points: number | null;
           priority: Database['public']['Enums']['task_priority'] | null;
           proposal_id: string | null;
           sprint_id: string | null;
           status: Database['public']['Enums']['task_status'] | null;
           task_type: Database['public']['Enums']['task_type'] | null;
+          template_id: string | null;
           title: string;
           updated_at: string | null;
         };
@@ -763,12 +765,14 @@ export type Database = {
           labels?: string[] | null;
           max_assignees?: number | null;
           org_id?: string | null;
+          parent_task_id?: string | null;
           points?: number | null;
           priority?: Database['public']['Enums']['task_priority'] | null;
           proposal_id?: string | null;
           sprint_id?: string | null;
           status?: Database['public']['Enums']['task_status'] | null;
           task_type?: Database['public']['Enums']['task_type'] | null;
+          template_id?: string | null;
           title: string;
           updated_at?: string | null;
         };
@@ -786,12 +790,14 @@ export type Database = {
           labels?: string[] | null;
           max_assignees?: number | null;
           org_id?: string | null;
+          parent_task_id?: string | null;
           points?: number | null;
           priority?: Database['public']['Enums']['task_priority'] | null;
           proposal_id?: string | null;
           sprint_id?: string | null;
           status?: Database['public']['Enums']['task_status'] | null;
           task_type?: Database['public']['Enums']['task_type'] | null;
+          template_id?: string | null;
           title?: string;
           updated_at?: string | null;
         };
@@ -1061,6 +1067,142 @@ export type Database = {
         };
         Relationships: [];
       };
+      // Phase 12: Task Dependencies
+      task_dependencies: {
+        Row: {
+          id: string;
+          task_id: string;
+          depends_on_task_id: string;
+          created_at: string | null;
+          created_by: string | null;
+        };
+        Insert: {
+          id?: string;
+          task_id: string;
+          depends_on_task_id: string;
+          created_at?: string | null;
+          created_by?: string | null;
+        };
+        Update: {
+          id?: string;
+          task_id?: string;
+          depends_on_task_id?: string;
+          created_at?: string | null;
+          created_by?: string | null;
+        };
+        Relationships: [];
+      };
+      // Phase 12: Task Templates
+      task_templates: {
+        Row: {
+          id: string;
+          name: string;
+          description: string | null;
+          task_type: Database['public']['Enums']['task_type'] | null;
+          priority: Database['public']['Enums']['task_priority'] | null;
+          base_points: number | null;
+          labels: string[] | null;
+          is_team_task: boolean | null;
+          max_assignees: number | null;
+          default_assignee_id: string | null;
+          is_recurring: boolean | null;
+          recurrence_rule: string | null;
+          org_id: string | null;
+          created_by: string;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          description?: string | null;
+          task_type?: Database['public']['Enums']['task_type'] | null;
+          priority?: Database['public']['Enums']['task_priority'] | null;
+          base_points?: number | null;
+          labels?: string[] | null;
+          is_team_task?: boolean | null;
+          max_assignees?: number | null;
+          default_assignee_id?: string | null;
+          is_recurring?: boolean | null;
+          recurrence_rule?: string | null;
+          org_id?: string | null;
+          created_by: string;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          description?: string | null;
+          task_type?: Database['public']['Enums']['task_type'] | null;
+          priority?: Database['public']['Enums']['task_priority'] | null;
+          base_points?: number | null;
+          labels?: string[] | null;
+          is_team_task?: boolean | null;
+          max_assignees?: number | null;
+          default_assignee_id?: string | null;
+          is_recurring?: boolean | null;
+          recurrence_rule?: string | null;
+          org_id?: string | null;
+          created_by?: string;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [];
+      };
+      // Phase 12: Recurring Task Instances
+      recurring_task_instances: {
+        Row: {
+          id: string;
+          template_id: string;
+          task_id: string;
+          sprint_id: string | null;
+          generated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          template_id: string;
+          task_id: string;
+          sprint_id?: string | null;
+          generated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          template_id?: string;
+          task_id?: string;
+          sprint_id?: string | null;
+          generated_at?: string | null;
+        };
+        Relationships: [];
+      };
+      // Phase 12: Vote Delegations
+      vote_delegations: {
+        Row: {
+          id: string;
+          delegator_id: string;
+          delegate_id: string;
+          category: string | null;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          delegator_id: string;
+          delegate_id: string;
+          category?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          delegator_id?: string;
+          delegate_id?: string;
+          category?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       leaderboard_view: {
@@ -1155,6 +1297,31 @@ export type Database = {
           vote_count: number;
           yes_votes: number;
         }[];
+      };
+      // Phase 12 functions
+      is_task_blocked: {
+        Args: { p_task_id: string };
+        Returns: boolean;
+      };
+      get_subtask_progress: {
+        Args: { p_parent_task_id: string };
+        Returns: {
+          total_subtasks: number;
+          completed_subtasks: number;
+          progress_percentage: number;
+        }[];
+      };
+      get_effective_voting_power: {
+        Args: {
+          p_user_id: string;
+          p_proposal_id: string;
+          p_proposal_category?: string;
+        };
+        Returns: number;
+      };
+      clone_recurring_templates: {
+        Args: { p_sprint_id: string };
+        Returns: number;
       };
     };
     Enums: {

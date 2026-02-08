@@ -409,19 +409,94 @@ In-app notification system with follow/subscribe model, auto-follow triggers, re
 - Integrate `FollowButton` into task detail and proposal detail pages
 - Notification cleanup cron (delete > 90 days old)
 
+## Phase 12: Advanced Features (added 2026-02-08)
+
+### What was built
+
+Task dependencies, subtasks, task templates with recurrence, and vote delegation.
+
+**Database**: Migration `20260208100000_phase12_advanced_features.sql`:
+
+- `task_dependencies` table — blocking dependencies between tasks with cycle prevention trigger (recursive CTE, max depth 50)
+- `parent_task_id` column on `tasks` — subtask hierarchy (max 1 level, enforced by trigger)
+- `task_templates` table — reusable task blueprints with recurrence support
+- `recurring_task_instances` table — tracks which templates have been cloned into which sprints
+- `vote_delegations` table — per-category or global vote delegation with `COALESCE(category, 'global')` uniqueness
+- `recurrence_rule` enum: sprint_start, daily, weekly, biweekly, monthly
+- RLS policies for all new tables
+- Helper functions: `get_blocking_tasks()`, `get_blocked_tasks()`, `is_task_blocked()`, `get_subtask_progress()`, `get_effective_voting_power()`, `clone_recurring_templates()`
+
+**Feature domains**:
+
+- `src/features/tasks/types.ts` — `TaskDependency`, `SubtaskSummary`, `TaskTemplate`, `TaskTemplateWithCreator`, `RecurringTaskInstance`, `RecurrenceRule`, `RECURRENCE_RULE_LABELS`
+- `src/features/tasks/schemas.ts` — `addDependencySchema`, `createSubtaskSchema`, `createTemplateSchema`, `updateTemplateSchema`, `recurrenceRuleSchema`
+- `src/features/tasks/hooks.ts` — `useTaskDependencies()`, `useAddDependency()`, `useRemoveDependency()`, `useSubtasks()`, `useSubtaskProgress()`, `useCreateSubtask()`, `useTaskTemplates()`, `useTaskTemplate()`, `useCreateTemplate()`, `useUpdateTemplate()`, `useDeleteTemplate()`, `useCreateFromTemplate()`
+- `src/features/tasks/utils.ts` — `isTaskBlocked()`, `getIncompleteBlockers()`, `calculateSubtaskProgress()`, `canClaimTaskWithDeps()`
+- `src/features/voting/types.ts` — `DelegationCategory`, `DELEGATION_CATEGORY_LABELS`, `VoteDelegation`, `OutgoingDelegation`, `IncomingDelegation`, `EffectiveVotingPower`
+- `src/features/voting/schemas.ts` — `delegationCategorySchema`, `delegateVoteSchema`, `revokeDelegationSchema`
+- `src/features/voting/hooks.ts` — `useDelegations()`, `useDelegate()`, `useRevokeDelegation()`, `useEffectiveVotingPower()`
+
+**API routes**:
+
+- `src/app/api/tasks/[id]/dependencies/route.ts` — GET (blockers + blocked-by), POST (add dependency with cycle check), DELETE (remove)
+- `src/app/api/tasks/[id]/subtasks/route.ts` — GET (list with progress), POST (create under parent, max 1 level)
+- `src/app/api/tasks/templates/route.ts` — GET (list), POST (create, council/admin only)
+- `src/app/api/tasks/templates/[id]/route.ts` — GET/PATCH/DELETE (council/admin for write ops)
+- `src/app/api/tasks/templates/[id]/instantiate/route.ts` — POST (create task from template, requires organic_id)
+- `src/app/api/voting/delegations/route.ts` — GET (outgoing + incoming), POST (delegate), DELETE (revoke)
+- `src/app/api/proposals/[id]/effective-power/route.ts` — GET (own weight + delegated weight from non-voting delegators)
+- `src/app/api/sprints/[id]/complete/route.ts` — Extended to call `clone_recurring_templates` on sprint completion
+
+**UI components**:
+
+- `src/components/tasks/blocked-badge.tsx` — Red badge showing "Blocked by N tasks"
+- `src/components/tasks/subtask-list.tsx` — Expandable checklist with progress bar, inline add form
+- `src/components/tasks/subtask-progress.tsx` — Compact "3/5" indicator
+- `src/components/tasks/dependency-picker.tsx` — Search+select for adding/removing blocking deps
+- `src/components/tasks/template-picker.tsx` — Grid of template cards with one-click instantiation
+- `src/components/tasks/template-manager.tsx` — Full CRUD admin interface for templates
+- `src/components/tasks/recurrence-badge.tsx` — Blue badge showing recurrence rule
+- `src/components/voting/DelegationPanel.tsx` — Full delegation management with member search
+- `src/components/voting/DelegatedPowerBadge.tsx` — Effective voting power breakdown
+- `src/components/voting/DelegationInfo.tsx` — Compact delegation status text
+
+**Pages**: `src/app/[locale]/tasks/templates/page.tsx` — admin sees TemplateManager, members see TemplatePicker
+
+**Navigation**: Templates added to sidebar + mobile sidebar (FileText icon, gated on admin/council)
+
+**i18n**: `Tasks.dependencies`, `Tasks.subtasks`, `Tasks.templates`, `Voting.delegation` keys across all 3 languages
+
+### Key patterns
+
+- Cycle prevention: Postgres trigger with recursive CTE (max depth 50) prevents A→B→A dependency chains
+- Subtask nesting: Max 1 level enforced by trigger (`prevent_deep_nesting`)
+- Vote delegation: per-category or global, revocable, delegator override when voting directly
+- Effective power: own snapshot weight + delegated weight from non-voting delegators matching category
+- Recurring templates: `clone_recurring_templates(sprint_id)` auto-clones sprint_start templates on sprint completion
+- Template instantiation: any member with organic_id can create tasks from templates
+
+### What to do next
+
+- Wire Phase 12 components into existing task detail page (`tasks/[id]/page.tsx`)
+- Wire DelegationPanel into proposal/voting pages
+- Apply migration `20260208100000_phase12_advanced_features.sql` to Supabase
+- Cron job for daily/weekly/biweekly/monthly recurring task creation
+- Drag-and-drop reordering for subtasks
+
 ## Workspace Health Summary (Last audit: 2026-02-08)
 
 ### What's Solid
 
 - Lint passes with zero errors/warnings
-- React Query properly centralized in `src/features/{tasks,proposals,analytics,treasury,members,settings,notifications}/hooks.ts`
-- Zod schemas separated in `src/features/{tasks,proposals,analytics,treasury,members,settings,notifications}/schemas.ts`
-- Barrel exports enable clean imports (`@/features/tasks`, `@/features/proposals`, `@/features/analytics`, `@/features/treasury`, `@/features/members`, `@/features/settings`, `@/features/notifications`)
+- React Query properly centralized in `src/features/{tasks,proposals,analytics,treasury,members,settings,notifications,voting}/hooks.ts`
+- Zod schemas separated in `src/features/{tasks,proposals,analytics,treasury,members,settings,notifications,voting}/schemas.ts`
+- Barrel exports enable clean imports (`@/features/tasks`, `@/features/proposals`, `@/features/analytics`, `@/features/treasury`, `@/features/members`, `@/features/settings`, `@/features/notifications`, `@/features/voting`)
 - Proposals feature domain fully built: types, schemas, hooks, UI components, API routes
 - Members + Settings feature domains fully built with admin/council access control
 - Migration files well-organized and timestamped
 - Notifications system fully built: follow model, auto-follow triggers, real-time push, preference toggles
-- i18n implementation complete (en, pt-PT, zh-CN) — includes ProposalWizard, ProposalDetail, Members, Settings, and Notifications namespaces
+- Phase 12 advanced features: task dependencies (cycle-safe), subtasks, templates with recurrence, vote delegation
+- i18n implementation complete (en, pt-PT, zh-CN) — includes ProposalWizard, ProposalDetail, Members, Settings, Notifications, and Phase 12 namespaces
 - Wallet security: nonce validation with 5-minute TTL
 - RPC caching prevents 429 rate limit errors
 

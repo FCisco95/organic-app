@@ -259,3 +259,97 @@ export const CLAIMABLE_STATUSES: TaskStatus[] = ['backlog', 'todo'];
 
 // Task status that indicates work is in progress
 export const IN_PROGRESS_STATUSES: TaskStatus[] = ['in_progress', 'review'];
+
+// ============================================
+// Phase 12: Dependencies, Subtasks, Templates
+// ============================================
+
+// Recurrence rule values
+export type RecurrenceRule = 'sprint_start' | 'daily' | 'weekly' | 'biweekly' | 'monthly';
+
+// Recurrence rule labels
+export const RECURRENCE_RULE_LABELS: Record<RecurrenceRule, string> = {
+  sprint_start: 'Every Sprint Start',
+  daily: 'Daily',
+  weekly: 'Weekly',
+  biweekly: 'Biweekly',
+  monthly: 'Monthly',
+};
+
+// Task dependency
+export interface TaskDependency {
+  id: string;
+  task_id: string;
+  depends_on_task_id: string;
+  created_at: string;
+  created_by: string | null;
+  // Joined fields
+  blocking_task?: {
+    id: string;
+    title: string;
+    status: TaskStatus;
+  };
+}
+
+// Subtask summary for parent task display
+export interface SubtaskSummary {
+  total: number;
+  completed: number;
+  percentage: number;
+}
+
+// Task template
+export interface TaskTemplate {
+  id: string;
+  name: string;
+  description: string | null;
+  task_type: TaskType;
+  priority: TaskPriority;
+  base_points: number;
+  labels: string[];
+  is_team_task: boolean;
+  max_assignees: number;
+  default_assignee_id: string | null;
+  is_recurring: boolean;
+  recurrence_rule: RecurrenceRule | null;
+  org_id: string | null;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// Template with creator info
+export interface TaskTemplateWithCreator extends TaskTemplate {
+  creator?: {
+    id: string;
+    name: string | null;
+    email: string;
+  };
+}
+
+// Recurring task instance (for tracking)
+export interface RecurringTaskInstance {
+  id: string;
+  template_id: string;
+  task_id: string;
+  sprint_id: string | null;
+  generated_at: string;
+}
+
+// Extended task with dependency/subtask info
+export interface TaskWithDependencies extends TaskWithRelations {
+  dependencies?: TaskDependency[];
+  blocked_by?: TaskDependency[];
+  subtasks?: TaskWithRelations[];
+  subtask_summary?: SubtaskSummary;
+  parent_task?: {
+    id: string;
+    title: string;
+    status: TaskStatus;
+  } | null;
+  is_blocked?: boolean;
+  template?: {
+    id: string;
+    name: string;
+  } | null;
+}

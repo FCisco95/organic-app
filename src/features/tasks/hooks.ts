@@ -2,13 +2,25 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
-import { TaskAssigneeWithUser, TaskSubmissionWithReviewer, TaskWithRelations } from './types';
+import {
+  TaskAssigneeWithUser,
+  TaskSubmissionWithReviewer,
+  TaskWithRelations,
+  TaskDependency,
+  TaskTemplate,
+  TaskTemplateWithCreator,
+  SubtaskSummary,
+} from './types';
 import {
   CreateTaskInput,
   UpdateTaskInput,
   TaskSubmissionInput,
   ReviewSubmissionInput,
   TaskFilters,
+  AddDependencyInput,
+  CreateSubtaskInput,
+  CreateTemplateInput,
+  UpdateTemplateInput,
 } from './schemas';
 
 // Query keys
@@ -23,6 +35,11 @@ export const taskKeys = {
   myTasks: (userId: string) => [...taskKeys.all, 'my-tasks', userId] as const,
   claimable: () => [...taskKeys.all, 'claimable'] as const,
   pendingReview: () => [...taskKeys.all, 'pending-review'] as const,
+  // Phase 12
+  dependencies: (taskId: string) => [...taskKeys.all, 'dependencies', taskId] as const,
+  subtasks: (taskId: string) => [...taskKeys.all, 'subtasks', taskId] as const,
+  templates: () => [...taskKeys.all, 'templates'] as const,
+  template: (id: string) => [...taskKeys.all, 'template', id] as const,
 };
 
 /**
@@ -499,5 +516,356 @@ export function useTaskAssignees(taskId: string) {
       return data as unknown as TaskAssigneeWithUser[];
     },
     enabled: !!taskId,
+  });
+}
+
+// ============================================
+// Phase 12: Dependencies
+// ============================================
+
+/**
+ * Fetch dependencies for a task (tasks that block this task)
+ */
+export function useTaskDependencies(taskId: string) {
+  return useQuery({
+    queryKey: taskKeys.dependencies(taskId),
+    queryFn: async () => {
+      const response = await fetch(`/api/tasks/${taskId}/dependencies`);
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to fetch dependencies');
+      }
+      const { dependencies } = await response.json();
+      return dependencies as TaskDependency[];
+    },
+    enabled: !!taskId,
+  });
+}
+
+/**
+ * Add a dependency to a task
+ */
+export function useAddDependency() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ taskId, input }: { taskId: string; input: AddDependencyInput }) => {
+      const response = await fetch(`/api/tasks/${taskId}/dependencies`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to add dependency');
+      }
+
+      return response.json();
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: taskKeys.dependencies(variables.taskId) });
+      queryClient.invalidateQueries({ queryKey: taskKeys.detail(variables.taskId) });
+      queryClient.invalidateQueries({
+        queryKey: taskKeys.dependencies(variables.input.depends_on_task_id),
+      });
+    },
+  });
+}
+
+/**
+ * Remove a dependency from a task
+ */
+export function useRemoveDependency() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      taskId,
+      dependencyId,
+    }: {
+      taskId: string;
+      dependencyId: string;
+      dependsOnTaskId?: string;
+    }) => {
+      const response = await fetch(`/api/tasks/${taskId}/dependencies?id=${dependencyId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to remove dependency');
+      }
+
+      return response.json();
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: taskKeys.dependencies(variables.taskId) });
+      queryClient.invalidateQueries({ queryKey: taskKeys.detail(variables.taskId) });
+      if (variables.dependsOnTaskId) {
+        queryClient.invalidateQueries({
+          queryKey: taskKeys.dependencies(variables.dependsOnTaskId),
+        });
+      }
+    },
+  });
+}
+
+// ============================================
+// Phase 12: Subtasks
+// ============================================
+
+/**
+ * Fetch subtasks for a parent task
+ */
+export function useSubtasks(parentTaskId: string) {
+  const supabase = createClient();
+
+  return useQuery({
+    queryKey: taskKeys.subtasks(parentTaskId),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('tasks')
+        .select(
+          `
+          *,
+          assignee:user_profiles!tasks_assignee_id_fkey(
+            id, name, email, organic_id, avatar_url
+          )
+        `
+        )
+        .eq('parent_task_id', parentTaskId)
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+      return data as unknown as TaskWithRelations[];
+    },
+    enabled: !!parentTaskId,
+  });
+}
+
+/**
+ * Get subtask progress summary for a parent task
+ */
+export function useSubtaskProgress(parentTaskId: string) {
+  const supabase = createClient();
+
+  return useQuery({
+    queryKey: [...taskKeys.subtasks(parentTaskId), 'progress'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('tasks')
+        .select('status')
+        .eq('parent_task_id', parentTaskId);
+
+      if (error) throw error;
+
+      const total = data?.length ?? 0;
+      const completed = data?.filter((t) => t.status === 'done').length ?? 0;
+
+      return {
+        total,
+        completed,
+        percentage: total > 0 ? Math.round((completed / total) * 100) : 0,
+      } as SubtaskSummary;
+    },
+    enabled: !!parentTaskId,
+  });
+}
+
+/**
+ * Create a subtask under a parent task
+ */
+export function useCreateSubtask() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      parentTaskId,
+      input,
+    }: {
+      parentTaskId: string;
+      input: CreateSubtaskInput;
+    }) => {
+      const response = await fetch(`/api/tasks/${parentTaskId}/subtasks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to create subtask');
+      }
+
+      return response.json();
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: taskKeys.subtasks(variables.parentTaskId) });
+      queryClient.invalidateQueries({ queryKey: taskKeys.detail(variables.parentTaskId) });
+      queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
+    },
+  });
+}
+
+// ============================================
+// Phase 12: Task Templates
+// ============================================
+
+/**
+ * Fetch all task templates
+ */
+export function useTaskTemplates() {
+  return useQuery({
+    queryKey: taskKeys.templates(),
+    queryFn: async () => {
+      const response = await fetch('/api/tasks/templates');
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to fetch templates');
+      }
+      const { templates } = await response.json();
+      return templates as TaskTemplateWithCreator[];
+    },
+  });
+}
+
+/**
+ * Fetch a single task template
+ */
+export function useTaskTemplate(templateId: string) {
+  return useQuery({
+    queryKey: taskKeys.template(templateId),
+    queryFn: async () => {
+      const response = await fetch(`/api/tasks/templates/${templateId}`);
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to fetch template');
+      }
+      const { template } = await response.json();
+      return template as TaskTemplate;
+    },
+    enabled: !!templateId,
+  });
+}
+
+/**
+ * Create a task template (council/admin only)
+ */
+export function useCreateTemplate() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (input: CreateTemplateInput) => {
+      const response = await fetch('/api/tasks/templates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to create template');
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: taskKeys.templates() });
+    },
+  });
+}
+
+/**
+ * Update a task template (council/admin only)
+ */
+export function useUpdateTemplate() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      templateId,
+      input,
+    }: {
+      templateId: string;
+      input: UpdateTemplateInput;
+    }) => {
+      const response = await fetch(`/api/tasks/templates/${templateId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to update template');
+      }
+
+      return response.json();
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: taskKeys.templates() });
+      queryClient.invalidateQueries({ queryKey: taskKeys.template(variables.templateId) });
+    },
+  });
+}
+
+/**
+ * Delete a task template (council/admin only)
+ */
+export function useDeleteTemplate() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (templateId: string) => {
+      const response = await fetch(`/api/tasks/templates/${templateId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to delete template');
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: taskKeys.templates() });
+    },
+  });
+}
+
+/**
+ * Create a task from a template (any member with organic_id)
+ */
+export function useCreateFromTemplate() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      templateId,
+      sprintId,
+      overrides,
+    }: {
+      templateId: string;
+      sprintId?: string;
+      overrides?: { title?: string; description?: string };
+    }) => {
+      const response = await fetch(`/api/tasks/templates/${templateId}/instantiate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sprint_id: sprintId, ...overrides }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to create task from template');
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
+    },
   });
 }

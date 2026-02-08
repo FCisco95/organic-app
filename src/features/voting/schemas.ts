@@ -82,3 +82,26 @@ export const holderSnapshotSchema = z.object({
   taken_at: z.string(),
 });
 export type HolderSnapshotSchema = z.infer<typeof holderSnapshotSchema>;
+
+// ============================================
+// Phase 12: Vote Delegation
+// ============================================
+
+export const delegationCategorySchema = z.enum([
+  'feature',
+  'governance',
+  'treasury',
+  'community',
+  'development',
+]);
+
+export const delegateVoteSchema = z.object({
+  delegate_id: z.string().uuid('Invalid delegate ID'),
+  category: delegationCategorySchema.optional().nullable(),
+});
+export type DelegateVoteInput = z.infer<typeof delegateVoteSchema>;
+
+export const revokeDelegationSchema = z.object({
+  delegation_id: z.string().uuid('Invalid delegation ID'),
+});
+export type RevokeDelegationInput = z.infer<typeof revokeDelegationSchema>;

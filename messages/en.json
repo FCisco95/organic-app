@@ -30,6 +30,7 @@
     "treasury": "Treasury",
     "members": "Members",
     "notifications": "Notifications",
+    "templates": "Templates",
     "settings": "Settings",
     "signOut": "Sign Out",
     "signIn": "Sign In",
@@ -590,7 +591,60 @@
     "epochNamePlaceholder": "e.g., Epoch 1, Q1 2024",
     "labelStartDate": "Start Date",
     "labelEndDate": "End Date",
-    "createEpoch": "Create Epoch"
+    "createEpoch": "Create Epoch",
+    "dependencies": {
+      "title": "Dependencies",
+      "addBlocker": "Add blocker",
+      "done": "Done",
+      "searchTasks": "Search tasks...",
+      "noDependencies": "No dependencies",
+      "blockedBy": "Blocked by {count, plural, one {# task} other {# tasks}}",
+      "dependencyAdded": "Dependency added",
+      "dependencyRemoved": "Dependency removed",
+      "circularError": "This would create a circular dependency",
+      "alreadyExists": "Dependency already exists"
+    },
+    "subtasks": {
+      "title": "Subtasks",
+      "add": "Add",
+      "save": "Save",
+      "loading": "Loading...",
+      "noSubtasks": "No subtasks yet",
+      "placeholder": "New subtask title...",
+      "created": "Subtask created",
+      "progress": "{completed}/{total}",
+      "maxDepthError": "Cannot create subtasks under a subtask"
+    },
+    "templates": {
+      "title": "Task Templates",
+      "newTemplate": "New Template",
+      "editTemplate": "Edit Template",
+      "noTemplates": "No templates yet",
+      "noTemplatesHint": "Council or admin can create templates",
+      "created": "Template created",
+      "updated": "Template updated",
+      "deleted": "Template deleted",
+      "fromTemplate": "From Template",
+      "taskCreated": "Task created from template",
+      "nameRequired": "Name is required",
+      "nameLabel": "Name",
+      "descriptionLabel": "Description",
+      "typeLabel": "Type",
+      "priorityLabel": "Priority",
+      "basePointsLabel": "Base Points",
+      "recurring": "Recurring",
+      "recurrence": "Recurrence",
+      "recurrenceRules": {
+        "sprint_start": "Every Sprint Start",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "biweekly": "Biweekly",
+        "monthly": "Monthly"
+      },
+      "create": "Create",
+      "update": "Update",
+      "cancel": "Cancel"
+    }
   },
   "ReviewQueue": {
     "title": "Submission review queue",
@@ -837,6 +891,31 @@
     },
     "common": {
       "cancel": "Cancel"
+    },
+    "delegation": {
+      "title": "Vote Delegation",
+      "delegate": "Delegate",
+      "cancel": "Cancel",
+      "yourDelegations": "Your Delegations",
+      "delegatedToYou": "Delegated to You",
+      "noDelegations": "No active delegations. Delegate your voting power to a trusted member.",
+      "scope": "Scope",
+      "global": "Global",
+      "searchMembers": "Search members...",
+      "noMembers": "No members found",
+      "created": "Delegation created",
+      "revoked": "Delegation revoked",
+      "cannotSelf": "Cannot delegate to yourself",
+      "effectivePower": "{total} $ORG",
+      "ownPower": "{own} own",
+      "delegatedPower": "{delegated} delegated from {count, plural, one {# member} other {# members}}",
+      "categories": {
+        "feature": "Feature",
+        "governance": "Governance",
+        "treasury": "Treasury",
+        "community": "Community",
+        "development": "Development"
+      }
     }
   },
   "dashboard": {

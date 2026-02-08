@@ -30,6 +30,7 @@
     "treasury": "Tesouraria",
     "members": "Membros",
     "notifications": "Notificações",
+    "templates": "Modelos",
     "settings": "Definições",
     "signOut": "Sair",
     "signIn": "Entrar",
@@ -590,7 +591,60 @@
     "epochNamePlaceholder": "ex.: Época 1, Q1 2024",
     "labelStartDate": "Data de início",
     "labelEndDate": "Data de término",
-    "createEpoch": "Criar época"
+    "createEpoch": "Criar época",
+    "dependencies": {
+      "title": "Dependências",
+      "addBlocker": "Adicionar bloqueador",
+      "done": "Concluído",
+      "searchTasks": "Pesquisar tarefas...",
+      "noDependencies": "Sem dependências",
+      "blockedBy": "Bloqueado por {count, plural, one {# tarefa} other {# tarefas}}",
+      "dependencyAdded": "Dependência adicionada",
+      "dependencyRemoved": "Dependência removida",
+      "circularError": "Isto criaria uma dependência circular",
+      "alreadyExists": "Dependência já existe"
+    },
+    "subtasks": {
+      "title": "Subtarefas",
+      "add": "Adicionar",
+      "save": "Guardar",
+      "loading": "A carregar...",
+      "noSubtasks": "Sem subtarefas ainda",
+      "placeholder": "Título da nova subtarefa...",
+      "created": "Subtarefa criada",
+      "progress": "{completed}/{total}",
+      "maxDepthError": "Não é possível criar subtarefas dentro de uma subtarefa"
+    },
+    "templates": {
+      "title": "Modelos de Tarefas",
+      "newTemplate": "Novo Modelo",
+      "editTemplate": "Editar Modelo",
+      "noTemplates": "Sem modelos ainda",
+      "noTemplatesHint": "Conselho ou admin podem criar modelos",
+      "created": "Modelo criado",
+      "updated": "Modelo atualizado",
+      "deleted": "Modelo eliminado",
+      "fromTemplate": "A partir de Modelo",
+      "taskCreated": "Tarefa criada a partir do modelo",
+      "nameRequired": "Nome é obrigatório",
+      "nameLabel": "Nome",
+      "descriptionLabel": "Descrição",
+      "typeLabel": "Tipo",
+      "priorityLabel": "Prioridade",
+      "basePointsLabel": "Pontos Base",
+      "recurring": "Recorrente",
+      "recurrence": "Recorrência",
+      "recurrenceRules": {
+        "sprint_start": "A cada início de Sprint",
+        "daily": "Diário",
+        "weekly": "Semanal",
+        "biweekly": "Quinzenal",
+        "monthly": "Mensal"
+      },
+      "create": "Criar",
+      "update": "Atualizar",
+      "cancel": "Cancelar"
+    }
   },
   "ReviewQueue": {
     "title": "Fila de revisão de submissões",
@@ -837,6 +891,31 @@
     },
     "common": {
       "cancel": "Cancelar"
+    },
+    "delegation": {
+      "title": "Delegação de Voto",
+      "delegate": "Delegar",
+      "cancel": "Cancelar",
+      "yourDelegations": "As suas Delegações",
+      "delegatedToYou": "Delegado a Si",
+      "noDelegations": "Sem delegações ativas. Delegue o seu poder de voto a um membro de confiança.",
+      "scope": "Âmbito",
+      "global": "Global",
+      "searchMembers": "Pesquisar membros...",
+      "noMembers": "Nenhum membro encontrado",
+      "created": "Delegação criada",
+      "revoked": "Delegação revogada",
+      "cannotSelf": "Não pode delegar a si mesmo",
+      "effectivePower": "{total} $ORG",
+      "ownPower": "{own} próprio",
+      "delegatedPower": "{delegated} delegado de {count, plural, one {# membro} other {# membros}}",
+      "categories": {
+        "feature": "Funcionalidade",
+        "governance": "Governança",
+        "treasury": "Tesouraria",
+        "community": "Comunidade",
+        "development": "Desenvolvimento"
+      }
     }
   },
   "dashboard": {

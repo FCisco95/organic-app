@@ -167,3 +167,61 @@ export const RESULT_COLORS: Record<ProposalResult, string> = {
   failed: 'bg-red-100 text-red-700',
   quorum_not_met: 'bg-yellow-100 text-yellow-700',
 };
+
+// ============================================
+// Phase 12: Vote Delegation
+// ============================================
+
+export type DelegationCategory =
+  | 'feature'
+  | 'governance'
+  | 'treasury'
+  | 'community'
+  | 'development';
+
+export const DELEGATION_CATEGORY_LABELS: Record<DelegationCategory, string> = {
+  feature: 'Feature',
+  governance: 'Governance',
+  treasury: 'Treasury',
+  community: 'Community',
+  development: 'Development',
+};
+
+// Vote delegation record
+export interface VoteDelegation {
+  id: string;
+  delegator_id: string;
+  delegate_id: string;
+  category: DelegationCategory | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// Delegation with profile info (for display)
+export interface OutgoingDelegation extends VoteDelegation {
+  delegate?: {
+    id: string;
+    name: string | null;
+    email: string;
+    organic_id: number | null;
+    avatar_url: string | null;
+  };
+}
+
+export interface IncomingDelegation extends VoteDelegation {
+  delegator?: {
+    id: string;
+    name: string | null;
+    email: string;
+    organic_id: number | null;
+    avatar_url: string | null;
+  };
+}
+
+// Effective voting power (own + delegated)
+export interface EffectiveVotingPower {
+  own_weight: number;
+  delegated_weight: number;
+  total_weight: number;
+  delegator_count: number;
+}

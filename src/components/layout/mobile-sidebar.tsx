@@ -23,6 +23,7 @@ import {
   Settings,
   User,
   LogOut,
+  FileText,
 } from 'lucide-react';
 
 export function MobileSidebar() {
@@ -39,6 +40,7 @@ export function MobileSidebar() {
     { href: '/treasury', labelKey: 'treasury', icon: Wallet, show: true },
     { href: '/members', labelKey: 'members', icon: Users, show: !!user },
     { href: '/tasks', labelKey: 'tasks', icon: CheckSquare, show: !!profile?.organic_id },
+    { href: '/tasks/templates', labelKey: 'templates', icon: FileText, show: !!isAdminOrCouncil },
     { href: '/sprints', labelKey: 'sprints', icon: Zap, show: !!profile?.organic_id },
     { href: '/proposals', labelKey: 'proposals', icon: Vote, show: !!user },
     { href: '/leaderboard', labelKey: 'leaderboard', icon: Trophy, show: !!user },

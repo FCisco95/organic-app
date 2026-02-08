@@ -4,6 +4,8 @@ import {
   TaskPriority,
   ReviewStatus,
   TaskWithRelations,
+  TaskDependency,
+  SubtaskSummary,
   QUALITY_MULTIPLIERS,
   QUALITY_SCORE_LABELS,
   TASK_TYPE_LABELS,
@@ -294,4 +296,61 @@ export function validateSubmissionForType(
     valid: errors.length === 0,
     errors,
   };
+}
+
+// ============================================
+// Phase 12: Dependencies + Subtasks utilities
+// ============================================
+
+/**
+ * Check if a task is blocked by incomplete dependencies
+ */
+export function isTaskBlocked(dependencies: TaskDependency[]): boolean {
+  return dependencies.some((dep) => dep.blocking_task?.status !== 'done');
+}
+
+/**
+ * Get the list of incomplete blocking tasks
+ */
+export function getIncompleteBlockers(dependencies: TaskDependency[]): TaskDependency[] {
+  return dependencies.filter((dep) => dep.blocking_task?.status !== 'done');
+}
+
+/**
+ * Calculate subtask progress from a list of subtasks
+ */
+export function calculateSubtaskProgress(subtasks: TaskWithRelations[]): SubtaskSummary {
+  const total = subtasks.length;
+  const completed = subtasks.filter((t) => t.status === 'done').length;
+  return {
+    total,
+    completed,
+    percentage: total > 0 ? Math.round((completed / total) * 100) : 0,
+  };
+}
+
+/**
+ * Check if a task can be claimed, considering dependencies
+ */
+export function canClaimTaskWithDeps(
+  task: TaskWithRelations,
+  userId: string,
+  userHasOrganicId: boolean,
+  dependencies: TaskDependency[]
+): { canClaim: boolean; reason?: string } {
+  // Check dependencies first
+  if (isTaskBlocked(dependencies)) {
+    const blockers = getIncompleteBlockers(dependencies);
+    const blockerTitles = blockers
+      .map((d) => d.blocking_task?.title || 'Unknown')
+      .slice(0, 3)
+      .join(', ');
+    return {
+      canClaim: false,
+      reason: `Blocked by: ${blockerTitles}${blockers.length > 3 ? ` +${blockers.length - 3} more` : ''}`,
+    };
+  }
+
+  // Then check regular claim rules
+  return canClaimTask(task, userId, userHasOrganicId);
 }

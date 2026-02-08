@@ -30,6 +30,7 @@
     "treasury": "财务",
     "members": "成员",
     "notifications": "通知",
+    "templates": "模板",
     "settings": "设置",
     "signOut": "退出登录",
     "signIn": "登录",
@@ -590,7 +591,60 @@
     "epochNamePlaceholder": "例如：周期 1，2024 Q1",
     "labelStartDate": "开始日期",
     "labelEndDate": "结束日期",
-    "createEpoch": "创建周期"
+    "createEpoch": "创建周期",
+    "dependencies": {
+      "title": "依赖关系",
+      "addBlocker": "添加阻塞项",
+      "done": "完成",
+      "searchTasks": "搜索任务...",
+      "noDependencies": "无依赖关系",
+      "blockedBy": "被 {count} 个任务阻塞",
+      "dependencyAdded": "依赖关系已添加",
+      "dependencyRemoved": "依赖关系已移除",
+      "circularError": "这将导致循环依赖",
+      "alreadyExists": "依赖关系已存在"
+    },
+    "subtasks": {
+      "title": "子任务",
+      "add": "添加",
+      "save": "保存",
+      "loading": "加载中...",
+      "noSubtasks": "暂无子任务",
+      "placeholder": "新子任务标题...",
+      "created": "子任务已创建",
+      "progress": "{completed}/{total}",
+      "maxDepthError": "不能在子任务下创建子任务"
+    },
+    "templates": {
+      "title": "任务模板",
+      "newTemplate": "新建模板",
+      "editTemplate": "编辑模板",
+      "noTemplates": "暂无模板",
+      "noTemplatesHint": "理事会或管理员可以创建模板",
+      "created": "模板已创建",
+      "updated": "模板已更新",
+      "deleted": "模板已删除",
+      "fromTemplate": "从模板创建",
+      "taskCreated": "已从模板创建任务",
+      "nameRequired": "名称不能为空",
+      "nameLabel": "名称",
+      "descriptionLabel": "描述",
+      "typeLabel": "类型",
+      "priorityLabel": "优先级",
+      "basePointsLabel": "基础积分",
+      "recurring": "循环任务",
+      "recurrence": "循环规则",
+      "recurrenceRules": {
+        "sprint_start": "每个Sprint开始时",
+        "daily": "每天",
+        "weekly": "每周",
+        "biweekly": "每两周",
+        "monthly": "每月"
+      },
+      "create": "创建",
+      "update": "更新",
+      "cancel": "取消"
+    }
   },
   "ReviewQueue": {
     "title": "提交审核队列",
@@ -837,6 +891,31 @@
     },
     "common": {
       "cancel": "取消"
+    },
+    "delegation": {
+      "title": "投票委托",
+      "delegate": "委托",
+      "cancel": "取消",
+      "yourDelegations": "您的委托",
+      "delegatedToYou": "委托给您的",
+      "noDelegations": "没有活跃的委托。将您的投票权委托给值得信赖的成员。",
+      "scope": "范围",
+      "global": "全局",
+      "searchMembers": "搜索成员...",
+      "noMembers": "未找到成员",
+      "created": "委托已创建",
+      "revoked": "委托已撤销",
+      "cannotSelf": "不能委托给自己",
+      "effectivePower": "{total} $ORG",
+      "ownPower": "{own} 自有",
+      "delegatedPower": "来自 {count} 位成员的 {delegated} 委托",
+      "categories": {
+        "feature": "功能",
+        "governance": "治理",
+        "treasury": "金库",
+        "community": "社区",
+        "development": "开发"
+      }
     }
   },
   "dashboard": {

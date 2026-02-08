@@ -178,7 +178,29 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: 'Failed to complete sprint' }, { status: 500 });
     }
 
-    return NextResponse.json({ sprint: updatedSprint, snapshot });
+    // Phase 12: Auto-clone recurring task templates into next sprint
+    let recurringTasksCloned = 0;
+    const targetSprintId =
+      incomplete_action === 'next_sprint' && next_sprint_id ? next_sprint_id : null;
+
+    if (targetSprintId) {
+      const { data: cloneResult, error: cloneError } = await supabase.rpc(
+        'clone_recurring_templates',
+        { p_sprint_id: targetSprintId }
+      );
+
+      if (cloneError) {
+        console.error('Error cloning recurring templates:', cloneError);
+      } else {
+        recurringTasksCloned = cloneResult ?? 0;
+      }
+    }
+
+    return NextResponse.json({
+      sprint: updatedSprint,
+      snapshot,
+      recurring_tasks_cloned: recurringTasksCloned,
+    });
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

@@ -146,3 +146,55 @@ export const taskFiltersSchema = z.object({
 });
 
 export type TaskFilters = z.infer<typeof taskFiltersSchema>;
+
+// ============================================
+// Phase 12: Dependencies, Subtasks, Templates
+// ============================================
+
+// Recurrence rule schema
+export const recurrenceRuleSchema = z.enum([
+  'sprint_start',
+  'daily',
+  'weekly',
+  'biweekly',
+  'monthly',
+]);
+
+// Add dependency schema
+export const addDependencySchema = z.object({
+  depends_on_task_id: z.string().uuid('Invalid task ID'),
+});
+export type AddDependencyInput = z.infer<typeof addDependencySchema>;
+
+// Create subtask schema
+export const createSubtaskSchema = z.object({
+  title: z.string().min(1, 'Title is required').max(200, 'Title too long'),
+  description: z.string().max(5000, 'Description too long').optional(),
+  task_type: taskTypeSchema.default('custom'),
+  priority: taskPrioritySchema.default('medium'),
+  base_points: z.number().int().min(0).max(10000).optional(),
+  due_date: z.string().datetime().optional().nullable(),
+  labels: z.array(z.string().max(50)).max(10).default([]),
+  assignee_id: z.string().uuid().optional().nullable(),
+});
+export type CreateSubtaskInput = z.input<typeof createSubtaskSchema>;
+
+// Create task template schema
+export const createTemplateSchema = z.object({
+  name: z.string().min(1, 'Name is required').max(200, 'Name too long'),
+  description: z.string().max(5000, 'Description too long').optional(),
+  task_type: taskTypeSchema.default('custom'),
+  priority: taskPrioritySchema.default('medium'),
+  base_points: z.number().int().min(0).max(10000).default(0),
+  labels: z.array(z.string().max(50)).max(10).default([]),
+  is_team_task: z.boolean().default(false),
+  max_assignees: z.number().int().min(1).max(20).default(1),
+  default_assignee_id: z.string().uuid().optional().nullable(),
+  is_recurring: z.boolean().default(false),
+  recurrence_rule: recurrenceRuleSchema.optional().nullable(),
+});
+export type CreateTemplateInput = z.input<typeof createTemplateSchema>;
+
+// Update task template schema
+export const updateTemplateSchema = createTemplateSchema.partial();
+export type UpdateTemplateInput = z.input<typeof updateTemplateSchema>;
