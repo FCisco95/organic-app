@@ -113,7 +113,10 @@ export async function PATCH(request: NextRequest) {
 
       if (votingError) {
         console.error('Voting config update error:', votingError);
-        return NextResponse.json({ error: 'Failed to update governance settings' }, { status: 500 });
+        return NextResponse.json(
+          { error: 'Failed to update governance settings' },
+          { status: 500 }
+        );
       }
     }
 

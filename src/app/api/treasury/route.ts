@@ -15,13 +15,8 @@ async function fetchSolPrice(): Promise<number | null> {
     );
     if (!res.ok) return null;
     const json = await res.json();
-    const price =
-      json?.data?.['So11111111111111111111111111111111111111112']?.price;
-    return typeof price === 'number'
-      ? price
-      : typeof price === 'string'
-        ? parseFloat(price)
-        : null;
+    const price = json?.data?.['So11111111111111111111111111111111111111112']?.price;
+    return typeof price === 'number' ? price : typeof price === 'string' ? parseFloat(price) : null;
   } catch {
     return null;
   }
@@ -30,26 +25,19 @@ async function fetchSolPrice(): Promise<number | null> {
 async function fetchOrgPrice(): Promise<number | null> {
   if (!TOKEN_CONFIG.mint) return null;
   try {
-    const res = await fetch(
-      `https://api.jup.ag/price/v2?ids=${TOKEN_CONFIG.mint}`,
-      { signal: AbortSignal.timeout(5000) }
-    );
+    const res = await fetch(`https://api.jup.ag/price/v2?ids=${TOKEN_CONFIG.mint}`, {
+      signal: AbortSignal.timeout(5000),
+    });
     if (!res.ok) return null;
     const json = await res.json();
     const price = json?.data?.[TOKEN_CONFIG.mint]?.price;
-    return typeof price === 'number'
-      ? price
-      : typeof price === 'string'
-        ? parseFloat(price)
-        : null;
+    return typeof price === 'number' ? price : typeof price === 'string' ? parseFloat(price) : null;
   } catch {
     return null;
   }
 }
 
-async function fetchRecentTransactions(
-  walletAddress: string
-): Promise<TreasuryTransaction[]> {
+async function fetchRecentTransactions(walletAddress: string): Promise<TreasuryTransaction[]> {
   try {
     const connection = getConnection();
     const pubkey = new PublicKey(walletAddress);
@@ -84,16 +72,14 @@ async function fetchRecentTransactions(
               type = 'transfer';
               amount = (parsed.info.lamports as number) / LAMPORTS_PER_SOL;
               token = 'SOL';
-              direction =
-                parsed.info.destination === walletAddress ? 'in' : 'out';
+              direction = parsed.info.destination === walletAddress ? 'in' : 'out';
               break;
             }
             if (parsed.type === 'transferChecked' && parsed.info) {
               type = 'token_transfer';
               amount = parsed.info.tokenAmount?.uiAmount ?? null;
               token = 'ORG';
-              direction =
-                parsed.info.destination === walletAddress ? 'in' : 'out';
+              direction = parsed.info.destination === walletAddress ? 'in' : 'out';
               break;
             }
           }
@@ -129,20 +115,18 @@ export async function GET() {
     const connection = getConnection();
     const pubkey = new PublicKey(wallet);
 
-    const [solBalance, orgBalance, solPrice, orgPrice, transactions] =
-      await Promise.all([
-        connection.getBalance(pubkey),
-        getTokenBalance(wallet),
-        fetchSolPrice(),
-        fetchOrgPrice(),
-        fetchRecentTransactions(wallet),
-      ]);
+    const [solBalance, orgBalance, solPrice, orgPrice, transactions] = await Promise.all([
+      connection.getBalance(pubkey),
+      getTokenBalance(wallet),
+      fetchSolPrice(),
+      fetchOrgPrice(),
+      fetchRecentTransactions(wallet),
+    ]);
 
     const solAmount = solBalance / LAMPORTS_PER_SOL;
     const solUsd = solPrice != null ? solAmount * solPrice : null;
     const orgUsd = orgPrice != null ? orgBalance * orgPrice : null;
-    const totalUsd =
-      solUsd != null && orgUsd != null ? solUsd + orgUsd : null;
+    const totalUsd = solUsd != null && orgUsd != null ? solUsd + orgUsd : null;
 
     const allocations = TREASURY_ALLOCATIONS.map((a) => ({
       key: a.key,
@@ -171,9 +155,6 @@ export async function GET() {
     return NextResponse.json(response);
   } catch (error) {
     console.error('Treasury API error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

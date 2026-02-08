@@ -31,10 +31,12 @@ export function TreasuryTab({ org }: TreasuryTabProps) {
 
   const totalPct = allocations.reduce((sum, a) => sum + a.percentage, 0);
 
-  const handleAllocationChange = (index: number, field: keyof TreasuryAllocationConfig, value: string | number) => {
-    setAllocations((prev) =>
-      prev.map((a, i) => (i === index ? { ...a, [field]: value } : a))
-    );
+  const handleAllocationChange = (
+    index: number,
+    field: keyof TreasuryAllocationConfig,
+    value: string | number
+  ) => {
+    setAllocations((prev) => prev.map((a, i) => (i === index ? { ...a, [field]: value } : a)));
   };
 
   const addAllocation = () => {
@@ -77,7 +79,9 @@ export function TreasuryTab({ org }: TreasuryTabProps) {
             <label className="text-sm font-medium text-gray-900">{t('treasury.allocations')}</label>
             <p className="text-xs text-gray-500 mt-0.5">
               {t('treasury.allocationsDescription')}
-              <span className={`ml-2 font-medium ${totalPct === 100 ? 'text-green-600' : 'text-red-500'}`}>
+              <span
+                className={`ml-2 font-medium ${totalPct === 100 ? 'text-green-600' : 'text-red-500'}`}
+              >
                 ({totalPct}%)
               </span>
             </p>

@@ -32,10 +32,15 @@ export function ActivityTrendChart({ data, loading }: ActivityTrendChartProps) {
     label: formatDay(d.day),
   }));
 
-  const isEmpty = !data || data.every((d) => d.task_events + d.governance_events + d.comment_events === 0);
+  const isEmpty =
+    !data || data.every((d) => d.task_events + d.governance_events + d.comment_events === 0);
 
   return (
-    <ChartCard title={t('charts.activityTrends')} description={t('charts.activityTrendsDesc')} loading={loading}>
+    <ChartCard
+      title={t('charts.activityTrends')}
+      description={t('charts.activityTrendsDesc')}
+      loading={loading}
+    >
       {isEmpty ? (
         <p className="py-12 text-center text-sm text-gray-400">{t('empty')}</p>
       ) : (

@@ -75,7 +75,10 @@ export function SprintsTab({ org }: SprintsTabProps) {
         </div>
       </SettingsField>
 
-      <SettingsField label={t('sprints.organicIdThreshold')} description={t('sprints.organicIdThresholdDescription')}>
+      <SettingsField
+        label={t('sprints.organicIdThreshold')}
+        description={t('sprints.organicIdThresholdDescription')}
+      >
         <SettingsInput
           type="number"
           value={threshold}

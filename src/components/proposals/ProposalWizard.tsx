@@ -19,10 +19,7 @@ import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
 import { useCreateProposal, useUpdateProposal } from '@/features/proposals/hooks';
-import {
-  wizardStepSchemas,
-  type CreateProposalInput,
-} from '@/features/proposals/schemas';
+import { wizardStepSchemas, type CreateProposalInput } from '@/features/proposals/schemas';
 import type { ProposalCategory, WizardStep } from '@/features/proposals/types';
 import {
   PROPOSAL_CATEGORIES,
@@ -156,9 +153,7 @@ export function ProposalWizard({ initialData, proposalId, onSuccess }: ProposalW
           onSuccess?.(result?.id);
         }
       } catch (error) {
-        toast.error(
-          error instanceof Error ? error.message : t('toastFailed')
-        );
+        toast.error(error instanceof Error ? error.message : t('toastFailed'));
       }
     },
     [formData, isEditing, proposalId, createProposal, updateProposal, validateStep, onSuccess, t]
@@ -223,32 +218,15 @@ export function ProposalWizard({ initialData, proposalId, onSuccess }: ProposalW
       {/* Step Content */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         {step === 1 && (
-          <Step1Category
-            formData={formData}
-            errors={errors}
-            updateField={updateField}
-            t={t}
-          />
+          <Step1Category formData={formData} errors={errors} updateField={updateField} t={t} />
         )}
         {step === 2 && (
-          <Step2Problem
-            formData={formData}
-            errors={errors}
-            updateField={updateField}
-            t={t}
-          />
+          <Step2Problem formData={formData} errors={errors} updateField={updateField} t={t} />
         )}
         {step === 3 && (
-          <Step3Budget
-            formData={formData}
-            errors={errors}
-            updateField={updateField}
-            t={t}
-          />
+          <Step3Budget formData={formData} errors={errors} updateField={updateField} t={t} />
         )}
-        {step === 4 && (
-          <Step4Review formData={formData} goToStep={goToStep} t={t} />
-        )}
+        {step === 4 && <Step4Review formData={formData} goToStep={goToStep} t={t} />}
       </div>
 
       {/* Navigation Buttons */}
@@ -259,9 +237,7 @@ export function ProposalWizard({ initialData, proposalId, onSuccess }: ProposalW
           disabled={step === 1}
           className={cn(
             'flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors',
-            step === 1
-              ? 'invisible'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            step === 1 ? 'invisible' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
           )}
         >
           <ArrowLeft className="w-4 h-4" />
@@ -311,7 +287,10 @@ export function ProposalWizard({ initialData, proposalId, onSuccess }: ProposalW
 interface StepProps {
   formData: CreateProposalInput;
   errors: Record<string, string[]>;
-  updateField: <K extends keyof CreateProposalInput>(field: K, value: CreateProposalInput[K]) => void;
+  updateField: <K extends keyof CreateProposalInput>(
+    field: K,
+    value: CreateProposalInput[K]
+  ) => void;
   t: ReturnType<typeof useTranslations<'ProposalWizard'>>;
 }
 
@@ -345,12 +324,8 @@ function Step1Category({ formData, errors, updateField, t }: StepProps) {
                   <Icon className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">
-                    {PROPOSAL_CATEGORY_LABELS[cat]}
-                  </p>
-                  <p className="text-xs text-gray-500 mt-0.5">
-                    {t(`categoryDescription_${cat}`)}
-                  </p>
+                  <p className="font-medium text-gray-900">{PROPOSAL_CATEGORY_LABELS[cat]}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{t(`categoryDescription_${cat}`)}</p>
                 </div>
               </button>
             );
@@ -376,11 +351,7 @@ function Step1Category({ formData, errors, updateField, t }: StepProps) {
           maxLength={200}
         />
         <div className="flex justify-between mt-1">
-          {errors.title ? (
-            <p className="text-sm text-red-600">{errors.title[0]}</p>
-          ) : (
-            <span />
-          )}
+          {errors.title ? <p className="text-sm text-red-600">{errors.title[0]}</p> : <span />}
           <p className="text-xs text-gray-500">
             {t('charCount', { count: formData.title.length, max: 200 })}
           </p>
@@ -405,11 +376,7 @@ function Step1Category({ formData, errors, updateField, t }: StepProps) {
           maxLength={300}
         />
         <div className="flex justify-between mt-1">
-          {errors.summary ? (
-            <p className="text-sm text-red-600">{errors.summary[0]}</p>
-          ) : (
-            <span />
-          )}
+          {errors.summary ? <p className="text-sm text-red-600">{errors.summary[0]}</p> : <span />}
           <p className="text-xs text-gray-500">
             {t('charCount', { count: formData.summary.length, max: 300 })}
           </p>
@@ -511,9 +478,7 @@ function Step3Budget({ formData, errors, updateField, t }: StepProps) {
             errors.budget ? 'border-red-300' : 'border-gray-300'
           )}
         />
-        {errors.budget && (
-          <p className="mt-1 text-sm text-red-600">{errors.budget[0]}</p>
-        )}
+        {errors.budget && <p className="mt-1 text-sm text-red-600">{errors.budget[0]}</p>}
       </div>
 
       {/* Timeline */}
@@ -535,9 +500,7 @@ function Step3Budget({ formData, errors, updateField, t }: StepProps) {
             errors.timeline ? 'border-red-300' : 'border-gray-300'
           )}
         />
-        {errors.timeline && (
-          <p className="mt-1 text-sm text-red-600">{errors.timeline[0]}</p>
-        )}
+        {errors.timeline && <p className="mt-1 text-sm text-red-600">{errors.timeline[0]}</p>}
       </div>
     </div>
   );
@@ -552,13 +515,43 @@ interface Step4Props {
 
 function Step4Review({ formData, goToStep, t }: Step4Props) {
   const sections = [
-    { key: 'category', label: t('reviewSection_category'), value: PROPOSAL_CATEGORY_LABELS[formData.category], step: 1 as WizardStep },
+    {
+      key: 'category',
+      label: t('reviewSection_category'),
+      value: PROPOSAL_CATEGORY_LABELS[formData.category],
+      step: 1 as WizardStep,
+    },
     { key: 'title', label: t('reviewSection_title'), value: formData.title, step: 1 as WizardStep },
-    { key: 'summary', label: t('reviewSection_summary'), value: formData.summary, step: 1 as WizardStep },
-    { key: 'motivation', label: t('reviewSection_motivation'), value: formData.motivation, step: 2 as WizardStep },
-    { key: 'solution', label: t('reviewSection_solution'), value: formData.solution, step: 2 as WizardStep },
-    { key: 'budget', label: t('reviewSection_budget'), value: formData.budget || '', step: 3 as WizardStep },
-    { key: 'timeline', label: t('reviewSection_timeline'), value: formData.timeline || '', step: 3 as WizardStep },
+    {
+      key: 'summary',
+      label: t('reviewSection_summary'),
+      value: formData.summary,
+      step: 1 as WizardStep,
+    },
+    {
+      key: 'motivation',
+      label: t('reviewSection_motivation'),
+      value: formData.motivation,
+      step: 2 as WizardStep,
+    },
+    {
+      key: 'solution',
+      label: t('reviewSection_solution'),
+      value: formData.solution,
+      step: 2 as WizardStep,
+    },
+    {
+      key: 'budget',
+      label: t('reviewSection_budget'),
+      value: formData.budget || '',
+      step: 3 as WizardStep,
+    },
+    {
+      key: 'timeline',
+      label: t('reviewSection_timeline'),
+      value: formData.timeline || '',
+      step: 3 as WizardStep,
+    },
   ];
 
   return (

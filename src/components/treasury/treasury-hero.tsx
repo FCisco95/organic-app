@@ -23,9 +23,7 @@ export function TreasuryHero({ walletAddress }: TreasuryHeroProps) {
   return (
     <div className="rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 sm:p-8 text-white">
       <div className="max-w-3xl">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
-          {t('heroTitle')}
-        </h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{t('heroTitle')}</h1>
         <p className="mt-2 text-sm sm:text-base text-gray-300 leading-relaxed max-w-2xl">
           {t('heroDescription')}
         </p>

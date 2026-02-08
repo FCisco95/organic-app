@@ -39,7 +39,13 @@ interface SettingsSaveBarProps {
   saveLabel?: string;
 }
 
-export function SettingsSaveBar({ dirty, saving, onSave, onReset, saveLabel = 'Save' }: SettingsSaveBarProps) {
+export function SettingsSaveBar({
+  dirty,
+  saving,
+  onSave,
+  onReset,
+  saveLabel = 'Save',
+}: SettingsSaveBarProps) {
   if (!dirty) return null;
 
   return (

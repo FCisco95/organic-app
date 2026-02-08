@@ -14,7 +14,14 @@ interface MemberGridProps {
   onPageChange: (page: number) => void;
 }
 
-export function MemberGrid({ members, loading, total, page, limit, onPageChange }: MemberGridProps) {
+export function MemberGrid({
+  members,
+  loading,
+  total,
+  page,
+  limit,
+  onPageChange,
+}: MemberGridProps) {
   const t = useTranslations('Members');
   const totalPages = Math.ceil(total / limit);
 
@@ -68,9 +75,7 @@ export function MemberGrid({ members, loading, total, page, limit, onPageChange 
           >
             {t('prev')}
           </button>
-          <span className="text-sm text-gray-500">
-            {t('pageOf', { page, total: totalPages })}
-          </span>
+          <span className="text-sm text-gray-500">{t('pageOf', { page, total: totalPages })}</span>
           <button
             onClick={() => onPageChange(page + 1)}
             disabled={page >= totalPages}

@@ -4,7 +4,11 @@ import { Link } from '@/i18n/navigation';
 import { User, Calendar, MessageCircle } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useTranslations } from 'next-intl';
-import type { ProposalListItem, ProposalStatus, ProposalCategory } from '@/features/proposals/types';
+import type {
+  ProposalListItem,
+  ProposalStatus,
+  ProposalCategory,
+} from '@/features/proposals/types';
 import { CategoryBadge } from './CategoryBadge';
 import { StatusBadge } from './StatusBadge';
 
@@ -40,9 +44,7 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
         <div className="flex-1 min-w-0">
           {/* Title row with badges */}
           <div className="flex items-center gap-2 mb-2 flex-wrap">
-            <h3 className="text-xl font-semibold text-gray-900 truncate">
-              {proposal.title}
-            </h3>
+            <h3 className="text-xl font-semibold text-gray-900 truncate">{proposal.title}</h3>
             {isVoting && (
               <span className="inline-flex items-center gap-2 rounded-full bg-orange-600 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">
                 <span className="relative flex h-2 w-2">

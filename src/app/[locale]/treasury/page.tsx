@@ -25,16 +25,11 @@ export default function TreasuryPage() {
         {/* Charts + transactions */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <AllocationChart allocations={data?.allocations} loading={isLoading} />
-          <TransactionTable
-            transactions={data?.transactions}
-            loading={isLoading}
-          />
+          <TransactionTable transactions={data?.transactions} loading={isLoading} />
         </div>
 
         {/* Disclaimer */}
-        <p className="text-center text-xs text-gray-400 pb-4">
-          {t('disclaimer')}
-        </p>
+        <p className="text-center text-xs text-gray-400 pb-4">{t('disclaimer')}</p>
       </div>
     </PageContainer>
   );

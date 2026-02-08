@@ -1,19 +1,9 @@
 'use client';
 
-import {
-  Lightbulb,
-  Scale,
-  Wallet,
-  Users,
-  Code,
-  type LucideIcon,
-} from 'lucide-react';
+import { Lightbulb, Scale, Wallet, Users, Code, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { ProposalCategory } from '@/features/proposals/types';
-import {
-  PROPOSAL_CATEGORY_LABELS,
-  PROPOSAL_CATEGORY_COLORS,
-} from '@/features/proposals/types';
+import { PROPOSAL_CATEGORY_LABELS, PROPOSAL_CATEGORY_COLORS } from '@/features/proposals/types';
 
 const CATEGORY_ICON_MAP: Record<ProposalCategory, LucideIcon> = {
   feature: Lightbulb,

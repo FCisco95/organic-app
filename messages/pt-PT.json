@@ -29,6 +29,7 @@
     "analytics": "Analíticas",
     "treasury": "Tesouraria",
     "members": "Membros",
+    "notifications": "Notificações",
     "settings": "Definições",
     "signOut": "Sair",
     "signIn": "Entrar",
@@ -364,6 +365,7 @@
     "viewDetails": "Ver detalhes da sprint",
     "sprintList": "Lista de sprints",
     "upcomingSprints": "Próximas sprints",
+    "activeSprint": "Sprint Ativo",
     "pastSprints": "Sprints anteriores",
     "tasksCompleted": "{completed} / {total} tarefas concluídas",
     "pointsEarned": "{points} pontos ganhos",
@@ -696,7 +698,11 @@
     "pointsEarned": "pontos ganhos",
     "likeTask": "Curtir tarefa",
     "likedTask": "Remover curtida",
-    "favoritesCount": "{count, plural, one {# favorito} other {# favoritos}}"
+    "favoritesCount": "{count, plural, one {# favorito} other {# favoritos}}",
+    "noContributors": "Sem contribuidores ainda",
+    "labelLabels": "Etiquetas",
+    "labelPlaceholder": "Adicionar etiqueta",
+    "addLabel": "Adicionar"
   },
   "Profile": {
     "loadingProfile": "Carregando seu perfil...",
@@ -727,6 +733,7 @@
     "verified": "Verificado",
     "notAssigned": "Não atribuído",
     "roleLabel": "Função",
+    "unknown": "Desconhecido",
     "guest": "Convidado",
     "memberSince": "Membro Desde",
     "socialContact": "Social e Contato",
@@ -1054,5 +1061,50 @@
     "error": "Erro",
     "warning": "Aviso",
     "info": "Informação"
+  },
+  "Notifications": {
+    "title": "Notificações",
+    "pageTitle": "Notificações",
+    "pageDescription": "Fique a par da atividade em tarefas e propostas que segue.",
+    "bell": "Notificações",
+    "markAllRead": "Marcar tudo como lido",
+    "viewAll": "Ver todas as notificações",
+    "empty": "Ainda sem notificações",
+    "emptyPage": "Tudo em dia!",
+    "emptyPageHint": "Siga tarefas e propostas para receber notificações sobre atualizações.",
+    "someone": "Alguém",
+    "untitled": "Sem título",
+    "follow": "Seguir",
+    "following": "A seguir",
+    "tabs": {
+      "all": "Tudo"
+    },
+    "events": {
+      "taskCreated": "criou a tarefa \"{title}\"",
+      "taskStatusChanged": "moveu \"{title}\" para {status}",
+      "taskCompleted": "completou \"{title}\"",
+      "taskDeleted": "eliminou a tarefa \"{title}\"",
+      "submissionCreated": "submeteu trabalho em \"{title}\"",
+      "submissionReviewed": "avaliou submissão de \"{title}\" ({status})",
+      "commentCreated": "comentou em \"{title}\"",
+      "commentDeleted": "removeu um comentário de \"{title}\"",
+      "proposalCreated": "criou proposta \"{title}\"",
+      "proposalStatusChanged": "alterou \"{title}\" para {status}",
+      "proposalDeleted": "eliminou proposta \"{title}\"",
+      "voteCast": "votou em \"{title}\""
+    },
+    "preferences": {
+      "title": "Preferências de Notificações",
+      "category": "Categoria",
+      "inApp": "Na app",
+      "email": "Email",
+      "categories": {
+        "tasks": "Tarefas",
+        "proposals": "Propostas",
+        "voting": "Votação",
+        "comments": "Comentários",
+        "system": "Sistema"
+      }
+    }
   }
 }

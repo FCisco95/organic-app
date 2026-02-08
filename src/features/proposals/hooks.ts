@@ -231,13 +231,7 @@ export function useUpdateProposalStatus() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      proposalId,
-      status,
-    }: {
-      proposalId: string;
-      status: string;
-    }) => {
+    mutationFn: async ({ proposalId, status }: { proposalId: string; status: string }) => {
       const response = await fetch(`/api/proposals/${proposalId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -267,13 +261,7 @@ export function useAddComment() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      proposalId,
-      body,
-    }: {
-      proposalId: string;
-      body: string;
-    }) => {
+    mutationFn: async ({ proposalId, body }: { proposalId: string; body: string }) => {
       const response = await fetch(`/api/proposals/${proposalId}/comments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

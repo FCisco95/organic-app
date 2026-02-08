@@ -44,13 +44,7 @@ export interface OrganizationWithVoting extends Organization {
   voting_config: VotingConfig | null;
 }
 
-export type SettingsTab =
-  | 'general'
-  | 'token'
-  | 'treasury'
-  | 'governance'
-  | 'sprints'
-  | 'members';
+export type SettingsTab = 'general' | 'token' | 'treasury' | 'governance' | 'sprints' | 'members';
 
 export const SETTINGS_TABS: { key: SettingsTab; labelKey: string; icon: string }[] = [
   { key: 'general', labelKey: 'Settings.tabs.general', icon: 'Settings' },

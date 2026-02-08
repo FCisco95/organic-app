@@ -73,13 +73,9 @@ export function BalanceCards({ balances, loading }: BalanceCardsProps) {
                 {card.value}
               </p>
               <div className="mt-1.5 flex items-baseline gap-2">
-                <p className="text-xs text-gray-400 leading-tight">
-                  {card.label}
-                </p>
+                <p className="text-xs text-gray-400 leading-tight">{card.label}</p>
                 {card.sub && (
-                  <p className="text-xs font-mono text-gray-400 tabular-nums">
-                    {card.sub}
-                  </p>
+                  <p className="text-xs font-mono text-gray-400 tabular-nums">{card.sub}</p>
                 )}
               </div>
             </>

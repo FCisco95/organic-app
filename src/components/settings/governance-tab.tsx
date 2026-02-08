@@ -94,7 +94,10 @@ export function GovernanceTab({ votingConfig }: GovernanceTabProps) {
         </div>
       </SettingsField>
 
-      <SettingsField label={t('governance.approval')} description={t('governance.approvalDescription')}>
+      <SettingsField
+        label={t('governance.approval')}
+        description={t('governance.approvalDescription')}
+      >
         <div className="flex items-center gap-2">
           <SettingsInput
             type="number"
@@ -108,7 +111,10 @@ export function GovernanceTab({ votingConfig }: GovernanceTabProps) {
         </div>
       </SettingsField>
 
-      <SettingsField label={t('governance.votingDuration')} description={t('governance.votingDurationDescription')}>
+      <SettingsField
+        label={t('governance.votingDuration')}
+        description={t('governance.votingDurationDescription')}
+      >
         <div className="flex items-center gap-2">
           <SettingsInput
             type="number"
@@ -122,7 +128,10 @@ export function GovernanceTab({ votingConfig }: GovernanceTabProps) {
         </div>
       </SettingsField>
 
-      <SettingsField label={t('governance.proposalThreshold')} description={t('governance.proposalThresholdDescription')}>
+      <SettingsField
+        label={t('governance.proposalThreshold')}
+        description={t('governance.proposalThresholdDescription')}
+      >
         <SettingsInput
           type="number"
           value={threshold}
@@ -132,7 +141,10 @@ export function GovernanceTab({ votingConfig }: GovernanceTabProps) {
         />
       </SettingsField>
 
-      <SettingsField label={t('governance.cooldown')} description={t('governance.cooldownDescription')}>
+      <SettingsField
+        label={t('governance.cooldown')}
+        description={t('governance.cooldownDescription')}
+      >
         <div className="flex items-center gap-2">
           <SettingsInput
             type="number"
@@ -146,7 +158,10 @@ export function GovernanceTab({ votingConfig }: GovernanceTabProps) {
         </div>
       </SettingsField>
 
-      <SettingsField label={t('governance.maxLive')} description={t('governance.maxLiveDescription')}>
+      <SettingsField
+        label={t('governance.maxLive')}
+        description={t('governance.maxLiveDescription')}
+      >
         <SettingsInput
           type="number"
           value={maxLive}
@@ -157,7 +172,10 @@ export function GovernanceTab({ votingConfig }: GovernanceTabProps) {
         />
       </SettingsField>
 
-      <SettingsField label={t('governance.abstainQuorum')} description={t('governance.abstainQuorumDescription')}>
+      <SettingsField
+        label={t('governance.abstainQuorum')}
+        description={t('governance.abstainQuorumDescription')}
+      >
         <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="checkbox"

@@ -11,6 +11,7 @@ export type ReviewStatus = Database['public']['Enums']['review_status'];
 export type ProposalCategory = 'feature' | 'governance' | 'treasury' | 'community' | 'development';
 export type TaskPriority = Database['public']['Enums']['task_priority'];
 export type ActivityEventType = Database['public']['Enums']['activity_event_type'];
+export type NotificationCategoryDB = Database['public']['Enums']['notification_category'];
 export type ProposalResult = 'passed' | 'failed' | 'quorum_not_met';
 
 export type Database = {
@@ -165,6 +166,101 @@ export type Database = {
             columns: ['proposal_id'];
             isOneToOne: false;
             referencedRelation: 'proposals';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      notification_preferences: {
+        Row: {
+          category: Database['public']['Enums']['notification_category'];
+          created_at: string | null;
+          email: boolean | null;
+          id: string;
+          in_app: boolean | null;
+          updated_at: string | null;
+          user_id: string;
+        };
+        Insert: {
+          category: Database['public']['Enums']['notification_category'];
+          created_at?: string | null;
+          email?: boolean | null;
+          id?: string;
+          in_app?: boolean | null;
+          updated_at?: string | null;
+          user_id: string;
+        };
+        Update: {
+          category?: Database['public']['Enums']['notification_category'];
+          created_at?: string | null;
+          email?: boolean | null;
+          id?: string;
+          in_app?: boolean | null;
+          updated_at?: string | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'notification_preferences_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'user_profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      notifications: {
+        Row: {
+          actor_id: string | null;
+          category: Database['public']['Enums']['notification_category'];
+          created_at: string | null;
+          event_type: Database['public']['Enums']['activity_event_type'];
+          id: string;
+          metadata: Json | null;
+          read: boolean | null;
+          read_at: string | null;
+          subject_id: string;
+          subject_type: string;
+          user_id: string;
+        };
+        Insert: {
+          actor_id?: string | null;
+          category: Database['public']['Enums']['notification_category'];
+          created_at?: string | null;
+          event_type: Database['public']['Enums']['activity_event_type'];
+          id?: string;
+          metadata?: Json | null;
+          read?: boolean | null;
+          read_at?: string | null;
+          subject_id: string;
+          subject_type: string;
+          user_id: string;
+        };
+        Update: {
+          actor_id?: string | null;
+          category?: Database['public']['Enums']['notification_category'];
+          created_at?: string | null;
+          event_type?: Database['public']['Enums']['activity_event_type'];
+          id?: string;
+          metadata?: Json | null;
+          read?: boolean | null;
+          read_at?: string | null;
+          subject_id?: string;
+          subject_type?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'notifications_actor_id_fkey';
+            columns: ['actor_id'];
+            isOneToOne: false;
+            referencedRelation: 'user_profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'notifications_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'user_profiles';
             referencedColumns: ['id'];
           },
         ];
@@ -737,6 +833,38 @@ export type Database = {
           },
         ];
       };
+      user_follows: {
+        Row: {
+          created_at: string | null;
+          id: string;
+          subject_id: string;
+          subject_type: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string | null;
+          id?: string;
+          subject_id: string;
+          subject_type: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string | null;
+          id?: string;
+          subject_id?: string;
+          subject_type?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'user_follows_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'user_profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       user_profiles: {
         Row: {
           avatar_url: string | null;
@@ -977,6 +1105,14 @@ export type Database = {
         }[];
       };
       get_next_organic_id: { Args: never; Returns: number };
+      get_notification_category: {
+        Args: { evt: Database['public']['Enums']['activity_event_type'] };
+        Returns: Database['public']['Enums']['notification_category'];
+      };
+      resolve_follow_target: {
+        Args: { p_metadata: Json; p_subject_id: string; p_subject_type: string };
+        Returns: { target_id: string; target_type: string }[];
+      };
       get_proposals_by_category: {
         Args: never;
         Returns: {
@@ -1035,6 +1171,7 @@ export type Database = {
         | 'proposal_status_changed'
         | 'proposal_deleted'
         | 'vote_cast';
+      notification_category: 'tasks' | 'proposals' | 'voting' | 'comments' | 'system';
       proposal_category: 'feature' | 'governance' | 'treasury' | 'community' | 'development';
       proposal_status: 'draft' | 'submitted' | 'approved' | 'rejected' | 'voting';
       review_status: 'pending' | 'approved' | 'rejected' | 'disputed';
@@ -1075,8 +1212,7 @@ export type Tables<
     ? R
     : never
   : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
-    ? (DefaultSchema['Tables'] &
-        DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
+    ? (DefaultSchema['Tables'] & DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R;
       }
       ? R
@@ -1184,6 +1320,7 @@ export const Constants = {
         'proposal_deleted',
         'vote_cast',
       ],
+      notification_category: ['tasks', 'proposals', 'voting', 'comments', 'system'],
       proposal_category: ['feature', 'governance', 'treasury', 'community', 'development'],
       proposal_status: ['draft', 'submitted', 'approved', 'rejected', 'voting'],
       review_status: ['pending', 'approved', 'rejected', 'disputed'],

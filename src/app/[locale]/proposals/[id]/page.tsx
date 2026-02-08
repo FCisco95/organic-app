@@ -28,6 +28,7 @@ import { formatDistanceToNow } from 'date-fns';
 import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
 import type { ProposalWithVoting } from '@/features/voting';
+import { FollowButton } from '@/components/notifications/follow-button';
 import { VotingPanel, VoteResults, AdminVotingControls } from '@/components/voting';
 import { PageContainer } from '@/components/layout';
 import { StatusBadge, CategoryBadge, ProposalSections } from '@/components/proposals';
@@ -178,24 +179,27 @@ export default function ProposalDetailPage() {
           {/* Title + Actions */}
           <div className="flex items-start justify-between gap-4">
             <h1 className="text-3xl font-bold text-gray-900 flex-1">{proposal.title}</h1>
-            {(isAuthor || isAdmin) && proposal.status === 'draft' && (
-              <div className="flex gap-2 shrink-0">
-                <Link
-                  href={`/proposals/new?edit=${proposal.id}`}
-                  className="flex items-center gap-1 px-3 py-1.5 text-sm bg-white/80 hover:bg-white text-gray-700 rounded-lg transition-colors ring-1 ring-gray-200"
-                >
-                  <Edit2 className="w-4 h-4" />
-                  {t('edit')}
-                </Link>
-                <button
-                  onClick={() => setShowDeleteConfirm(true)}
-                  className="flex items-center gap-1 px-3 py-1.5 text-sm bg-red-50 hover:bg-red-100 text-red-700 rounded-lg transition-colors ring-1 ring-red-200"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  {t('delete')}
-                </button>
-              </div>
-            )}
+            <div className="flex gap-2 shrink-0">
+              {user && <FollowButton subjectType="proposal" subjectId={proposalId} />}
+              {(isAuthor || isAdmin) && proposal.status === 'draft' && (
+                <>
+                  <Link
+                    href={`/proposals/new?edit=${proposal.id}`}
+                    className="flex items-center gap-1 px-3 py-1.5 text-sm bg-white/80 hover:bg-white text-gray-700 rounded-lg transition-colors ring-1 ring-gray-200"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                    {t('edit')}
+                  </Link>
+                  <button
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className="flex items-center gap-1 px-3 py-1.5 text-sm bg-red-50 hover:bg-red-100 text-red-700 rounded-lg transition-colors ring-1 ring-red-200"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    {t('delete')}
+                  </button>
+                </>
+              )}
+            </div>
           </div>
 
           {/* Meta Info Pills */}
@@ -210,7 +214,9 @@ export default function ProposalDetailPage() {
             </div>
             <div className="flex items-center gap-1.5 text-sm text-gray-600 bg-white/60 rounded-full px-3 py-1">
               <Calendar className="w-3.5 h-3.5" />
-              <span>{formatDistanceToNow(new Date(proposal.created_at!), { addSuffix: true })}</span>
+              <span>
+                {formatDistanceToNow(new Date(proposal.created_at!), { addSuffix: true })}
+              </span>
             </div>
             <div className="flex items-center gap-1.5 text-sm text-gray-600 bg-white/60 rounded-full px-3 py-1">
               <MessageCircle className="w-3.5 h-3.5" />

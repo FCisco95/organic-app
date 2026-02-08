@@ -29,6 +29,7 @@
     "analytics": "数据分析",
     "treasury": "财务",
     "members": "成员",
+    "notifications": "通知",
     "settings": "设置",
     "signOut": "退出登录",
     "signIn": "登录",
@@ -364,6 +365,7 @@
     "viewDetails": "查看冲刺详情",
     "sprintList": "冲刺列表",
     "upcomingSprints": "即将开始的冲刺",
+    "activeSprint": "进行中的冲刺",
     "pastSprints": "历史冲刺",
     "tasksCompleted": "{completed} / {total} 任务完成",
     "pointsEarned": "获得 {points} 积分",
@@ -696,7 +698,11 @@
     "pointsEarned": "积分获得",
     "likeTask": "点赞任务",
     "likedTask": "取消点赞",
-    "favoritesCount": "{count, plural, one {# 个收藏} other {# 个收藏}}"
+    "favoritesCount": "{count, plural, one {# 个收藏} other {# 个收藏}}",
+    "noContributors": "暂无贡献者",
+    "labelLabels": "标签",
+    "labelPlaceholder": "添加标签",
+    "addLabel": "添加"
   },
   "Profile": {
     "loadingProfile": "正在加载您的个人资料...",
@@ -727,6 +733,7 @@
     "verified": "已验证",
     "notAssigned": "未分配",
     "roleLabel": "角色",
+    "unknown": "未知",
     "guest": "访客",
     "memberSince": "成员始于",
     "socialContact": "社交与联系方式",
@@ -1054,5 +1061,50 @@
     "error": "错误",
     "warning": "警告",
     "info": "信息"
+  },
+  "Notifications": {
+    "title": "通知",
+    "pageTitle": "通知",
+    "pageDescription": "关注您跟踪的任务和提案的最新动态。",
+    "bell": "通知",
+    "markAllRead": "全部标为已读",
+    "viewAll": "查看所有通知",
+    "empty": "暂无通知",
+    "emptyPage": "已全部阅读！",
+    "emptyPageHint": "关注任务和提案以接收更新通知。",
+    "someone": "某人",
+    "untitled": "无标题",
+    "follow": "关注",
+    "following": "已关注",
+    "tabs": {
+      "all": "全部"
+    },
+    "events": {
+      "taskCreated": "创建了任务「{title}」",
+      "taskStatusChanged": "将「{title}」移至 {status}",
+      "taskCompleted": "完成了「{title}」",
+      "taskDeleted": "删除了任务「{title}」",
+      "submissionCreated": "提交了「{title}」的工作",
+      "submissionReviewed": "审核了「{title}」的提交（{status}）",
+      "commentCreated": "评论了「{title}」",
+      "commentDeleted": "删除了「{title}」的评论",
+      "proposalCreated": "创建了提案「{title}」",
+      "proposalStatusChanged": "将「{title}」更改为 {status}",
+      "proposalDeleted": "删除了提案「{title}」",
+      "voteCast": "在「{title}」上投票"
+    },
+    "preferences": {
+      "title": "通知偏好设置",
+      "category": "分类",
+      "inApp": "应用内",
+      "email": "邮件",
+      "categories": {
+        "tasks": "任务",
+        "proposals": "提案",
+        "voting": "投票",
+        "comments": "评论",
+        "system": "系统"
+      }
+    }
   }
 }

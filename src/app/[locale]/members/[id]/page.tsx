@@ -4,15 +4,7 @@ import { use } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
-import {
-  ArrowLeft,
-  Lock,
-  MapPin,
-  Globe,
-  Star,
-  Calendar,
-  ExternalLink,
-} from 'lucide-react';
+import { ArrowLeft, Lock, MapPin, Globe, Star, Calendar, ExternalLink } from 'lucide-react';
 import { PageContainer } from '@/components/layout';
 import { useMember, ROLE_LABELS, ROLE_COLORS } from '@/features/members';
 import type { UserRole } from '@/types/database';
@@ -120,7 +112,9 @@ export default function MemberProfilePage({ params }: { params: Promise<{ id: st
             {member.organic_id && (
               <p className="text-sm text-gray-500 mt-0.5">ORG-{member.organic_id}</p>
             )}
-            {member.bio && <p className="text-gray-600 mt-3 text-sm leading-relaxed">{member.bio}</p>}
+            {member.bio && (
+              <p className="text-gray-600 mt-3 text-sm leading-relaxed">{member.bio}</p>
+            )}
           </div>
         </div>
 

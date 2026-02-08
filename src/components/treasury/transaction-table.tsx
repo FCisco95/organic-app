@@ -38,9 +38,7 @@ export function TransactionTable({ transactions, loading }: TransactionTableProp
   return (
     <ChartCard title={t('transactionsTitle')} description={t('transactionsDesc')} loading={loading}>
       {!transactions || transactions.length === 0 ? (
-        <p className="py-8 text-center text-sm text-gray-400">
-          {t('noTransactions')}
-        </p>
+        <p className="py-8 text-center text-sm text-gray-400">{t('noTransactions')}</p>
       ) : (
         <div className="overflow-x-auto -mx-5">
           <table className="w-full text-sm">
@@ -63,10 +61,7 @@ export function TransactionTable({ transactions, loading }: TransactionTableProp
             </thead>
             <tbody className="divide-y divide-gray-50">
               {transactions.map((tx) => (
-                <tr
-                  key={tx.signature}
-                  className="hover:bg-gray-50/50 transition-colors"
-                >
+                <tr key={tx.signature} className="hover:bg-gray-50/50 transition-colors">
                   <td className="px-5 py-2.5">
                     <code className="text-xs font-mono text-gray-600">
                       {shortSig(tx.signature)}
@@ -82,9 +77,7 @@ export function TransactionTable({ transactions, loading }: TransactionTableProp
                       <span
                         className={cn(
                           'text-xs font-medium',
-                          tx.direction === 'in'
-                            ? 'text-green-600'
-                            : 'text-red-600'
+                          tx.direction === 'in' ? 'text-green-600' : 'text-red-600'
                         )}
                       >
                         {tx.type === 'transfer'
@@ -99,9 +92,7 @@ export function TransactionTable({ transactions, loading }: TransactionTableProp
                     <span
                       className={cn(
                         'text-xs font-mono tabular-nums',
-                        tx.direction === 'in'
-                          ? 'text-green-600'
-                          : 'text-red-600'
+                        tx.direction === 'in' ? 'text-green-600' : 'text-red-600'
                       )}
                     >
                       {tx.direction === 'in' ? '+' : '-'}

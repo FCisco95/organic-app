@@ -42,7 +42,10 @@ export function GeneralTab({ org }: GeneralTabProps) {
         <SettingsInput value={name} onChange={(e) => setName(e.target.value)} maxLength={100} />
       </SettingsField>
 
-      <SettingsField label={t('general.orgDescription')} description={t('general.orgDescriptionHelp')}>
+      <SettingsField
+        label={t('general.orgDescription')}
+        description={t('general.orgDescriptionHelp')}
+      >
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}

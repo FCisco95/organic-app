@@ -26,6 +26,7 @@ import { TaskSubmissionsSection } from '@/components/tasks/task-submissions-sect
 import { TaskEditForm } from '@/components/tasks/task-edit-form';
 import { TaskDetailSummary } from '@/components/tasks/task-detail-summary';
 import { PageContainer } from '@/components/layout';
+import { FollowButton } from '@/components/notifications/follow-button';
 
 // Local type alias for the task shape used in this page
 type Task = TaskWithRelations;
@@ -601,6 +602,7 @@ export default function TaskDetailPage() {
 
         {!isEditing && (
           <div className="flex gap-3">
+            {user && <FollowButton subjectType="task" subjectId={taskId} />}
             {profile?.role && ['admin', 'council'].includes(profile.role) && (
               <>
                 <button

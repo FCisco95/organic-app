@@ -16,7 +16,8 @@ export function MemberCard({ member }: MemberCardProps) {
   const locale = useLocale();
   const t = useTranslations('Members');
 
-  const displayName = member.name || (member.organic_id ? `ORG-${member.organic_id}` : t('anonymous'));
+  const displayName =
+    member.name || (member.organic_id ? `ORG-${member.organic_id}` : t('anonymous'));
 
   if (!member.profile_visible) {
     return (
@@ -27,9 +28,7 @@ export function MemberCard({ member }: MemberCardProps) {
           </div>
           <div>
             <p className="font-medium text-gray-500">{t('privateMember')}</p>
-            {member.organic_id && (
-              <p className="text-sm text-gray-400">ORG-{member.organic_id}</p>
-            )}
+            {member.organic_id && <p className="text-sm text-gray-400">ORG-{member.organic_id}</p>}
           </div>
         </div>
       </div>
@@ -68,9 +67,7 @@ export function MemberCard({ member }: MemberCardProps) {
               </span>
             )}
           </div>
-          {member.organic_id && (
-            <p className="text-sm text-gray-500">ORG-{member.organic_id}</p>
-          )}
+          {member.organic_id && <p className="text-sm text-gray-500">ORG-{member.organic_id}</p>}
         </div>
       </div>
 

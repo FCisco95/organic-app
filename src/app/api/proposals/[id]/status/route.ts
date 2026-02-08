@@ -39,7 +39,10 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     }
 
     if (!profile.role || !['admin', 'council'].includes(profile.role)) {
-      return NextResponse.json({ error: 'Forbidden: admin or council role required' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'Forbidden: admin or council role required' },
+        { status: 403 }
+      );
     }
 
     // Parse request

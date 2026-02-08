@@ -37,9 +37,7 @@ export default function MembersPage() {
         </div>
         <p className="text-sm text-gray-500">{t('description')}</p>
         {data && (
-          <p className="text-sm text-gray-400 mt-1">
-            {t('totalMembers', { count: data.total })}
-          </p>
+          <p className="text-sm text-gray-400 mt-1">{t('totalMembers', { count: data.total })}</p>
         )}
       </div>
 

@@ -25,17 +25,10 @@ export function VotingParticipationList({ data, loading }: VotingParticipationLi
             const yesPercent = total > 0 ? (item.yes_votes / total) * 100 : 0;
 
             return (
-              <div
-                key={item.proposal_id}
-                className="rounded-lg border border-gray-100 p-3"
-              >
-                <p className="text-sm font-medium text-gray-900 truncate">
-                  {item.proposal_title}
-                </p>
+              <div key={item.proposal_id} className="rounded-lg border border-gray-100 p-3">
+                <p className="text-sm font-medium text-gray-900 truncate">{item.proposal_title}</p>
                 <div className="mt-1.5 flex items-center gap-3 text-xs text-gray-500">
-                  <span>
-                    {t('charts.votes', { count: item.vote_count })}
-                  </span>
+                  <span>{t('charts.votes', { count: item.vote_count })}</span>
                   <span className="text-green-600">
                     {t('charts.yes')} {item.yes_votes}
                   </span>

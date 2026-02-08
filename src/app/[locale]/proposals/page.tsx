@@ -3,7 +3,12 @@
 import { useState } from 'react';
 import { Link } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
-import { useProposals, type ProposalFilters, PROPOSAL_CATEGORIES, PROPOSAL_CATEGORY_LABELS } from '@/features/proposals';
+import {
+  useProposals,
+  type ProposalFilters,
+  PROPOSAL_CATEGORIES,
+  PROPOSAL_CATEGORY_LABELS,
+} from '@/features/proposals';
 import type { ProposalCategory } from '@/features/proposals';
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -60,7 +65,16 @@ export default function ProposalsPage() {
                 : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
             }`}
           >
-            {status === 'all' ? t('filterAll') : t(`status${status.charAt(0).toUpperCase() + status.slice(1)}` as `statusDraft` | `statusSubmitted` | `statusApproved` | `statusRejected` | `statusVoting`)}
+            {status === 'all'
+              ? t('filterAll')
+              : t(
+                  `status${status.charAt(0).toUpperCase() + status.slice(1)}` as
+                    | `statusDraft`
+                    | `statusSubmitted`
+                    | `statusApproved`
+                    | `statusRejected`
+                    | `statusVoting`
+                )}
           </button>
         ))}
       </div>

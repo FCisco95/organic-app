@@ -10,7 +10,20 @@ import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ConnectWalletButton } from '@/components/wallet';
-import { Home, BarChart3, Wallet, Users, CheckSquare, Zap, Vote, Trophy, Settings, User, LogOut } from 'lucide-react';
+import {
+  Home,
+  BarChart3,
+  Wallet,
+  Users,
+  CheckSquare,
+  Zap,
+  Vote,
+  Trophy,
+  Bell,
+  Settings,
+  User,
+  LogOut,
+} from 'lucide-react';
 
 export function MobileSidebar() {
   const { user, profile, signOut } = useAuth();
@@ -29,6 +42,7 @@ export function MobileSidebar() {
     { href: '/sprints', labelKey: 'sprints', icon: Zap, show: !!profile?.organic_id },
     { href: '/proposals', labelKey: 'proposals', icon: Vote, show: !!user },
     { href: '/leaderboard', labelKey: 'leaderboard', icon: Trophy, show: !!user },
+    { href: '/notifications', labelKey: 'notifications', icon: Bell, show: !!user },
     { href: '/admin/settings', labelKey: 'settings', icon: Settings, show: !!isAdminOrCouncil },
     { href: '/profile', labelKey: 'profile', icon: User, show: !!user },
   ];

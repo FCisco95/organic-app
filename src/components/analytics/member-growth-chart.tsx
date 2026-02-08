@@ -34,7 +34,11 @@ export function MemberGrowthChart({ data, loading }: MemberGrowthChartProps) {
   const isEmpty = !data || data.length === 0;
 
   return (
-    <ChartCard title={t('charts.memberGrowth')} description={t('charts.memberGrowthDesc')} loading={loading}>
+    <ChartCard
+      title={t('charts.memberGrowth')}
+      description={t('charts.memberGrowthDesc')}
+      loading={loading}
+    >
       {isEmpty ? (
         <p className="py-12 text-center text-sm text-gray-400">{t('empty')}</p>
       ) : (

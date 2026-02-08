@@ -29,6 +29,7 @@
     "analytics": "Analytics",
     "treasury": "Treasury",
     "members": "Members",
+    "notifications": "Notifications",
     "settings": "Settings",
     "signOut": "Sign Out",
     "signIn": "Sign In",
@@ -364,6 +365,7 @@
     "viewDetails": "View Sprint Details",
     "sprintList": "Sprint List",
     "upcomingSprints": "Upcoming Sprints",
+    "activeSprint": "Active Sprint",
     "pastSprints": "Past Sprints",
     "tasksCompleted": "{completed} / {total} tasks completed",
     "pointsEarned": "{points} points earned",
@@ -696,7 +698,11 @@
     "pointsEarned": "points earned",
     "likeTask": "Like task",
     "likedTask": "Unlike task",
-    "favoritesCount": "{count, plural, one {# favorite} other {# favorites}}"
+    "favoritesCount": "{count, plural, one {# favorite} other {# favorites}}",
+    "noContributors": "No contributors yet",
+    "labelLabels": "Labels",
+    "labelPlaceholder": "Add a label",
+    "addLabel": "Add"
   },
   "Profile": {
     "loadingProfile": "Loading your profile...",
@@ -727,6 +733,7 @@
     "verified": "Verified",
     "notAssigned": "Not assigned",
     "roleLabel": "Role",
+    "unknown": "Unknown",
     "guest": "Guest",
     "memberSince": "Member Since",
     "socialContact": "Social & Contact",
@@ -1054,5 +1061,50 @@
     "error": "Error",
     "warning": "Warning",
     "info": "Info"
+  },
+  "Notifications": {
+    "title": "Notifications",
+    "pageTitle": "Notifications",
+    "pageDescription": "Stay up to date with activity on tasks and proposals you follow.",
+    "bell": "Notifications",
+    "markAllRead": "Mark all read",
+    "viewAll": "View all notifications",
+    "empty": "No notifications yet",
+    "emptyPage": "All caught up!",
+    "emptyPageHint": "Follow tasks and proposals to get notified about updates.",
+    "someone": "Someone",
+    "untitled": "Untitled",
+    "follow": "Follow",
+    "following": "Following",
+    "tabs": {
+      "all": "All"
+    },
+    "events": {
+      "taskCreated": "created task \"{title}\"",
+      "taskStatusChanged": "moved \"{title}\" to {status}",
+      "taskCompleted": "completed \"{title}\"",
+      "taskDeleted": "deleted task \"{title}\"",
+      "submissionCreated": "submitted work on \"{title}\"",
+      "submissionReviewed": "reviewed submission for \"{title}\" ({status})",
+      "commentCreated": "commented on \"{title}\"",
+      "commentDeleted": "removed a comment on \"{title}\"",
+      "proposalCreated": "created proposal \"{title}\"",
+      "proposalStatusChanged": "changed \"{title}\" to {status}",
+      "proposalDeleted": "deleted proposal \"{title}\"",
+      "voteCast": "voted on \"{title}\""
+    },
+    "preferences": {
+      "title": "Notification Preferences",
+      "category": "Category",
+      "inApp": "In-app",
+      "email": "Email",
+      "categories": {
+        "tasks": "Tasks",
+        "proposals": "Proposals",
+        "voting": "Voting",
+        "comments": "Comments",
+        "system": "System"
+      }
+    }
   }
 }

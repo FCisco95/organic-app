@@ -54,7 +54,11 @@ export function TokenTab({ org }: TokenTabProps) {
       <p className="text-sm text-gray-500 mb-6">{t('token.description')}</p>
 
       <SettingsField label={t('token.symbol')} description={t('token.symbolDescription')}>
-        <SettingsInput value={tokenSymbol} onChange={(e) => setTokenSymbol(e.target.value)} maxLength={20} />
+        <SettingsInput
+          value={tokenSymbol}
+          onChange={(e) => setTokenSymbol(e.target.value)}
+          maxLength={20}
+        />
       </SettingsField>
 
       <SettingsField label={t('token.mint')} description={t('token.mintDescription')}>

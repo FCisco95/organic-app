@@ -1,15 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { ChartCard } from './chart-card';
 import type { TaskCompletionPoint } from '@/features/analytics';
 
@@ -34,7 +26,11 @@ export function TaskCompletionChart({ data, loading }: TaskCompletionChartProps)
   const isEmpty = !data || data.every((d) => d.completed_count === 0);
 
   return (
-    <ChartCard title={t('charts.taskCompletions')} description={t('charts.taskCompletionsDesc')} loading={loading}>
+    <ChartCard
+      title={t('charts.taskCompletions')}
+      description={t('charts.taskCompletionsDesc')}
+      loading={loading}
+    >
       {isEmpty ? (
         <p className="py-12 text-center text-sm text-gray-400">{t('empty')}</p>
       ) : (

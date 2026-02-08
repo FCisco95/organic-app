@@ -18,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Menu, User, LogOut } from 'lucide-react';
+import { NotificationBell } from '@/components/notifications/notification-bell';
 
 export function TopBar() {
   const { user, profile, loading, signOut } = useAuth();
@@ -86,6 +87,9 @@ export function TopBar() {
             <div className="hidden lg:block">
               <ConnectWalletButton />
             </div>
+
+            {/* Notifications */}
+            <NotificationBell />
 
             {/* Avatar dropdown */}
             <DropdownMenu>

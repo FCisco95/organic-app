@@ -8,7 +8,20 @@ import { cn } from '@/lib/utils';
 import { useSidebar } from './sidebar-context';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Home, BarChart3, Wallet, Users, CheckSquare, Zap, Vote, Trophy, Settings, User, LogOut } from 'lucide-react';
+import {
+  Home,
+  BarChart3,
+  Wallet,
+  Users,
+  CheckSquare,
+  Zap,
+  Vote,
+  Trophy,
+  Bell,
+  Settings,
+  User,
+  LogOut,
+} from 'lucide-react';
 
 interface NavItem {
   href: string;
@@ -34,6 +47,7 @@ export function Sidebar() {
     { href: '/sprints', labelKey: 'sprints', icon: Zap, show: !!profile?.organic_id },
     { href: '/proposals', labelKey: 'proposals', icon: Vote, show: !!user },
     { href: '/leaderboard', labelKey: 'leaderboard', icon: Trophy, show: !!user },
+    { href: '/notifications', labelKey: 'notifications', icon: Bell, show: !!user },
   ];
 
   const bottomItems: NavItem[] = [

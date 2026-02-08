@@ -87,10 +87,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
     // Authors can only edit drafts
     if (isAuthor && !isAdmin && proposal.status !== 'draft') {
-      return NextResponse.json(
-        { error: 'Only draft proposals can be edited' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Only draft proposals can be edited' }, { status: 400 });
     }
 
     // Parse and validate
