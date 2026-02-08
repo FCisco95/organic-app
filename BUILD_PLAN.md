@@ -169,6 +169,7 @@
 - [ ] Task assignment notifications
 - [ ] Proposal voting reminders
 - [ ] Discord bot integration
+- [ ] Telegram bot integration
 - [ ] Announcement system
 
 ### Phase 12: Advanced Features

@@ -2,6 +2,78 @@
 
 Add newest entries at the top.
 
+## 2026-02-08 (Session: Notifications & Communication — Phase 11a)
+
+### Database
+
+- Migration `20260208000000_notifications_system.sql` — applied to Supabase
+  - `notification_category` enum (tasks, proposals, voting, comments, system)
+  - `user_follows` table — user subscribes to tasks/proposals
+  - `notifications` table — per-user notification records with event type, category, actor, metadata
+  - `notification_preferences` table — per-category in_app/email toggles
+  - RLS policies: users manage their own data, SECURITY DEFINER triggers for inserts
+  - Realtime publication enabled on `notifications` table
+  - Helper functions: `get_notification_category()`, `resolve_follow_target()`
+  - Fan-out trigger: `notify_followers()` on `activity_log` INSERT creates notifications for each follower
+  - 5 auto-follow triggers: task creator, task assignee, proposal creator, voter, task commenter
+- Migration `20260208_proposal_comment_notifications` — applied to Supabase
+  - Activity log trigger for generic `comments` table (proposal comments)
+  - Auto-follow trigger for proposal commenters
+  - Updated `resolve_follow_target()` to handle both task and proposal comments
+- Backfilled historical notifications from activity_log for existing follows
+- Regenerated + manually extended `src/types/database.ts` with 3 new tables, enum, and 2 functions
+
+### Feature domain
+
+- Created `src/features/notifications/` — types, schemas, hooks, barrel export
+  - Types: `Notification`, `NotificationPreference`, `UserFollow`, `NotificationCategory`, `FollowSubjectType`, `NotificationsResponse`, `EVENT_ICONS`, `NOTIFICATION_CATEGORIES`
+  - Schemas: `notificationFiltersSchema`, `updatePreferenceSchema`, `followSchema`
+  - Hooks: `useNotifications` (with Realtime subscription filtered by user_id), `useUnreadCount`, `useMarkRead`, `useMarkAllRead`, `useNotificationPreferences`, `useUpdatePreference`, `useIsFollowing`, `useFollow`, `useUnfollow`
+
+### API routes
+
+- `src/app/api/notifications/route.ts` — GET (list with cursor/category/unread filters + actor enrichment) + PATCH (mark all read)
+- `src/app/api/notifications/[id]/read/route.ts` — PATCH (mark single read)
+- `src/app/api/notifications/preferences/route.ts` — GET (with auto-seed defaults) + PATCH (upsert per-category)
+- `src/app/api/notifications/follow/route.ts` — GET (check status) + POST (follow) + DELETE (unfollow)
+
+### UI components
+
+- `src/components/notifications/notification-bell.tsx` — bell icon button with unread count badge, dropdown panel, mark all read, view all link
+- `src/components/notifications/notification-item.tsx` — notification row with unread dot, actor avatar, i18n action text, relative time, navigation resolution
+- `src/components/notifications/notification-preferences.tsx` — toggle grid (categories × channels) with custom ToggleSwitch
+- `src/components/notifications/follow-button.tsx` — follow/unfollow toggle with Bell/BellOff icons
+
+### Pages & navigation
+
+- Created `src/app/[locale]/notifications/page.tsx` — full page with category filter tabs, collapsible preferences panel, mark all read
+- Added NotificationBell to top-bar (between wallet button and avatar)
+- Added Notifications link to sidebar + mobile sidebar (Bell icon, gated on auth)
+- Wired FollowButton into task detail page (`src/app/[locale]/tasks/[id]/page.tsx`) — visible to all authenticated users
+- Wired FollowButton into proposal detail page (`src/app/[locale]/proposals/[id]/page.tsx`) — visible to all authenticated users, outside draft-only conditional
+
+### Bug fixes
+
+- Fixed Realtime subscription leak: filtered by `user_id=eq.${userId}` so users only receive their own notifications
+- Added safety check in Realtime callback to prevent cross-user notification display
+
+### i18n
+
+- Added `Notifications` namespace (~40 keys) across en.json, pt-PT.json, zh-CN.json (events, preferences, follow, tabs, empty states)
+- Added `notifications` key to `Navigation` namespace in all 3 locales
+- Fixed 6 missing i18n keys across the broader app:
+  - `Profile.unknown` — en/pt-PT/zh-CN
+  - `Sprints.activeSprint` — en/pt-PT/zh-CN
+  - `TaskDetail.noContributors` — en/pt-PT/zh-CN
+  - `TaskDetail.labelLabels` — en/pt-PT/zh-CN
+  - `TaskDetail.labelPlaceholder` — en/pt-PT/zh-CN
+  - `TaskDetail.addLabel` — en/pt-PT/zh-CN
+
+### Verification
+
+- Lint: zero errors/warnings
+- Build: compiles successfully
+
 ## 2026-02-07 (Session: Member Management & Admin Settings — Phase 9)
 
 ### Database
