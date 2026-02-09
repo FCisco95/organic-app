@@ -3,16 +3,9 @@
 @tailwind utilities;
 
 /*
- * Typography scale (Inter):
- *   xs: 12px  — captions, badges
- *   sm: 14px  — body, nav links
- *   base: 16px — default body
- *   lg: 18px  — section headings
- *   xl: 20px  — page subtitles
- *   2xl: 24px — page titles
- *
- * Theme: dark sidebar (slate-900) + refined light content area
- * Orange accent: #FF7A00 (hsl 28 100% 50%)
+ * Typography: DM Sans (body) + Fraunces (display) + JetBrains Mono (data)
+ * Theme: dark sidebar + refined light content area
+ * Orange accent: #FF7A00 — used sparingly
  */
 
 @layer base {
@@ -38,7 +31,7 @@
     --ring: 28 100% 50%;
     --radius: 0.5rem;
 
-    /* Sidebar: dark slate-blue, independent of page theme */
+    /* Sidebar */
     --sidebar: 222 47% 11%;
     --sidebar-foreground: 210 40% 93%;
     --sidebar-border: 217 33% 17%;
@@ -87,3 +80,12 @@
     @apply bg-background text-foreground antialiased;
   }
 }
+
+/* Page-load stagger delays */
+.stagger-1 { animation-delay: 0ms; }
+.stagger-2 { animation-delay: 80ms; }
+.stagger-3 { animation-delay: 160ms; }
+.stagger-4 { animation-delay: 240ms; }
+.stagger-5 { animation-delay: 320ms; }
+.stagger-6 { animation-delay: 400ms; }
+.stagger-7 { animation-delay: 480ms; }

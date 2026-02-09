@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { DM_Sans, Fraunces, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/features/auth/context';
 import { SolanaWalletProvider } from '@/features/auth/wallet-provider';
@@ -8,9 +8,19 @@ import { getMessages, setRequestLocale } from 'next-intl/server';
 import { LayoutClient } from '@/components/layout-client';
 import { QueryProvider } from '@/components/query-provider';
 
-const inter = Inter({
+const dmSans = DM_Sans({
   subsets: ['latin'],
-  variable: '--font-inter',
+  variable: '--font-sans',
+});
+
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  variable: '--font-display',
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
 });
 
 export const metadata: Metadata = {
@@ -31,7 +41,9 @@ export default async function RootLayout({
 
   return (
     <html lang={locale}>
-      <body className={`${inter.className} antialiased`}>
+      <body
+        className={`${dmSans.className} ${fraunces.variable} ${jetbrainsMono.variable} antialiased`}
+      >
         <NextIntlClientProvider locale={locale} messages={messages}>
           <QueryProvider>
             <AuthProvider>
