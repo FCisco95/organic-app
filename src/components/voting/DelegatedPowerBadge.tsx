@@ -2,6 +2,7 @@
 
 import { Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 import { useEffectiveVotingPower, formatVotingWeight } from '@/features/voting';
 
 interface DelegatedPowerBadgeProps {
@@ -15,6 +16,7 @@ export function DelegatedPowerBadge({
   userId,
   className,
 }: DelegatedPowerBadgeProps) {
+  const t = useTranslations('Voting.delegation');
   const { data: power } = useEffectiveVotingPower(proposalId, userId);
 
   if (!power || power.delegated_weight === 0) return null;
@@ -30,12 +32,14 @@ export function DelegatedPowerBadge({
       <Users className="w-4 h-4 flex-shrink-0" />
       <div>
         <span className="font-medium">
-          {formatVotingWeight(power.total_weight)} $ORG
+          {t('effectivePower', { total: formatVotingWeight(power.total_weight) })}
         </span>
         <span className="text-blue-500 text-xs ml-1">
-          ({formatVotingWeight(power.own_weight)} own +{' '}
-          {formatVotingWeight(power.delegated_weight)} delegated from{' '}
-          {power.delegator_count} member{power.delegator_count > 1 ? 's' : ''})
+          ({t('ownPower', { own: formatVotingWeight(power.own_weight) })} +{' '}
+          {t('delegatedPower', {
+            delegated: formatVotingWeight(power.delegated_weight),
+            count: power.delegator_count,
+          })})
         </span>
       </div>
     </div>

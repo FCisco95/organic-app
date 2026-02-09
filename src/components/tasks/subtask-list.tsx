@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { Plus, CheckCircle2, Circle, ChevronDown, ChevronRight, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Link } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 import { useSubtasks, useCreateSubtask, TaskWithRelations } from '@/features/tasks';
 import toast from 'react-hot-toast';
 
@@ -12,6 +14,7 @@ interface SubtaskListProps {
 }
 
 export function SubtaskList({ parentTaskId, className }: SubtaskListProps) {
+  const t = useTranslations('Tasks.subtasks');
   const { data: subtasks, isLoading } = useSubtasks(parentTaskId);
   const createSubtask = useCreateSubtask();
   const [isExpanded, setIsExpanded] = useState(true);
@@ -32,7 +35,7 @@ export function SubtaskList({ parentTaskId, className }: SubtaskListProps) {
       });
       setNewTitle('');
       setIsAdding(false);
-      toast.success('Subtask created');
+      toast.success(t('created'));
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to create subtask');
     }
@@ -51,10 +54,10 @@ export function SubtaskList({ parentTaskId, className }: SubtaskListProps) {
           ) : (
             <ChevronRight className="w-4 h-4" />
           )}
-          Subtasks
+          {t('title')}
           {total > 0 && (
             <span className="text-xs text-gray-500">
-              ({completed}/{total})
+              ({t('progress', { completed, total })})
             </span>
           )}
         </button>
@@ -66,7 +69,7 @@ export function SubtaskList({ parentTaskId, className }: SubtaskListProps) {
           className="flex items-center gap-1 text-xs text-organic-orange hover:text-orange-600 font-medium"
         >
           <Plus className="w-3.5 h-3.5" />
-          Add
+          {t('add')}
         </button>
       </div>
 
@@ -86,7 +89,7 @@ export function SubtaskList({ parentTaskId, className }: SubtaskListProps) {
           {isLoading ? (
             <div className="flex items-center gap-2 text-sm text-gray-500 py-2">
               <Loader2 className="w-4 h-4 animate-spin" />
-              Loading...
+              {t('loading')}
             </div>
           ) : (
             subtasks?.map((subtask) => (
@@ -109,7 +112,7 @@ export function SubtaskList({ parentTaskId, className }: SubtaskListProps) {
                     setNewTitle('');
                   }
                 }}
-                placeholder="New subtask title..."
+                placeholder={t('placeholder')}
                 className="flex-1 text-sm bg-transparent border-b border-gray-300 focus:border-organic-orange outline-none py-1"
                 autoFocus
               />
@@ -121,14 +124,14 @@ export function SubtaskList({ parentTaskId, className }: SubtaskListProps) {
                 {createSubtask.isPending ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
                 ) : (
-                  'Save'
+                  t('save')
                 )}
               </button>
             </div>
           )}
 
           {!isLoading && total === 0 && !isAdding && (
-            <p className="text-xs text-gray-400 py-1">No subtasks yet</p>
+            <p className="text-xs text-gray-400 py-1">{t('noSubtasks')}</p>
           )}
         </div>
       )}
@@ -140,7 +143,7 @@ function SubtaskItem({ subtask }: { subtask: TaskWithRelations }) {
   const isDone = subtask.status === 'done';
 
   return (
-    <a
+    <Link
       href={`/tasks/${subtask.id}`}
       className="flex items-center gap-2 py-1.5 px-1 rounded hover:bg-gray-50 group"
     >
@@ -162,6 +165,6 @@ function SubtaskItem({ subtask }: { subtask: TaskWithRelations }) {
           {subtask.assignee.name || subtask.assignee.email}
         </span>
       )}
-    </a>
+    </Link>
   );
 }

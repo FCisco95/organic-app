@@ -2,7 +2,8 @@
 
 import { Repeat } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { RecurrenceRule, RECURRENCE_RULE_LABELS } from '@/features/tasks';
+import { useTranslations } from 'next-intl';
+import { RecurrenceRule } from '@/features/tasks';
 
 interface RecurrenceBadgeProps {
   rule: RecurrenceRule;
@@ -10,6 +11,8 @@ interface RecurrenceBadgeProps {
 }
 
 export function RecurrenceBadge({ rule, className }: RecurrenceBadgeProps) {
+  const t = useTranslations('Tasks.templates.recurrenceRules');
+
   return (
     <span
       className={cn(
@@ -17,10 +20,10 @@ export function RecurrenceBadge({ rule, className }: RecurrenceBadgeProps) {
         'bg-blue-50 text-blue-600',
         className
       )}
-      title={`Recurring: ${RECURRENCE_RULE_LABELS[rule]}`}
+      title={t(rule)}
     >
       <Repeat className="w-3 h-3" />
-      {RECURRENCE_RULE_LABELS[rule]}
+      {t(rule)}
     </span>
   );
 }

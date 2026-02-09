@@ -18,14 +18,7 @@ export async function GET() {
 
     const { data: templates, error } = await supabase
       .from('task_templates')
-      .select(
-        `
-        *,
-        creator:user_profiles!task_templates_created_by_fkey(
-          id, name, email
-        )
-      `
-      )
+      .select('*')
       .order('created_at', { ascending: false });
 
     if (error) {

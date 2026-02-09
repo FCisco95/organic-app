@@ -31,8 +31,8 @@ export const votingKeys = {
   snapshot: (proposalId: string) => [...votingKeys.all, 'snapshot', proposalId] as const,
   // Phase 12: Delegations
   delegations: () => [...votingKeys.all, 'delegations'] as const,
-  effectivePower: (proposalId: string) =>
-    [...votingKeys.all, 'effective-power', proposalId] as const,
+  effectivePower: (proposalId: string, userId?: string) =>
+    [...votingKeys.all, 'effective-power', proposalId, userId] as const,
 };
 
 /**
@@ -344,6 +344,9 @@ export function useDelegate() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: votingKeys.delegations() });
+      queryClient.invalidateQueries({
+        queryKey: [...votingKeys.all, 'effective-power'],
+      });
     },
   });
 }
@@ -371,6 +374,9 @@ export function useRevokeDelegation() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: votingKeys.delegations() });
+      queryClient.invalidateQueries({
+        queryKey: [...votingKeys.all, 'effective-power'],
+      });
     },
   });
 }
@@ -380,7 +386,7 @@ export function useRevokeDelegation() {
  */
 export function useEffectiveVotingPower(proposalId: string, userId: string | undefined) {
   return useQuery({
-    queryKey: votingKeys.effectivePower(proposalId),
+    queryKey: votingKeys.effectivePower(proposalId, userId),
     queryFn: async () => {
       const response = await fetch(
         `/api/proposals/${proposalId}/effective-power?user_id=${userId}`

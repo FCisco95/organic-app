@@ -535,8 +535,11 @@ export function useTaskDependencies(taskId: string) {
         const data = await response.json();
         throw new Error(data.error || 'Failed to fetch dependencies');
       }
-      const { dependencies } = await response.json();
-      return dependencies as TaskDependency[];
+      const result = await response.json();
+      return {
+        dependencies: (result.dependencies ?? []) as TaskDependency[],
+        blocked_by_this: (result.blocked_by_this ?? []) as TaskDependency[],
+      };
     },
     enabled: !!taskId,
   });
@@ -716,16 +719,18 @@ export function useCreateSubtask() {
  * Fetch all task templates
  */
 export function useTaskTemplates() {
+  const supabase = createClient();
+
   return useQuery({
     queryKey: taskKeys.templates(),
     queryFn: async () => {
-      const response = await fetch('/api/tasks/templates');
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to fetch templates');
-      }
-      const { templates } = await response.json();
-      return templates as TaskTemplateWithCreator[];
+      const { data, error } = await supabase
+        .from('task_templates')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data as TaskTemplateWithCreator[];
     },
   });
 }
@@ -734,16 +739,19 @@ export function useTaskTemplates() {
  * Fetch a single task template
  */
 export function useTaskTemplate(templateId: string) {
+  const supabase = createClient();
+
   return useQuery({
     queryKey: taskKeys.template(templateId),
     queryFn: async () => {
-      const response = await fetch(`/api/tasks/templates/${templateId}`);
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to fetch template');
-      }
-      const { template } = await response.json();
-      return template as TaskTemplate;
+      const { data, error } = await supabase
+        .from('task_templates')
+        .select('*')
+        .eq('id', templateId)
+        .single();
+
+      if (error) throw error;
+      return data as TaskTemplate;
     },
     enabled: !!templateId,
   });

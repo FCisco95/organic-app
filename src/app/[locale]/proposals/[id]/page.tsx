@@ -30,6 +30,9 @@ import { useTranslations } from 'next-intl';
 import type { ProposalWithVoting } from '@/features/voting';
 import { FollowButton } from '@/components/notifications/follow-button';
 import { VotingPanel, VoteResults, AdminVotingControls } from '@/components/voting';
+import { DelegatedPowerBadge } from '@/components/voting/DelegatedPowerBadge';
+import { DelegationPanel } from '@/components/voting/DelegationPanel';
+import { DelegationInfo } from '@/components/voting/DelegationInfo';
 import { PageContainer } from '@/components/layout';
 import { StatusBadge, CategoryBadge, ProposalSections } from '@/components/proposals';
 import { createClient } from '@/lib/supabase/client';
@@ -301,8 +304,12 @@ export default function ProposalDetailPage() {
 
       {/* Voting Panel - Show during voting */}
       {proposal.status === 'voting' && (
-        <div className="mb-6">
+        <div className="mb-6 space-y-4">
+          {user && (
+            <DelegatedPowerBadge proposalId={proposalId} userId={user.id} />
+          )}
           <VotingPanel proposal={proposal as unknown as ProposalWithVoting} />
+          {user && <DelegationInfo />}
         </div>
       )}
 
@@ -310,6 +317,13 @@ export default function ProposalDetailPage() {
       {proposal.result && (
         <div className="mb-6">
           <VoteResults proposal={proposal as unknown as ProposalWithVoting} />
+        </div>
+      )}
+
+      {/* Delegation Panel - Manage vote delegations */}
+      {user && (proposal.status === 'voting' || proposal.status === 'submitted') && (
+        <div className="bg-white rounded-2xl shadow-sm ring-1 ring-gray-200/60 p-6 mb-6">
+          <DelegationPanel />
         </div>
       )}
 

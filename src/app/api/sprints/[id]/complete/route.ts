@@ -153,6 +153,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
         if (backlogError) {
           console.error('Error moving tasks to backlog:', backlogError);
+          return NextResponse.json(
+            { error: 'Failed to move incomplete tasks to backlog' },
+            { status: 500 }
+          );
         }
       } else if (incomplete_action === 'next_sprint' && next_sprint_id) {
         const { error: moveError } = await supabase
@@ -162,6 +166,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
         if (moveError) {
           console.error('Error moving tasks to next sprint:', moveError);
+          return NextResponse.json(
+            { error: 'Failed to move incomplete tasks to next sprint' },
+            { status: 500 }
+          );
         }
       }
     }
@@ -201,7 +209,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       snapshot,
       recurring_tasks_cloned: recurringTasksCloned,
     });
-  } catch {
+  } catch (error) {
+    console.error('Sprint complete error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

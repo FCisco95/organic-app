@@ -2,6 +2,7 @@
 
 import { Ban } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 import { TaskDependency } from '@/features/tasks';
 
 interface BlockedBadgeProps {
@@ -11,6 +12,8 @@ interface BlockedBadgeProps {
 }
 
 export function BlockedBadge({ dependencies, className, compact }: BlockedBadgeProps) {
+  const t = useTranslations('Tasks.dependencies');
+
   const incompleteBlockers = dependencies.filter(
     (dep) => dep.blocking_task?.status !== 'done'
   );
@@ -25,7 +28,7 @@ export function BlockedBadge({ dependencies, className, compact }: BlockedBadgeP
           'bg-red-100 text-red-700',
           className
         )}
-        title={`Blocked by ${incompleteBlockers.length} task${incompleteBlockers.length > 1 ? 's' : ''}`}
+        title={t('blockedBy', { count: incompleteBlockers.length })}
       >
         <Ban className="w-3 h-3" />
         {incompleteBlockers.length}
@@ -44,8 +47,7 @@ export function BlockedBadge({ dependencies, className, compact }: BlockedBadgeP
       <Ban className="w-4 h-4 flex-shrink-0" />
       <div>
         <span className="font-medium">
-          Blocked by {incompleteBlockers.length} task
-          {incompleteBlockers.length > 1 ? 's' : ''}
+          {t('blockedBy', { count: incompleteBlockers.length })}
         </span>
         <div className="text-xs text-red-600 mt-0.5">
           {incompleteBlockers

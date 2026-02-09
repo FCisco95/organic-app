@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Users, ArrowRight, X, Loader2, Search, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 import {
   useDelegations,
   useDelegate,
@@ -20,6 +21,7 @@ interface DelegationPanelProps {
 }
 
 export function DelegationPanel({ className }: DelegationPanelProps) {
+  const t = useTranslations('Voting.delegation');
   const { user } = useAuth();
   const { data, isLoading } = useDelegations();
   const delegate = useDelegate();
@@ -58,7 +60,7 @@ export function DelegationPanel({ className }: DelegationPanelProps) {
         delegate_id: delegateId,
         category: selectedCategory,
       });
-      toast.success('Delegation created');
+      toast.success(t('created'));
       setShowPicker(false);
       setSearch('');
     } catch (error) {
@@ -69,7 +71,7 @@ export function DelegationPanel({ className }: DelegationPanelProps) {
   const handleRevoke = async (delegationId: string) => {
     try {
       await revoke.mutateAsync({ delegation_id: delegationId });
-      toast.success('Delegation revoked');
+      toast.success(t('revoked'));
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to revoke');
     }
@@ -82,27 +84,26 @@ export function DelegationPanel({ className }: DelegationPanelProps) {
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
           <Shield className="w-4 h-4" />
-          Vote Delegation
+          {t('title')}
         </h3>
         <button
           onClick={() => setShowPicker(!showPicker)}
           className="text-xs text-organic-orange hover:text-orange-600 font-medium"
         >
-          {showPicker ? 'Cancel' : '+ Delegate'}
+          {showPicker ? t('cancel') : `+ ${t('delegate')}`}
         </button>
       </div>
 
       {isLoading ? (
         <div className="flex items-center gap-2 text-sm text-gray-500">
           <Loader2 className="w-4 h-4 animate-spin" />
-          Loading...
         </div>
       ) : (
         <>
           {/* Outgoing delegations */}
           {data?.outgoing && data.outgoing.length > 0 && (
             <div className="space-y-2">
-              <p className="text-xs font-medium text-gray-500 uppercase">Your Delegations</p>
+              <p className="text-xs font-medium text-gray-500 uppercase">{t('yourDelegations')}</p>
               {data.outgoing.map((del) => (
                 <div
                   key={del.id}
@@ -119,14 +120,14 @@ export function DelegationPanel({ className }: DelegationPanelProps) {
                         ({DELEGATION_CATEGORY_LABELS[del.category]})
                       </span>
                     ) : (
-                      <span className="ml-2 text-xs text-gray-400">(Global)</span>
+                      <span className="ml-2 text-xs text-gray-400">({t('global')})</span>
                     )}
                   </div>
                   <button
                     onClick={() => handleRevoke(del.id)}
                     disabled={revoke.isPending}
                     className="text-gray-400 hover:text-red-500"
-                    title="Revoke delegation"
+                    title={t('revoke')}
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -138,7 +139,7 @@ export function DelegationPanel({ className }: DelegationPanelProps) {
           {/* Incoming delegations */}
           {data?.incoming && data.incoming.length > 0 && (
             <div className="space-y-2">
-              <p className="text-xs font-medium text-gray-500 uppercase">Delegated to You</p>
+              <p className="text-xs font-medium text-gray-500 uppercase">{t('delegatedToYou')}</p>
               {data.incoming.map((del) => (
                 <div
                   key={del.id}
@@ -154,7 +155,7 @@ export function DelegationPanel({ className }: DelegationPanelProps) {
                         ({DELEGATION_CATEGORY_LABELS[del.category]})
                       </span>
                     ) : (
-                      <span className="ml-2 text-xs text-gray-400">(Global)</span>
+                      <span className="ml-2 text-xs text-gray-400">({t('global')})</span>
                     )}
                   </div>
                 </div>
@@ -166,7 +167,7 @@ export function DelegationPanel({ className }: DelegationPanelProps) {
             (!data?.incoming || data.incoming.length === 0) &&
             !showPicker && (
               <p className="text-xs text-gray-400 text-center py-2">
-                No active delegations. Delegate your voting power to a trusted member.
+                {t('noDelegations')}
               </p>
             )}
         </>
@@ -177,7 +178,7 @@ export function DelegationPanel({ className }: DelegationPanelProps) {
         <div className="border border-gray-200 rounded-lg overflow-hidden">
           {/* Category selector */}
           <div className="p-2 border-b border-gray-200 bg-gray-50">
-            <label className="block text-xs font-medium text-gray-500 mb-1">Scope</label>
+            <label className="block text-xs font-medium text-gray-500 mb-1">{t('scope')}</label>
             <div className="flex gap-1 flex-wrap">
               <button
                 onClick={() => setSelectedCategory(null)}
@@ -188,7 +189,7 @@ export function DelegationPanel({ className }: DelegationPanelProps) {
                     : 'bg-white text-gray-600 border border-gray-200 hover:border-gray-300'
                 )}
               >
-                Global
+                {t('global')}
               </button>
               {Object.entries(DELEGATION_CATEGORY_LABELS).map(([key, label]) => (
                 <button
@@ -214,7 +215,7 @@ export function DelegationPanel({ className }: DelegationPanelProps) {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search members..."
+              placeholder={t('searchMembers')}
               className="w-full pl-9 pr-3 py-2 text-sm border-b border-gray-200 focus:outline-none focus:border-organic-orange"
               autoFocus
             />
@@ -246,7 +247,7 @@ export function DelegationPanel({ className }: DelegationPanelProps) {
               </button>
             ))}
             {(!members || members.length === 0) && (
-              <p className="text-xs text-gray-400 py-3 text-center">No members found</p>
+              <p className="text-xs text-gray-400 py-3 text-center">{t('noMembers')}</p>
             )}
           </div>
         </div>

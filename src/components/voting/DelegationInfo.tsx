@@ -1,7 +1,8 @@
 'use client';
 
-import { ArrowRight, Shield } from 'lucide-react';
+import { Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 import { useDelegations, DELEGATION_CATEGORY_LABELS } from '@/features/voting';
 
 interface DelegationInfoProps {
@@ -9,6 +10,7 @@ interface DelegationInfoProps {
 }
 
 export function DelegationInfo({ className }: DelegationInfoProps) {
+  const t = useTranslations('Voting.delegation');
   const { data } = useDelegations();
 
   const outgoing = data?.outgoing ?? [];
@@ -21,32 +23,27 @@ export function DelegationInfo({ className }: DelegationInfoProps) {
       {outgoing.map((del) => (
         <div key={del.id} className="flex items-center gap-1 text-gray-500">
           <Shield className="w-3 h-3" />
-          <span>You delegated</span>
-          {del.category ? (
-            <span className="font-medium">{DELEGATION_CATEGORY_LABELS[del.category]}</span>
-          ) : (
-            <span className="font-medium">all</span>
-          )}
-          <span>votes</span>
-          <ArrowRight className="w-3 h-3" />
-          <span className="font-medium text-gray-700">
-            {del.delegate?.name || del.delegate?.email || 'Unknown'}
+          <span>
+            {t('outgoingText', {
+              category: del.category
+                ? DELEGATION_CATEGORY_LABELS[del.category]
+                : t('allVotes'),
+              name: del.delegate?.name || del.delegate?.email || 'Unknown',
+            })}
           </span>
         </div>
       ))}
       {incoming.map((del) => (
         <div key={del.id} className="flex items-center gap-1 text-green-600">
           <Shield className="w-3 h-3" />
-          <span className="font-medium">
-            {del.delegator?.name || del.delegator?.email || 'Unknown'}
+          <span>
+            {t('incomingText', {
+              category: del.category
+                ? DELEGATION_CATEGORY_LABELS[del.category]
+                : t('allVotes'),
+              name: del.delegator?.name || del.delegator?.email || 'Unknown',
+            })}
           </span>
-          <span>delegated</span>
-          {del.category ? (
-            <span className="font-medium">{DELEGATION_CATEGORY_LABELS[del.category]}</span>
-          ) : (
-            <span className="font-medium">all</span>
-          )}
-          <span>votes to you</span>
         </div>
       ))}
     </div>

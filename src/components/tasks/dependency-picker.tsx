@@ -11,6 +11,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 import {
   useTasks,
   useTaskDependencies,
@@ -26,6 +27,7 @@ interface DependencyPickerProps {
 }
 
 export function DependencyPicker({ taskId, className }: DependencyPickerProps) {
+  const t = useTranslations('Tasks.dependencies');
   const { data: deps, isLoading: depsLoading } = useTaskDependencies(taskId);
   const { data: allTasks } = useTasks({});
   const addDep = useAddDependency();
@@ -33,7 +35,7 @@ export function DependencyPicker({ taskId, className }: DependencyPickerProps) {
   const [search, setSearch] = useState('');
   const [isAdding, setIsAdding] = useState(false);
 
-  const dependencies = (deps as TaskDependency[] | undefined) ?? [];
+  const dependencies = deps?.dependencies ?? [];
   const blockerIds = new Set(dependencies.map((d) => d.depends_on_task_id));
 
   // Filter tasks for the picker (exclude self, already-added)
@@ -52,7 +54,7 @@ export function DependencyPicker({ taskId, className }: DependencyPickerProps) {
         taskId,
         input: { depends_on_task_id: dependsOnTaskId },
       });
-      toast.success('Dependency added');
+      toast.success(t('dependencyAdded'));
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to add dependency');
     }
@@ -65,7 +67,7 @@ export function DependencyPicker({ taskId, className }: DependencyPickerProps) {
         dependencyId: dep.id,
         dependsOnTaskId: dep.depends_on_task_id,
       });
-      toast.success('Dependency removed');
+      toast.success(t('dependencyRemoved'));
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to remove dependency');
     }
@@ -76,13 +78,13 @@ export function DependencyPicker({ taskId, className }: DependencyPickerProps) {
       <div className="flex items-center justify-between">
         <h4 className="text-sm font-medium text-gray-700 flex items-center gap-2">
           <Link2 className="w-4 h-4" />
-          Dependencies
+          {t('title')}
         </h4>
         <button
           onClick={() => setIsAdding(!isAdding)}
           className="text-xs text-organic-orange hover:text-orange-600 font-medium"
         >
-          {isAdding ? 'Done' : '+ Add blocker'}
+          {isAdding ? t('done') : `+ ${t('addBlocker')}`}
         </button>
       </div>
 
@@ -90,7 +92,6 @@ export function DependencyPicker({ taskId, className }: DependencyPickerProps) {
       {depsLoading ? (
         <div className="flex items-center gap-2 text-sm text-gray-500">
           <Loader2 className="w-4 h-4 animate-spin" />
-          Loading...
         </div>
       ) : dependencies.length > 0 ? (
         <div className="space-y-1">
@@ -118,7 +119,7 @@ export function DependencyPicker({ taskId, className }: DependencyPickerProps) {
                 <button
                   onClick={() => handleRemove(dep)}
                   className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-opacity"
-                  title="Remove dependency"
+                  title={t('dependencyRemoved')}
                 >
                   <Unlink className="w-3.5 h-3.5" />
                 </button>
@@ -128,7 +129,7 @@ export function DependencyPicker({ taskId, className }: DependencyPickerProps) {
         </div>
       ) : (
         !isAdding && (
-          <p className="text-xs text-gray-400">No dependencies</p>
+          <p className="text-xs text-gray-400">{t('noDependencies')}</p>
         )
       )}
 
@@ -141,7 +142,7 @@ export function DependencyPicker({ taskId, className }: DependencyPickerProps) {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search tasks..."
+              placeholder={t('searchTasks')}
               className="w-full pl-9 pr-3 py-2 text-sm border-b border-gray-200 focus:outline-none focus:border-organic-orange"
               autoFocus
             />
@@ -167,7 +168,7 @@ export function DependencyPicker({ taskId, className }: DependencyPickerProps) {
               </button>
             ))}
             {availableTasks.length === 0 && (
-              <p className="text-xs text-gray-400 py-3 text-center">No matching tasks</p>
+              <p className="text-xs text-gray-400 py-3 text-center">{t('searchTasks')}</p>
             )}
           </div>
         </div>

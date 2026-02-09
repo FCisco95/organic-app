@@ -475,11 +475,19 @@ Task dependencies, subtasks, task templates with recurrence, and vote delegation
 - Recurring templates: `clone_recurring_templates(sprint_id)` auto-clones sprint_start templates on sprint completion
 - Template instantiation: any member with organic_id can create tasks from templates
 
+### Integration (completed 2026-02-09)
+
+- Phase 12 components wired into task detail page: BlockedBadge, DependencyPicker, SubtaskList
+- Delegation components wired into proposal detail page: DelegatedPowerBadge, DelegationPanel, DelegationInfo
+- All 10 Phase 12 UI components use `useTranslations()` with existing i18n keys
+- Fixed: `useEffectiveVotingPower` cache key now includes userId
+- Fixed: `useTaskDependencies` returns `{ dependencies, blocked_by_this }` (was discarding `blocked_by_this`)
+- Fixed: Sprint complete route now returns 500 on task-move errors (was silently swallowing)
+- Fixed: SubtaskList uses `<Link>` from `@/i18n/navigation` (was plain `<a>`)
+- Fixed: `useDelegate`/`useRevokeDelegation` invalidate effective-power queries on success
+
 ### What to do next
 
-- Wire Phase 12 components into existing task detail page (`tasks/[id]/page.tsx`)
-- Wire DelegationPanel into proposal/voting pages
-- Apply migration `20260208100000_phase12_advanced_features.sql` to Supabase
 - Cron job for daily/weekly/biweekly/monthly recurring task creation
 - Drag-and-drop reordering for subtasks
 
@@ -495,7 +503,7 @@ Task dependencies, subtasks, task templates with recurrence, and vote delegation
 - Members + Settings feature domains fully built with admin/council access control
 - Migration files well-organized and timestamped
 - Notifications system fully built: follow model, auto-follow triggers, real-time push, preference toggles
-- Phase 12 advanced features: task dependencies (cycle-safe), subtasks, templates with recurrence, vote delegation
+- Phase 12 advanced features: task dependencies (cycle-safe), subtasks, templates with recurrence, vote delegation — all wired into task detail and proposal detail pages
 - i18n implementation complete (en, pt-PT, zh-CN) — includes ProposalWizard, ProposalDetail, Members, Settings, Notifications, and Phase 12 namespaces
 - Wallet security: nonce validation with 5-minute TTL
 - RPC caching prevents 429 rate limit errors
@@ -506,8 +514,6 @@ Task dependencies, subtasks, task templates with recurrence, and vote delegation
 
 - `src/features/{organic-id,profile,sprints}/`
 - `src/components/{auth,sprints}/`
-
-**Pending migration**: `supabase/migrations/20260201000000_create_activity_log.sql` needs to be applied to Supabase before the activity dashboard works. See "Activity Dashboard & Live Feed" section above.
 
 **Types**: Prefer importing shared task/sprint types from `@/features/tasks/types.ts`; avoid reintroducing page-local duplicates.
 

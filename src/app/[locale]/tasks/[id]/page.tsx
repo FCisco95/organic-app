@@ -25,6 +25,10 @@ import { TaskCommentsSection } from '@/components/tasks/task-comments-section';
 import { TaskSubmissionsSection } from '@/components/tasks/task-submissions-section';
 import { TaskEditForm } from '@/components/tasks/task-edit-form';
 import { TaskDetailSummary } from '@/components/tasks/task-detail-summary';
+import { BlockedBadge } from '@/components/tasks/blocked-badge';
+import { SubtaskList } from '@/components/tasks/subtask-list';
+import { DependencyPicker } from '@/components/tasks/dependency-picker';
+import { useTaskDependencies } from '@/features/tasks';
 import { PageContainer } from '@/components/layout';
 import { FollowButton } from '@/components/notifications/follow-button';
 
@@ -44,6 +48,7 @@ export default function TaskDetailPage() {
   const { user, profile } = useAuth();
   const t = useTranslations('TaskDetail');
   const taskId = typeof params.id === 'string' ? params.id : (params.id?.[0] ?? '');
+  const { data: dependencyData } = useTaskDependencies(taskId);
   const canLike = !!profile?.role && ['member', 'council', 'admin'].includes(profile.role);
   const standardLabels = ['📣 Growth', '🎨 Design', '💻 Dev', '🧠 Research'];
 
@@ -636,6 +641,11 @@ export default function TaskDetailPage() {
 
       {/* Task Details */}
       <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+        {/* Blocked Badge - show if task has incomplete blockers */}
+        {dependencyData?.dependencies && dependencyData.dependencies.length > 0 && (
+          <BlockedBadge dependencies={dependencyData.dependencies} className="mb-4" />
+        )}
+
         {isEditing ? (
           <TaskEditForm
             editForm={editForm}
@@ -671,6 +681,23 @@ export default function TaskDetailPage() {
           />
         )}
       </div>
+
+      {/* Dependencies - shown for non-subtask tasks, admin/council/creator can manage */}
+      {!task.parent_task_id && (
+        (profile?.role && ['admin', 'council'].includes(profile.role)) ||
+        (user && task.created_by === user.id)
+      ) && (
+        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+          <DependencyPicker taskId={taskId} />
+        </div>
+      )}
+
+      {/* Subtasks - shown for non-subtask tasks */}
+      {!task.parent_task_id && (
+        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+          <SubtaskList parentTaskId={taskId} />
+        </div>
+      )}
 
       {/* Task Actions - Claim and Submit */}
       {user && profile?.organic_id && (

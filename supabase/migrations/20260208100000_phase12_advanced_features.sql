@@ -239,10 +239,17 @@ CREATE TABLE IF NOT EXISTS vote_delegations (
   updated_at TIMESTAMPTZ DEFAULT NOW(),
 
   -- Cannot delegate to self
-  CONSTRAINT no_self_delegation CHECK (delegator_id != delegate_id),
-  -- One delegation per delegator per category (NULL = global)
-  CONSTRAINT unique_delegation UNIQUE (delegator_id, COALESCE(category, 'global'))
+  CONSTRAINT no_self_delegation CHECK (delegator_id != delegate_id)
 );
+
+-- Partial unique indexes for "one delegation per delegator per category (or one global)"
+-- Non-NULL category: one delegation per delegator per specific category
+CREATE UNIQUE INDEX idx_unique_delegation_category
+  ON vote_delegations (delegator_id, category) WHERE category IS NOT NULL;
+
+-- NULL category (global): one global delegation per delegator
+CREATE UNIQUE INDEX idx_unique_delegation_global
+  ON vote_delegations (delegator_id) WHERE category IS NULL;
 
 CREATE INDEX idx_vote_delegations_delegator ON vote_delegations(delegator_id);
 CREATE INDEX idx_vote_delegations_delegate ON vote_delegations(delegate_id);
