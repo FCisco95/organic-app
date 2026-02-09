@@ -44,9 +44,10 @@ export function useProposals(filters: ProposalFilters = {}) {
         query = query.eq('category', filters.category);
       }
       if (filters.search) {
-        query = query.or(
-          `title.ilike.%${filters.search}%,summary.ilike.%${filters.search}%,body.ilike.%${filters.search}%`
-        );
+        query = query.textSearch('search_vector', filters.search, {
+          type: 'websearch',
+          config: 'english',
+        });
       }
       if (filters.created_by) {
         query = query.eq('created_by', filters.created_by);
@@ -55,21 +56,27 @@ export function useProposals(filters: ProposalFilters = {}) {
       const { data, error } = await query;
       if (error) throw error;
 
-      // Get comment counts for each proposal
-      const proposalsWithCounts = await Promise.all(
-        (data || []).map(async (proposal) => {
-          const { count } = await supabase
-            .from('comments')
-            .select('*', { count: 'exact', head: true })
-            .eq('subject_type', 'proposal')
-            .eq('subject_id', proposal.id);
+      const proposalIds = (data ?? []).map((proposal) => proposal.id);
+      if (proposalIds.length === 0) return [] as ProposalListItem[];
 
-          return {
-            ...proposal,
-            comments_count: count || 0,
-          };
-        })
+      const { data: counts, error: countsError } = await supabase.rpc('get_comment_counts', {
+        p_subject_type: 'proposal',
+        p_subject_ids: proposalIds,
+      });
+
+      if (countsError) throw countsError;
+
+      const countMap = new Map(
+        (counts ?? []).map((row: { subject_id: string; count: number }) => [
+          row.subject_id,
+          row.count,
+        ])
       );
+
+      const proposalsWithCounts = (data ?? []).map((proposal) => ({
+        ...proposal,
+        comments_count: countMap.get(proposal.id) ?? 0,
+      }));
 
       return proposalsWithCounts as unknown as ProposalListItem[];
     },

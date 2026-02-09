@@ -67,34 +67,40 @@ export default function SprintsPage() {
   // Fetch stats when sprints change
   useEffect(() => {
     if (!sprints.length) {
+      setSprintStats({});
       setLoading(false);
       return;
     }
     const fetchStats = async () => {
       try {
         const supabase = createClient();
+        const sprintIds = sprints.map((sprint) => sprint.id);
+        const { data, error } = await supabase.rpc('get_sprint_stats', {
+          p_sprint_ids: sprintIds,
+        });
+
+        if (error) throw error;
+
         const stats: SprintStats = {};
-
-        for (const sprint of sprints) {
-          const { data: tasks } = await supabase
-            .from('tasks')
-            .select('id, status, points')
-            .eq('sprint_id', sprint.id);
-
-          if (tasks) {
-            const totalPoints = tasks.reduce((sum, task) => sum + (task.points || 0), 0);
-            const completedPoints = tasks
-              .filter((task) => task.status === 'done')
-              .reduce((sum, task) => sum + (task.points || 0), 0);
-            stats[sprint.id] = {
-              total: tasks.length,
-              completed: tasks.filter((t) => t.status === 'done').length,
-              inProgress: tasks.filter((t) => t.status === 'in_progress').length,
-              points: completedPoints,
-              totalPoints,
+        (data ?? []).forEach(
+          (row: {
+            sprint_id: string;
+            total: number;
+            completed: number;
+            in_progress: number;
+            points: number;
+            total_points: number;
+          }) => {
+            stats[row.sprint_id] = {
+              total: row.total,
+              completed: row.completed,
+              inProgress: row.in_progress,
+              points: row.points,
+              totalPoints: row.total_points,
             };
           }
-        }
+        );
+
         setSprintStats(stats);
       } catch (err) {
         console.error('Error fetching sprint stats:', err);

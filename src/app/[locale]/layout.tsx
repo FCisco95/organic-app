@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { DM_Sans, Fraunces, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/features/auth/context';
 import { SolanaWalletProvider } from '@/features/auth/wallet-provider';
@@ -7,21 +6,6 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { LayoutClient } from '@/components/layout-client';
 import { QueryProvider } from '@/components/query-provider';
-
-const dmSans = DM_Sans({
-  subsets: ['latin'],
-  variable: '--font-sans',
-});
-
-const fraunces = Fraunces({
-  subsets: ['latin'],
-  variable: '--font-display',
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-mono',
-});
 
 export const metadata: Metadata = {
   title: 'Organic App',
@@ -41,9 +25,7 @@ export default async function RootLayout({
 
   return (
     <html lang={locale}>
-      <body
-        className={`${dmSans.className} ${fraunces.variable} ${jetbrainsMono.variable} antialiased`}
-      >
+      <body className="antialiased font-sans">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <QueryProvider>
             <AuthProvider>

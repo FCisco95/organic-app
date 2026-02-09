@@ -1,1506 +1,1822 @@
-export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
-
-// Custom type aliases for convenience
-export type UserRole = Database['public']['Enums']['user_role'];
-export type ProposalStatus = Database['public']['Enums']['proposal_status'];
-export type TaskStatus = Database['public']['Enums']['task_status'];
-export type SprintStatus = Database['public']['Enums']['sprint_status'];
-export type VoteValue = Database['public']['Enums']['vote_value'];
-export type TaskType = Database['public']['Enums']['task_type'];
-export type ReviewStatus = Database['public']['Enums']['review_status'];
-export type ProposalCategory = 'feature' | 'governance' | 'treasury' | 'community' | 'development';
-export type TaskPriority = Database['public']['Enums']['task_priority'];
-export type ActivityEventType = Database['public']['Enums']['activity_event_type'];
-export type NotificationCategoryDB = Database['public']['Enums']['notification_category'];
-export type ProposalResult = 'passed' | 'failed' | 'quorum_not_met';
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
 
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: '13.0.5';
-  };
+    PostgrestVersion: "13.0.5"
+  }
   public: {
     Tables: {
       activity_log: {
         Row: {
-          actor_id: string | null;
-          created_at: string | null;
-          event_type: Database['public']['Enums']['activity_event_type'];
-          id: string;
-          metadata: Json | null;
-          subject_id: string;
-          subject_type: string;
-        };
+          actor_id: string | null
+          created_at: string | null
+          event_type: Database["public"]["Enums"]["activity_event_type"]
+          id: string
+          metadata: Json | null
+          subject_id: string
+          subject_type: string
+        }
         Insert: {
-          actor_id?: string | null;
-          created_at?: string | null;
-          event_type: Database['public']['Enums']['activity_event_type'];
-          id?: string;
-          metadata?: Json | null;
-          subject_id: string;
-          subject_type: string;
-        };
+          actor_id?: string | null
+          created_at?: string | null
+          event_type: Database["public"]["Enums"]["activity_event_type"]
+          id?: string
+          metadata?: Json | null
+          subject_id: string
+          subject_type: string
+        }
         Update: {
-          actor_id?: string | null;
-          created_at?: string | null;
-          event_type?: Database['public']['Enums']['activity_event_type'];
-          id?: string;
-          metadata?: Json | null;
-          subject_id?: string;
-          subject_type?: string;
-        };
+          actor_id?: string | null
+          created_at?: string | null
+          event_type?: Database["public"]["Enums"]["activity_event_type"]
+          id?: string
+          metadata?: Json | null
+          subject_id?: string
+          subject_type?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'activity_log_actor_id_fkey';
-            columns: ['actor_id'];
-            isOneToOne: false;
-            referencedRelation: 'leaderboard_view';
-            referencedColumns: ['id'];
+            foreignKeyName: "activity_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_view"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'activity_log_actor_id_fkey';
-            columns: ['actor_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "activity_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       comments: {
         Row: {
-          attachments: Json | null;
-          body: string;
-          created_at: string | null;
-          id: string;
-          org_id: string | null;
-          subject_id: string;
-          subject_type: string;
-          updated_at: string | null;
-          user_id: string;
-        };
+          attachments: Json | null
+          body: string
+          created_at: string | null
+          id: string
+          org_id: string | null
+          subject_id: string
+          subject_type: string
+          updated_at: string | null
+          user_id: string
+        }
         Insert: {
-          attachments?: Json | null;
-          body: string;
-          created_at?: string | null;
-          id?: string;
-          org_id?: string | null;
-          subject_id: string;
-          subject_type: string;
-          updated_at?: string | null;
-          user_id: string;
-        };
+          attachments?: Json | null
+          body: string
+          created_at?: string | null
+          id?: string
+          org_id?: string | null
+          subject_id: string
+          subject_type: string
+          updated_at?: string | null
+          user_id: string
+        }
         Update: {
-          attachments?: Json | null;
-          body?: string;
-          created_at?: string | null;
-          id?: string;
-          org_id?: string | null;
-          subject_id?: string;
-          subject_type?: string;
-          updated_at?: string | null;
-          user_id?: string;
-        };
+          attachments?: Json | null
+          body?: string
+          created_at?: string | null
+          id?: string
+          org_id?: string | null
+          subject_id?: string
+          subject_type?: string
+          updated_at?: string | null
+          user_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'comments_org_id_fkey';
-            columns: ['org_id'];
-            isOneToOne: false;
-            referencedRelation: 'orgs';
-            referencedColumns: ['id'];
+            foreignKeyName: "comments_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "orgs"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'comments_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'leaderboard_view';
-            referencedColumns: ['id'];
+            foreignKeyName: "comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_view"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'comments_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       holder_snapshots: {
         Row: {
-          balance_ui: number;
-          created_at: string | null;
-          id: string;
-          org_id: string | null;
-          proposal_id: string;
-          taken_at: string | null;
-          wallet_pubkey: string;
-        };
+          balance_ui: number
+          created_at: string | null
+          id: string
+          org_id: string | null
+          proposal_id: string
+          taken_at: string | null
+          wallet_pubkey: string
+        }
         Insert: {
-          balance_ui: number;
-          created_at?: string | null;
-          id?: string;
-          org_id?: string | null;
-          proposal_id: string;
-          taken_at?: string | null;
-          wallet_pubkey: string;
-        };
+          balance_ui: number
+          created_at?: string | null
+          id?: string
+          org_id?: string | null
+          proposal_id: string
+          taken_at?: string | null
+          wallet_pubkey: string
+        }
         Update: {
-          balance_ui?: number;
-          created_at?: string | null;
-          id?: string;
-          org_id?: string | null;
-          proposal_id?: string;
-          taken_at?: string | null;
-          wallet_pubkey?: string;
-        };
+          balance_ui?: number
+          created_at?: string | null
+          id?: string
+          org_id?: string | null
+          proposal_id?: string
+          taken_at?: string | null
+          wallet_pubkey?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'holder_snapshots_org_id_fkey';
-            columns: ['org_id'];
-            isOneToOne: false;
-            referencedRelation: 'orgs';
-            referencedColumns: ['id'];
+            foreignKeyName: "holder_snapshots_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "orgs"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'holder_snapshots_proposal_id_fkey';
-            columns: ['proposal_id'];
-            isOneToOne: false;
-            referencedRelation: 'proposals';
-            referencedColumns: ['id'];
+            foreignKeyName: "holder_snapshots_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
+      notification_batch_events: {
+        Row: {
+          actor_id: string | null
+          batch_id: string
+          created_at: string | null
+          event_type: Database["public"]["Enums"]["activity_event_type"]
+          id: string
+          metadata: Json | null
+          subject_id: string
+          subject_type: string
+          user_id: string
+        }
+        Insert: {
+          actor_id?: string | null
+          batch_id: string
+          created_at?: string | null
+          event_type: Database["public"]["Enums"]["activity_event_type"]
+          id?: string
+          metadata?: Json | null
+          subject_id: string
+          subject_type: string
+          user_id: string
+        }
+        Update: {
+          actor_id?: string | null
+          batch_id?: string
+          created_at?: string | null
+          event_type?: Database["public"]["Enums"]["activity_event_type"]
+          id?: string
+          metadata?: Json | null
+          subject_id?: string
+          subject_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_batch_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_batch_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_batch_events_batch_id_fkey"
+            columns: ["batch_id"]
+            isOneToOne: false
+            referencedRelation: "notification_batches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_batch_events_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_batch_events_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notification_batches: {
+        Row: {
+          category: Database["public"]["Enums"]["notification_category"]
+          count: number
+          created_at: string | null
+          event_type: Database["public"]["Enums"]["activity_event_type"]
+          first_event_at: string
+          id: string
+          last_event_at: string
+          subject_id: string
+          subject_type: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["notification_category"]
+          count?: number
+          created_at?: string | null
+          event_type: Database["public"]["Enums"]["activity_event_type"]
+          first_event_at?: string
+          id?: string
+          last_event_at?: string
+          subject_id: string
+          subject_type: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["notification_category"]
+          count?: number
+          created_at?: string | null
+          event_type?: Database["public"]["Enums"]["activity_event_type"]
+          first_event_at?: string
+          id?: string
+          last_event_at?: string
+          subject_id?: string
+          subject_type?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_batches_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_batches_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_preferences: {
         Row: {
-          category: Database['public']['Enums']['notification_category'];
-          created_at: string | null;
-          email: boolean | null;
-          id: string;
-          in_app: boolean | null;
-          updated_at: string | null;
-          user_id: string;
-        };
+          category: Database["public"]["Enums"]["notification_category"]
+          created_at: string | null
+          email: boolean | null
+          id: string
+          in_app: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
         Insert: {
-          category: Database['public']['Enums']['notification_category'];
-          created_at?: string | null;
-          email?: boolean | null;
-          id?: string;
-          in_app?: boolean | null;
-          updated_at?: string | null;
-          user_id: string;
-        };
+          category: Database["public"]["Enums"]["notification_category"]
+          created_at?: string | null
+          email?: boolean | null
+          id?: string
+          in_app?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
         Update: {
-          category?: Database['public']['Enums']['notification_category'];
-          created_at?: string | null;
-          email?: boolean | null;
-          id?: string;
-          in_app?: boolean | null;
-          updated_at?: string | null;
-          user_id?: string;
-        };
+          category?: Database["public"]["Enums"]["notification_category"]
+          created_at?: string | null
+          email?: boolean | null
+          id?: string
+          in_app?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'notification_preferences_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "notification_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_view"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+          {
+            foreignKeyName: "notification_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
-          actor_id: string | null;
-          category: Database['public']['Enums']['notification_category'];
-          created_at: string | null;
-          event_type: Database['public']['Enums']['activity_event_type'];
-          id: string;
-          metadata: Json | null;
-          read: boolean | null;
-          read_at: string | null;
-          subject_id: string;
-          subject_type: string;
-          user_id: string;
-        };
+          actor_id: string | null
+          batch_id: string | null
+          category: Database["public"]["Enums"]["notification_category"]
+          created_at: string | null
+          dedupe_key: string | null
+          event_type: Database["public"]["Enums"]["activity_event_type"]
+          id: string
+          metadata: Json | null
+          read: boolean | null
+          read_at: string | null
+          subject_id: string
+          subject_type: string
+          user_id: string
+        }
         Insert: {
-          actor_id?: string | null;
-          category: Database['public']['Enums']['notification_category'];
-          created_at?: string | null;
-          event_type: Database['public']['Enums']['activity_event_type'];
-          id?: string;
-          metadata?: Json | null;
-          read?: boolean | null;
-          read_at?: string | null;
-          subject_id: string;
-          subject_type: string;
-          user_id: string;
-        };
+          actor_id?: string | null
+          batch_id?: string | null
+          category: Database["public"]["Enums"]["notification_category"]
+          created_at?: string | null
+          dedupe_key?: string | null
+          event_type: Database["public"]["Enums"]["activity_event_type"]
+          id?: string
+          metadata?: Json | null
+          read?: boolean | null
+          read_at?: string | null
+          subject_id: string
+          subject_type: string
+          user_id: string
+        }
         Update: {
-          actor_id?: string | null;
-          category?: Database['public']['Enums']['notification_category'];
-          created_at?: string | null;
-          event_type?: Database['public']['Enums']['activity_event_type'];
-          id?: string;
-          metadata?: Json | null;
-          read?: boolean | null;
-          read_at?: string | null;
-          subject_id?: string;
-          subject_type?: string;
-          user_id?: string;
-        };
+          actor_id?: string | null
+          batch_id?: string | null
+          category?: Database["public"]["Enums"]["notification_category"]
+          created_at?: string | null
+          dedupe_key?: string | null
+          event_type?: Database["public"]["Enums"]["activity_event_type"]
+          id?: string
+          metadata?: Json | null
+          read?: boolean | null
+          read_at?: string | null
+          subject_id?: string
+          subject_type?: string
+          user_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'notifications_actor_id_fkey';
-            columns: ['actor_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "notifications_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_view"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'notifications_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "notifications_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+          {
+            foreignKeyName: "notifications_batch_id_fkey"
+            columns: ["batch_id"]
+            isOneToOne: false
+            referencedRelation: "notification_batches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orgs: {
         Row: {
-          created_at: string | null;
-          default_sprint_capacity: number;
-          default_sprint_duration_days: number;
-          description: string | null;
-          id: string;
-          logo_url: string | null;
-          name: string;
-          organic_id_threshold: number | null;
-          slug: string;
-          theme: Json | null;
-          token_decimals: number;
-          token_mint: string | null;
-          token_symbol: string;
-          token_total_supply: number;
-          treasury_allocations: Json;
-          treasury_wallet: string | null;
-          updated_at: string | null;
-        };
+          created_at: string | null
+          default_sprint_capacity: number
+          default_sprint_duration_days: number
+          description: string | null
+          id: string
+          logo_url: string | null
+          name: string
+          organic_id_threshold: number | null
+          slug: string
+          theme: Json | null
+          token_decimals: number
+          token_mint: string | null
+          token_symbol: string
+          token_total_supply: number
+          treasury_allocations: Json
+          treasury_wallet: string | null
+          updated_at: string | null
+        }
         Insert: {
-          created_at?: string | null;
-          default_sprint_capacity?: number;
-          default_sprint_duration_days?: number;
-          description?: string | null;
-          id?: string;
-          logo_url?: string | null;
-          name: string;
-          organic_id_threshold?: number | null;
-          slug: string;
-          theme?: Json | null;
-          token_decimals?: number;
-          token_mint?: string | null;
-          token_symbol?: string;
-          token_total_supply?: number;
-          treasury_allocations?: Json;
-          treasury_wallet?: string | null;
-          updated_at?: string | null;
-        };
+          created_at?: string | null
+          default_sprint_capacity?: number
+          default_sprint_duration_days?: number
+          description?: string | null
+          id?: string
+          logo_url?: string | null
+          name: string
+          organic_id_threshold?: number | null
+          slug: string
+          theme?: Json | null
+          token_decimals?: number
+          token_mint?: string | null
+          token_symbol?: string
+          token_total_supply?: number
+          treasury_allocations?: Json
+          treasury_wallet?: string | null
+          updated_at?: string | null
+        }
         Update: {
-          created_at?: string | null;
-          default_sprint_capacity?: number;
-          default_sprint_duration_days?: number;
-          description?: string | null;
-          id?: string;
-          logo_url?: string | null;
-          name?: string;
-          organic_id_threshold?: number | null;
-          slug?: string;
-          theme?: Json | null;
-          token_decimals?: number;
-          token_mint?: string | null;
-          token_symbol?: string;
-          token_total_supply?: number;
-          treasury_allocations?: Json;
-          treasury_wallet?: string | null;
-          updated_at?: string | null;
-        };
-        Relationships: [];
-      };
+          created_at?: string | null
+          default_sprint_capacity?: number
+          default_sprint_duration_days?: number
+          description?: string | null
+          id?: string
+          logo_url?: string | null
+          name?: string
+          organic_id_threshold?: number | null
+          slug?: string
+          theme?: Json | null
+          token_decimals?: number
+          token_mint?: string | null
+          token_symbol?: string
+          token_total_supply?: number
+          treasury_allocations?: Json
+          treasury_wallet?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       proposals: {
         Row: {
-          approval_threshold: number | null;
-          body: string;
-          budget: string | null;
-          category: Database['public']['Enums']['proposal_category'] | null;
-          closes_at: string | null;
-          created_at: string | null;
-          created_by: string;
-          id: string;
-          motivation: string | null;
-          org_id: string | null;
-          quorum_required: number | null;
-          result: string | null;
-          snapshot_taken_at: string | null;
-          solution: string | null;
-          status: Database['public']['Enums']['proposal_status'] | null;
-          summary: string | null;
-          timeline: string | null;
-          title: string;
-          total_circulating_supply: number | null;
-          updated_at: string | null;
-          voting_ends_at: string | null;
-          voting_starts_at: string | null;
-        };
+          approval_threshold: number | null
+          body: string
+          budget: string | null
+          category: Database["public"]["Enums"]["proposal_category"] | null
+          closes_at: string | null
+          created_at: string | null
+          created_by: string
+          id: string
+          motivation: string | null
+          org_id: string | null
+          quorum_required: number | null
+          result: string | null
+          search_vector: unknown
+          snapshot_taken_at: string | null
+          solution: string | null
+          status: Database["public"]["Enums"]["proposal_status"] | null
+          summary: string | null
+          timeline: string | null
+          title: string
+          total_circulating_supply: number | null
+          updated_at: string | null
+          voting_ends_at: string | null
+          voting_starts_at: string | null
+        }
         Insert: {
-          approval_threshold?: number | null;
-          body: string;
-          budget?: string | null;
-          category?: Database['public']['Enums']['proposal_category'] | null;
-          closes_at?: string | null;
-          created_at?: string | null;
-          created_by: string;
-          id?: string;
-          motivation?: string | null;
-          org_id?: string | null;
-          quorum_required?: number | null;
-          result?: string | null;
-          snapshot_taken_at?: string | null;
-          solution?: string | null;
-          status?: Database['public']['Enums']['proposal_status'] | null;
-          summary?: string | null;
-          timeline?: string | null;
-          title: string;
-          total_circulating_supply?: number | null;
-          updated_at?: string | null;
-          voting_ends_at?: string | null;
-          voting_starts_at?: string | null;
-        };
+          approval_threshold?: number | null
+          body: string
+          budget?: string | null
+          category?: Database["public"]["Enums"]["proposal_category"] | null
+          closes_at?: string | null
+          created_at?: string | null
+          created_by: string
+          id?: string
+          motivation?: string | null
+          org_id?: string | null
+          quorum_required?: number | null
+          result?: string | null
+          search_vector?: unknown
+          snapshot_taken_at?: string | null
+          solution?: string | null
+          status?: Database["public"]["Enums"]["proposal_status"] | null
+          summary?: string | null
+          timeline?: string | null
+          title: string
+          total_circulating_supply?: number | null
+          updated_at?: string | null
+          voting_ends_at?: string | null
+          voting_starts_at?: string | null
+        }
         Update: {
-          approval_threshold?: number | null;
-          body?: string;
-          budget?: string | null;
-          category?: Database['public']['Enums']['proposal_category'] | null;
-          closes_at?: string | null;
-          created_at?: string | null;
-          created_by?: string;
-          id?: string;
-          motivation?: string | null;
-          org_id?: string | null;
-          quorum_required?: number | null;
-          result?: string | null;
-          snapshot_taken_at?: string | null;
-          solution?: string | null;
-          status?: Database['public']['Enums']['proposal_status'] | null;
-          summary?: string | null;
-          timeline?: string | null;
-          title?: string;
-          total_circulating_supply?: number | null;
-          updated_at?: string | null;
-          voting_ends_at?: string | null;
-          voting_starts_at?: string | null;
-        };
+          approval_threshold?: number | null
+          body?: string
+          budget?: string | null
+          category?: Database["public"]["Enums"]["proposal_category"] | null
+          closes_at?: string | null
+          created_at?: string | null
+          created_by?: string
+          id?: string
+          motivation?: string | null
+          org_id?: string | null
+          quorum_required?: number | null
+          result?: string | null
+          search_vector?: unknown
+          snapshot_taken_at?: string | null
+          solution?: string | null
+          status?: Database["public"]["Enums"]["proposal_status"] | null
+          summary?: string | null
+          timeline?: string | null
+          title?: string
+          total_circulating_supply?: number | null
+          updated_at?: string | null
+          voting_ends_at?: string | null
+          voting_starts_at?: string | null
+        }
         Relationships: [
           {
-            foreignKeyName: 'proposals_created_by_fkey';
-            columns: ['created_by'];
-            isOneToOne: false;
-            referencedRelation: 'leaderboard_view';
-            referencedColumns: ['id'];
+            foreignKeyName: "proposals_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_view"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'proposals_created_by_fkey';
-            columns: ['created_by'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "proposals_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'proposals_org_id_fkey';
-            columns: ['org_id'];
-            isOneToOne: false;
-            referencedRelation: 'orgs';
-            referencedColumns: ['id'];
+            foreignKeyName: "proposals_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "orgs"
+            referencedColumns: ["id"]
           },
-        ];
-      };
-      sprint_snapshots: {
-        Row: {
-          completed_at: string;
-          completed_by: string | null;
-          completed_points: number;
-          completed_tasks: number;
-          completion_rate: number;
-          created_at: string | null;
-          id: string;
-          incomplete_action: string | null;
-          incomplete_tasks: number;
-          sprint_id: string;
-          task_summary: Json;
-          total_points: number;
-          total_tasks: number;
-        };
-        Insert: {
-          completed_at?: string;
-          completed_by?: string | null;
-          completed_points?: number;
-          completed_tasks?: number;
-          completion_rate?: number;
-          created_at?: string | null;
-          id?: string;
-          incomplete_action?: string | null;
-          incomplete_tasks?: number;
-          sprint_id: string;
-          task_summary?: Json;
-          total_points?: number;
-          total_tasks?: number;
-        };
-        Update: {
-          completed_at?: string;
-          completed_by?: string | null;
-          completed_points?: number;
-          completed_tasks?: number;
-          completion_rate?: number;
-          created_at?: string | null;
-          id?: string;
-          incomplete_action?: string | null;
-          incomplete_tasks?: number;
-          sprint_id?: string;
-          task_summary?: Json;
-          total_points?: number;
-          total_tasks?: number;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'sprint_snapshots_completed_by_fkey';
-            columns: ['completed_by'];
-            isOneToOne: false;
-            referencedRelation: 'leaderboard_view';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'sprint_snapshots_completed_by_fkey';
-            columns: ['completed_by'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'sprint_snapshots_sprint_id_fkey';
-            columns: ['sprint_id'];
-            isOneToOne: true;
-            referencedRelation: 'sprints';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      sprints: {
-        Row: {
-          capacity_points: number | null;
-          created_at: string | null;
-          end_at: string;
-          goal: string | null;
-          id: string;
-          name: string;
-          org_id: string | null;
-          start_at: string;
-          status: Database['public']['Enums']['sprint_status'] | null;
-          updated_at: string | null;
-        };
-        Insert: {
-          capacity_points?: number | null;
-          created_at?: string | null;
-          end_at: string;
-          goal?: string | null;
-          id?: string;
-          name: string;
-          org_id?: string | null;
-          start_at: string;
-          status?: Database['public']['Enums']['sprint_status'] | null;
-          updated_at?: string | null;
-        };
-        Update: {
-          capacity_points?: number | null;
-          created_at?: string | null;
-          end_at?: string;
-          goal?: string | null;
-          id?: string;
-          name?: string;
-          org_id?: string | null;
-          start_at?: string;
-          status?: Database['public']['Enums']['sprint_status'] | null;
-          updated_at?: string | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'sprints_org_id_fkey';
-            columns: ['org_id'];
-            isOneToOne: false;
-            referencedRelation: 'orgs';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      task_assignees: {
-        Row: {
-          claimed_at: string | null;
-          id: string;
-          submission_id: string | null;
-          task_id: string;
-          user_id: string;
-        };
-        Insert: {
-          claimed_at?: string | null;
-          id?: string;
-          submission_id?: string | null;
-          task_id: string;
-          user_id: string;
-        };
-        Update: {
-          claimed_at?: string | null;
-          id?: string;
-          submission_id?: string | null;
-          task_id?: string;
-          user_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'task_assignees_submission_id_fkey';
-            columns: ['submission_id'];
-            isOneToOne: false;
-            referencedRelation: 'task_submissions';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'task_assignees_task_id_fkey';
-            columns: ['task_id'];
-            isOneToOne: false;
-            referencedRelation: 'tasks';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      task_comments: {
-        Row: {
-          content: string;
-          created_at: string | null;
-          id: string;
-          task_id: string;
-          updated_at: string | null;
-          user_id: string;
-        };
-        Insert: {
-          content: string;
-          created_at?: string | null;
-          id?: string;
-          task_id: string;
-          updated_at?: string | null;
-          user_id: string;
-        };
-        Update: {
-          content?: string;
-          created_at?: string | null;
-          id?: string;
-          task_id?: string;
-          updated_at?: string | null;
-          user_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'task_comments_task_id_fkey';
-            columns: ['task_id'];
-            isOneToOne: false;
-            referencedRelation: 'tasks';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      task_likes: {
-        Row: {
-          created_at: string | null;
-          task_id: string;
-          user_id: string;
-        };
-        Insert: {
-          created_at?: string | null;
-          task_id: string;
-          user_id: string;
-        };
-        Update: {
-          created_at?: string | null;
-          task_id?: string;
-          user_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'task_likes_task_id_fkey';
-            columns: ['task_id'];
-            isOneToOne: false;
-            referencedRelation: 'tasks';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      task_submissions: {
-        Row: {
-          content_link: string | null;
-          content_text: string | null;
-          created_at: string | null;
-          custom_fields: Json | null;
-          description: string | null;
-          earned_points: number | null;
-          file_urls: string[] | null;
-          id: string;
-          pr_link: string | null;
-          quality_score: number | null;
-          reach_metrics: Json | null;
-          rejection_reason: string | null;
-          review_status: Database['public']['Enums']['review_status'] | null;
-          reviewed_at: string | null;
-          reviewer_id: string | null;
-          reviewer_notes: string | null;
-          revision_notes: string | null;
-          submission_type: Database['public']['Enums']['task_type'];
-          submitted_at: string | null;
-          task_id: string;
-          testing_notes: string | null;
-          updated_at: string | null;
-          user_id: string;
-        };
-        Insert: {
-          content_link?: string | null;
-          content_text?: string | null;
-          created_at?: string | null;
-          custom_fields?: Json | null;
-          description?: string | null;
-          earned_points?: number | null;
-          file_urls?: string[] | null;
-          id?: string;
-          pr_link?: string | null;
-          quality_score?: number | null;
-          reach_metrics?: Json | null;
-          rejection_reason?: string | null;
-          review_status?: Database['public']['Enums']['review_status'] | null;
-          reviewed_at?: string | null;
-          reviewer_id?: string | null;
-          reviewer_notes?: string | null;
-          revision_notes?: string | null;
-          submission_type: Database['public']['Enums']['task_type'];
-          submitted_at?: string | null;
-          task_id: string;
-          testing_notes?: string | null;
-          updated_at?: string | null;
-          user_id: string;
-        };
-        Update: {
-          content_link?: string | null;
-          content_text?: string | null;
-          created_at?: string | null;
-          custom_fields?: Json | null;
-          description?: string | null;
-          earned_points?: number | null;
-          file_urls?: string[] | null;
-          id?: string;
-          pr_link?: string | null;
-          quality_score?: number | null;
-          reach_metrics?: Json | null;
-          rejection_reason?: string | null;
-          review_status?: Database['public']['Enums']['review_status'] | null;
-          reviewed_at?: string | null;
-          reviewer_id?: string | null;
-          reviewer_notes?: string | null;
-          revision_notes?: string | null;
-          submission_type?: Database['public']['Enums']['task_type'];
-          submitted_at?: string | null;
-          task_id?: string;
-          testing_notes?: string | null;
-          updated_at?: string | null;
-          user_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'task_submissions_task_id_fkey';
-            columns: ['task_id'];
-            isOneToOne: false;
-            referencedRelation: 'tasks';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      tasks: {
-        Row: {
-          assignee_id: string | null;
-          base_points: number | null;
-          claimed_at: string | null;
-          completed_at: string | null;
-          created_at: string | null;
-          created_by: string | null;
-          description: string | null;
-          due_date: string | null;
-          id: string;
-          is_team_task: boolean | null;
-          labels: string[] | null;
-          max_assignees: number | null;
-          org_id: string | null;
-          parent_task_id: string | null;
-          points: number | null;
-          priority: Database['public']['Enums']['task_priority'] | null;
-          proposal_id: string | null;
-          sprint_id: string | null;
-          status: Database['public']['Enums']['task_status'] | null;
-          task_type: Database['public']['Enums']['task_type'] | null;
-          template_id: string | null;
-          title: string;
-          updated_at: string | null;
-        };
-        Insert: {
-          assignee_id?: string | null;
-          base_points?: number | null;
-          claimed_at?: string | null;
-          completed_at?: string | null;
-          created_at?: string | null;
-          created_by?: string | null;
-          description?: string | null;
-          due_date?: string | null;
-          id?: string;
-          is_team_task?: boolean | null;
-          labels?: string[] | null;
-          max_assignees?: number | null;
-          org_id?: string | null;
-          parent_task_id?: string | null;
-          points?: number | null;
-          priority?: Database['public']['Enums']['task_priority'] | null;
-          proposal_id?: string | null;
-          sprint_id?: string | null;
-          status?: Database['public']['Enums']['task_status'] | null;
-          task_type?: Database['public']['Enums']['task_type'] | null;
-          template_id?: string | null;
-          title: string;
-          updated_at?: string | null;
-        };
-        Update: {
-          assignee_id?: string | null;
-          base_points?: number | null;
-          claimed_at?: string | null;
-          completed_at?: string | null;
-          created_at?: string | null;
-          created_by?: string | null;
-          description?: string | null;
-          due_date?: string | null;
-          id?: string;
-          is_team_task?: boolean | null;
-          labels?: string[] | null;
-          max_assignees?: number | null;
-          org_id?: string | null;
-          parent_task_id?: string | null;
-          points?: number | null;
-          priority?: Database['public']['Enums']['task_priority'] | null;
-          proposal_id?: string | null;
-          sprint_id?: string | null;
-          status?: Database['public']['Enums']['task_status'] | null;
-          task_type?: Database['public']['Enums']['task_type'] | null;
-          template_id?: string | null;
-          title?: string;
-          updated_at?: string | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'tasks_assignee_id_fkey';
-            columns: ['assignee_id'];
-            isOneToOne: false;
-            referencedRelation: 'leaderboard_view';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'tasks_assignee_id_fkey';
-            columns: ['assignee_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'tasks_org_id_fkey';
-            columns: ['org_id'];
-            isOneToOne: false;
-            referencedRelation: 'orgs';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'tasks_proposal_id_fkey';
-            columns: ['proposal_id'];
-            isOneToOne: false;
-            referencedRelation: 'proposals';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'tasks_sprint_id_fkey';
-            columns: ['sprint_id'];
-            isOneToOne: false;
-            referencedRelation: 'sprints';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      user_follows: {
-        Row: {
-          created_at: string | null;
-          id: string;
-          subject_id: string;
-          subject_type: string;
-          user_id: string;
-        };
-        Insert: {
-          created_at?: string | null;
-          id?: string;
-          subject_id: string;
-          subject_type: string;
-          user_id: string;
-        };
-        Update: {
-          created_at?: string | null;
-          id?: string;
-          subject_id?: string;
-          subject_type?: string;
-          user_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'user_follows_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      user_profiles: {
-        Row: {
-          avatar_url: string | null;
-          bio: string | null;
-          created_at: string | null;
-          discord: string | null;
-          email: string;
-          id: string;
-          location: string | null;
-          name: string | null;
-          organic_id: number | null;
-          profile_visible: boolean;
-          role: Database['public']['Enums']['user_role'] | null;
-          tasks_completed: number;
-          total_points: number;
-          twitter: string | null;
-          updated_at: string | null;
-          wallet_pubkey: string | null;
-          website: string | null;
-        };
-        Insert: {
-          avatar_url?: string | null;
-          bio?: string | null;
-          created_at?: string | null;
-          discord?: string | null;
-          email: string;
-          id: string;
-          location?: string | null;
-          name?: string | null;
-          organic_id?: number | null;
-          profile_visible?: boolean;
-          role?: Database['public']['Enums']['user_role'] | null;
-          tasks_completed?: number;
-          total_points?: number;
-          twitter?: string | null;
-          updated_at?: string | null;
-          wallet_pubkey?: string | null;
-          website?: string | null;
-        };
-        Update: {
-          avatar_url?: string | null;
-          bio?: string | null;
-          created_at?: string | null;
-          discord?: string | null;
-          email?: string;
-          id?: string;
-          location?: string | null;
-          name?: string | null;
-          organic_id?: number | null;
-          profile_visible?: boolean;
-          role?: Database['public']['Enums']['user_role'] | null;
-          tasks_completed?: number;
-          total_points?: number;
-          twitter?: string | null;
-          updated_at?: string | null;
-          wallet_pubkey?: string | null;
-          website?: string | null;
-        };
-        Relationships: [];
-      };
-      votes: {
-        Row: {
-          created_at: string | null;
-          id: string;
-          org_id: string | null;
-          proposal_id: string;
-          value: Database['public']['Enums']['vote_value'];
-          voter_id: string;
-          weight: number;
-        };
-        Insert: {
-          created_at?: string | null;
-          id?: string;
-          org_id?: string | null;
-          proposal_id: string;
-          value: Database['public']['Enums']['vote_value'];
-          voter_id: string;
-          weight?: number;
-        };
-        Update: {
-          created_at?: string | null;
-          id?: string;
-          org_id?: string | null;
-          proposal_id?: string;
-          value?: Database['public']['Enums']['vote_value'];
-          voter_id?: string;
-          weight?: number;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'votes_org_id_fkey';
-            columns: ['org_id'];
-            isOneToOne: false;
-            referencedRelation: 'orgs';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'votes_proposal_id_fkey';
-            columns: ['proposal_id'];
-            isOneToOne: false;
-            referencedRelation: 'proposals';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'votes_voter_id_fkey';
-            columns: ['voter_id'];
-            isOneToOne: false;
-            referencedRelation: 'leaderboard_view';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'votes_voter_id_fkey';
-            columns: ['voter_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      voting_config: {
-        Row: {
-          abstain_counts_toward_quorum: boolean;
-          approval_threshold: number;
-          created_at: string | null;
-          id: string;
-          max_live_proposals: number;
-          org_id: string | null;
-          proposal_threshold_org: number;
-          proposer_cooldown_days: number;
-          quorum_percentage: number;
-          updated_at: string | null;
-          voting_duration_days: number;
-        };
-        Insert: {
-          abstain_counts_toward_quorum?: boolean;
-          approval_threshold?: number;
-          created_at?: string | null;
-          id?: string;
-          max_live_proposals?: number;
-          org_id?: string | null;
-          proposal_threshold_org?: number;
-          proposer_cooldown_days?: number;
-          quorum_percentage?: number;
-          updated_at?: string | null;
-          voting_duration_days?: number;
-        };
-        Update: {
-          abstain_counts_toward_quorum?: boolean;
-          approval_threshold?: number;
-          created_at?: string | null;
-          id?: string;
-          max_live_proposals?: number;
-          org_id?: string | null;
-          proposal_threshold_org?: number;
-          proposer_cooldown_days?: number;
-          quorum_percentage?: number;
-          updated_at?: string | null;
-          voting_duration_days?: number;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'voting_config_org_id_fkey';
-            columns: ['org_id'];
-            isOneToOne: true;
-            referencedRelation: 'orgs';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      wallet_nonces: {
-        Row: {
-          created_at: string | null;
-          expires_at: string;
-          id: string;
-          nonce: string;
-          used_at: string | null;
-          user_id: string | null;
-        };
-        Insert: {
-          created_at?: string | null;
-          expires_at: string;
-          id?: string;
-          nonce: string;
-          used_at?: string | null;
-          user_id?: string | null;
-        };
-        Update: {
-          created_at?: string | null;
-          expires_at?: string;
-          id?: string;
-          nonce?: string;
-          used_at?: string | null;
-          user_id?: string | null;
-        };
-        Relationships: [];
-      };
-      // Phase 12: Task Dependencies
-      task_dependencies: {
-        Row: {
-          id: string;
-          task_id: string;
-          depends_on_task_id: string;
-          created_at: string | null;
-          created_by: string | null;
-        };
-        Insert: {
-          id?: string;
-          task_id: string;
-          depends_on_task_id: string;
-          created_at?: string | null;
-          created_by?: string | null;
-        };
-        Update: {
-          id?: string;
-          task_id?: string;
-          depends_on_task_id?: string;
-          created_at?: string | null;
-          created_by?: string | null;
-        };
-        Relationships: [];
-      };
-      // Phase 12: Task Templates
-      task_templates: {
-        Row: {
-          id: string;
-          name: string;
-          description: string | null;
-          task_type: Database['public']['Enums']['task_type'] | null;
-          priority: Database['public']['Enums']['task_priority'] | null;
-          base_points: number | null;
-          labels: string[] | null;
-          is_team_task: boolean | null;
-          max_assignees: number | null;
-          default_assignee_id: string | null;
-          is_recurring: boolean | null;
-          recurrence_rule: string | null;
-          org_id: string | null;
-          created_by: string;
-          created_at: string | null;
-          updated_at: string | null;
-        };
-        Insert: {
-          id?: string;
-          name: string;
-          description?: string | null;
-          task_type?: Database['public']['Enums']['task_type'] | null;
-          priority?: Database['public']['Enums']['task_priority'] | null;
-          base_points?: number | null;
-          labels?: string[] | null;
-          is_team_task?: boolean | null;
-          max_assignees?: number | null;
-          default_assignee_id?: string | null;
-          is_recurring?: boolean | null;
-          recurrence_rule?: string | null;
-          org_id?: string | null;
-          created_by: string;
-          created_at?: string | null;
-          updated_at?: string | null;
-        };
-        Update: {
-          id?: string;
-          name?: string;
-          description?: string | null;
-          task_type?: Database['public']['Enums']['task_type'] | null;
-          priority?: Database['public']['Enums']['task_priority'] | null;
-          base_points?: number | null;
-          labels?: string[] | null;
-          is_team_task?: boolean | null;
-          max_assignees?: number | null;
-          default_assignee_id?: string | null;
-          is_recurring?: boolean | null;
-          recurrence_rule?: string | null;
-          org_id?: string | null;
-          created_by?: string;
-          created_at?: string | null;
-          updated_at?: string | null;
-        };
-        Relationships: [];
-      };
-      // Phase 12: Recurring Task Instances
+        ]
+      }
       recurring_task_instances: {
         Row: {
-          id: string;
-          template_id: string;
-          task_id: string;
-          sprint_id: string | null;
-          generated_at: string | null;
-        };
+          generated_at: string | null
+          id: string
+          sprint_id: string | null
+          task_id: string
+          template_id: string
+        }
         Insert: {
-          id?: string;
-          template_id: string;
-          task_id: string;
-          sprint_id?: string | null;
-          generated_at?: string | null;
-        };
+          generated_at?: string | null
+          id?: string
+          sprint_id?: string | null
+          task_id: string
+          template_id: string
+        }
         Update: {
-          id?: string;
-          template_id?: string;
-          task_id?: string;
-          sprint_id?: string | null;
-          generated_at?: string | null;
-        };
-        Relationships: [];
-      };
-      // Phase 12: Vote Delegations
+          generated_at?: string | null
+          id?: string
+          sprint_id?: string | null
+          task_id?: string
+          template_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recurring_task_instances_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "sprints"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recurring_task_instances_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recurring_task_instances_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "task_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sprint_snapshots: {
+        Row: {
+          completed_at: string
+          completed_by: string | null
+          completed_points: number
+          completed_tasks: number
+          completion_rate: number
+          created_at: string | null
+          id: string
+          incomplete_action: string | null
+          incomplete_tasks: number
+          sprint_id: string
+          task_summary: Json
+          total_points: number
+          total_tasks: number
+        }
+        Insert: {
+          completed_at?: string
+          completed_by?: string | null
+          completed_points?: number
+          completed_tasks?: number
+          completion_rate?: number
+          created_at?: string | null
+          id?: string
+          incomplete_action?: string | null
+          incomplete_tasks?: number
+          sprint_id: string
+          task_summary?: Json
+          total_points?: number
+          total_tasks?: number
+        }
+        Update: {
+          completed_at?: string
+          completed_by?: string | null
+          completed_points?: number
+          completed_tasks?: number
+          completion_rate?: number
+          created_at?: string | null
+          id?: string
+          incomplete_action?: string | null
+          incomplete_tasks?: number
+          sprint_id?: string
+          task_summary?: Json
+          total_points?: number
+          total_tasks?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sprint_snapshots_completed_by_fkey"
+            columns: ["completed_by"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sprint_snapshots_completed_by_fkey"
+            columns: ["completed_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sprint_snapshots_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: true
+            referencedRelation: "sprints"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sprints: {
+        Row: {
+          capacity_points: number | null
+          created_at: string | null
+          end_at: string
+          goal: string | null
+          id: string
+          name: string
+          org_id: string | null
+          start_at: string
+          status: Database["public"]["Enums"]["sprint_status"] | null
+          updated_at: string | null
+        }
+        Insert: {
+          capacity_points?: number | null
+          created_at?: string | null
+          end_at: string
+          goal?: string | null
+          id?: string
+          name: string
+          org_id?: string | null
+          start_at: string
+          status?: Database["public"]["Enums"]["sprint_status"] | null
+          updated_at?: string | null
+        }
+        Update: {
+          capacity_points?: number | null
+          created_at?: string | null
+          end_at?: string
+          goal?: string | null
+          id?: string
+          name?: string
+          org_id?: string | null
+          start_at?: string
+          status?: Database["public"]["Enums"]["sprint_status"] | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sprints_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "orgs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_assignees: {
+        Row: {
+          claimed_at: string | null
+          id: string
+          submission_id: string | null
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          claimed_at?: string | null
+          id?: string
+          submission_id?: string | null
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          claimed_at?: string | null
+          id?: string
+          submission_id?: string | null
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_assignees_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "task_submissions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_assignees_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_comments: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          task_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          task_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          task_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_comments_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_dependencies: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          depends_on_task_id: string
+          id: string
+          task_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          depends_on_task_id: string
+          id?: string
+          task_id: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          depends_on_task_id?: string
+          id?: string
+          task_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_dependencies_depends_on_task_id_fkey"
+            columns: ["depends_on_task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_dependencies_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_likes: {
+        Row: {
+          created_at: string | null
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_likes_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_submissions: {
+        Row: {
+          content_link: string | null
+          content_text: string | null
+          created_at: string | null
+          custom_fields: Json | null
+          description: string | null
+          earned_points: number | null
+          file_urls: string[] | null
+          id: string
+          pr_link: string | null
+          quality_score: number | null
+          reach_metrics: Json | null
+          rejection_reason: string | null
+          review_status: Database["public"]["Enums"]["review_status"] | null
+          reviewed_at: string | null
+          reviewer_id: string | null
+          reviewer_notes: string | null
+          revision_notes: string | null
+          submission_type: Database["public"]["Enums"]["task_type"]
+          submitted_at: string | null
+          task_id: string
+          testing_notes: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          content_link?: string | null
+          content_text?: string | null
+          created_at?: string | null
+          custom_fields?: Json | null
+          description?: string | null
+          earned_points?: number | null
+          file_urls?: string[] | null
+          id?: string
+          pr_link?: string | null
+          quality_score?: number | null
+          reach_metrics?: Json | null
+          rejection_reason?: string | null
+          review_status?: Database["public"]["Enums"]["review_status"] | null
+          reviewed_at?: string | null
+          reviewer_id?: string | null
+          reviewer_notes?: string | null
+          revision_notes?: string | null
+          submission_type: Database["public"]["Enums"]["task_type"]
+          submitted_at?: string | null
+          task_id: string
+          testing_notes?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          content_link?: string | null
+          content_text?: string | null
+          created_at?: string | null
+          custom_fields?: Json | null
+          description?: string | null
+          earned_points?: number | null
+          file_urls?: string[] | null
+          id?: string
+          pr_link?: string | null
+          quality_score?: number | null
+          reach_metrics?: Json | null
+          rejection_reason?: string | null
+          review_status?: Database["public"]["Enums"]["review_status"] | null
+          reviewed_at?: string | null
+          reviewer_id?: string | null
+          reviewer_notes?: string | null
+          revision_notes?: string | null
+          submission_type?: Database["public"]["Enums"]["task_type"]
+          submitted_at?: string | null
+          task_id?: string
+          testing_notes?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_submissions_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_templates: {
+        Row: {
+          base_points: number | null
+          created_at: string | null
+          created_by: string
+          default_assignee_id: string | null
+          description: string | null
+          id: string
+          is_recurring: boolean | null
+          is_team_task: boolean | null
+          labels: string[] | null
+          max_assignees: number | null
+          name: string
+          org_id: string | null
+          priority: Database["public"]["Enums"]["task_priority"] | null
+          recurrence_rule: Database["public"]["Enums"]["recurrence_rule"] | null
+          task_type: Database["public"]["Enums"]["task_type"] | null
+          updated_at: string | null
+        }
+        Insert: {
+          base_points?: number | null
+          created_at?: string | null
+          created_by: string
+          default_assignee_id?: string | null
+          description?: string | null
+          id?: string
+          is_recurring?: boolean | null
+          is_team_task?: boolean | null
+          labels?: string[] | null
+          max_assignees?: number | null
+          name: string
+          org_id?: string | null
+          priority?: Database["public"]["Enums"]["task_priority"] | null
+          recurrence_rule?:
+            | Database["public"]["Enums"]["recurrence_rule"]
+            | null
+          task_type?: Database["public"]["Enums"]["task_type"] | null
+          updated_at?: string | null
+        }
+        Update: {
+          base_points?: number | null
+          created_at?: string | null
+          created_by?: string
+          default_assignee_id?: string | null
+          description?: string | null
+          id?: string
+          is_recurring?: boolean | null
+          is_team_task?: boolean | null
+          labels?: string[] | null
+          max_assignees?: number | null
+          name?: string
+          org_id?: string | null
+          priority?: Database["public"]["Enums"]["task_priority"] | null
+          recurrence_rule?:
+            | Database["public"]["Enums"]["recurrence_rule"]
+            | null
+          task_type?: Database["public"]["Enums"]["task_type"] | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_templates_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "orgs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tasks: {
+        Row: {
+          assignee_id: string | null
+          base_points: number | null
+          claimed_at: string | null
+          completed_at: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          due_date: string | null
+          id: string
+          is_team_task: boolean | null
+          labels: string[] | null
+          max_assignees: number | null
+          org_id: string | null
+          parent_task_id: string | null
+          points: number | null
+          priority: Database["public"]["Enums"]["task_priority"] | null
+          proposal_id: string | null
+          search_vector: unknown
+          sprint_id: string | null
+          status: Database["public"]["Enums"]["task_status"] | null
+          task_type: Database["public"]["Enums"]["task_type"] | null
+          template_id: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          assignee_id?: string | null
+          base_points?: number | null
+          claimed_at?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          is_team_task?: boolean | null
+          labels?: string[] | null
+          max_assignees?: number | null
+          org_id?: string | null
+          parent_task_id?: string | null
+          points?: number | null
+          priority?: Database["public"]["Enums"]["task_priority"] | null
+          proposal_id?: string | null
+          search_vector?: unknown
+          sprint_id?: string | null
+          status?: Database["public"]["Enums"]["task_status"] | null
+          task_type?: Database["public"]["Enums"]["task_type"] | null
+          template_id?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          assignee_id?: string | null
+          base_points?: number | null
+          claimed_at?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          is_team_task?: boolean | null
+          labels?: string[] | null
+          max_assignees?: number | null
+          org_id?: string | null
+          parent_task_id?: string | null
+          points?: number | null
+          priority?: Database["public"]["Enums"]["task_priority"] | null
+          proposal_id?: string | null
+          search_vector?: unknown
+          sprint_id?: string | null
+          status?: Database["public"]["Enums"]["task_status"] | null
+          task_type?: Database["public"]["Enums"]["task_type"] | null
+          template_id?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "orgs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_parent_task_id_fkey"
+            columns: ["parent_task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "sprints"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "task_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_follows: {
+        Row: {
+          created_at: string | null
+          id: string
+          subject_id: string
+          subject_type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          subject_id: string
+          subject_type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          subject_id?: string
+          subject_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_follows_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_follows_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string | null
+          discord: string | null
+          email: string
+          id: string
+          location: string | null
+          name: string | null
+          organic_id: number | null
+          profile_visible: boolean
+          role: Database["public"]["Enums"]["user_role"] | null
+          tasks_completed: number
+          total_points: number
+          twitter: string | null
+          updated_at: string | null
+          wallet_pubkey: string | null
+          website: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          discord?: string | null
+          email: string
+          id: string
+          location?: string | null
+          name?: string | null
+          organic_id?: number | null
+          profile_visible?: boolean
+          role?: Database["public"]["Enums"]["user_role"] | null
+          tasks_completed?: number
+          total_points?: number
+          twitter?: string | null
+          updated_at?: string | null
+          wallet_pubkey?: string | null
+          website?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          discord?: string | null
+          email?: string
+          id?: string
+          location?: string | null
+          name?: string | null
+          organic_id?: number | null
+          profile_visible?: boolean
+          role?: Database["public"]["Enums"]["user_role"] | null
+          tasks_completed?: number
+          total_points?: number
+          twitter?: string | null
+          updated_at?: string | null
+          wallet_pubkey?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
       vote_delegations: {
         Row: {
-          id: string;
-          delegator_id: string;
-          delegate_id: string;
-          category: string | null;
-          created_at: string | null;
-          updated_at: string | null;
-        };
+          category: Database["public"]["Enums"]["proposal_category"] | null
+          created_at: string | null
+          delegate_id: string
+          delegator_id: string
+          id: string
+          updated_at: string | null
+        }
         Insert: {
-          id?: string;
-          delegator_id: string;
-          delegate_id: string;
-          category?: string | null;
-          created_at?: string | null;
-          updated_at?: string | null;
-        };
+          category?: Database["public"]["Enums"]["proposal_category"] | null
+          created_at?: string | null
+          delegate_id: string
+          delegator_id: string
+          id?: string
+          updated_at?: string | null
+        }
         Update: {
-          id?: string;
-          delegator_id?: string;
-          delegate_id?: string;
-          category?: string | null;
-          created_at?: string | null;
-          updated_at?: string | null;
-        };
-        Relationships: [];
-      };
-    };
+          category?: Database["public"]["Enums"]["proposal_category"] | null
+          created_at?: string | null
+          delegate_id?: string
+          delegator_id?: string
+          id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      votes: {
+        Row: {
+          created_at: string | null
+          id: string
+          org_id: string | null
+          proposal_id: string
+          value: Database["public"]["Enums"]["vote_value"]
+          voter_id: string
+          weight: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          org_id?: string | null
+          proposal_id: string
+          value: Database["public"]["Enums"]["vote_value"]
+          voter_id: string
+          weight?: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          org_id?: string | null
+          proposal_id?: string
+          value?: Database["public"]["Enums"]["vote_value"]
+          voter_id?: string
+          weight?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "votes_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "orgs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "votes_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "votes_voter_id_fkey"
+            columns: ["voter_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "votes_voter_id_fkey"
+            columns: ["voter_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      voting_config: {
+        Row: {
+          abstain_counts_toward_quorum: boolean
+          approval_threshold: number
+          created_at: string | null
+          id: string
+          max_live_proposals: number
+          org_id: string | null
+          proposal_threshold_org: number
+          proposer_cooldown_days: number
+          quorum_percentage: number
+          updated_at: string | null
+          voting_duration_days: number
+        }
+        Insert: {
+          abstain_counts_toward_quorum?: boolean
+          approval_threshold?: number
+          created_at?: string | null
+          id?: string
+          max_live_proposals?: number
+          org_id?: string | null
+          proposal_threshold_org?: number
+          proposer_cooldown_days?: number
+          quorum_percentage?: number
+          updated_at?: string | null
+          voting_duration_days?: number
+        }
+        Update: {
+          abstain_counts_toward_quorum?: boolean
+          approval_threshold?: number
+          created_at?: string | null
+          id?: string
+          max_live_proposals?: number
+          org_id?: string | null
+          proposal_threshold_org?: number
+          proposer_cooldown_days?: number
+          quorum_percentage?: number
+          updated_at?: string | null
+          voting_duration_days?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "voting_config_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: true
+            referencedRelation: "orgs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wallet_nonces: {
+        Row: {
+          created_at: string | null
+          expires_at: string
+          id: string
+          nonce: string
+          used_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          expires_at: string
+          id?: string
+          nonce: string
+          used_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          expires_at?: string
+          id?: string
+          nonce?: string
+          used_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+    }
     Views: {
       leaderboard_view: {
         Row: {
-          avatar_url: string | null;
-          dense_rank: number | null;
-          email: string | null;
-          id: string | null;
-          name: string | null;
-          organic_id: number | null;
-          rank: number | null;
-          role: Database['public']['Enums']['user_role'] | null;
-          tasks_completed: number | null;
-          total_points: number | null;
-        };
-        Relationships: [];
-      };
-    };
+          avatar_url: string | null
+          dense_rank: number | null
+          email: string | null
+          id: string | null
+          name: string | null
+          organic_id: number | null
+          rank: number | null
+          role: Database["public"]["Enums"]["user_role"] | null
+          tasks_completed: number | null
+          total_points: number | null
+        }
+        Relationships: []
+      }
+    }
     Functions: {
-      calculate_quality_multiplier: { Args: { score: number }; Returns: number };
+      calculate_quality_multiplier: { Args: { score: number }; Returns: number }
       calculate_vote_result: {
-        Args: { p_proposal_id: string };
-        Returns: string;
-      };
-      check_quorum_met: { Args: { p_proposal_id: string }; Returns: boolean };
-      cleanup_expired_nonces: { Args: never; Returns: number };
+        Args: { p_proposal_id: string }
+        Returns: string
+      }
+      check_quorum_met: { Args: { p_proposal_id: string }; Returns: boolean }
+      cleanup_expired_nonces: { Args: never; Returns: number }
+      clone_recurring_templates: {
+        Args: { p_sprint_id: string }
+        Returns: number
+      }
       get_activity_trends: {
-        Args: { days?: number };
+        Args: { days?: number }
         Returns: {
-          comment_events: number;
-          day: string;
-          governance_events: number;
-          task_events: number;
-        }[];
-      };
-      get_member_growth: {
-        Args: { months?: number };
+          comment_events: number
+          day: string
+          governance_events: number
+          task_events: number
+        }[]
+      }
+      get_blocked_tasks: {
+        Args: { p_task_id: string }
         Returns: {
-          cumulative_members: number;
-          month: string;
-          new_members: number;
-        }[];
-      };
-      get_next_organic_id: { Args: never; Returns: number };
-      get_notification_category: {
-        Args: { evt: Database['public']['Enums']['activity_event_type'] };
-        Returns: Database['public']['Enums']['notification_category'];
-      };
-      resolve_follow_target: {
-        Args: { p_metadata: Json; p_subject_id: string; p_subject_type: string };
-        Returns: { target_id: string; target_type: string }[];
-      };
-      get_proposals_by_category: {
-        Args: never;
+          blocked_task_id: string
+          blocked_task_status: string
+          blocked_task_title: string
+        }[]
+      }
+      get_blocking_tasks: {
+        Args: { p_task_id: string }
         Returns: {
-          category: string;
-          count: number;
-        }[];
-      };
-      get_task_completions: {
-        Args: { weeks?: number };
+          blocking_task_id: string
+          blocking_task_status: string
+          blocking_task_title: string
+        }[]
+      }
+      get_comment_counts: {
+        Args: { p_subject_ids: string[]; p_subject_type: string }
         Returns: {
-          completed_count: number;
-          total_points: number;
-          week: string;
-        }[];
-      };
-      get_user_voting_weight: {
-        Args: { p_proposal_id: string; p_wallet_pubkey: string };
-        Returns: number;
-      };
-      get_vote_tally: {
-        Args: { p_proposal_id: string };
-        Returns: {
-          abstain_count: number;
-          abstain_votes: number;
-          no_count: number;
-          no_votes: number;
-          total_count: number;
-          total_votes: number;
-          yes_count: number;
-          yes_votes: number;
-        }[];
-      };
-      get_voting_participation: {
-        Args: { result_limit?: number };
-        Returns: {
-          abstain_votes: number;
-          no_votes: number;
-          proposal_id: string;
-          proposal_title: string;
-          vote_count: number;
-          yes_votes: number;
-        }[];
-      };
-      // Phase 12 functions
-      is_task_blocked: {
-        Args: { p_task_id: string };
-        Returns: boolean;
-      };
-      get_subtask_progress: {
-        Args: { p_parent_task_id: string };
-        Returns: {
-          total_subtasks: number;
-          completed_subtasks: number;
-          progress_percentage: number;
-        }[];
-      };
+          count: number
+          subject_id: string
+        }[]
+      }
       get_effective_voting_power: {
         Args: {
-          p_user_id: string;
-          p_proposal_id: string;
-          p_proposal_category?: string;
-        };
-        Returns: number;
-      };
-      clone_recurring_templates: {
-        Args: { p_sprint_id: string };
-        Returns: number;
-      };
-    };
+          p_proposal_category?: Database["public"]["Enums"]["proposal_category"]
+          p_proposal_id: string
+          p_user_id: string
+        }
+        Returns: number
+      }
+      get_member_growth: {
+        Args: { months?: number }
+        Returns: {
+          cumulative_members: number
+          month: string
+          new_members: number
+        }[]
+      }
+      get_next_organic_id: { Args: never; Returns: number }
+      get_notification_category: {
+        Args: { evt: Database["public"]["Enums"]["activity_event_type"] }
+        Returns: Database["public"]["Enums"]["notification_category"]
+      }
+      get_proposals_by_category: {
+        Args: never
+        Returns: {
+          category: string
+          count: number
+        }[]
+      }
+      get_sprint_stats: {
+        Args: { p_sprint_ids: string[] }
+        Returns: {
+          completed: number
+          in_progress: number
+          points: number
+          sprint_id: string
+          total: number
+          total_points: number
+        }[]
+      }
+      get_subtask_progress: {
+        Args: { p_parent_task_id: string }
+        Returns: {
+          completed_subtasks: number
+          progress_percentage: number
+          total_subtasks: number
+        }[]
+      }
+      get_task_completions: {
+        Args: { weeks?: number }
+        Returns: {
+          completed_count: number
+          total_points: number
+          week: string
+        }[]
+      }
+      get_user_voting_weight: {
+        Args: { p_proposal_id: string; p_wallet_pubkey: string }
+        Returns: number
+      }
+      get_vote_tally: {
+        Args: { p_proposal_id: string }
+        Returns: {
+          abstain_count: number
+          abstain_votes: number
+          no_count: number
+          no_votes: number
+          total_count: number
+          total_votes: number
+          yes_count: number
+          yes_votes: number
+        }[]
+      }
+      get_voting_participation: {
+        Args: { result_limit?: number }
+        Returns: {
+          abstain_votes: number
+          no_votes: number
+          proposal_id: string
+          proposal_title: string
+          vote_count: number
+          yes_votes: number
+        }[]
+      }
+      is_task_blocked: { Args: { p_task_id: string }; Returns: boolean }
+      resolve_follow_target: {
+        Args: { p_metadata: Json; p_subject_id: string; p_subject_type: string }
+        Returns: {
+          target_id: string
+          target_type: string
+        }[]
+      }
+    }
     Enums: {
       activity_event_type:
-        | 'task_created'
-        | 'task_status_changed'
-        | 'task_completed'
-        | 'task_deleted'
-        | 'submission_created'
-        | 'submission_reviewed'
-        | 'comment_created'
-        | 'comment_deleted'
-        | 'proposal_created'
-        | 'proposal_status_changed'
-        | 'proposal_deleted'
-        | 'vote_cast'
-        | 'voting_reminder_24h'
-        | 'voting_reminder_1h';
-      notification_category: 'tasks' | 'proposals' | 'voting' | 'comments' | 'system';
-      proposal_category: 'feature' | 'governance' | 'treasury' | 'community' | 'development';
-      proposal_status: 'draft' | 'submitted' | 'approved' | 'rejected' | 'voting';
-      review_status: 'pending' | 'approved' | 'rejected' | 'disputed';
-      sprint_status: 'planning' | 'active' | 'completed';
-      task_priority: 'low' | 'medium' | 'high' | 'critical';
-      task_status: 'backlog' | 'todo' | 'in_progress' | 'review' | 'done';
-      task_type: 'development' | 'content' | 'design' | 'custom';
-      user_role: 'admin' | 'council' | 'member' | 'guest';
-      vote_value: 'yes' | 'no' | 'abstain';
-    };
+        | "task_created"
+        | "task_status_changed"
+        | "task_completed"
+        | "task_deleted"
+        | "submission_created"
+        | "submission_reviewed"
+        | "comment_created"
+        | "comment_deleted"
+        | "proposal_created"
+        | "proposal_status_changed"
+        | "proposal_deleted"
+        | "vote_cast"
+        | "voting_reminder_24h"
+        | "voting_reminder_1h"
+      notification_category:
+        | "tasks"
+        | "proposals"
+        | "voting"
+        | "comments"
+        | "system"
+      proposal_category:
+        | "feature"
+        | "governance"
+        | "treasury"
+        | "community"
+        | "development"
+      proposal_status:
+        | "draft"
+        | "submitted"
+        | "approved"
+        | "rejected"
+        | "voting"
+      recurrence_rule:
+        | "sprint_start"
+        | "daily"
+        | "weekly"
+        | "biweekly"
+        | "monthly"
+      review_status: "pending" | "approved" | "rejected" | "disputed"
+      sprint_status: "planning" | "active" | "completed"
+      task_priority: "low" | "medium" | "high" | "critical"
+      task_status: "backlog" | "todo" | "in_progress" | "review" | "done"
+      task_type: "development" | "content" | "design" | "custom"
+      user_role: "admin" | "council" | "member" | "guest"
+      vote_value: "yes" | "no" | "abstain"
+    }
     CompositeTypes: {
-      [_ in never]: never;
-    };
-  };
-};
+      [_ in never]: never
+    }
+  }
+}
 
-type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>;
+export type UserRole = Database["public"]["Enums"]["user_role"]
+export type ProposalStatus = Database["public"]["Enums"]["proposal_status"]
+export type ProposalCategory = Database["public"]["Enums"]["proposal_category"]
+export type TaskStatus = Database["public"]["Enums"]["task_status"]
+export type SprintStatus = Database["public"]["Enums"]["sprint_status"]
+export type VoteValue = Database["public"]["Enums"]["vote_value"]
+export type TaskType = Database["public"]["Enums"]["task_type"]
+export type ReviewStatus = Database["public"]["Enums"]["review_status"]
+export type TaskPriority = Database["public"]["Enums"]["task_priority"]
+export type ActivityEventType = Database["public"]["Enums"]["activity_event_type"]
+export type NotificationCategoryDB = Database["public"]["Enums"]["notification_category"]
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>];
+export type ProposalResult = "passed" | "failed" | "quorum_not_met"
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
+  schema: keyof DatabaseWithoutInternals
 }
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
-      Row: infer R;
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
-    ? (DefaultSchema['Tables'] & DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R;
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
       }
       ? R
       : never
-    : never;
+    : never
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema['Tables']
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
+  schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
-      Insert: infer I;
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
     }
     ? I
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I;
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
       }
       ? I
       : never
-    : never;
+    : never
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema['Tables']
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
+  schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
-      Update: infer U;
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
     }
     ? U
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U;
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
       }
       ? U
       : never
-    : never;
+    : never
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema['Enums']
+    | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
+  schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
-    ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
-    : never;
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema['CompositeTypes']
+    | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
+  schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
-    ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
-    : never;
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
 
 export const Constants = {
   public: {
     Enums: {
       activity_event_type: [
-        'task_created',
-        'task_status_changed',
-        'task_completed',
-        'task_deleted',
-        'submission_created',
-        'submission_reviewed',
-        'comment_created',
-        'comment_deleted',
-        'proposal_created',
-        'proposal_status_changed',
-        'proposal_deleted',
-        'vote_cast',
-        'voting_reminder_24h',
-        'voting_reminder_1h',
+        "task_created",
+        "task_status_changed",
+        "task_completed",
+        "task_deleted",
+        "submission_created",
+        "submission_reviewed",
+        "comment_created",
+        "comment_deleted",
+        "proposal_created",
+        "proposal_status_changed",
+        "proposal_deleted",
+        "vote_cast",
+        "voting_reminder_24h",
+        "voting_reminder_1h",
       ],
-      notification_category: ['tasks', 'proposals', 'voting', 'comments', 'system'],
-      proposal_category: ['feature', 'governance', 'treasury', 'community', 'development'],
-      proposal_status: ['draft', 'submitted', 'approved', 'rejected', 'voting'],
-      review_status: ['pending', 'approved', 'rejected', 'disputed'],
-      sprint_status: ['planning', 'active', 'completed'],
-      task_priority: ['low', 'medium', 'high', 'critical'],
-      task_status: ['backlog', 'todo', 'in_progress', 'review', 'done'],
-      task_type: ['development', 'content', 'design', 'custom'],
-      user_role: ['admin', 'council', 'member', 'guest'],
-      vote_value: ['yes', 'no', 'abstain'],
+      notification_category: [
+        "tasks",
+        "proposals",
+        "voting",
+        "comments",
+        "system",
+      ],
+      proposal_category: [
+        "feature",
+        "governance",
+        "treasury",
+        "community",
+        "development",
+      ],
+      proposal_status: ["draft", "submitted", "approved", "rejected", "voting"],
+      recurrence_rule: [
+        "sprint_start",
+        "daily",
+        "weekly",
+        "biweekly",
+        "monthly",
+      ],
+      review_status: ["pending", "approved", "rejected", "disputed"],
+      sprint_status: ["planning", "active", "completed"],
+      task_priority: ["low", "medium", "high", "critical"],
+      task_status: ["backlog", "todo", "in_progress", "review", "done"],
+      task_type: ["development", "content", "design", "custom"],
+      user_role: ["admin", "council", "member", "guest"],
+      vote_value: ["yes", "no", "abstain"],
     },
   },
-} as const;
+} as const

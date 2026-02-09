@@ -9,7 +9,35 @@
  */
 
 @layer base {
+  @font-face {
+    font-family: 'DM Sans';
+    font-style: normal;
+    font-weight: 100 1000;
+    font-display: swap;
+    src: url('/fonts/dm-sans-var.woff2') format('woff2');
+  }
+
+  @font-face {
+    font-family: 'Fraunces';
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url('/fonts/fraunces-var.woff2') format('woff2');
+  }
+
+  @font-face {
+    font-family: 'JetBrains Mono';
+    font-style: normal;
+    font-weight: 100 800;
+    font-display: swap;
+    src: url('/fonts/jetbrains-mono-var.woff2') format('woff2');
+  }
+
   :root {
+    --font-sans: 'DM Sans';
+    --font-display: 'Fraunces';
+    --font-mono: 'JetBrains Mono';
+
     --background: 220 14% 96%;
     --foreground: 224 10% 15%;
     --card: 0 0% 100%;

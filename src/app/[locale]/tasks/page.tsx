@@ -94,12 +94,17 @@ export default function TasksPage() {
     }
   }, []);
 
-  const loadSubmissions = useCallback(async () => {
+  const loadSubmissions = useCallback(async (taskIds: string[]) => {
     try {
+      if (taskIds.length === 0) {
+        setSubmissions([]);
+        return;
+      }
       const supabase = createClient();
       const { data: submissionRows, error } = await supabase
         .from('task_submissions')
-        .select('task_id, user_id');
+        .select('task_id, user_id')
+        .in('task_id', taskIds);
 
       if (error) throw error;
 
@@ -152,10 +157,18 @@ export default function TasksPage() {
     }
   }, []);
 
-  const loadLikes = useCallback(async () => {
+  const loadLikes = useCallback(async (taskIds: string[]) => {
     try {
+      if (taskIds.length === 0) {
+        setLikeCounts({});
+        setLikedTasks({});
+        return;
+      }
       const supabase = createClient();
-      const { data, error } = await supabase.from('task_likes').select('task_id, user_id');
+      const { data, error } = await supabase
+        .from('task_likes')
+        .select('task_id, user_id')
+        .in('task_id', taskIds);
 
       if (error) throw error;
 
@@ -191,9 +204,10 @@ export default function TasksPage() {
   }, [loadCommentCounts, tasks]);
 
   useEffect(() => {
-    loadSubmissions();
-    loadLikes();
-  }, [loadSubmissions, loadLikes]);
+    const taskIds = tasks.map((task) => task.id);
+    loadSubmissions(taskIds);
+    loadLikes(taskIds);
+  }, [loadSubmissions, loadLikes, tasks]);
 
   useEffect(() => {
     const submissionCountMap = submissions.reduce<Record<string, number>>((acc, submission) => {

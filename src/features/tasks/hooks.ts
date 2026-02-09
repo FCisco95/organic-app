@@ -87,7 +87,10 @@ export function useTasks(filters: TaskFilters = {}) {
         query = query.in('status', ['backlog', 'todo']).is('assignee_id', null);
       }
       if (filters.search) {
-        query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
+        query = query.textSearch('search_vector', filters.search, {
+          type: 'websearch',
+          config: 'english',
+        });
       }
       if (filters.labels && filters.labels.length > 0) {
         query = query.overlaps('labels', filters.labels);
