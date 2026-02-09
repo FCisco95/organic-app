@@ -78,6 +78,19 @@
 - [x] Active sprint indicator
 - [x] Sprint history and archive
 
+### Phase 12: Advanced Tasks & Delegation (Completed)
+
+- [x] Task dependencies + blocking visualization (BlockedBadge, DependencyPicker)
+- [x] Subtasks support + progress display (SubtaskList, SubtaskProgress)
+- [x] Task templates CRUD + create-from-template flow
+- [x] Recurring task templates cloned on sprint completion
+- [x] Delegation UX during voting (DelegatedPowerBadge, DelegationInfo, DelegationPanel)
+- [x] Task detail page integration for dependencies/subtasks
+- [x] Proposal detail page integration for delegation UX
+- [x] i18n coverage for all Phase 12 components
+- [x] Phase 12 bug fixes and query cache invalidation
+- [x] Templates page UX polish (header, cards, skeletons)
+
 ## 🚧 In Progress / Next Steps
 
 ### Phase 7: Proposals System (In Progress)
@@ -278,10 +291,10 @@
 - [x] Real-time unread counter updates
 - [x] Notifications respect follow + preference rules
 - [x] No cross-user data leaks (RLS enforced)
-- [ ] Email digests sent only when relevant
 - [x] All notifications link to valid sources
 - [x] Batched notifications show correct count and update in real-time
 - [x] Voting reminders are idempotent (no duplicates on re-run)
+- [ ] Email digests sent only when relevant
 
 ### Phase 12: Advanced Features
 
