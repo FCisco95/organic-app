@@ -44,6 +44,10 @@ next-env.d.ts
 # MCP config (contains tokens)
 .mcp.json
 
+# Agent tooling
+.agents/
+agents/
+
 # Local / OS junk
 *:Zone.Identifier
 logo-base64.txt
