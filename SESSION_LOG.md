@@ -457,3 +457,8 @@ Add newest entries at the top.
 - Updated middleware for locale detection
 - Modified next.config.js for i18n plugin
 - Updated package.json with next-intl dependency
+## 2026-02-09
+- Implemented DB performance improvements: search vectors, indexes, batching RPCs, and query updates.
+- Switched to self-hosted fonts (removed `next/font/google`) and added local font loading in globals.
+- Updated Supabase types and rebuilt to address missing RPC/type exports.
+- Restored deleted `supabase/` migrations and noted remaining build issue (`/_document` not found).
