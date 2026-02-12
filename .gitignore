@@ -56,3 +56,9 @@ logo-base64.txt
 # Supabase local temp
 supabase/.temp/
 .envrc
+
+
+node_modules/
+.next/
+.env
+dist/
