@@ -6,12 +6,13 @@ import type { TreasuryTransaction } from '@/features/treasury/types';
 
 let cached: { data: unknown; timestamp: number } | null = null;
 const CACHE_TTL = 60_000;
+const RESPONSE_CACHE_CONTROL = 'public, s-maxage=60, stale-while-revalidate=120';
 
 async function fetchSolPrice(): Promise<number | null> {
   try {
     const res = await fetch(
       'https://api.jup.ag/price/v2?ids=So11111111111111111111111111111111111111112',
-      { signal: AbortSignal.timeout(5000) }
+      { signal: AbortSignal.timeout(5000), next: { revalidate: 60 } }
     );
     if (!res.ok) return null;
     const json = await res.json();
@@ -27,6 +28,7 @@ async function fetchOrgPrice(): Promise<number | null> {
   try {
     const res = await fetch(`https://api.jup.ag/price/v2?ids=${TOKEN_CONFIG.mint}`, {
       signal: AbortSignal.timeout(5000),
+      next: { revalidate: 60 },
     });
     if (!res.ok) return null;
     const json = await res.json();
@@ -108,7 +110,9 @@ export async function GET() {
   try {
     const now = Date.now();
     if (cached && now - cached.timestamp < CACHE_TTL) {
-      return NextResponse.json(cached.data);
+      return NextResponse.json(cached.data, {
+        headers: { 'Cache-Control': RESPONSE_CACHE_CONTROL },
+      });
     }
 
     const wallet = TOKEN_CONFIG.treasuryWallet;
@@ -152,7 +156,9 @@ export async function GET() {
     const response = { data };
     cached = { data: response, timestamp: now };
 
-    return NextResponse.json(response);
+    return NextResponse.json(response, {
+      headers: { 'Cache-Control': RESPONSE_CACHE_CONTROL },
+    });
   } catch (error) {
     console.error('Treasury API error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

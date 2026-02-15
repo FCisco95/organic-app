@@ -2,11 +2,12 @@ import { NextResponse } from 'next/server';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { isOrgHolder } from '@/lib/solana';
 
+const ASSIGN_PROFILE_COLUMNS = 'id, organic_id, wallet_pubkey';
+
 type UserProfile = {
   id: string;
   organic_id: number | null;
   wallet_pubkey: string | null;
-  [key: string]: unknown;
 };
 
 export async function POST(request: Request) {
@@ -36,7 +37,7 @@ export async function POST(request: Request) {
     // Get user profile
     const { data: profileData, error: profileError } = await supabase
       .from('user_profiles')
-      .select('*')
+      .select(ASSIGN_PROFILE_COLUMNS)
       .eq('id', user.id)
       .maybeSingle();
 

@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
+const achievementCheckByUser = new Map<string, number>();
+const ACHIEVEMENT_CHECK_TTL_MS = 5 * 60 * 1000;
+const XP_EVENT_COLUMNS =
+  'id, user_id, event_type, source_type, source_id, xp_amount, metadata, created_at';
+const ACHIEVEMENT_COLUMNS =
+  'id, name, description, icon, category, condition_type, condition_field, condition_threshold, xp_reward, created_at';
+
 export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient();
@@ -20,7 +27,7 @@ export async function GET(request: NextRequest) {
     if (isHistory) {
       const { data: events, error } = await supabase
         .from('xp_events')
-        .select('*')
+        .select(XP_EVENT_COLUMNS)
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(limit);
@@ -48,10 +55,10 @@ export async function GET(request: NextRequest) {
           .eq('user_id', user.id)
           .order('unlocked_at', { ascending: false })
           .limit(5),
-        supabase.from('achievements').select('*'),
+        supabase.from('achievements').select(ACHIEVEMENT_COLUMNS),
         supabase
           .from('xp_events')
-          .select('*')
+          .select(XP_EVENT_COLUMNS)
           .eq('user_id', user.id)
           .order('created_at', { ascending: false })
           .limit(10),
@@ -61,8 +68,13 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to fetch reputation' }, { status: 500 });
     }
 
-    // Also trigger achievement check
-    await supabase.rpc('check_achievements', { p_user_id: user.id });
+    // Avoid running the expensive achievement scan on every read request.
+    const now = Date.now();
+    const lastCheckedAt = achievementCheckByUser.get(user.id) ?? 0;
+    if (now - lastCheckedAt >= ACHIEVEMENT_CHECK_TTL_MS) {
+      await supabase.rpc('check_achievements', { p_user_id: user.id });
+      achievementCheckByUser.set(user.id, now);
+    }
 
     const profile = profileResult.data;
     const achievementDefs = achievementDefsResult.data ?? [];

@@ -22,15 +22,15 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Missing subject_type or subject_id' }, { status: 400 });
     }
 
-    const { data } = await supabase
+    const { count } = await supabase
       .from('user_follows')
-      .select('id')
+      .select('id', { head: true, count: 'exact' })
       .eq('user_id', user.id)
       .eq('subject_type', subjectType)
       .eq('subject_id', subjectId)
-      .maybeSingle();
+      .limit(1);
 
-    return NextResponse.json({ following: !!data });
+    return NextResponse.json({ following: (count ?? 0) > 0 });
   } catch (err) {
     console.error('Follow check API error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

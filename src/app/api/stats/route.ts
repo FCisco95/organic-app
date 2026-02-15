@@ -5,12 +5,14 @@ const ORG_TOKEN_MINT = process.env.NEXT_PUBLIC_ORG_TOKEN_MINT;
 
 let cachedStats: { data: unknown; timestamp: number } | null = null;
 const CACHE_TTL = 60_000; // 60 seconds
+const RESPONSE_CACHE_CONTROL = 'public, s-maxage=60, stale-while-revalidate=120';
 
 async function fetchOrgPrice(): Promise<number | null> {
   if (!ORG_TOKEN_MINT) return null;
   try {
     const res = await fetch(`https://api.jup.ag/price/v2?ids=${ORG_TOKEN_MINT}`, {
       signal: AbortSignal.timeout(5000),
+      next: { revalidate: 60 },
     });
     if (!res.ok) return null;
     const json = await res.json();
@@ -25,7 +27,9 @@ export async function GET() {
   try {
     const now = Date.now();
     if (cachedStats && now - cachedStats.timestamp < CACHE_TTL) {
-      return NextResponse.json(cachedStats.data);
+      return NextResponse.json(cachedStats.data, {
+        headers: { 'Cache-Control': RESPONSE_CACHE_CONTROL },
+      });
     }
 
     const supabase = await createClient();
@@ -55,7 +59,9 @@ export async function GET() {
     const response = { stats };
     cachedStats = { data: response, timestamp: now };
 
-    return NextResponse.json(response);
+    return NextResponse.json(response, {
+      headers: { 'Cache-Control': RESPONSE_CACHE_CONTROL },
+    });
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { notificationFiltersSchema } from '@/features/notifications/schemas';
 
+const NOTIFICATION_SELECT_COLUMNS =
+  'id, user_id, event_type, category, actor_id, subject_type, subject_id, metadata, read, read_at, created_at, batch_id';
+
 // GET /api/notifications — list notifications for current user
 export async function GET(request: NextRequest) {
   try {
@@ -49,7 +52,7 @@ export async function GET(request: NextRequest) {
     {
       let q = supabase
         .from('notifications')
-        .select('*, notification_batches(count, first_event_at, last_event_at)', {
+        .select(`${NOTIFICATION_SELECT_COLUMNS}, notification_batches(count, first_event_at, last_event_at)`, {
           count: 'exact',
         })
         .eq('user_id', user.id)
@@ -72,7 +75,7 @@ export async function GET(request: NextRequest) {
     if (!useBatchJoin) {
       let q = supabase
         .from('notifications')
-        .select('*', { count: 'exact' })
+        .select(NOTIFICATION_SELECT_COLUMNS, { count: 'exact' })
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(limit);
@@ -90,12 +93,20 @@ export async function GET(request: NextRequest) {
       total = result.count ?? 0;
     }
 
-    // Get unread count (always, for the badge)
-    const { count: unreadCount } = await supabase
-      .from('notifications')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', user.id)
-      .eq('read', false);
+    // Reuse the already computed total when this request is specifically
+    // the unread badge query (/api/notifications?unread=true&limit=1).
+    let unreadCount: number | null = null;
+    const canReuseTotalForUnreadCount = unread === true && !category && !cursorTimestamp;
+    if (canReuseTotalForUnreadCount) {
+      unreadCount = total;
+    } else {
+      const { count } = await supabase
+        .from('notifications')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .eq('read', false);
+      unreadCount = count ?? 0;
+    }
 
     // Fetch actor info for notifications
     const actorIds = [

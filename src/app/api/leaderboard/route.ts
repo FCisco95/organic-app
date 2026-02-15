@@ -18,6 +18,7 @@ type LeaderboardEntry = {
   level: number | null;
   current_streak: number | null;
 };
+const RESPONSE_CACHE_CONTROL = 'public, s-maxage=60, stale-while-revalidate=120';
 
 const ensureRanks = (entries: LeaderboardRow[]) => {
   if (entries.length === 0) return entries;
@@ -81,9 +82,14 @@ export async function GET() {
         current_streak: row.current_streak,
       }));
 
-    return NextResponse.json({
-      leaderboard: result,
-    });
+    return NextResponse.json(
+      {
+        leaderboard: result,
+      },
+      {
+        headers: { 'Cache-Control': RESPONSE_CACHE_CONTROL },
+      }
+    );
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
