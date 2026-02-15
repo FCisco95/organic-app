@@ -2,6 +2,17 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 
+const DELEGATION_COLUMNS = 'id, delegator_id, delegate_id, category, created_at, updated_at';
+const DELEGATION_PROFILE_COLUMNS = 'id, name, email, organic_id, avatar_url';
+
+type DelegationProfile = {
+  id: string;
+  name: string | null;
+  email: string;
+  organic_id: number | null;
+  avatar_url: string | null;
+};
+
 const delegateSchema = z.object({
   delegate_id: z.string().uuid('Invalid delegate ID'),
   category: z
@@ -28,55 +39,65 @@ export async function GET() {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
-    // Delegations I've made (who I delegated to)
-    const { data: outgoing, error: outError } = await supabase
-      .from('vote_delegations')
-      .select(
-        `
-        id,
-        delegator_id,
-        delegate_id,
-        category,
-        created_at,
-        delegate:user_profiles!vote_delegations_delegate_id_fkey(
-          id, name, email, organic_id, avatar_url
-        )
-      `
-      )
-      .eq('delegator_id', user.id)
-      .order('created_at', { ascending: false });
+    const [outgoingResult, incomingResult] = await Promise.all([
+      supabase
+        .from('vote_delegations')
+        .select(DELEGATION_COLUMNS)
+        .eq('delegator_id', user.id)
+        .order('created_at', { ascending: false }),
+      supabase
+        .from('vote_delegations')
+        .select(DELEGATION_COLUMNS)
+        .eq('delegate_id', user.id)
+        .order('created_at', { ascending: false }),
+    ]);
 
-    if (outError) {
-      console.error('Error fetching outgoing delegations:', outError);
+    const outgoing = outgoingResult.data ?? [];
+    const incoming = incomingResult.data ?? [];
+
+    if (outgoingResult.error) {
+      console.error('Error fetching outgoing delegations:', outgoingResult.error);
       return NextResponse.json({ error: 'Failed to fetch delegations' }, { status: 500 });
     }
 
-    // Delegations to me (who delegated to me)
-    const { data: incoming, error: inError } = await supabase
-      .from('vote_delegations')
-      .select(
-        `
-        id,
-        delegator_id,
-        delegate_id,
-        category,
-        created_at,
-        delegator:user_profiles!vote_delegations_delegator_id_fkey(
-          id, name, email, organic_id, avatar_url
-        )
-      `
-      )
-      .eq('delegate_id', user.id)
-      .order('created_at', { ascending: false });
-
-    if (inError) {
-      console.error('Error fetching incoming delegations:', inError);
+    if (incomingResult.error) {
+      console.error('Error fetching incoming delegations:', incomingResult.error);
       return NextResponse.json({ error: 'Failed to fetch delegations' }, { status: 500 });
+    }
+
+    const profileIds = [
+      ...new Set([
+        ...outgoing.map((delegation) => delegation.delegate_id),
+        ...incoming.map((delegation) => delegation.delegator_id),
+      ]),
+    ];
+
+    const profilesById = new Map<string, DelegationProfile>();
+    if (profileIds.length > 0) {
+      const { data: profiles, error: profilesError } = await supabase
+        .from('user_profiles')
+        .select(DELEGATION_PROFILE_COLUMNS)
+        .in('id', profileIds);
+
+      if (profilesError) {
+        console.error('Error fetching delegation profiles:', profilesError);
+        return NextResponse.json({ error: 'Failed to fetch delegations' }, { status: 500 });
+      }
+
+      for (const profile of profiles ?? []) {
+        profilesById.set(profile.id, profile);
+      }
     }
 
     return NextResponse.json({
-      outgoing: outgoing ?? [],
-      incoming: incoming ?? [],
+      outgoing: outgoing.map((delegation) => ({
+        ...delegation,
+        delegate: profilesById.get(delegation.delegate_id) ?? null,
+      })),
+      incoming: incoming.map((delegation) => ({
+        ...delegation,
+        delegator: profilesById.get(delegation.delegator_id) ?? null,
+      })),
     });
   } catch (error) {
     console.error('Delegations GET error:', error);
