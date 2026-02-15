@@ -1,10 +1,19 @@
 import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 
+let cachedConnection: { rpcUrl: string; connection: Connection } | null = null;
+let cachedOrgMint: { mintAddress: string; mint: PublicKey } | null = null;
+
 // Solana connection
 export function getConnection(): Connection {
   const rpcUrl = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || clusterApiUrl('mainnet-beta');
-  return new Connection(rpcUrl, 'confirmed');
+  if (cachedConnection?.rpcUrl === rpcUrl) {
+    return cachedConnection.connection;
+  }
+
+  const connection = new Connection(rpcUrl, 'confirmed');
+  cachedConnection = { rpcUrl, connection };
+  return connection;
 }
 
 // ORG Token mint address
@@ -12,7 +21,13 @@ export function getConnection(): Connection {
 export function getOrgTokenMint(): PublicKey {
   const mintAddress =
     process.env.NEXT_PUBLIC_ORG_TOKEN_MINT || 'DuXugm4oTXrGDopgxgudyhboaf6uUg1GVbJ6jk6qbonk';
-  return new PublicKey(mintAddress);
+  if (cachedOrgMint?.mintAddress === mintAddress) {
+    return cachedOrgMint.mint;
+  }
+
+  const mint = new PublicKey(mintAddress);
+  cachedOrgMint = { mintAddress, mint };
+  return mint;
 }
 
 // Legacy export for backwards compatibility
