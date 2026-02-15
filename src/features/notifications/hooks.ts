@@ -46,7 +46,7 @@ export function useNotifications(filters?: { category?: NotificationCategory; un
       if (!res.ok) throw new Error('Failed to fetch notifications');
       return res.json();
     },
-    staleTime: 15_000,
+    staleTime: 30_000,
   });
 
   // Subscribe to realtime inserts for live updates, filtered to current user
@@ -110,15 +110,19 @@ export function useNotifications(filters?: { category?: NotificationCategory; un
             if (!old) return old;
             const index = old.notifications.findIndex((n) => n.id === updatedNotification.id);
             if (index === -1) return old;
+            const wasUnread = !old.notifications[index].read;
             const notifications = [...old.notifications];
             notifications[index] = { ...notifications[index], ...updatedNotification };
             notifications.sort(
               (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
             );
-            return { ...old, notifications };
+            const nowUnread = !updatedNotification.read;
+            return {
+              ...old,
+              notifications,
+              unread_count: wasUnread && !nowUnread ? Math.max(0, old.unread_count - 1) : old.unread_count,
+            };
           });
-
-          queryClient.invalidateQueries({ queryKey: notificationKeys.unreadCount() });
         }
       )
       .subscribe();
@@ -157,7 +161,7 @@ export function useNotificationsInfinite(filters?: {
       const last = lastPage.notifications[lastPage.notifications.length - 1];
       return last?.id;
     },
-    staleTime: 15_000,
+    staleTime: 30_000,
   });
 }
 
@@ -170,8 +174,8 @@ export function useUnreadCount() {
       const data: NotificationsResponse = await res.json();
       return data.unread_count;
     },
-    staleTime: 15_000,
-    refetchInterval: 30_000,
+    staleTime: 30_000,
+    refetchInterval: 60_000,
   });
 }
 
@@ -184,10 +188,32 @@ export function useMarkRead() {
         method: 'PATCH',
       });
       if (!res.ok) throw new Error('Failed to mark as read');
-      return res.json();
+      await res.json();
+      return notificationId;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: notificationKeys.all });
+    onSuccess: (notificationId) => {
+      queryClient.setQueryData<number>(notificationKeys.unreadCount(), (old) =>
+        old ? Math.max(0, old - 1) : 0
+      );
+      queryClient.setQueriesData<NotificationsResponse>(
+        { queryKey: notificationKeys.all },
+        (old) => {
+          if (!old) return old;
+          const index = old.notifications.findIndex((n) => n.id === notificationId);
+          if (index === -1 || old.notifications[index].read) return old;
+          const notifications = [...old.notifications];
+          notifications[index] = {
+            ...notifications[index],
+            read: true,
+            read_at: new Date().toISOString(),
+          };
+          return {
+            ...old,
+            notifications,
+            unread_count: Math.max(0, old.unread_count - 1),
+          };
+        }
+      );
     },
   });
 }
@@ -202,7 +228,21 @@ export function useMarkAllRead() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: notificationKeys.all });
+      queryClient.setQueryData(notificationKeys.unreadCount(), 0);
+      queryClient.setQueriesData<NotificationsResponse>(
+        { queryKey: notificationKeys.all },
+        (old) => {
+          if (!old) return old;
+          const now = new Date().toISOString();
+          return {
+            ...old,
+            notifications: old.notifications.map((notification) =>
+              notification.read ? notification : { ...notification, read: true, read_at: now }
+            ),
+            unread_count: 0,
+          };
+        }
+      );
     },
   });
 }

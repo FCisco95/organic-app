@@ -23,6 +23,11 @@ import {
   UpdateTemplateInput,
 } from './schemas';
 
+const TASK_SUBMISSION_REVIEW_COLUMNS =
+  'id, task_id, user_id, submission_type, content_link, content_text, description, pr_link, file_urls, custom_fields, testing_notes, revision_notes, reach_metrics, review_status, quality_score, earned_points, reviewer_id, reviewer_notes, rejection_reason, submitted_at, reviewed_at, created_at, updated_at';
+const TASK_TEMPLATE_COLUMNS =
+  'id, name, description, task_type, priority, base_points, labels, is_team_task, max_assignees, default_assignee_id, is_recurring, recurrence_rule, org_id, created_by, created_at, updated_at';
+
 // Query keys
 export const taskKeys = {
   all: ['tasks'] as const,
@@ -226,7 +231,7 @@ export function usePendingReviewSubmissions() {
     queryFn: async () => {
       const { data: submissions, error } = await supabase
         .from('task_submissions')
-        .select('*')
+        .select(TASK_SUBMISSION_REVIEW_COLUMNS)
         .eq('review_status', 'pending')
         .order('submitted_at', { ascending: true });
 
@@ -729,12 +734,13 @@ export function useTaskTemplates() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('task_templates')
-        .select('*')
+        .select(TASK_TEMPLATE_COLUMNS)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
       return data as TaskTemplateWithCreator[];
     },
+    staleTime: 5 * 60 * 1000,
   });
 }
 
@@ -749,7 +755,7 @@ export function useTaskTemplate(templateId: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('task_templates')
-        .select('*')
+        .select(TASK_TEMPLATE_COLUMNS)
         .eq('id', templateId)
         .single();
 
@@ -757,6 +763,7 @@ export function useTaskTemplate(templateId: string) {
       return data as TaskTemplate;
     },
     enabled: !!templateId,
+    staleTime: 5 * 60 * 1000,
   });
 }
 
