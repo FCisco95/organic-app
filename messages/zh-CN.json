@@ -679,7 +679,11 @@
       "viewPullRequest": "查看 Pull Request",
       "viewContent": "查看内容",
       "designFile": "设计文件 {index}",
-      "viewSubmission": "查看提交"
+      "viewSubmission": "查看提交",
+      "on": "于",
+      "views": "浏览",
+      "likes": "点赞",
+      "shares": "分享"
     },
     "submission": {
       "submitWorkFor": "提交{type}任务工作",

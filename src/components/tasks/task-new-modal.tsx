@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
-import type { Assignee, Sprint, TaskPriority } from '@/features/tasks';
+import { useCreateTask, type Assignee, type Sprint, type TaskPriority } from '@/features/tasks';
 
 type TaskNewModalProps = {
   onClose: () => void;
@@ -14,6 +14,7 @@ type TaskNewModalProps = {
 
 export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewModalProps) {
   const t = useTranslations('Tasks');
+  const createTask = useCreateTask();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [points, setPoints] = useState('');
@@ -80,25 +81,20 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
 
       setSubmitting(true);
 
-      const response = await fetch('/api/tasks', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: title.trim(),
-          description: description.trim() || undefined,
-          base_points: points ? parseInt(points, 10) : undefined,
-          sprint_id: sprintId || undefined,
-          assignee_id: assigneeId || undefined,
-          priority,
-          due_date: dueDate || undefined,
-          labels,
-        }),
+      await createTask.mutateAsync({
+        title: title.trim(),
+        description: description.trim() || undefined,
+        task_type: 'custom',
+        is_team_task: false,
+        max_assignees: 1,
+        base_points: points ? parseInt(points, 10) : undefined,
+        sprint_id: sprintId || undefined,
+        assignee_id: assigneeId || undefined,
+        priority,
+        // API schema expects datetime; normalize date input to ISO.
+        due_date: dueDate ? new Date(`${dueDate}T00:00:00.000Z`).toISOString() : undefined,
+        labels,
       });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || t('toastTaskCreateFailed'));
-      }
 
       toast.success(t('toastTaskCreated'));
       onSuccess();

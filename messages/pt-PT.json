@@ -679,7 +679,11 @@
       "viewPullRequest": "Ver Pull Request",
       "viewContent": "Ver Conteúdo",
       "designFile": "Ficheiro de Design {index}",
-      "viewSubmission": "Ver Submissão"
+      "viewSubmission": "Ver Submissão",
+      "on": "em",
+      "views": "visualizações",
+      "likes": "gostos",
+      "shares": "partilhas"
     },
     "submission": {
       "submitWorkFor": "Submeter Trabalho para Tarefa de {type}",

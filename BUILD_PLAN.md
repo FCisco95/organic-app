@@ -93,6 +93,15 @@
 
 ## 🚧 In Progress / Next Steps
 
+### Phase 2.1: Task Management Audit Hardening (In Progress)
+
+- [x] Task creation modal now uses `POST /api/tasks` with server-side validation/authorization
+- [x] Submission review approval updates points + claimable points + tasks completed and runs achievement checks
+- [x] Claim API supports self-join for backlog/todo/in-progress and prevents leaving after submission
+- [x] Task list visibility hardened: tasks with `null` status are normalized to backlog so they remain visible
+- [ ] Complete remaining task i18n hardcoded string cleanup across all task surfaces
+- [ ] Complete manual QA sweep for task user stories (discovery, self-join, review, mobile)
+
 ### Phase 7: Proposals System (In Progress)
 
 - [x] Proposal creation form (multi-step wizard with per-step Zod validation)

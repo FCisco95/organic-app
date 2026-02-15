@@ -256,7 +256,7 @@ export const REVIEW_STATUS_COLORS: Record<ReviewStatus, string> = {
 };
 
 // Task status that indicates task is claimable
-export const CLAIMABLE_STATUSES: TaskStatus[] = ['backlog', 'todo'];
+export const CLAIMABLE_STATUSES: TaskStatus[] = ['backlog', 'todo', 'in_progress'];
 
 // Task status that indicates work is in progress
 export const IN_PROGRESS_STATUSES: TaskStatus[] = ['in_progress', 'review'];

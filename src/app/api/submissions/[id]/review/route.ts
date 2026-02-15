@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 
 const QUALITY_MULTIPLIERS: Record<number, number> = {
@@ -27,6 +27,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   try {
     const { id: submissionId } = await params;
     const supabase = await createClient();
+    const serviceClient = createServiceClient();
 
     const {
       data: { user },
@@ -116,25 +117,33 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
     if (action === 'approve') {
       // 1. Update submitter's user_profiles: points + tasks_completed
-      const { data: submitterProfile } = await supabase
+      const { data: submitterProfile, error: profileError } = await serviceClient
         .from('user_profiles')
         .select('total_points, claimable_points, tasks_completed')
         .eq('id', submission.user_id)
         .single();
 
-      if (submitterProfile) {
-        await supabase
-          .from('user_profiles')
-          .update({
-            total_points: (submitterProfile.total_points ?? 0) + earnedPoints,
-            claimable_points: (submitterProfile.claimable_points ?? 0) + earnedPoints,
-            tasks_completed: (submitterProfile.tasks_completed ?? 0) + 1,
-          })
-          .eq('id', submission.user_id);
+      if (profileError || !submitterProfile) {
+        console.error('Error loading submitter profile:', profileError);
+        return NextResponse.json({ error: 'Failed to update submitter profile' }, { status: 500 });
+      }
+
+      const { error: profileUpdateError } = await serviceClient
+        .from('user_profiles')
+        .update({
+          total_points: (submitterProfile.total_points ?? 0) + earnedPoints,
+          claimable_points: (submitterProfile.claimable_points ?? 0) + earnedPoints,
+          tasks_completed: (submitterProfile.tasks_completed ?? 0) + 1,
+        })
+        .eq('id', submission.user_id);
+
+      if (profileUpdateError) {
+        console.error('Error updating submitter profile:', profileUpdateError);
+        return NextResponse.json({ error: 'Failed to update submitter profile' }, { status: 500 });
       }
 
       // 2. Log task_completed activity (triggers XP via award_xp DB trigger)
-      await supabase.from('activity_log').insert({
+      const { error: taskCompletedLogError } = await serviceClient.from('activity_log').insert({
         event_type: 'task_completed',
         actor_id: submission.user_id,
         subject_type: 'task',
@@ -147,28 +156,35 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         },
       });
 
-      // 3. For solo tasks, mark as done
+      if (taskCompletedLogError) {
+        console.error('Error logging task_completed activity:', taskCompletedLogError);
+        return NextResponse.json({ error: 'Failed to log task completion' }, { status: 500 });
+      }
+
+      // 3. Run achievement checks after counters/XP updates from DB triggers.
+      const { error: achievementError } = await serviceClient.rpc('check_achievements', {
+        p_user_id: submission.user_id,
+      });
+
+      if (achievementError) {
+        console.error('Error checking achievements:', achievementError);
+        return NextResponse.json({ error: 'Failed to check achievements' }, { status: 500 });
+      }
+
+      // 4. For solo tasks, mark as done
       if (task && !task.is_team_task) {
-        await supabase
+        const { error: markDoneError } = await serviceClient
           .from('tasks')
           .update({ status: 'done', completed_at: new Date().toISOString() })
           .eq('id', submission.task_id);
+
+        if (markDoneError) {
+          console.error('Error marking task as done:', markDoneError);
+          return NextResponse.json({ error: 'Failed to mark task as done' }, { status: 500 });
+        }
       }
     }
-
-    // Log the review activity for the reviewer
-    await supabase.from('activity_log').insert({
-      event_type: 'submission_reviewed',
-      actor_id: user.id,
-      subject_type: 'submission',
-      subject_id: submissionId,
-      metadata: {
-        task_id: submission.task_id,
-        action,
-        quality_score,
-        ...(action === 'approve' ? { earned_points: earnedPoints } : { rejection_reason }),
-      },
-    });
+    // submission_reviewed activity is logged by DB trigger on task_submissions update.
 
     return NextResponse.json({
       submission: updatedSubmission,

@@ -679,7 +679,11 @@
       "viewPullRequest": "View Pull Request",
       "viewContent": "View Content",
       "designFile": "Design File {index}",
-      "viewSubmission": "View Submission"
+      "viewSubmission": "View Submission",
+      "on": "on",
+      "views": "views",
+      "likes": "likes",
+      "shares": "shares"
     },
     "submission": {
       "submitWorkFor": "Submit Work for {type} Task",

@@ -320,6 +320,8 @@ export default function TasksPage() {
     completed: ['done'],
   };
 
+  const normalizeTaskStatus = (status: TaskStatus | null): TaskStatus => status ?? 'backlog';
+
   const isVisibleToNonOrg = (status: TaskStatus) =>
     ['todo', 'in_progress', 'review', 'done'].includes(status);
 
@@ -380,12 +382,12 @@ export default function TasksPage() {
   };
 
   const getTabTasks = (tab: TaskTab) => {
-    const filteredByStatus = tasks.filter(
-      (task) => task.status && tabStatusMap[tab].includes(task.status)
+    const filteredByStatus = tasks.filter((task) =>
+      tabStatusMap[tab].includes(normalizeTaskStatus(task.status))
     );
     const visibleByRole = isOrgMember
       ? filteredByStatus
-      : filteredByStatus.filter((task) => task.status && isVisibleToNonOrg(task.status));
+      : filteredByStatus.filter((task) => isVisibleToNonOrg(normalizeTaskStatus(task.status)));
 
     return applyFilters(visibleByRole, tab);
   };

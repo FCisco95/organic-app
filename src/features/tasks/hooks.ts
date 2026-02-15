@@ -89,7 +89,7 @@ export function useTasks(filters: TaskFilters = {}) {
         query = query.eq('assignee_id', filters.assignee_id);
       }
       if (filters.is_claimable) {
-        query = query.in('status', ['backlog', 'todo']).is('assignee_id', null);
+        query = query.in('status', ['backlog', 'todo', 'in_progress']);
       }
       if (filters.search) {
         query = query.textSearch('search_vector', filters.search, {

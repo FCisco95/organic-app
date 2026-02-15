@@ -38,8 +38,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: 'Task not found' }, { status: 404 });
     }
 
-    // Check if task is joinable
-    if (!task.status || !['backlog', 'todo'].includes(task.status)) {
+    // Check if task is joinable (allow additional participants while in progress)
+    if (!task.status || !['backlog', 'todo', 'in_progress'].includes(task.status)) {
       return NextResponse.json(
         { error: 'This task is not available for joining' },
         { status: 400 }
@@ -119,6 +119,22 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     if (task.status && ['review', 'done'].includes(task.status)) {
       return NextResponse.json(
         { error: 'Cannot leave a task in review or already completed' },
+        { status: 400 }
+      );
+    }
+
+    // Don't allow leaving if user has already submitted work for this task
+    const { data: existingSubmission } = await supabase
+      .from('task_submissions')
+      .select('id')
+      .eq('task_id', taskId)
+      .eq('user_id', user.id)
+      .limit(1)
+      .maybeSingle();
+
+    if (existingSubmission) {
+      return NextResponse.json(
+        { error: 'Cannot leave a task after submitting work' },
         { status: 400 }
       );
     }
