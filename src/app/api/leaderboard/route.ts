@@ -14,6 +14,9 @@ type LeaderboardEntry = {
   tasks_completed: number | null;
   role: string;
   rank: number | null;
+  xp_total: number | null;
+  level: number | null;
+  current_streak: number | null;
 };
 
 const ensureRanks = (entries: LeaderboardRow[]) => {
@@ -45,7 +48,7 @@ export async function GET() {
     const { data: leaderboard, error } = await supabase
       .from('leaderboard_view')
       .select(
-        'id, name, email, organic_id, avatar_url, total_points, tasks_completed, role, rank, dense_rank'
+        'id, name, email, organic_id, avatar_url, total_points, tasks_completed, role, rank, dense_rank, xp_total, level, current_streak'
       )
       .not('organic_id', 'is', null)
       .order('total_points', { ascending: false })
@@ -73,6 +76,9 @@ export async function GET() {
         tasks_completed: row.tasks_completed,
         role: row.role ?? 'guest',
         rank: row.rank,
+        xp_total: row.xp_total,
+        level: row.level,
+        current_streak: row.current_streak,
       }));
 
     return NextResponse.json({

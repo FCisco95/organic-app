@@ -7,6 +7,7 @@ import { ActivityFeed } from '@/components/dashboard/activity-feed';
 import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
 import { Vote, CheckSquare, Fingerprint, ArrowRight, CalendarClock, Gavel, Layers } from 'lucide-react';
+import { ReputationSummary } from '@/components/reputation/reputation-summary';
 import Image from 'next/image';
 
 const CAPABILITIES = [
@@ -295,14 +296,18 @@ export default function Home() {
               {t('statusCardOneBody')}
             </p>
           </div>
-          <div className="rounded-2xl border border-gray-200 bg-white p-4">
-            <p className="text-[11px] uppercase tracking-[0.2em] text-gray-500">
-              {t('statusCardTwoLabel')}
-            </p>
-            <p className="mt-2 text-sm text-gray-700">
-              {t('statusCardTwoBody')}
-            </p>
-          </div>
+          {user ? (
+            <ReputationSummary />
+          ) : (
+            <div className="rounded-2xl border border-gray-200 bg-white p-4">
+              <p className="text-[11px] uppercase tracking-[0.2em] text-gray-500">
+                {t('statusCardTwoLabel')}
+              </p>
+              <p className="mt-2 text-sm text-gray-700">
+                {t('statusCardTwoBody')}
+              </p>
+            </div>
+          )}
           <div className="rounded-2xl border border-gray-200 bg-white p-4">
             <p className="text-[11px] uppercase tracking-[0.2em] text-gray-500">
               {t('statusCardThreeLabel')}

@@ -59,6 +59,45 @@ export type Database = {
           },
         ]
       }
+      achievements: {
+        Row: {
+          id: string
+          name: string
+          description: string
+          icon: string
+          category: string
+          condition_type: string
+          condition_field: string
+          condition_threshold: number
+          xp_reward: number
+          created_at: string
+        }
+        Insert: {
+          id: string
+          name: string
+          description: string
+          icon?: string
+          category: string
+          condition_type: string
+          condition_field: string
+          condition_threshold: number
+          xp_reward?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string
+          icon?: string
+          category?: string
+          condition_type?: string
+          condition_field?: string
+          condition_threshold?: number
+          xp_reward?: number
+          created_at?: string
+        }
+        Relationships: []
+      }
       comments: {
         Row: {
           attachments: Json | null
@@ -1168,6 +1207,54 @@ export type Database = {
           },
         ]
       }
+      user_achievements: {
+        Row: {
+          id: string
+          user_id: string
+          achievement_id: string
+          unlocked_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          achievement_id: string
+          unlocked_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          achievement_id?: string
+          unlocked_at?: string
+        }
+        Relationships: []
+      }
+      user_activity_counts: {
+        Row: {
+          user_id: string
+          tasks_completed: number
+          votes_cast: number
+          proposals_created: number
+          comments_created: number
+          updated_at: string
+        }
+        Insert: {
+          user_id: string
+          tasks_completed?: number
+          votes_cast?: number
+          proposals_created?: number
+          comments_created?: number
+          updated_at?: string
+        }
+        Update: {
+          user_id?: string
+          tasks_completed?: number
+          votes_cast?: number
+          proposals_created?: number
+          comments_created?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_follows: {
         Row: {
           created_at: string | null
@@ -1212,10 +1299,14 @@ export type Database = {
           avatar_url: string | null
           bio: string | null
           created_at: string | null
+          current_streak: number
           discord: string | null
           email: string
           id: string
+          last_active_date: string | null
+          level: number
           location: string | null
+          longest_streak: number
           name: string | null
           organic_id: number | null
           profile_visible: boolean
@@ -1226,15 +1317,20 @@ export type Database = {
           updated_at: string | null
           wallet_pubkey: string | null
           website: string | null
+          xp_total: number
         }
         Insert: {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string | null
+          current_streak?: number
           discord?: string | null
           email: string
           id: string
+          last_active_date?: string | null
+          level?: number
           location?: string | null
+          longest_streak?: number
           name?: string | null
           organic_id?: number | null
           profile_visible?: boolean
@@ -1245,15 +1341,20 @@ export type Database = {
           updated_at?: string | null
           wallet_pubkey?: string | null
           website?: string | null
+          xp_total?: number
         }
         Update: {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string | null
+          current_streak?: number
           discord?: string | null
           email?: string
           id?: string
+          last_active_date?: string | null
+          level?: number
           location?: string | null
+          longest_streak?: number
           name?: string | null
           organic_id?: number | null
           profile_visible?: boolean
@@ -1264,6 +1365,7 @@ export type Database = {
           updated_at?: string | null
           wallet_pubkey?: string | null
           website?: string | null
+          xp_total?: number
         }
         Relationships: []
       }
@@ -1430,29 +1532,75 @@ export type Database = {
         }
         Relationships: []
       }
+      xp_events: {
+        Row: {
+          id: string
+          user_id: string
+          event_type: string
+          source_type: string | null
+          source_id: string | null
+          xp_amount: number
+          metadata: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          event_type: string
+          source_type?: string | null
+          source_id?: string | null
+          xp_amount: number
+          metadata?: Json
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          event_type?: string
+          source_type?: string | null
+          source_id?: string | null
+          xp_amount?: number
+          metadata?: Json
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       leaderboard_view: {
         Row: {
           avatar_url: string | null
+          current_streak: number | null
           dense_rank: number | null
           email: string | null
           id: string | null
+          level: number | null
           name: string | null
           organic_id: number | null
           rank: number | null
           role: Database["public"]["Enums"]["user_role"] | null
           tasks_completed: number | null
           total_points: number | null
+          xp_total: number | null
         }
         Relationships: []
       }
     }
     Functions: {
+      calculate_level_from_xp: { Args: { xp: number }; Returns: number }
       calculate_quality_multiplier: { Args: { score: number }; Returns: number }
       calculate_vote_result: {
         Args: { p_proposal_id: string }
         Returns: string
+      }
+      check_achievements: {
+        Args: { p_user_id: string }
+        Returns: {
+          achievement_id: string
+          achievement_name: string
+          xp_reward: number
+          icon: string
+        }[]
       }
       check_quorum_met: { Args: { p_proposal_id: string }; Returns: boolean }
       cleanup_expired_nonces: { Args: never; Returns: number }

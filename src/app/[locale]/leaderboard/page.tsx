@@ -7,6 +7,8 @@ import { Trophy, Medal, Award, User, Star, TrendingUp } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
+import { LevelBadge } from '@/components/reputation/level-badge';
+import { formatXp } from '@/features/reputation';
 
 type LeaderboardEntry = {
   id: string;
@@ -18,6 +20,9 @@ type LeaderboardEntry = {
   tasks_completed: number;
   role: string;
   rank: number;
+  xp_total: number | null;
+  level: number | null;
+  current_streak: number | null;
 };
 
 export default function LeaderboardPage() {
@@ -122,7 +127,8 @@ export default function LeaderboardPage() {
         {/* Table Header */}
         <div className="grid grid-cols-12 gap-4 px-6 py-4 bg-gray-50 border-b border-gray-200 text-sm font-medium text-gray-500">
           <div className="col-span-1">{t('tableRank')}</div>
-          <div className="col-span-6">{t('tableMember')}</div>
+          <div className="col-span-4">{t('tableMember')}</div>
+          <div className="col-span-2 text-center">{t('tableLevel')}</div>
           <div className="col-span-2 text-center">{t('tableTasks')}</div>
           <div className="col-span-3 text-right">{t('tablePoints')}</div>
         </div>
@@ -154,7 +160,7 @@ export default function LeaderboardPage() {
                   <div className="col-span-1 flex items-center">{getRankIcon(entry.rank)}</div>
 
                   {/* Member Info */}
-                  <div className="col-span-6 flex items-center gap-3">
+                  <div className="col-span-4 flex items-center gap-3">
                     {entry.avatar_url ? (
                       <Image
                         src={entry.avatar_url}
@@ -185,6 +191,16 @@ export default function LeaderboardPage() {
                         </p>
                       )}
                     </div>
+                  </div>
+
+                  {/* Level */}
+                  <div className="col-span-2 flex items-center justify-center gap-2">
+                    {entry.level != null && entry.level > 0 && (
+                      <LevelBadge level={entry.level} size="sm" />
+                    )}
+                    {entry.xp_total != null && (
+                      <span className="text-xs text-gray-400">{formatXp(entry.xp_total)}</span>
+                    )}
                   </div>
 
                   {/* Tasks Completed */}
