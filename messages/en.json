@@ -67,6 +67,7 @@
     "treasury": "Treasury",
     "members": "Members",
     "notifications": "Notifications",
+    "disputes": "Disputes",
     "templates": "Templates",
     "settings": "Settings",
     "signOut": "Sign Out",
@@ -1240,7 +1241,12 @@
       "proposalDeleted": "deleted proposal \"{title}\"",
       "voteCast": "voted on \"{title}\"",
       "votingReminder24h": "voting ends in 24 hours for \"{title}\"",
-      "votingReminder1h": "voting ends in 1 hour for \"{title}\""
+      "votingReminder1h": "voting ends in 1 hour for \"{title}\"",
+      "disputeCreated": "disputed the review on \"{title}\"",
+      "disputeResponseSubmitted": "responded to the dispute on \"{title}\"",
+      "disputeEscalated": "dispute on \"{title}\" was escalated",
+      "disputeResolved": "dispute on \"{title}\" was resolved",
+      "disputeWithdrawn": "withdrew the dispute on \"{title}\""
     },
     "preferences": {
       "title": "Notification Preferences",
@@ -1252,6 +1258,7 @@
         "proposals": "Proposals",
         "voting": "Voting",
         "comments": "Comments",
+        "disputes": "Disputes",
         "system": "System"
       }
     }
@@ -1469,6 +1476,131 @@
         "distributions": "Distributions",
         "manual": "Manual Distribution"
       }
+    }
+  },
+  "Disputes": {
+    "title": "Disputes",
+    "pageTitle": "Dispute Resolution",
+    "pageDescription": "Review and resolve task submission disputes.",
+    "createTitle": "File a Dispute",
+    "createDescription": "Dispute a task submission review. An XP stake is required.",
+    "detailTitle": "Dispute Details",
+    "queueTitle": "Dispute Queue",
+    "queueEmpty": "No disputes to review",
+    "queueEmptyHint": "Disputes filed by members will appear here for arbitration.",
+    "myDisputesEmpty": "You have no disputes",
+    "myDisputesEmptyHint": "If you disagree with a task review, you can file a dispute from the task detail page.",
+    "fileDispute": "File Dispute",
+    "withdrawDispute": "Withdraw Dispute",
+    "withdrawConfirm": "Are you sure? A withdrawal fee of {fee} XP will be deducted from your stake.",
+    "appealDispute": "Appeal to Admin",
+    "appealConfirm": "Appeal this ruling? An admin will make the final decision.",
+    "assignSelf": "Claim as Arbitrator",
+    "recuse": "Recuse Myself",
+    "recuseConfirm": "Remove yourself as arbitrator? The dispute will return to the queue.",
+    "resolve": "Resolve Dispute",
+    "mediate": "Propose Mediation",
+    "mediateAgreement": "Mediation Agreement",
+    "xpStake": "XP Stake",
+    "xpStakeInfo": "This XP will be deducted now. It will be refunded if the dispute is upheld or mediated.",
+    "xpInsufficient": "Insufficient XP to file a dispute",
+    "cooldownActive": "Cooldown active — wait {days} days between disputes",
+    "minXpRequired": "Minimum {xp} XP required to file disputes",
+    "status": {
+      "open": "Open",
+      "mediation": "Mediation",
+      "awaiting_response": "Awaiting Response",
+      "under_review": "Under Review",
+      "resolved": "Resolved",
+      "appealed": "Appealed",
+      "appeal_review": "Appeal Review",
+      "dismissed": "Dismissed",
+      "withdrawn": "Withdrawn",
+      "mediated": "Mediated"
+    },
+    "tier": {
+      "mediation": "Mediation",
+      "council": "Council",
+      "admin": "Admin"
+    },
+    "resolution": {
+      "overturned": "Overturned",
+      "upheld": "Upheld",
+      "compromise": "Compromise",
+      "dismissed": "Dismissed"
+    },
+    "reason": {
+      "rejected_unfairly": "Rejected Unfairly",
+      "low_quality_score": "Low Quality Score",
+      "plagiarism_claim": "Plagiarism Claim",
+      "reviewer_bias": "Reviewer Bias",
+      "other": "Other"
+    },
+    "form": {
+      "reason": "Dispute Reason",
+      "reasonPlaceholder": "Select a reason...",
+      "evidence": "Evidence",
+      "evidencePlaceholder": "Describe why you believe the review was unfair. Provide specific details and context...",
+      "evidenceLinks": "Evidence Links",
+      "evidenceLinksPlaceholder": "Add supporting links (optional)",
+      "addLink": "Add Link",
+      "requestMediation": "Request mediation first",
+      "requestMediationHint": "Try to resolve with the reviewer before escalating (24h window)",
+      "response": "Counter-Argument",
+      "responsePlaceholder": "Provide your perspective on why the original review was fair...",
+      "responseLinks": "Supporting Links",
+      "resolutionOutcome": "Resolution Outcome",
+      "resolutionNotes": "Resolution Notes",
+      "resolutionNotesPlaceholder": "Explain the reasoning behind your decision...",
+      "newQualityScore": "New Quality Score",
+      "newQualityScoreHint": "Set a new quality score for the compromise",
+      "appealReason": "Appeal Reason",
+      "appealReasonPlaceholder": "Explain why you believe the council ruling was incorrect...",
+      "agreementText": "Agreement",
+      "agreementPlaceholder": "Describe the agreed resolution..."
+    },
+    "timeline": {
+      "filed": "Dispute Filed",
+      "mediationStarted": "Mediation Started",
+      "responseSubmitted": "Response Submitted",
+      "arbitratorAssigned": "Arbitrator Assigned",
+      "underReview": "Under Review",
+      "resolved": "Resolved",
+      "appealed": "Appealed",
+      "appealReview": "Appeal Under Review",
+      "withdrawn": "Withdrawn",
+      "mediated": "Mediated",
+      "deadline": "Deadline: {date}"
+    },
+    "detail": {
+      "task": "Task",
+      "submission": "Submission",
+      "disputant": "Disputant",
+      "reviewer": "Reviewer",
+      "arbitrator": "Arbitrator",
+      "unassigned": "Unassigned",
+      "evidence": "Evidence",
+      "reviewerResponse": "Reviewer Response",
+      "noResponse": "No response submitted yet",
+      "responseDeadline": "Response deadline: {date}",
+      "resolutionSection": "Resolution",
+      "comments": "Discussion",
+      "addComment": "Add Comment",
+      "originalReview": "Original Review",
+      "qualityScore": "Quality Score",
+      "rejectionReason": "Rejection Reason"
+    },
+    "stats": {
+      "title": "Arbitrator Stats",
+      "resolved": "Resolved",
+      "overturnRate": "Overturn Rate",
+      "avgTime": "Avg. Resolution Time"
+    },
+    "achievements": {
+      "first_arbiter": "First Arbiter",
+      "justice_keeper": "Justice Keeper",
+      "peacemaker": "Peacemaker",
+      "vindicated": "Vindicated"
     }
   }
 }

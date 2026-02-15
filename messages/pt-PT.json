@@ -67,6 +67,7 @@
     "treasury": "Tesouraria",
     "members": "Membros",
     "notifications": "Notificações",
+    "disputes": "Disputas",
     "templates": "Modelos",
     "settings": "Definições",
     "signOut": "Sair",
@@ -1240,7 +1241,12 @@
       "proposalDeleted": "eliminou proposta \"{title}\"",
       "voteCast": "votou em \"{title}\"",
       "votingReminder24h": "a votação termina em 24 horas para \"{title}\"",
-      "votingReminder1h": "a votação termina em 1 hora para \"{title}\""
+      "votingReminder1h": "a votação termina em 1 hora para \"{title}\"",
+      "disputeCreated": "disputou a revisão de \"{title}\"",
+      "disputeResponseSubmitted": "respondeu à disputa sobre \"{title}\"",
+      "disputeEscalated": "disputa sobre \"{title}\" foi escalada",
+      "disputeResolved": "disputa sobre \"{title}\" foi resolvida",
+      "disputeWithdrawn": "retirou a disputa sobre \"{title}\""
     },
     "preferences": {
       "title": "Preferências de Notificações",
@@ -1252,6 +1258,7 @@
         "proposals": "Propostas",
         "voting": "Votação",
         "comments": "Comentários",
+        "disputes": "Disputas",
         "system": "Sistema"
       }
     }
@@ -1469,6 +1476,131 @@
         "distributions": "Distribuições",
         "manual": "Distribuição Manual"
       }
+    }
+  },
+  "Disputes": {
+    "title": "Disputas",
+    "pageTitle": "Resolução de Disputas",
+    "pageDescription": "Reveja e resolva disputas de submissões de tarefas.",
+    "createTitle": "Abrir uma Disputa",
+    "createDescription": "Dispute a revisão de uma submissão de tarefa. É necessário um depósito de XP.",
+    "detailTitle": "Detalhes da Disputa",
+    "queueTitle": "Fila de Disputas",
+    "queueEmpty": "Nenhuma disputa para rever",
+    "queueEmptyHint": "As disputas submetidas por membros aparecerão aqui para arbitragem.",
+    "myDisputesEmpty": "Não tem disputas",
+    "myDisputesEmptyHint": "Se discordar de uma revisão de tarefa, pode abrir uma disputa na página de detalhe da tarefa.",
+    "fileDispute": "Abrir Disputa",
+    "withdrawDispute": "Retirar Disputa",
+    "withdrawConfirm": "Tem a certeza? Uma taxa de {fee} XP será deduzida do seu depósito.",
+    "appealDispute": "Recorrer ao Admin",
+    "appealConfirm": "Recorrer desta decisão? Um admin tomará a decisão final.",
+    "assignSelf": "Assumir como Árbitro",
+    "recuse": "Recusar-me",
+    "recuseConfirm": "Remover-se como árbitro? A disputa voltará à fila.",
+    "resolve": "Resolver Disputa",
+    "mediate": "Propor Mediação",
+    "mediateAgreement": "Acordo de Mediação",
+    "xpStake": "Depósito de XP",
+    "xpStakeInfo": "Este XP será deduzido agora. Será devolvido se a disputa for aceite ou mediada.",
+    "xpInsufficient": "XP insuficiente para abrir uma disputa",
+    "cooldownActive": "Período de espera ativo — aguarde {days} dias entre disputas",
+    "minXpRequired": "Mínimo de {xp} XP necessário para abrir disputas",
+    "status": {
+      "open": "Aberta",
+      "mediation": "Mediação",
+      "awaiting_response": "Aguardando Resposta",
+      "under_review": "Em Revisão",
+      "resolved": "Resolvida",
+      "appealed": "Recorrida",
+      "appeal_review": "Revisão de Recurso",
+      "dismissed": "Rejeitada",
+      "withdrawn": "Retirada",
+      "mediated": "Mediada"
+    },
+    "tier": {
+      "mediation": "Mediação",
+      "council": "Conselho",
+      "admin": "Admin"
+    },
+    "resolution": {
+      "overturned": "Revertida",
+      "upheld": "Mantida",
+      "compromise": "Compromisso",
+      "dismissed": "Rejeitada"
+    },
+    "reason": {
+      "rejected_unfairly": "Rejeitada Injustamente",
+      "low_quality_score": "Pontuação de Qualidade Baixa",
+      "plagiarism_claim": "Alegação de Plágio",
+      "reviewer_bias": "Parcialidade do Revisor",
+      "other": "Outro"
+    },
+    "form": {
+      "reason": "Motivo da Disputa",
+      "reasonPlaceholder": "Selecione um motivo...",
+      "evidence": "Evidências",
+      "evidencePlaceholder": "Descreva por que acredita que a revisão foi injusta. Forneça detalhes específicos e contexto...",
+      "evidenceLinks": "Links de Evidência",
+      "evidenceLinksPlaceholder": "Adicionar links de suporte (opcional)",
+      "addLink": "Adicionar Link",
+      "requestMediation": "Solicitar mediação primeiro",
+      "requestMediationHint": "Tente resolver com o revisor antes de escalar (janela de 24h)",
+      "response": "Contra-Argumento",
+      "responsePlaceholder": "Apresente a sua perspetiva sobre por que a revisão original foi justa...",
+      "responseLinks": "Links de Suporte",
+      "resolutionOutcome": "Resultado da Resolução",
+      "resolutionNotes": "Notas da Resolução",
+      "resolutionNotesPlaceholder": "Explique o raciocínio por trás da sua decisão...",
+      "newQualityScore": "Nova Pontuação de Qualidade",
+      "newQualityScoreHint": "Defina uma nova pontuação para o compromisso",
+      "appealReason": "Motivo do Recurso",
+      "appealReasonPlaceholder": "Explique por que acredita que a decisão do conselho foi incorreta...",
+      "agreementText": "Acordo",
+      "agreementPlaceholder": "Descreva a resolução acordada..."
+    },
+    "timeline": {
+      "filed": "Disputa Aberta",
+      "mediationStarted": "Mediação Iniciada",
+      "responseSubmitted": "Resposta Submetida",
+      "arbitratorAssigned": "Árbitro Atribuído",
+      "underReview": "Em Revisão",
+      "resolved": "Resolvida",
+      "appealed": "Recorrida",
+      "appealReview": "Recurso em Revisão",
+      "withdrawn": "Retirada",
+      "mediated": "Mediada",
+      "deadline": "Prazo: {date}"
+    },
+    "detail": {
+      "task": "Tarefa",
+      "submission": "Submissão",
+      "disputant": "Disputante",
+      "reviewer": "Revisor",
+      "arbitrator": "Árbitro",
+      "unassigned": "Não atribuído",
+      "evidence": "Evidências",
+      "reviewerResponse": "Resposta do Revisor",
+      "noResponse": "Nenhuma resposta submetida ainda",
+      "responseDeadline": "Prazo de resposta: {date}",
+      "resolutionSection": "Resolução",
+      "comments": "Discussão",
+      "addComment": "Adicionar Comentário",
+      "originalReview": "Revisão Original",
+      "qualityScore": "Pontuação de Qualidade",
+      "rejectionReason": "Motivo da Rejeição"
+    },
+    "stats": {
+      "title": "Estatísticas do Árbitro",
+      "resolved": "Resolvidas",
+      "overturnRate": "Taxa de Reversão",
+      "avgTime": "Tempo Médio de Resolução"
+    },
+    "achievements": {
+      "first_arbiter": "Primeiro Árbitro",
+      "justice_keeper": "Guardião da Justiça",
+      "peacemaker": "Pacificador",
+      "vindicated": "Vindicado"
     }
   }
 }

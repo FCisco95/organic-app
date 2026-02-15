@@ -12,7 +12,12 @@ export type ActivityEventType =
   | 'proposal_deleted'
   | 'vote_cast'
   | 'voting_reminder_24h'
-  | 'voting_reminder_1h';
+  | 'voting_reminder_1h'
+  | 'dispute_created'
+  | 'dispute_response_submitted'
+  | 'dispute_escalated'
+  | 'dispute_resolved'
+  | 'dispute_withdrawn';
 
 export interface ActivityEvent {
   id: string;

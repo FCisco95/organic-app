@@ -67,6 +67,7 @@
     "treasury": "财务",
     "members": "成员",
     "notifications": "通知",
+    "disputes": "争议",
     "templates": "模板",
     "settings": "设置",
     "signOut": "退出登录",
@@ -1240,7 +1241,12 @@
       "proposalDeleted": "删除了提案「{title}」",
       "voteCast": "在「{title}」上投票",
       "votingReminder24h": "「{title}」的投票将在 24 小时后结束",
-      "votingReminder1h": "「{title}」的投票将在 1 小时后结束"
+      "votingReminder1h": "「{title}」的投票将在 1 小时后结束",
+      "disputeCreated": "对「{title}」的审查提出了争议",
+      "disputeResponseSubmitted": "回应了「{title}」的争议",
+      "disputeEscalated": "「{title}」的争议已升级",
+      "disputeResolved": "「{title}」的争议已解决",
+      "disputeWithdrawn": "撤回了「{title}」的争议"
     },
     "preferences": {
       "title": "通知偏好设置",
@@ -1252,6 +1258,7 @@
         "proposals": "提案",
         "voting": "投票",
         "comments": "评论",
+        "disputes": "争议",
         "system": "系统"
       }
     }
@@ -1469,6 +1476,131 @@
         "distributions": "分配记录",
         "manual": "手动分配"
       }
+    }
+  },
+  "Disputes": {
+    "title": "争议",
+    "pageTitle": "争议解决",
+    "pageDescription": "审查和解决任务提交争议。",
+    "createTitle": "提交争议",
+    "createDescription": "对任务提交审查提出争议。需要 XP 押金。",
+    "detailTitle": "争议详情",
+    "queueTitle": "争议队列",
+    "queueEmpty": "没有待审查的争议",
+    "queueEmptyHint": "成员提交的争议将显示在这里等待仲裁。",
+    "myDisputesEmpty": "您没有争议",
+    "myDisputesEmptyHint": "如果您不同意任务审查结果，可以在任务详情页提出争议。",
+    "fileDispute": "提交争议",
+    "withdrawDispute": "撤回争议",
+    "withdrawConfirm": "确定吗？将从您的押金中扣除 {fee} XP 手续费。",
+    "appealDispute": "向管理员申诉",
+    "appealConfirm": "申诉此裁决？管理员将做出最终决定。",
+    "assignSelf": "认领为仲裁员",
+    "recuse": "退出仲裁",
+    "recuseConfirm": "确定退出仲裁？争议将返回队列。",
+    "resolve": "解决争议",
+    "mediate": "提议调解",
+    "mediateAgreement": "调解协议",
+    "xpStake": "XP 押金",
+    "xpStakeInfo": "此 XP 将立即扣除。如果争议被支持或调解成功，将予以退还。",
+    "xpInsufficient": "XP 不足，无法提交争议",
+    "cooldownActive": "冷却期中 — 两次争议之间需等待 {days} 天",
+    "minXpRequired": "最低需要 {xp} XP 才能提交争议",
+    "status": {
+      "open": "待处理",
+      "mediation": "调解中",
+      "awaiting_response": "等待回复",
+      "under_review": "审查中",
+      "resolved": "已解决",
+      "appealed": "已申诉",
+      "appeal_review": "申诉审查中",
+      "dismissed": "已驳回",
+      "withdrawn": "已撤回",
+      "mediated": "已调解"
+    },
+    "tier": {
+      "mediation": "调解",
+      "council": "理事会",
+      "admin": "管理员"
+    },
+    "resolution": {
+      "overturned": "推翻",
+      "upheld": "维持",
+      "compromise": "折中",
+      "dismissed": "驳回"
+    },
+    "reason": {
+      "rejected_unfairly": "不公正拒绝",
+      "low_quality_score": "质量评分过低",
+      "plagiarism_claim": "抄袭指控",
+      "reviewer_bias": "审查者偏见",
+      "other": "其他"
+    },
+    "form": {
+      "reason": "争议原因",
+      "reasonPlaceholder": "选择原因...",
+      "evidence": "证据",
+      "evidencePlaceholder": "描述您认为审查不公正的原因。请提供具体细节和背景...",
+      "evidenceLinks": "证据链接",
+      "evidenceLinksPlaceholder": "添加支持链接（可选）",
+      "addLink": "添加链接",
+      "requestMediation": "先请求调解",
+      "requestMediationHint": "在升级之前尝试与审查者解决（24小时窗口）",
+      "response": "反驳意见",
+      "responsePlaceholder": "阐述您认为原始审查公正的理由...",
+      "responseLinks": "支持链接",
+      "resolutionOutcome": "解决结果",
+      "resolutionNotes": "解决说明",
+      "resolutionNotesPlaceholder": "解释您决定的理由...",
+      "newQualityScore": "新质量评分",
+      "newQualityScoreHint": "为折中方案设置新的质量评分",
+      "appealReason": "申诉原因",
+      "appealReasonPlaceholder": "解释您认为理事会裁决不正确的原因...",
+      "agreementText": "协议",
+      "agreementPlaceholder": "描述达成的解决方案..."
+    },
+    "timeline": {
+      "filed": "争议已提交",
+      "mediationStarted": "调解已开始",
+      "responseSubmitted": "回复已提交",
+      "arbitratorAssigned": "仲裁员已分配",
+      "underReview": "审查中",
+      "resolved": "已解决",
+      "appealed": "已申诉",
+      "appealReview": "申诉审查中",
+      "withdrawn": "已撤回",
+      "mediated": "已调解",
+      "deadline": "截止日期：{date}"
+    },
+    "detail": {
+      "task": "任务",
+      "submission": "提交",
+      "disputant": "争议方",
+      "reviewer": "审查者",
+      "arbitrator": "仲裁员",
+      "unassigned": "未分配",
+      "evidence": "证据",
+      "reviewerResponse": "审查者回复",
+      "noResponse": "尚未提交回复",
+      "responseDeadline": "回复截止：{date}",
+      "resolutionSection": "解决方案",
+      "comments": "讨论",
+      "addComment": "添加评论",
+      "originalReview": "原始审查",
+      "qualityScore": "质量评分",
+      "rejectionReason": "拒绝原因"
+    },
+    "stats": {
+      "title": "仲裁员统计",
+      "resolved": "已解决",
+      "overturnRate": "推翻率",
+      "avgTime": "平均解决时间"
+    },
+    "achievements": {
+      "first_arbiter": "首位仲裁员",
+      "justice_keeper": "正义守护者",
+      "peacemaker": "和平使者",
+      "vindicated": "正名者"
     }
   }
 }

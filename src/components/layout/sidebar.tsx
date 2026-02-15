@@ -23,6 +23,7 @@ import {
   User,
   LogOut,
   FileText,
+  Scale,
 } from 'lucide-react';
 
 interface NavItem {
@@ -51,6 +52,7 @@ export function Sidebar() {
     { href: '/proposals', labelKey: 'proposals', icon: Vote, show: !!user },
     { href: '/leaderboard', labelKey: 'leaderboard', icon: Trophy, show: !!user },
     { href: '/rewards', labelKey: 'rewards', icon: Gift, show: !!user },
+    { href: '/disputes', labelKey: 'disputes', icon: Scale, show: !!user },
     { href: '/notifications', labelKey: 'notifications', icon: Bell, show: !!user },
   ];
 

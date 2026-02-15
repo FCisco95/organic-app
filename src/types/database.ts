@@ -156,6 +156,178 @@ export type Database = {
           },
         ]
       }
+      dispute_comments: {
+        Row: {
+          content: string
+          created_at: string
+          dispute_id: string
+          id: string
+          user_id: string
+          visibility: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          dispute_id: string
+          id?: string
+          user_id: string
+          visibility?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          dispute_id?: string
+          id?: string
+          user_id?: string
+          visibility?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dispute_comments_dispute_id_fkey"
+            columns: ["dispute_id"]
+            isOneToOne: false
+            referencedRelation: "disputes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dispute_comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      disputes: {
+        Row: {
+          appeal_deadline: string | null
+          arbitrator_id: string | null
+          created_at: string
+          disputant_id: string
+          evidence_links: string[]
+          evidence_text: string
+          id: string
+          mediation_deadline: string | null
+          new_quality_score: number | null
+          reason: Database["public"]["Enums"]["dispute_reason"]
+          resolution: Database["public"]["Enums"]["dispute_resolution"] | null
+          resolution_notes: string | null
+          resolved_at: string | null
+          response_deadline: string | null
+          response_links: string[]
+          response_submitted_at: string | null
+          response_text: string | null
+          reviewer_id: string
+          sprint_id: string | null
+          status: Database["public"]["Enums"]["dispute_status"]
+          submission_id: string
+          task_id: string
+          tier: Database["public"]["Enums"]["dispute_tier"]
+          updated_at: string
+          xp_refunded: boolean
+          xp_stake: number
+        }
+        Insert: {
+          appeal_deadline?: string | null
+          arbitrator_id?: string | null
+          created_at?: string
+          disputant_id: string
+          evidence_links?: string[]
+          evidence_text: string
+          id?: string
+          mediation_deadline?: string | null
+          new_quality_score?: number | null
+          reason: Database["public"]["Enums"]["dispute_reason"]
+          resolution?: Database["public"]["Enums"]["dispute_resolution"] | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          response_deadline?: string | null
+          response_links?: string[]
+          response_submitted_at?: string | null
+          response_text?: string | null
+          reviewer_id: string
+          sprint_id?: string | null
+          status?: Database["public"]["Enums"]["dispute_status"]
+          submission_id: string
+          task_id: string
+          tier?: Database["public"]["Enums"]["dispute_tier"]
+          updated_at?: string
+          xp_refunded?: boolean
+          xp_stake: number
+        }
+        Update: {
+          appeal_deadline?: string | null
+          arbitrator_id?: string | null
+          created_at?: string
+          disputant_id?: string
+          evidence_links?: string[]
+          evidence_text?: string
+          id?: string
+          mediation_deadline?: string | null
+          new_quality_score?: number | null
+          reason?: Database["public"]["Enums"]["dispute_reason"]
+          resolution?: Database["public"]["Enums"]["dispute_resolution"] | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          response_deadline?: string | null
+          response_links?: string[]
+          response_submitted_at?: string | null
+          response_text?: string | null
+          reviewer_id?: string
+          sprint_id?: string | null
+          status?: Database["public"]["Enums"]["dispute_status"]
+          submission_id?: string
+          task_id?: string
+          tier?: Database["public"]["Enums"]["dispute_tier"]
+          updated_at?: string
+          xp_refunded?: boolean
+          xp_stake?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "disputes_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "task_submissions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "disputes_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "disputes_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "sprints"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "disputes_disputant_id_fkey"
+            columns: ["disputant_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "disputes_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "disputes_arbitrator_id_fkey"
+            columns: ["arbitrator_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       holder_snapshots: {
         Row: {
           balance_ui: number
@@ -1936,12 +2108,41 @@ export type Database = {
         | "vote_cast"
         | "voting_reminder_24h"
         | "voting_reminder_1h"
+        | "dispute_created"
+        | "dispute_response_submitted"
+        | "dispute_escalated"
+        | "dispute_resolved"
+        | "dispute_withdrawn"
+      dispute_reason:
+        | "rejected_unfairly"
+        | "low_quality_score"
+        | "plagiarism_claim"
+        | "reviewer_bias"
+        | "other"
+      dispute_resolution:
+        | "overturned"
+        | "upheld"
+        | "compromise"
+        | "dismissed"
+      dispute_status:
+        | "open"
+        | "mediation"
+        | "awaiting_response"
+        | "under_review"
+        | "resolved"
+        | "appealed"
+        | "appeal_review"
+        | "dismissed"
+        | "withdrawn"
+        | "mediated"
+      dispute_tier: "mediation" | "council" | "admin"
       distribution_type: "epoch" | "manual" | "claim"
       notification_category:
         | "tasks"
         | "proposals"
         | "voting"
         | "comments"
+        | "disputes"
         | "system"
       proposal_category:
         | "feature"
@@ -2111,13 +2312,40 @@ export const Constants = {
         "vote_cast",
         "voting_reminder_24h",
         "voting_reminder_1h",
+        "dispute_created",
+        "dispute_response_submitted",
+        "dispute_escalated",
+        "dispute_resolved",
+        "dispute_withdrawn",
       ],
+      dispute_reason: [
+        "rejected_unfairly",
+        "low_quality_score",
+        "plagiarism_claim",
+        "reviewer_bias",
+        "other",
+      ],
+      dispute_resolution: ["overturned", "upheld", "compromise", "dismissed"],
+      dispute_status: [
+        "open",
+        "mediation",
+        "awaiting_response",
+        "under_review",
+        "resolved",
+        "appealed",
+        "appeal_review",
+        "dismissed",
+        "withdrawn",
+        "mediated",
+      ],
+      dispute_tier: ["mediation", "council", "admin"],
       distribution_type: ["epoch", "manual", "claim"],
       notification_category: [
         "tasks",
         "proposals",
         "voting",
         "comments",
+        "disputes",
         "system",
       ],
       proposal_category: [

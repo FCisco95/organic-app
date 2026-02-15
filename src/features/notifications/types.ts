@@ -1,6 +1,6 @@
 import type { ActivityEventType } from '@/features/activity/types';
 
-export type NotificationCategory = 'tasks' | 'proposals' | 'voting' | 'comments' | 'system';
+export type NotificationCategory = 'tasks' | 'proposals' | 'voting' | 'comments' | 'disputes' | 'system';
 
 export type FollowSubjectType = 'task' | 'proposal';
 
@@ -54,6 +54,7 @@ export const NOTIFICATION_CATEGORIES: NotificationCategory[] = [
   'proposals',
   'voting',
   'comments',
+  'disputes',
   'system',
 ];
 
@@ -62,6 +63,7 @@ export const CATEGORY_LABELS: Record<NotificationCategory, string> = {
   proposals: 'Proposals',
   voting: 'Voting',
   comments: 'Comments',
+  disputes: 'Disputes',
   system: 'System',
 };
 
@@ -80,4 +82,9 @@ export const EVENT_ICONS: Record<ActivityEventType, string> = {
   vote_cast: '🗳️',
   voting_reminder_24h: '⏰',
   voting_reminder_1h: '⏰',
+  dispute_created: '⚖️',
+  dispute_response_submitted: '📝',
+  dispute_escalated: '⬆️',
+  dispute_resolved: '✅',
+  dispute_withdrawn: '↩️',
 };
