@@ -1,14 +1,35 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
 import { useAnalytics } from '@/features/analytics';
 import { KPICards } from '@/components/analytics/kpi-cards';
-import { ActivityTrendChart } from '@/components/analytics/activity-trend-chart';
-import { MemberGrowthChart } from '@/components/analytics/member-growth-chart';
-import { TaskCompletionChart } from '@/components/analytics/task-completion-chart';
-import { ProposalCategoryChart } from '@/components/analytics/proposal-category-chart';
-import { VotingParticipationList } from '@/components/analytics/voting-participation-list';
+
+const ActivityTrendChart = dynamic(
+  () => import('@/components/analytics/activity-trend-chart').then((mod) => mod.ActivityTrendChart),
+  { loading: () => <div className="h-80 rounded-2xl bg-gray-100 animate-pulse" /> }
+);
+const MemberGrowthChart = dynamic(
+  () => import('@/components/analytics/member-growth-chart').then((mod) => mod.MemberGrowthChart),
+  { loading: () => <div className="h-80 rounded-2xl bg-gray-100 animate-pulse" /> }
+);
+const TaskCompletionChart = dynamic(
+  () => import('@/components/analytics/task-completion-chart').then((mod) => mod.TaskCompletionChart),
+  { loading: () => <div className="h-80 rounded-2xl bg-gray-100 animate-pulse" /> }
+);
+const ProposalCategoryChart = dynamic(
+  () =>
+    import('@/components/analytics/proposal-category-chart').then((mod) => mod.ProposalCategoryChart),
+  { loading: () => <div className="h-80 rounded-2xl bg-gray-100 animate-pulse" /> }
+);
+const VotingParticipationList = dynamic(
+  () =>
+    import('@/components/analytics/voting-participation-list').then(
+      (mod) => mod.VotingParticipationList
+    ),
+  { loading: () => <div className="h-80 rounded-2xl bg-gray-100 animate-pulse" /> }
+);
 
 export default function AnalyticsPage() {
   const t = useTranslations('Analytics');

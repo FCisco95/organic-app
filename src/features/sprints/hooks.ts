@@ -4,6 +4,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
 import type { Sprint, SprintSnapshot, SprintWithSnapshot } from './types';
 
+const SPRINT_COLUMNS =
+  'id, org_id, name, start_at, end_at, status, capacity_points, goal, created_at, updated_at';
+const SPRINT_SNAPSHOT_COLUMNS =
+  'id, sprint_id, completed_by, completed_at, total_tasks, completed_tasks, incomplete_tasks, total_points, completed_points, completion_rate, task_summary, incomplete_action, created_at';
+
 // Query keys
 export const sprintKeys = {
   all: ['sprints'] as const,
@@ -26,12 +31,13 @@ export function useSprints() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('sprints')
-        .select('*')
+        .select(SPRINT_COLUMNS)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
       return data as Sprint[];
     },
+    staleTime: 120_000,
   });
 }
 
@@ -50,6 +56,7 @@ export function useSprint(id: string) {
       return response.json();
     },
     enabled: !!id,
+    staleTime: 60_000,
   });
 }
 
@@ -64,7 +71,7 @@ export function useSprintSnapshot(sprintId: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('sprint_snapshots')
-        .select('*')
+        .select(SPRINT_SNAPSHOT_COLUMNS)
         .eq('sprint_id', sprintId)
         .single();
 
@@ -75,6 +82,7 @@ export function useSprintSnapshot(sprintId: string) {
       return data as SprintSnapshot;
     },
     enabled: !!sprintId,
+    staleTime: 120_000,
   });
 }
 
@@ -89,7 +97,7 @@ export function useSprintTimeline() {
     queryFn: async () => {
       const { data: sprints, error: sprintError } = await supabase
         .from('sprints')
-        .select('*')
+        .select(SPRINT_COLUMNS)
         .eq('status', 'completed')
         .order('end_at', { ascending: false });
 
@@ -99,7 +107,7 @@ export function useSprintTimeline() {
       const sprintIds = sprints.map((s) => s.id);
       const { data: snapshots, error: snapError } = await supabase
         .from('sprint_snapshots')
-        .select('*')
+        .select(SPRINT_SNAPSHOT_COLUMNS)
         .in('sprint_id', sprintIds);
 
       if (snapError) throw snapError;
@@ -113,6 +121,7 @@ export function useSprintTimeline() {
         })
       );
     },
+    staleTime: 120_000,
   });
 }
 

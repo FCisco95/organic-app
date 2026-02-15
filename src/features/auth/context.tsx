@@ -6,6 +6,8 @@ import { createClient } from '@/lib/supabase/client';
 import { Database } from '@/types/database';
 
 type UserProfile = Database['public']['Tables']['user_profiles']['Row'];
+const USER_PROFILE_COLUMNS =
+  'id, email, name, role, organic_id, wallet_pubkey, avatar_url, bio, location, website, twitter, discord, profile_visible, xp_total, level, current_streak, longest_streak, last_active_date, total_points, tasks_completed, created_at, updated_at';
 
 interface AuthContextType {
   user: User | null;
@@ -36,7 +38,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Also force a fresh fetch by using a timestamp
         const { data, error } = await supabase
           .from('user_profiles')
-          .select('*')
+          .select(USER_PROFILE_COLUMNS)
           .eq('id', userId)
           .maybeSingle();
 

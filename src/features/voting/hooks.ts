@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import {
   VoteResults,
@@ -18,6 +19,9 @@ import {
   DelegateVoteInput,
   RevokeDelegationInput,
 } from './schemas';
+
+const VOTING_CONFIG_COLUMNS =
+  'id, org_id, quorum_percentage, approval_threshold, voting_duration_days, proposal_threshold_org, proposer_cooldown_days, max_live_proposals, abstain_counts_toward_quorum, created_at, updated_at';
 
 // Query keys
 export const votingKeys = {
@@ -44,7 +48,11 @@ export function useVotingConfig() {
   return useQuery({
     queryKey: votingKeys.config(),
     queryFn: async () => {
-      const { data, error } = await supabase.from('voting_config').select('*').limit(1).single();
+      const { data, error } = await supabase
+        .from('voting_config')
+        .select(VOTING_CONFIG_COLUMNS)
+        .limit(1)
+        .single();
 
       if (error) throw error;
       return data as VotingConfig;
@@ -98,7 +106,7 @@ export function useVoteResults(proposalId: string) {
       return response.json() as Promise<VoteResults>;
     },
     enabled: !!proposalId,
-    refetchInterval: 30000, // Refresh every 30 seconds during voting
+    refetchInterval: (query) => (query.state.data?.is_voting_open ? 30_000 : false),
   });
 }
 
@@ -253,21 +261,32 @@ export function useFinalizeVoting() {
  * Calculate time remaining for voting
  */
 export function useVotingTimeRemaining(votingEndsAt: string | null) {
-  return useQuery({
-    queryKey: ['voting-time-remaining', votingEndsAt],
-    queryFn: () => {
-      if (!votingEndsAt) return null;
-
-      const now = new Date();
-      const end = new Date(votingEndsAt);
-      const diff = end.getTime() - now.getTime();
-
-      if (diff <= 0) return 0;
-      return diff;
-    },
-    enabled: !!votingEndsAt,
-    refetchInterval: 1000, // Update every second
+  const [timeRemaining, setTimeRemaining] = useState<number | null>(() => {
+    if (!votingEndsAt) return null;
+    const diff = new Date(votingEndsAt).getTime() - Date.now();
+    return diff > 0 ? diff : 0;
   });
+
+  useEffect(() => {
+    if (!votingEndsAt) {
+      setTimeRemaining(null);
+      return;
+    }
+
+    const endMs = new Date(votingEndsAt).getTime();
+    const update = () => {
+      const diff = endMs - Date.now();
+      setTimeRemaining(diff > 0 ? diff : 0);
+    };
+
+    update();
+    const timer = window.setInterval(update, 1000);
+    return () => {
+      window.clearInterval(timer);
+    };
+  }, [votingEndsAt]);
+
+  return { data: timeRemaining };
 }
 
 /**

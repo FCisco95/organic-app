@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
+type DelegationRow = {
+  delegator_id: string;
+  category: string | null;
+};
+
 // GET - Calculate effective voting power for a user on a proposal
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -51,21 +56,10 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     const proposalCategory = proposal?.category || null;
 
     // Find delegators who delegated to this user
-    let delegationQuery = supabase
+    const { data: delegations, error: delError } = await supabase
       .from('vote_delegations')
-      .select(
-        `
-        id,
-        delegator_id,
-        category,
-        delegator:user_profiles!vote_delegations_delegator_id_fkey(
-          id, wallet_pubkey
-        )
-      `
-      )
+      .select('delegator_id, category')
       .eq('delegate_id', targetUserId);
-
-    const { data: delegations, error: delError } = await delegationQuery;
 
     if (delError) {
       console.error('Error fetching delegations:', delError);
@@ -75,37 +69,78 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     let delegatedWeight = 0;
     let delegatorCount = 0;
 
-    for (const del of delegations ?? []) {
-      // Check if delegation applies: global (null category) or matching category
-      if (del.category !== null && del.category !== proposalCategory) {
-        continue;
+    const applicableDelegations = ((delegations ?? []) as unknown as DelegationRow[]).filter(
+      (delegation) => delegation.category === null || delegation.category === proposalCategory
+    );
+
+    if (applicableDelegations.length > 0) {
+      const delegatorIds = applicableDelegations.map((delegation) => delegation.delegator_id);
+      const { data: delegatorProfiles, error: delegatorProfilesError } = await supabase
+        .from('user_profiles')
+        .select('id, wallet_pubkey')
+        .in('id', delegatorIds);
+
+      if (delegatorProfilesError) {
+        console.error('Error fetching delegator profiles:', delegatorProfilesError);
+        return NextResponse.json({ error: 'Failed to fetch delegator profiles' }, { status: 500 });
       }
 
-      // Check if delegator voted directly (override delegation)
-      const { data: directVote } = await supabase
+      const delegatorWalletById = new Map(
+        (delegatorProfiles ?? []).map((profile) => [profile.id, profile.wallet_pubkey])
+      );
+
+      const { data: directVotes, error: directVotesError } = await supabase
         .from('votes')
-        .select('id')
+        .select('voter_id')
         .eq('proposal_id', proposalId)
-        .eq('voter_id', del.delegator_id)
-        .maybeSingle();
+        .in('voter_id', delegatorIds);
 
-      if (directVote) {
-        continue; // Delegator voted directly, skip their weight
+      if (directVotesError) {
+        console.error('Error fetching direct votes:', directVotesError);
+        return NextResponse.json(
+          { error: 'Failed to fetch direct votes for delegators' },
+          { status: 500 }
+        );
       }
 
-      // Get delegator's snapshot weight
-      const delegator = del.delegator as unknown as { id: string; wallet_pubkey: string | null };
-      if (delegator?.wallet_pubkey) {
-        const { data: delegatorSnapshot } = await supabase
-          .from('holder_snapshots')
-          .select('balance_ui')
-          .eq('proposal_id', proposalId)
-          .eq('wallet_pubkey', delegator.wallet_pubkey)
-          .maybeSingle();
+      const directVoterIds = new Set((directVotes ?? []).map((vote) => vote.voter_id));
+      const walletPubkeys = [
+        ...new Set(
+          applicableDelegations
+            .filter((delegation) => !directVoterIds.has(delegation.delegator_id))
+            .map((delegation) => delegatorWalletById.get(delegation.delegator_id))
+            .filter((wallet): wallet is string => !!wallet)
+        ),
+      ];
 
-        if (delegatorSnapshot?.balance_ui) {
-          delegatedWeight += delegatorSnapshot.balance_ui;
-          delegatorCount++;
+      if (walletPubkeys.length > 0) {
+        const { data: snapshotRows, error: snapshotError } = await supabase
+          .from('holder_snapshots')
+          .select('wallet_pubkey, balance_ui')
+          .eq('proposal_id', proposalId)
+          .in('wallet_pubkey', walletPubkeys);
+
+        if (snapshotError) {
+          console.error('Error fetching delegator snapshots:', snapshotError);
+          return NextResponse.json(
+            { error: 'Failed to fetch snapshot balances for delegators' },
+            { status: 500 }
+          );
+        }
+
+        const walletBalances = new Map(
+          (snapshotRows ?? []).map((row) => [row.wallet_pubkey, row.balance_ui ?? 0])
+        );
+
+        for (const delegation of applicableDelegations) {
+          if (directVoterIds.has(delegation.delegator_id)) continue;
+          const wallet = delegatorWalletById.get(delegation.delegator_id);
+          if (!wallet) continue;
+          const balance = walletBalances.get(wallet) ?? 0;
+          if (balance > 0) {
+            delegatedWeight += balance;
+            delegatorCount++;
+          }
         }
       }
     }

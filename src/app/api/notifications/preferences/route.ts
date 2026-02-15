@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { updatePreferenceSchema } from '@/features/notifications/schemas';
 import type { NotificationCategory } from '@/features/notifications/types';
 
+const PREFERENCE_COLUMNS = 'id, user_id, category, in_app, email, created_at, updated_at';
+
 const ALL_CATEGORIES: NotificationCategory[] = [
   'tasks',
   'proposals',
@@ -26,8 +28,9 @@ export async function GET() {
     // Fetch existing preferences
     const { data: existing, error } = await supabase
       .from('notification_preferences')
-      .select('*')
-      .eq('user_id', user.id);
+      .select(PREFERENCE_COLUMNS)
+      .eq('user_id', user.id)
+      .order('category', { ascending: true });
 
     if (error) {
       console.error('Preferences query error:', error);
@@ -49,7 +52,7 @@ export async function GET() {
       const { data: inserted, error: insertError } = await supabase
         .from('notification_preferences')
         .insert(rows)
-        .select();
+        .select(PREFERENCE_COLUMNS);
 
       if (insertError) {
         console.error('Seed preferences error:', insertError);
@@ -91,11 +94,7 @@ export async function PATCH(request: Request) {
 
     const { category, in_app, email } = parsed.data;
 
-    const updateData: Record<string, unknown> = {
-      updated_at: new Date().toISOString(),
-    };
-    if (in_app !== undefined) updateData.in_app = in_app;
-    if (email !== undefined) updateData.email = email;
+    const nowIso = new Date().toISOString();
 
     // Upsert: update if exists, insert if not
     const { data, error } = await supabase
@@ -106,11 +105,11 @@ export async function PATCH(request: Request) {
           category,
           in_app: in_app ?? true,
           email: email ?? true,
-          updated_at: new Date().toISOString(),
+          updated_at: nowIso,
         },
         { onConflict: 'user_id,category' }
       )
-      .select()
+      .select(PREFERENCE_COLUMNS)
       .single();
 
     if (error) {

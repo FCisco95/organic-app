@@ -20,8 +20,8 @@ export function useStats() {
       const { stats } = await res.json();
       return stats;
     },
-    staleTime: 60_000,
-    refetchInterval: 60_000,
+    staleTime: 120_000,
+    refetchInterval: 120_000,
   });
 }
 
@@ -37,6 +37,7 @@ export function useActivityFeed(limit = 20) {
       const { events } = await res.json();
       return events;
     },
+    staleTime: 30_000,
   });
 
   // Subscribe to realtime inserts

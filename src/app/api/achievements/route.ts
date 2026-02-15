@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
+const ACHIEVEMENT_COLUMNS =
+  'id, name, description, icon, category, condition_type, condition_field, condition_threshold, xp_reward, created_at';
+
 export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient();
@@ -17,7 +20,7 @@ export async function GET(request: NextRequest) {
     // Fetch all achievement definitions
     const { data: achievements, error } = await supabase
       .from('achievements')
-      .select('*')
+      .select(ACHIEVEMENT_COLUMNS)
       .order('category')
       .order('condition_threshold');
 

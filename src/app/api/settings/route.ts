@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
+const ORG_COLUMNS =
+  'id, name, slug, description, logo_url, theme, token_symbol, token_mint, token_decimals, token_total_supply, treasury_wallet, treasury_allocations, organic_id_threshold, default_sprint_duration_days, default_sprint_capacity, created_at, updated_at';
+const VOTING_CONFIG_COLUMNS =
+  'id, org_id, quorum_percentage, approval_threshold, voting_duration_days, proposal_threshold_org, proposer_cooldown_days, max_live_proposals, abstain_counts_toward_quorum, created_at, updated_at';
+
 export async function GET() {
   try {
     const supabase = await createClient();
@@ -8,7 +13,7 @@ export async function GET() {
     // Fetch the first org (single-tenant for now)
     const { data: org, error: orgError } = await supabase
       .from('orgs')
-      .select('*')
+      .select(ORG_COLUMNS)
       .order('created_at', { ascending: true })
       .limit(1)
       .single();
@@ -20,7 +25,7 @@ export async function GET() {
     // Fetch voting config linked to this org
     const { data: votingConfig } = await supabase
       .from('voting_config')
-      .select('*')
+      .select(VOTING_CONFIG_COLUMNS)
       .eq('org_id', org.id)
       .single();
 

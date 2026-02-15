@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { completeSprintSchema } from '@/features/sprints/schemas';
 
+const SPRINT_COLUMNS =
+  'id, name, status, start_at, end_at, goal, capacity_points, org_id, created_at, updated_at';
+
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
@@ -46,7 +49,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     // Verify sprint exists and is active
     const { data: sprint, error: sprintError } = await supabase
       .from('sprints')
-      .select('*')
+      .select(SPRINT_COLUMNS)
       .eq('id', id)
       .single();
 
@@ -179,7 +182,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       .from('sprints')
       .update({ status: 'completed' })
       .eq('id', id)
-      .select()
+      .select(SPRINT_COLUMNS)
       .single();
 
     if (updateError) {

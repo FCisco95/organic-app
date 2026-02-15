@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
+const XP_EVENT_COLUMNS =
+  'id, user_id, event_type, source_type, source_id, xp_amount, metadata, created_at';
+const ACHIEVEMENT_COLUMNS =
+  'id, name, description, icon, category, condition_type, condition_field, condition_threshold, xp_reward, created_at';
+
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ userId: string }> }
@@ -34,10 +39,10 @@ export async function GET(
         .eq('user_id', userId)
         .order('unlocked_at', { ascending: false })
         .limit(10),
-      supabase.from('achievements').select('*'),
+      supabase.from('achievements').select(ACHIEVEMENT_COLUMNS),
       supabase
         .from('xp_events')
-        .select('*')
+        .select(XP_EVENT_COLUMNS)
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
         .limit(10),

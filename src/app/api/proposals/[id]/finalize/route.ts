@@ -3,6 +3,16 @@ import { createClient } from '@/lib/supabase/server';
 import { finalizeVotingSchema } from '@/features/voting/schemas';
 import { ProposalResult } from '@/types/database';
 
+const PROPOSAL_FINALIZE_COLUMNS =
+  'id, title, status, voting_ends_at, total_circulating_supply, quorum_required, approval_threshold, result';
+
+type VoteTallyRow = {
+  yes_votes: number | string | null;
+  no_votes: number | string | null;
+  abstain_votes: number | string | null;
+  total_votes: number | string | null;
+};
+
 /**
  * POST /api/proposals/[id]/finalize
  * Admin-only endpoint to finalize voting on a proposal.
@@ -53,7 +63,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     // Get proposal
     const { data: proposal, error: proposalError } = await supabase
       .from('proposals')
-      .select('*')
+      .select(PROPOSAL_FINALIZE_COLUMNS)
       .eq('id', proposalId)
       .single();
 
@@ -88,13 +98,14 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       );
     }
 
-    // Get votes for calculation
-    const { data: votes, error: votesError } = await supabase
-      .from('votes')
-      .select('value, weight')
-      .eq('proposal_id', proposalId);
+    // Use aggregate RPC to avoid transferring every vote row.
+    // Cast to `never` until generated Supabase types include this new RPC.
+    const { data: tallyRows, error: tallyError } = await supabase.rpc(
+      'get_proposal_vote_tally' as never,
+      { p_proposal_id: proposalId } as never
+    );
 
-    if (votesError) {
+    if (tallyError) {
       return NextResponse.json({ error: 'Failed to fetch votes' }, { status: 500 });
     }
 
@@ -107,27 +118,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     const abstainCountsTowardQuorum = config?.abstain_counts_toward_quorum ?? true;
 
-    // Calculate vote totals
-    let yesVotes = 0;
-    let noVotes = 0;
-    let abstainVotes = 0;
-    let totalVotes = 0;
-
-    for (const vote of votes || []) {
-      totalVotes += vote.weight;
-
-      switch (vote.value) {
-        case 'yes':
-          yesVotes += vote.weight;
-          break;
-        case 'no':
-          noVotes += vote.weight;
-          break;
-        case 'abstain':
-          abstainVotes += vote.weight;
-          break;
-      }
-    }
+    const rawTallyRows = (tallyRows ?? []) as unknown as VoteTallyRow[];
+    const tally = rawTallyRows[0];
+    const yesVotes = Number(tally?.yes_votes ?? 0);
+    const noVotes = Number(tally?.no_votes ?? 0);
+    const abstainVotes = Number(tally?.abstain_votes ?? 0);
+    const totalVotes = Number(tally?.total_votes ?? 0);
 
     // Calculate quorum-relevant votes
     const quorumVotes = abstainCountsTowardQuorum ? totalVotes : yesVotes + noVotes;
@@ -172,7 +168,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         status: newStatus,
       })
       .eq('id', proposalId)
-      .select()
+      .select('id, title, status, result')
       .single();
 
     if (updateError) {
