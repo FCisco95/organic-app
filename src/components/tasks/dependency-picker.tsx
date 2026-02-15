@@ -28,6 +28,7 @@ interface DependencyPickerProps {
 
 export function DependencyPicker({ taskId, className }: DependencyPickerProps) {
   const t = useTranslations('Tasks.dependencies');
+  const tTasks = useTranslations('Tasks');
   const { data: deps, isLoading: depsLoading } = useTaskDependencies(taskId);
   const { data: allTasks } = useTasks({});
   const addDep = useAddDependency();
@@ -56,7 +57,7 @@ export function DependencyPicker({ taskId, className }: DependencyPickerProps) {
       });
       toast.success(t('dependencyAdded'));
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to add dependency');
+      toast.error(error instanceof Error ? error.message : t('addFailed'));
     }
   };
 
@@ -69,7 +70,7 @@ export function DependencyPicker({ taskId, className }: DependencyPickerProps) {
       });
       toast.success(t('dependencyRemoved'));
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to remove dependency');
+      toast.error(error instanceof Error ? error.message : t('removeFailed'));
     }
   };
 
@@ -114,7 +115,7 @@ export function DependencyPicker({ taskId, className }: DependencyPickerProps) {
                     isDone ? 'text-gray-400 line-through' : 'text-gray-700'
                   )}
                 >
-                  {dep.blocking_task?.title || 'Unknown task'}
+                  {dep.blocking_task?.title || t('unknownTask')}
                 </span>
                 <button
                   onClick={() => handleRemove(dep)}
@@ -168,7 +169,9 @@ export function DependencyPicker({ taskId, className }: DependencyPickerProps) {
               </button>
             ))}
             {availableTasks.length === 0 && (
-              <p className="text-xs text-gray-400 py-3 text-center">{t('searchTasks')}</p>
+              <p className="text-xs text-gray-400 py-3 text-center">
+                {tTasks('noDependenciesAvailable')}
+              </p>
             )}
           </div>
         </div>

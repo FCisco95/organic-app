@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { mediateDisputeSchema } from '@/features/disputes/schemas';
 
+const MEDIATION_PROPOSAL_PREFIX = 'Mediation proposal (pending): ';
+
 /**
  * POST /api/disputes/[id]/mediate
  * Both parties agree to a mediated resolution.
@@ -68,12 +70,66 @@ export async function POST(
       );
     }
 
-    // Mark dispute as mediated
+    const agreedOutcome = parseResult.data.agreed_outcome.trim();
+
+    // Check latest pending mediation proposal
+    const { data: latestProposal } = await supabase
+      .from('dispute_comments')
+      .select('id, user_id, content, created_at')
+      .eq('dispute_id', id)
+      .like('content', `${MEDIATION_PROPOSAL_PREFIX}%`)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    const proposedOutcome = latestProposal?.content?.startsWith(MEDIATION_PROPOSAL_PREFIX)
+      ? latestProposal.content.slice(MEDIATION_PROPOSAL_PREFIX.length).trim()
+      : null;
+
+    // Two-party confirmation rule:
+    // 1) first party submits proposal
+    // 2) other party confirms the same proposal text
+    const waitingForOtherParty =
+      !latestProposal ||
+      latestProposal.user_id === user.id ||
+      proposedOutcome !== agreedOutcome;
+
+    if (waitingForOtherParty) {
+      const { data: updated, error: updateError } = await supabase
+        .from('disputes')
+        .update({
+          status: 'mediation',
+          tier: 'mediation',
+        })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (updateError) throw updateError;
+
+      await supabase.from('dispute_comments').insert({
+        dispute_id: id,
+        user_id: user.id,
+        content: `${MEDIATION_PROPOSAL_PREFIX}${agreedOutcome}`,
+        visibility: 'parties_only',
+      });
+
+      return NextResponse.json(
+        {
+          data: updated,
+          pending_confirmation: true,
+          message: 'Mediation proposal submitted. Waiting for other party confirmation.',
+        },
+        { status: 202 }
+      );
+    }
+
+    // Other party confirmed the same proposal text -> mark as mediated
     const { data: updated, error: updateError } = await supabase
       .from('disputes')
       .update({
         status: 'mediated',
-        resolution_notes: parseResult.data.agreed_outcome,
+        resolution_notes: agreedOutcome,
         resolved_at: new Date().toISOString(),
       })
       .eq('id', id)
@@ -86,7 +142,7 @@ export async function POST(
     await supabase.from('dispute_comments').insert({
       dispute_id: id,
       user_id: user.id,
-      content: `**Mediation agreement:** ${parseResult.data.agreed_outcome}`,
+      content: `Mediation agreement confirmed by both parties: ${agreedOutcome}`,
       visibility: 'parties_only',
     });
 

@@ -3,19 +3,32 @@
 import { useTranslations } from 'next-intl';
 import { AlertCircle, CheckCircle, Clock, ExternalLink, XCircle } from 'lucide-react';
 import type { TaskSubmissionWithReviewer } from '@/features/tasks';
+import { DisputeButton } from '@/components/disputes/DisputeButton';
 
 type TaskSubmissionsSectionProps = {
   submissions: TaskSubmissionWithReviewer[];
   getDisplayName: (user: TaskSubmissionWithReviewer['user']) => string;
+  currentUserId?: string;
+  onDisputeCreated?: () => void;
 };
 
 export function TaskSubmissionsSection({
   submissions,
   getDisplayName,
+  currentUserId,
+  onDisputeCreated,
 }: TaskSubmissionsSectionProps) {
   const t = useTranslations('TaskDetail');
+  const tTasks = useTranslations('Tasks');
 
-  if (submissions.length === 0) return null;
+  if (submissions.length === 0) {
+    return (
+      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">{t('submissions')}</h2>
+        <p className="text-sm text-gray-500">{tTasks('noSubmissionsYet')}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
@@ -29,6 +42,8 @@ export function TaskSubmissionsSection({
             key={submission.id}
             submission={submission}
             getDisplayName={getDisplayName}
+            currentUserId={currentUserId}
+            onDisputeCreated={onDisputeCreated}
           />
         ))}
       </div>
@@ -39,9 +54,13 @@ export function TaskSubmissionsSection({
 function SubmissionCard({
   submission,
   getDisplayName,
+  currentUserId,
+  onDisputeCreated,
 }: {
   submission: TaskSubmissionWithReviewer;
   getDisplayName: (user: TaskSubmissionWithReviewer['user']) => string;
+  currentUserId?: string;
+  onDisputeCreated?: () => void;
 }) {
   const t = useTranslations('TaskDetail');
 
@@ -60,6 +79,7 @@ function SubmissionCard({
   };
 
   const reviewStatus = submission.review_status ?? 'pending';
+  const isSubmissionOwner = Boolean(currentUserId && submission.user_id === currentUserId);
 
   return (
     <div className={`rounded-lg border p-4 ${statusColors[reviewStatus]}`}>
@@ -145,6 +165,17 @@ function SubmissionCard({
               <span className="inline-flex items-center px-2 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
                 +{submission.earned_points} {t('pointsEarned')}
               </span>
+            </div>
+          )}
+
+          {isSubmissionOwner && (
+            <div className="mt-3">
+              <DisputeButton
+                submissionId={submission.id}
+                reviewStatus={reviewStatus}
+                isSubmissionOwner={isSubmissionOwner}
+                onSuccess={onDisputeCreated}
+              />
             </div>
           )}
         </div>

@@ -1,7 +1,13 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { DisputeWithRelations, DisputeListItem, DisputeComment, DisputeConfig } from './types';
+import type {
+  DisputeWithRelations,
+  DisputeListItem,
+  DisputeComment,
+  DisputeConfig,
+  ArbitratorStats,
+} from './types';
 import type {
   DisputeFilters,
   CreateDisputeInput,
@@ -23,6 +29,8 @@ export const disputeKeys = {
   comments: (disputeId: string) => [...disputeKeys.all, 'comments', disputeId] as const,
   config: () => [...disputeKeys.all, 'config'] as const,
   eligibility: (submissionId: string) => [...disputeKeys.all, 'eligibility', submissionId] as const,
+  pendingCount: () => [...disputeKeys.all, 'pending-count'] as const,
+  stats: () => [...disputeKeys.all, 'stats'] as const,
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────
@@ -98,6 +106,27 @@ export function useDisputeEligibility(submissionId: string) {
         user_xp: number;
       }>(`/api/disputes?check_eligibility=${submissionId}`),
     enabled: !!submissionId,
+  });
+}
+
+/** Fetch pending dispute count for sidebar badges */
+export function usePendingDisputeCount(enabled = true) {
+  return useQuery({
+    queryKey: disputeKeys.pendingCount(),
+    queryFn: () => fetchJson<{ count: number }>('/api/disputes?pending_count=true'),
+    enabled,
+    staleTime: 30 * 1000, // 30 seconds
+    refetchInterval: 30 * 1000,
+  });
+}
+
+/** Fetch arbitrator performance stats for council/admin dashboard */
+export function useArbitratorStats(enabled = true) {
+  return useQuery({
+    queryKey: disputeKeys.stats(),
+    queryFn: () => fetchJson<{ data: ArbitratorStats }>('/api/disputes?stats=true'),
+    enabled,
+    staleTime: 60 * 1000, // 1 minute
   });
 }
 

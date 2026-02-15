@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
-import { createClient } from '@/lib/supabase/client';
 import type { Assignee, Sprint, TaskPriority } from '@/features/tasks';
 
 type TaskNewModalProps = {
@@ -80,30 +79,32 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
       }
 
       setSubmitting(true);
-      const supabase = createClient();
 
-      const { error } = await supabase.from('tasks').insert({
-        title: title.trim(),
-        description: description.trim() || null,
-        points: points ? parseInt(points, 10) : null,
-        sprint_id: sprintId || null,
-        assignee_id: assigneeId || null,
-        priority,
-        due_date: dueDate || null,
-        labels,
-        status: 'backlog' as const,
+      const response = await fetch('/api/tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: title.trim(),
+          description: description.trim() || undefined,
+          base_points: points ? parseInt(points, 10) : undefined,
+          sprint_id: sprintId || undefined,
+          assignee_id: assigneeId || undefined,
+          priority,
+          due_date: dueDate || undefined,
+          labels,
+        }),
       });
 
-      if (error) throw error;
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || t('toastTaskCreateFailed'));
+      }
 
       toast.success(t('toastTaskCreated'));
       onSuccess();
     } catch (error) {
-      const supabaseError = error as { message?: string };
       const message =
-        error instanceof Error
-          ? error.message
-          : (supabaseError?.message ?? t('toastTaskCreateFailed'));
+        error instanceof Error ? error.message : t('toastTaskCreateFailed');
       console.error('Error creating task:', error);
       toast.error(message);
     } finally {

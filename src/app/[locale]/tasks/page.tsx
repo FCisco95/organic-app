@@ -12,7 +12,7 @@ import {
 } from '@/features/tasks';
 
 import { createClient } from '@/lib/supabase/client';
-import { Plus } from 'lucide-react';
+import { ChevronDown, ChevronUp, Info, Plus, X } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { TaskFiltersBar } from '@/components/tasks/task-filters-bar';
@@ -41,6 +41,8 @@ export default function TasksPage() {
   const [commentCounts, setCommentCounts] = useState<Record<string, number>>({});
   const [submissionCounts, setSubmissionCounts] = useState<Record<string, number>>({});
   const [contributorCounts, setContributorCounts] = useState<Record<string, number>>({});
+  const [showInfoBanner, setShowInfoBanner] = useState(false);
+  const [isInfoBannerExpanded, setIsInfoBannerExpanded] = useState(true);
 
   const isOrgMember = !!profile?.organic_id;
   const canManage = profile?.role === 'admin';
@@ -75,6 +77,10 @@ export default function TasksPage() {
           assignee:user_profiles!tasks_assignee_id_fkey (
             organic_id,
             email
+          ),
+          assignees:task_assignees (
+            *,
+            user:user_profiles(id, name, email, organic_id, avatar_url)
           ),
           sprints (
             name
@@ -193,6 +199,11 @@ export default function TasksPage() {
   useEffect(() => {
     loadSprints();
   }, [loadSprints]);
+
+  useEffect(() => {
+    const isDismissed = window.localStorage.getItem('tasksInfoBannerDismissed') === 'true';
+    setShowInfoBanner(!isDismissed);
+  }, []);
 
   useEffect(() => {
     loadTasks();
@@ -380,6 +391,13 @@ export default function TasksPage() {
   };
 
   const tabTasks = getTabTasks(activeView);
+  const hasActiveFilters =
+    searchFilter.trim().length > 0 ||
+    categoryFilter !== 'all' ||
+    contributorFilter !== 'all' ||
+    sprintFilter !== 'all' ||
+    Boolean(dateFrom) ||
+    Boolean(dateTo);
 
   const getActivityCounts = (taskId: string) => ({
     comments: commentCounts[taskId] ?? 0,
@@ -419,6 +437,11 @@ export default function TasksPage() {
     }
   };
 
+  const handleDismissInfoBanner = () => {
+    window.localStorage.setItem('tasksInfoBannerDismissed', 'true');
+    setShowInfoBanner(false);
+  };
+
   return (
     <PageContainer width="wide">
       {/* Header */}
@@ -448,6 +471,41 @@ export default function TasksPage() {
           )}
         </div>
       </div>
+
+      {showInfoBanner && (
+        <div className="mb-6 rounded-xl border border-organic-orange/30 bg-gradient-to-r from-orange-50 to-amber-50 p-4">
+          <div className="flex items-start justify-between gap-3">
+            <button
+              type="button"
+              onClick={() => setIsInfoBannerExpanded((prev) => !prev)}
+              className="flex flex-1 items-center gap-2 text-left"
+            >
+              <Info className="mt-0.5 h-4 w-4 text-organic-orange" />
+              <span className="font-medium text-gray-900">{t('infoBanner.title')}</span>
+              {isInfoBannerExpanded ? (
+                <ChevronUp className="h-4 w-4 text-gray-500" />
+              ) : (
+                <ChevronDown className="h-4 w-4 text-gray-500" />
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={handleDismissInfoBanner}
+              className="text-gray-500 hover:text-gray-700"
+              aria-label={t('infoBanner.dismiss')}
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+          {isInfoBannerExpanded && (
+            <ul className="mt-3 space-y-1 pl-6 text-sm text-gray-700 list-disc">
+              <li>{t('infoBanner.browse')}</li>
+              <li>{t('infoBanner.submit')}</li>
+              <li>{t('infoBanner.earn')}</li>
+            </ul>
+          )}
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="mb-6 flex gap-2 overflow-x-auto pb-2">
@@ -495,6 +553,7 @@ export default function TasksPage() {
         currentSprint={currentSprint}
         loading={loading}
         tasks={tabTasks}
+        hasActiveFilters={hasActiveFilters}
         canLike={canLike}
         likedTasks={likedTasks}
         likeCounts={likeCounts}

@@ -90,7 +90,15 @@ export async function POST(
       .select()
       .single();
 
-    if (updateError) throw updateError;
+    if (updateError) {
+      if (updateError.code === 'PGRST116') {
+        return NextResponse.json(
+          { error: 'Not authorized to assign this dispute' },
+          { status: 403 }
+        );
+      }
+      throw updateError;
+    }
 
     return NextResponse.json({ data: updated });
   } catch (error) {
@@ -168,7 +176,15 @@ export async function DELETE(
       .select()
       .single();
 
-    if (updateError) throw updateError;
+    if (updateError) {
+      if (updateError.code === 'PGRST116') {
+        return NextResponse.json(
+          { error: 'Not authorized to recuse from this dispute' },
+          { status: 403 }
+        );
+      }
+      throw updateError;
+    }
 
     return NextResponse.json({ data: updated });
   } catch (error) {

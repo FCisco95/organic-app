@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
-// POST - Claim a task
+// POST - Join a task (universal self-join: always uses task_assignees)
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: taskId } = await params;
@@ -24,13 +24,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       .single();
 
     if (!profile?.organic_id) {
-      return NextResponse.json({ error: 'You need an Organic ID to claim tasks' }, { status: 403 });
+      return NextResponse.json({ error: 'You need an Organic ID to join tasks' }, { status: 403 });
     }
 
     // Get the task
     const { data: task, error: taskError } = await supabase
       .from('tasks')
-      .select('id, is_team_task, assignee_id, max_assignees, status')
+      .select('id, assignee_id, status')
       .eq('id', taskId)
       .single();
 
@@ -38,85 +38,58 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: 'Task not found' }, { status: 404 });
     }
 
-    // Check if task is claimable
+    // Check if task is joinable
     if (!task.status || !['backlog', 'todo'].includes(task.status)) {
       return NextResponse.json(
-        { error: 'This task is not available for claiming' },
+        { error: 'This task is not available for joining' },
         { status: 400 }
       );
     }
 
-    if (task.is_team_task) {
-      // Team task: check assignee count
-      const { count } = await supabase
-        .from('task_assignees')
-        .select('id', { count: 'exact', head: true })
-        .eq('task_id', taskId);
+    // Check if user already joined
+    const { data: existing } = await supabase
+      .from('task_assignees')
+      .select('id')
+      .eq('task_id', taskId)
+      .eq('user_id', user.id)
+      .maybeSingle();
 
-      if ((count || 0) >= (task.max_assignees ?? 1)) {
-        return NextResponse.json(
-          { error: 'This task has reached maximum assignees' },
-          { status: 400 }
-        );
-      }
-
-      // Check if user already claimed
-      const { data: existing } = await supabase
-        .from('task_assignees')
-        .select('id')
-        .eq('task_id', taskId)
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (existing) {
-        return NextResponse.json({ error: 'You have already claimed this task' }, { status: 400 });
-      }
-
-      // Add user to task assignees
-      const { error: insertError } = await supabase.from('task_assignees').insert({
-        task_id: taskId,
-        user_id: user.id,
-      });
-
-      if (insertError) {
-        return NextResponse.json({ error: 'Failed to claim task' }, { status: 500 });
-      }
-
-      // Update task status to in_progress if still in backlog/todo
-      await supabase
-        .from('tasks')
-        .update({ status: 'in_progress', completed_at: null })
-        .eq('id', taskId)
-        .in('status', ['backlog', 'todo']);
-    } else {
-      // Solo task: check if already claimed
-      if (task.assignee_id) {
-        return NextResponse.json({ error: 'This task is already claimed' }, { status: 400 });
-      }
-
-      // Assign task to user
-      const { error: updateError } = await supabase
-        .from('tasks')
-        .update({
-          assignee_id: user.id,
-          claimed_at: new Date().toISOString(),
-          status: 'in_progress',
-          completed_at: null,
-        })
-        .eq('id', taskId);
-
-      if (updateError) {
-        return NextResponse.json({ error: 'Failed to claim task' }, { status: 500 });
-      }
+    if (existing) {
+      return NextResponse.json({ error: 'You have already joined this task' }, { status: 400 });
     }
 
-    return NextResponse.json({ success: true, message: 'Task claimed successfully' });
+    // Add user to task_assignees (unlimited joins)
+    const { error: insertError } = await supabase.from('task_assignees').insert({
+      task_id: taskId,
+      user_id: user.id,
+    });
+
+    if (insertError) {
+      return NextResponse.json({ error: 'Failed to join task' }, { status: 500 });
+    }
+
+    // Set as primary assignee if first joiner (backward compat with assignee_id)
+    if (!task.assignee_id) {
+      await supabase
+        .from('tasks')
+        .update({ assignee_id: user.id, claimed_at: new Date().toISOString() })
+        .eq('id', taskId);
+    }
+
+    // Move task to in_progress if still in backlog/todo
+    await supabase
+      .from('tasks')
+      .update({ status: 'in_progress', completed_at: null })
+      .eq('id', taskId)
+      .in('status', ['backlog', 'todo']);
+
+    return NextResponse.json({ success: true, message: 'Task joined successfully' });
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
-// DELETE - Unclaim a task
+// DELETE - Leave a task
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: taskId } = await params;
@@ -134,7 +107,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     // Get the task
     const { data: task, error: taskError } = await supabase
       .from('tasks')
-      .select('id, is_team_task, assignee_id, status')
+      .select('id, assignee_id, status')
       .eq('id', taskId)
       .single();
 
@@ -142,61 +115,56 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
       return NextResponse.json({ error: 'Task not found' }, { status: 404 });
     }
 
-    // Don't allow unclaiming tasks that are already in review or done
+    // Don't allow leaving tasks that are in review or done
     if (task.status && ['review', 'done'].includes(task.status)) {
       return NextResponse.json(
-        { error: 'Cannot unclaim a task in review or already completed' },
+        { error: 'Cannot leave a task in review or already completed' },
         { status: 400 }
       );
     }
 
-    if (task.is_team_task) {
-      // Remove user from task assignees
-      const { error: deleteError } = await supabase
+    // Remove user from task_assignees
+    const { error: deleteError } = await supabase
+      .from('task_assignees')
+      .delete()
+      .eq('task_id', taskId)
+      .eq('user_id', user.id);
+
+    if (deleteError) {
+      return NextResponse.json({ error: 'Failed to leave task' }, { status: 500 });
+    }
+
+    // Check remaining assignees
+    const { count } = await supabase
+      .from('task_assignees')
+      .select('id', { count: 'exact', head: true })
+      .eq('task_id', taskId);
+
+    if (count === 0) {
+      // No assignees left — move back to todo and clear primary assignee
+      await supabase
+        .from('tasks')
+        .update({ status: 'todo', assignee_id: null, claimed_at: null, completed_at: null })
+        .eq('id', taskId);
+    } else if (task.assignee_id === user.id) {
+      // If leaving user was the primary assignee, reassign to first remaining
+      const { data: nextAssignee } = await supabase
         .from('task_assignees')
-        .delete()
+        .select('user_id')
         .eq('task_id', taskId)
-        .eq('user_id', user.id);
+        .order('claimed_at', { ascending: true })
+        .limit(1)
+        .single();
 
-      if (deleteError) {
-        return NextResponse.json({ error: 'Failed to unclaim task' }, { status: 500 });
-      }
-
-      // Check if there are any assignees left
-      const { count } = await supabase
-        .from('task_assignees')
-        .select('id', { count: 'exact', head: true })
-        .eq('task_id', taskId);
-
-      // If no assignees left, set status back to todo
-      if (count === 0) {
+      if (nextAssignee) {
         await supabase
           .from('tasks')
-          .update({ status: 'todo', completed_at: null })
+          .update({ assignee_id: nextAssignee.user_id })
           .eq('id', taskId);
-      }
-    } else {
-      // Solo task: clear assignee
-      if (task.assignee_id !== user.id) {
-        return NextResponse.json({ error: 'You are not assigned to this task' }, { status: 403 });
-      }
-
-      const { error: updateError } = await supabase
-        .from('tasks')
-        .update({
-          assignee_id: null,
-          claimed_at: null,
-          status: 'todo',
-          completed_at: null,
-        })
-        .eq('id', taskId);
-
-      if (updateError) {
-        return NextResponse.json({ error: 'Failed to unclaim task' }, { status: 500 });
       }
     }
 
-    return NextResponse.json({ success: true, message: 'Task unclaimed' });
+    return NextResponse.json({ success: true, message: 'Left task successfully' });
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

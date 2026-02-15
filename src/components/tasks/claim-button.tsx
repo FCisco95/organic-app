@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Hand, X, Loader2 } from 'lucide-react';
+import { UserPlus, UserMinus, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useClaimTask, useUnclaimTask, TaskWithRelations, canClaimTask } from '@/features/tasks';
 import { useAuth } from '@/features/auth/context';
+import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
 
 interface ClaimButtonProps {
@@ -15,6 +16,7 @@ interface ClaimButtonProps {
 
 export function ClaimButton({ task, onSuccess, className }: ClaimButtonProps) {
   const { user, profile } = useAuth();
+  const t = useTranslations('Tasks');
   const claimTask = useClaimTask();
   const unclaimTask = useUnclaimTask();
   const [isLoading, setIsLoading] = useState(false);
@@ -26,15 +28,13 @@ export function ClaimButton({ task, onSuccess, className }: ClaimButtonProps) {
   const userId = user.id;
   const userHasOrganicId = !!profile.organic_id;
 
-  // Check if user is already assigned
-  const isAssigned = task.is_team_task
-    ? task.assignees?.some((a) => a.user_id === userId)
-    : task.assignee_id === userId;
+  // Check if user is a participant (always via task_assignees)
+  const isParticipant = task.assignees?.some((a) => a.user_id === userId) ?? false;
 
-  // Check if task can be claimed
+  // Check if task can be joined
   const { canClaim, reason } = canClaimTask(task, userId, userHasOrganicId);
 
-  const handleClaim = async () => {
+  const handleJoin = async () => {
     if (!canClaim) {
       if (reason) toast.error(reason);
       return;
@@ -43,35 +43,35 @@ export function ClaimButton({ task, onSuccess, className }: ClaimButtonProps) {
     setIsLoading(true);
     try {
       await claimTask.mutateAsync(task.id);
-      toast.success('Task claimed successfully!');
+      toast.success(t('joinSuccess'));
       onSuccess?.();
     } catch (error) {
-      toast.error('Failed to claim task');
-      console.error('Claim error:', error);
+      toast.error(t('joinFailed'));
+      console.error('Join error:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleUnclaim = async () => {
+  const handleLeave = async () => {
     setIsLoading(true);
     try {
       await unclaimTask.mutateAsync(task.id);
-      toast.success('Task unclaimed');
+      toast.success(t('leaveSuccess'));
       onSuccess?.();
     } catch (error) {
-      toast.error('Failed to unclaim task');
-      console.error('Unclaim error:', error);
+      toast.error(t('leaveFailed'));
+      console.error('Leave error:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // If user is assigned, show unclaim button
-  if (isAssigned) {
+  // Show "Leave Task" if user is a participant
+  if (isParticipant) {
     return (
       <button
-        onClick={handleUnclaim}
+        onClick={handleLeave}
         disabled={isLoading}
         className={cn(
           'flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors',
@@ -80,16 +80,38 @@ export function ClaimButton({ task, onSuccess, className }: ClaimButtonProps) {
           className
         )}
       >
-        {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <X className="w-4 h-4" />}
-        Unclaim Task
+        {isLoading ? (
+          <Loader2 className="w-4 h-4 animate-spin" />
+        ) : (
+          <UserMinus className="w-4 h-4" />
+        )}
+        {t('leaveTask')}
       </button>
     );
   }
 
-  // Show claim button (disabled if can't claim)
+  // Show disabled state for non-members
+  if (!userHasOrganicId) {
+    return (
+      <button
+        disabled
+        title={t('joinRequiresOrganicId')}
+        className={cn(
+          'flex items-center gap-2 px-4 py-2 rounded-lg font-medium',
+          'bg-gray-100 text-gray-400 cursor-not-allowed',
+          className
+        )}
+      >
+        <UserPlus className="w-4 h-4" />
+        {t('joinTask')}
+      </button>
+    );
+  }
+
+  // Show "Join Task" button
   return (
     <button
-      onClick={handleClaim}
+      onClick={handleJoin}
       disabled={isLoading || !canClaim}
       title={reason}
       className={cn(
@@ -101,38 +123,35 @@ export function ClaimButton({ task, onSuccess, className }: ClaimButtonProps) {
         className
       )}
     >
-      {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Hand className="w-4 h-4" />}
-      Claim Task
+      {isLoading ? (
+        <Loader2 className="w-4 h-4 animate-spin" />
+      ) : (
+        <UserPlus className="w-4 h-4" />
+      )}
+      {t('joinTask')}
     </button>
   );
 }
 
-interface TeamClaimStatusProps {
+interface ParticipantCountProps {
   task: TaskWithRelations;
   className?: string;
 }
 
-export function TeamClaimStatus({ task, className }: TeamClaimStatusProps) {
-  if (!task.is_team_task) return null;
+export function ParticipantCount({ task, className }: ParticipantCountProps) {
+  const t = useTranslations('Tasks');
+  const count = task.assignees?.length ?? 0;
 
-  const currentAssignees = task.assignees?.length ?? 0;
-  const maxAssignees = task.max_assignees ?? 1;
-  const percentage = (currentAssignees / maxAssignees) * 100;
+  if (count === 0) return null;
 
   return (
-    <div className={cn('space-y-2', className)}>
-      <div className="flex items-center justify-between text-sm">
-        <span className="text-gray-600">Team Progress</span>
-        <span className="font-medium text-gray-900">
-          {currentAssignees} / {maxAssignees} members
-        </span>
-      </div>
-      <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-        <div
-          className="h-full bg-organic-orange transition-all duration-300"
-          style={{ width: `${percentage}%` }}
-        />
-      </div>
+    <div className={cn('flex items-center gap-2 text-sm text-gray-600', className)}>
+      <span>{t('participantCount', { count })}</span>
     </div>
   );
+}
+
+// Keep TeamClaimStatus for backward compat but redirect to ParticipantCount
+export function TeamClaimStatus({ task, className }: ParticipantCountProps) {
+  return <ParticipantCount task={task} className={className} />;
 }

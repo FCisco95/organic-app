@@ -2,7 +2,8 @@
 
 import { Code, FileText, Palette, Wrench } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { TaskType, TASK_TYPE_LABELS } from '@/features/tasks';
+import { useTranslations } from 'next-intl';
+import { TaskType } from '@/features/tasks';
 
 interface TaskTypeBadgeProps {
   type: TaskType;
@@ -48,6 +49,7 @@ export function TaskTypeBadge({
   showLabel = true,
   className,
 }: TaskTypeBadgeProps) {
+  const t = useTranslations('Tasks.taskTypes');
   const config = typeConfig[type];
   const Icon = config.icon;
 
@@ -61,7 +63,7 @@ export function TaskTypeBadge({
       )}
     >
       <Icon className={iconSizeClasses[size]} />
-      {showLabel && <span>{TASK_TYPE_LABELS[type]}</span>}
+      {showLabel && <span>{t(type)}</span>}
     </span>
   );
 }
@@ -79,6 +81,7 @@ export function TaskTypeSelector({
   disabled = false,
   className,
 }: TaskTypeSelectorProps) {
+  const t = useTranslations('Tasks.taskTypes');
   const types: TaskType[] = ['development', 'content', 'design', 'custom'];
 
   return (
@@ -106,7 +109,7 @@ export function TaskTypeSelector({
             <span
               className={cn('font-medium', isSelected ? 'text-organic-orange' : 'text-gray-700')}
             >
-              {TASK_TYPE_LABELS[type]}
+              {t(type)}
             </span>
           </button>
         );

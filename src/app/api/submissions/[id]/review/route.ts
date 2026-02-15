@@ -2,6 +2,14 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 
+const QUALITY_MULTIPLIERS: Record<number, number> = {
+  1: 0.2,
+  2: 0.4,
+  3: 0.6,
+  4: 0.8,
+  5: 1.0,
+};
+
 const reviewSchema = z
   .object({
     quality_score: z.number().int().min(1).max(5),
@@ -67,7 +75,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: 'Submission not found' }, { status: 404 });
     }
 
-    // Check if submission is pending
     if (submission.review_status !== 'pending') {
       return NextResponse.json(
         { error: 'This submission has already been reviewed' },
@@ -83,8 +90,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       .single();
 
     const basePoints = task?.base_points || task?.points || 0;
+    const multiplier = QUALITY_MULTIPLIERS[quality_score] ?? 0;
+    const earnedPoints = Math.floor(basePoints * multiplier);
 
-    // Update submission
+    // Update submission with review
     const { data: updatedSubmission, error: updateError } = await supabase
       .from('task_submissions')
       .update({
@@ -93,6 +102,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         reviewer_notes: reviewer_notes || null,
         review_status: action === 'approve' ? 'approved' : 'rejected',
         rejection_reason: action === 'reject' ? rejection_reason : null,
+        earned_points: action === 'approve' ? earnedPoints : null,
+        reviewed_at: new Date().toISOString(),
       })
       .eq('id', submissionId)
       .select()
@@ -103,9 +114,40 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: 'Failed to review submission' }, { status: 500 });
     }
 
-    // If approved, update task status
     if (action === 'approve') {
-      // For solo tasks, mark as done
+      // 1. Update submitter's user_profiles: points + tasks_completed
+      const { data: submitterProfile } = await supabase
+        .from('user_profiles')
+        .select('total_points, claimable_points, tasks_completed')
+        .eq('id', submission.user_id)
+        .single();
+
+      if (submitterProfile) {
+        await supabase
+          .from('user_profiles')
+          .update({
+            total_points: (submitterProfile.total_points ?? 0) + earnedPoints,
+            claimable_points: (submitterProfile.claimable_points ?? 0) + earnedPoints,
+            tasks_completed: (submitterProfile.tasks_completed ?? 0) + 1,
+          })
+          .eq('id', submission.user_id);
+      }
+
+      // 2. Log task_completed activity (triggers XP via award_xp DB trigger)
+      await supabase.from('activity_log').insert({
+        event_type: 'task_completed',
+        actor_id: submission.user_id,
+        subject_type: 'task',
+        subject_id: submission.task_id,
+        metadata: {
+          submission_id: submissionId,
+          points: earnedPoints,
+          quality_score,
+          reviewer_id: user.id,
+        },
+      });
+
+      // 3. For solo tasks, mark as done
       if (task && !task.is_team_task) {
         await supabase
           .from('tasks')
@@ -113,6 +155,20 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
           .eq('id', submission.task_id);
       }
     }
+
+    // Log the review activity for the reviewer
+    await supabase.from('activity_log').insert({
+      event_type: 'submission_reviewed',
+      actor_id: user.id,
+      subject_type: 'submission',
+      subject_id: submissionId,
+      metadata: {
+        task_id: submission.task_id,
+        action,
+        quality_score,
+        ...(action === 'approve' ? { earned_points: earnedPoints } : { rejection_reason }),
+      },
+    });
 
     return NextResponse.json({
       submission: updatedSubmission,

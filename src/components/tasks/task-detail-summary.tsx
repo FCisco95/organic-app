@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Calendar, Heart, Tag, User, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import { TASK_TYPE_LABELS, TaskSubmissionWithReviewer, TaskWithRelations } from '@/features/tasks';
+import { TaskSubmissionWithReviewer, TaskWithRelations } from '@/features/tasks';
 
 type Contributor = NonNullable<TaskSubmissionWithReviewer['user']>;
 
@@ -47,6 +47,8 @@ export function TaskDetailSummary({
   formatDate,
 }: TaskDetailSummaryProps) {
   const t = useTranslations('TaskDetail');
+  const tTasks = useTranslations('Tasks');
+  const participants = task.assignees ?? [];
 
   const getContributorName = (contributor: Contributor) => {
     if (contributor.organic_id) return t('organicId', { id: contributor.organic_id });
@@ -97,7 +99,7 @@ export function TaskDetailSummary({
           {likeCount}
         </button>
         <span className="px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700">
-          {TASK_TYPE_LABELS[task.task_type ?? 'custom']}
+          {tTasks(`taskTypes.${task.task_type ?? 'custom'}`)}
         </span>
         {task.is_team_task && (
           <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-700">
@@ -141,6 +143,44 @@ export function TaskDetailSummary({
           ))}
         </div>
       )}
+
+      <div className="mt-4">
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-medium text-gray-700">{t('participants')}</p>
+          {participants.length > 0 && (
+            <span className="text-xs text-gray-500">{tTasks('participantCount', { count: participants.length })}</span>
+          )}
+        </div>
+        {participants.length === 0 ? (
+          <p className="text-sm text-gray-500 mt-2">{t('noParticipants')}</p>
+        ) : (
+          <div className="flex flex-wrap gap-2 mt-2">
+            {participants.map((assignment) => {
+              if (!assignment.user) return null;
+
+              return (
+                <span
+                  key={assignment.id}
+                  className="inline-flex items-center gap-2 px-2.5 py-1.5 bg-gray-100 text-gray-700 rounded-full text-xs"
+                >
+                  {assignment.user.avatar_url ? (
+                    <Image
+                      src={assignment.user.avatar_url}
+                      alt={getDisplayName(assignment.user)}
+                      width={16}
+                      height={16}
+                      className="rounded-full"
+                    />
+                  ) : (
+                    <User className="w-3.5 h-3.5 text-gray-400" />
+                  )}
+                  {getDisplayName(assignment.user)}
+                </span>
+              );
+            })}
+          </div>
+        )}
+      </div>
 
       <div className="mt-4">
         <div className="flex items-center justify-between">

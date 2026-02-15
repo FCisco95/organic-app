@@ -3,12 +3,14 @@
 import Image from 'next/image';
 import { Link, usePathname } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
+import { usePendingDisputeCount } from '@/features/disputes/hooks';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { useSidebar } from './sidebar-context';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
 import { ConnectWalletButton } from '@/components/wallet';
 import {
   Home,
@@ -35,6 +37,8 @@ export function MobileSidebar() {
   const { mobileOpen, setMobileOpen } = useSidebar();
 
   const isAdminOrCouncil = profile?.role === 'admin' || profile?.role === 'council';
+  const { data: pendingData } = usePendingDisputeCount(!!user && isAdminOrCouncil);
+  const pendingCount = pendingData?.count ?? 0;
 
   const navItems = [
     { href: '/', labelKey: 'home', icon: Home, show: true },
@@ -96,6 +100,11 @@ export function MobileSidebar() {
                   >
                     <item.icon className="h-4 w-4 shrink-0" />
                     <span>{t(item.labelKey)}</span>
+                    {item.href === '/disputes' && isAdminOrCouncil && pendingCount > 0 ? (
+                      <Badge className="ml-auto min-w-5 h-5 px-1.5 bg-orange-600 text-white text-[10px] leading-none flex items-center justify-center">
+                        {pendingCount > 99 ? '99+' : pendingCount}
+                      </Badge>
+                    ) : null}
                   </Link>
                 )
             )}

@@ -74,7 +74,8 @@ export function getReviewStatusColor(status: ReviewStatus): string {
 }
 
 /**
- * Check if a task can be claimed by a user
+ * Check if a task can be joined by a user (universal self-join model)
+ * All tasks use task_assignees — unlimited participants allowed.
  */
 export function canClaimTask(
   task: TaskWithRelations,
@@ -83,32 +84,18 @@ export function canClaimTask(
 ): { canClaim: boolean; reason?: string } {
   // User must have an Organic ID
   if (!userHasOrganicId) {
-    return { canClaim: false, reason: 'You need an Organic ID to claim tasks' };
+    return { canClaim: false, reason: 'You need an Organic ID to join tasks' };
   }
 
-  // Task must be in a claimable status
+  // Task must be in a joinable status
   if (!task.status || !CLAIMABLE_STATUSES.includes(task.status)) {
-    return { canClaim: false, reason: 'This task is not available for claiming' };
+    return { canClaim: false, reason: 'This task is not available for joining' };
   }
 
-  // For solo tasks, check if already assigned
-  if (!task.is_team_task) {
-    if (task.assignee_id) {
-      return { canClaim: false, reason: 'This task is already claimed' };
-    }
-    return { canClaim: true };
-  }
-
-  // For team tasks, check assignee count
-  const currentAssignees = task.assignees?.length ?? 0;
-  if (currentAssignees >= (task.max_assignees ?? 1)) {
-    return { canClaim: false, reason: 'This task has reached maximum assignees' };
-  }
-
-  // Check if user already claimed this task
-  const alreadyClaimed = task.assignees?.some((a) => a.user_id === userId);
-  if (alreadyClaimed) {
-    return { canClaim: false, reason: 'You have already claimed this task' };
+  // Check if user already joined (via task_assignees)
+  const alreadyJoined = task.assignees?.some((a) => a.user_id === userId);
+  if (alreadyJoined) {
+    return { canClaim: false, reason: 'You have already joined this task' };
   }
 
   return { canClaim: true };
@@ -164,19 +151,26 @@ export function getDueDateDays(dueDate: string): { days: number; overdue: boolea
 }
 
 /**
- * Format due date relative to now
+ * Format due date relative to now.
+ * Accepts an optional translation function for i18n support.
+ * When `t` is provided, it uses keys from Tasks.dueDate namespace:
+ *   today, overdueSingle, overdueMultiple, tomorrow, inDays
  */
-export function formatDueDate(dueDate: string): string {
+export function formatDueDate(
+  dueDate: string,
+  t?: (key: string, values?: Record<string, unknown>) => string
+): string {
   const { days, overdue } = getDueDateDays(dueDate);
 
-  if (days === 0) {
-    return 'Due today';
+  if (t) {
+    if (days === 0) return t('today');
+    if (overdue) return days === 1 ? t('overdueSingle') : t('overdueMultiple', { days });
+    return days === 1 ? t('tomorrow') : t('inDays', { days });
   }
 
-  if (overdue) {
-    return days === 1 ? '1 day overdue' : `${days} days overdue`;
-  }
-
+  // Fallback (non-i18n contexts)
+  if (days === 0) return 'Due today';
+  if (overdue) return days === 1 ? '1 day overdue' : `${days} days overdue`;
   return days === 1 ? 'Due tomorrow' : `Due in ${days} days`;
 }
 

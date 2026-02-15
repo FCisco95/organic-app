@@ -18,9 +18,8 @@ import {
   useUpdateTemplate,
   useDeleteTemplate,
   TaskTemplateWithCreator,
-  RECURRENCE_RULE_LABELS,
-  TASK_TYPE_LABELS,
 } from '@/features/tasks';
+import type { TaskType, RecurrenceRule } from '@/features/tasks';
 import { CreateTemplateInput } from '@/features/tasks/schemas';
 import toast from 'react-hot-toast';
 
@@ -43,6 +42,7 @@ const EMPTY_FORM: CreateTemplateInput = {
 
 export function TemplateManager({ className }: TemplateManagerProps) {
   const t = useTranslations('Tasks.templates');
+  const tTasks = useTranslations('Tasks');
   const { data: templates, isLoading } = useTaskTemplates();
   const createTemplate = useCreateTemplate();
   const updateTemplate = useUpdateTemplate();
@@ -68,7 +68,7 @@ export function TemplateManager({ className }: TemplateManagerProps) {
       }
       resetForm();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to save template');
+      toast.error(error instanceof Error ? error.message : t('saveFailed'));
     }
   };
 
@@ -90,12 +90,12 @@ export function TemplateManager({ className }: TemplateManagerProps) {
   };
 
   const handleDelete = async (templateId: string) => {
-    if (!confirm(t('deleted') + '?')) return;
+    if (!confirm(t('confirmDelete'))) return;
     try {
       await deleteTemplate.mutateAsync(templateId);
       toast.success(t('deleted'));
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to delete template');
+      toast.error(error instanceof Error ? error.message : t('deleteFailed'));
     }
   };
 
@@ -180,9 +180,9 @@ export function TemplateManager({ className }: TemplateManagerProps) {
                 }
                 className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white/70 focus:outline-none focus:border-organic-orange focus:ring-2 focus:ring-organic-orange/20"
               >
-                {Object.entries(TASK_TYPE_LABELS).map(([value, label]) => (
+                {(['development', 'content', 'design', 'custom'] as TaskType[]).map((value) => (
                   <option key={value} value={value}>
-                    {label}
+                    {tTasks(`taskTypes.${value}`)}
                   </option>
                 ))}
               </select>
@@ -200,10 +200,10 @@ export function TemplateManager({ className }: TemplateManagerProps) {
                 }
                 className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white/70 focus:outline-none focus:border-organic-orange focus:ring-2 focus:ring-organic-orange/20"
               >
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-                <option value="critical">Critical</option>
+                <option value="low">{tTasks('priorities.low')}</option>
+                <option value="medium">{tTasks('priorities.medium')}</option>
+                <option value="high">{tTasks('priorities.high')}</option>
+                <option value="critical">{tTasks('priorities.critical')}</option>
               </select>
             </div>
 
@@ -250,9 +250,9 @@ export function TemplateManager({ className }: TemplateManagerProps) {
                 }
                 className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white/70 focus:outline-none focus:border-organic-orange focus:ring-2 focus:ring-organic-orange/20"
               >
-                {Object.entries(RECURRENCE_RULE_LABELS).map(([value, label]) => (
+                {(['sprint_start', 'daily', 'weekly', 'biweekly', 'monthly'] as RecurrenceRule[]).map((value) => (
                   <option key={value} value={value}>
-                    {label}
+                    {t(`recurrenceRules.${value}`)}
                     </option>
                   ))}
                 </select>
@@ -308,7 +308,7 @@ export function TemplateManager({ className }: TemplateManagerProps) {
                       {template.name}
                     </span>
                     <span className="text-xs text-gray-400">
-                      {TASK_TYPE_LABELS[template.task_type]}
+                      {tTasks(`taskTypes.${template.task_type}`)}
                     </span>
                     {template.base_points > 0 && (
                       <span className="text-xs text-gray-400">{template.base_points} pts</span>
@@ -316,7 +316,7 @@ export function TemplateManager({ className }: TemplateManagerProps) {
                     {template.is_recurring && template.recurrence_rule && (
                       <span className="inline-flex items-center gap-1 text-xs text-blue-500">
                         <Repeat className="w-3 h-3" />
-                        {RECURRENCE_RULE_LABELS[template.recurrence_rule]}
+                        {t(`recurrenceRules.${template.recurrence_rule}`)}
                       </span>
                     )}
                   </div>

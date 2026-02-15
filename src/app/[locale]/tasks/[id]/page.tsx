@@ -138,20 +138,17 @@ export default function TaskDetailPage() {
       if (!error && taskData) {
         const typedTask = taskData as unknown as Task;
 
-        // Fetch assignees for team tasks
-        let assignees: TaskAssigneeWithUser[] = [];
-        if (typedTask.is_team_task) {
-          const { data: assigneesData } = await supabase
-            .from('task_assignees')
-            .select(
-              `
-              *,
-              user:user_profiles(id, name, email, organic_id, avatar_url)
+        // Fetch assignees (all tasks use task_assignees now)
+        const { data: assigneesData } = await supabase
+          .from('task_assignees')
+          .select(
             `
-            )
-            .eq('task_id', taskId);
-          assignees = (assigneesData ?? []) as unknown as TaskAssigneeWithUser[];
-        }
+            *,
+            user:user_profiles(id, name, email, organic_id, avatar_url)
+          `
+          )
+          .eq('task_id', taskId);
+        const assignees = (assigneesData ?? []) as unknown as TaskAssigneeWithUser[];
 
         // Fetch submissions
         const { data: submissionsData } = await supabase
@@ -745,6 +742,8 @@ export default function TaskDetailPage() {
       <TaskSubmissionsSection
         submissions={task.submissions ?? []}
         getDisplayName={getDisplayName}
+        currentUserId={user?.id}
+        onDisputeCreated={() => fetchTaskDetails()}
       />
 
       <TaskCommentsSection

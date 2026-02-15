@@ -44,6 +44,16 @@ export async function GET(request: NextRequest) {
       return handleEligibilityCheck(supabase, user.id, checkEligibility);
     }
 
+    // Pending dispute counter (used by sidebar badge)
+    if (searchParams.get('pending_count') === 'true') {
+      return handlePendingCount(supabase, user.id);
+    }
+
+    // Arbitrator stats (used by council/admin dashboard)
+    if (searchParams.get('stats') === 'true') {
+      return handleArbitratorStats(supabase, user.id);
+    }
+
     // Parse filters
     const filters = disputeFilterSchema.parse({
       status: searchParams.get('status') || undefined,
@@ -407,5 +417,100 @@ async function handleEligibilityCheck(
     eligible: true,
     xp_stake: config.xp_dispute_stake,
     user_xp: profile.xp_total,
+  });
+}
+
+async function handlePendingCount(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  userId: string
+) {
+  const { data: profile } = await supabase
+    .from('user_profiles')
+    .select('role')
+    .eq('id', userId)
+    .single();
+
+  const isCouncilOrAdmin = profile?.role === 'admin' || profile?.role === 'council';
+
+  let query = supabase
+    .from('disputes')
+    .select('id', { count: 'exact', head: true })
+    .not('status', 'in', '("resolved","dismissed","withdrawn","mediated")');
+
+  if (!isCouncilOrAdmin) {
+    query = query.or(
+      `disputant_id.eq.${userId},reviewer_id.eq.${userId},arbitrator_id.eq.${userId}`
+    );
+  }
+
+  const { count, error } = await query;
+  if (error) {
+    return NextResponse.json({ error: 'Failed to fetch pending count' }, { status: 500 });
+  }
+
+  return NextResponse.json({ count: count ?? 0 });
+}
+
+async function handleArbitratorStats(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  userId: string
+) {
+  const { data: profile } = await supabase
+    .from('user_profiles')
+    .select('role')
+    .eq('id', userId)
+    .single();
+
+  const isCouncilOrAdmin = profile?.role === 'admin' || profile?.role === 'council';
+  if (!isCouncilOrAdmin) {
+    return NextResponse.json(
+      {
+        data: {
+          resolved_count: 0,
+          overturn_rate: 0,
+          avg_resolution_hours: 0,
+        },
+      }
+    );
+  }
+
+  const { data: disputes, error } = await supabase
+    .from('disputes')
+    .select('resolution, created_at, resolved_at')
+    .eq('arbitrator_id', userId)
+    .in('status', ['resolved', 'dismissed']);
+
+  if (error) {
+    return NextResponse.json({ error: 'Failed to fetch arbitrator stats' }, { status: 500 });
+  }
+
+  const resolvedCount = disputes?.length ?? 0;
+  const overturnedCount =
+    disputes?.filter((dispute) => dispute.resolution === 'overturned').length ?? 0;
+  const overturnRate =
+    resolvedCount > 0 ? Math.round((overturnedCount / resolvedCount) * 100) : 0;
+
+  const durations = (disputes ?? [])
+    .map((dispute) => {
+      if (!dispute.resolved_at) return null;
+      const start = new Date(dispute.created_at).getTime();
+      const end = new Date(dispute.resolved_at).getTime();
+      if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return null;
+      return (end - start) / (1000 * 60 * 60);
+    })
+    .filter((value): value is number => value !== null);
+
+  const avgResolutionHours =
+    durations.length > 0
+      ? Math.round((durations.reduce((acc, value) => acc + value, 0) / durations.length) * 10) /
+        10
+      : 0;
+
+  return NextResponse.json({
+    data: {
+      resolved_count: resolvedCount,
+      overturn_rate: overturnRate,
+      avg_resolution_hours: avgResolutionHours,
+    },
   });
 }

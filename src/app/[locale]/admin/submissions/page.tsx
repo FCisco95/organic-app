@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useAuth } from '@/features/auth/context';
 import { usePendingReviewSubmissions } from '@/features/tasks/hooks';
 import { TaskReviewPanel } from '@/components/tasks/task-review-panel';
-import { TASK_TYPE_LABELS, TaskSubmissionWithReviewer, TaskType } from '@/features/tasks';
+import { TaskSubmissionWithReviewer, TaskType } from '@/features/tasks';
 import { Link } from '@/i18n/navigation';
 import { Loader2 } from 'lucide-react';
 import { PageContainer } from '@/components/layout';
@@ -26,6 +26,7 @@ type SubmissionGroup = {
 
 export default function SubmissionReviewQueuePage() {
   const t = useTranslations('ReviewQueue');
+  const tTasks = useTranslations('Tasks.taskTypes');
   const { profile, loading: authLoading } = useAuth();
   const { data, isLoading, error } = usePendingReviewSubmissions();
 
@@ -113,7 +114,7 @@ export default function SubmissionReviewQueuePage() {
                       </Link>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="text-sm text-gray-600">{TASK_TYPE_LABELS[taskType]}</span>
+                      <span className="text-sm text-gray-600">{tTasks(taskType)}</span>
                       <span className="text-sm text-gray-500">
                         {t('pendingCount', { count: group.submissions.length })}
                       </span>

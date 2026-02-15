@@ -149,11 +149,10 @@ export function useTask(taskId: string) {
       if (error) throw error;
 
       const task = data as unknown as TaskWithRelations;
-      const assignees = task.is_team_task ? (task.assignees ?? []) : [];
 
       return {
         ...task,
-        assignees,
+        assignees: task.assignees ?? [],
         submissions: task.submissions ?? [],
       } as unknown as TaskWithRelations;
     },
@@ -266,31 +265,26 @@ export function usePendingReviewSubmissions() {
 }
 
 /**
- * Create a new task
+ * Create a new task via API route (server-side validated)
  */
 export function useCreateTask() {
-  const supabase = createClient();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (input: CreateTaskInput) => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      const response = await fetch('/api/tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input),
+      });
 
-      const { data, error } = await supabase
-        .from('tasks')
-        .insert({
-          ...input,
-          points: input.base_points,
-          created_by: user.id,
-        })
-        .select()
-        .single();
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to create task');
+      }
 
-      if (error) throw error;
-      return data;
+      const { task } = await response.json();
+      return task;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: taskKeys.lists() });

@@ -3,9 +3,11 @@
 import Image from 'next/image';
 import { Link, usePathname } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
+import { usePendingDisputeCount } from '@/features/disputes/hooks';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { useSidebar } from './sidebar-context';
+import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -40,6 +42,8 @@ export function Sidebar() {
   const { collapsed } = useSidebar();
 
   const isAdminOrCouncil = profile?.role === 'admin' || profile?.role === 'council';
+  const { data: pendingData } = usePendingDisputeCount(!!user && isAdminOrCouncil);
+  const pendingCount = pendingData?.count ?? 0;
 
   const navItems: NavItem[] = [
     { href: '/', labelKey: 'home', icon: Home, show: true },
@@ -108,6 +112,9 @@ export function Sidebar() {
                     icon={item.icon}
                     active={isActive(item.href)}
                     collapsed={collapsed}
+                    badgeCount={
+                      item.href === '/disputes' && isAdminOrCouncil ? pendingCount : undefined
+                    }
                   />
                 )
             )}
@@ -149,12 +156,14 @@ function NavLink({
   icon: Icon,
   active,
   collapsed,
+  badgeCount,
 }: {
   href: string;
   label: string;
   icon: React.ElementType;
   active: boolean;
   collapsed: boolean;
+  badgeCount?: number;
 }) {
   const link = (
     <Link
@@ -172,7 +181,21 @@ function NavLink({
         <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-organic-orange" />
       )}
       <Icon className={cn('h-[18px] w-[18px] shrink-0', active && 'text-organic-orange')} />
-      {!collapsed && <span>{label}</span>}
+      {!collapsed && (
+        <>
+          <span>{label}</span>
+          {badgeCount && badgeCount > 0 ? (
+            <Badge className="ml-auto min-w-5 h-5 px-1.5 bg-orange-600 text-white text-[10px] leading-none flex items-center justify-center">
+              {badgeCount > 99 ? '99+' : badgeCount}
+            </Badge>
+          ) : null}
+        </>
+      )}
+      {collapsed && badgeCount && badgeCount > 0 ? (
+        <span className="absolute -top-1 -right-1 min-w-4 h-4 rounded-full bg-orange-600 text-[10px] text-white flex items-center justify-center px-1">
+          {badgeCount > 9 ? '9+' : badgeCount}
+        </span>
+      ) : null}
     </Link>
   );
 

@@ -2,7 +2,7 @@
 
 import { Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { QUALITY_SCORE_LABELS } from '@/features/tasks';
+import { useTranslations } from 'next-intl';
 
 interface QualityRatingProps {
   value: number;
@@ -27,6 +27,8 @@ export function QualityRating({
   showLabel = false,
   className,
 }: QualityRatingProps) {
+  const t = useTranslations('Tasks.qualityScores');
+
   const handleClick = (rating: number) => {
     if (!readonly && onChange) {
       onChange(rating);
@@ -58,7 +60,7 @@ export function QualityRating({
         ))}
       </div>
       {showLabel && value > 0 && (
-        <span className="text-sm text-gray-600">{QUALITY_SCORE_LABELS[value]}</span>
+        <span className="text-sm text-gray-600">{t(String(value))}</span>
       )}
     </div>
   );

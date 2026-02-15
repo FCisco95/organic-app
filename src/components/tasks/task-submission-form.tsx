@@ -15,16 +15,9 @@ import {
   contentSubmissionSchema,
   designSubmissionSchema,
   customSubmissionSchema,
-  TASK_TYPE_LABELS,
 } from '@/features/tasks';
+import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
-
-const getSubmissionErrorMessage = (error: unknown) => {
-  if (error instanceof Error && error.message) {
-    return error.message;
-  }
-  return 'Failed to submit work';
-};
 
 interface TaskSubmissionFormProps {
   task: TaskWithRelations;
@@ -41,13 +34,18 @@ export function TaskSubmissionForm({
   onCancel,
   className,
 }: TaskSubmissionFormProps) {
+  const t = useTranslations('Tasks.submission');
+  const tTasks = useTranslations('Tasks');
   const taskType = task.task_type ?? 'custom';
-  const normalizedTaskType = TASK_TYPE_LABELS[taskType] ? taskType : 'custom';
+  const validTaskTypes: TaskType[] = ['development', 'content', 'design', 'custom'];
+  const normalizedTaskType: TaskType = validTaskTypes.includes(taskType as TaskType)
+    ? (taskType as TaskType)
+    : 'custom';
 
   return (
     <div className={cn('bg-white rounded-lg border border-gray-200 p-6', className)}>
       <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        Submit Work for {TASK_TYPE_LABELS[normalizedTaskType]} Task
+        {t('submitWorkFor', { type: tTasks(`taskTypes.${normalizedTaskType}`) })}
       </h3>
 
       {normalizedTaskType === 'development' && (
@@ -76,6 +74,7 @@ function DevelopmentSubmissionForm({
   onSuccess?: () => void;
   onCancel?: () => void;
 }) {
+  const t = useTranslations('Tasks.submission');
   const submitTask = useSubmitTask();
   const {
     register,
@@ -94,11 +93,10 @@ function DevelopmentSubmissionForm({
   const onSubmit = async (data: TaskSubmissionInput) => {
     try {
       await submitTask.mutateAsync({ taskId: task.id, submission: data });
-      toast.success('Submission sent for review!');
+      toast.success(t('submissionSuccess'));
       onSuccess?.();
     } catch (error) {
-      toast.error(getSubmissionErrorMessage(error));
-      console.error('Submission error:', error);
+      toast.error(error instanceof Error ? error.message : t('submissionFailed'));
     }
   };
 
@@ -108,14 +106,14 @@ function DevelopmentSubmissionForm({
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Pull Request Link <span className="text-red-500">*</span>
+          {t('prLinkLabel')} <span className="text-red-500">*</span>
         </label>
         <div className="relative">
           <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             {...register('pr_link')}
             type="url"
-            placeholder="https://github.com/org/repo/pull/123"
+            placeholder={t('prLinkPlaceholder')}
             className={cn(
               'w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent',
               errors.pr_link ? 'border-red-300' : 'border-gray-300'
@@ -126,21 +124,25 @@ function DevelopmentSubmissionForm({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          {t('descriptionLabel')}
+        </label>
         <textarea
           {...register('description')}
           rows={3}
-          placeholder="Describe what you implemented..."
+          placeholder={t('descriptionPlaceholder')}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Testing Notes</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          {t('testingNotesLabel')}
+        </label>
         <textarea
           {...register('testing_notes')}
           rows={2}
-          placeholder="How to test this change..."
+          placeholder={t('testingNotesPlaceholder')}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none"
         />
       </div>
@@ -160,6 +162,7 @@ function ContentSubmissionForm({
   onSuccess?: () => void;
   onCancel?: () => void;
 }) {
+  const t = useTranslations('Tasks.submission');
   const submitTask = useSubmitTask();
   const {
     register,
@@ -187,11 +190,10 @@ function ContentSubmissionForm({
   const onSubmit = async (data: TaskSubmissionInput) => {
     try {
       await submitTask.mutateAsync({ taskId: task.id, submission: data });
-      toast.success('Submission sent for review!');
+      toast.success(t('submissionSuccess'));
       onSuccess?.();
     } catch (error) {
-      toast.error(getSubmissionErrorMessage(error));
-      console.error('Submission error:', error);
+      toast.error(error instanceof Error ? error.message : t('submissionFailed'));
     }
   };
 
@@ -200,51 +202,55 @@ function ContentSubmissionForm({
       <input type="hidden" {...register('submission_type')} value="content" />
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Content Link</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          {t('contentLinkLabel')}
+        </label>
         <div className="relative">
           <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             {...register('content_link')}
             type="url"
-            placeholder="https://twitter.com/..."
+            placeholder={t('contentLinkPlaceholder')}
             className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Content Text</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          {t('contentTextLabel')}
+        </label>
         <textarea
           {...register('content_text')}
           rows={4}
-          placeholder="Paste your content here..."
+          placeholder={t('contentTextPlaceholder')}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none"
         />
       </div>
 
       {!contentLink && !contentText && (
-        <p className="text-sm text-amber-600">
-          Please provide either a content link or content text.
-        </p>
+        <p className="text-sm text-amber-600">{t('contentRequired')}</p>
       )}
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          {t('descriptionLabel')}
+        </label>
         <textarea
           {...register('description')}
           rows={2}
-          placeholder="Any additional context..."
+          placeholder={t('descriptionPlaceholder')}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none"
         />
       </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Reach Metrics (optional)
+          {t('reachMetricsLabel')}
         </label>
         <div className="grid grid-cols-3 gap-3">
           <div>
-            <label className="block text-xs text-gray-500 mb-1">Views</label>
+            <label className="block text-xs text-gray-500 mb-1">{t('views')}</label>
             <input
               {...register('reach_metrics.views', { valueAsNumber: true })}
               type="number"
@@ -254,7 +260,7 @@ function ContentSubmissionForm({
             />
           </div>
           <div>
-            <label className="block text-xs text-gray-500 mb-1">Likes</label>
+            <label className="block text-xs text-gray-500 mb-1">{t('likes')}</label>
             <input
               {...register('reach_metrics.likes', { valueAsNumber: true })}
               type="number"
@@ -264,7 +270,7 @@ function ContentSubmissionForm({
             />
           </div>
           <div>
-            <label className="block text-xs text-gray-500 mb-1">Shares</label>
+            <label className="block text-xs text-gray-500 mb-1">{t('shares')}</label>
             <input
               {...register('reach_metrics.shares', { valueAsNumber: true })}
               type="number"
@@ -291,6 +297,7 @@ function DesignSubmissionForm({
   onSuccess?: () => void;
   onCancel?: () => void;
 }) {
+  const t = useTranslations('Tasks.submission');
   const submitTask = useSubmitTask();
   const [fileUrls, setFileUrls] = useState<string[]>([]);
   const [newUrl, setNewUrl] = useState('');
@@ -327,11 +334,10 @@ function DesignSubmissionForm({
   const onSubmit = async (data: TaskSubmissionInput) => {
     try {
       await submitTask.mutateAsync({ taskId: task.id, submission: data });
-      toast.success('Submission sent for review!');
+      toast.success(t('submissionSuccess'));
       onSuccess?.();
     } catch (error) {
-      toast.error(getSubmissionErrorMessage(error));
-      console.error('Submission error:', error);
+      toast.error(error instanceof Error ? error.message : t('submissionFailed'));
     }
   };
 
@@ -341,11 +347,9 @@ function DesignSubmissionForm({
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          File URLs <span className="text-red-500">*</span>
+          {t('fileUrlsLabel')} <span className="text-red-500">*</span>
         </label>
-        <p className="text-xs text-gray-500 mb-2">
-          Add links to your design files (Figma, Google Drive, Dropbox, etc.)
-        </p>
+        <p className="text-xs text-gray-500 mb-2">{t('fileUrlsHint')}</p>
 
         <div className="flex gap-2 mb-2">
           <div className="relative flex-1">
@@ -360,7 +364,7 @@ function DesignSubmissionForm({
                   addFileUrl();
                 }
               }}
-              placeholder="https://figma.com/file/..."
+              placeholder={t('fileUrlPlaceholder')}
               className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
             />
           </div>
@@ -397,21 +401,25 @@ function DesignSubmissionForm({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          {t('descriptionLabel')}
+        </label>
         <textarea
           {...register('description')}
           rows={3}
-          placeholder="Describe your design work..."
+          placeholder={t('descriptionPlaceholder')}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Revision Notes</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          {t('revisionNotesLabel')}
+        </label>
         <textarea
           {...register('revision_notes')}
           rows={2}
-          placeholder="Any changes from previous iterations..."
+          placeholder={t('revisionNotesPlaceholder')}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none"
         />
       </div>
@@ -431,6 +439,7 @@ function CustomSubmissionForm({
   onSuccess?: () => void;
   onCancel?: () => void;
 }) {
+  const t = useTranslations('Tasks.submission');
   const submitTask = useSubmitTask();
   const {
     register,
@@ -454,11 +463,10 @@ function CustomSubmissionForm({
         custom_fields: data.custom_fields?.link ? data.custom_fields : undefined,
       };
       await submitTask.mutateAsync({ taskId: task.id, submission: cleanedSubmission });
-      toast.success('Submission sent for review!');
+      toast.success(t('submissionSuccess'));
       onSuccess?.();
     } catch (error) {
-      toast.error(getSubmissionErrorMessage(error));
-      console.error('Submission error:', error);
+      toast.error(error instanceof Error ? error.message : t('submissionFailed'));
     }
   };
 
@@ -467,24 +475,28 @@ function CustomSubmissionForm({
       <input type="hidden" {...register('submission_type')} value="custom" />
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Work Link</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          {t('workLinkLabel')}
+        </label>
         <div className="relative">
           <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             {...register('custom_fields.link')}
             type="url"
-            placeholder="https://"
+            placeholder={t('workLinkPlaceholder')}
             className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          {t('descriptionLabel')}
+        </label>
         <textarea
           {...register('description')}
           rows={4}
-          placeholder="Describe your work and provide any relevant links or information..."
+          placeholder={t('descriptionGenericPlaceholder')}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none"
         />
       </div>
@@ -496,6 +508,8 @@ function CustomSubmissionForm({
 
 // Form Actions (shared)
 function FormActions({ isSubmitting, onCancel }: { isSubmitting: boolean; onCancel?: () => void }) {
+  const t = useTranslations('Tasks.submission');
+
   return (
     <div className="flex gap-3 pt-4">
       {onCancel && (
@@ -505,7 +519,7 @@ function FormActions({ isSubmitting, onCancel }: { isSubmitting: boolean; onCanc
           disabled={isSubmitting}
           className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors disabled:opacity-50"
         >
-          Cancel
+          {t('cancel')}
         </button>
       )}
       <button
@@ -514,7 +528,7 @@ function FormActions({ isSubmitting, onCancel }: { isSubmitting: boolean; onCanc
         className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
       >
         {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-        {isSubmitting ? 'Submitting...' : 'Submit Work'}
+        {isSubmitting ? t('submitting') : t('submitWork')}
       </button>
     </div>
   );

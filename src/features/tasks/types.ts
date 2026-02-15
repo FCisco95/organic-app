@@ -54,6 +54,7 @@ export interface TaskListItem extends Task {
   sprints?: {
     name: string;
   } | null;
+  assignees?: TaskAssigneeWithUser[];
 }
 
 // Task submission summary (used in task list for contributor display)

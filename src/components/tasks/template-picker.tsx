@@ -8,8 +8,6 @@ import {
   useTaskTemplates,
   useCreateFromTemplate,
   TaskTemplateWithCreator,
-  RECURRENCE_RULE_LABELS,
-  TASK_TYPE_LABELS,
 } from '@/features/tasks';
 import toast from 'react-hot-toast';
 
@@ -21,6 +19,7 @@ interface TemplatePickerProps {
 
 export function TemplatePicker({ sprintId, onTaskCreated, className }: TemplatePickerProps) {
   const t = useTranslations('Tasks.templates');
+  const tTasks = useTranslations('Tasks');
   const { data: templates, isLoading } = useTaskTemplates();
   const createFromTemplate = useCreateFromTemplate();
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -35,7 +34,7 @@ export function TemplatePicker({ sprintId, onTaskCreated, className }: TemplateP
       toast.success(t('taskCreated'));
       onTaskCreated?.();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to create from template');
+      toast.error(error instanceof Error ? error.message : t('createFailed'));
     } finally {
       setSelectedId(null);
     }
@@ -111,7 +110,7 @@ export function TemplatePicker({ sprintId, onTaskCreated, className }: TemplateP
 
             <div className="flex items-center gap-2 flex-wrap">
               <span className="inline-flex items-center gap-1 text-xs text-gray-400">
-                {TASK_TYPE_LABELS[template.task_type]}
+                {tTasks(`taskTypes.${template.task_type}`)}
               </span>
               {template.base_points > 0 && (
                 <span className="text-xs text-gray-400">{template.base_points} pts</span>
@@ -119,7 +118,7 @@ export function TemplatePicker({ sprintId, onTaskCreated, className }: TemplateP
               {template.is_recurring && template.recurrence_rule && (
                 <span className="inline-flex items-center gap-1 text-xs text-blue-500">
                   <Repeat className="w-3 h-3" />
-                  {RECURRENCE_RULE_LABELS[template.recurrence_rule]}
+                  {t(`recurrenceRules.${template.recurrence_rule}`)}
                 </span>
               )}
             </div>

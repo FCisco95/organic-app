@@ -1,6 +1,7 @@
 'use client';
 
-import { AlertCircle, Clock, Heart, Tag, User } from 'lucide-react';
+import Image from 'next/image';
+import { AlertCircle, Clock, Heart, Tag, User, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import type { Sprint, TaskListItem, TaskTab } from '@/features/tasks';
@@ -12,6 +13,7 @@ type TaskListSectionProps = {
   currentSprint: Sprint | undefined;
   loading: boolean;
   tasks: TaskListItem[];
+  hasActiveFilters: boolean;
   canLike: boolean;
   likedTasks: Record<string, boolean>;
   likeCounts: Record<string, number>;
@@ -32,6 +34,7 @@ export function TaskListSection({
   currentSprint,
   loading,
   tasks,
+  hasActiveFilters,
   canLike,
   likedTasks,
   likeCounts,
@@ -66,7 +69,9 @@ export function TaskListSection({
         <div className="p-8 text-center text-gray-500">
           {activeView === 'activeSprint' && !currentSprint
             ? t('noActiveSprint')
-            : t('noTasksInView')}
+            : hasActiveFilters
+              ? t('noTasksFiltered')
+              : t('noTasksInView')}
         </div>
       ) : (
         <div className="divide-y divide-gray-100">
@@ -74,6 +79,9 @@ export function TaskListSection({
             const isOverdue =
               task.due_date && new Date(task.due_date) < new Date() && task.status !== 'done';
             const activity = getActivityCounts(task.id);
+            const participants = task.assignees ?? [];
+            const visibleParticipants = participants.slice(0, 4);
+            const overflowParticipants = Math.max(participants.length - visibleParticipants.length, 0);
 
             return (
               <Link
@@ -124,6 +132,44 @@ export function TaskListSection({
                         <div className="flex items-center gap-1">
                           <Tag className="w-3 h-3" />
                           <span>{task.labels.join(', ')}</span>
+                        </div>
+                      )}
+                      {participants.length > 0 && (
+                        <div className="flex items-center gap-2">
+                          <Users className="w-3 h-3" />
+                          <div className="flex -space-x-2">
+                            {visibleParticipants.map((assignment) => {
+                              if (!assignment.user) return null;
+
+                              const fallbackLabel = assignment.user.email || assignment.user.name || '';
+                              const displayLabel = assignment.user.organic_id
+                                ? t('assigneeId', { id: assignment.user.organic_id })
+                                : fallbackLabel;
+
+                              return assignment.user.avatar_url ? (
+                                <Image
+                                  key={assignment.id}
+                                  src={assignment.user.avatar_url}
+                                  alt={displayLabel}
+                                  width={20}
+                                  height={20}
+                                  className="h-5 w-5 rounded-full border border-white object-cover"
+                                />
+                              ) : (
+                                <span
+                                  key={assignment.id}
+                                  className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-white bg-gray-300 text-[10px] text-gray-700"
+                                  title={displayLabel}
+                                >
+                                  {(displayLabel[0] ?? '?').toUpperCase()}
+                                </span>
+                              );
+                            })}
+                          </div>
+                          {overflowParticipants > 0 && (
+                            <span className="text-[11px] text-gray-500">+{overflowParticipants}</span>
+                          )}
+                          <span>{t('participantCount', { count: participants.length })}</span>
                         </div>
                       )}
                     </div>

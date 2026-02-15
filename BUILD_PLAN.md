@@ -336,80 +336,80 @@
 
 #### 16.1 Core dispute system
 
-- [ ] `disputes` table with status lifecycle (open → mediation → awaiting_response → under_review → resolved/dismissed/withdrawn/mediated)
-- [ ] `dispute_comments` table for semi-public discussion threads (parties + arbitrator visibility)
-- [ ] Dispute reason categories: rejected_unfairly, low_quality_score, plagiarism_claim, reviewer_bias, other
-- [ ] XP stake on filing (default 50 XP, configurable via `orgs.gamification_config`)
-- [ ] Minimum XP threshold to file (default 100 XP, prevents spam from new members)
-- [ ] One active dispute per submission constraint
-- [ ] 7-day cooldown between disputes per user
+- [x] `disputes` table with status lifecycle (open → mediation → awaiting_response → under_review → resolved/dismissed/withdrawn/mediated)
+- [x] `dispute_comments` table for semi-public discussion threads (parties + arbitrator visibility)
+- [x] Dispute reason categories: rejected_unfairly, low_quality_score, plagiarism_claim, reviewer_bias, other
+- [x] XP stake on filing (default 50 XP, configurable via `orgs.gamification_config`)
+- [x] Minimum XP threshold to file (default 100 XP, prevents spam from new members)
+- [x] One active dispute per submission constraint
+- [x] 7-day cooldown between disputes per user
 - [ ] Evidence required: text explanation + optional file/link attachments (append-only, immutable after submission)
 
 #### 16.2 Three-tier escalation
 
-- [ ] **Tier 1 — Mediation** (optional, 24h window): both parties can negotiate a resolution privately
-- [ ] **Tier 2 — Council arbitration**: council+ member (not the original reviewer) reviews evidence and decides
-- [ ] **Tier 3 — Admin appeal**: disputant can appeal council ruling within 48h; admin makes final ruling
+- [x] **Tier 1 — Mediation** (optional, 24h window): both parties can negotiate a resolution privately
+- [x] **Tier 2 — Council arbitration**: council+ member (not the original reviewer) reviews evidence and decides
+- [x] **Tier 3 — Admin appeal**: disputant can appeal council ruling within 48h; admin makes final ruling
 - [ ] Sprint-bound deadlines: unresolved disputes auto-escalate at sprint close; admin-tier disputes get 48h extension
-- [ ] Arbitrator self-assignment from queue (conflict-of-interest guard: cannot be original reviewer)
-- [ ] Arbitrator recusal with dispute reassignment
+- [x] Arbitrator self-assignment from queue (conflict-of-interest guard: cannot be original reviewer)
+- [x] Arbitrator recusal with dispute reassignment
 
 #### 16.3 Structured counter-arguments
 
-- [ ] Reviewer receives 48h window to submit counter-argument after dispute is filed
-- [ ] Counter-argument form: text response + optional evidence links
-- [ ] Response deadline tracked; arbitration proceeds regardless after deadline passes
+- [x] Reviewer receives 48h window to submit counter-argument after dispute is filed
+- [x] Counter-argument form: text response + optional evidence links
+- [x] Response deadline tracked; arbitration proceeds regardless after deadline passes
 
 #### 16.4 Resolution outcomes
 
-- [ ] **Overturn**: submission approved, points awarded, disputant XP stake refunded, reviewer XP penalty
-- [ ] **Compromise**: arbitrator sets new quality score, partial points recalculated, disputant XP stake refunded
-- [ ] **Uphold**: original decision stands, disputant loses XP stake
+- [x] **Overturn**: submission approved, points awarded, disputant XP stake refunded, reviewer XP penalty
+- [x] **Compromise**: arbitrator sets new quality score, partial points recalculated, disputant XP stake refunded
+- [x] **Uphold**: original decision stands, disputant loses XP stake
 - [ ] **Dismiss**: frivolous dispute, disputant loses XP stake + extended cooldown
-- [ ] **Withdrawn**: disputant can withdraw before resolution (small XP fee deducted, rest refunded)
+- [x] **Withdrawn**: disputant can withdraw before resolution (small XP fee deducted, rest refunded)
 - [ ] **Mediated**: both parties agree on resolution, full XP stake refunded
 
 #### 16.5 Arbitrator rewards & reviewer accountability
 
-- [ ] Arbitrator earns flat XP per resolution (default 25 XP, configurable)
-- [ ] Reviewer XP penalty on overturned decisions (default 30 XP, configurable)
+- [x] Arbitrator earns flat XP per resolution (default 25 XP, configurable)
+- [x] Reviewer XP penalty on overturned decisions (default 30 XP, configurable)
 - [ ] Reviewer accuracy tracking (% of reviews overturned via disputes)
 - [ ] Achievements: "First Arbiter" (1 resolved), "Justice Keeper" (10 resolved), "Peacemaker" (5 mediated), "Vindicated" (1 won as disputant)
 
 #### 16.6 UI & pages
 
-- [ ] Dedicated `/disputes` queue page (council/admin see all, members see their own)
-- [ ] Dispute detail page `/disputes/[id]` with evidence, response, timeline, resolution panel
-- [ ] Inline "Dispute" button on rejected task submissions (disabled if cooldown/insufficient XP)
+- [x] Dedicated `/disputes` queue page (council/admin see all, members see their own)
+- [x] Dispute detail page `/disputes/[id]` with evidence, response, timeline, resolution panel
+- [x] Inline "Dispute" button on rejected task submissions (disabled if cooldown/insufficient XP)
 - [ ] Create Dispute modal (reason picker, evidence text, file upload, XP stake display)
-- [ ] Dispute timeline visualization (filed → mediation → response → review → resolved)
-- [ ] Status + tier badge components
-- [ ] Arbitrator stats dashboard (resolved count, overturn rate)
-- [ ] Sidebar navigation link with pending-dispute badge counter (council/admin)
+- [x] Dispute timeline visualization (filed → mediation → response → review → resolved)
+- [x] Status + tier badge components
+- [x] Arbitrator stats dashboard (resolved count, overturn rate)
+- [x] Sidebar navigation link with pending-dispute badge counter (council/admin)
 
 #### 16.7 Notifications & activity integration
 
-- [ ] Activity event types: dispute_created, dispute_response_submitted, dispute_escalated, dispute_resolved, dispute_withdrawn
-- [ ] New `disputes` notification category with user preference toggle
-- [ ] Auto-follow for disputant, reviewer, and arbitrator
+- [x] Activity event types: dispute_created, dispute_response_submitted, dispute_escalated, dispute_resolved, dispute_withdrawn
+- [x] New `disputes` notification category with user preference toggle
+- [x] Auto-follow for disputant, reviewer, and arbitrator
 - [ ] Notifications: reviewer notified on filing, disputant on response, arbitrator on escalation, both on resolution
 
 #### 16.8 i18n
 
-- [ ] Disputes namespace across en, pt-PT, zh-CN (~80 keys)
-- [ ] Covers: statuses, tiers, resolutions, reasons, form labels, validation errors, notification copy, achievements
+- [x] Disputes namespace across en, pt-PT, zh-CN (~80 keys)
+- [x] Covers: statuses, tiers, resolutions, reasons, form labels, validation errors, notification copy, achievements
 
 #### 16.9 Configurable parameters (via orgs.gamification_config)
 
-- [ ] `xp_dispute_stake`: 50 (XP cost to file)
-- [ ] `xp_dispute_arbitrator_reward`: 25 (XP per resolution)
-- [ ] `xp_dispute_reviewer_penalty`: 30 (XP lost if overturned)
-- [ ] `xp_dispute_withdrawal_fee`: 10 (small fee on withdrawal)
-- [ ] `dispute_mediation_hours`: 24
-- [ ] `dispute_response_hours`: 48
-- [ ] `dispute_appeal_hours`: 48
-- [ ] `dispute_cooldown_days`: 7
-- [ ] `dispute_min_xp_to_file`: 100
+- [x] `xp_dispute_stake`: 50 (XP cost to file)
+- [x] `xp_dispute_arbitrator_reward`: 25 (XP per resolution)
+- [x] `xp_dispute_reviewer_penalty`: 30 (XP lost if overturned)
+- [x] `xp_dispute_withdrawal_fee`: 10 (small fee on withdrawal)
+- [x] `dispute_mediation_hours`: 24
+- [x] `dispute_response_hours`: 48
+- [x] `dispute_appeal_hours`: 48
+- [x] `dispute_cooldown_days`: 7
+- [x] `dispute_min_xp_to_file`: 100
 
 ### Phase 17: Integrations (Future)
 

@@ -199,6 +199,12 @@ export interface DisputeConfig {
   dispute_min_xp_to_file: number;
 }
 
+export interface ArbitratorStats {
+  resolved_count: number;
+  overturn_rate: number;
+  avg_resolution_hours: number;
+}
+
 export const DEFAULT_DISPUTE_CONFIG: DisputeConfig = {
   xp_dispute_stake: 50,
   xp_dispute_arbitrator_reward: 25,

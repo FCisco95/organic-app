@@ -21,12 +21,11 @@ import { cn } from '@/lib/utils';
 import {
   TaskSubmissionWithReviewer,
   useReviewSubmission,
-  ReviewSubmissionInput,
-  REVIEW_STATUS_COLORS,
   calculateEarnedPoints,
   getQualityMultiplierPercent,
 } from '@/features/tasks';
 import { QualityRating } from './quality-rating';
+import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
 
 interface TaskReviewPanelProps {
@@ -42,6 +41,7 @@ export function TaskReviewPanel({
   onReviewComplete,
   className,
 }: TaskReviewPanelProps) {
+  const t = useTranslations('Tasks.review');
   const pendingSubmissions = submissions.filter((s) => s.review_status === 'pending');
   const reviewedSubmissions = submissions.filter((s) => s.review_status !== 'pending');
 
@@ -52,7 +52,7 @@ export function TaskReviewPanel({
         <div>
           <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <span className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
-            Pending Review ({pendingSubmissions.length})
+            {t('pendingReview')} ({pendingSubmissions.length})
           </h3>
           <div className="space-y-4">
             {pendingSubmissions.map((submission) => (
@@ -71,7 +71,7 @@ export function TaskReviewPanel({
       {reviewedSubmissions.length > 0 && (
         <div>
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Review History ({reviewedSubmissions.length})
+            {t('reviewHistory')} ({reviewedSubmissions.length})
           </h3>
           <div className="space-y-4">
             {reviewedSubmissions.map((submission) => (
@@ -82,7 +82,7 @@ export function TaskReviewPanel({
       )}
 
       {submissions.length === 0 && (
-        <div className="text-center py-8 text-gray-500">No submissions yet</div>
+        <div className="text-center py-8 text-gray-500">{t('noSubmissions')}</div>
       )}
     </div>
   );
@@ -98,6 +98,7 @@ function SubmissionReviewCard({
   basePoints: number;
   onReviewComplete?: () => void;
 }) {
+  const t = useTranslations('Tasks.review');
   const reviewSubmission = useReviewSubmission();
   const [qualityScore, setQualityScore] = useState<number>(3);
   const [reviewerNotes, setReviewerNotes] = useState('');
@@ -118,11 +119,10 @@ function SubmissionReviewCard({
           action: 'approve',
         },
       });
-      toast.success('Submission approved!');
+      toast.success(t('approved'));
       onReviewComplete?.();
-    } catch (error) {
-      toast.error('Failed to approve submission');
-      console.error('Review error:', error);
+    } catch {
+      toast.error(t('approveFailed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -130,7 +130,7 @@ function SubmissionReviewCard({
 
   const handleReject = async () => {
     if (!rejectionReason.trim()) {
-      toast.error('Please provide a rejection reason');
+      toast.error(t('rejectionReasonRequired'));
       return;
     }
 
@@ -145,11 +145,10 @@ function SubmissionReviewCard({
           rejection_reason: rejectionReason,
         },
       });
-      toast.success('Submission rejected');
+      toast.success(t('rejected'));
       onReviewComplete?.();
-    } catch (error) {
-      toast.error('Failed to reject submission');
-      console.error('Review error:', error);
+    } catch {
+      toast.error(t('rejectFailed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -187,28 +186,30 @@ function SubmissionReviewCard({
 
         {/* Quality Rating */}
         <div className="pt-4 border-t border-gray-100">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Quality Score</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {t('qualityScoreLabel')}
+          </label>
           <div className="flex items-center gap-4">
             <QualityRating value={qualityScore} onChange={setQualityScore} size="lg" showLabel />
             <span className="text-sm text-gray-500">
-              ({getQualityMultiplierPercent(qualityScore)} multiplier)
+              ({t('multiplier', { percent: getQualityMultiplierPercent(qualityScore) })})
             </span>
           </div>
           <p className="mt-2 text-sm text-gray-600">
-            Estimated points: <strong>{estimatedPoints}</strong> (base: {basePoints})
+            {t('estimatedPoints')}: <strong>{estimatedPoints}</strong> ({t('base')}: {basePoints})
           </p>
         </div>
 
         {/* Reviewer Notes */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Reviewer Notes (optional)
+            {t('reviewerNotesLabel')}
           </label>
           <textarea
             value={reviewerNotes}
             onChange={(e) => setReviewerNotes(e.target.value)}
             rows={2}
-            placeholder="Add feedback or notes..."
+            placeholder={t('reviewerNotesPlaceholder')}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none"
           />
         </div>
@@ -217,13 +218,13 @@ function SubmissionReviewCard({
         {isRejecting && (
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Rejection Reason <span className="text-red-500">*</span>
+              {t('rejectionReasonLabel')} <span className="text-red-500">*</span>
             </label>
             <textarea
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}
               rows={2}
-              placeholder="Explain why this submission is being rejected..."
+              placeholder={t('rejectionReasonPlaceholder')}
               className="w-full px-3 py-2 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
             />
           </div>
@@ -239,7 +240,7 @@ function SubmissionReviewCard({
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-2 border border-red-300 text-red-600 rounded-lg font-medium hover:bg-red-50 transition-colors disabled:opacity-50"
               >
                 <X className="w-4 h-4" />
-                Reject
+                {t('reject')}
               </button>
               <button
                 onClick={handleApprove}
@@ -251,7 +252,7 @@ function SubmissionReviewCard({
                 ) : (
                   <Check className="w-4 h-4" />
                 )}
-                Approve
+                {t('approve')}
               </button>
             </>
           ) : (
@@ -261,7 +262,7 @@ function SubmissionReviewCard({
                 disabled={isSubmitting}
                 className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors disabled:opacity-50"
               >
-                Cancel
+                {t('cancel')}
               </button>
               <button
                 onClick={handleReject}
@@ -273,7 +274,7 @@ function SubmissionReviewCard({
                 ) : (
                   <X className="w-4 h-4" />
                 )}
-                Confirm Reject
+                {t('confirmReject')}
               </button>
             </>
           )}
@@ -285,6 +286,8 @@ function SubmissionReviewCard({
 
 // Submission History Card (for reviewed submissions)
 function SubmissionHistoryCard({ submission }: { submission: TaskSubmissionWithReviewer }) {
+  const t = useTranslations('Tasks.review');
+
   return (
     <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
       {/* Header */}
@@ -302,7 +305,7 @@ function SubmissionHistoryCard({ submission }: { submission: TaskSubmissionWithR
                     : submission.user?.email)}
               </p>
               <p className="text-xs text-gray-500">
-                Submitted{' '}
+                {t('submitted')}{' '}
                 {submission.submitted_at
                   ? new Date(submission.submitted_at).toLocaleDateString()
                   : '-'}
@@ -345,7 +348,7 @@ function SubmissionHistoryCard({ submission }: { submission: TaskSubmissionWithR
 
         {submission.reviewer && (
           <p className="text-xs text-gray-500">
-            Reviewed by{' '}
+            {t('reviewedBy')}{' '}
             {submission.reviewer.name ||
               (submission.reviewer.organic_id
                 ? `Organic #${submission.reviewer.organic_id}`
@@ -366,6 +369,7 @@ function SubmissionContent({
   submission: TaskSubmissionWithReviewer;
   compact?: boolean;
 }) {
+  const t = useTranslations('Tasks.review');
   const type = submission.submission_type;
   const customFields = submission.custom_fields as Record<
     string,
@@ -386,12 +390,12 @@ function SubmissionContent({
             className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium"
           >
             <Code className="w-4 h-4" />
-            View Pull Request
+            {t('viewPullRequest')}
             <ExternalLink className="w-3 h-3" />
           </a>
           {!compact && submission.testing_notes && (
             <p className="mt-2 text-sm text-gray-600">
-              <strong>Testing:</strong> {submission.testing_notes}
+              <strong>{t('testing')}:</strong> {submission.testing_notes}
             </p>
           )}
         </div>
@@ -408,7 +412,7 @@ function SubmissionContent({
               className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium"
             >
               <FileText className="w-4 h-4" />
-              View Content
+              {t('viewContent')}
               <ExternalLink className="w-3 h-3" />
             </a>
           )}
@@ -455,7 +459,7 @@ function SubmissionContent({
                   className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 text-sm"
                 >
                   <Palette className="w-4 h-4" />
-                  Design File {index + 1}
+                  {t('designFile', { index: index + 1 })}
                   <ExternalLink className="w-3 h-3" />
                 </a>
               </li>
@@ -463,7 +467,7 @@ function SubmissionContent({
           </ul>
           {!compact && submission.revision_notes && (
             <p className="mt-2 text-sm text-gray-600">
-              <strong>Revision Notes:</strong> {submission.revision_notes}
+              <strong>{t('revisionNotes')}:</strong> {submission.revision_notes}
             </p>
           )}
         </div>
@@ -480,7 +484,7 @@ function SubmissionContent({
               className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium"
             >
               <LinkIcon className="w-4 h-4" />
-              View Submission
+              {t('viewSubmission')}
               <ExternalLink className="w-3 h-3" />
             </a>
           )}
