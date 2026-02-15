@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { updateTemplateSchema } from '@/features/tasks/schemas';
 
+const TASK_TEMPLATE_COLUMNS =
+  'id, name, description, task_type, priority, base_points, labels, is_team_task, max_assignees, default_assignee_id, is_recurring, recurrence_rule, org_id, created_by, created_at, updated_at';
+
 // GET - Fetch a single task template
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -19,7 +22,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
     const { data: template, error } = await supabase
       .from('task_templates')
-      .select('*')
+      .select(TASK_TEMPLATE_COLUMNS)
       .eq('id', id)
       .single();
 
@@ -73,7 +76,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       .from('task_templates')
       .update(parsed.data)
       .eq('id', id)
-      .select()
+      .select(TASK_TEMPLATE_COLUMNS)
       .single();
 
     if (error) {

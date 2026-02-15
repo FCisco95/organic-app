@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
+const SPRINT_COLUMNS =
+  'id, org_id, name, start_at, end_at, status, capacity_points, goal, created_at, updated_at';
+
 // GET - Fetch all sprints
 export async function GET() {
   try {
@@ -17,7 +20,7 @@ export async function GET() {
 
     const { data: sprints, error } = await supabase
       .from('sprints')
-      .select('*')
+      .select(SPRINT_COLUMNS)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -79,7 +82,7 @@ export async function POST(request: Request) {
         capacity_points: capacity_points ?? null,
         goal: goal || null,
       })
-      .select()
+      .select(SPRINT_COLUMNS)
       .single();
 
     if (error) {

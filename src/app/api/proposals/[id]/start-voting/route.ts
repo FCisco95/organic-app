@@ -3,6 +3,11 @@ import { createClient } from '@/lib/supabase/server';
 import { getAllTokenHolders } from '@/lib/solana';
 import { startVotingSchema } from '@/features/voting/schemas';
 
+const START_VOTING_CONFIG_COLUMNS = 'quorum_percentage, approval_threshold, voting_duration_days';
+const START_VOTING_PROPOSAL_COLUMNS = 'id, title, status';
+const START_VOTING_UPDATE_COLUMNS =
+  'id, title, status, voting_starts_at, voting_ends_at, snapshot_taken_at, total_circulating_supply, quorum_required, approval_threshold, result';
+
 /**
  * POST /api/proposals/[id]/start-voting
  * Admin-only endpoint to start voting on a proposal.
@@ -51,7 +56,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     // Get voting config
     const { data: config, error: configError } = await supabase
       .from('voting_config')
-      .select('*')
+      .select(START_VOTING_CONFIG_COLUMNS)
       .limit(1)
       .single();
 
@@ -64,7 +69,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     // Check if proposal exists and is in 'submitted' status
     const { data: proposal, error: proposalError } = await supabase
       .from('proposals')
-      .select('id, status, title')
+      .select(START_VOTING_PROPOSAL_COLUMNS)
       .eq('id', proposalId)
       .single();
 
@@ -80,13 +85,13 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     // Check if snapshot already exists
-    const { data: existingSnapshot } = await supabase
+    const { count: existingSnapshotCount } = await supabase
       .from('holder_snapshots')
-      .select('id')
+      .select('id', { head: true, count: 'exact' })
       .eq('proposal_id', proposalId)
       .limit(1);
 
-    if (existingSnapshot && existingSnapshot.length > 0) {
+    if ((existingSnapshotCount ?? 0) > 0) {
       return NextResponse.json(
         { error: 'Snapshot already taken for this proposal' },
         { status: 400 }
@@ -140,7 +145,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         approval_threshold: config.approval_threshold,
       })
       .eq('id', proposalId)
-      .select()
+      .select(START_VOTING_UPDATE_COLUMNS)
       .single();
 
     if (updateError) {

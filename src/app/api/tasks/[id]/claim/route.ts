@@ -50,7 +50,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       // Team task: check assignee count
       const { count } = await supabase
         .from('task_assignees')
-        .select('*', { count: 'exact', head: true })
+        .select('id', { count: 'exact', head: true })
         .eq('task_id', taskId);
 
       if ((count || 0) >= (task.max_assignees ?? 1)) {
@@ -66,7 +66,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         .select('id')
         .eq('task_id', taskId)
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (existing) {
         return NextResponse.json({ error: 'You have already claimed this task' }, { status: 400 });
@@ -165,7 +165,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
       // Check if there are any assignees left
       const { count } = await supabase
         .from('task_assignees')
-        .select('*', { count: 'exact', head: true })
+        .select('id', { count: 'exact', head: true })
         .eq('task_id', taskId);
 
       // If no assignees left, set status back to todo

@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createTemplateSchema } from '@/features/tasks/schemas';
 
+const TASK_TEMPLATE_COLUMNS =
+  'id, name, description, task_type, priority, base_points, labels, is_team_task, max_assignees, default_assignee_id, is_recurring, recurrence_rule, org_id, created_by, created_at, updated_at';
+
 // GET - List all task templates
 export async function GET() {
   try {
@@ -18,7 +21,7 @@ export async function GET() {
 
     const { data: templates, error } = await supabase
       .from('task_templates')
-      .select('*')
+      .select(TASK_TEMPLATE_COLUMNS)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -74,7 +77,7 @@ export async function POST(request: Request) {
         ...parsed.data,
         created_by: user.id,
       })
-      .select()
+      .select(TASK_TEMPLATE_COLUMNS)
       .single();
 
     if (error) {

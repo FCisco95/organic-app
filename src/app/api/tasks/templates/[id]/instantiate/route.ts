@@ -2,6 +2,11 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 
+const TASK_TEMPLATE_INSTANTIATE_COLUMNS =
+  'id, name, description, task_type, priority, base_points, labels, is_team_task, max_assignees, default_assignee_id';
+const TASK_INSERT_COLUMNS =
+  'id, title, description, task_type, priority, base_points, points, labels, is_team_task, max_assignees, assignee_id, sprint_id, template_id, status, created_by, created_at, updated_at, due_date, proposal_id, parent_task_id, claimed_at, completed_at';
+
 const instantiateSchema = z.object({
   sprint_id: z.string().uuid().optional().nullable(),
   title: z.string().min(1).max(200).optional(),
@@ -40,7 +45,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     // Fetch template
     const { data: template, error: templateError } = await supabase
       .from('task_templates')
-      .select('*')
+      .select(TASK_TEMPLATE_INSTANTIATE_COLUMNS)
       .eq('id', templateId)
       .single();
 
@@ -76,7 +81,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         status: 'backlog',
         created_by: user.id,
       })
-      .select()
+      .select(TASK_INSERT_COLUMNS)
       .single();
 
     if (error) {

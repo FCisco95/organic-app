@@ -2,6 +2,21 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { VoteTally, VoteResults } from '@/features/voting/types';
 
+const RESPONSE_CACHE_CONTROL = 'public, s-maxage=15, stale-while-revalidate=30';
+const VOTING_CONFIG_TTL_MS = 5 * 60 * 1000;
+
+let cachedAbstainCountsTowardQuorum: { value: boolean; timestamp: number } | null = null;
+type VoteTallyRow = {
+  yes_votes: number | string | null;
+  no_votes: number | string | null;
+  abstain_votes: number | string | null;
+  total_votes: number | string | null;
+  yes_count: number | string | null;
+  no_count: number | string | null;
+  abstain_count: number | string | null;
+  total_count: number | string | null;
+};
+
 /**
  * GET /api/proposals/[id]/results
  * Get vote tallies and participation stats for a proposal.
@@ -24,57 +39,53 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: 'Proposal not found' }, { status: 404 });
     }
 
-    // Get vote tallies
-    const { data: votes, error: votesError } = await supabase
-      .from('votes')
-      .select('value, weight')
-      .eq('proposal_id', proposalId);
+    // Get vote tallies via aggregate RPC (avoids transferring all vote rows).
+    // Cast to `never` until generated Supabase types include this new RPC.
+    const { data: tallyRows, error: tallyError } = await supabase.rpc(
+      'get_proposal_vote_tally' as never,
+      { p_proposal_id: proposalId } as never
+    );
 
-    if (votesError) {
-      console.error('Error fetching votes:', votesError);
+    if (tallyError) {
+      console.error('Error fetching vote tally:', tallyError);
       return NextResponse.json({ error: 'Failed to fetch votes' }, { status: 500 });
     }
 
-    // Calculate tallies
+    const rawTallyRows = (tallyRows ?? []) as unknown as VoteTallyRow[];
+    const tallyRow = rawTallyRows[0];
+
     const tally: VoteTally = {
-      yes_votes: 0,
-      no_votes: 0,
-      abstain_votes: 0,
-      total_votes: 0,
-      yes_count: 0,
-      no_count: 0,
-      abstain_count: 0,
-      total_count: 0,
+      yes_votes: Number(tallyRow?.yes_votes ?? 0),
+      no_votes: Number(tallyRow?.no_votes ?? 0),
+      abstain_votes: Number(tallyRow?.abstain_votes ?? 0),
+      total_votes: Number(tallyRow?.total_votes ?? 0),
+      yes_count: Number(tallyRow?.yes_count ?? 0),
+      no_count: Number(tallyRow?.no_count ?? 0),
+      abstain_count: Number(tallyRow?.abstain_count ?? 0),
+      total_count: Number(tallyRow?.total_count ?? 0),
     };
 
-    for (const vote of votes || []) {
-      tally.total_votes += vote.weight;
-      tally.total_count += 1;
+    // Cache voting config for a short TTL to reduce query load during polling.
+    const nowMs = Date.now();
+    let abstainCountsTowardQuorum = true;
+    if (
+      cachedAbstainCountsTowardQuorum &&
+      nowMs - cachedAbstainCountsTowardQuorum.timestamp < VOTING_CONFIG_TTL_MS
+    ) {
+      abstainCountsTowardQuorum = cachedAbstainCountsTowardQuorum.value;
+    } else {
+      const { data: config } = await supabase
+        .from('voting_config')
+        .select('abstain_counts_toward_quorum')
+        .limit(1)
+        .single();
 
-      switch (vote.value) {
-        case 'yes':
-          tally.yes_votes += vote.weight;
-          tally.yes_count += 1;
-          break;
-        case 'no':
-          tally.no_votes += vote.weight;
-          tally.no_count += 1;
-          break;
-        case 'abstain':
-          tally.abstain_votes += vote.weight;
-          tally.abstain_count += 1;
-          break;
-      }
+      abstainCountsTowardQuorum = config?.abstain_counts_toward_quorum ?? true;
+      cachedAbstainCountsTowardQuorum = {
+        value: abstainCountsTowardQuorum,
+        timestamp: nowMs,
+      };
     }
-
-    // Get voting config to check if abstain counts toward quorum
-    const { data: config } = await supabase
-      .from('voting_config')
-      .select('abstain_counts_toward_quorum')
-      .limit(1)
-      .single();
-
-    const abstainCountsTowardQuorum = config?.abstain_counts_toward_quorum ?? true;
 
     // Calculate quorum-relevant votes
     const quorumVotes = abstainCountsTowardQuorum
@@ -123,7 +134,9 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       time_remaining_ms: timeRemainingMs,
     };
 
-    return NextResponse.json(results);
+    return NextResponse.json(results, {
+      headers: { 'Cache-Control': RESPONSE_CACHE_CONTROL },
+    });
   } catch (error) {
     console.error('Error fetching results:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
