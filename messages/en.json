@@ -196,6 +196,7 @@
     "pointsLabel": "{points} pts",
     "tableRank": "Rank",
     "tableMember": "Member",
+    "tableLevel": "Level",
     "tableTasks": "Tasks",
     "tablePoints": "Points",
     "loading": "Loading leaderboard...",
@@ -1236,5 +1237,90 @@
         "system": "System"
       }
     }
+  },
+  "Reputation": {
+    "title": "Reputation",
+    "xp": "XP",
+    "level": "Level",
+    "streak": "Streak",
+    "longestStreak": "Longest streak",
+    "achievements": "Achievements",
+    "progress": "Progress",
+    "maxLevel": "Max level reached!",
+    "xpToNext": "{xp} XP to next level",
+    "xpTotal": "{xp} XP total",
+    "daysStreak": "{count} day streak",
+    "noStreak": "No active streak",
+    "achievementsUnlocked": "{count} unlocked",
+    "recentXp": "Recent XP",
+    "noXpYet": "No XP earned yet. Complete tasks, vote, or participate to earn XP!",
+    "noAchievementsYet": "No achievements unlocked yet. Keep contributing!",
+    "levels": {
+      "1": "Seed",
+      "2": "Sprout",
+      "3": "Sapling",
+      "4": "Vine",
+      "5": "Branch",
+      "6": "Trunk",
+      "7": "Bloom",
+      "8": "Grove",
+      "9": "Forest",
+      "10": "Canopy",
+      "11": "Ancient Oak"
+    },
+    "categories": {
+      "all": "All",
+      "contribution": "Contribution",
+      "governance": "Governance",
+      "community": "Community",
+      "milestone": "Milestone"
+    },
+    "achievementNames": {
+      "first_task": "First Harvest",
+      "tasks_5": "Growing Season",
+      "tasks_25": "Seasoned Grower",
+      "tasks_100": "Master Cultivator",
+      "first_vote": "First Voice",
+      "voter_10": "Active Citizen",
+      "voter_50": "Governance Pillar",
+      "first_proposal": "Idea Planter",
+      "proposals_5": "Visionary",
+      "first_comment": "Community Voice",
+      "comments_50": "Conversation Starter",
+      "streak_7": "Consistent Grower",
+      "streak_30": "Unwavering",
+      "xp_1000": "Rising Star",
+      "xp_10000": "Legend in the Making"
+    },
+    "achievementDescriptions": {
+      "first_task": "Complete your first task",
+      "tasks_5": "Complete 5 tasks",
+      "tasks_25": "Complete 25 tasks",
+      "tasks_100": "Complete 100 tasks",
+      "first_vote": "Cast your first vote",
+      "voter_10": "Cast 10 votes",
+      "voter_50": "Cast 50 votes",
+      "first_proposal": "Create your first proposal",
+      "proposals_5": "Create 5 proposals",
+      "first_comment": "Write your first comment",
+      "comments_50": "Write 50 comments",
+      "streak_7": "Maintain a 7-day activity streak",
+      "streak_30": "Maintain a 30-day activity streak",
+      "xp_1000": "Reach 1,000 XP",
+      "xp_10000": "Reach 10,000 XP"
+    },
+    "xpSources": {
+      "task_completed": "Task completed",
+      "vote_cast": "Vote cast",
+      "proposal_created": "Proposal created",
+      "comment_created": "Comment posted",
+      "achievement_unlocked": "Achievement bonus"
+    },
+    "toast": {
+      "levelUp": "Level up! You reached {level} — {name}",
+      "achievementUnlocked": "Achievement unlocked: {name}"
+    },
+    "locked": "Locked",
+    "unlocked": "Unlocked"
   }
 }

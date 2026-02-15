@@ -11,6 +11,7 @@ export interface MemberListItem {
   tasks_completed: number;
   profile_visible: boolean;
   created_at: string | null;
+  level: number;
 }
 
 export interface MemberProfile extends MemberListItem {

@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     let query = supabase
       .from('user_profiles')
       .select(
-        'id, name, email, avatar_url, organic_id, role, total_points, tasks_completed, profile_visible, created_at',
+        'id, name, email, avatar_url, organic_id, role, total_points, tasks_completed, profile_visible, created_at, level',
         { count: 'exact' }
       )
       .order('total_points', { ascending: false });
@@ -46,9 +46,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to fetch members' }, { status: 500 });
     }
 
+    const members = (data ?? []).map((m) => ({
+      ...m,
+      level: m.level ?? 1,
+    }));
+
     return NextResponse.json({
       data: {
-        members: data ?? [],
+        members,
         total: count ?? 0,
         page,
         limit,

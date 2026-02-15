@@ -317,13 +317,13 @@
 
 ### Phase 14: Reputation & Gamification
 
-- [ ] XP and level progression system (11 tiers)
-- [ ] Reputation tiers with unlocks (voting power, task access, roles)
-- [ ] Level/badge display on profiles
-- [ ] Achievement system (milestones, roles, activity)
-- [ ] Streak tracking (daily/weekly activity)
-- [ ] Level-up animations and achievement popups
-- [ ] Visible progress bars for level advancement
+- [x] XP and level progression system (11 tiers)
+- [x] Reputation tiers with unlocks (voting power, task access, roles)
+- [x] Level/badge display on profiles
+- [x] Achievement system (milestones, roles, activity)
+- [x] Streak tracking (daily/weekly activity)
+- [x] Level-up animations and achievement popups
+- [x] Visible progress bars for level advancement
 
 ### Phase 15: Rewards & Distribution
 

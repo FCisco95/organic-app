@@ -196,6 +196,7 @@
     "pointsLabel": "{points} pts",
     "tableRank": "Rank",
     "tableMember": "Membro",
+    "tableLevel": "Nível",
     "tableTasks": "Tarefas",
     "tablePoints": "Pontos",
     "loading": "Carregando ranking...",
@@ -1236,5 +1237,90 @@
         "system": "Sistema"
       }
     }
+  },
+  "Reputation": {
+    "title": "Reputação",
+    "xp": "XP",
+    "level": "Nível",
+    "streak": "Sequência",
+    "longestStreak": "Maior sequência",
+    "achievements": "Conquistas",
+    "progress": "Progresso",
+    "maxLevel": "Nível máximo atingido!",
+    "xpToNext": "{xp} XP para o próximo nível",
+    "xpTotal": "{xp} XP total",
+    "daysStreak": "Sequência de {count} dias",
+    "noStreak": "Sem sequência ativa",
+    "achievementsUnlocked": "{count} desbloqueadas",
+    "recentXp": "XP Recente",
+    "noXpYet": "Ainda sem XP. Complete tarefas, vote ou participe para ganhar XP!",
+    "noAchievementsYet": "Ainda sem conquistas. Continue a contribuir!",
+    "levels": {
+      "1": "Semente",
+      "2": "Broto",
+      "3": "Muda",
+      "4": "Vinha",
+      "5": "Ramo",
+      "6": "Tronco",
+      "7": "Flor",
+      "8": "Bosque",
+      "9": "Floresta",
+      "10": "Copa",
+      "11": "Carvalho Antigo"
+    },
+    "categories": {
+      "all": "Todas",
+      "contribution": "Contribuição",
+      "governance": "Governança",
+      "community": "Comunidade",
+      "milestone": "Marco"
+    },
+    "achievementNames": {
+      "first_task": "Primeira Colheita",
+      "tasks_5": "Época de Cultivo",
+      "tasks_25": "Cultivador Experiente",
+      "tasks_100": "Mestre Cultivador",
+      "first_vote": "Primeira Voz",
+      "voter_10": "Cidadão Ativo",
+      "voter_50": "Pilar da Governança",
+      "first_proposal": "Plantador de Ideias",
+      "proposals_5": "Visionário",
+      "first_comment": "Voz da Comunidade",
+      "comments_50": "Iniciador de Conversas",
+      "streak_7": "Cultivador Consistente",
+      "streak_30": "Inabalável",
+      "xp_1000": "Estrela em Ascensão",
+      "xp_10000": "Lenda em Formação"
+    },
+    "achievementDescriptions": {
+      "first_task": "Complete a sua primeira tarefa",
+      "tasks_5": "Complete 5 tarefas",
+      "tasks_25": "Complete 25 tarefas",
+      "tasks_100": "Complete 100 tarefas",
+      "first_vote": "Vote pela primeira vez",
+      "voter_10": "Vote 10 vezes",
+      "voter_50": "Vote 50 vezes",
+      "first_proposal": "Crie a sua primeira proposta",
+      "proposals_5": "Crie 5 propostas",
+      "first_comment": "Escreva o seu primeiro comentário",
+      "comments_50": "Escreva 50 comentários",
+      "streak_7": "Mantenha uma sequência de 7 dias",
+      "streak_30": "Mantenha uma sequência de 30 dias",
+      "xp_1000": "Alcance 1.000 XP",
+      "xp_10000": "Alcance 10.000 XP"
+    },
+    "xpSources": {
+      "task_completed": "Tarefa concluída",
+      "vote_cast": "Voto registado",
+      "proposal_created": "Proposta criada",
+      "comment_created": "Comentário publicado",
+      "achievement_unlocked": "Bónus de conquista"
+    },
+    "toast": {
+      "levelUp": "Subiu de nível! Alcançou {level} — {name}",
+      "achievementUnlocked": "Conquista desbloqueada: {name}"
+    },
+    "locked": "Bloqueada",
+    "unlocked": "Desbloqueada"
   }
 }

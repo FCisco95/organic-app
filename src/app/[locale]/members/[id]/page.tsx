@@ -8,6 +8,11 @@ import { ArrowLeft, Lock, MapPin, Globe, Star, Calendar, ExternalLink } from 'lu
 import { PageContainer } from '@/components/layout';
 import { useMember, ROLE_LABELS, ROLE_COLORS } from '@/features/members';
 import type { UserRole } from '@/types/database';
+import { useReputation, useAchievements } from '@/features/reputation';
+import { LevelBadge } from '@/components/reputation/level-badge';
+import { XpProgressBar } from '@/components/reputation/xp-progress-bar';
+import { StreakDisplay } from '@/components/reputation/streak-display';
+import { AchievementGrid } from '@/components/reputation/achievement-grid';
 
 // Brand icons as simple text since we don't have react-icons
 function TwitterIcon() {
@@ -22,6 +27,10 @@ export default function MemberProfilePage({ params }: { params: Promise<{ id: st
   const locale = useLocale();
   const t = useTranslations('Members');
   const { data: member, isLoading } = useMember(id);
+  const tRep = useTranslations('Reputation');
+  const profileVisible = member?.profile_visible ?? false;
+  const { data: reputation } = useReputation(id, { enabled: profileVisible });
+  const { data: achievements } = useAchievements(id, { enabled: profileVisible });
 
   if (isLoading) {
     return (
@@ -108,6 +117,9 @@ export default function MemberProfilePage({ params }: { params: Promise<{ id: st
                   {ROLE_LABELS[member.role as UserRole]}
                 </span>
               )}
+              {reputation && reputation.level > 1 && (
+                <LevelBadge level={reputation.level} size="md" />
+              )}
             </div>
             {member.organic_id && (
               <p className="text-sm text-gray-500 mt-0.5">ORG-{member.organic_id}</p>
@@ -178,6 +190,26 @@ export default function MemberProfilePage({ params }: { params: Promise<{ id: st
           <p className="text-sm text-gray-500">{t('tasksCompleted')}</p>
         </div>
       </div>
+
+      {/* Reputation */}
+      {reputation && (
+        <div className="mt-6 bg-white rounded-xl border border-gray-200 p-6">
+          <h2 className="text-sm font-semibold text-gray-900 mb-4">{tRep('title')}</h2>
+          <div className="flex items-center gap-4 mb-4">
+            <LevelBadge level={reputation.level} size="lg" />
+            <StreakDisplay streak={reputation.current_streak} />
+          </div>
+          <XpProgressBar xpTotal={reputation.xp_total} level={reputation.level} />
+        </div>
+      )}
+
+      {/* Achievements */}
+      {achievements && achievements.length > 0 && (
+        <div className="mt-6 bg-white rounded-xl border border-gray-200 p-6">
+          <h2 className="text-sm font-semibold text-gray-900 mb-4">{tRep('achievements')}</h2>
+          <AchievementGrid achievements={achievements} />
+        </div>
+      )}
     </PageContainer>
   );
 }

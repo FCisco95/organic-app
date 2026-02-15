@@ -7,6 +7,7 @@ import { Lock, Star } from 'lucide-react';
 import type { MemberListItem } from '@/features/members';
 import { ROLE_LABELS, ROLE_COLORS } from '@/features/members';
 import type { UserRole } from '@/types/database';
+import { LevelBadge } from '@/components/reputation/level-badge';
 
 interface MemberCardProps {
   member: MemberListItem;
@@ -65,6 +66,9 @@ export function MemberCard({ member }: MemberCardProps) {
               >
                 {ROLE_LABELS[member.role as UserRole]}
               </span>
+            )}
+            {member.level > 1 && (
+              <LevelBadge level={member.level} showName={false} />
             )}
           </div>
           {member.organic_id && <p className="text-sm text-gray-500">ORG-{member.organic_id}</p>}
