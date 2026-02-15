@@ -1,5 +1,6 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import { Link, useRouter } from '@/i18n/navigation';
@@ -29,13 +30,34 @@ import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
 import type { ProposalWithVoting } from '@/features/voting';
 import { FollowButton } from '@/components/notifications/follow-button';
-import { VotingPanel, VoteResults, AdminVotingControls } from '@/components/voting';
-import { DelegatedPowerBadge } from '@/components/voting/DelegatedPowerBadge';
-import { DelegationPanel } from '@/components/voting/DelegationPanel';
-import { DelegationInfo } from '@/components/voting/DelegationInfo';
 import { PageContainer } from '@/components/layout';
 import { StatusBadge, CategoryBadge, ProposalSections } from '@/components/proposals';
-import { createClient } from '@/lib/supabase/client';
+
+const VotingPanel = dynamic(
+  () => import('@/components/voting').then((mod) => mod.VotingPanel),
+  { loading: () => <div className="h-64 rounded-2xl bg-gray-100 animate-pulse" /> }
+);
+const VoteResults = dynamic(
+  () => import('@/components/voting').then((mod) => mod.VoteResults),
+  { loading: () => <div className="h-64 rounded-2xl bg-gray-100 animate-pulse" /> }
+);
+const AdminVotingControls = dynamic(
+  () => import('@/components/voting').then((mod) => mod.AdminVotingControls),
+  { loading: () => <div className="h-20 rounded-lg bg-gray-100 animate-pulse" /> }
+);
+const DelegatedPowerBadge = dynamic(
+  () =>
+    import('@/components/voting/DelegatedPowerBadge').then((mod) => mod.DelegatedPowerBadge),
+  { loading: () => <div className="h-12 rounded-lg bg-gray-100 animate-pulse" /> }
+);
+const DelegationPanel = dynamic(
+  () => import('@/components/voting/DelegationPanel').then((mod) => mod.DelegationPanel),
+  { loading: () => <div className="h-40 rounded-lg bg-gray-100 animate-pulse" /> }
+);
+const DelegationInfo = dynamic(
+  () => import('@/components/voting/DelegationInfo').then((mod) => mod.DelegationInfo),
+  { loading: () => <div className="h-24 rounded-lg bg-gray-100 animate-pulse" /> }
+);
 
 export default function ProposalDetailPage() {
   const params = useParams();
@@ -100,6 +122,7 @@ export default function ProposalDetailPage() {
     if (!isAdmin || !proposal) return;
 
     try {
+      const { createClient } = await import('@/lib/supabase/client');
       const supabase = createClient();
       const { error } = await supabase
         .from('tasks')
