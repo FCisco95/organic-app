@@ -31,7 +31,7 @@ const STATUS_ICON_MAP: Record<DisputeStatus, LucideIcon> = {
 };
 
 interface DisputeStatusBadgeProps {
-  status: DisputeStatus;
+  status: string;
   showIcon?: boolean;
   className?: string;
 }
@@ -42,8 +42,18 @@ export function DisputeStatusBadge({
   className,
 }: DisputeStatusBadgeProps) {
   const t = useTranslations('Disputes');
-  const Icon = STATUS_ICON_MAP[status];
-  const colorClasses = DISPUTE_STATUS_COLORS[status];
+  const fallbackStatus: DisputeStatus = 'open';
+  const safeStatus = (status in STATUS_ICON_MAP ? status : fallbackStatus) as DisputeStatus;
+  const Icon = STATUS_ICON_MAP[safeStatus];
+  const colorClasses =
+    DISPUTE_STATUS_COLORS[safeStatus] ?? DISPUTE_STATUS_COLORS[fallbackStatus];
+  const statusLabel =
+    safeStatus === status
+      ? t(`status.${safeStatus}`)
+      : status
+          .split('_')
+          .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+          .join(' ');
 
   return (
     <span
@@ -54,7 +64,7 @@ export function DisputeStatusBadge({
       )}
     >
       {showIcon && <Icon className="w-3.5 h-3.5" />}
-      {t(`status.${status}`)}
+      {statusLabel}
     </span>
   );
 }

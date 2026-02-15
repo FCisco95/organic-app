@@ -23,7 +23,7 @@ export default function DisputeDetailPage({
   const { user, profile } = useAuth();
   const t = useTranslations('Disputes');
   const td = useTranslations('Disputes.detail');
-  const { data, isLoading, refetch } = useDispute(id);
+  const { data, isLoading, isError, error, refetch } = useDispute(id);
   const { data: commentsData, refetch: refetchComments } = useDisputeComments(id);
   const addComment = useAddDisputeComment();
   const [commentText, setCommentText] = useState('');
@@ -50,6 +50,19 @@ export default function DisputeDetailPage({
       <PageContainer>
         <div className="flex items-center justify-center py-20">
           <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+        </div>
+      </PageContainer>
+    );
+  }
+
+  if (isError) {
+    return (
+      <PageContainer>
+        <div className="text-center py-20">
+          <p className="text-red-600 text-sm">{(error as Error)?.message || 'Failed to load dispute'}</p>
+          <Link href="/disputes" className="text-orange-600 hover:underline mt-2 inline-block">
+            {t('pageTitle')}
+          </Link>
         </div>
       </PageContainer>
     );

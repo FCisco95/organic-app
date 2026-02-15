@@ -196,6 +196,7 @@ export interface DisputeConfig {
   dispute_response_hours: number;
   dispute_appeal_hours: number;
   dispute_cooldown_days: number;
+  dispute_dismissed_cooldown_days: number;
   dispute_min_xp_to_file: number;
 }
 
@@ -214,5 +215,6 @@ export const DEFAULT_DISPUTE_CONFIG: DisputeConfig = {
   dispute_response_hours: 48,
   dispute_appeal_hours: 48,
   dispute_cooldown_days: 7,
+  dispute_dismissed_cooldown_days: 14,
   dispute_min_xp_to_file: 100,
 };

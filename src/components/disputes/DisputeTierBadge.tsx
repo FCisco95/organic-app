@@ -13,7 +13,7 @@ const TIER_ICON_MAP: Record<DisputeTier, LucideIcon> = {
 };
 
 interface DisputeTierBadgeProps {
-  tier: DisputeTier;
+  tier: string;
   showIcon?: boolean;
   className?: string;
 }
@@ -24,8 +24,14 @@ export function DisputeTierBadge({
   className,
 }: DisputeTierBadgeProps) {
   const t = useTranslations('Disputes');
-  const Icon = TIER_ICON_MAP[tier];
-  const colorClasses = DISPUTE_TIER_COLORS[tier];
+  const fallbackTier: DisputeTier = 'council';
+  const safeTier = (tier in TIER_ICON_MAP ? tier : fallbackTier) as DisputeTier;
+  const Icon = TIER_ICON_MAP[safeTier];
+  const colorClasses = DISPUTE_TIER_COLORS[safeTier] ?? DISPUTE_TIER_COLORS[fallbackTier];
+  const tierLabel =
+    safeTier === tier
+      ? t(`tier.${safeTier}`)
+      : tier.charAt(0).toUpperCase() + tier.slice(1);
 
   return (
     <span
@@ -36,7 +42,7 @@ export function DisputeTierBadge({
       )}
     >
       {showIcon && <Icon className="w-3 h-3" />}
-      {t(`tier.${tier}`)}
+      {tierLabel}
     </span>
   );
 }

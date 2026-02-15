@@ -25,7 +25,7 @@ export function DisputeQueue({ myDisputes = false }: DisputeQueueProps) {
 
   const selectedStatus = STATUS_TABS.find((tab) => tab.key === activeTab)?.statuses;
 
-  const { data, isLoading } = useDisputes({
+  const { data, isLoading, isError, error } = useDisputes({
     status: selectedStatus,
     my_disputes: myDisputes || undefined,
   });
@@ -63,6 +63,10 @@ export function DisputeQueue({ myDisputes = false }: DisputeQueueProps) {
               className="h-28 rounded-lg bg-gray-100 animate-pulse"
             />
           ))}
+        </div>
+      ) : isError ? (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {(error as Error)?.message || t('queueEmptyHint')}
         </div>
       ) : disputes.length === 0 ? (
         <div className="text-center py-12">

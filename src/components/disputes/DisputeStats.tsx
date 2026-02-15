@@ -5,7 +5,7 @@ import { useArbitratorStats } from '@/features/disputes/hooks';
 
 export function DisputeStats() {
   const t = useTranslations('Disputes.stats');
-  const { data, isLoading } = useArbitratorStats(true);
+  const { data, isLoading, isError, error } = useArbitratorStats(true);
   const stats = data?.data;
 
   const resolved = stats?.resolved_count ?? 0;
@@ -15,6 +15,9 @@ export function DisputeStats() {
   return (
     <div className="mb-6 rounded-xl border border-gray-200 bg-white p-5">
       <h2 className="text-sm font-semibold text-gray-900 mb-4">{t('title')}</h2>
+      {isError ? (
+        <p className="mb-3 text-xs text-red-600">{(error as Error)?.message || 'Failed to load'}</p>
+      ) : null}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <StatCard label={t('resolved')} value={isLoading ? '...' : String(resolved)} />
         <StatCard

@@ -5,7 +5,6 @@ import { Calendar, User } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useTranslations } from 'next-intl';
 import type { DisputeListItem } from '@/features/disputes/types';
-import type { DisputeStatus, DisputeTier } from '@/features/disputes/types';
 import { DisputeStatusBadge } from './DisputeStatusBadge';
 import { DisputeTierBadge } from './DisputeTierBadge';
 
@@ -21,6 +20,16 @@ export function DisputeCard({ dispute }: DisputeCardProps) {
     (dispute.disputant?.organic_id
       ? `ORG-${dispute.disputant.organic_id}`
       : dispute.disputant?.email?.split('@')[0] || '');
+  const reasonLabel =
+    dispute.reason in {
+      rejected_unfairly: true,
+      low_quality_score: true,
+      plagiarism_claim: true,
+      reviewer_bias: true,
+      other: true,
+    }
+      ? t(`reason.${dispute.reason}`)
+      : dispute.reason;
 
   return (
     <Link
@@ -33,12 +42,12 @@ export function DisputeCard({ dispute }: DisputeCardProps) {
             <h3 className="text-base font-semibold text-gray-900 truncate">
               {taskTitle}
             </h3>
-            <DisputeStatusBadge status={dispute.status as DisputeStatus} showIcon={false} />
-            <DisputeTierBadge tier={dispute.tier as DisputeTier} />
+            <DisputeStatusBadge status={dispute.status} showIcon={false} />
+            <DisputeTierBadge tier={dispute.tier} />
           </div>
 
           <p className="text-sm text-gray-600 mb-3">
-            {t(`reason.${dispute.reason}`)}
+            {reasonLabel}
           </p>
 
           <div className="flex items-center gap-4 text-sm text-gray-500">

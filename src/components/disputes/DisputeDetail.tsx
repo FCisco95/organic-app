@@ -6,7 +6,7 @@ import { formatDistanceToNow, format } from 'date-fns';
 import { ExternalLink, User, Clock } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import type { DisputeWithRelations, DisputeStatus, DisputeTier, DisputeResolution } from '@/features/disputes/types';
+import type { DisputeWithRelations, DisputeResolution } from '@/features/disputes/types';
 import { DISPUTE_RESOLUTION_LABELS, TERMINAL_STATUSES } from '@/features/disputes/types';
 import { DisputeStatusBadge } from './DisputeStatusBadge';
 import { DisputeTierBadge } from './DisputeTierBadge';
@@ -46,6 +46,18 @@ export function DisputeDetail({
   const isAdmin = currentUserRole === 'admin';
   const isCouncil = currentUserRole === 'council';
   const isTerminal = TERMINAL_STATUSES.includes(dispute.status);
+  const evidenceLinks = Array.isArray(dispute.evidence_links) ? dispute.evidence_links : [];
+  const responseLinks = Array.isArray(dispute.response_links) ? dispute.response_links : [];
+  const reasonLabel =
+    dispute.reason in {
+      rejected_unfairly: true,
+      low_quality_score: true,
+      plagiarism_claim: true,
+      reviewer_bias: true,
+      other: true,
+    }
+      ? t(`reason.${dispute.reason}`)
+      : dispute.reason;
 
   const canRespond =
     isReviewer &&
@@ -103,8 +115,8 @@ export function DisputeDetail({
       {/* Header */}
       <div>
         <div className="flex items-center gap-3 flex-wrap mb-2">
-          <DisputeStatusBadge status={dispute.status as DisputeStatus} />
-          <DisputeTierBadge tier={dispute.tier as DisputeTier} />
+          <DisputeStatusBadge status={dispute.status} />
+          <DisputeTierBadge tier={dispute.tier} />
           {dispute.resolution && (
             <span className="text-sm font-medium text-gray-700">
               {DISPUTE_RESOLUTION_LABELS[dispute.resolution as DisputeResolution]}
@@ -117,14 +129,14 @@ export function DisputeDetail({
         </h1>
 
         <p className="text-sm text-gray-500">
-          {t(`reason.${dispute.reason}`)} &middot;{' '}
+          {reasonLabel} &middot;{' '}
           {formatDistanceToNow(new Date(dispute.created_at), { addSuffix: true })}
         </p>
       </div>
 
       {/* Timeline */}
       <DisputeTimeline
-        status={dispute.status as DisputeStatus}
+        status={dispute.status}
         tier={dispute.tier}
       />
 
@@ -154,11 +166,11 @@ export function DisputeDetail({
           {td('evidence')}
         </h3>
         <p className="text-sm text-gray-700 whitespace-pre-wrap">
-          {dispute.evidence_text}
+          {dispute.evidence_text ?? '—'}
         </p>
-        {dispute.evidence_links.length > 0 && (
+        {evidenceLinks.length > 0 && (
           <ul className="mt-3 space-y-1">
-            {dispute.evidence_links.map((link, i) => (
+            {evidenceLinks.map((link, i) => (
               <li key={i}>
                 <a
                   href={link}
@@ -185,9 +197,9 @@ export function DisputeDetail({
             <p className="text-sm text-gray-700 whitespace-pre-wrap">
               {dispute.response_text}
             </p>
-            {dispute.response_links.length > 0 && (
+            {responseLinks.length > 0 && (
               <ul className="mt-3 space-y-1">
-                {dispute.response_links.map((link, i) => (
+                {responseLinks.map((link, i) => (
                   <li key={i}>
                     <a
                       href={link}

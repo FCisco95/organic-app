@@ -352,7 +352,7 @@
 - [x] Minimum XP threshold to file (default 100 XP, prevents spam from new members)
 - [x] One active dispute per submission constraint
 - [x] 7-day cooldown between disputes per user
-- [ ] Evidence required: text explanation + optional file/link attachments (append-only, immutable after submission)
+- [ ] Evidence required: text explanation + optional file/link attachments (text + links implemented; file upload pending)
 
 #### 16.2 Three-tier escalation
 
@@ -374,9 +374,9 @@
 - [x] **Overturn**: submission approved, points awarded, disputant XP stake refunded, reviewer XP penalty
 - [x] **Compromise**: arbitrator sets new quality score, partial points recalculated, disputant XP stake refunded
 - [x] **Uphold**: original decision stands, disputant loses XP stake
-- [ ] **Dismiss**: frivolous dispute, disputant loses XP stake + extended cooldown
+- [x] **Dismiss**: frivolous dispute, disputant loses XP stake + extended cooldown
 - [x] **Withdrawn**: disputant can withdraw before resolution (small XP fee deducted, rest refunded)
-- [ ] **Mediated**: both parties agree on resolution, full XP stake refunded
+- [x] **Mediated**: both parties agree on resolution, full XP stake refunded
 
 #### 16.5 Arbitrator rewards & reviewer accountability
 
@@ -390,7 +390,7 @@
 - [x] Dedicated `/disputes` queue page (council/admin see all, members see their own)
 - [x] Dispute detail page `/disputes/[id]` with evidence, response, timeline, resolution panel
 - [x] Inline "Dispute" button on rejected task submissions (disabled if cooldown/insufficient XP)
-- [ ] Create Dispute modal (reason picker, evidence text, file upload, XP stake display)
+- [ ] Create Dispute modal (reason picker + evidence text + links + XP stake implemented; file upload pending)
 - [x] Dispute timeline visualization (filed → mediation → response → review → resolved)
 - [x] Status + tier badge components
 - [x] Arbitrator stats dashboard (resolved count, overturn rate)
@@ -401,7 +401,13 @@
 - [x] Activity event types: dispute_created, dispute_response_submitted, dispute_escalated, dispute_resolved, dispute_withdrawn
 - [x] New `disputes` notification category with user preference toggle
 - [x] Auto-follow for disputant, reviewer, and arbitrator
-- [ ] Notifications: reviewer notified on filing, disputant on response, arbitrator on escalation, both on resolution
+- [x] Notifications: reviewer notified on filing, disputant on response, arbitrator on escalation, both on resolution
+
+#### 16.10 User-story QA coverage
+
+- [x] User-story QA matrix documented in `tests/phase16-disputes-user-stories.md`
+- [x] Disputes queue/detail rendering hardened for unexpected enum values and limited payloads
+- [ ] Execute full manual pass for all Phase 16 user stories on staging/production data
 
 #### 16.8 i18n
 
@@ -418,6 +424,7 @@
 - [x] `dispute_response_hours`: 48
 - [x] `dispute_appeal_hours`: 48
 - [x] `dispute_cooldown_days`: 7
+- [x] `dispute_dismissed_cooldown_days`: 14
 - [x] `dispute_min_xp_to_file`: 100
 
 ### Phase 17: Integrations (Future)

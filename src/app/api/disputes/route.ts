@@ -4,6 +4,63 @@ import { createDisputeSchema, disputeFilterSchema } from '@/features/disputes/sc
 import type { DisputeConfig } from '@/features/disputes/types';
 import { DEFAULT_DISPUTE_CONFIG } from '@/features/disputes/types';
 
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+type RecentDispute = {
+  created_at: string;
+  status: string;
+};
+
+function getCooldownDays(config: DisputeConfig, disputeStatus?: string) {
+  const baseCooldownDays = Math.max(0, config.dispute_cooldown_days);
+  const dismissedCooldownDays = Math.max(
+    baseCooldownDays,
+    config.dispute_dismissed_cooldown_days
+  );
+
+  if (disputeStatus === 'dismissed') {
+    return {
+      cooldownDays: dismissedCooldownDays,
+      isExtended: dismissedCooldownDays > baseCooldownDays,
+    };
+  }
+
+  return {
+    cooldownDays: baseCooldownDays,
+    isExtended: false,
+  };
+}
+
+function getCooldownState(config: DisputeConfig, recentDispute: RecentDispute | null) {
+  if (!recentDispute?.created_at) return null;
+
+  const createdAtMs = new Date(recentDispute.created_at).getTime();
+  if (!Number.isFinite(createdAtMs)) return null;
+
+  const { cooldownDays, isExtended } = getCooldownDays(config, recentDispute.status);
+  const cooldownMs = cooldownDays * MS_PER_DAY;
+  const elapsedMs = Date.now() - createdAtMs;
+
+  if (elapsedMs >= cooldownMs) return null;
+
+  const remainingDays = Math.ceil((cooldownMs - elapsedMs) / MS_PER_DAY);
+  return {
+    cooldownDays,
+    remainingDays,
+    isExtended,
+    status: recentDispute.status,
+  };
+}
+
+function formatCooldownMessage(cooldown: NonNullable<ReturnType<typeof getCooldownState>>) {
+  const dayLabel = cooldown.remainingDays === 1 ? 'day' : 'days';
+  if (cooldown.isExtended && cooldown.status === 'dismissed') {
+    return `Dismissed disputes require a ${cooldown.cooldownDays}-day cooldown (${cooldown.remainingDays} ${dayLabel} remaining)`;
+  }
+
+  return `Cooldown active (${cooldown.cooldownDays}-day wait between disputes, ${cooldown.remainingDays} ${dayLabel} remaining)`;
+}
+
 /**
  * GET /api/disputes
  * List disputes with filters, or return config / eligibility check.
@@ -241,21 +298,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check cooldown
-    const cooldownDate = new Date();
-    cooldownDate.setDate(cooldownDate.getDate() - config.dispute_cooldown_days);
-
-    const { data: recentDisputes } = await supabase
+    const { data: recentDispute } = await supabase
       .from('disputes')
-      .select('id')
+      .select('created_at, status')
       .eq('disputant_id', user.id)
-      .gte('created_at', cooldownDate.toISOString())
-      .limit(1);
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
-    if (recentDisputes && recentDisputes.length > 0) {
+    const cooldown = getCooldownState(config, recentDispute);
+    if (cooldown) {
       return NextResponse.json(
         {
-          error: `You must wait ${config.dispute_cooldown_days} days between disputes`,
+          error: formatCooldownMessage(cooldown),
         },
         { status: 429 }
       );
@@ -376,21 +431,19 @@ async function handleEligibilityCheck(
     });
   }
 
-  // Check cooldown
-  const cooldownDate = new Date();
-  cooldownDate.setDate(cooldownDate.getDate() - config.dispute_cooldown_days);
-
-  const { data: recentDisputes } = await supabase
+  const { data: recentDispute } = await supabase
     .from('disputes')
-    .select('id')
+    .select('created_at, status')
     .eq('disputant_id', userId)
-    .gte('created_at', cooldownDate.toISOString())
-    .limit(1);
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
-  if (recentDisputes && recentDisputes.length > 0) {
+  const cooldown = getCooldownState(config, recentDispute);
+  if (cooldown) {
     return NextResponse.json({
       eligible: false,
-      reason: `Cooldown active (${config.dispute_cooldown_days}-day wait between disputes)`,
+      reason: formatCooldownMessage(cooldown),
       xp_stake: config.xp_dispute_stake,
       user_xp: profile.xp_total,
     });
