@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievements: {
+        Row: {
+          category: string
+          condition_field: string
+          condition_threshold: number
+          condition_type: string
+          created_at: string
+          description: string
+          icon: string
+          id: string
+          name: string
+          xp_reward: number
+        }
+        Insert: {
+          category: string
+          condition_field: string
+          condition_threshold: number
+          condition_type: string
+          created_at?: string
+          description: string
+          icon?: string
+          id: string
+          name: string
+          xp_reward?: number
+        }
+        Update: {
+          category?: string
+          condition_field?: string
+          condition_threshold?: number
+          condition_type?: string
+          created_at?: string
+          description?: string
+          icon?: string
+          id?: string
+          name?: string
+          xp_reward?: number
+        }
+        Relationships: []
+      }
       activity_log: {
         Row: {
           actor_id: string | null
@@ -58,45 +97,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      achievements: {
-        Row: {
-          id: string
-          name: string
-          description: string
-          icon: string
-          category: string
-          condition_type: string
-          condition_field: string
-          condition_threshold: number
-          xp_reward: number
-          created_at: string
-        }
-        Insert: {
-          id: string
-          name: string
-          description: string
-          icon?: string
-          category: string
-          condition_type: string
-          condition_field: string
-          condition_threshold: number
-          xp_reward?: number
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          name?: string
-          description?: string
-          icon?: string
-          category?: string
-          condition_type?: string
-          condition_field?: string
-          condition_threshold?: number
-          xp_reward?: number
-          created_at?: string
-        }
-        Relationships: []
       }
       comments: {
         Row: {
@@ -465,10 +465,12 @@ export type Database = {
           default_sprint_capacity: number
           default_sprint_duration_days: number
           description: string | null
+          gamification_config: Json
           id: string
           logo_url: string | null
           name: string
           organic_id_threshold: number | null
+          rewards_config: Json | null
           slug: string
           theme: Json | null
           token_decimals: number
@@ -484,10 +486,12 @@ export type Database = {
           default_sprint_capacity?: number
           default_sprint_duration_days?: number
           description?: string | null
+          gamification_config?: Json
           id?: string
           logo_url?: string | null
           name: string
           organic_id_threshold?: number | null
+          rewards_config?: Json | null
           slug: string
           theme?: Json | null
           token_decimals?: number
@@ -503,10 +507,12 @@ export type Database = {
           default_sprint_capacity?: number
           default_sprint_duration_days?: number
           description?: string | null
+          gamification_config?: Json
           id?: string
           logo_url?: string | null
           name?: string
           organic_id_threshold?: number | null
+          rewards_config?: Json | null
           slug?: string
           theme?: Json | null
           token_decimals?: number
@@ -665,6 +671,111 @@ export type Database = {
           },
         ]
       }
+      reward_claims: {
+        Row: {
+          admin_note: string | null
+          conversion_rate: number
+          created_at: string
+          id: string
+          paid_at: string | null
+          paid_tx_signature: string | null
+          points_amount: number
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["reward_claim_status"]
+          token_amount: number
+          user_id: string
+          wallet_address: string | null
+        }
+        Insert: {
+          admin_note?: string | null
+          conversion_rate: number
+          created_at?: string
+          id?: string
+          paid_at?: string | null
+          paid_tx_signature?: string | null
+          points_amount: number
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["reward_claim_status"]
+          token_amount: number
+          user_id: string
+          wallet_address?: string | null
+        }
+        Update: {
+          admin_note?: string | null
+          conversion_rate?: number
+          created_at?: string
+          id?: string
+          paid_at?: string | null
+          paid_tx_signature?: string | null
+          points_amount?: number
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["reward_claim_status"]
+          token_amount?: number
+          user_id?: string
+          wallet_address?: string | null
+        }
+        Relationships: []
+      }
+      reward_distributions: {
+        Row: {
+          category: string | null
+          claim_id: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          points_earned: number | null
+          reason: string | null
+          sprint_id: string | null
+          token_amount: number
+          type: Database["public"]["Enums"]["distribution_type"]
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          claim_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          points_earned?: number | null
+          reason?: string | null
+          sprint_id?: string | null
+          token_amount: number
+          type: Database["public"]["Enums"]["distribution_type"]
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          claim_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          points_earned?: number | null
+          reason?: string | null
+          sprint_id?: string | null
+          token_amount?: number
+          type?: Database["public"]["Enums"]["distribution_type"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reward_distributions_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "reward_claims"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reward_distributions_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "sprints"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sprint_snapshots: {
         Row: {
           completed_at: string
@@ -744,6 +855,7 @@ export type Database = {
           id: string
           name: string
           org_id: string | null
+          reward_pool: number | null
           start_at: string
           status: Database["public"]["Enums"]["sprint_status"] | null
           updated_at: string | null
@@ -756,6 +868,7 @@ export type Database = {
           id?: string
           name: string
           org_id?: string | null
+          reward_pool?: number | null
           start_at: string
           status?: Database["public"]["Enums"]["sprint_status"] | null
           updated_at?: string | null
@@ -768,6 +881,7 @@ export type Database = {
           id?: string
           name?: string
           org_id?: string | null
+          reward_pool?: number | null
           start_at?: string
           status?: Database["public"]["Enums"]["sprint_status"] | null
           updated_at?: string | null
@@ -1209,51 +1323,88 @@ export type Database = {
       }
       user_achievements: {
         Row: {
-          id: string
-          user_id: string
           achievement_id: string
+          id: string
           unlocked_at: string
+          user_id: string
         }
         Insert: {
-          id?: string
-          user_id: string
           achievement_id: string
+          id?: string
           unlocked_at?: string
+          user_id: string
         }
         Update: {
-          id?: string
-          user_id?: string
           achievement_id?: string
+          id?: string
           unlocked_at?: string
+          user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_achievements_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_achievements_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_activity_counts: {
         Row: {
-          user_id: string
-          tasks_completed: number
-          votes_cast: number
-          proposals_created: number
           comments_created: number
+          proposals_created: number
+          tasks_completed: number
           updated_at: string
+          user_id: string
+          votes_cast: number
         }
         Insert: {
-          user_id: string
-          tasks_completed?: number
-          votes_cast?: number
-          proposals_created?: number
           comments_created?: number
+          proposals_created?: number
+          tasks_completed?: number
           updated_at?: string
+          user_id: string
+          votes_cast?: number
         }
         Update: {
-          user_id?: string
-          tasks_completed?: number
-          votes_cast?: number
-          proposals_created?: number
           comments_created?: number
+          proposals_created?: number
+          tasks_completed?: number
           updated_at?: string
+          user_id?: string
+          votes_cast?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_activity_counts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "leaderboard_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_activity_counts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_follows: {
         Row: {
@@ -1298,6 +1449,7 @@ export type Database = {
         Row: {
           avatar_url: string | null
           bio: string | null
+          claimable_points: number
           created_at: string | null
           current_streak: number
           discord: string | null
@@ -1322,6 +1474,7 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           bio?: string | null
+          claimable_points?: number
           created_at?: string | null
           current_streak?: number
           discord?: string | null
@@ -1346,6 +1499,7 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           bio?: string | null
+          claimable_points?: number
           created_at?: string | null
           current_streak?: number
           discord?: string | null
@@ -1534,42 +1688,58 @@ export type Database = {
       }
       xp_events: {
         Row: {
-          id: string
-          user_id: string
-          event_type: string
-          source_type: string | null
-          source_id: string | null
-          xp_amount: number
-          metadata: Json
           created_at: string
+          event_type: string
+          id: string
+          metadata: Json
+          source_id: string | null
+          source_type: string | null
+          user_id: string
+          xp_amount: number
         }
         Insert: {
-          id?: string
-          user_id: string
-          event_type: string
-          source_type?: string | null
-          source_id?: string | null
-          xp_amount: number
-          metadata?: Json
           created_at?: string
+          event_type: string
+          id?: string
+          metadata?: Json
+          source_id?: string | null
+          source_type?: string | null
+          user_id: string
+          xp_amount: number
         }
         Update: {
-          id?: string
-          user_id?: string
-          event_type?: string
-          source_type?: string | null
-          source_id?: string | null
-          xp_amount?: number
-          metadata?: Json
           created_at?: string
+          event_type?: string
+          id?: string
+          metadata?: Json
+          source_id?: string | null
+          source_type?: string | null
+          user_id?: string
+          xp_amount?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "xp_events_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "xp_events_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
       leaderboard_view: {
         Row: {
           avatar_url: string | null
+          claimable_points: number | null
           current_streak: number | null
           dense_rank: number | null
           email: string | null
@@ -1598,13 +1768,17 @@ export type Database = {
         Returns: {
           achievement_id: string
           achievement_name: string
-          xp_reward: number
           icon: string
+          xp_reward: number
         }[]
       }
       check_quorum_met: { Args: { p_proposal_id: string }; Returns: boolean }
       cleanup_expired_nonces: { Args: never; Returns: number }
       clone_recurring_templates: {
+        Args: { p_sprint_id: string }
+        Returns: number
+      }
+      distribute_epoch_rewards: {
         Args: { p_sprint_id: string }
         Returns: number
       }
@@ -1661,6 +1835,19 @@ export type Database = {
         Args: { evt: Database["public"]["Enums"]["activity_event_type"] }
         Returns: Database["public"]["Enums"]["notification_category"]
       }
+      get_proposal_vote_tally: {
+        Args: { p_proposal_id: string }
+        Returns: {
+          abstain_count: number
+          abstain_votes: number
+          no_count: number
+          no_votes: number
+          total_count: number
+          total_votes: number
+          yes_count: number
+          yes_votes: number
+        }[]
+      }
       get_proposals_by_category: {
         Args: never
         Returns: {
@@ -1668,6 +1855,7 @@ export type Database = {
           count: number
         }[]
       }
+      get_rewards_summary: { Args: never; Returns: Json }
       get_sprint_stats: {
         Args: { p_sprint_ids: string[] }
         Returns: {
@@ -1748,6 +1936,7 @@ export type Database = {
         | "vote_cast"
         | "voting_reminder_24h"
         | "voting_reminder_1h"
+      distribution_type: "epoch" | "manual" | "claim"
       notification_category:
         | "tasks"
         | "proposals"
@@ -1773,6 +1962,7 @@ export type Database = {
         | "biweekly"
         | "monthly"
       review_status: "pending" | "approved" | "rejected" | "disputed"
+      reward_claim_status: "pending" | "approved" | "rejected" | "paid"
       sprint_status: "planning" | "active" | "completed"
       task_priority: "low" | "medium" | "high" | "critical"
       task_status: "backlog" | "todo" | "in_progress" | "review" | "done"
@@ -1785,20 +1975,6 @@ export type Database = {
     }
   }
 }
-
-export type UserRole = Database["public"]["Enums"]["user_role"]
-export type ProposalStatus = Database["public"]["Enums"]["proposal_status"]
-export type ProposalCategory = Database["public"]["Enums"]["proposal_category"]
-export type TaskStatus = Database["public"]["Enums"]["task_status"]
-export type SprintStatus = Database["public"]["Enums"]["sprint_status"]
-export type VoteValue = Database["public"]["Enums"]["vote_value"]
-export type TaskType = Database["public"]["Enums"]["task_type"]
-export type ReviewStatus = Database["public"]["Enums"]["review_status"]
-export type TaskPriority = Database["public"]["Enums"]["task_priority"]
-export type ActivityEventType = Database["public"]["Enums"]["activity_event_type"]
-export type NotificationCategoryDB = Database["public"]["Enums"]["notification_category"]
-
-export type ProposalResult = "passed" | "failed" | "quorum_not_met"
 
 type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 
@@ -1936,6 +2112,7 @@ export const Constants = {
         "voting_reminder_24h",
         "voting_reminder_1h",
       ],
+      distribution_type: ["epoch", "manual", "claim"],
       notification_category: [
         "tasks",
         "proposals",
@@ -1959,6 +2136,7 @@ export const Constants = {
         "monthly",
       ],
       review_status: ["pending", "approved", "rejected", "disputed"],
+      reward_claim_status: ["pending", "approved", "rejected", "paid"],
       sprint_status: ["planning", "active", "completed"],
       task_priority: ["low", "medium", "high", "critical"],
       task_status: ["backlog", "todo", "in_progress", "review", "done"],
@@ -1968,3 +2146,15 @@ export const Constants = {
     },
   },
 } as const
+
+// Re-export convenience type aliases used across the codebase
+export type UserRole = Database["public"]["Enums"]["user_role"]
+export type SprintStatus = Database["public"]["Enums"]["sprint_status"]
+export type VoteValue = Database["public"]["Enums"]["vote_value"]
+export type ProposalStatus = Database["public"]["Enums"]["proposal_status"]
+export type ProposalCategory = Database["public"]["Enums"]["proposal_category"]
+export type TaskType = Database["public"]["Enums"]["task_type"]
+export type TaskStatus = Database["public"]["Enums"]["task_status"]
+export type TaskPriority = Database["public"]["Enums"]["task_priority"]
+export type ReviewStatus = Database["public"]["Enums"]["review_status"]
+export type ProposalResult = "passed" | "failed" | "quorum_not_met"

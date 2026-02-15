@@ -17,6 +17,7 @@ import {
   Zap,
   Vote,
   Trophy,
+  Gift,
   Bell,
   Settings,
   User,
@@ -49,10 +50,12 @@ export function Sidebar() {
     { href: '/sprints', labelKey: 'sprints', icon: Zap, show: !!profile?.organic_id },
     { href: '/proposals', labelKey: 'proposals', icon: Vote, show: !!user },
     { href: '/leaderboard', labelKey: 'leaderboard', icon: Trophy, show: !!user },
+    { href: '/rewards', labelKey: 'rewards', icon: Gift, show: !!user },
     { href: '/notifications', labelKey: 'notifications', icon: Bell, show: !!user },
   ];
 
   const bottomItems: NavItem[] = [
+    { href: '/admin/rewards', labelKey: 'adminRewards', icon: Gift, show: !!isAdminOrCouncil },
     { href: '/admin/settings', labelKey: 'settings', icon: Settings, show: !!isAdminOrCouncil },
     { href: '/profile', labelKey: 'profile', icon: User, show: !!user },
   ];

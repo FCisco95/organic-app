@@ -327,10 +327,10 @@
 
 ### Phase 15: Rewards & Distribution
 
-- [ ] Point-to-token conversion (threshold-based claiming)
-- [ ] Epoch pool distribution (fixed pool per sprint)
-- [ ] Manual distribution tooling (admin)
-- [ ] Treasury-linked rewards reporting
+- [x] Point-to-token conversion (threshold-based claiming)
+- [x] Epoch pool distribution (fixed pool per sprint)
+- [x] Manual distribution tooling (admin)
+- [x] Treasury-linked rewards reporting
 
 ### Phase 16: Dispute Resolution
 

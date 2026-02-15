@@ -76,7 +76,9 @@
     "connectWallet": "Connect Wallet",
     "walletConnected": "Wallet Connected",
     "changeWallet": "Change Wallet",
-    "disconnectWallet": "Disconnect Wallet"
+    "disconnectWallet": "Disconnect Wallet",
+    "rewards": "Rewards",
+    "adminRewards": "Manage Rewards"
   },
   "Wallet": {
     "toastConnected": "Wallet connected",
@@ -1100,7 +1102,8 @@
       "treasury": "Treasury",
       "governance": "Governance",
       "sprints": "Sprints",
-      "members": "Members"
+      "members": "Members",
+      "rewards": "Rewards"
     },
     "general": {
       "description": "Basic organization information",
@@ -1164,6 +1167,21 @@
       "organicId": "Organic ID",
       "role": "Role",
       "noMembers": "No members found"
+    },
+    "rewards": {
+      "description": "Configure the rewards and token distribution system",
+      "enabled": "Enable Rewards",
+      "enabledDescription": "Allow members to claim token rewards for points earned",
+      "rate": "Conversion Rate",
+      "rateDescription": "How many points equal 1 ORG token",
+      "pointsPerToken": "points per token",
+      "minThreshold": "Minimum Claim",
+      "minThresholdDescription": "Minimum points required to submit a claim",
+      "points": "points",
+      "defaultEpochPool": "Default Epoch Pool",
+      "defaultEpochPoolDescription": "Default token pool for sprint reward distributions",
+      "requireWallet": "Require Wallet",
+      "requireWalletDescription": "Users must have a linked wallet to claim rewards"
     }
   },
   "common": {
@@ -1322,5 +1340,135 @@
     },
     "locked": "Locked",
     "unlocked": "Unlocked"
+  },
+  "Rewards": {
+    "title": "Rewards",
+    "subtitle": "Claim ORG tokens for your contributions to the DAO",
+    "signInRequired": "Sign in Required",
+    "signInDescription": "Sign in to view your rewards and claim tokens.",
+    "loadError": "Failed to load rewards data",
+    "overview": {
+      "title": "Your Rewards",
+      "subtitle": "Convert earned points into ORG tokens",
+      "claimable": "Claimable Points",
+      "tokenEquivalent": "≈ {amount} ORG",
+      "pending": "Pending Claims",
+      "pendingLabel": "Awaiting review",
+      "distributed": "Total Received",
+      "tokensReceived": "ORG tokens distributed",
+      "conversionRate": "{rate} points = 1 ORG token",
+      "minThreshold": "Min: {min} points",
+      "claimButton": "Claim Rewards",
+      "rewardsDisabled": "Rewards not enabled",
+      "walletRequired": "Link wallet to claim",
+      "belowThreshold": "Need {min} points minimum"
+    },
+    "sections": {
+      "myClaims": "My Claims",
+      "myDistributions": "My Distributions"
+    },
+    "claimStatus": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "paid": "Paid"
+    },
+    "distributionType": {
+      "epoch": "Epoch",
+      "manual": "Manual",
+      "claim": "Claim"
+    },
+    "distributionCategory": {
+      "epoch_reward": "Epoch Reward",
+      "bonus": "Bonus",
+      "bounty": "Bounty",
+      "correction": "Correction",
+      "claim_payout": "Claim Payout"
+    },
+    "claims": {
+      "empty": "No claims yet",
+      "user": "User",
+      "points": "Points",
+      "tokens": "Tokens",
+      "status": "Status",
+      "date": "Date",
+      "actions": "Actions",
+      "review": "Review",
+      "markPaid": "Mark Paid"
+    },
+    "distributions": {
+      "empty": "No distributions yet",
+      "user": "User",
+      "type": "Type",
+      "category": "Category",
+      "tokens": "Tokens",
+      "reason": "Reason",
+      "date": "Date"
+    },
+    "claimModal": {
+      "title": "Claim Rewards",
+      "pointsLabel": "Points to claim",
+      "pointsPlaceholder": "Enter points amount",
+      "max": "MAX",
+      "available": "Available: {points} points",
+      "youWillReceive": "You will receive",
+      "conversionRate": "Conversion rate",
+      "pointsPerToken": "pts/ORG",
+      "walletLabel": "Payout wallet:",
+      "cancel": "Cancel",
+      "submit": "Submit Claim",
+      "submitting": "Submitting..."
+    },
+    "reviewModal": {
+      "title": "Review Claim",
+      "user": "User",
+      "points": "Points",
+      "tokens": "Token Amount",
+      "wallet": "Wallet",
+      "noteLabel": "Admin Note (optional)",
+      "notePlaceholder": "Add a note about this decision...",
+      "approve": "Approve",
+      "reject": "Reject"
+    },
+    "payModal": {
+      "title": "Record Payment",
+      "recipient": "Recipient",
+      "amount": "Amount",
+      "wallet": "Wallet",
+      "txLabel": "Transaction Signature",
+      "txPlaceholder": "Paste Solana tx signature...",
+      "cancel": "Cancel",
+      "confirm": "Confirm Payment",
+      "processing": "Processing..."
+    },
+    "manualModal": {
+      "title": "Manual Distribution",
+      "recipientLabel": "Recipient #{num}",
+      "userIdPlaceholder": "User ID (UUID)",
+      "tokenAmountPlaceholder": "Token amount",
+      "reasonPlaceholder": "Reason for distribution",
+      "addRecipient": "Add Recipient",
+      "cancel": "Cancel",
+      "submit": "Send Distribution",
+      "sending": "Sending..."
+    },
+    "admin": {
+      "title": "Reward Management",
+      "subtitle": "Review claims, manage distributions, and track payouts",
+      "accessDenied": "Access Denied",
+      "accessDeniedDesc": "Admin or council access required.",
+      "totalDistributed": "Total Distributed",
+      "pendingClaims": "Pending Claims",
+      "approvedClaims": "Approved (Unpaid)",
+      "manualDistribute": "Manual Distribution",
+      "manualTitle": "Manual Distribution",
+      "manualDescription": "Send token rewards directly to contributors for bonuses, bounties, or corrections.",
+      "tabs": {
+        "pending": "Pending Claims",
+        "allClaims": "All Claims",
+        "distributions": "Distributions",
+        "manual": "Manual Distribution"
+      }
+    }
   }
 }

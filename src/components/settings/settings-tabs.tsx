@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Settings, Coins, Wallet, Vote, Zap, Users } from 'lucide-react';
+import { Settings, Coins, Wallet, Vote, Zap, Users, Gift } from 'lucide-react';
 import type { SettingsTab } from '@/features/settings';
 
 const ICON_MAP: Record<string, typeof Settings> = {
@@ -11,6 +11,7 @@ const ICON_MAP: Record<string, typeof Settings> = {
   Vote,
   Zap,
   Users,
+  Gift,
 };
 
 const TABS: { key: SettingsTab; icon: string }[] = [
@@ -20,6 +21,7 @@ const TABS: { key: SettingsTab; icon: string }[] = [
   { key: 'governance', icon: 'Vote' },
   { key: 'sprints', icon: 'Zap' },
   { key: 'members', icon: 'Users' },
+  { key: 'rewards', icon: 'Gift' },
 ];
 
 interface SettingsTabsProps {
