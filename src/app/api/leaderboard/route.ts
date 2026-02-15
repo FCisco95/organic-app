@@ -49,7 +49,7 @@ export async function GET() {
     const { data: leaderboard, error } = await supabase
       .from('leaderboard_view')
       .select(
-        'id, name, email, organic_id, avatar_url, total_points, tasks_completed, role, rank, dense_rank, xp_total, level, current_streak'
+        'id, name, email, organic_id, avatar_url, total_points, tasks_completed, role, rank, dense_rank, xp_total, level, current_streak, claimable_points'
       )
       .not('organic_id', 'is', null)
       .order('total_points', { ascending: false })

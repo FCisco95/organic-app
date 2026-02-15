@@ -14,6 +14,7 @@ import { TreasuryTab } from '@/components/settings/treasury-tab';
 import { GovernanceTab } from '@/components/settings/governance-tab';
 import { SprintsTab } from '@/components/settings/sprints-tab';
 import { MembersTab } from '@/components/settings/members-tab';
+import { RewardsTab } from '@/components/settings/rewards-tab';
 
 export default function AdminSettingsPage() {
   const t = useTranslations('Settings');
@@ -70,6 +71,8 @@ export default function AdminSettingsPage() {
         return <SprintsTab org={org} />;
       case 'members':
         return <MembersTab />;
+      case 'rewards':
+        return <RewardsTab org={org} />;
     }
   };
 

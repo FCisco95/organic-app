@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { completeSprintSchema } from '@/features/sprints/schemas';
 
 const SPRINT_COLUMNS =
-  'id, name, status, start_at, end_at, goal, capacity_points, org_id, created_at, updated_at';
+  'id, name, status, start_at, end_at, goal, capacity_points, reward_pool, org_id, created_at, updated_at';
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -207,10 +207,26 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       }
     }
 
+    // Phase 15: Distribute epoch rewards if sprint has a reward pool > 0
+    let epochDistributions = 0;
+    if (sprint.reward_pool && Number(sprint.reward_pool) > 0) {
+      const { data: distCount, error: distError } = await supabase.rpc(
+        'distribute_epoch_rewards',
+        { p_sprint_id: id }
+      );
+
+      if (distError) {
+        console.error('Error distributing epoch rewards:', distError);
+      } else {
+        epochDistributions = distCount ?? 0;
+      }
+    }
+
     return NextResponse.json({
       sprint: updatedSprint,
       snapshot,
       recurring_tasks_cloned: recurringTasksCloned,
+      epoch_distributions: epochDistributions,
     });
   } catch (error) {
     console.error('Sprint complete error:', error);

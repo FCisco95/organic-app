@@ -23,6 +23,14 @@ export interface Organization {
   default_sprint_duration_days: number;
   // Organic ID config
   organic_id_threshold: number | null;
+  // Rewards config
+  rewards_config: {
+    enabled: boolean;
+    points_to_token_rate: number;
+    min_claim_threshold: number;
+    default_epoch_pool: number;
+    claim_requires_wallet: boolean;
+  } | null;
   // Timestamps
   created_at: string | null;
   updated_at: string | null;
@@ -44,7 +52,14 @@ export interface OrganizationWithVoting extends Organization {
   voting_config: VotingConfig | null;
 }
 
-export type SettingsTab = 'general' | 'token' | 'treasury' | 'governance' | 'sprints' | 'members';
+export type SettingsTab =
+  | 'general'
+  | 'token'
+  | 'treasury'
+  | 'governance'
+  | 'sprints'
+  | 'members'
+  | 'rewards';
 
 export const SETTINGS_TABS: { key: SettingsTab; labelKey: string; icon: string }[] = [
   { key: 'general', labelKey: 'Settings.tabs.general', icon: 'Settings' },
@@ -53,4 +68,5 @@ export const SETTINGS_TABS: { key: SettingsTab; labelKey: string; icon: string }
   { key: 'governance', labelKey: 'Settings.tabs.governance', icon: 'Vote' },
   { key: 'sprints', labelKey: 'Settings.tabs.sprints', icon: 'Zap' },
   { key: 'members', labelKey: 'Settings.tabs.members', icon: 'Users' },
+  { key: 'rewards', labelKey: 'Settings.tabs.rewards', icon: 'Gift' },
 ];

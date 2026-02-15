@@ -2,6 +2,83 @@
 
 Add newest entries at the top.
 
+## 2026-02-15 (Session: Rewards & Distribution — Phase 15)
+
+### Database
+
+- Added migration `20260216000000_rewards_distribution.sql`
+  - New columns: `user_profiles.claimable_points`, `sprints.reward_pool`, `orgs.rewards_config`
+  - New enums: `reward_claim_status`, `distribution_type`
+  - New tables: `reward_claims`, `reward_distributions` with indexes + RLS
+  - Updated `update_user_points_on_task_completion()` trigger to maintain `claimable_points`
+  - Added RPCs: `distribute_epoch_rewards(UUID)`, `get_rewards_summary()`
+  - Added claimable points backfill and rebuilt `leaderboard_view` with `claimable_points`
+  - Added defensive `DROP FUNCTION IF EXISTS` before RPC creation for compatibility
+
+### Feature domain
+
+- Created `src/features/rewards/`:
+  - `types.ts` (claims/distributions/config/summary interfaces + constants)
+  - `schemas.ts` (claim/review/pay/manual distribution/filter schemas)
+  - `hooks.ts` (query key factory + rewards API hooks)
+  - `index.ts` barrel export
+
+### API routes
+
+- Added rewards endpoints:
+  - `src/app/api/rewards/route.ts`
+  - `src/app/api/rewards/claims/route.ts`
+  - `src/app/api/rewards/claims/[id]/route.ts`
+  - `src/app/api/rewards/claims/[id]/pay/route.ts`
+  - `src/app/api/rewards/distributions/route.ts`
+  - `src/app/api/rewards/distributions/manual/route.ts`
+  - `src/app/api/rewards/summary/route.ts`
+- Added 60s cache header on rewards summary response
+- Implemented safe JSON parsing for `rewards_config`
+- Replaced unsupported relation joins with explicit profile/sprint enrichment queries
+
+### UI / pages
+
+- Added user rewards page: `src/app/[locale]/rewards/page.tsx`
+- Added admin rewards page: `src/app/[locale]/admin/rewards/page.tsx`
+- Added rewards component set in `src/components/rewards/`
+  - overview, claim modal, claims/distributions tables, status badge
+  - admin summary cards, review/pay modals, manual distribution modal
+
+### Integrations
+
+- Sprint completion integration:
+  - `src/app/api/sprints/[id]/complete/route.ts` now includes `reward_pool` and calls `distribute_epoch_rewards`
+  - returns `epoch_distributions` count without blocking sprint completion on distribution errors
+- Settings integration:
+  - Added rewards tab to settings types and tabs UI
+  - Added `src/components/settings/rewards-tab.tsx`
+  - `src/app/api/settings/route.ts` now reads/writes `rewards_config`
+- Navigation:
+  - Added `/rewards` and `/admin/rewards` nav entries (desktop + mobile)
+- i18n:
+  - Added Rewards namespace and new nav keys in `messages/en.json`, `messages/pt-PT.json`, `messages/zh-CN.json`
+
+### Compatibility fixes
+
+- Restored convenience type aliases in `src/types/database.ts` after generated types overwrite:
+  - `UserRole`, `SprintStatus`, `VoteValue`, `ProposalStatus`, `ProposalCategory`,
+    `TaskType`, `TaskStatus`, `TaskPriority`, `ReviewStatus`, `ProposalResult`
+- Updated profile and sprint select constants for new fields:
+  - `claimable_points` in auth profile context
+  - `reward_pool` in sprint hooks
+
+### Verification
+
+- `npm run lint` passes
+- `npm run build` passes
+- Verified unauthenticated guards on rewards endpoints return `401`
+
+### Environment limitation
+
+- Browser smoke could not be executed in this environment due missing Playwright runtime dependency (`libnspr4.so`)
+- Authenticated member/admin rewards smoke remains required in CI or host machine with browser deps
+
 ## 2026-02-08 (Session: Notifications & Communication — Phase 11a)
 
 ### Database

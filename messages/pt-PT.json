@@ -76,7 +76,9 @@
     "connectWallet": "Conectar Carteira",
     "walletConnected": "Carteira Conectada",
     "changeWallet": "Alterar Carteira",
-    "disconnectWallet": "Desconectar Carteira"
+    "disconnectWallet": "Desconectar Carteira",
+    "rewards": "Recompensas",
+    "adminRewards": "Gerir Recompensas"
   },
   "Wallet": {
     "toastConnected": "Carteira conectada",
@@ -1100,7 +1102,8 @@
       "treasury": "Tesouraria",
       "governance": "Governança",
       "sprints": "Sprints",
-      "members": "Membros"
+      "members": "Membros",
+      "rewards": "Recompensas"
     },
     "general": {
       "description": "Informações básicas da organização",
@@ -1164,6 +1167,21 @@
       "organicId": "Organic ID",
       "role": "Função",
       "noMembers": "Nenhum membro encontrado"
+    },
+    "rewards": {
+      "description": "Configurar o sistema de recompensas e distribuição de tokens",
+      "enabled": "Ativar Recompensas",
+      "enabledDescription": "Permitir que membros reclamem recompensas em tokens por pontos ganhos",
+      "rate": "Taxa de Conversão",
+      "rateDescription": "Quantos pontos equivalem a 1 token ORG",
+      "pointsPerToken": "pontos por token",
+      "minThreshold": "Reclamação Mínima",
+      "minThresholdDescription": "Pontos mínimos necessários para submeter uma reclamação",
+      "points": "pontos",
+      "defaultEpochPool": "Pool de Época Padrão",
+      "defaultEpochPoolDescription": "Pool de tokens padrão para distribuições de recompensas de sprint",
+      "requireWallet": "Exigir Carteira",
+      "requireWalletDescription": "Utilizadores devem ter uma carteira vinculada para reclamar recompensas"
     }
   },
   "common": {
@@ -1322,5 +1340,135 @@
     },
     "locked": "Bloqueada",
     "unlocked": "Desbloqueada"
+  },
+  "Rewards": {
+    "title": "Recompensas",
+    "subtitle": "Reclamar tokens ORG pelas suas contribuições à DAO",
+    "signInRequired": "Início de Sessão Necessário",
+    "signInDescription": "Inicie sessão para ver as suas recompensas e reclamar tokens.",
+    "loadError": "Falha ao carregar dados de recompensas",
+    "overview": {
+      "title": "As Suas Recompensas",
+      "subtitle": "Converter pontos ganhos em tokens ORG",
+      "claimable": "Pontos Reclamáveis",
+      "tokenEquivalent": "≈ {amount} ORG",
+      "pending": "Reclamações Pendentes",
+      "pendingLabel": "A aguardar revisão",
+      "distributed": "Total Recebido",
+      "tokensReceived": "Tokens ORG distribuídos",
+      "conversionRate": "{rate} pontos = 1 token ORG",
+      "minThreshold": "Mín: {min} pontos",
+      "claimButton": "Reclamar Recompensas",
+      "rewardsDisabled": "Recompensas não ativadas",
+      "walletRequired": "Vincule carteira para reclamar",
+      "belowThreshold": "Necessário mínimo de {min} pontos"
+    },
+    "sections": {
+      "myClaims": "Minhas Reclamações",
+      "myDistributions": "Minhas Distribuições"
+    },
+    "claimStatus": {
+      "pending": "Pendente",
+      "approved": "Aprovada",
+      "rejected": "Rejeitada",
+      "paid": "Paga"
+    },
+    "distributionType": {
+      "epoch": "Época",
+      "manual": "Manual",
+      "claim": "Reclamação"
+    },
+    "distributionCategory": {
+      "epoch_reward": "Recompensa de Época",
+      "bonus": "Bónus",
+      "bounty": "Recompensa",
+      "correction": "Correção",
+      "claim_payout": "Pagamento de Reclamação"
+    },
+    "claims": {
+      "empty": "Sem reclamações ainda",
+      "user": "Utilizador",
+      "points": "Pontos",
+      "tokens": "Tokens",
+      "status": "Estado",
+      "date": "Data",
+      "actions": "Ações",
+      "review": "Rever",
+      "markPaid": "Marcar Pago"
+    },
+    "distributions": {
+      "empty": "Sem distribuições ainda",
+      "user": "Utilizador",
+      "type": "Tipo",
+      "category": "Categoria",
+      "tokens": "Tokens",
+      "reason": "Motivo",
+      "date": "Data"
+    },
+    "claimModal": {
+      "title": "Reclamar Recompensas",
+      "pointsLabel": "Pontos a reclamar",
+      "pointsPlaceholder": "Introduza quantidade de pontos",
+      "max": "MÁX",
+      "available": "Disponível: {points} pontos",
+      "youWillReceive": "Vai receber",
+      "conversionRate": "Taxa de conversão",
+      "pointsPerToken": "pts/ORG",
+      "walletLabel": "Carteira de pagamento:",
+      "cancel": "Cancelar",
+      "submit": "Submeter Reclamação",
+      "submitting": "A submeter..."
+    },
+    "reviewModal": {
+      "title": "Rever Reclamação",
+      "user": "Utilizador",
+      "points": "Pontos",
+      "tokens": "Quantidade de Tokens",
+      "wallet": "Carteira",
+      "noteLabel": "Nota do Admin (opcional)",
+      "notePlaceholder": "Adicione uma nota sobre esta decisão...",
+      "approve": "Aprovar",
+      "reject": "Rejeitar"
+    },
+    "payModal": {
+      "title": "Registar Pagamento",
+      "recipient": "Destinatário",
+      "amount": "Montante",
+      "wallet": "Carteira",
+      "txLabel": "Assinatura da Transação",
+      "txPlaceholder": "Cole a assinatura tx Solana...",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar Pagamento",
+      "processing": "A processar..."
+    },
+    "manualModal": {
+      "title": "Distribuição Manual",
+      "recipientLabel": "Destinatário #{num}",
+      "userIdPlaceholder": "ID do Utilizador (UUID)",
+      "tokenAmountPlaceholder": "Quantidade de tokens",
+      "reasonPlaceholder": "Motivo da distribuição",
+      "addRecipient": "Adicionar Destinatário",
+      "cancel": "Cancelar",
+      "submit": "Enviar Distribuição",
+      "sending": "A enviar..."
+    },
+    "admin": {
+      "title": "Gestão de Recompensas",
+      "subtitle": "Rever reclamações, gerir distribuições e acompanhar pagamentos",
+      "accessDenied": "Acesso Negado",
+      "accessDeniedDesc": "Acesso de admin ou conselho necessário.",
+      "totalDistributed": "Total Distribuído",
+      "pendingClaims": "Reclamações Pendentes",
+      "approvedClaims": "Aprovadas (Não Pagas)",
+      "manualDistribute": "Distribuição Manual",
+      "manualTitle": "Distribuição Manual",
+      "manualDescription": "Enviar recompensas em tokens diretamente a contribuidores para bónus, recompensas ou correções.",
+      "tabs": {
+        "pending": "Pendentes",
+        "allClaims": "Todas as Reclamações",
+        "distributions": "Distribuições",
+        "manual": "Distribuição Manual"
+      }
+    }
   }
 }

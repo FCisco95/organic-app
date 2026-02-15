@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client';
 import type { Sprint, SprintSnapshot, SprintWithSnapshot } from './types';
 
 const SPRINT_COLUMNS =
-  'id, org_id, name, start_at, end_at, status, capacity_points, goal, created_at, updated_at';
+  'id, org_id, name, start_at, end_at, status, capacity_points, reward_pool, goal, created_at, updated_at';
 const SPRINT_SNAPSHOT_COLUMNS =
   'id, sprint_id, completed_by, completed_at, total_tasks, completed_tasks, incomplete_tasks, total_points, completed_points, completion_rate, task_summary, incomplete_action, created_at';
 
