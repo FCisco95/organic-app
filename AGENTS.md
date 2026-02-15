@@ -1,123 +1,136 @@
 # AGENTS.md
 
-This document defines repository-level rules and expectations for any automated agent or AI system working in this codebase.
+Repository-wide operating rules for any automated coding agent working in this codebase.
 
-Agents must follow these guidelines strictly. When unsure, stop and ask.
+When uncertain, stop and ask.
 
-## Project Structure & Module Organization
+## Authority and precedence
 
-- `src/app/`
-  - Next.js App Router pages, layouts, and API routes
-  - Localized routes live under `src/app/[locale]/` (e.g., `auth`, `login`, `signup`, `profile`, `tasks`, `proposals`, `sprints`, `leaderboard`)
-  - API routes live under `src/app/api/`
-  - Global files: `src/app/[locale]/layout.tsx`, `src/app/[locale]/page.tsx`, `src/app/[locale]/globals.css`
+Instruction precedence inside this repo:
 
-- `src/features/`
-  - Feature-first domain logic
-  - Examples: `auth/`, `tasks/`, `proposals/`, `voting/`, `sprints/`, `notifications/`, `organic-id/`
-  - Business logic, data access, and feature-specific helpers live here
+1. `AGENTS.md`
+2. `CLAUDE.md`
+3. `GEMINI.md`
 
-- `src/components/`
-  - UI components only
-  - `src/components/ui/` contains shadcn/ui primitives
-  - Feature UI lives in subfolders matching feature names
-  - Avoid placing business logic here
+`AGENTS.md` defines durable, cross-agent rules.
+Do not use this file for milestone logs, roadmap status, or session notes.
 
-- `src/lib/`
-  - Shared libraries (Supabase, Solana, helpers)
+## Project architecture map
 
-- `src/hooks/`
-  - Shared React hooks
+App layer:
 
-- `src/config/`
-  - App configuration and constants
+- `src/app/[locale]/` localized Next.js App Router pages/layouts
+- `src/app/api/` route handlers
 
-- `src/types/`
-  - Shared and generated TypeScript types
+Domain layer:
 
-- `public/`
-  - Static assets only
+- `src/features/` feature-first business logic, hooks, schemas, and types
 
-- `supabase/migrations/`
-  - SQL migrations tracked in git
-  - Migrations must be incremental and reversible
+UI layer:
 
-## Build, Test, and Development Commands
+- `src/components/` UI components only
+- `src/components/ui/` shadcn/ui primitives
 
-Agents should validate changes locally using:
+Shared layer:
 
-- `npm run dev`
-  - Start local dev server at `http://localhost:3000`
+- `src/lib/` shared integrations/helpers (Supabase, Solana, utils)
+- `src/hooks/` shared hooks
+- `src/config/` app configuration and constants
+- `src/types/` shared/generated TypeScript types
+- `src/i18n/` localization helpers
+- `messages/` translation files (`en.json`, `pt-PT.json`, `zh-CN.json`)
 
-- `npm run build`
-  - Validate production build
+Data layer:
 
-- `npm run lint`
-  - ESLint with Next.js core-web-vitals rules
+- `supabase/migrations/` SQL migrations (incremental and reversible)
+- `supabase/functions/` edge functions
 
-- `npm run format`
-  - Prettier formatting
+Assets:
 
-Do not add or change scripts without approval.
+- `public/` static files only
 
-## Coding Style & Naming Conventions
+## Engineering standards
 
-- TypeScript and TSX only
-- Use Next.js App Router patterns exclusively
-- Avoid `any`; prefer strict typing and explicit return types
-- Use Zod for API and form validation
-- Keep functions small and readable
+- TypeScript/TSX only.
+- Next.js App Router patterns only.
+- Use Zod for external input validation (API/form/query params).
+- Avoid `any`; prefer strict typing and explicit return types.
+- Keep functions and modules small and readable.
+- Keep business logic out of UI components.
 
-**Naming**
+Naming:
 
 - React components: `PascalCase`
 - Hooks: `useSomething`
-- Feature folders: lowercase or kebab-case (`tasks`, `organic-id`)
-- Files: lowercase with hyphens where appropriate
+- Feature folders: lowercase or kebab-case
+- Files: lowercase, kebab-case where appropriate
 
-## Testing Guidelines
+## Security and sensitive areas
 
-- Automated tests are not yet standardized
-- Minimum checks before changes:
-  - `npm run lint`
-  - `npm run build`
+- Never commit or expose secrets/tokens/private keys.
+- Treat `.env.local.example` as reference only.
+- Do not log env variable values.
+- Do not modify Supabase RLS policies unless explicitly instructed.
+- Do not change auth/session/wallet verification logic without explicit approval.
+- Solana token checks must remain server-validated.
 
-- If adding tests:
-  - Co-locate them inside the relevant feature folder
-  - Example: `src/features/tasks/__tests__/task-create.test.ts`
+## Change policy
 
-## Commit & Pull Request Guidelines
+- Prefer small, focused diffs.
+- Avoid drive-by refactors or mixed concerns in one change.
+- Do not change npm scripts without approval.
+- Do not rename/move broad folder structures without approval.
+- Route handlers should orchestrate; heavy domain logic belongs in `src/features/`.
 
-- Commit messages:
-  - Short, imperative, sentence case
-  - Example: `Add task creation API`
+## Validation policy
 
-- Pull requests:
-  - Small, focused diffs
-  - Clear description of what changed and why
-  - Screenshots for UI changes when applicable
-  - Update documentation when behavior changes
+Minimum validation for meaningful code changes:
 
-Avoid drive-by refactors or mixed concerns in a single PR.
+- `npm run lint`
+- `npm run build`
 
-## Security & Configuration Rules
+Also run targeted manual checks for touched flows (UI/API/auth/roles/i18n).
 
-- Use `.env.local.example` as a reference only
-- Never commit secrets or tokens
-- Do not log or expose env variables
-- Do not modify Supabase RLS policies unless explicitly instructed
-- Do not change auth, session, or wallet verification logic without approval
-- Solana token checks must remain server-validated
+If adding tests:
 
-## Authority & References
+- Co-locate with feature code, e.g. `src/features/tasks/__tests__/task-create.test.ts`
 
-- **CLAUDE.md** defines operational rules and file navigation
-- **GEMINI.md** defines project goals and collaboration principles
+## Documentation policy
 
-If instructions conflict:
+Update docs when behavior or assumptions change:
 
-1. Follow `AGENTS.md`
-2. Then `CLAUDE.md`
-3. Then `GEMINI.md`
+- `README.md` for setup/usage changes
+- `CLAUDE.md` for Claude-specific operating guidance
+- `BUILD_PLAN.md` for roadmap/progress changes
+- `SESSION_LOG.md` for chronological session notes
 
-When uncertain, pause and ask before acting.
+## Commit and PR expectations
+
+Commits:
+
+- Short, imperative, sentence case
+- Example: `Add task creation API`
+
+Pull requests:
+
+- Small, focused diff
+- Clear summary of what changed and why
+- Screenshots for UI changes when applicable
+- Mention risks and migration impact when relevant
+
+## Ask-before-changing gates
+
+Get explicit confirmation before:
+
+- Auth/session/wallet flow changes
+- RLS/permissions model changes
+- Public API contract changes
+- Cross-domain schema redesigns
+- Large refactors, renames, or folder moves
+
+## Command reference
+
+- `npm run dev` — local development
+- `npm run lint` — lint checks
+- `npm run build` — production build validation
+- `npm run format` — formatting
