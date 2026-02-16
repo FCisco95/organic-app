@@ -187,6 +187,7 @@ async function apiRequest(
   };
 }
 
+
 test.describe('Phase 16 disputes API role matrix', () => {
   test.describe.configure({ mode: 'serial' });
 
@@ -203,7 +204,7 @@ test.describe('Phase 16 disputes API role matrix', () => {
 
     const runId = `qa${Date.now()}`;
     const pass = 'Phase16!Pass123';
-    const baseOrganic = Math.floor(Date.now() / 1000) % 1000000;
+    const baseOrganic = Math.floor(100000000 + Math.random() * 800000000);
     const createdUserIds: string[] = [];
     const createdTaskIds: string[] = [];
     const results: Array<Record<string, unknown>> = [];

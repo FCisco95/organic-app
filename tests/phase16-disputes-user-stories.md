@@ -43,7 +43,7 @@
 - Given: user filing a dispute
 - When: user needs to attach evidence
 - Then: evidence text is required; links supported; file upload should be supported
-- Status: `Partial` (file upload pending)
+- Status: `Implemented`
 
 ## Mediation and response
 
@@ -93,7 +93,7 @@
 - Given: unresolved dispute at sprint close
 - When: automation job runs
 - Then: dispute auto-escalates tier, with admin-tier 48h extension
-- Status: `Pending`
+- Status: `Implemented`
 
 ## Accountability and achievements
 
@@ -101,20 +101,30 @@
 - Given: reviewer has multiple disputed outcomes
 - When: accuracy dashboard/report is opened
 - Then: reviewer accuracy percentage is displayed and queryable
-- Status: `Pending`
+- Status: `Implemented`
 
 ### US-DISPUTE-15: Dispute achievements unlock
 - Given: thresholds reached for arbitrator/disputant achievements
 - When: counters update and achievement checks run
 - Then: achievements are awarded and visible to user
-- Status: `Pending`
+- Status: `Implemented`
 
 ## Manual regression pass checklist
-- [ ] Verify `/disputes` queue for member role
-- [ ] Verify `/disputes` queue + stats for council/admin
-- [ ] Verify `/disputes/[id]` detail render for party and non-party views
-- [ ] Verify file dispute flow from rejected task submission
-- [ ] Verify mediation proposal + confirmation flow
-- [ ] Verify reviewer response flow
-- [ ] Verify arbitrator assign + resolve flow
-- [ ] Verify dispute notifications in notifications center
+- [x] Verify `/disputes` queue for member role
+- [x] Verify `/disputes` queue + stats for council/admin
+- [x] Verify clicking queue items opens `/disputes/[id]` without runtime errors
+- [x] Verify `/disputes/[id]` detail render for party and non-party views
+- [x] Verify file dispute flow from rejected task submission
+- [x] Verify evidence file upload and download links on dispute detail
+- [x] Verify mediation proposal + confirmation flow
+- [x] Verify reviewer response flow
+- [x] Verify arbitrator assign + resolve flow
+- [x] Verify dispute notifications in notifications center
+
+### Automation evidence (2026-02-15)
+- `tests/phase16-disputes-api.spec.ts` passed (role matrix, filing, response, assign/resolve, mediation, stats).
+- `tests/phase16-disputes-ui.spec.ts` passed (member queue click-through, party/non-party detail rendering, disputes notifications category endpoint availability).
+- `tests/phase16-disputes-escalation.spec.ts` passed (sprint-close auto-escalation + admin deadline extension).
+- `tests/phase16-disputes-reviewer-accuracy.spec.ts` passed (reviewer overturned-rate accuracy metric).
+- `tests/phase16-disputes-evidence-upload.spec.ts` passed (upload + signed evidence detail links).
+- `tests/phase16-disputes-achievements.spec.ts` passed (first_arbiter + vindicated unlock and `/api/achievements` visibility).

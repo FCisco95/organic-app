@@ -2,6 +2,76 @@
 
 Add newest entries at the top.
 
+## 2026-02-15 (Session: Disputes Completion — Phase 16)
+
+### Disputes stability and flow
+
+- Fixed client dynamic route handling for dispute/member detail pages by using `useParams()` instead of `use(params)`:
+  - `src/app/[locale]/disputes/[id]/page.tsx`
+  - `src/app/[locale]/members/[id]/page.tsx`
+- Hardened dispute queue/detail rendering against invalid timestamps and partial payloads:
+  - `src/components/disputes/DisputeCard.tsx`
+  - `src/components/disputes/DisputeDetail.tsx`
+  - `src/app/[locale]/disputes/[id]/page.tsx`
+
+### Points and escalation correctness
+
+- Removed duplicate API-side point increments to keep DB trigger as source of truth:
+  - `src/app/api/submissions/[id]/review/route.ts`
+  - `src/app/api/disputes/[id]/resolve/route.ts`
+- Added migration `20260215222000_submission_points_claimable_sync.sql` for consistent `total_points`, `claimable_points`, and `tasks_completed` transitions.
+- Added sprint close dispute automation migration `20260215230000_dispute_sprint_auto_escalation.sql` and wired API integration:
+  - `src/app/api/sprints/[id]/complete/route.ts`
+
+### Accountability and achievements
+
+- Added reviewer accuracy endpoint/hook/dashboard surfacing:
+  - `src/app/api/disputes/route.ts` (`reviewer_accuracy=true`)
+  - `src/features/disputes/hooks.ts`
+  - `src/components/disputes/DisputeStats.tsx`
+- Added dispute achievement counters migration `20260215233000_dispute_achievement_counters.sql`.
+
+### Evidence upload completion
+
+- Added private dispute evidence storage migration:
+  - `supabase/migrations/20260216003000_dispute_evidence_storage.sql`
+- Added authenticated upload API:
+  - `src/app/api/disputes/evidence/route.ts`
+- Extended dispute create schema/types + persistence for `evidence_files`:
+  - `src/features/disputes/schemas.ts`
+  - `src/features/disputes/types.ts`
+  - `src/app/api/disputes/route.ts`
+  - `src/types/database.ts`
+- Added signed evidence download links on dispute detail responses:
+  - `src/app/api/disputes/[id]/route.ts`
+- Updated dispute UI for file upload and detail rendering:
+  - `src/components/disputes/CreateDisputeModal.tsx`
+  - `src/components/disputes/DisputeDetail.tsx`
+- Added i18n keys in all locales (`en`, `pt-PT`, `zh-CN`) for evidence upload labels/messages.
+
+### Validation
+
+- `npm run lint` passes
+- `npm run build` passes
+- Applied Supabase migrations for:
+  - `20260216003000_dispute_evidence_storage.sql`
+  - `20260215230000_dispute_sprint_auto_escalation.sql`
+- Stabilized dispute specs:
+  - made escalation fixture compatible with pre-existing active sprint (temporary suspend/restore)
+  - made UI fixture login deterministic via session-cookie injection and robust dispute-link polling
+  - switched QA fixture `organic_id` generation to collision-safe randomized values
+- Fixed notifications category validation gaps for disputes:
+  - added `disputes` to `src/features/notifications/schemas.ts`
+  - included `disputes` in notification preference seeding in `src/app/api/notifications/preferences/route.ts`
+- Phase 16 dispute suite passes serially:
+  - `tests/phase16-disputes-api.spec.ts`
+  - `tests/phase16-disputes-ui.spec.ts`
+  - `tests/phase16-disputes-escalation.spec.ts`
+  - `tests/phase16-disputes-reviewer-accuracy.spec.ts`
+  - `tests/phase16-disputes-evidence-upload.spec.ts`
+- Added dedicated achievements regression:
+  - `tests/phase16-disputes-achievements.spec.ts` validates `first_arbiter` and `vindicated` unlock paths and `/api/achievements` visibility.
+
 ## 2026-02-15 (Session: Rewards & Distribution — Phase 15)
 
 ### Database
