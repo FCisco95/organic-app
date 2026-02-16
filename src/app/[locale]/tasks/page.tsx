@@ -6,6 +6,7 @@ import {
   TaskTab,
   TaskListItem,
   TaskSubmissionSummary,
+  TaskAssigneeWithUser,
   Sprint,
   TaskPriority,
   TaskStatus,
@@ -69,7 +70,7 @@ export default function TasksPage() {
       setLoading(true);
       const supabase = createClient();
 
-      let query = supabase
+      const { data, error } = await supabase
         .from('tasks')
         .select(
           `
@@ -78,10 +79,6 @@ export default function TasksPage() {
             organic_id,
             email
           ),
-          assignees:task_assignees (
-            *,
-            user:user_profiles(id, name, email, organic_id, avatar_url)
-          ),
           sprints (
             name
           )
@@ -89,10 +86,73 @@ export default function TasksPage() {
         )
         .order('created_at', { ascending: false });
 
-      const { data, error } = await query;
-
       if (error) throw error;
-      setTasks(data as unknown as TaskListItem[]);
+
+      const baseTasks = (data ?? []) as unknown as TaskListItem[];
+      if (baseTasks.length === 0) {
+        setTasks([]);
+        return;
+      }
+
+      const taskIds = baseTasks.map((task) => task.id);
+      const { data: assigneeRows, error: assigneesError } = await supabase
+        .from('task_assignees')
+        .select('id, task_id, user_id, claimed_at, submission_id')
+        .in('task_id', taskIds);
+
+      if (assigneesError) {
+        console.error('Error loading task assignees:', assigneesError);
+        setTasks(baseTasks);
+        return;
+      }
+
+      const userIds = Array.from(new Set((assigneeRows ?? []).map((row) => row.user_id)));
+      const { data: userRows, error: usersError } = userIds.length
+        ? await supabase
+            .from('user_profiles')
+            .select('id, name, email, organic_id, avatar_url')
+            .in('id', userIds)
+        : { data: [], error: null };
+
+      if (usersError) {
+        console.error('Error loading assignee profiles:', usersError);
+        setTasks(baseTasks);
+        return;
+      }
+
+      const userMap = new Map((userRows ?? []).map((profileRow) => [profileRow.id, profileRow]));
+      const assigneesByTask = (assigneeRows ?? []).reduce<Record<string, TaskAssigneeWithUser[]>>(
+        (acc, row) => {
+          const assignment = row as {
+            id: string;
+            task_id: string;
+            user_id: string;
+            claimed_at: string | null;
+            submission_id: string | null;
+          };
+
+          const assignee: TaskAssigneeWithUser = {
+            id: assignment.id,
+            task_id: assignment.task_id,
+            user_id: assignment.user_id,
+            claimed_at: assignment.claimed_at,
+            submission_id: assignment.submission_id,
+            user: userMap.get(assignment.user_id) ?? undefined,
+          };
+
+          acc[assignment.task_id] = acc[assignment.task_id] ?? [];
+          acc[assignment.task_id].push(assignee);
+          return acc;
+        },
+        {}
+      );
+
+      setTasks(
+        baseTasks.map((task) => ({
+          ...task,
+          assignees: assigneesByTask[task.id] ?? [],
+        }))
+      );
     } catch (error) {
       console.error('Error loading tasks:', error);
     } finally {

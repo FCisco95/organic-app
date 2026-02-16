@@ -2,6 +2,23 @@
 
 Add newest entries at the top.
 
+## 2026-02-16 (Session: Tasks visibility + dispute comments route stability)
+
+### Task board visibility
+
+- Fixed Tasks page showing `0 tasks` by replacing a fragile nested relation query in `src/app/[locale]/tasks/page.tsx`.
+- Removed nested `assignees:task_assignees(... user:user_profiles ...)` embed from the base `tasks` query.
+- Added two-step assignee hydration (`task_assignees` rows + `user_profiles` lookup) and made enrichment non-fatal so tasks still render when participant lookup fails.
+
+### Disputes route build stability
+
+- Added `export const dynamic = 'force-dynamic'` to `src/app/api/disputes/[id]/comments/route.ts` to force runtime handling and avoid route collection instability during build.
+
+### Validation
+
+- `npm run lint` passes.
+- `npm run build` passes.
+
 ## 2026-02-15 (Session: Disputes Completion — Phase 16)
 
 ### Disputes stability and flow

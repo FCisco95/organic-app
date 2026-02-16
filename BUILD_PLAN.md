@@ -621,8 +621,17 @@
 
 ---
 
-Last Updated: 2026-02-15
+Last Updated: 2026-02-16
 Version: 1.9.0
+
+## Recent Updates (2026-02-16)
+
+### Tasks and Build Stability
+
+- Fixed empty Tasks page data loading by removing a fragile nested `task_assignees -> user_profiles` embed in the tasks list query.
+- Added safe assignee hydration in a second pass (`task_assignees` + `user_profiles`) so task rows still render even if participant enrichment fails.
+- Added explicit `dynamic = 'force-dynamic'` to `src/app/api/disputes/[id]/comments/route.ts` to avoid route collection/build-time instability on this dynamic API handler.
+- Validated with `npm run lint` and `npm run build`.
 
 ## Recent Updates (2026-01-22)
 
