@@ -62,3 +62,7 @@ node_modules/
 .next/
 .env
 dist/
+
+
+docs/plans/
+test-results/
