@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { formatDistanceToNow, format } from 'date-fns';
-import { ExternalLink, User, Clock } from 'lucide-react';
+import { ExternalLink, User, Clock, Paperclip } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import type { DisputeWithRelations, DisputeResolution } from '@/features/disputes/types';
@@ -27,6 +27,20 @@ interface DisputeDetailProps {
   onRefresh: () => void;
 }
 
+function formatRelativeTime(value: string | null | undefined): string {
+  if (!value) return 'recently';
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime())) return 'recently';
+  return formatDistanceToNow(date, { addSuffix: true });
+}
+
+function formatDateTime(value: string | null | undefined): string | null {
+  if (!value) return null;
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime())) return null;
+  return format(date, 'PPp');
+}
+
 export function DisputeDetail({
   dispute,
   currentUserId,
@@ -47,6 +61,9 @@ export function DisputeDetail({
   const isCouncil = currentUserRole === 'council';
   const isTerminal = TERMINAL_STATUSES.includes(dispute.status);
   const evidenceLinks = Array.isArray(dispute.evidence_links) ? dispute.evidence_links : [];
+  const evidenceFileUrls = Array.isArray(dispute.evidence_file_urls)
+    ? dispute.evidence_file_urls
+    : [];
   const responseLinks = Array.isArray(dispute.response_links) ? dispute.response_links : [];
   const reasonLabel =
     dispute.reason in {
@@ -130,7 +147,7 @@ export function DisputeDetail({
 
         <p className="text-sm text-gray-500">
           {reasonLabel} &middot;{' '}
-          {formatDistanceToNow(new Date(dispute.created_at), { addSuffix: true })}
+          {formatRelativeTime(dispute.created_at)}
         </p>
       </div>
 
@@ -185,6 +202,27 @@ export function DisputeDetail({
             ))}
           </ul>
         )}
+        {evidenceFileUrls.length > 0 && (
+          <div className="mt-3">
+            <p className="text-xs font-medium text-gray-500 mb-1">{td('evidenceFiles')}</p>
+            <ul className="space-y-1">
+              {evidenceFileUrls.map((file) => (
+                <li key={file.path}>
+                  <a
+                    href={file.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+                  >
+                    <Paperclip className="w-3 h-3" />
+                    {file.file_name}
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
 
       {/* Reviewer response */}
@@ -221,9 +259,7 @@ export function DisputeDetail({
             {dispute.response_deadline && (
               <p className="flex items-center gap-1 mt-1 text-xs">
                 <Clock className="w-3 h-3" />
-                {td('responseDeadline', {
-                  date: format(new Date(dispute.response_deadline), 'PPp'),
-                })}
+                {td('responseDeadline', { date: formatDateTime(dispute.response_deadline) ?? '—' })}
               </p>
             )}
           </div>

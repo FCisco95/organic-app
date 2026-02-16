@@ -204,6 +204,7 @@ export type Database = {
           arbitrator_id: string | null
           created_at: string
           disputant_id: string
+          evidence_files: string[]
           evidence_links: string[]
           evidence_text: string
           id: string
@@ -232,6 +233,7 @@ export type Database = {
           arbitrator_id?: string | null
           created_at?: string
           disputant_id: string
+          evidence_files?: string[]
           evidence_links?: string[]
           evidence_text: string
           id?: string
@@ -260,6 +262,7 @@ export type Database = {
           arbitrator_id?: string | null
           created_at?: string
           disputant_id?: string
+          evidence_files?: string[]
           evidence_links?: string[]
           evidence_text?: string
           id?: string
@@ -1945,6 +1948,13 @@ export type Database = {
         }[]
       }
       check_quorum_met: { Args: { p_proposal_id: string }; Returns: boolean }
+      auto_escalate_sprint_disputes: {
+        Args: { p_sprint_id: string }
+        Returns: {
+          admin_extended_count: number
+          escalated_count: number
+        }[]
+      }
       cleanup_expired_nonces: { Args: never; Returns: number }
       clone_recurring_templates: {
         Args: { p_sprint_id: string }

@@ -101,6 +101,7 @@ export interface Dispute {
   reason: DisputeReason;
   evidence_text: string;
   evidence_links: string[];
+  evidence_files: string[];
   response_text: string | null;
   response_links: string[];
   response_deadline: string | null;
@@ -115,6 +116,12 @@ export interface Dispute {
   appeal_deadline: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface DisputeEvidenceFile {
+  path: string;
+  url: string;
+  file_name: string;
 }
 
 export interface DisputeComment {
@@ -171,6 +178,7 @@ export interface DisputeWithRelations extends Dispute {
     reviewer_notes: string | null;
     rejection_reason: string | null;
   };
+  evidence_file_urls?: DisputeEvidenceFile[];
 }
 
 export interface DisputeListItem extends Dispute {
@@ -204,6 +212,13 @@ export interface ArbitratorStats {
   resolved_count: number;
   overturn_rate: number;
   avg_resolution_hours: number;
+}
+
+export interface ReviewerAccuracyStats {
+  reviewer_id: string;
+  total_reviews_disputed: number;
+  overturned_count: number;
+  reviewer_accuracy: number;
 }
 
 export const DEFAULT_DISPUTE_CONFIG: DisputeConfig = {

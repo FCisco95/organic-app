@@ -352,14 +352,14 @@
 - [x] Minimum XP threshold to file (default 100 XP, prevents spam from new members)
 - [x] One active dispute per submission constraint
 - [x] 7-day cooldown between disputes per user
-- [ ] Evidence required: text explanation + optional file/link attachments (text + links implemented; file upload pending)
+- [x] Evidence required: text explanation + optional file/link attachments
 
 #### 16.2 Three-tier escalation
 
 - [x] **Tier 1 — Mediation** (optional, 24h window): both parties can negotiate a resolution privately
 - [x] **Tier 2 — Council arbitration**: council+ member (not the original reviewer) reviews evidence and decides
 - [x] **Tier 3 — Admin appeal**: disputant can appeal council ruling within 48h; admin makes final ruling
-- [ ] Sprint-bound deadlines: unresolved disputes auto-escalate at sprint close; admin-tier disputes get 48h extension
+- [x] Sprint-bound deadlines: unresolved disputes auto-escalate at sprint close; admin-tier disputes get 48h extension
 - [x] Arbitrator self-assignment from queue (conflict-of-interest guard: cannot be original reviewer)
 - [x] Arbitrator recusal with dispute reassignment
 
@@ -382,15 +382,15 @@
 
 - [x] Arbitrator earns flat XP per resolution (default 25 XP, configurable)
 - [x] Reviewer XP penalty on overturned decisions (default 30 XP, configurable)
-- [ ] Reviewer accuracy tracking (% of reviews overturned via disputes)
-- [ ] Achievements: "First Arbiter" (1 resolved), "Justice Keeper" (10 resolved), "Peacemaker" (5 mediated), "Vindicated" (1 won as disputant)
+- [x] Reviewer accuracy tracking (% of reviews overturned via disputes)
+- [x] Achievements: "First Arbiter" (1 resolved), "Justice Keeper" (10 resolved), "Peacemaker" (5 mediated), "Vindicated" (1 won as disputant)
 
 #### 16.6 UI & pages
 
 - [x] Dedicated `/disputes` queue page (council/admin see all, members see their own)
 - [x] Dispute detail page `/disputes/[id]` with evidence, response, timeline, resolution panel
 - [x] Inline "Dispute" button on rejected task submissions (disabled if cooldown/insufficient XP)
-- [ ] Create Dispute modal (reason picker + evidence text + links + XP stake implemented; file upload pending)
+- [x] Create Dispute modal (reason picker + evidence text + links + XP stake + file upload)
 - [x] Dispute timeline visualization (filed → mediation → response → review → resolved)
 - [x] Status + tier badge components
 - [x] Arbitrator stats dashboard (resolved count, overturn rate)

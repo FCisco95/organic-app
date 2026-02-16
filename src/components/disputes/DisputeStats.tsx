@@ -1,16 +1,21 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useArbitratorStats } from '@/features/disputes/hooks';
+import { useArbitratorStats, useReviewerAccuracy } from '@/features/disputes/hooks';
 
 export function DisputeStats() {
   const t = useTranslations('Disputes.stats');
   const { data, isLoading, isError, error } = useArbitratorStats(true);
+  const reviewerAccuracyQuery = useReviewerAccuracy(true);
   const stats = data?.data;
+  const reviewerStats = reviewerAccuracyQuery.data?.data;
 
   const resolved = stats?.resolved_count ?? 0;
   const overturnRate = stats?.overturn_rate ?? 0;
   const avgHours = stats?.avg_resolution_hours ?? 0;
+  const reviewerAccuracy = reviewerStats?.reviewer_accuracy ?? 0;
+  const isReviewerLoading = reviewerAccuracyQuery.isLoading;
+  const reviewerError = reviewerAccuracyQuery.error as Error | null;
 
   return (
     <div className="mb-6 rounded-xl border border-gray-200 bg-white p-5">
@@ -18,7 +23,10 @@ export function DisputeStats() {
       {isError ? (
         <p className="mb-3 text-xs text-red-600">{(error as Error)?.message || 'Failed to load'}</p>
       ) : null}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      {reviewerError ? (
+        <p className="mb-3 text-xs text-red-600">{reviewerError.message || 'Failed to load'}</p>
+      ) : null}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <StatCard label={t('resolved')} value={isLoading ? '...' : String(resolved)} />
         <StatCard
           label={t('overturnRate')}
@@ -27,6 +35,10 @@ export function DisputeStats() {
         <StatCard
           label={t('avgTime')}
           value={isLoading ? '...' : `${avgHours}h`}
+        />
+        <StatCard
+          label={t('reviewerAccuracy')}
+          value={isReviewerLoading ? '...' : `${reviewerAccuracy}%`}
         />
       </div>
     </div>

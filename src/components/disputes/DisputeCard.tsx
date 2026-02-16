@@ -12,6 +12,13 @@ interface DisputeCardProps {
   dispute: DisputeListItem;
 }
 
+function formatRelativeTime(value: string | null | undefined): string {
+  if (!value) return 'recently';
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime())) return 'recently';
+  return formatDistanceToNow(date, { addSuffix: true });
+}
+
 export function DisputeCard({ dispute }: DisputeCardProps) {
   const t = useTranslations('Disputes');
   const taskTitle = dispute.task?.title || t('detail.task');
@@ -58,9 +65,7 @@ export function DisputeCard({ dispute }: DisputeCardProps) {
             <div className="flex items-center gap-1">
               <Calendar className="w-3.5 h-3.5" />
               <span>
-                {formatDistanceToNow(new Date(dispute.created_at), {
-                  addSuffix: true,
-                })}
+                {formatRelativeTime(dispute.created_at)}
               </span>
             </div>
             <span className="text-xs text-gray-400">

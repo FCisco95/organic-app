@@ -1667,6 +1667,11 @@
       "evidencePlaceholder": "Describe why you believe the review was unfair. Provide specific details and context...",
       "evidenceLinks": "Evidence Links",
       "evidenceLinksPlaceholder": "Add supporting links (optional)",
+      "evidenceFiles": "Evidence Files",
+      "uploadEvidence": "Upload File",
+      "uploadingEvidence": "Uploading...",
+      "uploadFailed": "Failed to upload evidence file",
+      "maxEvidenceFiles": "Maximum 5 evidence files",
       "addLink": "Add Link",
       "requestMediation": "Request mediation first",
       "requestMediationHint": "Try to resolve with the reviewer before escalating (24h window)",
@@ -1704,6 +1709,7 @@
       "arbitrator": "Arbitrator",
       "unassigned": "Unassigned",
       "evidence": "Evidence",
+      "evidenceFiles": "Uploaded Files",
       "reviewerResponse": "Reviewer Response",
       "noResponse": "No response submitted yet",
       "responseDeadline": "Response deadline: {date}",
@@ -1718,7 +1724,8 @@
       "title": "Arbitrator Stats",
       "resolved": "Resolved",
       "overturnRate": "Overturn Rate",
-      "avgTime": "Avg. Resolution Time"
+      "avgTime": "Avg. Resolution Time",
+      "reviewerAccuracy": "Reviewer Accuracy"
     },
     "achievements": {
       "first_arbiter": "First Arbiter",

@@ -106,12 +106,6 @@ export async function POST(
 
     // If overturned: approve the submission and award points
     if (input.resolution === 'overturned') {
-      const { data: submission } = await supabase
-        .from('task_submissions')
-        .select('task_id')
-        .eq('id', dispute.submission_id)
-        .single();
-
       // Get task base points
       const { data: task } = await supabase
         .from('tasks')
@@ -132,22 +126,6 @@ export async function POST(
           reviewed_at: now,
         })
         .eq('id', dispute.submission_id);
-
-      // Increment disputant total points
-      if (earnedPoints > 0 && submission) {
-        const { data: disputantProfile } = await supabase
-          .from('user_profiles')
-          .select('total_points')
-          .eq('id', dispute.disputant_id)
-          .single();
-
-        await supabase
-          .from('user_profiles')
-          .update({
-            total_points: (disputantProfile?.total_points ?? 0) + earnedPoints,
-          })
-          .eq('id', dispute.disputant_id);
-      }
     }
 
     // If compromise: update submission with new quality score

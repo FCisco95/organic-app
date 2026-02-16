@@ -116,33 +116,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     }
 
     if (action === 'approve') {
-      // 1. Update submitter's user_profiles: points + tasks_completed
-      const { data: submitterProfile, error: profileError } = await serviceClient
-        .from('user_profiles')
-        .select('total_points, claimable_points, tasks_completed')
-        .eq('id', submission.user_id)
-        .single();
-
-      if (profileError || !submitterProfile) {
-        console.error('Error loading submitter profile:', profileError);
-        return NextResponse.json({ error: 'Failed to update submitter profile' }, { status: 500 });
-      }
-
-      const { error: profileUpdateError } = await serviceClient
-        .from('user_profiles')
-        .update({
-          total_points: (submitterProfile.total_points ?? 0) + earnedPoints,
-          claimable_points: (submitterProfile.claimable_points ?? 0) + earnedPoints,
-          tasks_completed: (submitterProfile.tasks_completed ?? 0) + 1,
-        })
-        .eq('id', submission.user_id);
-
-      if (profileUpdateError) {
-        console.error('Error updating submitter profile:', profileUpdateError);
-        return NextResponse.json({ error: 'Failed to update submitter profile' }, { status: 500 });
-      }
-
-      // 2. Log task_completed activity (triggers XP via award_xp DB trigger)
+      // Points/tasks counters are maintained by DB trigger on task_submissions.
+      // 1. Log task_completed activity (triggers XP via award_xp DB trigger)
       const { error: taskCompletedLogError } = await serviceClient.from('activity_log').insert({
         event_type: 'task_completed',
         actor_id: submission.user_id,
@@ -161,7 +136,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         return NextResponse.json({ error: 'Failed to log task completion' }, { status: 500 });
       }
 
-      // 3. Run achievement checks after counters/XP updates from DB triggers.
+      // 2. Run achievement checks after counters/XP updates from DB triggers.
       const { error: achievementError } = await serviceClient.rpc('check_achievements', {
         p_user_id: submission.user_id,
       });
@@ -171,7 +146,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         return NextResponse.json({ error: 'Failed to check achievements' }, { status: 500 });
       }
 
-      // 4. For solo tasks, mark as done
+      // 3. For solo tasks, mark as done
       if (task && !task.is_team_task) {
         const { error: markDoneError } = await serviceClient
           .from('tasks')

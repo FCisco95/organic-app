@@ -45,6 +45,10 @@ export const createDisputeSchema = z.object({
     .array(z.string().url('Invalid URL'))
     .max(10, 'Maximum 10 evidence links')
     .default([]),
+  evidence_files: z
+    .array(z.string().min(1, 'Invalid evidence file path'))
+    .max(5, 'Maximum 5 evidence files')
+    .default([]),
   request_mediation: z.boolean().default(false),
 });
 export type CreateDisputeInput = z.infer<typeof createDisputeSchema>;

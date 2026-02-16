@@ -1,5 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
+
+const EVIDENCE_BUCKET = 'dispute-evidence';
+const EVIDENCE_URL_TTL_SECONDS = 60 * 60;
+
+function getEvidenceFileName(path: string): string {
+  const parts = path.split('/');
+  return parts[parts.length - 1] || path;
+}
 
 const DISPUTE_DETAIL_SELECT = `
   *,
@@ -82,10 +90,65 @@ export async function GET(
       return NextResponse.json({ data: limited });
     }
 
-    return NextResponse.json({ data: dispute });
+    const evidenceFiles = Array.isArray(dispute.evidence_files) ? dispute.evidence_files : [];
+
+    if (evidenceFiles.length === 0) {
+      return NextResponse.json({ data: { ...dispute, evidence_file_urls: [] } });
+    }
+
+    const serviceClient = process.env.SUPABASE_SERVICE_ROLE_KEY
+      ? createServiceClient()
+      : null;
+    const signedUrls = await Promise.all(
+      evidenceFiles.map(async (path) => {
+        const clients = [supabase, serviceClient].filter(
+          (client): client is typeof supabase => client !== null
+        );
+
+        for (const client of clients) {
+          try {
+            const { data, error: signedUrlError } = await client.storage
+              .from(EVIDENCE_BUCKET)
+              .createSignedUrl(path, EVIDENCE_URL_TTL_SECONDS);
+
+            if (!signedUrlError && data?.signedUrl) {
+              return {
+                path,
+                url: data.signedUrl,
+                file_name: getEvidenceFileName(path),
+              };
+            }
+          } catch (signedUrlError) {
+            console.warn('Failed to generate dispute evidence signed URL', {
+              dispute_id: dispute.id,
+              path,
+              error:
+                signedUrlError instanceof Error
+                  ? signedUrlError.message
+                  : String(signedUrlError),
+            });
+          }
+        }
+
+        return null;
+      })
+    );
+
+    return NextResponse.json({
+      data: {
+        ...dispute,
+        evidence_file_urls: signedUrls.filter(
+          (entry): entry is { path: string; url: string; file_name: string } => entry !== null
+        ),
+      },
+    });
   } catch (error) {
     console.error('Error fetching dispute:', error);
-    return NextResponse.json({ error: 'Failed to fetch dispute' }, { status: 500 });
+    const details =
+      process.env.NODE_ENV === 'development' && error instanceof Error
+        ? error.message
+        : undefined;
+    return NextResponse.json({ error: 'Failed to fetch dispute', details }, { status: 500 });
   }
 }
 

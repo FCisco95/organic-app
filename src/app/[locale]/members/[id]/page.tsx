@@ -1,6 +1,5 @@
 'use client';
 
-import { use } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
@@ -13,6 +12,7 @@ import { LevelBadge } from '@/components/reputation/level-badge';
 import { XpProgressBar } from '@/components/reputation/xp-progress-bar';
 import { StreakDisplay } from '@/components/reputation/streak-display';
 import { AchievementGrid } from '@/components/reputation/achievement-grid';
+import { useParams } from 'next/navigation';
 
 // Brand icons as simple text since we don't have react-icons
 function TwitterIcon() {
@@ -22,8 +22,10 @@ function DiscordIcon() {
   return <span className="text-xs font-bold">D</span>;
 }
 
-export default function MemberProfilePage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function MemberProfilePage() {
+  const params = useParams<{ id: string }>();
+  const idParam = params?.id;
+  const id = Array.isArray(idParam) ? idParam[0] : idParam ?? '';
   const locale = useLocale();
   const t = useTranslations('Members');
   const { data: member, isLoading } = useMember(id);

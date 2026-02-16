@@ -1,6 +1,13 @@
 import { z } from 'zod';
 
-const notificationCategoryEnum = z.enum(['tasks', 'proposals', 'voting', 'comments', 'system']);
+const notificationCategoryEnum = z.enum([
+  'tasks',
+  'proposals',
+  'voting',
+  'comments',
+  'disputes',
+  'system',
+]);
 
 export const notificationFiltersSchema = z.object({
   category: notificationCategoryEnum.optional(),

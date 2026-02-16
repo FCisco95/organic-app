@@ -189,6 +189,21 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: 'Failed to complete sprint' }, { status: 500 });
     }
 
+    // Phase 16: Auto-escalate unresolved disputes tied to the completed sprint.
+    let disputesEscalated = 0;
+    let adminDisputeExtensions = 0;
+    const { data: escalationData, error: escalationError } = await supabase.rpc(
+      'auto_escalate_sprint_disputes',
+      { p_sprint_id: id }
+    );
+
+    if (escalationError) {
+      console.error('Error auto-escalating sprint disputes:', escalationError);
+    } else if (Array.isArray(escalationData) && escalationData.length > 0) {
+      disputesEscalated = escalationData[0]?.escalated_count ?? 0;
+      adminDisputeExtensions = escalationData[0]?.admin_extended_count ?? 0;
+    }
+
     // Phase 12: Auto-clone recurring task templates into next sprint
     let recurringTasksCloned = 0;
     const targetSprintId =
@@ -227,6 +242,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       snapshot,
       recurring_tasks_cloned: recurringTasksCloned,
       epoch_distributions: epochDistributions,
+      disputes_escalated: disputesEscalated,
+      admin_dispute_extensions: adminDisputeExtensions,
     });
   } catch (error) {
     console.error('Sprint complete error:', error);

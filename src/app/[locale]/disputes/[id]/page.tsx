@@ -1,6 +1,5 @@
 'use client';
 
-import { use } from 'react';
 import { useTranslations } from 'next-intl';
 import { useAuth } from '@/features/auth/context';
 import { useDispute, useDisputeComments, useAddDisputeComment } from '@/features/disputes/hooks';
@@ -13,13 +12,19 @@ import { Link } from '@/i18n/navigation';
 import { formatDistanceToNow } from 'date-fns';
 import { useState } from 'react';
 import type { DisputeWithRelations } from '@/features/disputes/types';
+import { useParams } from 'next/navigation';
 
-export default function DisputeDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = use(params);
+function formatRelativeTime(value: string | null | undefined): string {
+  if (!value) return 'recently';
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime())) return 'recently';
+  return formatDistanceToNow(date, { addSuffix: true });
+}
+
+export default function DisputeDetailPage() {
+  const params = useParams<{ id: string }>();
+  const idParam = params?.id;
+  const id = Array.isArray(idParam) ? idParam[0] : idParam ?? '';
   const { user, profile } = useAuth();
   const t = useTranslations('Disputes');
   const td = useTranslations('Disputes.detail');
@@ -141,9 +146,7 @@ export default function DisputeDetailPage({
                             : comment.user?.email?.split('@')[0])}
                       </span>
                       <span className="text-[10px] text-gray-400">
-                        {formatDistanceToNow(new Date(comment.created_at), {
-                          addSuffix: true,
-                        })}
+                        {formatRelativeTime(comment.created_at)}
                       </span>
                     </div>
                     <p className="text-sm text-gray-700">{comment.content}</p>

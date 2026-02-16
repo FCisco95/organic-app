@@ -10,6 +10,7 @@ const ALL_CATEGORIES: NotificationCategory[] = [
   'proposals',
   'voting',
   'comments',
+  'disputes',
   'system',
 ];
 

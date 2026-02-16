@@ -5,6 +5,7 @@ import type { DisputeConfig } from '@/features/disputes/types';
 import { DEFAULT_DISPUTE_CONFIG } from '@/features/disputes/types';
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
+const MAX_EVIDENCE_FILES = 5;
 
 type RecentDispute = {
   created_at: string;
@@ -111,6 +112,12 @@ export async function GET(request: NextRequest) {
       return handleArbitratorStats(supabase, user.id);
     }
 
+    // Reviewer accuracy (used for dispute accountability dashboard)
+    if (searchParams.get('reviewer_accuracy') === 'true') {
+      const reviewerId = searchParams.get('reviewer_id') || undefined;
+      return handleReviewerAccuracy(supabase, user.id, reviewerId);
+    }
+
     // Parse filters
     const filters = disputeFilterSchema.parse({
       status: searchParams.get('status') || undefined,
@@ -215,6 +222,31 @@ export async function POST(request: NextRequest) {
     }
 
     const input = parseResult.data;
+    const normalizedEvidenceLinks = Array.from(
+      new Set(input.evidence_links.map((value) => value.trim()).filter(Boolean))
+    );
+    const normalizedEvidenceFiles = Array.from(
+      new Set((input.evidence_files ?? []).map((value) => value.trim()).filter(Boolean))
+    );
+
+    if (normalizedEvidenceFiles.length > MAX_EVIDENCE_FILES) {
+      return NextResponse.json(
+        { error: `Maximum ${MAX_EVIDENCE_FILES} evidence files allowed` },
+        { status: 400 }
+      );
+    }
+
+    const hasInvalidEvidencePath = normalizedEvidenceFiles.some((path) => {
+      if (!path.startsWith(`${user.id}/`)) return true;
+      return path.includes('..');
+    });
+
+    if (hasInvalidEvidencePath) {
+      return NextResponse.json(
+        { error: 'Invalid evidence file path' },
+        { status: 400 }
+      );
+    }
 
     // Load dispute config
     const { data: org } = await supabase
@@ -356,7 +388,8 @@ export async function POST(request: NextRequest) {
         tier: input.request_mediation ? 'mediation' : 'council',
         reason: input.reason,
         evidence_text: input.evidence_text,
-        evidence_links: input.evidence_links,
+        evidence_links: normalizedEvidenceLinks,
+        evidence_files: normalizedEvidenceFiles,
         response_deadline: responseDeadline,
         mediation_deadline: mediationDeadline,
         xp_stake: config.xp_dispute_stake,
@@ -564,6 +597,55 @@ async function handleArbitratorStats(
       resolved_count: resolvedCount,
       overturn_rate: overturnRate,
       avg_resolution_hours: avgResolutionHours,
+    },
+  });
+}
+
+async function handleReviewerAccuracy(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  userId: string,
+  reviewerId?: string
+) {
+  const { data: profile } = await supabase
+    .from('user_profiles')
+    .select('role')
+    .eq('id', userId)
+    .single();
+
+  const isCouncilOrAdmin = profile?.role === 'admin' || profile?.role === 'council';
+  if (!isCouncilOrAdmin) {
+    return NextResponse.json({ error: 'Admin or council access required' }, { status: 403 });
+  }
+
+  let query = supabase
+    .from('disputes')
+    .select('reviewer_id, resolution')
+    .in('status', ['resolved', 'dismissed']);
+
+  if (reviewerId) {
+    query = query.eq('reviewer_id', reviewerId);
+  }
+
+  const { data: disputes, error } = await query;
+
+  if (error) {
+    return NextResponse.json({ error: 'Failed to fetch reviewer accuracy' }, { status: 500 });
+  }
+
+  const totalReviewsDisputed = disputes?.length ?? 0;
+  const overturnedCount =
+    disputes?.filter((dispute) => dispute.resolution === 'overturned').length ?? 0;
+  const reviewerAccuracy =
+    totalReviewsDisputed > 0
+      ? Math.round(((totalReviewsDisputed - overturnedCount) / totalReviewsDisputed) * 100)
+      : 0;
+
+  return NextResponse.json({
+    data: {
+      reviewer_id: reviewerId ?? 'all',
+      total_reviews_disputed: totalReviewsDisputed,
+      overturned_count: overturnedCount,
+      reviewer_accuracy: reviewerAccuracy,
     },
   });
 }

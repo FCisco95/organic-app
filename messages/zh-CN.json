@@ -1667,6 +1667,11 @@
       "evidencePlaceholder": "描述您认为审查不公正的原因。请提供具体细节和背景...",
       "evidenceLinks": "证据链接",
       "evidenceLinksPlaceholder": "添加支持链接（可选）",
+      "evidenceFiles": "证据文件",
+      "uploadEvidence": "上传文件",
+      "uploadingEvidence": "上传中...",
+      "uploadFailed": "证据文件上传失败",
+      "maxEvidenceFiles": "最多上传 5 个证据文件",
       "addLink": "添加链接",
       "requestMediation": "先请求调解",
       "requestMediationHint": "在升级之前尝试与审查者解决（24小时窗口）",
@@ -1704,6 +1709,7 @@
       "arbitrator": "仲裁员",
       "unassigned": "未分配",
       "evidence": "证据",
+      "evidenceFiles": "已上传文件",
       "reviewerResponse": "审查者回复",
       "noResponse": "尚未提交回复",
       "responseDeadline": "回复截止：{date}",
@@ -1718,7 +1724,8 @@
       "title": "仲裁员统计",
       "resolved": "已解决",
       "overturnRate": "推翻率",
-      "avgTime": "平均解决时间"
+      "avgTime": "平均解决时间",
+      "reviewerAccuracy": "评审准确率"
     },
     "achievements": {
       "first_arbiter": "首位仲裁员",

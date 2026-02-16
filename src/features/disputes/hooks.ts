@@ -7,6 +7,7 @@ import type {
   DisputeComment,
   DisputeConfig,
   ArbitratorStats,
+  ReviewerAccuracyStats,
 } from './types';
 import type {
   DisputeFilters,
@@ -31,6 +32,8 @@ export const disputeKeys = {
   eligibility: (submissionId: string) => [...disputeKeys.all, 'eligibility', submissionId] as const,
   pendingCount: () => [...disputeKeys.all, 'pending-count'] as const,
   stats: () => [...disputeKeys.all, 'stats'] as const,
+  reviewerAccuracy: (reviewerId?: string) =>
+    [...disputeKeys.all, 'reviewer-accuracy', reviewerId ?? 'global'] as const,
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────
@@ -125,6 +128,21 @@ export function useArbitratorStats(enabled = true) {
   return useQuery({
     queryKey: disputeKeys.stats(),
     queryFn: () => fetchJson<{ data: ArbitratorStats }>('/api/disputes?stats=true'),
+    enabled,
+    staleTime: 60 * 1000, // 1 minute
+  });
+}
+
+/** Fetch reviewer accuracy metrics for accountability tracking */
+export function useReviewerAccuracy(enabled = true, reviewerId?: string) {
+  const params = new URLSearchParams();
+  params.set('reviewer_accuracy', 'true');
+  if (reviewerId) params.set('reviewer_id', reviewerId);
+
+  return useQuery({
+    queryKey: disputeKeys.reviewerAccuracy(reviewerId),
+    queryFn: () =>
+      fetchJson<{ data: ReviewerAccuracyStats }>(`/api/disputes?${params.toString()}`),
     enabled,
     staleTime: 60 * 1000, // 1 minute
   });
