@@ -20,8 +20,9 @@ export function useStats() {
       const { stats } = await res.json();
       return stats;
     },
-    staleTime: 120_000,
-    refetchInterval: 120_000,
+    staleTime: 300_000, // 5 minutes — dashboard stats are slow-changing
+    refetchInterval: 300_000,
+    refetchOnWindowFocus: true,
   });
 }
 

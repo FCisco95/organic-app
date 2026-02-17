@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { appealDisputeSchema } from '@/features/disputes/schemas';
 import { DEFAULT_DISPUTE_CONFIG } from '@/features/disputes/types';
 import type { DisputeConfig } from '@/features/disputes/types';
+import { parseJsonBody } from '@/lib/parse-json-body';
 
 /**
  * POST /api/disputes/[id]/appeal
@@ -86,7 +87,10 @@ export async function POST(
     }
 
     // Parse input
-    const body = await request.json();
+    const { data: body, error: jsonError } = await parseJsonBody(request);
+    if (jsonError) {
+      return NextResponse.json({ error: jsonError }, { status: 400 });
+    }
     const parseResult = appealDisputeSchema.safeParse(body);
     if (!parseResult.success) {
       return NextResponse.json(

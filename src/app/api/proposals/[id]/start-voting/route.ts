@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getAllTokenHolders } from '@/lib/solana';
 import { startVotingSchema } from '@/features/voting/schemas';
+import { parseJsonBody } from '@/lib/parse-json-body';
 
 const START_VOTING_CONFIG_COLUMNS = 'quorum_percentage, approval_threshold, voting_duration_days';
 const START_VOTING_PROPOSAL_COLUMNS = 'id, title, status';
@@ -43,12 +44,16 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     // Parse and validate request body
-    const body = await request.json().catch(() => ({}));
+    const { data: body, error: jsonError } = await parseJsonBody(request);
+    if (jsonError) {
+      return NextResponse.json({ error: jsonError, code: 'INVALID_JSON' }, { status: 400 });
+    }
+
     const parseResult = startVotingSchema.safeParse(body);
 
     if (!parseResult.success) {
       return NextResponse.json(
-        { error: 'Invalid request', details: parseResult.error.flatten() },
+        { error: 'Invalid request', code: 'INVALID_REQUEST', details: parseResult.error.flatten() },
         { status: 400 }
       );
     }
@@ -162,7 +167,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       },
       voting_ends_at: votingEndsAt.toISOString(),
     });
-  } catch {
+  } catch (error) {
+    console.error('Start voting error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

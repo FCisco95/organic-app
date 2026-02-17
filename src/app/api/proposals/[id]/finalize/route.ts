@@ -2,16 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { finalizeVotingSchema } from '@/features/voting/schemas';
 import { ProposalResult } from '@/types/database';
+import { parseJsonBody } from '@/lib/parse-json-body';
 
 const PROPOSAL_FINALIZE_COLUMNS =
   'id, title, status, voting_ends_at, total_circulating_supply, quorum_required, approval_threshold, result';
-
-type VoteTallyRow = {
-  yes_votes: number | string | null;
-  no_votes: number | string | null;
-  abstain_votes: number | string | null;
-  total_votes: number | string | null;
-};
 
 /**
  * POST /api/proposals/[id]/finalize
@@ -48,12 +42,16 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     // Parse and validate request body
-    const body = await request.json().catch(() => ({}));
+    const { data: body, error: jsonError } = await parseJsonBody(request);
+    if (jsonError) {
+      return NextResponse.json({ error: jsonError, code: 'INVALID_JSON' }, { status: 400 });
+    }
+
     const parseResult = finalizeVotingSchema.safeParse(body);
 
     if (!parseResult.success) {
       return NextResponse.json(
-        { error: 'Invalid request', details: parseResult.error.flatten() },
+        { error: 'Invalid request', code: 'INVALID_REQUEST', details: parseResult.error.flatten() },
         { status: 400 }
       );
     }
@@ -92,17 +90,19 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       return NextResponse.json(
         {
           error: 'Voting period has not ended yet. Set force=true to finalize early.',
-          voting_ends_at: votingEndsAt.toISOString(),
+          code: 'VOTING_NOT_ENDED',
+          details: {
+            voting_ends_at: votingEndsAt.toISOString(),
+          },
         },
         { status: 400 }
       );
     }
 
-    // Use aggregate RPC to avoid transferring every vote row.
-    // Cast to `never` until generated Supabase types include this new RPC.
+    // Use aggregate RPC to avoid transferring every vote row
     const { data: tallyRows, error: tallyError } = await supabase.rpc(
-      'get_proposal_vote_tally' as never,
-      { p_proposal_id: proposalId } as never
+      'get_proposal_vote_tally',
+      { p_proposal_id: proposalId }
     );
 
     if (tallyError) {
@@ -118,8 +118,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     const abstainCountsTowardQuorum = config?.abstain_counts_toward_quorum ?? true;
 
-    const rawTallyRows = (tallyRows ?? []) as unknown as VoteTallyRow[];
-    const tally = rawTallyRows[0];
+    const tally = (tallyRows ?? [])[0];
     const yesVotes = Number(tally?.yes_votes ?? 0);
     const noVotes = Number(tally?.no_votes ?? 0);
     const abstainVotes = Number(tally?.abstain_votes ?? 0);
@@ -200,7 +199,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         participation_percentage: totalSupply > 0 ? (totalVotes / totalSupply) * 100 : 0,
       },
     });
-  } catch {
+  } catch (error) {
+    console.error('Proposal finalize error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

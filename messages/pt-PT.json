@@ -639,6 +639,12 @@
     "joinFailed": "Falha ao participar na tarefa",
     "leaveFailed": "Falha ao sair da tarefa",
     "joinRequiresOrganicId": "Precisa de um Organic ID para participar em tarefas",
+    "standardLabels": {
+      "growth": "📣 Crescimento",
+      "design": "🎨 Design",
+      "dev": "💻 Desenvolvimento",
+      "research": "🧠 Pesquisa"
+    },
     "participantCount": "{count, plural, one {# participante} other {# participantes}}",
     "infoBanner": {
       "title": "Como funcionam as tarefas",
@@ -963,7 +969,13 @@
     "noContributors": "Sem contribuidores ainda",
     "labelLabels": "Etiquetas",
     "labelPlaceholder": "Adicionar etiqueta",
-    "addLabel": "Adicionar"
+    "addLabel": "Adicionar",
+    "standardLabels": {
+      "growth": "📣 Crescimento",
+      "design": "🎨 Design",
+      "dev": "💻 Desenvolvimento",
+      "research": "🧠 Pesquisa"
+    }
   },
   "Profile": {
     "loadingProfile": "Carregando seu perfil...",

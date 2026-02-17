@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { updateProposalSchema } from '@/features/proposals/schemas';
+import { parseJsonBody } from '@/lib/parse-json-body';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -91,8 +92,11 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     }
 
     // Parse and validate
-    const body = await request.json();
-    const { status: newStatus, ...fields } = body;
+    const parsedBody = await parseJsonBody<Record<string, unknown>>(request);
+    if (parsedBody.error !== null) {
+      return NextResponse.json({ error: parsedBody.error }, { status: 400 });
+    }
+    const { status: newStatus, ...fields } = parsedBody.data;
     const parseResult = updateProposalSchema.safeParse(fields);
 
     if (!parseResult.success) {

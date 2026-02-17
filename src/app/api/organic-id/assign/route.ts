@@ -10,6 +10,19 @@ type UserProfile = {
   wallet_pubkey: string | null;
 };
 
+function isUserProfile(value: unknown): value is UserProfile {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return false;
+  }
+
+  const candidate = value as Record<string, unknown>;
+  return (
+    typeof candidate.id === 'string' &&
+    (candidate.organic_id === null || typeof candidate.organic_id === 'number') &&
+    (candidate.wallet_pubkey === null || typeof candidate.wallet_pubkey === 'string')
+  );
+}
+
 export async function POST(request: Request) {
   try {
     // Get auth token from header
@@ -41,11 +54,11 @@ export async function POST(request: Request) {
       .eq('id', user.id)
       .maybeSingle();
 
-    if (profileError || !profileData) {
+    if (profileError || !isUserProfile(profileData)) {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
     }
 
-    const profile = profileData as unknown as UserProfile;
+    const profile = profileData;
 
     // Check if user already has an Organic ID
     if (profile.organic_id) {
@@ -77,11 +90,11 @@ export async function POST(request: Request) {
     const { data: nextIdData, error: nextIdError } =
       await serviceSupabase.rpc('get_next_organic_id');
 
-    if (nextIdError) {
+    if (nextIdError || typeof nextIdData !== 'number') {
       return NextResponse.json({ error: 'Failed to generate Organic ID' }, { status: 500 });
     }
 
-    const organicId = nextIdData as unknown as number;
+    const organicId = nextIdData;
 
     // Update user profile with Organic ID and upgrade role to member
     const { error: updateError } = await serviceSupabase
@@ -101,7 +114,8 @@ export async function POST(request: Request) {
       organicId,
       message: `Organic ID #${organicId} assigned successfully!`,
     });
-  } catch {
+  } catch (error) {
+    console.error('Organic ID assign error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

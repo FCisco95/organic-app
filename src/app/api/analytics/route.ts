@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
+import { unstable_cache } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { TOKEN_CONFIG, calculateMarketCap } from '@/config/token';
 
-let cached: { data: unknown; timestamp: number } | null = null;
-const CACHE_TTL = 60_000; // 60 seconds
-const RESPONSE_CACHE_CONTROL = 'public, s-maxage=60, stale-while-revalidate=120';
+const RESPONSE_CACHE_CONTROL = 'public, s-maxage=120, stale-while-revalidate=300';
 
 async function fetchOrgPrice(): Promise<number | null> {
   if (!TOKEN_CONFIG.mint) return null;
@@ -17,20 +16,15 @@ async function fetchOrgPrice(): Promise<number | null> {
     const json = await res.json();
     const price = json?.data?.[TOKEN_CONFIG.mint]?.price;
     return typeof price === 'number' ? price : typeof price === 'string' ? parseFloat(price) : null;
-  } catch {
+  } catch (error) {
+    console.error('Analytics helper error:', error);
     return null;
   }
 }
 
-export async function GET() {
-  try {
-    const now = Date.now();
-    if (cached && now - cached.timestamp < CACHE_TTL) {
-      return NextResponse.json(cached.data, {
-        headers: { 'Cache-Control': RESPONSE_CACHE_CONTROL },
-      });
-    }
-
+// Cache analytics data for 120s — survives cold starts unlike in-memory cache
+const getCachedAnalytics = unstable_cache(
+  async () => {
     const supabase = await createClient();
 
     const [
@@ -63,29 +57,37 @@ export async function GET() {
       supabase.rpc('get_voting_participation', { result_limit: 10 }),
     ]);
 
-    const data = {
-      kpis: {
-        total_users: usersResult.count ?? 0,
-        org_holders: holdersResult.count ?? 0,
-        tasks_completed: tasksResult.count ?? 0,
-        active_proposals: proposalsResult.count ?? 0,
-        org_price: orgPrice,
-        market_cap: calculateMarketCap(orgPrice),
+    return {
+      data: {
+        kpis: {
+          total_users: usersResult.count ?? 0,
+          org_holders: holdersResult.count ?? 0,
+          tasks_completed: tasksResult.count ?? 0,
+          active_proposals: proposalsResult.count ?? 0,
+          org_price: orgPrice,
+          market_cap: calculateMarketCap(orgPrice),
+        },
+        activity_trends: activityTrends.data ?? [],
+        member_growth: memberGrowth.data ?? [],
+        task_completions: taskCompletions.data ?? [],
+        proposals_by_category: proposalsByCategory.data ?? [],
+        voting_participation: votingParticipation.data ?? [],
       },
-      activity_trends: activityTrends.data ?? [],
-      member_growth: memberGrowth.data ?? [],
-      task_completions: taskCompletions.data ?? [],
-      proposals_by_category: proposalsByCategory.data ?? [],
-      voting_participation: votingParticipation.data ?? [],
     };
+  },
+  ['analytics-data'],
+  { revalidate: 120 }
+);
 
-    const response = { data };
-    cached = { data: response, timestamp: now };
+export async function GET() {
+  try {
+    const response = await getCachedAnalytics();
 
     return NextResponse.json(response, {
       headers: { 'Cache-Control': RESPONSE_CACHE_CONTROL },
     });
-  } catch {
+  } catch (error) {
+    console.error('Analytics GET error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

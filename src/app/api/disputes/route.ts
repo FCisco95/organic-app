@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { createDisputeSchema, disputeFilterSchema } from '@/features/disputes/schemas';
 import type { DisputeConfig } from '@/features/disputes/types';
 import { DEFAULT_DISPUTE_CONFIG } from '@/features/disputes/types';
+import { applyRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
+import { parseJsonBody } from '@/lib/parse-json-body';
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const MAX_EVIDENCE_FILES = 5;
@@ -126,6 +128,10 @@ export async function GET(request: NextRequest) {
       my_disputes: searchParams.get('my_disputes') === 'true' || undefined,
     });
 
+    const page = Math.max(1, Number(searchParams.get('page')) || 1);
+    const limit = Math.min(50, Math.max(1, Number(searchParams.get('limit')) || 20));
+    const offset = (page - 1) * limit;
+
     // Get user role
     const { data: profile } = await supabase
       .from('user_profiles')
@@ -166,11 +172,15 @@ export async function GET(request: NextRequest) {
       query = query.eq('sprint_id', filters.sprint_id);
     }
 
-    const { data, error, count } = await query.limit(50);
+    const { data, error, count } = await query.range(offset, offset + limit - 1);
 
     if (error) throw error;
 
-    return NextResponse.json({ data: data ?? [], total: count ?? 0 });
+    return NextResponse.json({
+      data: data ?? [],
+      total: count ?? 0,
+      pagination: { page, limit, hasMore: offset + limit < (count ?? 0) },
+    });
   } catch (error) {
     console.error('Error fetching disputes:', error);
     return NextResponse.json({ error: 'Failed to fetch disputes' }, { status: 500 });
@@ -193,6 +203,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Rate limit: 3 disputes per minute per user
+    const rateLimited = applyRateLimit(`dispute:${user.id}`, RATE_LIMITS.disputeCreate);
+    if (rateLimited) return rateLimited;
+
     // Get user profile
     const { data: profile, error: profileError } = await supabase
       .from('user_profiles')
@@ -212,7 +226,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse input
-    const body = await request.json();
+    const { data: body, error: jsonError } = await parseJsonBody(request);
+    if (jsonError) {
+      return NextResponse.json({ error: jsonError }, { status: 400 });
+    }
+
     const parseResult = createDisputeSchema.safeParse(body);
     if (!parseResult.success) {
       return NextResponse.json(
@@ -549,56 +567,19 @@ async function handleArbitratorStats(
 
   const isCouncilOrAdmin = profile?.role === 'admin' || profile?.role === 'council';
   if (!isCouncilOrAdmin) {
-    return NextResponse.json(
-      {
-        data: {
-          resolved_count: 0,
-          overturn_rate: 0,
-          avg_resolution_hours: 0,
-        },
-      }
-    );
+    return NextResponse.json({
+      data: { resolved_count: 0, overturn_rate: 0, avg_resolution_hours: 0 },
+    });
   }
 
-  const { data: disputes, error } = await supabase
-    .from('disputes')
-    .select('resolution, created_at, resolved_at')
-    .eq('arbitrator_id', userId)
-    .in('status', ['resolved', 'dismissed']);
+  // Use RPC to compute stats in SQL instead of JS-side aggregation
+  const { data, error } = await supabase.rpc('get_arbitrator_stats', { p_user_id: userId });
 
   if (error) {
     return NextResponse.json({ error: 'Failed to fetch arbitrator stats' }, { status: 500 });
   }
 
-  const resolvedCount = disputes?.length ?? 0;
-  const overturnedCount =
-    disputes?.filter((dispute) => dispute.resolution === 'overturned').length ?? 0;
-  const overturnRate =
-    resolvedCount > 0 ? Math.round((overturnedCount / resolvedCount) * 100) : 0;
-
-  const durations = (disputes ?? [])
-    .map((dispute) => {
-      if (!dispute.resolved_at) return null;
-      const start = new Date(dispute.created_at).getTime();
-      const end = new Date(dispute.resolved_at).getTime();
-      if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return null;
-      return (end - start) / (1000 * 60 * 60);
-    })
-    .filter((value): value is number => value !== null);
-
-  const avgResolutionHours =
-    durations.length > 0
-      ? Math.round((durations.reduce((acc, value) => acc + value, 0) / durations.length) * 10) /
-        10
-      : 0;
-
-  return NextResponse.json({
-    data: {
-      resolved_count: resolvedCount,
-      overturn_rate: overturnRate,
-      avg_resolution_hours: avgResolutionHours,
-    },
-  });
+  return NextResponse.json({ data: data ?? { resolved_count: 0, overturn_rate: 0, avg_resolution_hours: 0 } });
 }
 
 async function handleReviewerAccuracy(

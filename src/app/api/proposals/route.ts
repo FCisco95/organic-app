@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createProposalSchema } from '@/features/proposals/schemas';
+import { applyRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
+import { parseJsonBody } from '@/lib/parse-json-body';
 
 /**
  * POST /api/proposals
@@ -19,6 +21,10 @@ export async function POST(request: NextRequest) {
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    // Rate limit: 5 proposals per minute per user
+    const rateLimited = applyRateLimit(`proposal:${user.id}`, RATE_LIMITS.proposalCreate);
+    if (rateLimited) return rateLimited;
 
     // Get user profile — check for Organic ID (verified member)
     const { data: profile, error: profileError } = await supabase
@@ -39,8 +45,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse and validate request body
-    const body = await request.json();
-    const { status: submitStatus, ...fields } = body;
+    const parsedBody = await parseJsonBody<Record<string, unknown>>(request);
+    if (parsedBody.error !== null) {
+      return NextResponse.json({ error: parsedBody.error }, { status: 400 });
+    }
+    const { status: submitStatus, ...fields } = parsedBody.data;
     const parseResult = createProposalSchema.safeParse(fields);
 
     if (!parseResult.success) {

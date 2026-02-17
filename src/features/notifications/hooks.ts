@@ -175,7 +175,8 @@ export function useUnreadCount() {
       return data.unread_count;
     },
     staleTime: 30_000,
-    refetchInterval: 60_000,
+    // No polling — Realtime subscription in useNotifications already updates unread count
+    refetchOnWindowFocus: true,
   });
 }
 

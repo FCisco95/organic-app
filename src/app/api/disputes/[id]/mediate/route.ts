@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { mediateDisputeSchema } from '@/features/disputes/schemas';
+import { parseJsonBody } from '@/lib/parse-json-body';
 
 const MEDIATION_PROPOSAL_PREFIX = 'Mediation proposal (pending): ';
 
@@ -61,7 +62,11 @@ export async function POST(
     }
 
     // Parse input
-    const body = await request.json();
+    const { data: body, error: jsonError } = await parseJsonBody(request);
+    if (jsonError) {
+      return NextResponse.json({ error: jsonError }, { status: 400 });
+    }
+
     const parseResult = mediateDisputeSchema.safeParse(body);
     if (!parseResult.success) {
       return NextResponse.json(
@@ -107,12 +112,22 @@ export async function POST(
 
       if (updateError) throw updateError;
 
-      await supabase.from('dispute_comments').insert({
+      const { error: commentError } = await supabase.from('dispute_comments').insert({
         dispute_id: id,
         user_id: user.id,
         content: `${MEDIATION_PROPOSAL_PREFIX}${agreedOutcome}`,
         visibility: 'parties_only',
       });
+
+      if (commentError) {
+        // Revert dispute status since the proposal comment is required for the mediation flow
+        console.error('Mediation proposal comment failed, reverting dispute status:', id, commentError);
+        await supabase
+          .from('disputes')
+          .update({ status: dispute.status, tier: dispute.tier })
+          .eq('id', id);
+        return NextResponse.json({ error: 'Failed to record mediation proposal' }, { status: 500 });
+      }
 
       return NextResponse.json(
         {
@@ -138,13 +153,17 @@ export async function POST(
 
     if (updateError) throw updateError;
 
-    // Record the mediation agreement as a comment
-    await supabase.from('dispute_comments').insert({
+    // Record the mediation agreement as a comment (non-critical — status is source of truth)
+    const { error: confirmCommentError } = await supabase.from('dispute_comments').insert({
       dispute_id: id,
       user_id: user.id,
       content: `Mediation agreement confirmed by both parties: ${agreedOutcome}`,
       visibility: 'parties_only',
     });
+
+    if (confirmCommentError) {
+      console.error('Non-critical: Failed to insert mediation confirmation comment:', id, confirmCommentError);
+    }
 
     return NextResponse.json({ data: updated });
   } catch (error) {

@@ -5,7 +5,8 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { AlertCircle } from 'lucide-react';
 import { useDisputeEligibility } from '@/features/disputes/hooks';
-import { CreateDisputeModal } from './CreateDisputeModal';
+import dynamic from 'next/dynamic';
+const CreateDisputeModal = dynamic(() => import('./CreateDisputeModal').then(m => m.CreateDisputeModal), { ssr: false });
 
 interface DisputeButtonProps {
   submissionId: string;

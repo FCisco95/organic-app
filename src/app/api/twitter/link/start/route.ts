@@ -5,6 +5,7 @@ import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { TwitterClient } from '@/lib/twitter/client';
 import { resolveTwitterRedirectUri } from '@/lib/twitter/config';
 import { generatePkcePair } from '@/lib/twitter/pkce';
+import { parseJsonBody } from '@/lib/parse-json-body';
 
 const startTwitterLinkSchema = z
   .object({
@@ -26,12 +27,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
-    const body = await request.json().catch(() => ({}));
+    const { data: body, error: jsonError } = await parseJsonBody(request);
+    if (jsonError) {
+      return NextResponse.json({ error: jsonError, code: 'INVALID_JSON' }, { status: 400 });
+    }
+
     const parsed = startTwitterLinkSchema.safeParse(body);
 
     if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Invalid request payload', details: parsed.error.errors },
+        {
+          error: 'Invalid request payload',
+          code: 'INVALID_REQUEST',
+          details: parsed.error.flatten(),
+        },
         { status: 400 }
       );
     }

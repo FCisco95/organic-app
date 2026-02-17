@@ -21,7 +21,8 @@ async function fetchSolPrice(): Promise<number | null> {
     const json = await res.json();
     const price = json?.data?.['So11111111111111111111111111111111111111112']?.price;
     return typeof price === 'number' ? price : typeof price === 'string' ? parseFloat(price) : null;
-  } catch {
+  } catch (error) {
+    console.error('Treasury helper error:', error);
     return null;
   }
 }
@@ -37,7 +38,8 @@ async function fetchOrgPrice(): Promise<number | null> {
     const json = await res.json();
     const price = json?.data?.[TOKEN_CONFIG.mint]?.price;
     return typeof price === 'number' ? price : typeof price === 'string' ? parseFloat(price) : null;
-  } catch {
+  } catch (error) {
+    console.error('Treasury helper error:', error);
     return null;
   }
 }

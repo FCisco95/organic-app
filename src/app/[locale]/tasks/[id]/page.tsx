@@ -23,7 +23,8 @@ import { TaskAssignModal } from '@/components/tasks/task-assign-modal';
 import { TaskDeleteConfirmModal } from '@/components/tasks/task-delete-confirm-modal';
 import { TaskCommentsSection } from '@/components/tasks/task-comments-section';
 import { TaskSubmissionsSection } from '@/components/tasks/task-submissions-section';
-import { TaskEditForm } from '@/components/tasks/task-edit-form';
+import dynamic from 'next/dynamic';
+const TaskEditForm = dynamic(() => import('@/components/tasks/task-edit-form').then(m => m.TaskEditForm), { ssr: false });
 import { TaskDetailSummary } from '@/components/tasks/task-detail-summary';
 import { BlockedBadge } from '@/components/tasks/blocked-badge';
 import { SubtaskList } from '@/components/tasks/subtask-list';
@@ -50,7 +51,12 @@ export default function TaskDetailPage() {
   const taskId = typeof params.id === 'string' ? params.id : (params.id?.[0] ?? '');
   const { data: dependencyData } = useTaskDependencies(taskId);
   const canLike = !!profile?.role && ['member', 'council', 'admin'].includes(profile.role);
-  const standardLabels = ['📣 Growth', '🎨 Design', '💻 Dev', '🧠 Research'];
+  const standardLabels = [
+    t('standardLabels.growth'),
+    t('standardLabels.design'),
+    t('standardLabels.dev'),
+    t('standardLabels.research'),
+  ];
 
   const [task, setTask] = useState<Task | null>(null);
   const [comments, setComments] = useState<TaskComment[]>([]);
@@ -70,7 +76,7 @@ export default function TaskDetailPage() {
   const [showAllContributors, setShowAllContributors] = useState(false);
   const [showContributorsModal, setShowContributorsModal] = useState(false);
   const submitEligibility = task
-    ? canSubmitTask(task as any, Boolean(profile?.organic_id))
+    ? canSubmitTask(task, Boolean(profile?.organic_id))
     : { canSubmit: false };
 
   const [editForm, setEditForm] = useState({
@@ -703,7 +709,7 @@ export default function TaskDetailPage() {
 
           <div className="flex flex-wrap gap-3">
             {/* Claim button - converts task to TaskWithRelations format for the component */}
-            <ClaimButton task={task as any} onSuccess={() => fetchTaskDetails()} />
+            <ClaimButton task={task} onSuccess={() => fetchTaskDetails()} />
 
             {/* Submit work button - show for assigned users when task is in progress */}
             {submitEligibility.canSubmit && !showSubmissionForm && (
@@ -720,7 +726,7 @@ export default function TaskDetailPage() {
           {/* Team task status */}
           {task.is_team_task && (
             <div className="mt-4">
-              <TeamClaimStatus task={task as any} />
+              <TeamClaimStatus task={task} />
             </div>
           )}
         </div>
@@ -729,7 +735,7 @@ export default function TaskDetailPage() {
       {/* Submission Form */}
       {showSubmissionForm && (
         <TaskSubmissionForm
-          task={task as any}
+          task={task}
           onSuccess={() => {
             setShowSubmissionForm(false);
             fetchTaskDetails();

@@ -34,7 +34,8 @@ export async function GET(request: NextRequest) {
     const events = (data ?? []).slice(0, limit);
 
     return NextResponse.json({ events, has_more });
-  } catch {
+  } catch (error) {
+    console.error('Activity GET error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

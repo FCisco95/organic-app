@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
+import { parseJsonBody } from '@/lib/parse-json-body';
 
 const EVIDENCE_BUCKET = 'dispute-evidence';
 const EVIDENCE_URL_TTL_SECONDS = 60 * 60;
@@ -172,8 +173,11 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
-    const { action } = body;
+    const parsedBody = await parseJsonBody<{ action?: string }>(request);
+    if (parsedBody.error !== null) {
+      return NextResponse.json({ error: parsedBody.error }, { status: 400 });
+    }
+    const { action } = parsedBody.data;
 
     // Load dispute
     const { data: dispute, error: fetchError } = await supabase

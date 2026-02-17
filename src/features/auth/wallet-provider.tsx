@@ -1,16 +1,9 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
-import {
-  PhantomWalletAdapter,
-  SolflareWalletAdapter,
-  CoinbaseWalletAdapter,
-  LedgerWalletAdapter,
-  TorusWalletAdapter,
-} from '@solana/wallet-adapter-wallets';
-import { TokenPocketWalletAdapter } from '@solana/wallet-adapter-tokenpocket';
 import { clusterApiUrl } from '@solana/web3.js';
+import type { Adapter } from '@solana/wallet-adapter-base';
 
 export function SolanaWalletProvider({ children }: { children: React.ReactNode }) {
   // Configure RPC endpoint
@@ -18,22 +11,32 @@ export function SolanaWalletProvider({ children }: { children: React.ReactNode }
     return process.env.NEXT_PUBLIC_SOLANA_RPC_URL || clusterApiUrl('mainnet-beta');
   }, []);
 
-  // Configure supported wallets
-  // Note: Many wallets like Backpack, OKX, Binance Web3 Wallet, and others use
-  // the Wallet Standard and will be auto-detected. We only need to explicitly
-  // add adapters for wallets that don't support the standard or need special
-  // configuration.
-  const wallets = useMemo(
-    () => [
-      new PhantomWalletAdapter(),
-      new SolflareWalletAdapter(),
-      new CoinbaseWalletAdapter(),
-      new LedgerWalletAdapter(),
-      new TorusWalletAdapter(),
-      new TokenPocketWalletAdapter(),
-    ],
-    []
-  );
+  // Lazy-load heavy wallet adapters (~500KB) — only downloaded after initial render.
+  // The provider works immediately with an empty wallets array (Wallet Standard
+  // wallets like Phantom are auto-detected). Explicit adapters load async for
+  // wallets that need them (Ledger, Torus, TokenPocket, etc).
+  const [wallets, setWallets] = useState<Adapter[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([
+      import('@solana/wallet-adapter-wallets'),
+      import('@solana/wallet-adapter-tokenpocket'),
+    ]).then(([walletAdapters, tokenpocket]) => {
+      if (cancelled) return;
+      setWallets([
+        new walletAdapters.PhantomWalletAdapter(),
+        new walletAdapters.SolflareWalletAdapter(),
+        new walletAdapters.CoinbaseWalletAdapter(),
+        new walletAdapters.LedgerWalletAdapter(),
+        new walletAdapters.TorusWalletAdapter(),
+        new tokenpocket.TokenPocketWalletAdapter(),
+      ]);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <ConnectionProvider endpoint={endpoint}>

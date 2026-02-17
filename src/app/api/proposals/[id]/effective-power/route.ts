@@ -1,11 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
-type DelegationRow = {
-  delegator_id: string;
-  category: string | null;
-};
-
 // GET - Calculate effective voting power for a user on a proposal
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -69,7 +64,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     let delegatedWeight = 0;
     let delegatorCount = 0;
 
-    const applicableDelegations = ((delegations ?? []) as unknown as DelegationRow[]).filter(
+    const applicableDelegations = (delegations ?? []).filter(
       (delegation) => delegation.category === null || delegation.category === proposalCategory
     );
 

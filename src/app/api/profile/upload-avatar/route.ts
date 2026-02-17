@@ -80,7 +80,8 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ url: publicUrl });
-  } catch {
+  } catch (error) {
+    console.error('Avatar upload error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

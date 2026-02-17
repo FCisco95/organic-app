@@ -2161,6 +2161,25 @@ export type Database = {
       }
     }
     Views: {
+      leaderboard_materialized: {
+        Row: {
+          avatar_url: string | null
+          claimable_points: number | null
+          current_streak: number | null
+          dense_rank: number | null
+          email: string | null
+          id: string | null
+          level: number | null
+          name: string | null
+          organic_id: number | null
+          rank: number | null
+          role: Database["public"]["Enums"]["user_role"] | null
+          tasks_completed: number | null
+          total_points: number | null
+          xp_total: number | null
+        }
+        Relationships: []
+      }
       leaderboard_view: {
         Row: {
           avatar_url: string | null
@@ -2222,6 +2241,10 @@ export type Database = {
           governance_events: number
           task_events: number
         }[]
+      }
+      get_arbitrator_stats: {
+        Args: { p_user_id: string }
+        Returns: Json
       }
       get_blocked_tasks: {
         Args: { p_task_id: string }

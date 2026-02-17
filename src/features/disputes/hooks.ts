@@ -118,8 +118,9 @@ export function usePendingDisputeCount(enabled = true) {
     queryKey: disputeKeys.pendingCount(),
     queryFn: () => fetchJson<{ count: number }>('/api/disputes?pending_count=true'),
     enabled,
-    staleTime: 30 * 1000, // 30 seconds
-    refetchInterval: 30 * 1000,
+    staleTime: 120 * 1000, // 2 minutes
+    refetchInterval: 120 * 1000,
+    refetchOnWindowFocus: true,
   });
 }
 

@@ -1,19 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { addCommentSchema } from '@/features/proposals/schemas';
+import { parseJsonBody } from '@/lib/parse-json-body';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
 /**
  * GET /api/proposals/[id]/comments
- * Fetch all comments for a proposal.
+ * Fetch comments for a proposal with cursor pagination.
  */
-export async function GET(_request: NextRequest, { params }: RouteParams) {
+export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
     const { id: proposalId } = await params;
     const supabase = await createClient();
 
-    const { data, error } = await supabase
+    const { searchParams } = new URL(request.url);
+    const limit = Math.min(50, Math.max(1, Number(searchParams.get('limit')) || 20));
+    const before = searchParams.get('before'); // cursor: ISO timestamp
+
+    let query = supabase
       .from('comments')
       .select(
         `
@@ -26,11 +31,25 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
       )
       .eq('subject_type', 'proposal')
       .eq('subject_id', proposalId)
-      .order('created_at', { ascending: true });
+      .order('created_at', { ascending: true })
+      .limit(limit + 1);
+
+    if (before) {
+      query = query.lt('created_at', before);
+    }
+
+    const { data, error } = await query;
 
     if (error) throw error;
 
-    return NextResponse.json(data);
+    const hasMore = (data?.length ?? 0) > limit;
+    const results = hasMore ? data!.slice(0, limit) : (data ?? []);
+
+    return NextResponse.json({
+      comments: results,
+      hasMore,
+      nextCursor: hasMore ? results[results.length - 1]?.created_at : null,
+    });
   } catch (error) {
     console.error('Error fetching comments:', error);
     return NextResponse.json({ error: 'Failed to fetch comments' }, { status: 500 });
@@ -57,7 +76,10 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     }
 
     // Parse and validate
-    const rawBody = await request.json();
+    const { data: rawBody, error: jsonError } = await parseJsonBody(request);
+    if (jsonError) {
+      return NextResponse.json({ error: jsonError }, { status: 400 });
+    }
     const parseResult = addCommentSchema.safeParse(rawBody);
 
     if (!parseResult.success) {

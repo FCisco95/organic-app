@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { parseJsonBody } from '@/lib/parse-json-body';
+import type { Database } from '@/types/database';
 
 const SPRINT_COLUMNS =
   'id, org_id, name, start_at, end_at, status, capacity_points, goal, created_at, updated_at';
 
-// GET - Fetch all sprints
-export async function GET() {
+// GET - Fetch sprints with pagination
+export async function GET(request: Request) {
   try {
     const supabase = await createClient();
 
@@ -18,17 +20,27 @@ export async function GET() {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
-    const { data: sprints, error } = await supabase
+    const { searchParams } = new URL(request.url);
+    const page = Math.max(1, Number(searchParams.get('page')) || 1);
+    const limit = Math.min(50, Math.max(1, Number(searchParams.get('limit')) || 20));
+    const offset = (page - 1) * limit;
+
+    const { data: sprints, error, count } = await supabase
       .from('sprints')
-      .select(SPRINT_COLUMNS)
-      .order('created_at', { ascending: false });
+      .select(SPRINT_COLUMNS, { count: 'exact' })
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
 
     if (error) {
       return NextResponse.json({ error: 'Failed to fetch sprints' }, { status: 500 });
     }
 
-    return NextResponse.json({ sprints });
-  } catch {
+    return NextResponse.json({
+      sprints,
+      pagination: { page, limit, total: count ?? 0, hasMore: offset + limit < (count ?? 0) },
+    });
+  } catch (error) {
+    console.error('Sprints GET error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -62,8 +74,18 @@ export async function POST(request: Request) {
       );
     }
 
-    const body = await request.json();
-    const { name, start_at, end_at, status, capacity_points, goal } = body;
+    const parsedBody = await parseJsonBody<{
+      name?: string;
+      start_at?: string;
+      end_at?: string;
+      status?: Database['public']['Enums']['sprint_status'];
+      capacity_points?: number | null;
+      goal?: string | null;
+    }>(request);
+    if (parsedBody.error !== null) {
+      return NextResponse.json({ error: parsedBody.error }, { status: 400 });
+    }
+    const { name, start_at, end_at, status, capacity_points, goal } = parsedBody.data;
 
     if (!name || !start_at || !end_at) {
       return NextResponse.json(
@@ -90,7 +112,8 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ sprint });
-  } catch {
+  } catch (error) {
+    console.error('Sprints POST error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

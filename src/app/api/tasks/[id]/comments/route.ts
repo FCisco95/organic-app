@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { parseJsonBody } from '@/lib/parse-json-body';
 
-// GET - Fetch all comments for a task
+// GET - Fetch comments for a task with cursor pagination
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
@@ -16,7 +17,11 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
-    const { data: comments, error } = await supabase
+    const { searchParams } = new URL(request.url);
+    const limit = Math.min(50, Math.max(1, Number(searchParams.get('limit')) || 20));
+    const before = searchParams.get('before'); // cursor: ISO timestamp
+
+    let query = supabase
       .from('task_comments')
       .select(
         `
@@ -31,14 +36,28 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       `
       )
       .eq('task_id', id)
-      .order('created_at', { ascending: true });
+      .order('created_at', { ascending: true })
+      .limit(limit + 1); // fetch one extra to detect hasMore
+
+    if (before) {
+      query = query.lt('created_at', before);
+    }
+
+    const { data: comments, error } = await query;
 
     if (error) {
       console.error('Error fetching comments:', error);
       return NextResponse.json({ error: 'Failed to fetch comments' }, { status: 500 });
     }
 
-    return NextResponse.json({ comments });
+    const hasMore = (comments?.length ?? 0) > limit;
+    const results = hasMore ? comments!.slice(0, limit) : (comments ?? []);
+
+    return NextResponse.json({
+      comments: results,
+      hasMore,
+      nextCursor: hasMore ? results[results.length - 1]?.created_at : null,
+    });
   } catch (error) {
     console.error('Error in comments route:', error);
     const message = error instanceof Error ? error.message : 'Internal server error';
@@ -61,20 +80,23 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
-    const body = await request.json();
-    const { content } = body;
+    const { data: body, error: jsonError } = await parseJsonBody(request);
+    if (jsonError) {
+      return NextResponse.json({ error: jsonError }, { status: 400 });
+    }
+    const rawContent = typeof body.content === 'string' ? body.content : '';
 
-    if (!content || content.trim().length === 0) {
+    if (rawContent.trim().length === 0) {
       return NextResponse.json({ error: 'Comment content is required' }, { status: 400 });
     }
 
     const { data: comment, error } = await supabase
       .from('task_comments')
-      .insert({
-        task_id: id,
-        user_id: user.id,
-        content: content.trim(),
-      })
+        .insert({
+          task_id: id,
+          user_id: user.id,
+          content: rawContent.trim(),
+        })
       .select(
         `
         *,

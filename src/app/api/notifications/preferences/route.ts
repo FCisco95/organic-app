@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { updatePreferenceSchema } from '@/features/notifications/schemas';
 import type { NotificationCategory } from '@/features/notifications/types';
+import { parseJsonBody } from '@/lib/parse-json-body';
 
 const PREFERENCE_COLUMNS = 'id, user_id, category, in_app, email, created_at, updated_at';
 
@@ -83,7 +84,10 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
+    const { data: body, error: jsonError } = await parseJsonBody(request);
+    if (jsonError) {
+      return NextResponse.json({ error: jsonError }, { status: 400 });
+    }
     const parsed = updatePreferenceSchema.safeParse(body);
 
     if (!parsed.success) {

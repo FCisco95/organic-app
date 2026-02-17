@@ -19,7 +19,8 @@ export async function GET(request: Request) {
   const appOrigin = (() => {
     try {
       return resolveAppOrigin({ fallbackOrigin: requestUrl.origin });
-    } catch {
+    } catch (error) {
+      console.error('Error resolving app origin for Twitter OAuth callback:', error);
       return requestUrl.origin;
     }
   })();

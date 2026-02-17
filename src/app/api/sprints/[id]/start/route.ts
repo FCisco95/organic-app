@@ -78,7 +78,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     }
 
     return NextResponse.json({ sprint: updatedSprint });
-  } catch {
+  } catch (error) {
+    console.error('Sprint start error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

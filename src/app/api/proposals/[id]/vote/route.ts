@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { castVoteSchema } from '@/features/voting/schemas';
+import { parseJsonBody } from '@/lib/parse-json-body';
 
 /**
  * POST /api/proposals/[id]/vote
@@ -23,7 +24,10 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     // Parse and validate request body
-    const body = await request.json();
+    const { data: body, error: jsonError } = await parseJsonBody(request);
+    if (jsonError) {
+      return NextResponse.json({ error: jsonError }, { status: 400 });
+    }
     const parseResult = castVoteSchema.safeParse(body);
 
     if (!parseResult.success) {
@@ -156,7 +160,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         created_at: vote.created_at,
       },
     });
-  } catch {
+  } catch (error) {
+    console.error('Vote POST error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -216,7 +221,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       voting_weight: votingWeight,
       can_vote: votingWeight > 0,
     });
-  } catch {
+  } catch (error) {
+    console.error('Vote GET error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

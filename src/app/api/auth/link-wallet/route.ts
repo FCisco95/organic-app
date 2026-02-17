@@ -3,6 +3,7 @@ import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { PublicKey } from '@solana/web3.js';
 import bs58 from 'bs58';
 import nacl from 'tweetnacl';
+import { parseJsonBody } from '@/lib/parse-json-body';
 
 // Extract nonce from the signed message
 function extractNonceFromMessage(message: string): string | null {
@@ -12,7 +13,16 @@ function extractNonceFromMessage(message: string): string | null {
 
 export async function POST(request: Request) {
   try {
-    const { walletAddress, signature, message } = await request.json();
+    const parsedBody = await parseJsonBody<{
+      walletAddress?: string;
+      signature?: string;
+      message?: string;
+    }>(request);
+    if (parsedBody.error !== null) {
+      return NextResponse.json({ error: parsedBody.error }, { status: 400 });
+    }
+
+    const { walletAddress, signature, message } = parsedBody.data;
 
     if (!walletAddress || !signature || !message) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -115,7 +125,8 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ success: true, walletAddress });
-  } catch {
+  } catch (error) {
+    console.error('Link wallet error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
+import { parseJsonBody } from '@/lib/parse-json-body';
 import { z } from 'zod';
 
 const QUALITY_MULTIPLIERS: Record<number, number> = {
@@ -53,7 +54,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     }
 
     // Parse and validate body
-    const body = await request.json();
+    const { data: body, error: jsonError } = await parseJsonBody(request);
+    if (jsonError) {
+      return NextResponse.json({ error: jsonError }, { status: 400 });
+    }
     const validationResult = reviewSchema.safeParse(body);
 
     if (!validationResult.success) {

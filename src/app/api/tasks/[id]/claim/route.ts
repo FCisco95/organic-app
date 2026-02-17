@@ -68,15 +68,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: 'Failed to join task' }, { status: 500 });
     }
 
-    // Set as primary assignee if first joiner (backward compat with assignee_id)
-    if (!task.assignee_id) {
-      await supabase
-        .from('tasks')
-        .update({ assignee_id: user.id, claimed_at: new Date().toISOString() })
-        .eq('id', taskId);
-    }
+    // Atomically set as primary assignee if no one claimed yet (prevents race condition)
+    await supabase
+      .from('tasks')
+      .update({ assignee_id: user.id, claimed_at: new Date().toISOString() })
+      .eq('id', taskId)
+      .is('assignee_id', null); // only succeeds if still unclaimed
 
-    // Move task to in_progress if still in backlog/todo
+    // Atomically move task to in_progress if still in backlog/todo
     await supabase
       .from('tasks')
       .update({ status: 'in_progress', completed_at: null })
@@ -84,7 +83,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       .in('status', ['backlog', 'todo']);
 
     return NextResponse.json({ success: true, message: 'Task joined successfully' });
-  } catch {
+  } catch (error) {
+    console.error('Task claim POST error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -181,7 +181,8 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     }
 
     return NextResponse.json({ success: true, message: 'Left task successfully' });
-  } catch {
+  } catch (error) {
+    console.error('Task claim DELETE error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
+import { parseJsonBody } from '@/lib/parse-json-body';
 
 const statusChangeSchema = z.object({
   status: z.enum(['approved', 'rejected', 'voting']),
@@ -46,7 +47,10 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     }
 
     // Parse request
-    const body = await request.json();
+    const { data: body, error: jsonError } = await parseJsonBody(request);
+    if (jsonError) {
+      return NextResponse.json({ error: jsonError }, { status: 400 });
+    }
     const parseResult = statusChangeSchema.safeParse(body);
 
     if (!parseResult.success) {

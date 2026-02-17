@@ -639,6 +639,12 @@
     "joinFailed": "加入任务失败",
     "leaveFailed": "退出任务失败",
     "joinRequiresOrganicId": "您需要 Organic ID 才能加入任务",
+    "standardLabels": {
+      "growth": "📣 增长",
+      "design": "🎨 设计",
+      "dev": "💻 开发",
+      "research": "🧠 研究"
+    },
     "participantCount": "{count} 位参与者",
     "infoBanner": {
       "title": "任务工作流程",
@@ -963,7 +969,13 @@
     "noContributors": "暂无贡献者",
     "labelLabels": "标签",
     "labelPlaceholder": "添加标签",
-    "addLabel": "添加"
+    "addLabel": "添加",
+    "standardLabels": {
+      "growth": "📣 增长",
+      "design": "🎨 设计",
+      "dev": "💻 开发",
+      "research": "🧠 研究"
+    }
   },
   "Profile": {
     "loadingProfile": "正在加载您的个人资料...",

@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
+import { unstable_cache } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { Database } from '@/types/database';
 
-type LeaderboardRow = Database['public']['Views']['leaderboard_view']['Row'];
+type LeaderboardRow = Database['public']['Views']['leaderboard_materialized']['Row'];
 
 type LeaderboardEntry = {
   id: string;
@@ -18,7 +19,7 @@ type LeaderboardEntry = {
   level: number | null;
   current_streak: number | null;
 };
-const RESPONSE_CACHE_CONTROL = 'public, s-maxage=60, stale-while-revalidate=120';
+const RESPONSE_CACHE_CONTROL = 'public, s-maxage=300, stale-while-revalidate=600';
 
 const ensureRanks = (entries: LeaderboardRow[]) => {
   if (entries.length === 0) return entries;
@@ -40,14 +41,14 @@ const ensureRanks = (entries: LeaderboardRow[]) => {
   });
 };
 
-export async function GET() {
-  try {
+// Cache leaderboard for 300s (5 min) — rankings change slowly
+const getCachedLeaderboard = unstable_cache(
+  async () => {
     const supabase = await createClient();
 
-    // Fetch leaderboard data from the leaderboard_view
-    // which includes pre-computed rank and dense_rank
+    // Use materialized view (refreshed every 5 min via pg_cron) for faster queries
     const { data: leaderboard, error } = await supabase
-      .from('leaderboard_view')
+      .from('leaderboard_materialized')
       .select(
         'id, name, email, organic_id, avatar_url, total_points, tasks_completed, role, rank, dense_rank, xp_total, level, current_streak, claimable_points'
       )
@@ -56,12 +57,11 @@ export async function GET() {
       .limit(100);
 
     if (error) {
-      return NextResponse.json({ error: 'Failed to fetch leaderboard' }, { status: 500 });
+      throw new Error('Failed to fetch leaderboard');
     }
 
     const normalized = ensureRanks(leaderboard || []);
 
-    // Map to LeaderboardEntry (filter out nulls for required fields)
     const result: LeaderboardEntry[] = normalized
       .filter(
         (row): row is LeaderboardRow & { id: string; email: string } =>
@@ -82,15 +82,21 @@ export async function GET() {
         current_streak: row.current_streak,
       }));
 
-    return NextResponse.json(
-      {
-        leaderboard: result,
-      },
-      {
-        headers: { 'Cache-Control': RESPONSE_CACHE_CONTROL },
-      }
-    );
-  } catch {
+    return { leaderboard: result };
+  },
+  ['leaderboard-data'],
+  { revalidate: 300 }
+);
+
+export async function GET() {
+  try {
+    const response = await getCachedLeaderboard();
+
+    return NextResponse.json(response, {
+      headers: { 'Cache-Control': RESPONSE_CACHE_CONTROL },
+    });
+  } catch (error) {
+    console.error('Leaderboard GET error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

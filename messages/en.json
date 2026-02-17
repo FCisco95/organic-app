@@ -639,6 +639,12 @@
     "joinFailed": "Failed to join task",
     "leaveFailed": "Failed to leave task",
     "joinRequiresOrganicId": "You need an Organic ID to join tasks",
+    "standardLabels": {
+      "growth": "📣 Growth",
+      "design": "🎨 Design",
+      "dev": "💻 Dev",
+      "research": "🧠 Research"
+    },
     "participantCount": "{count, plural, one {# participant} other {# participants}}",
     "infoBanner": {
       "title": "How tasks work",
@@ -963,7 +969,13 @@
     "noContributors": "No contributors yet",
     "labelLabels": "Labels",
     "labelPlaceholder": "Add a label",
-    "addLabel": "Add"
+    "addLabel": "Add",
+    "standardLabels": {
+      "growth": "📣 Growth",
+      "design": "🎨 Design",
+      "dev": "💻 Dev",
+      "research": "🧠 Research"
+    }
   },
   "Profile": {
     "loadingProfile": "Loading your profile...",

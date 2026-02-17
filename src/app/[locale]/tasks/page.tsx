@@ -18,13 +18,19 @@ import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { TaskFiltersBar } from '@/components/tasks/task-filters-bar';
 import { TaskListSection } from '@/components/tasks/task-list-section';
-import { TaskNewModal } from '@/components/tasks/task-new-modal';
+import dynamic from 'next/dynamic';
+const TaskNewModal = dynamic(() => import('@/components/tasks/task-new-modal').then(m => m.TaskNewModal), { ssr: false });
 import { PageContainer } from '@/components/layout';
 
 export default function TasksPage() {
   const { user, profile } = useAuth();
   const t = useTranslations('Tasks');
-  const standardLabels = ['📣 Growth', '🎨 Design', '💻 Dev', '🧠 Research'];
+  const standardLabels = [
+    t('standardLabels.growth'),
+    t('standardLabels.design'),
+    t('standardLabels.dev'),
+    t('standardLabels.research'),
+  ];
   const [tasks, setTasks] = useState<TaskListItem[]>([]);
   const [sprints, setSprints] = useState<Sprint[]>([]);
   const [activeView, setActiveView] = useState<TaskTab>('all');

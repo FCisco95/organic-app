@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getTokenBalance } from '@/lib/solana';
+import { parseJsonBody } from '@/lib/parse-json-body';
 
 // In-memory cache for token balances
 // Key: wallet address, Value: { balance, timestamp }
@@ -10,7 +11,12 @@ const CACHE_TTL_MS = 30 * 1000;
 
 export async function POST(request: Request) {
   try {
-    const { walletAddress } = await request.json();
+    const parsedBody = await parseJsonBody<{ walletAddress?: string }>(request);
+    if (parsedBody.error !== null) {
+      return NextResponse.json({ error: parsedBody.error }, { status: 400 });
+    }
+
+    const { walletAddress } = parsedBody.data;
 
     if (!walletAddress) {
       return NextResponse.json({ error: 'Wallet address is required' }, { status: 400 });
@@ -43,7 +49,8 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ balance, cached: false });
-  } catch {
+  } catch (error) {
+    console.error('Balance check error:', error);
     return NextResponse.json({ error: 'Failed to check balance' }, { status: 500 });
   }
 }

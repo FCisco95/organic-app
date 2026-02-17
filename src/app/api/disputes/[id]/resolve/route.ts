@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { resolveDisputeSchema } from '@/features/disputes/schemas';
+import { parseJsonBody } from '@/lib/parse-json-body';
 
 /**
  * POST /api/disputes/[id]/resolve
@@ -73,7 +74,11 @@ export async function POST(
     }
 
     // Parse input
-    const body = await request.json();
+    const { data: body, error: jsonError } = await parseJsonBody(request);
+    if (jsonError) {
+      return NextResponse.json({ error: jsonError }, { status: 400 });
+    }
+
     const parseResult = resolveDisputeSchema.safeParse(body);
     if (!parseResult.success) {
       return NextResponse.json(
@@ -106,7 +111,6 @@ export async function POST(
 
     // If overturned: approve the submission and award points
     if (input.resolution === 'overturned') {
-      // Get task base points
       const { data: task } = await supabase
         .from('tasks')
         .select('base_points')
@@ -114,10 +118,9 @@ export async function POST(
         .single();
 
       const basePoints = task?.base_points ?? 0;
-      // Full quality (5/5) on overturn
       const earnedPoints = basePoints;
 
-      await supabase
+      const { error: subError } = await supabase
         .from('task_submissions')
         .update({
           review_status: 'approved',
@@ -126,6 +129,16 @@ export async function POST(
           reviewed_at: now,
         })
         .eq('id', dispute.submission_id);
+
+      if (subError) {
+        // Compensate: revert dispute status
+        console.error('CRITICAL: Submission update failed after dispute resolve. Reverting dispute:', id, subError);
+        await supabase
+          .from('disputes')
+          .update({ status: dispute.status, resolution: null, resolution_notes: null, resolved_at: null })
+          .eq('id', id);
+        return NextResponse.json({ error: 'Failed to update submission. Resolution reverted.' }, { status: 500 });
+      }
     }
 
     // If compromise: update submission with new quality score
@@ -148,7 +161,7 @@ export async function POST(
         basePoints * (multipliers[input.new_quality_score] ?? 0.6)
       );
 
-      await supabase
+      const { error: subError } = await supabase
         .from('task_submissions')
         .update({
           review_status: 'approved',
@@ -157,6 +170,15 @@ export async function POST(
           reviewed_at: now,
         })
         .eq('id', dispute.submission_id);
+
+      if (subError) {
+        console.error('CRITICAL: Submission update failed after dispute compromise. Reverting dispute:', id, subError);
+        await supabase
+          .from('disputes')
+          .update({ status: dispute.status, resolution: null, resolution_notes: null, resolved_at: null })
+          .eq('id', id);
+        return NextResponse.json({ error: 'Failed to update submission. Resolution reverted.' }, { status: 500 });
+      }
     }
 
     return NextResponse.json({ data: updated });

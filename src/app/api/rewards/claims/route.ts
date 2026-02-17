@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { submitClaimSchema, claimFilterSchema } from '@/features/rewards/schemas';
 import type { RewardsConfig } from '@/features/rewards';
 import { DEFAULT_REWARDS_CONFIG } from '@/features/rewards';
+import { applyRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
+import { parseJsonBody } from '@/lib/parse-json-body';
 
 function parseRewardsConfig(value: unknown): RewardsConfig {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
@@ -89,6 +91,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to fetch claims' }, { status: 500 });
     }
 
+    // Fetch user profiles in parallel (FK goes to auth.users, not user_profiles, so can't use Supabase join)
     const userIds = Array.from(new Set((claims ?? []).map((c) => c.user_id)));
     let profileMap = new Map<string, { name: string | null; email: string }>();
 
@@ -99,21 +102,15 @@ export async function GET(request: NextRequest) {
         .in('id', userIds);
 
       profileMap = new Map(
-        (profiles ?? []).map((profile) => [
-          profile.id,
-          { name: profile.name, email: profile.email },
-        ])
+        (profiles ?? []).map((p) => [p.id, { name: p.name, email: p.email }])
       );
     }
 
-    const mapped = (claims ?? []).map((c) => {
-      const userInfo = profileMap.get(c.user_id);
-      return {
-        ...c,
-        user_name: userInfo?.name ?? null,
-        user_email: userInfo?.email ?? null,
-      };
-    });
+    const mapped = (claims ?? []).map((c) => ({
+      ...c,
+      user_name: profileMap.get(c.user_id)?.name ?? null,
+      user_email: profileMap.get(c.user_id)?.email ?? null,
+    }));
 
     return NextResponse.json({ claims: mapped, total: count ?? 0 });
   } catch (err) {
@@ -135,7 +132,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
-    const body = await request.json();
+    // Rate limit: 5 claims per minute per user
+    const rateLimited = applyRateLimit(`claim:${user.id}`, RATE_LIMITS.rewardClaim);
+    if (rateLimited) return rateLimited;
+
+    const { data: body, error: jsonError } = await parseJsonBody(request);
+    if (jsonError) {
+      return NextResponse.json({ error: jsonError }, { status: 400 });
+    }
+
     const parsed = submitClaimSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
@@ -195,17 +200,31 @@ export async function POST(request: NextRequest) {
     // Calculate token amount
     const token_amount = points_amount / config.points_to_token_rate;
 
-    // Lock-on-submit: deduct claimable_points immediately
-    const { error: updateError } = await supabase
+    // Lock-on-submit: deduct claimable_points with optimistic lock to prevent double-deduction
+    const expectedBefore = profile.claimable_points;
+    const expectedAfter = expectedBefore - points_amount;
+
+    const { data: deducted, error: updateError } = await supabase
       .from('user_profiles')
       .update({
-        claimable_points: profile.claimable_points - points_amount,
+        claimable_points: expectedAfter,
       })
-      .eq('id', user.id);
+      .eq('id', user.id)
+      .eq('claimable_points', expectedBefore) // optimistic lock: fail if concurrent mutation
+      .select('id')
+      .maybeSingle();
 
     if (updateError) {
       console.error('Points deduction error:', updateError);
       return NextResponse.json({ error: 'Failed to deduct points' }, { status: 500 });
+    }
+
+    if (!deducted) {
+      // Optimistic lock failed — another claim modified points concurrently
+      return NextResponse.json(
+        { error: 'Points balance changed. Please retry your claim.' },
+        { status: 409 }
+      );
     }
 
     // Create claim
@@ -222,11 +241,16 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (claimError) {
-      // Refund points on failure
-      await supabase
+      // Refund points on failure — verify the refund succeeds
+      const { error: refundError } = await supabase
         .from('user_profiles')
-        .update({ claimable_points: profile.claimable_points })
-        .eq('id', user.id);
+        .update({ claimable_points: expectedBefore })
+        .eq('id', user.id)
+        .eq('claimable_points', expectedAfter); // only refund if balance unchanged since deduction
+
+      if (refundError) {
+        console.error('CRITICAL: Points refund failed after claim insert error. User:', user.id, 'Amount:', points_amount, 'Refund error:', refundError);
+      }
 
       console.error('Claim insert error:', claimError);
       return NextResponse.json({ error: 'Failed to create claim' }, { status: 500 });

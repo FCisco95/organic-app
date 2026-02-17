@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { parseJsonBody } from '@/lib/parse-json-body';
 import { disputeCommentSchema } from '@/features/disputes/schemas';
 
 export const dynamic = 'force-dynamic';
@@ -141,7 +142,10 @@ export async function POST(
     }
 
     // Parse input
-    const body = await request.json();
+    const { data: body, error: jsonError } = await parseJsonBody(request);
+    if (jsonError) {
+      return NextResponse.json({ error: jsonError }, { status: 400 });
+    }
     const parseResult = disputeCommentSchema.safeParse(body);
     if (!parseResult.success) {
       return NextResponse.json(

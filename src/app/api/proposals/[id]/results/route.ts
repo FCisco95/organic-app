@@ -6,16 +6,6 @@ const RESPONSE_CACHE_CONTROL = 'public, s-maxage=15, stale-while-revalidate=30';
 const VOTING_CONFIG_TTL_MS = 5 * 60 * 1000;
 
 let cachedAbstainCountsTowardQuorum: { value: boolean; timestamp: number } | null = null;
-type VoteTallyRow = {
-  yes_votes: number | string | null;
-  no_votes: number | string | null;
-  abstain_votes: number | string | null;
-  total_votes: number | string | null;
-  yes_count: number | string | null;
-  no_count: number | string | null;
-  abstain_count: number | string | null;
-  total_count: number | string | null;
-};
 
 /**
  * GET /api/proposals/[id]/results
@@ -40,10 +30,9 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     // Get vote tallies via aggregate RPC (avoids transferring all vote rows).
-    // Cast to `never` until generated Supabase types include this new RPC.
     const { data: tallyRows, error: tallyError } = await supabase.rpc(
-      'get_proposal_vote_tally' as never,
-      { p_proposal_id: proposalId } as never
+      'get_proposal_vote_tally',
+      { p_proposal_id: proposalId }
     );
 
     if (tallyError) {
@@ -51,8 +40,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: 'Failed to fetch votes' }, { status: 500 });
     }
 
-    const rawTallyRows = (tallyRows ?? []) as unknown as VoteTallyRow[];
-    const tallyRow = rawTallyRows[0];
+    const tallyRow = (tallyRows ?? [])[0];
 
     const tally: VoteTally = {
       yes_votes: Number(tallyRow?.yes_votes ?? 0),

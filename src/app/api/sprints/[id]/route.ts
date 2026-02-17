@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { Database } from '@/types/database';
 import { createClient } from '@/lib/supabase/server';
+import { parseJsonBody } from '@/lib/parse-json-body';
 
 const SPRINT_COLUMNS =
   'id, org_id, name, start_at, end_at, status, capacity_points, goal, created_at, updated_at';
@@ -84,7 +85,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       tasks: tasks || [],
       snapshot,
     });
-  } catch {
+  } catch (error) {
+    console.error('Sprint GET error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -119,8 +121,18 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       );
     }
 
-    const body = await request.json();
-    const { name, start_at, end_at, status, capacity_points, goal } = body;
+    const parsedBody = await parseJsonBody<{
+      name?: string;
+      start_at?: string;
+      end_at?: string;
+      status?: Database['public']['Enums']['sprint_status'];
+      capacity_points?: number | null;
+      goal?: string | null;
+    }>(request);
+    if (parsedBody.error !== null) {
+      return NextResponse.json({ error: parsedBody.error }, { status: 400 });
+    }
+    const { name, start_at, end_at, status, capacity_points, goal } = parsedBody.data;
 
     const updates: Database['public']['Tables']['sprints']['Update'] = {};
     if (name !== undefined) updates.name = name;
@@ -142,7 +154,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     }
 
     return NextResponse.json({ sprint });
-  } catch {
+  } catch (error) {
+    console.error('Sprint PATCH error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -180,7 +193,8 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     }
 
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (error) {
+    console.error('Sprint DELETE error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

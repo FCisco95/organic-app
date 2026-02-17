@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 import { Database } from '@/types/database';
+import { applyRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
+import { parseJsonBody } from '@/lib/parse-json-body';
 
 // Validation schemas
 const developmentSubmissionSchema = z.object({
@@ -81,6 +83,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
     const canViewAll = profile?.role && ['admin', 'council'].includes(profile.role);
 
+    const { searchParams } = new URL(request.url);
+    const limit = Math.min(50, Math.max(1, Number(searchParams.get('limit')) || 50));
+
     let query = supabase
       .from('task_submissions')
       .select(
@@ -95,7 +100,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       `
       )
       .eq('task_id', taskId)
-      .order('submitted_at', { ascending: false });
+      .order('submitted_at', { ascending: false })
+      .limit(limit);
 
     // Non-admin/council can only see their own submissions or approved ones
     if (!canViewAll) {
@@ -139,7 +145,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     }));
 
     return NextResponse.json({ submissions: enrichedSubmissions });
-  } catch {
+  } catch (error) {
+    console.error('Submissions GET error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -159,6 +166,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     if (authError || !user) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
+
+    // Rate limit: 10 submissions per minute per user
+    const rateLimited = applyRateLimit(`submission:${user.id}`, RATE_LIMITS.taskSubmission);
+    if (rateLimited) return rateLimited;
 
     // Get the task
     const { data: task, error: taskError } = await supabase
@@ -228,7 +239,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     }
 
     // Parse and validate body
-    const body = await request.json();
+    const { data: body, error: jsonError } = await parseJsonBody(request);
+    if (jsonError) {
+      return NextResponse.json({ error: jsonError }, { status: 400 });
+    }
     const validationResult = submissionSchema.safeParse(body);
 
     if (!validationResult.success) {
@@ -409,7 +423,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     }
 
     return NextResponse.json({ submission }, { status: 201 });
-  } catch {
+  } catch (error) {
+    console.error('Submissions POST error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

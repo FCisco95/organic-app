@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { parseJsonBody } from '@/lib/parse-json-body';
 
 // GET - Fetch a single task with details
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -53,49 +54,49 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       return NextResponse.json({ error: 'Task not found' }, { status: 404 });
     }
 
-    // For team tasks, fetch assignees
-    let assignees: unknown[] = [];
-    if ((task as Record<string, unknown>).is_team_task) {
-      const { data: assigneesData } = await supabase
-        .from('task_assignees')
+    // Run independent queries in parallel instead of sequentially (was 3 serial roundtrips)
+    const [assigneesResult, submissionsResult, twitterTaskResult] = await Promise.all([
+      // Team task assignees
+      (task as Record<string, unknown>).is_team_task
+        ? supabase
+            .from('task_assignees')
+            .select('*, user:user_profiles(id, name, email, organic_id, avatar_url)')
+            .eq('task_id', id)
+        : Promise.resolve({ data: [] }),
+      // Submissions with user/reviewer joins
+      supabase
+        .from('task_submissions')
         .select(
           `
           *,
-          user:user_profiles(id, name, email, organic_id, avatar_url)
+          user:user_profiles!task_submissions_user_id_fkey(
+            id, name, email, organic_id, avatar_url
+          ),
+          reviewer:user_profiles!task_submissions_reviewer_id_fkey(
+            id, name, email, organic_id
+          )
         `
         )
-        .eq('task_id', id);
-      assignees = assigneesData || [];
-    }
+        .eq('task_id', id)
+        .order('submitted_at', { ascending: false }),
+      // Twitter engagement task config
+      supabase
+        .from('twitter_engagement_tasks')
+        .select('*')
+        .eq('task_id', id)
+        .maybeSingle(),
+    ]);
 
-    // Fetch submissions
-    const { data: submissions } = await supabase
-      .from('task_submissions')
-      .select(
-        `
-        *,
-        user:user_profiles!task_submissions_user_id_fkey(
-          id, name, email, organic_id, avatar_url
-        ),
-        reviewer:user_profiles!task_submissions_reviewer_id_fkey(
-          id, name, email, organic_id
-        )
-      `
-      )
-      .eq('task_id', id)
-      .order('submitted_at', { ascending: false });
+    const assignees = assigneesResult.data || [];
+    const submissions = submissionsResult.data || [];
+    const twitterEngagementTask = twitterTaskResult.data || null;
 
-    const { data: twitterEngagementTask } = await supabase
-      .from('twitter_engagement_tasks')
-      .select('*')
-      .eq('task_id', id)
-      .maybeSingle();
-
-    const twitterSubmissionIds = (submissions ?? [])
+    // Enrich twitter submissions if any exist
+    const twitterSubmissionIds = submissions
       .filter((submission) => submission.submission_type === 'twitter')
       .map((submission) => submission.id);
 
-    let enrichedSubmissions = submissions || [];
+    let enrichedSubmissions = submissions;
 
     if (twitterSubmissionIds.length > 0) {
       const { data: twitterSubmissions } = await supabase
@@ -107,7 +108,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         (twitterSubmissions ?? []).map((submission) => [submission.submission_id, submission])
       );
 
-      enrichedSubmissions = (submissions || []).map((submission) => ({
+      enrichedSubmissions = submissions.map((submission) => ({
         ...submission,
         twitter_engagement_submission: twitterSubmissionMap.get(submission.id) ?? null,
       }));
@@ -118,10 +119,11 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         ...task,
         assignees,
         submissions: enrichedSubmissions,
-        twitter_engagement_task: twitterEngagementTask || null,
+        twitter_engagement_task: twitterEngagementTask,
       },
     });
-  } catch {
+  } catch (error) {
+    console.error('Task GET error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -141,7 +143,10 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
-    const body = await request.json();
+    const { data: body, error: jsonError } = await parseJsonBody(request);
+    if (jsonError) {
+      return NextResponse.json({ error: jsonError }, { status: 400 });
+    }
     const {
       title,
       description,
@@ -156,7 +161,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       max_assignees,
       due_date,
       labels,
-    } = body;
+    } = body as Record<string, unknown>;
 
     // Build update object with only provided fields
     const updates: Record<string, unknown> = {};
@@ -211,7 +216,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     }
 
     return NextResponse.json({ task });
-  } catch {
+  } catch (error) {
+    console.error('Task PATCH error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -253,7 +259,8 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     }
 
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (error) {
+    console.error('Task DELETE error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
