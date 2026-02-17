@@ -248,6 +248,110 @@ npm run dev
 - `npm run lint` - Run ESLint
 - `npm run format` - Format code with Prettier
 
+## Deployment Checklist (Vercel)
+
+Set these variables in Vercel for both Preview and Production:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `NEXT_PUBLIC_SOLANA_RPC_URL`
+- `NEXT_PUBLIC_SOLANA_NETWORK`
+- `NEXT_PUBLIC_ORG_TOKEN_MINT`
+- `NEXT_PUBLIC_APP_URL`
+- `NEXT_PUBLIC_APP_DOMAIN`
+- `ADMIN_EMAIL`
+
+Set these for Sentry monitoring:
+
+- `SENTRY_DSN`
+- `NEXT_PUBLIC_SENTRY_DSN`
+- `SENTRY_ENVIRONMENT`
+- `SENTRY_TRACES_SAMPLE_RATE`
+- `NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE`
+- `SENTRY_PROFILES_SAMPLE_RATE`
+- `SENTRY_ORG` (for source map upload)
+- `SENTRY_PROJECT` (for source map upload)
+- `SENTRY_AUTH_TOKEN` (for source map upload)
+
+Set these to enable distributed Upstash rate limiting:
+
+- `UPSTASH_REDIS_REST_URL`
+- `UPSTASH_REDIS_REST_TOKEN`
+
+Set this to secure scheduled internal refresh routes:
+
+- `CRON_SECRET`
+
+Set these only if you use Twitter/X verification:
+
+- `TWITTER_CLIENT_ID`
+- `TWITTER_CLIENT_SECRET`
+- `TWITTER_REDIRECT_URI`
+- `TWITTER_CALLBACK_URL` (optional compatibility alias)
+- `TWITTER_OAUTH_SCOPE`
+- `TWITTER_TOKEN_AUTH_METHOD`
+- `TWITTER_TOKEN_ENCRYPTION_KEY`
+
+Optional:
+
+- `NEXT_PUBLIC_PLAUSIBLE_DOMAIN`
+- `NEXT_TELEMETRY_DISABLED`
+- `DISABLE_RATE_LIMIT` (use `true` only for local debugging)
+- `ENABLE_RATE_LIMIT_NON_VERCEL` (set `true` if you run production outside Vercel)
+
+Production launch checks:
+
+- Confirm Supabase migrations are applied in production.
+- Confirm Vercel CI passes (`lint` and `build`) for the release commit.
+- Confirm `GET /api/health` returns `200`.
+- Confirm GitHub Actions workflow `Market Cache Refresh` is active and successful.
+- Confirm Supabase auth redirect URLs and site URL match the production domain.
+
+### Operations Runbook (Market Cache Refresh)
+
+This app uses GitHub Actions (not Vercel Cron) to warm market cache snapshots.
+
+Required secrets:
+
+- Vercel env: `CRON_SECRET`
+- GitHub Actions secrets:
+  - `BASE_URL` (for example `https://organic-app-rust.vercel.app`)
+  - `CRON_SECRET` (must match Vercel value)
+
+Manual validation commands:
+
+```bash
+export BASE_URL="https://organic-app-rust.vercel.app"
+export CRON_SECRET="your_cron_secret"
+
+# Refresh endpoint (authorized)
+curl -i -X POST \
+  -H "Authorization: Bearer $CRON_SECRET" \
+  "$BASE_URL/api/internal/market-cache/refresh"
+
+# Core API health checks
+curl -i "$BASE_URL/api/stats"
+curl -i "$BASE_URL/api/analytics"
+curl -i "$BASE_URL/api/treasury"
+```
+
+Expected results:
+
+- Refresh endpoint returns `200`.
+- Core endpoints return `200`.
+- Core endpoints include `X-Data-Source` and `X-Data-Age-Seconds` response headers.
+
+Trigger/inspect scheduler workflow:
+
+```bash
+# Trigger now
+gh workflow run market-cache-refresh.yml --ref main
+
+# Check latest run
+gh run list --workflow market-cache-refresh.yml --limit 1
+```
+
 ### Key Features
 
 #### 🔐 Authentication & Profiles
