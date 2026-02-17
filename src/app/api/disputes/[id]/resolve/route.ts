@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { resolveDisputeSchema } from '@/features/disputes/schemas';
 import { parseJsonBody } from '@/lib/parse-json-body';
+import { logger } from '@/lib/logger';
 
 /**
  * POST /api/disputes/[id]/resolve
@@ -132,7 +133,7 @@ export async function POST(
 
       if (subError) {
         // Compensate: revert dispute status
-        console.error('CRITICAL: Submission update failed after dispute resolve. Reverting dispute:', id, subError);
+        logger.error('CRITICAL: Submission update failed after dispute resolve. Reverting dispute:', id, subError);
         await supabase
           .from('disputes')
           .update({ status: dispute.status, resolution: null, resolution_notes: null, resolved_at: null })
@@ -172,7 +173,7 @@ export async function POST(
         .eq('id', dispute.submission_id);
 
       if (subError) {
-        console.error('CRITICAL: Submission update failed after dispute compromise. Reverting dispute:', id, subError);
+        logger.error('CRITICAL: Submission update failed after dispute compromise. Reverting dispute:', id, subError);
         await supabase
           .from('disputes')
           .update({ status: dispute.status, resolution: null, resolution_notes: null, resolved_at: null })
@@ -183,7 +184,7 @@ export async function POST(
 
     return NextResponse.json({ data: updated });
   } catch (error) {
-    console.error('Error resolving dispute:', error);
+    logger.error('Error resolving dispute:', error);
     return NextResponse.json(
       { error: 'Failed to resolve dispute' },
       { status: 500 }

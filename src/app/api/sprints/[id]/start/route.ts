@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { logger } from '@/lib/logger';
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -79,7 +80,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
     return NextResponse.json({ sprint: updatedSprint });
   } catch (error) {
-    console.error('Sprint start error:', error);
+    logger.error('Sprint start error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

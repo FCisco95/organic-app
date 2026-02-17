@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { parseJsonBody } from '@/lib/parse-json-body';
 import { followSchema } from '@/features/notifications/schemas';
+import { logger } from '@/lib/logger';
 
 // GET /api/notifications/follow?subject_type=task&subject_id=xxx — check if following
 export async function GET(request: NextRequest) {
@@ -33,7 +34,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ following: (count ?? 0) > 0 });
   } catch (err) {
-    console.error('Follow check API error:', err);
+    logger.error('Follow check API error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -75,13 +76,13 @@ export async function POST(request: Request) {
     );
 
     if (error) {
-      console.error('Follow error:', error);
+      logger.error('Follow error:', error);
       return NextResponse.json({ error: 'Failed to follow' }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
   } catch (err) {
-    console.error('Follow API error:', err);
+    logger.error('Follow API error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -121,13 +122,13 @@ export async function DELETE(request: Request) {
       .eq('subject_id', subject_id);
 
     if (error) {
-      console.error('Unfollow error:', error);
+      logger.error('Unfollow error:', error);
       return NextResponse.json({ error: 'Failed to unfollow' }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
   } catch (err) {
-    console.error('Unfollow API error:', err);
+    logger.error('Unfollow API error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

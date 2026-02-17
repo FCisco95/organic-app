@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { isOrgHolder } from '@/lib/solana';
+import { logger } from '@/lib/logger';
 
 const ASSIGN_PROFILE_COLUMNS = 'id, organic_id, wallet_pubkey';
 
@@ -115,7 +116,7 @@ export async function POST(request: Request) {
       message: `Organic ID #${organicId} assigned successfully!`,
     });
   } catch (error) {
-    console.error('Organic ID assign error:', error);
+    logger.error('Organic ID assign error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

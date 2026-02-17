@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { parseJsonBody } from '@/lib/parse-json-body';
 import { z } from 'zod';
+import { logger } from '@/lib/logger';
 
 const DELEGATION_COLUMNS = 'id, delegator_id, delegate_id, category, created_at, updated_at';
 const DELEGATION_PROFILE_COLUMNS = 'id, name, email, organic_id, avatar_url';
@@ -57,12 +58,12 @@ export async function GET() {
     const incoming = incomingResult.data ?? [];
 
     if (outgoingResult.error) {
-      console.error('Error fetching outgoing delegations:', outgoingResult.error);
+      logger.error('Error fetching outgoing delegations:', outgoingResult.error);
       return NextResponse.json({ error: 'Failed to fetch delegations' }, { status: 500 });
     }
 
     if (incomingResult.error) {
-      console.error('Error fetching incoming delegations:', incomingResult.error);
+      logger.error('Error fetching incoming delegations:', incomingResult.error);
       return NextResponse.json({ error: 'Failed to fetch delegations' }, { status: 500 });
     }
 
@@ -81,7 +82,7 @@ export async function GET() {
         .in('id', profileIds);
 
       if (profilesError) {
-        console.error('Error fetching delegation profiles:', profilesError);
+        logger.error('Error fetching delegation profiles:', profilesError);
         return NextResponse.json({ error: 'Failed to fetch delegations' }, { status: 500 });
       }
 
@@ -101,7 +102,7 @@ export async function GET() {
       })),
     });
   } catch (error) {
-    console.error('Delegations GET error:', error);
+    logger.error('Delegations GET error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -208,20 +209,20 @@ export async function POST(request: Request) {
           .single();
 
         if (retryError) {
-          console.error('Error creating delegation (retry):', retryError);
+          logger.error('Error creating delegation (retry):', retryError);
           return NextResponse.json({ error: 'Failed to create delegation' }, { status: 500 });
         }
 
         return NextResponse.json({ delegation: newDelegation }, { status: 201 });
       }
 
-      console.error('Error creating delegation:', error);
+      logger.error('Error creating delegation:', error);
       return NextResponse.json({ error: 'Failed to create delegation' }, { status: 500 });
     }
 
     return NextResponse.json({ delegation }, { status: 201 });
   } catch (error) {
-    console.error('Delegations POST error:', error);
+    logger.error('Delegations POST error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -260,13 +261,13 @@ export async function DELETE(request: Request) {
       .eq('delegator_id', user.id);
 
     if (error) {
-      console.error('Error revoking delegation:', error);
+      logger.error('Error revoking delegation:', error);
       return NextResponse.json({ error: 'Failed to revoke delegation' }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Delegations DELETE error:', error);
+    logger.error('Delegations DELETE error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

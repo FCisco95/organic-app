@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { logger } from '@/lib/logger';
 
 // PATCH /api/notifications/[id]/read — mark single notification as read
 export async function PATCH(_request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -21,13 +22,13 @@ export async function PATCH(_request: Request, { params }: { params: Promise<{ i
       .eq('user_id', user.id);
 
     if (error) {
-      console.error('Mark read error:', error);
+      logger.error('Mark read error:', error);
       return NextResponse.json({ error: 'Failed to mark as read' }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
   } catch (err) {
-    console.error('Mark read API error:', err);
+    logger.error('Mark read API error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { logger } from '@/lib/logger';
 
 // POST - Join a task (universal self-join: always uses task_assignees)
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -84,7 +85,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
     return NextResponse.json({ success: true, message: 'Task joined successfully' });
   } catch (error) {
-    console.error('Task claim POST error:', error);
+    logger.error('Task claim POST error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -182,7 +183,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
 
     return NextResponse.json({ success: true, message: 'Left task successfully' });
   } catch (error) {
-    console.error('Task claim DELETE error:', error);
+    logger.error('Task claim DELETE error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

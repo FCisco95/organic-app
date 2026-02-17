@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { payClaimSchema } from '@/features/rewards/schemas';
 import { parseJsonBody } from '@/lib/parse-json-body';
+import { logger } from '@/lib/logger';
 
 export async function POST(
   request: NextRequest,
@@ -78,7 +79,7 @@ export async function POST(
       .maybeSingle();
 
     if (updateError) {
-      console.error('Claim pay error:', updateError);
+      logger.error('Claim pay error:', updateError);
       return NextResponse.json({ error: 'Failed to mark claim as paid' }, { status: 500 });
     }
 
@@ -99,13 +100,13 @@ export async function POST(
     });
 
     if (distError) {
-      console.error('Distribution record error:', distError);
+      logger.error('Distribution record error:', distError);
       // Don't fail the pay action since the claim is already marked as paid
     }
 
     return NextResponse.json({ claim: updated });
   } catch (err) {
-    console.error('Claim pay error:', err);
+    logger.error('Claim pay error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

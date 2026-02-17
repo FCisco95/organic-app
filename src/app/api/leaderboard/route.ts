@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { unstable_cache } from 'next/cache';
-import { createClient } from '@/lib/supabase/server';
+import { createAnonClient } from '@/lib/supabase/server';
 import { Database } from '@/types/database';
+import { logger } from '@/lib/logger';
 
 type LeaderboardRow = Database['public']['Views']['leaderboard_materialized']['Row'];
 
@@ -44,7 +45,7 @@ const ensureRanks = (entries: LeaderboardRow[]) => {
 // Cache leaderboard for 300s (5 min) — rankings change slowly
 const getCachedLeaderboard = unstable_cache(
   async () => {
-    const supabase = await createClient();
+    const supabase = createAnonClient();
 
     // Use materialized view (refreshed every 5 min via pg_cron) for faster queries
     const { data: leaderboard, error } = await supabase
@@ -96,7 +97,7 @@ export async function GET() {
       headers: { 'Cache-Control': RESPONSE_CACHE_CONTROL },
     });
   } catch (error) {
-    console.error('Leaderboard GET error:', error);
+    logger.error('Leaderboard GET error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

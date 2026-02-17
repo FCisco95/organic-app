@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { parseJsonBody } from '@/lib/parse-json-body';
+import { logger } from '@/lib/logger';
 
 // GET - Fetch a single task with details
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -123,7 +124,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       },
     });
   } catch (error) {
-    console.error('Task GET error:', error);
+    logger.error('Task GET error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -217,7 +218,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
     return NextResponse.json({ task });
   } catch (error) {
-    console.error('Task PATCH error:', error);
+    logger.error('Task PATCH error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -260,7 +261,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Task DELETE error:', error);
+    logger.error('Task DELETE error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

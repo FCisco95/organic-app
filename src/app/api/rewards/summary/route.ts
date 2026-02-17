@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { logger } from '@/lib/logger';
 
 export async function GET() {
   try {
@@ -29,7 +30,7 @@ export async function GET() {
     const { data, error } = await supabase.rpc('get_rewards_summary');
 
     if (error) {
-      console.error('Rewards summary RPC error:', error);
+      logger.error('Rewards summary RPC error:', error);
       return NextResponse.json({ error: 'Failed to fetch rewards summary' }, { status: 500 });
     }
 
@@ -39,7 +40,7 @@ export async function GET() {
       },
     });
   } catch (err) {
-    console.error('Rewards summary error:', err);
+    logger.error('Rewards summary error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

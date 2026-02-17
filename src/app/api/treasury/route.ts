@@ -3,107 +3,53 @@ import { PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { getConnection, getTokenBalance } from '@/lib/solana';
 import { TOKEN_CONFIG, TREASURY_ALLOCATIONS } from '@/config/token';
 import type { TreasuryTransaction } from '@/features/treasury/types';
+import { logger } from '@/lib/logger';
+import {
+  buildMarketDataHeaders,
+  getMarketPriceSnapshot,
+} from '@/features/market-data/server/service';
 
-let cached: { data: unknown; timestamp: number } | null = null;
+export const dynamic = 'force-dynamic';
+
+let cached: { data: unknown; timestamp: number; marketHeaders: Record<string, string> } | null = null;
 let cachedTransactions: { data: TreasuryTransaction[]; timestamp: number } | null = null;
+let transactionsBackoffUntilMs = 0;
 const CACHE_TTL = 60_000;
 const TRANSACTION_CACHE_TTL = 10 * 60_000;
+const TRANSACTION_RATE_LIMIT_BACKOFF_MS = 5 * 60_000;
 const TRANSACTION_FETCH_TIMEOUT_MS = 2_500;
 const RESPONSE_CACHE_CONTROL = 'public, s-maxage=60, stale-while-revalidate=120';
 
-async function fetchSolPrice(): Promise<number | null> {
-  try {
-    const res = await fetch(
-      'https://api.jup.ag/price/v2?ids=So11111111111111111111111111111111111111112',
-      { signal: AbortSignal.timeout(5000), next: { revalidate: 60 } }
-    );
-    if (!res.ok) return null;
-    const json = await res.json();
-    const price = json?.data?.['So11111111111111111111111111111111111111112']?.price;
-    return typeof price === 'number' ? price : typeof price === 'string' ? parseFloat(price) : null;
-  } catch (error) {
-    console.error('Treasury helper error:', error);
-    return null;
+function isRpcRateLimitError(error: unknown): boolean {
+  if (typeof error === 'string') {
+    return error.includes('429');
   }
-}
 
-async function fetchOrgPrice(): Promise<number | null> {
-  if (!TOKEN_CONFIG.mint) return null;
-  try {
-    const res = await fetch(`https://api.jup.ag/price/v2?ids=${TOKEN_CONFIG.mint}`, {
-      signal: AbortSignal.timeout(5000),
-      next: { revalidate: 60 },
-    });
-    if (!res.ok) return null;
-    const json = await res.json();
-    const price = json?.data?.[TOKEN_CONFIG.mint]?.price;
-    return typeof price === 'number' ? price : typeof price === 'string' ? parseFloat(price) : null;
-  } catch (error) {
-    console.error('Treasury helper error:', error);
-    return null;
+  if (error instanceof Error) {
+    return error.message.includes('429');
   }
+
+  return false;
 }
 
 async function fetchRecentTransactions(walletAddress: string): Promise<TreasuryTransaction[]> {
   const connection = getConnection();
   const pubkey = new PublicKey(walletAddress);
   const signatures = await connection.getSignaturesForAddress(pubkey, {
-    limit: 10,
+    limit: 5,
   });
 
   if (signatures.length === 0) return [];
 
-  const txs = await connection.getParsedTransactions(
-    signatures.map((s) => s.signature),
-    { maxSupportedTransactionVersion: 0 }
-  );
-
-  const results: TreasuryTransaction[] = [];
-
-  for (let i = 0; i < signatures.length; i++) {
-    const sig = signatures[i];
-    const tx = txs[i];
-
-    let type: TreasuryTransaction['type'] = 'unknown';
-    let amount: number | null = null;
-    let token: TreasuryTransaction['token'] = null;
-    let direction: TreasuryTransaction['direction'] = 'in';
-
-    if (tx?.meta && tx.transaction) {
-      const instructions = tx.transaction.message.instructions;
-      for (const ix of instructions) {
-        if ('parsed' in ix && ix.parsed) {
-          const parsed = ix.parsed;
-          if (parsed.type === 'transfer' && parsed.info) {
-            type = 'transfer';
-            amount = (parsed.info.lamports as number) / LAMPORTS_PER_SOL;
-            token = 'SOL';
-            direction = parsed.info.destination === walletAddress ? 'in' : 'out';
-            break;
-          }
-          if (parsed.type === 'transferChecked' && parsed.info) {
-            type = 'token_transfer';
-            amount = parsed.info.tokenAmount?.uiAmount ?? null;
-            token = 'ORG';
-            direction = parsed.info.destination === walletAddress ? 'in' : 'out';
-            break;
-          }
-        }
-      }
-    }
-
-    results.push({
-      signature: sig.signature,
-      block_time: sig.blockTime ?? null,
-      slot: sig.slot,
-      type,
-      amount,
-      token,
-      direction,
-    });
-  }
-
-  return results;
+  return signatures.map((sig) => ({
+    signature: sig.signature,
+    block_time: sig.blockTime ?? null,
+    slot: sig.slot,
+    type: 'unknown' as const,
+    amount: null,
+    token: null,
+    direction: 'in' as const,
+  }));
 }
 
 async function getRecentTransactions(walletAddress: string): Promise<TreasuryTransaction[]> {
@@ -112,12 +58,25 @@ async function getRecentTransactions(walletAddress: string): Promise<TreasuryTra
     return cachedTransactions.data;
   }
 
+  if (transactionsBackoffUntilMs > now) {
+    return cachedTransactions?.data ?? [];
+  }
+
   try {
     const transactions = await fetchRecentTransactions(walletAddress);
     cachedTransactions = { data: transactions, timestamp: now };
+    transactionsBackoffUntilMs = 0;
     return transactions;
   } catch (error) {
-    console.error('Error fetching treasury transactions:', error);
+    if (isRpcRateLimitError(error)) {
+      transactionsBackoffUntilMs = now + TRANSACTION_RATE_LIMIT_BACKOFF_MS;
+      logger.warn('Treasury transaction fetch hit RPC 429, entering backoff', {
+        backoff_ms: TRANSACTION_RATE_LIMIT_BACKOFF_MS,
+      });
+      return cachedTransactions?.data ?? [];
+    }
+
+    logger.error('Error fetching treasury transactions:', error);
     return cachedTransactions?.data ?? [];
   }
 }
@@ -139,7 +98,10 @@ export async function GET() {
     const now = Date.now();
     if (cached && now - cached.timestamp < CACHE_TTL) {
       return NextResponse.json(cached.data, {
-        headers: { 'Cache-Control': RESPONSE_CACHE_CONTROL },
+        headers: {
+          'Cache-Control': RESPONSE_CACHE_CONTROL,
+          ...cached.marketHeaders,
+        },
       });
     }
 
@@ -147,14 +109,16 @@ export async function GET() {
     const connection = getConnection();
     const pubkey = new PublicKey(wallet);
 
-    const [solBalance, orgBalance, solPrice, orgPrice, transactions] = await Promise.all([
+    const [solBalance, orgBalance, solPriceSnapshot, orgPriceSnapshot, transactions] = await Promise.all([
       connection.getBalance(pubkey),
       getTokenBalance(wallet),
-      fetchSolPrice(),
-      fetchOrgPrice(),
+      getMarketPriceSnapshot('sol_price'),
+      getMarketPriceSnapshot('org_price'),
       getRecentTransactionsWithTimeout(wallet),
     ]);
 
+    const solPrice = solPriceSnapshot.value;
+    const orgPrice = orgPriceSnapshot.value;
     const solAmount = solBalance / LAMPORTS_PER_SOL;
     const solUsd = solPrice != null ? solAmount * solPrice : null;
     const orgUsd = orgPrice != null ? orgBalance * orgPrice : null;
@@ -182,13 +146,17 @@ export async function GET() {
     };
 
     const response = { data };
-    cached = { data: response, timestamp: now };
+    const marketHeaders = buildMarketDataHeaders([solPriceSnapshot, orgPriceSnapshot]);
+    cached = { data: response, timestamp: now, marketHeaders };
 
     return NextResponse.json(response, {
-      headers: { 'Cache-Control': RESPONSE_CACHE_CONTROL },
+      headers: {
+        'Cache-Control': RESPONSE_CACHE_CONTROL,
+        ...marketHeaders,
+      },
     });
   } catch (error) {
-    console.error('Treasury API error:', error);
+    logger.error('Treasury API error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

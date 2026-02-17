@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getTokenBalance } from '@/lib/solana';
 import { parseJsonBody } from '@/lib/parse-json-body';
+import { logger } from '@/lib/logger';
 
 // In-memory cache for token balances
 // Key: wallet address, Value: { balance, timestamp }
@@ -50,7 +51,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ balance, cached: false });
   } catch (error) {
-    console.error('Balance check error:', error);
+    logger.error('Balance check error:', error);
     return NextResponse.json({ error: 'Failed to check balance' }, { status: 500 });
   }
 }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { parseJsonBody } from '@/lib/parse-json-body';
+import { logger } from '@/lib/logger';
 
 const EVIDENCE_BUCKET = 'dispute-evidence';
 const EVIDENCE_URL_TTL_SECONDS = 60 * 60;
@@ -144,7 +145,7 @@ export async function GET(
       },
     });
   } catch (error) {
-    console.error('Error fetching dispute:', error);
+    logger.error('Error fetching dispute:', error);
     const details =
       process.env.NODE_ENV === 'development' && error instanceof Error
         ? error.message
@@ -222,7 +223,7 @@ export async function PATCH(
 
     return NextResponse.json({ error: 'Unknown action' }, { status: 400 });
   } catch (error) {
-    console.error('Error updating dispute:', error);
+    logger.error('Error updating dispute:', error);
     return NextResponse.json({ error: 'Failed to update dispute' }, { status: 500 });
   }
 }

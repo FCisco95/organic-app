@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { parseJsonBody } from '@/lib/parse-json-body';
 import { disputeCommentSchema } from '@/features/disputes/schemas';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -73,7 +74,7 @@ export async function GET(
 
     return NextResponse.json({ data: comments ?? [] });
   } catch (error) {
-    console.error('Error fetching dispute comments:', error);
+    logger.error('Error fetching dispute comments:', error);
     return NextResponse.json(
       { error: 'Failed to fetch comments' },
       { status: 500 }
@@ -178,7 +179,7 @@ export async function POST(
 
     return NextResponse.json({ data: comment }, { status: 201 });
   } catch (error) {
-    console.error('Error adding dispute comment:', error);
+    logger.error('Error adding dispute comment:', error);
     return NextResponse.json(
       { error: 'Failed to add comment' },
       { status: 500 }

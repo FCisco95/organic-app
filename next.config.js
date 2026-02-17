@@ -2,6 +2,7 @@ const withNextIntl = require('next-intl/plugin')('./src/i18n/request.ts');
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
+const { withSentryConfig } = require('@sentry/nextjs');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -14,10 +15,36 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**',
+        hostname: '**.supabase.co',
+      },
+      {
+        protocol: 'https',
+        hostname: 'raw.githubusercontent.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'pbs.twimg.com',
       },
     ],
   },
 };
 
-module.exports = withBundleAnalyzer(withNextIntl(nextConfig));
+const sentryBuildOptions = {
+  silent: true,
+  webpack: {
+    treeshake: {
+      removeDebugLogging: true,
+    },
+  },
+  sourcemaps: {
+    disable:
+      !process.env.SENTRY_AUTH_TOKEN ||
+      !process.env.SENTRY_ORG ||
+      !process.env.SENTRY_PROJECT,
+  },
+};
+
+module.exports = withSentryConfig(
+  withBundleAnalyzer(withNextIntl(nextConfig)),
+  sentryBuildOptions
+);

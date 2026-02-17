@@ -4,6 +4,7 @@ import { appealDisputeSchema } from '@/features/disputes/schemas';
 import { DEFAULT_DISPUTE_CONFIG } from '@/features/disputes/types';
 import type { DisputeConfig } from '@/features/disputes/types';
 import { parseJsonBody } from '@/lib/parse-json-body';
+import { logger } from '@/lib/logger';
 
 /**
  * POST /api/disputes/[id]/appeal
@@ -132,7 +133,7 @@ export async function POST(
 
     return NextResponse.json({ data: updated });
   } catch (error) {
-    console.error('Error appealing dispute:', error);
+    logger.error('Error appealing dispute:', error);
     return NextResponse.json(
       { error: 'Failed to appeal dispute' },
       { status: 500 }

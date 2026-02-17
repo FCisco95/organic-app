@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { respondToDisputeSchema } from '@/features/disputes/schemas';
 import { parseJsonBody } from '@/lib/parse-json-body';
+import { logger } from '@/lib/logger';
 
 /**
  * POST /api/disputes/[id]/respond
@@ -92,7 +93,7 @@ export async function POST(
 
     return NextResponse.json({ data: updated });
   } catch (error) {
-    console.error('Error responding to dispute:', error);
+    logger.error('Error responding to dispute:', error);
     return NextResponse.json(
       { error: 'Failed to submit response' },
       { status: 500 }

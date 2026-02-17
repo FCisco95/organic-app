@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { createTaskSchema } from '@/features/tasks/schemas';
 import { extractTweetIdFromUrl } from '@/lib/twitter/utils';
 import { parseJsonBody } from '@/lib/parse-json-body';
+import { logger } from '@/lib/logger';
 
 // POST - Create a new task
 export async function POST(request: Request) {
@@ -89,7 +90,7 @@ export async function POST(request: Request) {
       .single();
 
     if (insertError) {
-      console.error('Error creating task:', insertError);
+      logger.error('Error creating task:', insertError);
       return NextResponse.json({ error: 'Failed to create task' }, { status: 500 });
     }
 
@@ -130,7 +131,7 @@ export async function POST(request: Request) {
         .single();
 
       if (twitterTaskError) {
-        console.error('Error creating twitter task metadata:', twitterTaskError);
+        logger.error('Error creating twitter task metadata:', twitterTaskError);
         await supabase.from('tasks').delete().eq('id', task.id);
         return NextResponse.json({ error: 'Failed to create Twitter task metadata' }, { status: 500 });
       }
@@ -148,7 +149,7 @@ export async function POST(request: Request) {
       { status: 201 }
     );
   } catch (error: unknown) {
-    console.error('Error creating task:', error);
+    logger.error('Error creating task:', error);
     const message = error instanceof Error ? error.message : 'Internal server error';
     return NextResponse.json({ error: message }, { status: 500 });
   }

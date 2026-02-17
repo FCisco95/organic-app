@@ -22,7 +22,7 @@ export function useStats() {
     },
     staleTime: 300_000, // 5 minutes — dashboard stats are slow-changing
     refetchInterval: 300_000,
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
   });
 }
 

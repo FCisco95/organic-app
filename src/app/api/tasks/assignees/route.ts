@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { logger } from '@/lib/logger';
 
 export async function GET() {
   try {
@@ -24,13 +25,13 @@ export async function GET() {
       .order('organic_id', { ascending: true });
 
     if (error) {
-      console.error('Error fetching assignees:', error);
+      logger.error('Error fetching assignees:', error);
       return NextResponse.json({ error: 'Failed to fetch assignees' }, { status: 500 });
     }
 
     return NextResponse.json({ assignees });
   } catch (error) {
-    console.error('Error in assignees route:', error);
+    logger.error('Error in assignees route:', error);
     const message = error instanceof Error ? error.message : 'Internal server error';
     return NextResponse.json({ error: message }, { status: 500 });
   }

@@ -687,3 +687,30 @@ Add newest entries at the top.
 - Switched to self-hosted fonts (removed `next/font/google`) and added local font loading in globals.
 - Updated Supabase types and rebuilt to address missing RPC/type exports.
 - Restored deleted `supabase/` migrations and noted remaining build issue (`/_document` not found).
+
+## 2026-02-17
+- Implemented launch-readiness baseline rate limiting in `src/middleware.ts` for all `/api/*` routes with auth/read/write/sensitive categories.
+- Extended `src/lib/rate-limit.ts` with IP helpers, bypass rules for unknown/loopback IPs, and standardized limits.
+- Added auth endpoint throttling to `/api/auth/nonce` and `/api/auth/link-wallet`.
+- Added nonce cleanup scheduler migration: `supabase/migrations/20260217121000_schedule_wallet_nonce_cleanup.sql`.
+- Added deployment artifacts: `vercel.json`, `.github/workflows/ci.yml`, and `/api/health`.
+- Restricted `next.config.js` remote image hosts to explicit domains.
+- Added production deployment checklist to `README.md`.
+- Added shared `src/lib/logger.ts` and replaced API route `console.error` usage with `logger.error` across API handlers.
+- Added execution breakdown doc: `docs/plans/2026-02-17-launch-readiness-execution.md`.
+- Added Sentry baseline integration via `src/lib/sentry.ts` using `@sentry/node` + `@sentry/profiling-node`.
+- Updated logger to send captured exceptions/messages to Sentry when DSN env vars are configured.
+- Added Sentry and rate-limit env keys to `.env.local.example` and README deployment checklist.
+- Added optional Upstash Redis REST rate-limiting backend with automatic in-memory fallback.
+- Upgraded Sentry to full Next.js SDK wiring (`@sentry/nextjs`) with:
+  - `src/instrumentation.ts` + `src/instrumentation-client.ts`
+  - `src/sentry.server.config.ts` + `src/sentry.edge.config.ts`
+  - root error boundary `src/app/global-error.tsx`
+  - `withSentryConfig` integration in `next.config.js`
+- Migrated `src/lib/sentry.ts` to use `@sentry/nextjs` capture APIs and added shared settings helper (`src/lib/sentry-settings.ts`).
+- Ran launch QA checks:
+  - `tests/phase16-disputes-api.spec.ts` passed
+  - `tests/phase16-disputes-ui.spec.ts` passed (includes notifications endpoint check)
+  - hardened `tests/profile.spec.ts` (fixture user + Supabase session-cookie auth) and rerun passed
+  - proposal lifecycle API smoke passed (create -> vote -> finalize)
+  - stabilized `tests/phase2-tasks-ui.spec.ts` by replacing UI form login with Supabase session-cookie auth bootstrap; rerun passed in ~45s

@@ -1,0 +1,16 @@
+import * as Sentry from '@sentry/nextjs';
+import {
+  getSentryDsn,
+  getSentryEnvironment,
+  parseSampleRate,
+} from './lib/sentry-settings';
+
+const dsn = getSentryDsn();
+
+Sentry.init({
+  dsn,
+  enabled: Boolean(dsn),
+  environment: getSentryEnvironment(),
+  tracesSampleRate: parseSampleRate(process.env.SENTRY_TRACES_SAMPLE_RATE, 0.1),
+  profilesSampleRate: parseSampleRate(process.env.SENTRY_PROFILES_SAMPLE_RATE, 0),
+});

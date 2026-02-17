@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { updateProposalSchema } from '@/features/proposals/schemas';
 import { parseJsonBody } from '@/lib/parse-json-body';
+import { logger } from '@/lib/logger';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -38,7 +39,7 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Error fetching proposal:', error);
+    logger.error('Error fetching proposal:', error);
     return NextResponse.json({ error: 'Failed to fetch proposal' }, { status: 500 });
   }
 }
@@ -153,7 +154,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Error updating proposal:', error);
+    logger.error('Error updating proposal:', error);
     return NextResponse.json({ error: 'Failed to update proposal' }, { status: 500 });
   }
 }
@@ -183,7 +184,7 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error deleting proposal:', error);
+    logger.error('Error deleting proposal:', error);
     return NextResponse.json({ error: 'Failed to delete proposal' }, { status: 500 });
   }
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { logger } from '@/lib/logger';
 
 /**
  * POST /api/disputes/[id]/assign
@@ -102,7 +103,7 @@ export async function POST(
 
     return NextResponse.json({ data: updated });
   } catch (error) {
-    console.error('Error assigning arbitrator:', error);
+    logger.error('Error assigning arbitrator:', error);
     return NextResponse.json(
       { error: 'Failed to assign arbitrator' },
       { status: 500 }
@@ -188,7 +189,7 @@ export async function DELETE(
 
     return NextResponse.json({ data: updated });
   } catch (error) {
-    console.error('Error recusing arbitrator:', error);
+    logger.error('Error recusing arbitrator:', error);
     return NextResponse.json(
       { error: 'Failed to recuse arbitrator' },
       { status: 500 }

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { logger } from '@/lib/logger';
 
 // GET - Calculate effective voting power for a user on a proposal
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -57,7 +58,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       .eq('delegate_id', targetUserId);
 
     if (delError) {
-      console.error('Error fetching delegations:', delError);
+      logger.error('Error fetching delegations:', delError);
       return NextResponse.json({ error: 'Failed to fetch delegations' }, { status: 500 });
     }
 
@@ -76,7 +77,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         .in('id', delegatorIds);
 
       if (delegatorProfilesError) {
-        console.error('Error fetching delegator profiles:', delegatorProfilesError);
+        logger.error('Error fetching delegator profiles:', delegatorProfilesError);
         return NextResponse.json({ error: 'Failed to fetch delegator profiles' }, { status: 500 });
       }
 
@@ -91,7 +92,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         .in('voter_id', delegatorIds);
 
       if (directVotesError) {
-        console.error('Error fetching direct votes:', directVotesError);
+        logger.error('Error fetching direct votes:', directVotesError);
         return NextResponse.json(
           { error: 'Failed to fetch direct votes for delegators' },
           { status: 500 }
@@ -116,7 +117,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
           .in('wallet_pubkey', walletPubkeys);
 
         if (snapshotError) {
-          console.error('Error fetching delegator snapshots:', snapshotError);
+          logger.error('Error fetching delegator snapshots:', snapshotError);
           return NextResponse.json(
             { error: 'Failed to fetch snapshot balances for delegators' },
             { status: 500 }
@@ -147,7 +148,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       delegator_count: delegatorCount,
     });
   } catch (error) {
-    console.error('Effective power error:', error);
+    logger.error('Effective power error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { parseJsonBody } from '@/lib/parse-json-body';
 import { completeSprintSchema } from '@/features/sprints/schemas';
+import { logger } from '@/lib/logger';
 
 const SPRINT_COLUMNS =
   'id, name, status, start_at, end_at, goal, capacity_points, reward_pool, org_id, created_at, updated_at';
@@ -144,7 +145,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       .single();
 
     if (snapError) {
-      console.error('Error creating sprint snapshot:', snapError);
+      logger.error('Error creating sprint snapshot:', snapError);
       return NextResponse.json({ error: 'Failed to create sprint snapshot' }, { status: 500 });
     }
 
@@ -159,7 +160,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
           .in('id', incompleteIds);
 
         if (backlogError) {
-          console.error('Error moving tasks to backlog:', backlogError);
+          logger.error('Error moving tasks to backlog:', backlogError);
           return NextResponse.json(
             { error: 'Failed to move incomplete tasks to backlog' },
             { status: 500 }
@@ -172,7 +173,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
           .in('id', incompleteIds);
 
         if (moveError) {
-          console.error('Error moving tasks to next sprint:', moveError);
+          logger.error('Error moving tasks to next sprint:', moveError);
           return NextResponse.json(
             { error: 'Failed to move incomplete tasks to next sprint' },
             { status: 500 }
@@ -202,7 +203,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     );
 
     if (escalationError) {
-      console.error('Error auto-escalating sprint disputes:', escalationError);
+      logger.error('Error auto-escalating sprint disputes:', escalationError);
     } else if (Array.isArray(escalationData) && escalationData.length > 0) {
       disputesEscalated = escalationData[0]?.escalated_count ?? 0;
       adminDisputeExtensions = escalationData[0]?.admin_extended_count ?? 0;
@@ -220,7 +221,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       );
 
       if (cloneError) {
-        console.error('Error cloning recurring templates:', cloneError);
+        logger.error('Error cloning recurring templates:', cloneError);
       } else {
         recurringTasksCloned = cloneResult ?? 0;
       }
@@ -235,7 +236,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       );
 
       if (distError) {
-        console.error('Error distributing epoch rewards:', distError);
+        logger.error('Error distributing epoch rewards:', distError);
       } else {
         epochDistributions = distCount ?? 0;
       }
@@ -250,7 +251,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       admin_dispute_extensions: adminDisputeExtensions,
     });
   } catch (error) {
-    console.error('Sprint complete error:', error);
+    logger.error('Sprint complete error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

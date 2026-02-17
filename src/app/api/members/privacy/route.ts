@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { updatePrivacySchema } from '@/features/members/schemas';
 import { parseJsonBody } from '@/lib/parse-json-body';
+import { logger } from '@/lib/logger';
 
 export async function PATCH(request: NextRequest) {
   try {
@@ -33,13 +34,13 @@ export async function PATCH(request: NextRequest) {
       .eq('id', user.id);
 
     if (error) {
-      console.error('Privacy update error:', error);
+      logger.error('Privacy update error:', error);
       return NextResponse.json({ error: 'Failed to update privacy' }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
   } catch (err) {
-    console.error('Privacy API error:', err);
+    logger.error('Privacy API error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

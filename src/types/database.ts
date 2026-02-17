@@ -505,6 +505,42 @@ export type Database = {
           },
         ]
       }
+      market_snapshots: {
+        Row: {
+          error_count: number
+          expires_at: string
+          fetched_at: string
+          key: string
+          last_error: string | null
+          payload: Json
+          provider: string
+          stale_until: string
+          updated_at: string
+        }
+        Insert: {
+          error_count?: number
+          expires_at: string
+          fetched_at: string
+          key: string
+          last_error?: string | null
+          payload?: Json
+          provider?: string
+          stale_until: string
+          updated_at?: string
+        }
+        Update: {
+          error_count?: number
+          expires_at?: string
+          fetched_at?: string
+          key?: string
+          last_error?: string | null
+          payload?: Json
+          provider?: string
+          stale_until?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       notification_preferences: {
         Row: {
           category: Database["public"]["Enums"]["notification_category"]

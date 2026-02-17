@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import type { RewardsConfig } from '@/features/rewards';
 import { DEFAULT_REWARDS_CONFIG } from '@/features/rewards';
+import { logger } from '@/lib/logger';
 
 function parseRewardsConfig(value: unknown): RewardsConfig {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
@@ -107,7 +108,7 @@ export async function GET() {
       claim_requires_wallet: config.claim_requires_wallet,
     });
   } catch (err) {
-    console.error('Rewards GET error:', err);
+    logger.error('Rewards GET error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

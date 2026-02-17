@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { logger } from '@/lib/logger';
 
 export async function POST(request: Request) {
   try {
@@ -81,7 +82,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ url: publicUrl });
   } catch (error) {
-    console.error('Avatar upload error:', error);
+    logger.error('Avatar upload error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

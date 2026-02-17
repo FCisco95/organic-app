@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { parseJsonBody } from '@/lib/parse-json-body';
 import { updateMemberRoleSchema } from '@/features/members/schemas';
+import { logger } from '@/lib/logger';
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -49,13 +50,13 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       .eq('id', memberId);
 
     if (error) {
-      console.error('Role update error:', error);
+      logger.error('Role update error:', error);
       return NextResponse.json({ error: 'Failed to update role' }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
   } catch (err) {
-    console.error('Role update API error:', err);
+    logger.error('Role update API error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

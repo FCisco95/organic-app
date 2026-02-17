@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { parseJsonBody } from '@/lib/parse-json-body';
 import { updateTemplateSchema } from '@/features/tasks/schemas';
+import { logger } from '@/lib/logger';
 
 const TASK_TEMPLATE_COLUMNS =
   'id, name, description, task_type, priority, base_points, labels, is_team_task, max_assignees, default_assignee_id, is_recurring, recurrence_rule, org_id, created_by, created_at, updated_at';
@@ -33,7 +34,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
     return NextResponse.json({ template });
   } catch (error) {
-    console.error('Template GET error:', error);
+    logger.error('Template GET error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -84,13 +85,13 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       .single();
 
     if (error) {
-      console.error('Error updating template:', error);
+      logger.error('Error updating template:', error);
       return NextResponse.json({ error: 'Failed to update template' }, { status: 500 });
     }
 
     return NextResponse.json({ template });
   } catch (error) {
-    console.error('Template PATCH error:', error);
+    logger.error('Template PATCH error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -123,13 +124,13 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     const { error } = await supabase.from('task_templates').delete().eq('id', id);
 
     if (error) {
-      console.error('Error deleting template:', error);
+      logger.error('Error deleting template:', error);
       return NextResponse.json({ error: 'Failed to delete template' }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Template DELETE error:', error);
+    logger.error('Template DELETE error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

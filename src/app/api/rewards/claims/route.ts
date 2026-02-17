@@ -3,8 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { submitClaimSchema, claimFilterSchema } from '@/features/rewards/schemas';
 import type { RewardsConfig } from '@/features/rewards';
 import { DEFAULT_REWARDS_CONFIG } from '@/features/rewards';
-import { applyRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { parseJsonBody } from '@/lib/parse-json-body';
+import { logger } from '@/lib/logger';
 
 function parseRewardsConfig(value: unknown): RewardsConfig {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
@@ -87,7 +87,7 @@ export async function GET(request: NextRequest) {
     const { data: claims, count, error } = await query;
 
     if (error) {
-      console.error('Claims query error:', error);
+      logger.error('Claims query error:', error);
       return NextResponse.json({ error: 'Failed to fetch claims' }, { status: 500 });
     }
 
@@ -114,7 +114,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ claims: mapped, total: count ?? 0 });
   } catch (err) {
-    console.error('Claims GET error:', err);
+    logger.error('Claims GET error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -131,10 +131,6 @@ export async function POST(request: NextRequest) {
     if (authError || !user) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
-
-    // Rate limit: 5 claims per minute per user
-    const rateLimited = applyRateLimit(`claim:${user.id}`, RATE_LIMITS.rewardClaim);
-    if (rateLimited) return rateLimited;
 
     const { data: body, error: jsonError } = await parseJsonBody(request);
     if (jsonError) {
@@ -215,7 +211,7 @@ export async function POST(request: NextRequest) {
       .maybeSingle();
 
     if (updateError) {
-      console.error('Points deduction error:', updateError);
+      logger.error('Points deduction error:', updateError);
       return NextResponse.json({ error: 'Failed to deduct points' }, { status: 500 });
     }
 
@@ -249,16 +245,16 @@ export async function POST(request: NextRequest) {
         .eq('claimable_points', expectedAfter); // only refund if balance unchanged since deduction
 
       if (refundError) {
-        console.error('CRITICAL: Points refund failed after claim insert error. User:', user.id, 'Amount:', points_amount, 'Refund error:', refundError);
+        logger.error('CRITICAL: Points refund failed after claim insert error. User:', user.id, 'Amount:', points_amount, 'Refund error:', refundError);
       }
 
-      console.error('Claim insert error:', claimError);
+      logger.error('Claim insert error:', claimError);
       return NextResponse.json({ error: 'Failed to create claim' }, { status: 500 });
     }
 
     return NextResponse.json({ claim }, { status: 201 });
   } catch (err) {
-    console.error('Claims POST error:', err);
+    logger.error('Claims POST error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

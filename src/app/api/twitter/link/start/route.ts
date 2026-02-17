@@ -6,6 +6,7 @@ import { TwitterClient } from '@/lib/twitter/client';
 import { resolveTwitterRedirectUri } from '@/lib/twitter/config';
 import { generatePkcePair } from '@/lib/twitter/pkce';
 import { parseJsonBody } from '@/lib/parse-json-body';
+import { logger } from '@/lib/logger';
 
 const startTwitterLinkSchema = z
   .object({
@@ -80,7 +81,7 @@ export async function POST(request: Request) {
       expires_at: expiresAt,
     });
   } catch (error: unknown) {
-    console.error('Error starting Twitter OAuth flow:', error);
+    logger.error('Error starting Twitter OAuth flow:', error);
     const message = error instanceof Error ? error.message : 'Internal server error';
     return NextResponse.json({ error: message }, { status: 500 });
   }

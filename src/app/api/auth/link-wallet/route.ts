@@ -4,6 +4,8 @@ import { PublicKey } from '@solana/web3.js';
 import bs58 from 'bs58';
 import nacl from 'tweetnacl';
 import { parseJsonBody } from '@/lib/parse-json-body';
+import { applyIpRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
+import { logger } from '@/lib/logger';
 
 // Extract nonce from the signed message
 function extractNonceFromMessage(message: string): string | null {
@@ -13,6 +15,11 @@ function extractNonceFromMessage(message: string): string | null {
 
 export async function POST(request: Request) {
   try {
+    const rateLimited = await applyIpRateLimit(request, 'auth:link-wallet', RATE_LIMITS.auth);
+    if (rateLimited) {
+      return rateLimited;
+    }
+
     const parsedBody = await parseJsonBody<{
       walletAddress?: string;
       signature?: string;
@@ -126,7 +133,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, walletAddress });
   } catch (error) {
-    console.error('Link wallet error:', error);
+    logger.error('Link wallet error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

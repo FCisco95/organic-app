@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { parseJsonBody } from '@/lib/parse-json-body';
 import type { Database } from '@/types/database';
+import { logger } from '@/lib/logger';
 
 const SPRINT_COLUMNS =
   'id, org_id, name, start_at, end_at, status, capacity_points, goal, created_at, updated_at';
@@ -40,7 +41,7 @@ export async function GET(request: Request) {
       pagination: { page, limit, total: count ?? 0, hasMore: offset + limit < (count ?? 0) },
     });
   } catch (error) {
-    console.error('Sprints GET error:', error);
+    logger.error('Sprints GET error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -113,7 +114,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ sprint });
   } catch (error) {
-    console.error('Sprints POST error:', error);
+    logger.error('Sprints POST error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

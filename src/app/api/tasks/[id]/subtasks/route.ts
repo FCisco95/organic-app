@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createSubtaskSchema } from '@/features/tasks/schemas';
 import { parseJsonBody } from '@/lib/parse-json-body';
+import { logger } from '@/lib/logger';
 
 // GET - Fetch subtasks for a parent task
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -32,7 +33,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       .order('created_at', { ascending: true });
 
     if (error) {
-      console.error('Error fetching subtasks:', error);
+      logger.error('Error fetching subtasks:', error);
       return NextResponse.json({ error: 'Failed to fetch subtasks' }, { status: 500 });
     }
 
@@ -49,7 +50,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       },
     });
   } catch (error) {
-    console.error('Subtasks GET error:', error);
+    logger.error('Subtasks GET error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -133,13 +134,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       .single();
 
     if (error) {
-      console.error('Error creating subtask:', error);
+      logger.error('Error creating subtask:', error);
       return NextResponse.json({ error: 'Failed to create subtask' }, { status: 500 });
     }
 
     return NextResponse.json({ subtask }, { status: 201 });
   } catch (error) {
-    console.error('Subtasks POST error:', error);
+    logger.error('Subtasks POST error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

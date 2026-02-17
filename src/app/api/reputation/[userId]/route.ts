@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { logger } from '@/lib/logger';
 
 const XP_EVENT_COLUMNS =
   'id, user_id, event_type, source_type, source_id, xp_amount, metadata, created_at';
@@ -72,7 +73,7 @@ export async function GET(
       recent_achievements: achievements,
     });
   } catch (err) {
-    console.error('Reputation user API error:', err);
+    logger.error('Reputation user API error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

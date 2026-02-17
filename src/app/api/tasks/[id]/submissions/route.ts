@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 import { Database } from '@/types/database';
-import { applyRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { parseJsonBody } from '@/lib/parse-json-body';
+import { logger } from '@/lib/logger';
 
 // Validation schemas
 const developmentSubmissionSchema = z.object({
@@ -146,7 +146,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
     return NextResponse.json({ submissions: enrichedSubmissions });
   } catch (error) {
-    console.error('Submissions GET error:', error);
+    logger.error('Submissions GET error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -166,10 +166,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     if (authError || !user) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
-
-    // Rate limit: 10 submissions per minute per user
-    const rateLimited = applyRateLimit(`submission:${user.id}`, RATE_LIMITS.taskSubmission);
-    if (rateLimited) return rateLimited;
 
     // Get the task
     const { data: task, error: taskError } = await supabase
@@ -424,7 +420,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
     return NextResponse.json({ submission }, { status: 201 });
   } catch (error) {
-    console.error('Submissions POST error:', error);
+    logger.error('Submissions POST error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

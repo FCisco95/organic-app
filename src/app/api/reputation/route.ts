@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { logger } from '@/lib/logger';
 
 const achievementCheckByUser = new Map<string, number>();
 const ACHIEVEMENT_CHECK_TTL_MS = 5 * 60 * 1000;
@@ -101,7 +102,7 @@ export async function GET(request: NextRequest) {
       recent_achievements: achievements,
     });
   } catch (err) {
-    console.error('Reputation API error:', err);
+    logger.error('Reputation API error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

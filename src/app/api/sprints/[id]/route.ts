@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import type { Database } from '@/types/database';
 import { createClient } from '@/lib/supabase/server';
 import { parseJsonBody } from '@/lib/parse-json-body';
+import { logger } from '@/lib/logger';
 
 const SPRINT_COLUMNS =
   'id, org_id, name, start_at, end_at, status, capacity_points, goal, created_at, updated_at';
@@ -86,7 +87,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       snapshot,
     });
   } catch (error) {
-    console.error('Sprint GET error:', error);
+    logger.error('Sprint GET error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -155,7 +156,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
     return NextResponse.json({ sprint });
   } catch (error) {
-    console.error('Sprint PATCH error:', error);
+    logger.error('Sprint PATCH error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -194,7 +195,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Sprint DELETE error:', error);
+    logger.error('Sprint DELETE error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

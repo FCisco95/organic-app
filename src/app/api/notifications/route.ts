@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { notificationFiltersSchema } from '@/features/notifications/schemas';
+import { logger } from '@/lib/logger';
 
 const NOTIFICATION_SELECT_COLUMNS =
   'id, user_id, event_type, category, actor_id, subject_type, subject_id, metadata, read, read_at, created_at, batch_id';
@@ -86,7 +87,7 @@ export async function GET(request: NextRequest) {
 
       const result = await q;
       if (result.error) {
-        console.error('Notifications query error:', result.error);
+        logger.error('Notifications query error:', result.error);
         return NextResponse.json({ error: 'Failed to fetch notifications' }, { status: 500 });
       }
       rows = (result.data ?? []) as unknown as Record<string, unknown>[];
@@ -159,7 +160,7 @@ export async function GET(request: NextRequest) {
       unread_count: unreadCount ?? 0,
     });
   } catch (err) {
-    console.error('Notifications API error:', err);
+    logger.error('Notifications API error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -183,13 +184,13 @@ export async function PATCH() {
       .eq('read', false);
 
     if (error) {
-      console.error('Mark all read error:', error);
+      logger.error('Mark all read error:', error);
       return NextResponse.json({ error: 'Failed to mark all as read' }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
   } catch (err) {
-    console.error('Mark all read API error:', err);
+    logger.error('Mark all read API error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

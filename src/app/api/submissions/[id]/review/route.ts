@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { parseJsonBody } from '@/lib/parse-json-body';
 import { z } from 'zod';
+import { logger } from '@/lib/logger';
 
 const QUALITY_MULTIPLIERS: Record<number, number> = {
   1: 0.2,
@@ -115,7 +116,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       .single();
 
     if (updateError) {
-      console.error('Error updating submission:', updateError);
+      logger.error('Error updating submission:', updateError);
       return NextResponse.json({ error: 'Failed to review submission' }, { status: 500 });
     }
 
@@ -136,7 +137,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         .eq('submission_id', submissionId);
 
       if (twitterUpdateError) {
-        console.error('Error updating twitter engagement submission verification:', twitterUpdateError);
+        logger.error('Error updating twitter engagement submission verification:', twitterUpdateError);
         return NextResponse.json(
           { error: 'Failed to update twitter engagement verification state' },
           { status: 500 }
@@ -161,7 +162,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       });
 
       if (taskCompletedLogError) {
-        console.error('Error logging task_completed activity:', taskCompletedLogError);
+        logger.error('Error logging task_completed activity:', taskCompletedLogError);
         return NextResponse.json({ error: 'Failed to log task completion' }, { status: 500 });
       }
 
@@ -171,7 +172,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       });
 
       if (achievementError) {
-        console.error('Error checking achievements:', achievementError);
+        logger.error('Error checking achievements:', achievementError);
         return NextResponse.json({ error: 'Failed to check achievements' }, { status: 500 });
       }
 
@@ -183,7 +184,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
           .eq('id', submission.task_id);
 
         if (markDoneError) {
-          console.error('Error marking task as done:', markDoneError);
+          logger.error('Error marking task as done:', markDoneError);
           return NextResponse.json({ error: 'Failed to mark task as done' }, { status: 500 });
         }
       }
@@ -194,7 +195,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       submission: updatedSubmission,
     });
   } catch (error: unknown) {
-    console.error('Error reviewing submission:', error);
+    logger.error('Error reviewing submission:', error);
     const message = error instanceof Error ? error.message : 'Internal server error';
     return NextResponse.json({ error: message }, { status: 500 });
   }

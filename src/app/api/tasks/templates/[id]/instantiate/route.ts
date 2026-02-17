@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { parseJsonBody } from '@/lib/parse-json-body';
 import { z } from 'zod';
+import { logger } from '@/lib/logger';
 
 const TASK_TEMPLATE_INSTANTIATE_COLUMNS =
   'id, name, description, task_type, priority, base_points, labels, is_team_task, max_assignees, default_assignee_id';
@@ -96,13 +97,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       .single();
 
     if (error) {
-      console.error('Error instantiating template:', error);
+      logger.error('Error instantiating template:', error);
       return NextResponse.json({ error: 'Failed to create task from template' }, { status: 500 });
     }
 
     return NextResponse.json({ task }, { status: 201 });
   } catch (error) {
-    console.error('Template instantiate error:', error);
+    logger.error('Template instantiate error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

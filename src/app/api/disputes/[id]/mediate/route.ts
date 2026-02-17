@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { mediateDisputeSchema } from '@/features/disputes/schemas';
 import { parseJsonBody } from '@/lib/parse-json-body';
+import { logger } from '@/lib/logger';
 
 const MEDIATION_PROPOSAL_PREFIX = 'Mediation proposal (pending): ';
 
@@ -121,7 +122,7 @@ export async function POST(
 
       if (commentError) {
         // Revert dispute status since the proposal comment is required for the mediation flow
-        console.error('Mediation proposal comment failed, reverting dispute status:', id, commentError);
+        logger.error('Mediation proposal comment failed, reverting dispute status:', id, commentError);
         await supabase
           .from('disputes')
           .update({ status: dispute.status, tier: dispute.tier })
@@ -162,12 +163,12 @@ export async function POST(
     });
 
     if (confirmCommentError) {
-      console.error('Non-critical: Failed to insert mediation confirmation comment:', id, confirmCommentError);
+      logger.error('Non-critical: Failed to insert mediation confirmation comment:', id, confirmCommentError);
     }
 
     return NextResponse.json({ data: updated });
   } catch (error) {
-    console.error('Error mediating dispute:', error);
+    logger.error('Error mediating dispute:', error);
     return NextResponse.json(
       { error: 'Failed to mediate dispute' },
       { status: 500 }

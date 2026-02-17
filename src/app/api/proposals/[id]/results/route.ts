@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { VoteTally, VoteResults } from '@/features/voting/types';
+import { logger } from '@/lib/logger';
 
 const RESPONSE_CACHE_CONTROL = 'public, s-maxage=15, stale-while-revalidate=30';
 const VOTING_CONFIG_TTL_MS = 5 * 60 * 1000;
@@ -36,7 +37,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     );
 
     if (tallyError) {
-      console.error('Error fetching vote tally:', tallyError);
+      logger.error('Error fetching vote tally:', tallyError);
       return NextResponse.json({ error: 'Failed to fetch votes' }, { status: 500 });
     }
 
@@ -126,7 +127,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       headers: { 'Cache-Control': RESPONSE_CACHE_CONTROL },
     });
   } catch (error) {
-    console.error('Error fetching results:', error);
+    logger.error('Error fetching results:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

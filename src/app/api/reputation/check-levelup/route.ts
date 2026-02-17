@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { logger } from '@/lib/logger';
 
 export async function POST() {
   try {
@@ -46,7 +47,7 @@ export async function POST() {
       newLevel,
     });
   } catch (err) {
-    console.error('Level-up check API error:', err);
+    logger.error('Level-up check API error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

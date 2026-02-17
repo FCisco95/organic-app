@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { logger } from '@/lib/logger';
 
 const ACHIEVEMENT_COLUMNS =
   'id, name, description, icon, category, condition_type, condition_field, condition_threshold, xp_reward, created_at';
@@ -52,7 +53,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ achievements: result });
   } catch (error) {
-    console.error('Achievements GET error:', error);
+    logger.error('Achievements GET error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

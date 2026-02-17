@@ -19,6 +19,6 @@ export function useAnalytics() {
     },
     staleTime: 300_000, // 5 minutes — analytics data is slow-changing
     refetchInterval: 300_000,
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
   });
 }

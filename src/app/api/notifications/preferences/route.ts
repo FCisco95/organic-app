@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { updatePreferenceSchema } from '@/features/notifications/schemas';
 import type { NotificationCategory } from '@/features/notifications/types';
 import { parseJsonBody } from '@/lib/parse-json-body';
+import { logger } from '@/lib/logger';
 
 const PREFERENCE_COLUMNS = 'id, user_id, category, in_app, email, created_at, updated_at';
 
@@ -35,7 +36,7 @@ export async function GET() {
       .order('category', { ascending: true });
 
     if (error) {
-      console.error('Preferences query error:', error);
+      logger.error('Preferences query error:', error);
       return NextResponse.json({ error: 'Failed to fetch preferences' }, { status: 500 });
     }
 
@@ -57,7 +58,7 @@ export async function GET() {
         .select(PREFERENCE_COLUMNS);
 
       if (insertError) {
-        console.error('Seed preferences error:', insertError);
+        logger.error('Seed preferences error:', insertError);
       }
 
       return NextResponse.json({
@@ -67,7 +68,7 @@ export async function GET() {
 
     return NextResponse.json({ preferences: existing ?? [] });
   } catch (err) {
-    console.error('Preferences API error:', err);
+    logger.error('Preferences API error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -118,13 +119,13 @@ export async function PATCH(request: Request) {
       .single();
 
     if (error) {
-      console.error('Update preference error:', error);
+      logger.error('Update preference error:', error);
       return NextResponse.json({ error: 'Failed to update preference' }, { status: 500 });
     }
 
     return NextResponse.json({ preference: data });
   } catch (err) {
-    console.error('Update preference API error:', err);
+    logger.error('Update preference API error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

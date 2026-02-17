@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { parseJsonBody } from '@/lib/parse-json-body';
+import { logger } from '@/lib/logger';
 
 const ORG_COLUMNS =
   'id, name, slug, description, logo_url, theme, token_symbol, token_mint, token_decimals, token_total_supply, treasury_wallet, treasury_allocations, organic_id_threshold, default_sprint_duration_days, default_sprint_capacity, rewards_config, created_at, updated_at';
@@ -37,7 +38,7 @@ export async function GET() {
       },
     });
   } catch (err) {
-    console.error('Settings GET error:', err);
+    logger.error('Settings GET error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -108,7 +109,7 @@ export async function PATCH(request: NextRequest) {
       const { error: orgError } = await supabase.from('orgs').update(orgUpdate).eq('id', org.id);
 
       if (orgError) {
-        console.error('Org update error:', orgError);
+        logger.error('Org update error:', orgError);
         return NextResponse.json({ error: 'Failed to update organization' }, { status: 500 });
       }
     }
@@ -121,7 +122,7 @@ export async function PATCH(request: NextRequest) {
         .eq('org_id', org.id);
 
       if (votingError) {
-        console.error('Voting config update error:', votingError);
+        logger.error('Voting config update error:', votingError);
         return NextResponse.json(
           { error: 'Failed to update governance settings' },
           { status: 500 }
@@ -131,7 +132,7 @@ export async function PATCH(request: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (err) {
-    console.error('Settings PATCH error:', err);
+    logger.error('Settings PATCH error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

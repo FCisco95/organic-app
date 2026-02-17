@@ -3,8 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { createDisputeSchema, disputeFilterSchema } from '@/features/disputes/schemas';
 import type { DisputeConfig } from '@/features/disputes/types';
 import { DEFAULT_DISPUTE_CONFIG } from '@/features/disputes/types';
-import { applyRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { parseJsonBody } from '@/lib/parse-json-body';
+import { logger } from '@/lib/logger';
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const MAX_EVIDENCE_FILES = 5;
@@ -182,7 +182,7 @@ export async function GET(request: NextRequest) {
       pagination: { page, limit, hasMore: offset + limit < (count ?? 0) },
     });
   } catch (error) {
-    console.error('Error fetching disputes:', error);
+    logger.error('Error fetching disputes:', error);
     return NextResponse.json({ error: 'Failed to fetch disputes' }, { status: 500 });
   }
 }
@@ -202,10 +202,6 @@ export async function POST(request: NextRequest) {
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    // Rate limit: 3 disputes per minute per user
-    const rateLimited = applyRateLimit(`dispute:${user.id}`, RATE_LIMITS.disputeCreate);
-    if (rateLimited) return rateLimited;
 
     // Get user profile
     const { data: profile, error: profileError } = await supabase
@@ -425,7 +421,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ data: dispute }, { status: 201 });
   } catch (error) {
-    console.error('Error creating dispute:', error);
+    logger.error('Error creating dispute:', error);
     return NextResponse.json({ error: 'Failed to create dispute' }, { status: 500 });
   }
 }

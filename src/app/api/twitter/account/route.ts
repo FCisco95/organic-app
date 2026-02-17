@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
+import { logger } from '@/lib/logger';
 
 const ACCOUNT_SELECT_COLUMNS =
   'id, user_id, twitter_user_id, twitter_username, display_name, profile_image_url, scope, verified_at, created_at, updated_at, is_active';
@@ -48,7 +49,7 @@ export async function GET() {
       },
     });
   } catch (error: unknown) {
-    console.error('Error fetching Twitter account:', error);
+    logger.error('Error fetching Twitter account:', error);
     const message = error instanceof Error ? error.message : 'Internal server error';
     return NextResponse.json({ error: message }, { status: 500 });
   }
@@ -86,7 +87,7 @@ export async function DELETE() {
 
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
-    console.error('Error unlinking Twitter account:', error);
+    logger.error('Error unlinking Twitter account:', error);
     const message = error instanceof Error ? error.message : 'Internal server error';
     return NextResponse.json({ error: message }, { status: 500 });
   }

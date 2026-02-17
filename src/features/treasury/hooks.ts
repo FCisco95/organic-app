@@ -19,6 +19,6 @@ export function useTreasury() {
     },
     staleTime: 300_000, // 5 minutes — on-chain data doesn't change that fast
     refetchInterval: 300_000,
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
   });
 }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { distributionFilterSchema } from '@/features/rewards/schemas';
+import { logger } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -58,7 +59,7 @@ export async function GET(request: NextRequest) {
     const { data: distributions, count, error } = await query;
 
     if (error) {
-      console.error('Distributions query error:', error);
+      logger.error('Distributions query error:', error);
       return NextResponse.json({ error: 'Failed to fetch distributions' }, { status: 500 });
     }
 
@@ -103,7 +104,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ distributions: mapped, total: count ?? 0 });
   } catch (err) {
-    console.error('Distributions GET error:', err);
+    logger.error('Distributions GET error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

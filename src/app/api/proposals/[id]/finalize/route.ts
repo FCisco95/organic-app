@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { finalizeVotingSchema } from '@/features/voting/schemas';
 import { ProposalResult } from '@/types/database';
 import { parseJsonBody } from '@/lib/parse-json-body';
+import { logger } from '@/lib/logger';
 
 const PROPOSAL_FINALIZE_COLUMNS =
   'id, title, status, voting_ends_at, total_circulating_supply, quorum_required, approval_threshold, result';
@@ -200,7 +201,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       },
     });
   } catch (error) {
-    console.error('Proposal finalize error:', error);
+    logger.error('Proposal finalize error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

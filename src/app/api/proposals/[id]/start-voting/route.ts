@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { getAllTokenHolders } from '@/lib/solana';
 import { startVotingSchema } from '@/features/voting/schemas';
 import { parseJsonBody } from '@/lib/parse-json-body';
+import { logger } from '@/lib/logger';
 
 const START_VOTING_CONFIG_COLUMNS = 'quorum_percentage, approval_threshold, voting_duration_days';
 const START_VOTING_PROPOSAL_COLUMNS = 'id, title, status';
@@ -168,7 +169,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       voting_ends_at: votingEndsAt.toISOString(),
     });
   } catch (error) {
-    console.error('Start voting error:', error);
+    logger.error('Start voting error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

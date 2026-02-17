@@ -4,6 +4,7 @@ import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { TwitterClient, type TwitterTokenResponse, type TwitterUserInfo } from '@/lib/twitter/client';
 import { resolveAppOrigin, resolveTwitterRedirectUri } from '@/lib/twitter/config';
 import { withAtPrefix } from '@/lib/twitter/utils';
+import { logger } from '@/lib/logger';
 
 function buildProfileRedirect(origin: string, linked: boolean, reason?: string): URL {
   const target = new URL('/profile', origin);
@@ -20,7 +21,7 @@ export async function GET(request: Request) {
     try {
       return resolveAppOrigin({ fallbackOrigin: requestUrl.origin });
     } catch (error) {
-      console.error('Error resolving app origin for Twitter OAuth callback:', error);
+      logger.error('Error resolving app origin for Twitter OAuth callback:', error);
       return requestUrl.origin;
     }
   })();
@@ -64,7 +65,7 @@ export async function GET(request: Request) {
     try {
       redirectUri = resolveTwitterRedirectUri({ fallbackOrigin: appOrigin });
     } catch (error) {
-      console.error('Error resolving Twitter redirect URI:', error);
+      logger.error('Error resolving Twitter redirect URI:', error);
       return NextResponse.redirect(buildProfileRedirect(appOrigin, false, 'redirect_uri_config_failed'));
     }
 
@@ -73,7 +74,7 @@ export async function GET(request: Request) {
     try {
       tokenResponse = await twitterClient.exchangeCodeForToken(code, oauthSession.code_verifier);
     } catch (error) {
-      console.error('Error exchanging Twitter OAuth code for token:', error);
+      logger.error('Error exchanging Twitter OAuth code for token:', error);
       return NextResponse.redirect(buildProfileRedirect(appOrigin, false, 'token_exchange_failed'));
     }
 
@@ -81,7 +82,7 @@ export async function GET(request: Request) {
     try {
       twitterProfile = await twitterClient.getUserInfo(tokenResponse.access_token);
     } catch (error) {
-      console.error('Error fetching Twitter user profile:', error);
+      logger.error('Error fetching Twitter user profile:', error);
       return NextResponse.redirect(buildProfileRedirect(appOrigin, false, 'twitter_profile_failed'));
     }
 
@@ -98,7 +99,7 @@ export async function GET(request: Request) {
         ? encryptToken(tokenResponse.refresh_token, encryptionKey)
         : null;
     } catch (error) {
-      console.error('Error encrypting Twitter tokens:', error);
+      logger.error('Error encrypting Twitter tokens:', error);
       return NextResponse.redirect(buildProfileRedirect(appOrigin, false, 'token_encryption_failed'));
     }
 
@@ -152,7 +153,7 @@ export async function GET(request: Request) {
 
     return NextResponse.redirect(buildProfileRedirect(appOrigin, true));
   } catch (error: unknown) {
-    console.error('Error handling Twitter OAuth callback:', error);
+    logger.error('Error handling Twitter OAuth callback:', error);
     return NextResponse.redirect(buildProfileRedirect(appOrigin, false, 'oauth_callback_failed'));
   }
 }

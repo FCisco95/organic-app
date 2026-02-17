@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 import { parseJsonBody } from '@/lib/parse-json-body';
+import { logger } from '@/lib/logger';
 
 const statusChangeSchema = z.object({
   status: z.enum(['approved', 'rejected', 'voting']),
@@ -101,7 +102,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Error updating proposal status:', error);
+    logger.error('Error updating proposal status:', error);
     return NextResponse.json({ error: 'Failed to update status' }, { status: 500 });
   }
 }

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { parseJsonBody } from '@/lib/parse-json-body';
+import { logger } from '@/lib/logger';
 
 // GET - Fetch comments for a task with cursor pagination
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -46,7 +47,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     const { data: comments, error } = await query;
 
     if (error) {
-      console.error('Error fetching comments:', error);
+      logger.error('Error fetching comments:', error);
       return NextResponse.json({ error: 'Failed to fetch comments' }, { status: 500 });
     }
 
@@ -59,7 +60,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       nextCursor: hasMore ? results[results.length - 1]?.created_at : null,
     });
   } catch (error) {
-    console.error('Error in comments route:', error);
+    logger.error('Error in comments route:', error);
     const message = error instanceof Error ? error.message : 'Internal server error';
     return NextResponse.json({ error: message }, { status: 500 });
   }
@@ -112,13 +113,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       .single();
 
     if (error) {
-      console.error('Error creating comment:', error);
+      logger.error('Error creating comment:', error);
       return NextResponse.json({ error: 'Failed to create comment' }, { status: 500 });
     }
 
     return NextResponse.json({ comment });
   } catch (error) {
-    console.error('Error in create comment:', error);
+    logger.error('Error in create comment:', error);
     const message = error instanceof Error ? error.message : 'Internal server error';
     return NextResponse.json({ error: message }, { status: 500 });
   }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { memberFiltersSchema } from '@/features/members/schemas';
+import { logger } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -42,7 +43,7 @@ export async function GET(request: NextRequest) {
     const { data, count, error } = await query;
 
     if (error) {
-      console.error('Members query error:', error);
+      logger.error('Members query error:', error);
       return NextResponse.json({ error: 'Failed to fetch members' }, { status: 500 });
     }
 
@@ -60,7 +61,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (err) {
-    console.error('Members API error:', err);
+    logger.error('Members API error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

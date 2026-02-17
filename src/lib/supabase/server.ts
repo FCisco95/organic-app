@@ -30,6 +30,22 @@ export async function createClient() {
   );
 }
 
+// Stateless anon client for cache-safe route handlers and server-side public queries.
+export function createAnonClient() {
+  return createServerClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return [];
+        },
+        setAll() {},
+      },
+    }
+  );
+}
+
 // Service role client for admin operations
 export function createServiceClient() {
   return createServerClient<Database>(
