@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { z } from 'zod';
+import { Database } from '@/types/database';
 
 // Validation schemas
 const developmentSubmissionSchema = z.object({
@@ -41,11 +42,19 @@ const customSubmissionSchema = z.object({
     .nullable(),
 });
 
+const twitterSubmissionSchema = z.object({
+  submission_type: z.literal('twitter'),
+  screenshot_url: z.string().url().optional().nullable(),
+  comment_text: z.string().max(10000).optional().nullable(),
+  description: z.string().max(2000).optional(),
+});
+
 const submissionSchema = z.discriminatedUnion('submission_type', [
   developmentSubmissionSchema,
   contentSubmissionSchemaBase,
   designSubmissionSchema,
   customSubmissionSchema,
+  twitterSubmissionSchema,
 ]);
 
 // GET - Fetch submissions for a task
@@ -99,7 +108,37 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       return NextResponse.json({ error: 'Failed to fetch submissions' }, { status: 500 });
     }
 
-    return NextResponse.json({ submissions });
+    if (!submissions || submissions.length === 0) {
+      return NextResponse.json({ submissions: [] });
+    }
+
+    const twitterSubmissionIds = submissions
+      .filter((submission) => submission.submission_type === 'twitter')
+      .map((submission) => submission.id);
+
+    if (twitterSubmissionIds.length === 0) {
+      return NextResponse.json({ submissions });
+    }
+
+    const { data: twitterSubmissions, error: twitterSubmissionError } = await supabase
+      .from('twitter_engagement_submissions')
+      .select('*')
+      .in('submission_id', twitterSubmissionIds);
+
+    if (twitterSubmissionError) {
+      return NextResponse.json({ error: 'Failed to fetch twitter submission details' }, { status: 500 });
+    }
+
+    const twitterSubmissionMap = new Map(
+      (twitterSubmissions ?? []).map((submission) => [submission.submission_id, submission])
+    );
+
+    const enrichedSubmissions = submissions.map((submission) => ({
+      ...submission,
+      twitter_engagement_submission: twitterSubmissionMap.get(submission.id) ?? null,
+    }));
+
+    return NextResponse.json({ submissions: enrichedSubmissions });
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
@@ -110,6 +149,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   try {
     const { id: taskId } = await params;
     const supabase = await createClient();
+    const serviceClient = createServiceClient();
 
     const {
       data: { user },
@@ -131,7 +171,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     let taskClient = supabase;
 
     if (taskError || !task) {
-      const serviceClient = createServiceClient();
       const { data: serviceTask } = await serviceClient
         .from('tasks')
         .select('id, task_type, status, base_points, points, sprint_id')
@@ -221,6 +260,96 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       );
     }
 
+    let twitterSubmissionInsert:
+      | {
+          twitter_account_id: string;
+          engagement_type: 'like' | 'retweet' | 'comment';
+          target_tweet_id: string;
+          verification_method: 'api_auto' | 'screenshot' | 'manual' | 'ai_scored';
+          screenshot_url: string | null;
+          comment_text: string | null;
+        }
+      | null = null;
+
+    let submissionInsertPayload: Record<string, unknown> = submissionData;
+
+    if (submissionData.submission_type === 'twitter') {
+      const { data: twitterTaskConfig, error: twitterTaskError } = await taskClient
+        .from('twitter_engagement_tasks')
+        .select(
+          'engagement_type, target_tweet_id, auto_verify, auto_approve, requires_ai_review, verification_window_hours'
+        )
+        .eq('task_id', taskId)
+        .maybeSingle();
+
+      if (twitterTaskError || !twitterTaskConfig) {
+        return NextResponse.json(
+          { error: 'Twitter task configuration is missing for this task' },
+          { status: 400 }
+        );
+      }
+
+      const { data: twitterAccount, error: twitterAccountError } = await taskClient
+        .from('twitter_accounts')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+        .maybeSingle();
+
+      if (twitterAccountError || !twitterAccount) {
+        return NextResponse.json(
+          { error: 'Link your Twitter/X account before submitting this task' },
+          { status: 400 }
+        );
+      }
+
+      if (!submissionData.screenshot_url) {
+        return NextResponse.json(
+          { error: 'Screenshot evidence URL is required for Twitter/X submissions' },
+          { status: 400 }
+        );
+      }
+
+      if (twitterTaskConfig.engagement_type === 'comment' && !submissionData.comment_text?.trim()) {
+        return NextResponse.json(
+          { error: 'Comment text is required for comment engagement tasks' },
+          { status: 400 }
+        );
+      }
+
+      const verificationMethod: 'api_auto' | 'screenshot' | 'manual' | 'ai_scored' =
+        twitterTaskConfig.engagement_type === 'comment' && twitterTaskConfig.requires_ai_review
+          ? 'ai_scored'
+          : twitterTaskConfig.auto_verify
+            ? 'api_auto'
+            : 'screenshot';
+
+      submissionInsertPayload = {
+        submission_type: 'twitter',
+        description: submissionData.description || null,
+        content_link: submissionData.screenshot_url || null,
+        content_text: submissionData.comment_text || null,
+        custom_fields: {
+          screenshot_url: submissionData.screenshot_url || null,
+          comment_text: submissionData.comment_text || null,
+          engagement_type: twitterTaskConfig.engagement_type,
+          target_tweet_id: twitterTaskConfig.target_tweet_id,
+          verification_method: verificationMethod,
+          auto_approve: twitterTaskConfig.auto_approve,
+          verification_window_hours: twitterTaskConfig.verification_window_hours,
+        },
+      };
+
+      twitterSubmissionInsert = {
+        twitter_account_id: twitterAccount.id,
+        engagement_type: twitterTaskConfig.engagement_type,
+        target_tweet_id: twitterTaskConfig.target_tweet_id,
+        verification_method: verificationMethod,
+        screenshot_url: submissionData.screenshot_url || null,
+        comment_text: submissionData.comment_text?.trim() || null,
+      };
+    }
+
     // Check for existing pending submission
     const { data: existingSubmission } = await supabase
       .from('task_submissions')
@@ -238,18 +367,40 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     }
 
     // Create submission
+    const taskSubmissionInsertPayload: Database['public']['Tables']['task_submissions']['Insert'] = {
+      ...(submissionInsertPayload as Database['public']['Tables']['task_submissions']['Insert']),
+      task_id: taskId,
+      user_id: user.id,
+    };
+
     const { data: submission, error: insertError } = await supabase
       .from('task_submissions')
-      .insert({
-        task_id: taskId,
-        user_id: user.id,
-        ...submissionData,
-      })
+      .insert(taskSubmissionInsertPayload)
       .select()
       .single();
 
     if (insertError) {
       return NextResponse.json({ error: 'Failed to create submission' }, { status: 500 });
+    }
+
+    if (twitterSubmissionInsert) {
+      const { error: twitterInsertError } = await serviceClient
+        .from('twitter_engagement_submissions')
+        .insert({
+          submission_id: submission.id,
+          twitter_account_id: twitterSubmissionInsert.twitter_account_id,
+          engagement_type: twitterSubmissionInsert.engagement_type,
+          target_tweet_id: twitterSubmissionInsert.target_tweet_id,
+          verification_method: twitterSubmissionInsert.verification_method,
+          screenshot_url: twitterSubmissionInsert.screenshot_url,
+          comment_text: twitterSubmissionInsert.comment_text,
+          verified: false,
+        });
+
+      if (twitterInsertError) {
+        await supabase.from('task_submissions').delete().eq('id', submission.id);
+        return NextResponse.json({ error: 'Failed to store Twitter submission evidence' }, { status: 500 });
+      }
     }
 
     // Update task status to review unless already done

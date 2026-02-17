@@ -430,7 +430,7 @@
 ### Phase 17: Integrations (Future)
 
 - [ ] Discord bot (notifications, role sync)
-- [ ] Twitter/X engagement verification
+- [x] Twitter/X engagement verification (OAuth linking, twitter task type, manual screenshot evidence, API client scaffolding)
 - [ ] GitHub contribution tracking
 - [ ] On-chain data verification (holdings/activity)
 

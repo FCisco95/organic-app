@@ -4,20 +4,25 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { useRouter } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
 import { useWallet } from '@solana/wallet-adapter-react';
+import { useSearchParams } from 'next/navigation';
 
 import { createClient } from '@/lib/supabase/client';
 import Image from 'next/image';
 import {
+  AtSign,
+  CheckCircle2,
   Edit2,
   Save,
   X,
   Upload,
   MapPin,
   Globe,
+  Loader2,
   Twitter,
   MessageCircle,
   Calendar,
   Info,
+  Unlink2,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import bs58 from 'bs58';
@@ -29,12 +34,20 @@ import { NotificationPreferences } from '@/components/notifications/notification
 // Client-side balance cache TTL (15 seconds)
 const BALANCE_CACHE_TTL_MS = 15 * 1000;
 
+type LinkedTwitterAccount = {
+  id: string;
+  twitter_username: string;
+  display_name: string | null;
+  profile_image_url: string | null;
+};
+
 export default function ProfilePage() {
   const t = useTranslations('Profile');
   const tWallet = useTranslations('Wallet');
   const { user, profile, loading, refreshProfile } = useAuth();
   const { publicKey, signMessage, connected } = useWallet();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const balanceCacheRef = useRef<Map<string, { balance: number; ts: number }>>(new Map());
   const balanceRequestRef = useRef<{ controller: AbortController | null; id: number }>({
@@ -56,6 +69,10 @@ export default function ProfilePage() {
     contributions: 0,
     pointsEarned: 0,
   });
+  const [twitterAccount, setTwitterAccount] = useState<LinkedTwitterAccount | null>(null);
+  const [twitterLoading, setTwitterLoading] = useState(false);
+  const [twitterLinking, setTwitterLinking] = useState(false);
+  const [twitterUnlinking, setTwitterUnlinking] = useState(false);
 
   // Edit form states
   const [editForm, setEditForm] = useState({
@@ -63,7 +80,6 @@ export default function ProfilePage() {
     bio: '',
     location: '',
     website: '',
-    twitter: '',
     discord: '',
   });
 
@@ -75,7 +91,6 @@ export default function ProfilePage() {
         bio: profile.bio || '',
         location: profile.location || '',
         website: profile.website || '',
-        twitter: profile.twitter || '',
         discord: profile.discord || '',
       });
     }
@@ -157,6 +172,55 @@ export default function ProfilePage() {
       isActive = false;
     };
   }, [user]);
+
+  const loadTwitterAccount = useCallback(async () => {
+    if (!user) {
+      setTwitterAccount(null);
+      return;
+    }
+
+    setTwitterLoading(true);
+    try {
+      const response = await fetch('/api/twitter/account');
+      const payload = await response.json();
+
+      if (!response.ok) {
+        throw new Error(payload.error || 'Failed to fetch Twitter account');
+      }
+
+      setTwitterAccount((payload.account as LinkedTwitterAccount | null) ?? null);
+    } catch {
+      setTwitterAccount(null);
+    } finally {
+      setTwitterLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    void loadTwitterAccount();
+  }, [loadTwitterAccount]);
+
+  useEffect(() => {
+    const linked = searchParams.get('twitter_linked');
+    const reason = searchParams.get('reason');
+    if (!linked) return;
+
+    if (linked === '1') {
+      toast.success(t('toastTwitterLinked'));
+    } else {
+      toast.error(
+        reason ? `${t('toastFailedLinkTwitter')} (${reason})` : t('toastFailedLinkTwitter')
+      );
+    }
+
+    const url = new URL(window.location.href);
+    url.searchParams.delete('twitter_linked');
+    url.searchParams.delete('reason');
+    window.history.replaceState({}, '', url.toString());
+
+    void refreshProfile();
+    void loadTwitterAccount();
+  }, [loadTwitterAccount, refreshProfile, searchParams, t]);
 
   const fetchTokenBalance = useCallback(async (walletAddress: string, cacheKey: string) => {
     // Check client-side cache with TTL
@@ -405,7 +469,6 @@ export default function ProfilePage() {
           bio: editForm.bio.trim() || null,
           location: editForm.location.trim() || null,
           website: editForm.website.trim() || null,
-          twitter: editForm.twitter.trim() || null,
           discord: editForm.discord.trim() || null,
         } as any)
         .eq('id', user!.id as any);
@@ -431,9 +494,51 @@ export default function ProfilePage() {
         bio: profile.bio || '',
         location: profile.location || '',
         website: profile.website || '',
-        twitter: profile.twitter || '',
         discord: profile.discord || '',
       });
+    }
+  };
+
+  const handleStartTwitterLink = async () => {
+    setTwitterLinking(true);
+    try {
+      const response = await fetch('/api/twitter/link/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const payload = await response.json();
+
+      if (!response.ok || !payload.auth_url) {
+        throw new Error(payload.error || t('toastFailedLinkTwitter'));
+      }
+
+      window.location.assign(payload.auth_url as string);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : t('toastFailedLinkTwitter'));
+    } finally {
+      setTwitterLinking(false);
+    }
+  };
+
+  const handleUnlinkTwitter = async () => {
+    setTwitterUnlinking(true);
+    try {
+      const response = await fetch('/api/twitter/account', {
+        method: 'DELETE',
+      });
+      const payload = await response.json();
+
+      if (!response.ok) {
+        throw new Error(payload.error || t('toastFailedUnlinkTwitter'));
+      }
+
+      toast.success(t('toastTwitterUnlinked'));
+      await refreshProfile();
+      await loadTwitterAccount();
+    } catch {
+      toast.error(t('toastFailedUnlinkTwitter'));
+    } finally {
+      setTwitterUnlinking(false);
     }
   };
 
@@ -453,6 +558,7 @@ export default function ProfilePage() {
   }
 
   const formatStat = (value: number) => value.toLocaleString();
+  const linkedTwitterHandle = twitterAccount ? `@${twitterAccount.twitter_username}` : profile.twitter;
 
   return (
     <PageContainer>
@@ -756,22 +862,6 @@ export default function ProfilePage() {
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
-                  {t('twitterLabel')}
-                </label>
-                <div className="relative">
-                  <Twitter className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                  <input
-                    type="text"
-                    value={editForm.twitter}
-                    onChange={(e) => setEditForm({ ...editForm, twitter: e.target.value })}
-                    placeholder={t('twitterPlaceholder')}
-                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
-                    maxLength={50}
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
                   {t('discordLabel')}
                 </label>
                 <div className="relative">
@@ -785,6 +875,26 @@ export default function ProfilePage() {
                     maxLength={50}
                   />
                 </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 uppercase mb-1">
+                  {t('twitterLabel')}
+                </label>
+                {linkedTwitterHandle ? (
+                  <div className="flex items-center justify-between gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2">
+                    <div className="flex items-center gap-2 text-sm text-gray-700 min-w-0">
+                      <Twitter className="w-4 h-4 text-gray-400" />
+                      <span className="truncate">{linkedTwitterHandle}</span>
+                    </div>
+                    {profile.twitter_verified && (
+                      <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full text-xs font-medium">
+                        {t('verified')}
+                      </span>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500 italic">{t('twitterAccountNotLinked')}</p>
+                )}
               </div>
             </div>
           ) : (
@@ -808,16 +918,16 @@ export default function ProfilePage() {
                   </a>
                 </div>
               )}
-              {profile.twitter && (
+              {linkedTwitterHandle && (
                 <div className="flex items-center gap-2 text-sm">
                   <Twitter className="w-4 h-4 text-gray-400" />
                   <a
-                    href={`https://x.com/${profile.twitter.replace('@', '')}`}
+                    href={`https://x.com/${linkedTwitterHandle.replace('@', '')}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-organic-orange hover:underline"
                   >
-                    {profile.twitter}
+                    {linkedTwitterHandle}
                   </a>
                 </div>
               )}
@@ -829,7 +939,7 @@ export default function ProfilePage() {
               )}
               {!profile.location &&
                 !profile.website &&
-                !profile.twitter &&
+                !linkedTwitterHandle &&
                 !profile.discord &&
                 !isEditing && (
                   <p className="text-sm text-gray-400 italic">{t('noSocialLinksYet')}</p>
@@ -837,6 +947,81 @@ export default function ProfilePage() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Twitter/X Account Linking */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900">{t('twitterAccountTitle')}</h3>
+            <p className="text-sm text-gray-600">{t('twitterAccountDescription')}</p>
+          </div>
+          {twitterLoading && <Loader2 className="w-4 h-4 text-gray-400 animate-spin" />}
+        </div>
+
+        {twitterAccount ? (
+          <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-10 h-10 rounded-full overflow-hidden bg-white border border-emerald-200 flex-shrink-0">
+                  {twitterAccount.profile_image_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={twitterAccount.profile_image_url}
+                      alt={twitterAccount.twitter_username}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-emerald-700">
+                      <AtSign className="w-4 h-4" />
+                    </div>
+                  )}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-emerald-900 flex items-center gap-1">
+                    <CheckCircle2 className="w-4 h-4" />
+                    {t('twitterAccountConnected')}
+                  </p>
+                  <p className="text-sm text-emerald-800 truncate">
+                    {t('twitterLinkedAs', {
+                      username: `@${twitterAccount.twitter_username}`,
+                      name: twitterAccount.display_name || `@${twitterAccount.twitter_username}`,
+                    })}
+                  </p>
+                  {profile.twitter_verified && (
+                    <p className="text-xs text-emerald-700">{t('twitterAccountVerified')}</p>
+                  )}
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleUnlinkTwitter}
+                disabled={twitterUnlinking || twitterLinking}
+                className="inline-flex items-center gap-1 rounded-md border border-emerald-300 px-3 py-1.5 text-sm text-emerald-800 hover:bg-emerald-100 disabled:opacity-50"
+              >
+                {twitterUnlinking ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Unlink2 className="w-4 h-4" />
+                )}
+                {twitterUnlinking ? t('unlinkingTwitter') : t('unlinkTwitter')}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
+            <p className="text-sm text-amber-900 mb-3">{t('twitterAccountNotLinked')}</p>
+            <button
+              type="button"
+              onClick={handleStartTwitterLink}
+              disabled={twitterLinking || twitterUnlinking}
+              className="inline-flex items-center gap-2 rounded-md bg-sky-600 px-3 py-2 text-sm font-medium text-white hover:bg-sky-700 disabled:opacity-50"
+            >
+              {twitterLinking ? <Loader2 className="w-4 h-4 animate-spin" /> : <AtSign className="w-4 h-4" />}
+              {twitterLinking ? t('connectingTwitter') : t('connectTwitter')}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Wallet Section */}

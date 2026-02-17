@@ -85,11 +85,40 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       .eq('task_id', id)
       .order('submitted_at', { ascending: false });
 
+    const { data: twitterEngagementTask } = await supabase
+      .from('twitter_engagement_tasks')
+      .select('*')
+      .eq('task_id', id)
+      .maybeSingle();
+
+    const twitterSubmissionIds = (submissions ?? [])
+      .filter((submission) => submission.submission_type === 'twitter')
+      .map((submission) => submission.id);
+
+    let enrichedSubmissions = submissions || [];
+
+    if (twitterSubmissionIds.length > 0) {
+      const { data: twitterSubmissions } = await supabase
+        .from('twitter_engagement_submissions')
+        .select('*')
+        .in('submission_id', twitterSubmissionIds);
+
+      const twitterSubmissionMap = new Map(
+        (twitterSubmissions ?? []).map((submission) => [submission.submission_id, submission])
+      );
+
+      enrichedSubmissions = (submissions || []).map((submission) => ({
+        ...submission,
+        twitter_engagement_submission: twitterSubmissionMap.get(submission.id) ?? null,
+      }));
+    }
+
     return NextResponse.json({
       task: {
         ...task,
         assignees,
-        submissions: submissions || [],
+        submissions: enrichedSubmissions,
+        twitter_engagement_task: twitterEngagementTask || null,
       },
     });
   } catch {

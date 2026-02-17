@@ -1,13 +1,30 @@
 import { z } from 'zod';
+import { extractTweetIdFromUrl } from '@/lib/twitter/utils';
 
 // Task type enum
-export const taskTypeSchema = z.enum(['development', 'content', 'design', 'custom']);
+export const taskTypeSchema = z.enum(['development', 'content', 'design', 'custom', 'twitter']);
 export const taskStatusSchema = z.enum(['backlog', 'todo', 'in_progress', 'review', 'done']);
 export const taskPrioritySchema = z.enum(['low', 'medium', 'high', 'critical']);
 export const reviewStatusSchema = z.enum(['pending', 'approved', 'rejected', 'disputed']);
+export const twitterEngagementTypeSchema = z.enum(['like', 'retweet', 'comment']);
 
-// Create task schema
-export const createTaskSchema = z.object({
+export const twitterTaskConfigSchema = z.object({
+  engagement_type: twitterEngagementTypeSchema,
+  target_tweet_url: z
+    .string()
+    .url('Must be a valid URL')
+    .refine(
+      (url) => extractTweetIdFromUrl(url) !== null,
+      'Must be a valid X/Twitter status URL with a tweet ID'
+    ),
+  auto_verify: z.boolean().default(false),
+  auto_approve: z.boolean().default(false),
+  requires_ai_review: z.boolean().default(false),
+  verification_window_hours: z.number().int().min(1).max(720).default(168),
+  instructions: z.string().max(2000, 'Instructions too long').optional(),
+});
+
+const createTaskSchemaBase = z.object({
   title: z.string().min(1, 'Title is required').max(200, 'Title too long'),
   description: z.string().max(5000, 'Description too long').optional(),
   task_type: taskTypeSchema.default('custom'),
@@ -20,12 +37,44 @@ export const createTaskSchema = z.object({
   sprint_id: z.string().uuid().optional().nullable(),
   proposal_id: z.string().uuid().optional().nullable(),
   assignee_id: z.string().uuid().optional().nullable(),
+  twitter_task: twitterTaskConfigSchema.optional(),
 });
+
+// Create task schema
+export const createTaskSchema = createTaskSchemaBase
+  .refine((data) => data.task_type !== 'twitter' || !!data.twitter_task, {
+    message: 'Twitter task configuration is required when task_type is twitter',
+    path: ['twitter_task'],
+  })
+  .refine((data) => data.task_type === 'twitter' || !data.twitter_task, {
+    message: 'Twitter task configuration can only be provided for twitter tasks',
+    path: ['twitter_task'],
+  })
+  .refine(
+    (data) =>
+      data.task_type !== 'twitter' ||
+      data.twitter_task?.engagement_type !== 'comment' ||
+      data.twitter_task.requires_ai_review,
+    {
+      message: 'Comment engagement tasks must require AI review',
+      path: ['twitter_task', 'requires_ai_review'],
+    }
+  )
+  .refine(
+    (data) =>
+      data.task_type !== 'twitter' ||
+      !data.twitter_task?.auto_approve ||
+      data.twitter_task.auto_verify,
+    {
+      message: 'Auto-approve requires auto-verify for twitter tasks',
+      path: ['twitter_task', 'auto_approve'],
+    }
+  );
 
 export type CreateTaskInput = z.infer<typeof createTaskSchema>;
 
 // Update task schema
-export const updateTaskSchema = createTaskSchema.partial().extend({
+export const updateTaskSchema = createTaskSchemaBase.partial().extend({
   status: taskStatusSchema.optional(),
   points: z.number().int().min(0).optional().nullable(),
 });
@@ -90,6 +139,14 @@ export const customSubmissionSchema = z.object({
   custom_fields: z.record(z.union([z.string(), z.number(), z.boolean(), z.null()])).optional(),
 });
 
+// Twitter/X engagement submission schema
+export const twitterSubmissionSchema = z.object({
+  submission_type: z.literal('twitter'),
+  screenshot_url: z.string().url('Must be a valid URL').optional().nullable(),
+  comment_text: z.string().max(10000, 'Comment too long').optional().nullable(),
+  description: z.string().max(2000, 'Description too long').optional(),
+});
+
 // Combined submission schema (discriminated union)
 // Note: Uses contentSubmissionSchemaBase to work with discriminatedUnion (refine creates ZodEffects)
 export const taskSubmissionSchema = z.discriminatedUnion('submission_type', [
@@ -97,6 +154,7 @@ export const taskSubmissionSchema = z.discriminatedUnion('submission_type', [
   contentSubmissionSchemaBase,
   designSubmissionSchema,
   customSubmissionSchema,
+  twitterSubmissionSchema,
 ]);
 
 export type TaskSubmissionInput = z.infer<typeof taskSubmissionSchema>;

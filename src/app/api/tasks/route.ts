@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createTaskSchema } from '@/features/tasks/schemas';
+import { extractTweetIdFromUrl } from '@/lib/twitter/utils';
 
 // POST - Create a new task
 export async function POST(request: Request) {
@@ -88,7 +89,60 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Failed to create task' }, { status: 500 });
     }
 
-    return NextResponse.json({ task }, { status: 201 });
+    if (!task) {
+      return NextResponse.json({ error: 'Failed to create task' }, { status: 500 });
+    }
+
+    let twitterEngagementTask: Record<string, unknown> | null = null;
+
+    if (input.task_type === 'twitter' && input.twitter_task) {
+      const targetTweetId = extractTweetIdFromUrl(input.twitter_task.target_tweet_url);
+
+      if (!targetTweetId) {
+        await supabase.from('tasks').delete().eq('id', task.id);
+        return NextResponse.json(
+          { error: 'Twitter task target_tweet_url must include a valid tweet ID' },
+          { status: 400 }
+        );
+      }
+
+      const { data: twitterTask, error: twitterTaskError } = await supabase
+        .from('twitter_engagement_tasks')
+        .insert({
+          task_id: task.id,
+          engagement_type: input.twitter_task.engagement_type,
+          target_tweet_url: input.twitter_task.target_tweet_url,
+          target_tweet_id: targetTweetId,
+          auto_verify: input.twitter_task.auto_verify,
+          auto_approve: input.twitter_task.auto_approve,
+          requires_ai_review:
+            input.twitter_task.engagement_type === 'comment'
+              ? true
+              : input.twitter_task.requires_ai_review,
+          verification_window_hours: input.twitter_task.verification_window_hours,
+          instructions: input.twitter_task.instructions || null,
+        })
+        .select('*')
+        .single();
+
+      if (twitterTaskError) {
+        console.error('Error creating twitter task metadata:', twitterTaskError);
+        await supabase.from('tasks').delete().eq('id', task.id);
+        return NextResponse.json({ error: 'Failed to create Twitter task metadata' }, { status: 500 });
+      }
+
+      twitterEngagementTask = twitterTask;
+    }
+
+    return NextResponse.json(
+      {
+        task: {
+          ...task,
+          twitter_engagement_task: twitterEngagementTask,
+        },
+      },
+      { status: 201 }
+    );
   } catch (error: unknown) {
     console.error('Error creating task:', error);
     const message = error instanceof Error ? error.message : 'Internal server error';

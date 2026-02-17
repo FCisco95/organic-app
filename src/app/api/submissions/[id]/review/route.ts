@@ -68,7 +68,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     // Get the submission
     const { data: submission, error: submissionError } = await supabase
       .from('task_submissions')
-      .select('id, task_id, user_id, review_status')
+      .select('id, task_id, user_id, review_status, submission_type')
       .eq('id', submissionId)
       .single();
 
@@ -113,6 +113,31 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     if (updateError) {
       console.error('Error updating submission:', updateError);
       return NextResponse.json({ error: 'Failed to review submission' }, { status: 500 });
+    }
+
+    if (submission.submission_type === 'twitter') {
+      const now = new Date().toISOString();
+      const twitterVerificationUpdates: Record<string, unknown> = {
+        verified: action === 'approve',
+        verified_at: now,
+        verified_by: user.id,
+      };
+      if (action === 'approve') {
+        twitterVerificationUpdates.verification_method = 'manual';
+      }
+
+      const { error: twitterUpdateError } = await serviceClient
+        .from('twitter_engagement_submissions')
+        .update(twitterVerificationUpdates)
+        .eq('submission_id', submissionId);
+
+      if (twitterUpdateError) {
+        console.error('Error updating twitter engagement submission verification:', twitterUpdateError);
+        return NextResponse.json(
+          { error: 'Failed to update twitter engagement verification state' },
+          { status: 500 }
+        );
+      }
     }
 
     if (action === 'approve') {

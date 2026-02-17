@@ -53,6 +53,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: 'Template not found' }, { status: 404 });
     }
 
+    if (template.task_type === 'twitter') {
+      return NextResponse.json(
+        { error: 'Twitter/X templates are not supported yet. Create this task manually.' },
+        { status: 400 }
+      );
+    }
+
     const body = await request.json();
     const parsed = instantiateSchema.safeParse(body);
 

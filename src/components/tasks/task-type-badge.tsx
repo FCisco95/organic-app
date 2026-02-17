@@ -1,6 +1,6 @@
 'use client';
 
-import { Code, FileText, Palette, Wrench } from 'lucide-react';
+import { AtSign, Code, FileText, Palette, Wrench } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
 import { TaskType } from '@/features/tasks';
@@ -28,6 +28,10 @@ const typeConfig: Record<TaskType, { icon: React.ElementType; color: string }> =
   custom: {
     icon: Wrench,
     color: 'bg-gray-100 text-gray-700 border-gray-200',
+  },
+  twitter: {
+    icon: AtSign,
+    color: 'bg-sky-100 text-sky-700 border-sky-200',
   },
 };
 
@@ -82,7 +86,7 @@ export function TaskTypeSelector({
   className,
 }: TaskTypeSelectorProps) {
   const t = useTranslations('Tasks.taskTypes');
-  const types: TaskType[] = ['development', 'content', 'design', 'custom'];
+  const types: TaskType[] = ['development', 'content', 'design', 'custom', 'twitter'];
 
   return (
     <div className={cn('grid grid-cols-2 gap-2', className)}>

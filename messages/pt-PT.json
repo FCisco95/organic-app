@@ -529,7 +529,6 @@
     "deleteTitle": "Excluir sprint",
     "deleteDescription": "Tem certeza de que deseja excluir esta sprint? As tarefas atribuídas serão desatribuídas, mas não excluídas. Esta ação não pode ser desfeita.",
     "deleting": "Excluindo...",
-    "deleteSprint": "Excluir sprint",
     "alertUpdateFailed": "Falha ao atualizar sprint",
     "alertDeleteFailed": "Falha ao excluir sprint",
     "goal": "Objetivo",
@@ -683,7 +682,10 @@
       "on": "em",
       "views": "visualizações",
       "likes": "gostos",
-      "shares": "partilhas"
+      "shares": "partilhas",
+      "viewEvidence": "View Evidence",
+      "twitterEngagement": "Engagement",
+      "commentText": "Comment"
     },
     "submission": {
       "submitWorkFor": "Submeter Trabalho para Tarefa de {type}",
@@ -714,7 +716,32 @@
       "descriptionGenericPlaceholder": "Descreva o seu trabalho e forneça links ou informações relevantes...",
       "cancel": "Cancelar",
       "submitting": "A submeter...",
-      "submitWork": "Submeter Trabalho"
+      "submitWork": "Submeter Trabalho",
+      "twitterLinkStartFailed": "Failed to start Twitter/X account linking",
+      "twitterUnlinkFailed": "Failed to unlink Twitter/X account",
+      "twitterUnlinked": "Twitter/X account unlinked",
+      "twitterLinkRequired": "Link your Twitter/X account before submitting this task",
+      "twitterCommentRequired": "Comment text is required for comment engagement tasks",
+      "twitterScreenshotRequired": "Screenshot evidence URL is required",
+      "twitterLoadingContext": "Loading Twitter/X submission context...",
+      "twitterTaskConfigMissing": "Twitter/X task configuration is missing. Ask an admin to update this task.",
+      "twitterTargetTweetLabel": "Target tweet",
+      "twitterEngagementTypeLabel": "Engagement type",
+      "twitterEngagementTypes": {
+        "like": "Like",
+        "retweet": "Retweet",
+        "comment": "Comment"
+      },
+      "twitterInstructionsLabel": "Instructions",
+      "twitterConnect": "Connect Twitter/X account",
+      "twitterUnlink": "Unlink",
+      "twitterAccountConnected": "Twitter/X account connected",
+      "twitterManageInProfile": "Também pode gerir isto no Perfil.",
+      "twitterScreenshotLabel": "Screenshot evidence URL",
+      "twitterScreenshotPlaceholder": "https://...",
+      "twitterCommentLabel": "Comment text",
+      "twitterCommentPlaceholder": "Paste the exact comment you posted...",
+      "twitterDescriptionPlaceholder": "Optional notes for the reviewer..."
     },
     "dueDate": {
       "today": "Entrega hoje",
@@ -787,13 +814,15 @@
       "development": "Desenvolvimento",
       "content": "Conteúdo/Social",
       "design": "Design",
-      "custom": "Personalizado"
+      "custom": "Personalizado",
+      "twitter": "Twitter/X Engagement"
     },
     "taskTypeDescriptions": {
       "development": "Tarefas de código com links de PR do GitHub",
       "content": "Escrita, tweets e publicações de comunidade",
       "design": "Gráficos, mockups de UI e branding",
-      "custom": "Tipo de tarefa personalizado definido pelo admin"
+      "custom": "Tipo de tarefa personalizado definido pelo admin",
+      "twitter": "Verify likes, retweets, and comments on X"
     },
     "priorities": {
       "low": "Baixa",
@@ -807,6 +836,19 @@
       "3": "Médio",
       "4": "Bom",
       "5": "Excelente"
+    },
+    "labelTaskType": "Task Type",
+    "twitterTargetRequired": "Twitter/X tasks require a target tweet URL",
+    "twitterEngagementTypeLabel": "Engagement type",
+    "twitterTargetTweetLabel": "Target tweet URL",
+    "twitterInstructionsLabel": "Instructions",
+    "twitterInstructionsPlaceholder": "Add specific guidance for this Twitter/X task...",
+    "twitterAutoVerifyLabel": "Enable API auto-verify",
+    "twitterAutoApproveLabel": "Auto-approve after verification",
+    "twitterEngagementTypes": {
+      "like": "Like",
+      "retweet": "Retweet",
+      "comment": "Comment"
     }
   },
   "ReviewQueue": {
@@ -996,7 +1038,21 @@
     "walletMismatchDescription": "Conectada: {connected} | Vinculada: {linked}. O saldo exibido é da sua carteira vinculada.",
     "linkedWalletHoldsTokens": "Sua carteira vinculada possui {balance} tokens $ORG",
     "notificationPreferencesTitle": "Preferências de Notificação",
-    "notificationPreferencesDescription": "Escolha quais categorias você quer receber e como."
+    "notificationPreferencesDescription": "Escolha quais categorias você quer receber e como.",
+    "twitterAccountTitle": "Conta Twitter/X",
+    "twitterAccountDescription": "Ligue a sua conta Twitter/X para verificar tarefas de engagement.",
+    "twitterAccountNotLinked": "Ainda não há conta Twitter/X ligada.",
+    "twitterAccountConnected": "Conta Twitter/X ligada",
+    "twitterAccountVerified": "Verificada para tarefas de engagement",
+    "twitterLinkedAs": "{name} ({username})",
+    "connectTwitter": "Ligar conta Twitter/X",
+    "connectingTwitter": "A ligar conta Twitter/X...",
+    "unlinkTwitter": "Desligar",
+    "unlinkingTwitter": "A desligar...",
+    "toastTwitterLinked": "Conta Twitter/X ligada com sucesso!",
+    "toastFailedLinkTwitter": "Falha ao ligar conta Twitter/X",
+    "toastTwitterUnlinked": "Conta Twitter/X desligada",
+    "toastFailedUnlinkTwitter": "Falha ao desligar conta Twitter/X"
   },
   "Voting": {
     "title": "Votação Ponderada por Tokens",

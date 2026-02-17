@@ -251,6 +251,8 @@ export function getSubmissionFieldsForType(taskType: TaskType): string[] {
       return ['file_urls', 'description', 'revision_notes'];
     case 'custom':
       return ['description', 'custom_fields'];
+    case 'twitter':
+      return ['screenshot_url', 'comment_text', 'description'];
     default:
       return ['description'];
   }
@@ -283,6 +285,11 @@ export function validateSubmissionForType(
       break;
     case 'custom':
       // No required fields for custom
+      break;
+    case 'twitter':
+      if (!submission.screenshot_url) {
+        errors.push('Screenshot URL is required for Twitter tasks');
+      }
       break;
   }
 

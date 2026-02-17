@@ -120,6 +120,7 @@ export interface TaskWithRelations extends Task {
   } | null;
   assignees?: TaskAssigneeWithUser[];
   submissions?: TaskSubmissionWithReviewer[];
+  twitter_engagement_task?: Database['public']['Tables']['twitter_engagement_tasks']['Row'] | null;
   _count?: {
     submissions: number;
     assignees: number;
@@ -150,6 +151,9 @@ export interface TaskSubmissionWithReviewer extends TaskSubmission {
     email: string;
     organic_id: number | null;
   } | null;
+  twitter_engagement_submission?:
+    | Database['public']['Tables']['twitter_engagement_submissions']['Row']
+    | null;
 }
 
 // Reach metrics for content submissions
@@ -192,11 +196,18 @@ export interface CustomSubmissionData {
   custom_fields?: CustomSubmissionFields;
 }
 
+export interface TwitterSubmissionData {
+  screenshot_url?: string;
+  comment_text?: string;
+  description?: string;
+}
+
 export type SubmissionData =
   | DevelopmentSubmissionData
   | ContentSubmissionData
   | DesignSubmissionData
-  | CustomSubmissionData;
+  | CustomSubmissionData
+  | TwitterSubmissionData;
 
 // Review data
 export interface ReviewData {
@@ -229,6 +240,7 @@ export const TASK_TYPE_LABELS: Record<TaskType, string> = {
   content: 'Content/Social',
   design: 'Design',
   custom: 'Custom',
+  twitter: 'Twitter/X Engagement',
 };
 
 // Task type descriptions
@@ -237,6 +249,7 @@ export const TASK_TYPE_DESCRIPTIONS: Record<TaskType, string> = {
   content: 'Writing, tweets, and community posts',
   design: 'Graphics, UI mockups, and branding',
   custom: 'Admin-defined custom task type',
+  twitter: 'Verify likes, retweets, and comments on X',
 };
 
 // Task priority colors

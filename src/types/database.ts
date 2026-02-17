@@ -1496,6 +1496,253 @@ export type Database = {
           },
         ]
       }
+      twitter_accounts: {
+        Row: {
+          access_token_encrypted: string
+          created_at: string
+          display_name: string | null
+          id: string
+          is_active: boolean
+          profile_image_url: string | null
+          refresh_token_encrypted: string | null
+          scope: string[]
+          token_expires_at: string | null
+          twitter_user_id: string
+          twitter_username: string
+          updated_at: string
+          user_id: string
+          verified_at: string
+        }
+        Insert: {
+          access_token_encrypted: string
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          is_active?: boolean
+          profile_image_url?: string | null
+          refresh_token_encrypted?: string | null
+          scope?: string[]
+          token_expires_at?: string | null
+          twitter_user_id: string
+          twitter_username: string
+          updated_at?: string
+          user_id: string
+          verified_at?: string
+        }
+        Update: {
+          access_token_encrypted?: string
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          is_active?: boolean
+          profile_image_url?: string | null
+          refresh_token_encrypted?: string | null
+          scope?: string[]
+          token_expires_at?: string | null
+          twitter_user_id?: string
+          twitter_username?: string
+          updated_at?: string
+          user_id?: string
+          verified_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "twitter_accounts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "twitter_accounts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      twitter_engagement_submissions: {
+        Row: {
+          ai_feedback: string | null
+          ai_score: number | null
+          api_response: Json | null
+          comment_text: string | null
+          created_at: string
+          engagement_type: Database["public"]["Enums"]["twitter_engagement_type"]
+          id: string
+          screenshot_url: string | null
+          submission_id: string
+          target_tweet_id: string
+          twitter_account_id: string | null
+          updated_at: string
+          verification_method: Database["public"]["Enums"]["twitter_verification_method"]
+          verified: boolean
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          ai_feedback?: string | null
+          ai_score?: number | null
+          api_response?: Json | null
+          comment_text?: string | null
+          created_at?: string
+          engagement_type: Database["public"]["Enums"]["twitter_engagement_type"]
+          id?: string
+          screenshot_url?: string | null
+          submission_id: string
+          target_tweet_id: string
+          twitter_account_id?: string | null
+          updated_at?: string
+          verification_method?: Database["public"]["Enums"]["twitter_verification_method"]
+          verified?: boolean
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          ai_feedback?: string | null
+          ai_score?: number | null
+          api_response?: Json | null
+          comment_text?: string | null
+          created_at?: string
+          engagement_type?: Database["public"]["Enums"]["twitter_engagement_type"]
+          id?: string
+          screenshot_url?: string | null
+          submission_id?: string
+          target_tweet_id?: string
+          twitter_account_id?: string | null
+          updated_at?: string
+          verification_method?: Database["public"]["Enums"]["twitter_verification_method"]
+          verified?: boolean
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "twitter_engagement_submissions_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "task_submissions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "twitter_engagement_submissions_twitter_account_id_fkey"
+            columns: ["twitter_account_id"]
+            isOneToOne: false
+            referencedRelation: "twitter_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "twitter_engagement_submissions_verified_by_fkey"
+            columns: ["verified_by"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "twitter_engagement_submissions_verified_by_fkey"
+            columns: ["verified_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      twitter_engagement_tasks: {
+        Row: {
+          auto_approve: boolean
+          auto_verify: boolean
+          created_at: string
+          engagement_type: Database["public"]["Enums"]["twitter_engagement_type"]
+          id: string
+          instructions: string | null
+          requires_ai_review: boolean
+          target_tweet_id: string
+          target_tweet_url: string
+          task_id: string
+          updated_at: string
+          verification_window_hours: number
+        }
+        Insert: {
+          auto_approve?: boolean
+          auto_verify?: boolean
+          created_at?: string
+          engagement_type: Database["public"]["Enums"]["twitter_engagement_type"]
+          id?: string
+          instructions?: string | null
+          requires_ai_review?: boolean
+          target_tweet_id: string
+          target_tweet_url: string
+          task_id: string
+          updated_at?: string
+          verification_window_hours?: number
+        }
+        Update: {
+          auto_approve?: boolean
+          auto_verify?: boolean
+          created_at?: string
+          engagement_type?: Database["public"]["Enums"]["twitter_engagement_type"]
+          id?: string
+          instructions?: string | null
+          requires_ai_review?: boolean
+          target_tweet_id?: string
+          target_tweet_url?: string
+          task_id?: string
+          updated_at?: string
+          verification_window_hours?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "twitter_engagement_tasks_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      twitter_oauth_sessions: {
+        Row: {
+          code_verifier: string
+          created_at: string
+          expires_at: string
+          id: string
+          state: string
+          user_id: string
+        }
+        Insert: {
+          code_verifier: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          state: string
+          user_id: string
+        }
+        Update: {
+          code_verifier?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          state?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "twitter_oauth_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "twitter_oauth_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_achievements: {
         Row: {
           achievement_id: string
@@ -1641,6 +1888,7 @@ export type Database = {
           tasks_completed: number
           total_points: number
           twitter: string | null
+          twitter_verified: boolean
           updated_at: string | null
           wallet_pubkey: string | null
           website: string | null
@@ -1666,6 +1914,7 @@ export type Database = {
           tasks_completed?: number
           total_points?: number
           twitter?: string | null
+          twitter_verified?: boolean
           updated_at?: string | null
           wallet_pubkey?: string | null
           website?: string | null
@@ -1691,6 +1940,7 @@ export type Database = {
           tasks_completed?: number
           total_points?: number
           twitter?: string | null
+          twitter_verified?: boolean
           updated_at?: string | null
           wallet_pubkey?: string | null
           website?: string | null
@@ -2177,7 +2427,9 @@ export type Database = {
       sprint_status: "planning" | "active" | "completed"
       task_priority: "low" | "medium" | "high" | "critical"
       task_status: "backlog" | "todo" | "in_progress" | "review" | "done"
-      task_type: "development" | "content" | "design" | "custom"
+      task_type: "development" | "content" | "design" | "custom" | "twitter"
+      twitter_engagement_type: "like" | "retweet" | "comment"
+      twitter_verification_method: "api_auto" | "screenshot" | "manual" | "ai_scored"
       user_role: "admin" | "council" | "member" | "guest"
       vote_value: "yes" | "no" | "abstain"
     }
@@ -2378,7 +2630,9 @@ export const Constants = {
       sprint_status: ["planning", "active", "completed"],
       task_priority: ["low", "medium", "high", "critical"],
       task_status: ["backlog", "todo", "in_progress", "review", "done"],
-      task_type: ["development", "content", "design", "custom"],
+      task_type: ["development", "content", "design", "custom", "twitter"],
+      twitter_engagement_type: ["like", "retweet", "comment"],
+      twitter_verification_method: ["api_auto", "screenshot", "manual", "ai_scored"],
       user_role: ["admin", "council", "member", "guest"],
       vote_value: ["yes", "no", "abstain"],
     },

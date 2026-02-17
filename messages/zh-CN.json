@@ -529,7 +529,6 @@
     "deleteTitle": "删除冲刺",
     "deleteDescription": "确定要删除此冲刺吗？分配到该冲刺的任务将被取消分配但不会被删除。此操作无法撤销。",
     "deleting": "删除中...",
-    "deleteSprint": "删除冲刺",
     "alertUpdateFailed": "更新冲刺失败",
     "alertDeleteFailed": "删除冲刺失败",
     "goal": "目标",
@@ -683,7 +682,10 @@
       "on": "于",
       "views": "浏览",
       "likes": "点赞",
-      "shares": "分享"
+      "shares": "分享",
+      "viewEvidence": "View Evidence",
+      "twitterEngagement": "Engagement",
+      "commentText": "Comment"
     },
     "submission": {
       "submitWorkFor": "提交{type}任务工作",
@@ -714,7 +716,32 @@
       "descriptionGenericPlaceholder": "描述您的工作并提供相关链接或信息...",
       "cancel": "取消",
       "submitting": "提交中...",
-      "submitWork": "提交工作"
+      "submitWork": "提交工作",
+      "twitterLinkStartFailed": "Failed to start Twitter/X account linking",
+      "twitterUnlinkFailed": "Failed to unlink Twitter/X account",
+      "twitterUnlinked": "Twitter/X account unlinked",
+      "twitterLinkRequired": "Link your Twitter/X account before submitting this task",
+      "twitterCommentRequired": "Comment text is required for comment engagement tasks",
+      "twitterScreenshotRequired": "Screenshot evidence URL is required",
+      "twitterLoadingContext": "Loading Twitter/X submission context...",
+      "twitterTaskConfigMissing": "Twitter/X task configuration is missing. Ask an admin to update this task.",
+      "twitterTargetTweetLabel": "Target tweet",
+      "twitterEngagementTypeLabel": "Engagement type",
+      "twitterEngagementTypes": {
+        "like": "Like",
+        "retweet": "Retweet",
+        "comment": "Comment"
+      },
+      "twitterInstructionsLabel": "Instructions",
+      "twitterConnect": "Connect Twitter/X account",
+      "twitterUnlink": "Unlink",
+      "twitterAccountConnected": "Twitter/X account connected",
+      "twitterManageInProfile": "你也可以在个人资料页管理这个设置。",
+      "twitterScreenshotLabel": "Screenshot evidence URL",
+      "twitterScreenshotPlaceholder": "https://...",
+      "twitterCommentLabel": "Comment text",
+      "twitterCommentPlaceholder": "Paste the exact comment you posted...",
+      "twitterDescriptionPlaceholder": "Optional notes for the reviewer..."
     },
     "dueDate": {
       "today": "今天截止",
@@ -787,13 +814,15 @@
       "development": "开发",
       "content": "内容/社交",
       "design": "设计",
-      "custom": "自定义"
+      "custom": "自定义",
+      "twitter": "Twitter/X Engagement"
     },
     "taskTypeDescriptions": {
       "development": "带有 GitHub PR 链接的代码任务",
       "content": "写作、推文和社区帖子",
       "design": "图形、UI 原型和品牌设计",
-      "custom": "管理员定义的自定义任务类型"
+      "custom": "管理员定义的自定义任务类型",
+      "twitter": "Verify likes, retweets, and comments on X"
     },
     "priorities": {
       "low": "低",
@@ -807,6 +836,19 @@
       "3": "一般",
       "4": "良好",
       "5": "优秀"
+    },
+    "labelTaskType": "Task Type",
+    "twitterTargetRequired": "Twitter/X tasks require a target tweet URL",
+    "twitterEngagementTypeLabel": "Engagement type",
+    "twitterTargetTweetLabel": "Target tweet URL",
+    "twitterInstructionsLabel": "Instructions",
+    "twitterInstructionsPlaceholder": "Add specific guidance for this Twitter/X task...",
+    "twitterAutoVerifyLabel": "Enable API auto-verify",
+    "twitterAutoApproveLabel": "Auto-approve after verification",
+    "twitterEngagementTypes": {
+      "like": "Like",
+      "retweet": "Retweet",
+      "comment": "Comment"
     }
   },
   "ReviewQueue": {
@@ -996,7 +1038,21 @@
     "walletMismatchDescription": "已连接：{connected} | 已关联：{linked}。显示的余额为您已关联钱包的余额。",
     "linkedWalletHoldsTokens": "您已关联的钱包持有 {balance} 个 $ORG 代币",
     "notificationPreferencesTitle": "通知偏好设置",
-    "notificationPreferencesDescription": "选择您想接收的类别以及接收方式。"
+    "notificationPreferencesDescription": "选择您想接收的类别以及接收方式。",
+    "twitterAccountTitle": "Twitter/X 账号",
+    "twitterAccountDescription": "关联你的 Twitter/X 账号以验证互动任务。",
+    "twitterAccountNotLinked": "尚未关联 Twitter/X 账号。",
+    "twitterAccountConnected": "Twitter/X 账号已关联",
+    "twitterAccountVerified": "已用于互动任务验证",
+    "twitterLinkedAs": "{name} ({username})",
+    "connectTwitter": "关联 Twitter/X 账号",
+    "connectingTwitter": "正在关联 Twitter/X 账号...",
+    "unlinkTwitter": "取消关联",
+    "unlinkingTwitter": "正在取消关联...",
+    "toastTwitterLinked": "Twitter/X 账号关联成功！",
+    "toastFailedLinkTwitter": "关联 Twitter/X 账号失败",
+    "toastTwitterUnlinked": "Twitter/X 账号已取消关联",
+    "toastFailedUnlinkTwitter": "取消关联 Twitter/X 账号失败"
   },
   "Voting": {
     "title": "代币加权投票",

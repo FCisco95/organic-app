@@ -2,6 +2,67 @@
 
 Add newest entries at the top.
 
+## 2026-02-16 (Session: Twitter/X engagement verification foundation)
+
+### Database and security
+
+- Added migration `20260216180000_twitter_engagement_verification.sql`:
+  - Extended `task_type` enum with `twitter`
+  - Added `user_profiles.twitter_verified`
+  - Added tables: `twitter_accounts`, `twitter_oauth_sessions`, `twitter_engagement_tasks`, `twitter_engagement_submissions`
+  - Added enums: `twitter_engagement_type`, `twitter_verification_method`
+  - Added indexes, RLS policies, and updated-at triggers
+  - Added column-level token protection for encrypted token fields
+
+### Backend APIs and libs
+
+- Added token encryption helper: `src/lib/encryption.ts` (AES-256-GCM).
+- Added Twitter OAuth + API client utilities:
+  - `src/lib/twitter/client.ts`
+  - `src/lib/twitter/pkce.ts`
+  - `src/lib/twitter/utils.ts`
+- Added Twitter account/OAuth routes:
+  - `src/app/api/twitter/link/start/route.ts`
+  - `src/app/api/twitter/link/callback/route.ts`
+  - `src/app/api/twitter/account/route.ts`
+- Extended task and review APIs for Twitter flows:
+  - task creation now supports `twitter_task` metadata (`src/app/api/tasks/route.ts`)
+  - task submission route now supports `submission_type: twitter` and writes evidence rows (`src/app/api/tasks/[id]/submissions/route.ts`)
+  - submission review route now updates twitter verification state (`src/app/api/submissions/[id]/review/route.ts`)
+  - task detail API enriches with twitter task/submission metadata (`src/app/api/tasks/[id]/route.ts`)
+
+### Frontend and schemas
+
+- Added `twitter` task type across task schemas/types/utils:
+  - `src/features/tasks/schemas.ts`
+  - `src/features/tasks/types.ts`
+  - `src/features/tasks/utils.ts`
+- Added Twitter task creation fields in admin task modal (`src/components/tasks/task-new-modal.tsx`).
+- Added Twitter submission form with account linking/unlinking and evidence fields (`src/components/tasks/task-submission-form.tsx`).
+- Added Twitter rendering in review panel and task-type badge updates:
+  - `src/components/tasks/task-review-panel.tsx`
+  - `src/components/tasks/task-type-badge.tsx`
+- Prevented twitter template instantiation until template metadata support exists (`src/app/api/tasks/templates/[id]/instantiate/route.ts`).
+
+### Types, i18n, docs
+
+- Updated generated DB typing surface for new tables/enums/column:
+  - `src/types/database.ts`
+  - `src/features/auth/context.tsx` profile select now includes `twitter_verified`
+- Added i18n keys for new Twitter UI in all locales:
+  - `messages/en.json`
+  - `messages/pt-PT.json`
+  - `messages/zh-CN.json`
+- Updated env and setup docs:
+  - `.env.local.example`
+  - `README.md`
+  - `BUILD_PLAN.md` (Twitter/X integration item marked complete)
+
+### Validation
+
+- `npm run lint` passes.
+- `npm run build` passes.
+
 ## 2026-02-16 (Session: Tasks visibility + dispute comments route stability)
 
 ### Task board visibility

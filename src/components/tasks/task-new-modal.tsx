@@ -3,7 +3,13 @@
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
-import { useCreateTask, type Assignee, type Sprint, type TaskPriority } from '@/features/tasks';
+import {
+  useCreateTask,
+  type Assignee,
+  type Sprint,
+  type TaskPriority,
+  type TaskType,
+} from '@/features/tasks';
 
 type TaskNewModalProps = {
   onClose: () => void;
@@ -20,10 +26,18 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
   const [points, setPoints] = useState('');
   const [sprintId, setSprintId] = useState('');
   const [priority, setPriority] = useState<TaskPriority>('medium');
+  const [taskType, setTaskType] = useState<TaskType>('custom');
   const [assigneeId, setAssigneeId] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [labelInput, setLabelInput] = useState('');
   const [labels, setLabels] = useState<string[]>([]);
+  const [twitterEngagementType, setTwitterEngagementType] = useState<'like' | 'retweet' | 'comment'>(
+    'like'
+  );
+  const [twitterTargetTweetUrl, setTwitterTargetTweetUrl] = useState('');
+  const [twitterInstructions, setTwitterInstructions] = useState('');
+  const [twitterAutoVerify, setTwitterAutoVerify] = useState(false);
+  const [twitterAutoApprove, setTwitterAutoApprove] = useState(false);
   const [assignees, setAssignees] = useState<Assignee[]>([]);
   const [loadingAssignees, setLoadingAssignees] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -73,6 +87,11 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
       return;
     }
 
+    if (taskType === 'twitter' && !twitterTargetTweetUrl.trim()) {
+      toast.error(t('twitterTargetRequired'));
+      return;
+    }
+
     try {
       if (!userId) {
         toast.error(t('toastTaskCreateFailed'));
@@ -84,7 +103,7 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
       await createTask.mutateAsync({
         title: title.trim(),
         description: description.trim() || undefined,
-        task_type: 'custom',
+        task_type: taskType,
         is_team_task: false,
         max_assignees: 1,
         base_points: points ? parseInt(points, 10) : undefined,
@@ -94,6 +113,18 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
         // API schema expects datetime; normalize date input to ISO.
         due_date: dueDate ? new Date(`${dueDate}T00:00:00.000Z`).toISOString() : undefined,
         labels,
+        twitter_task:
+          taskType === 'twitter'
+            ? {
+                engagement_type: twitterEngagementType,
+                target_tweet_url: twitterTargetTweetUrl.trim(),
+                auto_verify: twitterAutoVerify,
+                auto_approve: twitterAutoApprove,
+                requires_ai_review: twitterEngagementType === 'comment',
+                verification_window_hours: 168,
+                instructions: twitterInstructions.trim() || undefined,
+              }
+            : undefined,
       });
 
       toast.success(t('toastTaskCreated'));
@@ -144,6 +175,23 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-1">
+                {t('labelTaskType')}
+              </label>
+              <select
+                value={taskType}
+                onChange={(e) => setTaskType(e.target.value as TaskType)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
+              >
+                <option value="custom">{t('taskTypes.custom')}</option>
+                <option value="development">{t('taskTypes.development')}</option>
+                <option value="content">{t('taskTypes.content')}</option>
+                <option value="design">{t('taskTypes.design')}</option>
+                <option value="twitter">{t('taskTypes.twitter')}</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-1">
                 {t('labelPriority')}
               </label>
               <select
@@ -157,7 +205,86 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
                 <option value="critical">{t('priority.critical')}</option>
               </select>
             </div>
+          </div>
 
+          {taskType === 'twitter' && (
+            <div className="rounded-lg border border-sky-200 bg-sky-50 p-4 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-sky-900 mb-1">
+                    {t('twitterEngagementTypeLabel')}
+                  </label>
+                  <select
+                    value={twitterEngagementType}
+                    onChange={(e) =>
+                      setTwitterEngagementType(e.target.value as 'like' | 'retweet' | 'comment')
+                    }
+                    className="w-full px-3 py-2 border border-sky-200 bg-white rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
+                  >
+                    <option value="like">{t('twitterEngagementTypes.like')}</option>
+                    <option value="retweet">{t('twitterEngagementTypes.retweet')}</option>
+                    <option value="comment">{t('twitterEngagementTypes.comment')}</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-sky-900 mb-1">
+                    {t('twitterTargetTweetLabel')} <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="url"
+                    value={twitterTargetTweetUrl}
+                    onChange={(e) => setTwitterTargetTweetUrl(e.target.value)}
+                    className="w-full px-3 py-2 border border-sky-200 bg-white rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
+                    placeholder="https://x.com/username/status/1234567890"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-sky-900 mb-1">
+                  {t('twitterInstructionsLabel')}
+                </label>
+                <textarea
+                  value={twitterInstructions}
+                  onChange={(e) => setTwitterInstructions(e.target.value)}
+                  rows={2}
+                  className="w-full px-3 py-2 border border-sky-200 bg-white rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none"
+                  placeholder={t('twitterInstructionsPlaceholder')}
+                />
+              </div>
+
+              <div className="flex flex-col md:flex-row md:items-center gap-3">
+                <label className="inline-flex items-center gap-2 text-sm text-sky-900">
+                  <input
+                    type="checkbox"
+                    checked={twitterAutoVerify}
+                    onChange={(e) => {
+                      const checked = e.target.checked;
+                      setTwitterAutoVerify(checked);
+                      if (!checked) {
+                        setTwitterAutoApprove(false);
+                      }
+                    }}
+                    className="rounded border-sky-300 text-organic-orange focus:ring-organic-orange"
+                  />
+                  {t('twitterAutoVerifyLabel')}
+                </label>
+                <label className="inline-flex items-center gap-2 text-sm text-sky-900">
+                  <input
+                    type="checkbox"
+                    checked={twitterAutoApprove}
+                    disabled={!twitterAutoVerify || twitterEngagementType === 'comment'}
+                    onChange={(e) => setTwitterAutoApprove(e.target.checked)}
+                    className="rounded border-sky-300 text-organic-orange focus:ring-organic-orange disabled:opacity-50"
+                  />
+                  {t('twitterAutoApproveLabel')}
+                </label>
+              </div>
+            </div>
+          )}
+
+          <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-1">
                 {t('labelPoints')}

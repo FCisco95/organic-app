@@ -12,6 +12,7 @@ import {
   FileText,
   Code,
   Palette,
+  AtSign,
   Eye,
   ThumbsUp,
   Share2,
@@ -377,6 +378,18 @@ function SubmissionContent({
   > | null;
   const customLink =
     customFields && typeof customFields.link === 'string' ? customFields.link : null;
+  const twitterScreenshotUrl =
+    customFields && typeof customFields.screenshot_url === 'string'
+      ? customFields.screenshot_url
+      : submission.content_link;
+  const twitterCommentText =
+    customFields && typeof customFields.comment_text === 'string'
+      ? customFields.comment_text
+      : submission.content_text;
+  const twitterEngagementType =
+    customFields && typeof customFields.engagement_type === 'string'
+      ? customFields.engagement_type
+      : null;
 
   return (
     <div className="space-y-3">
@@ -473,6 +486,34 @@ function SubmissionContent({
         </div>
       )}
 
+      {/* Twitter */}
+      {type === 'twitter' && (
+        <div>
+          {twitterScreenshotUrl && (
+            <a
+              href={twitterScreenshotUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium"
+            >
+              <AtSign className="w-4 h-4" />
+              {t('viewEvidence')}
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          )}
+          {twitterEngagementType && (
+            <p className="mt-2 text-sm text-gray-600">
+              <strong>{t('twitterEngagement')}:</strong> {twitterEngagementType}
+            </p>
+          )}
+          {!compact && twitterCommentText && (
+            <p className="mt-2 text-sm text-gray-700 bg-gray-50 p-3 rounded-lg whitespace-pre-wrap">
+              <strong>{t('commentText')}:</strong> {twitterCommentText}
+            </p>
+          )}
+        </div>
+      )}
+
       {/* Custom */}
       {type === 'custom' && (
         <div>
@@ -517,6 +558,7 @@ function SubmissionTypeBadge({ type }: { type: string }) {
     development: Code,
     content: FileText,
     design: Palette,
+    twitter: AtSign,
     custom: FileText,
   };
   const Icon = icons[type] || FileText;

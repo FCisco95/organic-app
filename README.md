@@ -216,6 +216,20 @@ cp .env.local.example .env.local
 # Edit .env.local with your credentials
 ```
 
+If you plan to use Twitter/X engagement verification, also configure:
+
+- `TWITTER_CLIENT_ID`
+- `TWITTER_CLIENT_SECRET`
+- `TWITTER_REDIRECT_URI` (primary)
+- `TWITTER_CALLBACK_URL` (optional compatibility alias)
+- `TWITTER_TOKEN_ENCRYPTION_KEY`
+
+For local tunnels (ngrok, Cloudflare Tunnel, etc.), use your public HTTPS domain:
+
+- Set `NEXT_PUBLIC_APP_URL` to your public app URL
+- Set `TWITTER_REDIRECT_URI` (or `TWITTER_CALLBACK_URL`) to `{PUBLIC_URL}/api/twitter/link/callback`
+- Register the exact same callback URL in your X Developer app settings
+
 4. Run the development server
 
 ```bash
