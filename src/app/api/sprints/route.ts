@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { parseJsonBody } from '@/lib/parse-json-body';
-import type { Database } from '@/types/database';
+import { createSprintSchema } from '@/features/sprints/schemas';
 import { logger } from '@/lib/logger';
 
 const SPRINT_COLUMNS =
@@ -75,35 +75,30 @@ export async function POST(request: Request) {
       );
     }
 
-    const parsedBody = await parseJsonBody<{
-      name?: string;
-      start_at?: string;
-      end_at?: string;
-      status?: Database['public']['Enums']['sprint_status'];
-      capacity_points?: number | null;
-      goal?: string | null;
-    }>(request);
-    if (parsedBody.error !== null) {
-      return NextResponse.json({ error: parsedBody.error }, { status: 400 });
+    const { data: body, error: jsonError } = await parseJsonBody(request);
+    if (jsonError) {
+      return NextResponse.json({ error: jsonError }, { status: 400 });
     }
-    const { name, start_at, end_at, status, capacity_points, goal } = parsedBody.data;
 
-    if (!name || !start_at || !end_at) {
+    const validationResult = createSprintSchema.safeParse(body);
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: 'Name, start date, and end date are required' },
+        { error: 'Invalid sprint data', details: validationResult.error.errors },
         { status: 400 }
       );
     }
 
+    const input = validationResult.data;
+
     const { data: sprint, error } = await supabase
       .from('sprints')
       .insert({
-        name,
-        start_at,
-        end_at,
-        status: status || 'planning',
-        capacity_points: capacity_points ?? null,
-        goal: goal || null,
+        name: input.name,
+        start_at: input.start_at,
+        end_at: input.end_at,
+        status: 'planning',
+        capacity_points: input.capacity_points ?? null,
+        goal: input.goal || null,
       })
       .select(SPRINT_COLUMNS)
       .single();

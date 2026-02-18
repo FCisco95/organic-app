@@ -79,7 +79,8 @@
     "changeWallet": "Change Wallet",
     "disconnectWallet": "Disconnect Wallet",
     "rewards": "Rewards",
-    "adminRewards": "Manage Rewards"
+    "adminRewards": "Manage Rewards",
+    "submissions": "Submissions"
   },
   "Wallet": {
     "toastConnected": "Wallet connected",
@@ -814,7 +815,9 @@
       "cancel": "Cancel",
       "confirmDelete": "Are you sure you want to delete this template?",
       "saveFailed": "Failed to save template",
-      "deleteFailed": "Failed to delete template"
+      "deleteFailed": "Failed to delete template",
+      "signInRequired": "Sign in required",
+      "signInRequiredHint": "You need to be signed in to view templates."
     },
     "taskTypes": {
       "development": "Development",
@@ -1786,7 +1789,11 @@
       "addComment": "Add Comment",
       "originalReview": "Original Review",
       "qualityScore": "Quality Score",
-      "rejectionReason": "Rejection Reason"
+      "rejectionReason": "Rejection Reason",
+      "notFound": "Dispute not found",
+      "backToDisputes": "Back to disputes",
+      "loadFailed": "Failed to load dispute",
+      "noCommentsYet": "No comments yet."
     },
     "stats": {
       "title": "Arbitrator Stats",
@@ -1801,5 +1808,10 @@
       "peacemaker": "Peacemaker",
       "vindicated": "Vindicated"
     }
+  },
+  "GlobalError": {
+    "title": "Something went wrong",
+    "description": "We tracked this error. Try again, or refresh the page.",
+    "tryAgain": "Try again"
   }
 }

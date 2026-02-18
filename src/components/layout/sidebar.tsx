@@ -26,6 +26,7 @@ import {
   LogOut,
   FileText,
   Scale,
+  ClipboardCheck,
 } from 'lucide-react';
 
 interface NavItem {
@@ -61,6 +62,7 @@ export function Sidebar() {
   ];
 
   const bottomItems: NavItem[] = [
+    { href: '/admin/submissions', labelKey: 'submissions', icon: ClipboardCheck, show: !!isAdminOrCouncil },
     { href: '/admin/rewards', labelKey: 'adminRewards', icon: Gift, show: !!isAdminOrCouncil },
     { href: '/admin/settings', labelKey: 'settings', icon: Settings, show: !!isAdminOrCouncil },
     { href: '/profile', labelKey: 'profile', icon: User, show: !!user },

@@ -64,9 +64,9 @@ export default function DisputeDetailPage() {
     return (
       <PageContainer>
         <div className="text-center py-20">
-          <p className="text-red-600 text-sm">{(error as Error)?.message || 'Failed to load dispute'}</p>
+          <p className="text-red-600 text-sm">{(error as Error)?.message || td('loadFailed')}</p>
           <Link href="/disputes" className="text-orange-600 hover:underline mt-2 inline-block">
-            {t('pageTitle')}
+            {td('backToDisputes')}
           </Link>
         </div>
       </PageContainer>
@@ -77,9 +77,9 @@ export default function DisputeDetailPage() {
     return (
       <PageContainer>
         <div className="text-center py-20">
-          <p className="text-gray-500">Dispute not found</p>
+          <p className="text-gray-500">{td('notFound')}</p>
           <Link href="/disputes" className="text-orange-600 hover:underline mt-2 inline-block">
-            Back to disputes
+            {td('backToDisputes')}
           </Link>
         </div>
       </PageContainer>
@@ -121,7 +121,7 @@ export default function DisputeDetailPage() {
 
           {/* Comment list */}
           {comments.length === 0 ? (
-            <p className="text-sm text-gray-400 mb-4">No comments yet.</p>
+            <p className="text-sm text-gray-400 mb-4">{td('noCommentsYet')}</p>
           ) : (
             <div className="space-y-3 mb-4">
               {comments.map((comment) => (

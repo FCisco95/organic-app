@@ -79,7 +79,8 @@
     "changeWallet": "Alterar Carteira",
     "disconnectWallet": "Desconectar Carteira",
     "rewards": "Recompensas",
-    "adminRewards": "Gerir Recompensas"
+    "adminRewards": "Gerir Recompensas",
+    "submissions": "Submissões"
   },
   "Wallet": {
     "toastConnected": "Carteira conectada",
@@ -814,7 +815,9 @@
       "cancel": "Cancelar",
       "confirmDelete": "Tem a certeza que deseja eliminar este modelo?",
       "saveFailed": "Falha ao guardar modelo",
-      "deleteFailed": "Falha ao eliminar modelo"
+      "deleteFailed": "Falha ao eliminar modelo",
+      "signInRequired": "Início de sessão necessário",
+      "signInRequiredHint": "Precisa de iniciar sessão para ver os modelos."
     },
     "taskTypes": {
       "development": "Desenvolvimento",
@@ -1786,7 +1789,11 @@
       "addComment": "Adicionar Comentário",
       "originalReview": "Revisão Original",
       "qualityScore": "Pontuação de Qualidade",
-      "rejectionReason": "Motivo da Rejeição"
+      "rejectionReason": "Motivo da Rejeição",
+      "notFound": "Disputa não encontrada",
+      "backToDisputes": "Voltar às disputas",
+      "loadFailed": "Falha ao carregar disputa",
+      "noCommentsYet": "Ainda sem comentários."
     },
     "stats": {
       "title": "Estatísticas do Árbitro",
@@ -1801,5 +1808,10 @@
       "peacemaker": "Pacificador",
       "vindicated": "Vindicado"
     }
+  },
+  "GlobalError": {
+    "title": "Algo correu mal",
+    "description": "Registámos este erro. Tente novamente ou atualize a página.",
+    "tryAgain": "Tentar novamente"
   }
 }

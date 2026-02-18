@@ -17,8 +17,8 @@ export default function TemplatesPage() {
       <PageContainer>
         <div className="flex flex-col items-center justify-center py-20 text-gray-400">
           <ShieldAlert className="w-12 h-12 mb-4 opacity-50" />
-          <h2 className="text-lg font-semibold text-gray-700">Sign in required</h2>
-          <p className="text-sm mt-1">You need to be signed in to view templates.</p>
+          <h2 className="text-lg font-semibold text-gray-700">{t('signInRequired')}</h2>
+          <p className="text-sm mt-1">{t('signInRequiredHint')}</p>
         </div>
       </PageContainer>
     );

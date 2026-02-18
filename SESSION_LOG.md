@@ -2,6 +2,89 @@
 
 Add newest entries at the top.
 
+## 2026-02-18 (Session: Launch readiness execution — Phases B, D, E, F)
+
+### Summary
+
+Resumed the professional launch readiness plan (`docs/plans/2026-02-17-professional-launch-readiness-plan.md`) from a frozen session that had completed Phases A and B and partially completed Phase D.
+
+### Phase D: UX/UI, i18n, and Accessibility (completed)
+
+**i18n hardened:**
+- Added `Templates.signInRequired` + `Templates.signInRequiredHint` to all 3 locales (en, pt-PT, zh-CN).
+- Added `Disputes.notFound`, `backToDisputes`, `loadFailed`, `noCommentsYet` to all 3 locales.
+- Added `GlobalError` namespace (`title`, `description`, `tryAgain`) to all 3 locales.
+- Added `Navigation.submissions` to all 3 locales.
+
+**Component fixes:**
+- `src/app/[locale]/tasks/templates/page.tsx`: replaced 2 hardcoded strings with `t()` calls.
+- `src/app/[locale]/disputes/[id]/page.tsx`: replaced 4 hardcoded strings (`loadFailed`, `backToDisputes` ×2, `notFound`, `noCommentsYet`).
+- `src/app/global-error.tsx`: replaced 3 hardcoded strings with a minimal locale map keyed from `document.documentElement.lang` (avoids next-intl dependency outside the `[locale]` layout).
+- `src/components/layout/sidebar.tsx` + `mobile-sidebar.tsx`: added `/admin/submissions` nav entry (ClipboardCheck icon, admin/council only).
+
+**Type cast cleanup:**
+- `src/components/layout/top-bar.tsx`: removed `(profile as any)` — `profile.name` is `string | null` in the generated DB types.
+- `src/components/navigation.tsx`: same removal in 2 places.
+
+### Phase E: Security and Logging Hygiene (completed)
+
+- `src/lib/twitter/client.ts`: removed 4 debug `console.log` lines from `exchangeCodeForToken` that logged `redirectUri`, clientSecret length, HTTP status, and Location header. Also fixed inconsistent indentation of the `fetch` call. Retained `console.error` on failure paths (appropriate for incident response).
+- Confirmed zero remaining `console.log` calls in `src/app/api/` and `src/lib/`.
+
+### Phase F: Performance and Reliability Gate (partial)
+
+- `.github/workflows/ci.yml`: added `e2e` job (depends on `lint-and-build`) that installs Playwright Chromium and runs `npm run test:e2e`. Passes secrets as env vars; tests self-skip when Supabase creds are absent.
+- Health endpoint (`/api/health`) already exists and checks Supabase + market cache.
+
+### Validation
+
+- `npm run lint`: ✔ No ESLint warnings or errors
+- `npm run build`: ✔ Passes cleanly
+
+### Phase C: Core Flow Verification (completed)
+
+**New files:**
+- `tests/helpers.ts` — shared fixtures: `createQaUser`, `buildSessionCookie`, `deleteQaUser`, `insertActiveSprint`, `getActiveSprintId`, `getFirstOrgId`, etc. Extracted so all spec files share one pattern.
+- `tests/tasks.spec.ts` — Task CRUD (auth + role), full submit → review lifecycle (member submits, admin approves, task goes to `done`).
+- `tests/sprints.spec.ts` — Sprint lifecycle: create, list, get, update, start (+ 409 conflict guard), complete with snapshot.
+- `tests/proposals.spec.ts` — Proposal lifecycle: create as member, public GET, submit, vote endpoint, delete.
+- `tests/disputes.spec.ts` — Dispute lifecycle: file against rejected submission (service-role fixture), add comment, list comments, withdraw.
+- `tests/rewards.spec.ts` — Rewards summary, claims list, claim validation (below threshold → 400), successful claim path.
+- `docs/qa-runbook.md` — Manual fallback QA checklist for auth, nav, tasks, sprints, proposals, disputes, rewards, error states, accessibility, mobile, and post-deploy smoke.
+
+All tests self-skip when Supabase env vars are absent (graceful CI skip pattern with `test.beforeEach → test.skip`).
+
+### Remaining
+
+- Phase G: Staging Sign-off — final go/no-go checklist against all completed phases.
+
+## 2026-02-17 (Session: Deploy readiness audit + Phase 19 planning)
+
+### Validation baseline
+
+- Ran `npm run lint` (pass).
+- Ran `npm run build` (pass).
+- Ran `npm run test:e2e`:
+  - initial sandbox run failed due browser launch permissions
+  - elevated run completed but discovered 1 test and skipped it
+
+### Readiness findings documented
+
+- Added a new deployment readiness snapshot section to `BUILD_PLAN.md` with current status and launch blockers.
+- Recorded key blockers:
+  - incomplete API validation hardening on several mutation routes
+  - very limited automated test coverage and no CI test gate
+  - i18n/UX consistency gaps on key pages and fallback states
+  - logging hygiene issue in Twitter OAuth client
+  - missing QA artifact referenced in build plan
+
+### Planning deliverables
+
+- Added Phase 19 launch-readiness program to `BUILD_PLAN.md` with user stories and test expectations by phase.
+- Added a detailed execution plan with user-story and test tracks:
+  - `docs/plans/2026-02-17-professional-launch-readiness-plan.md`
+- Added a persistent next-session priority list in `NEXT_SESSION_FOCUS.md` with top 3 execution targets (API hardening, test gate expansion, UX/i18n/accessibility polish).
+
 ## 2026-02-16 (Session: Twitter/X engagement verification foundation)
 
 ### Database and security

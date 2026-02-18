@@ -84,9 +84,6 @@ export class TwitterClient {
   }
 
   async exchangeCodeForToken(code: string, codeVerifier: string): Promise<TwitterTokenResponse> {
-    console.log('[twitter] redirectUri:', this.redirectUri);
-    console.log('[twitter] clientSecret loaded?', Boolean(this.clientSecret), 'len:', this.clientSecret.length);
-
     // Confidential client: Basic base64(client_id:client_secret)
     const basic = Buffer.from(`${this.clientId}:${this.clientSecret}`).toString('base64');
 
@@ -99,17 +96,14 @@ export class TwitterClient {
     });
 
     const response = await fetch(TOKEN_URL, {
-  method: 'POST',
-  redirect: 'manual', // IMPORTANT: do NOT follow redirects
-  headers: {
-    'Content-Type': 'application/x-www-form-urlencoded',
-    Authorization: `Basic ${basic}`,
-  },
-  body,
-});
-
-console.log('[twitter] token status', response.status);
-console.log('[twitter] token location', response.headers.get('location'));
+      method: 'POST',
+      redirect: 'manual', // IMPORTANT: do NOT follow redirects
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Authorization: `Basic ${basic}`,
+      },
+      body,
+    });
 
     const text = await response.text();
 

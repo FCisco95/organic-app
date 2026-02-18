@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import type { Database } from '@/types/database';
 import { createClient } from '@/lib/supabase/server';
 import { parseJsonBody } from '@/lib/parse-json-body';
+import { updateSprintSchema } from '@/features/sprints/schemas';
 import { logger } from '@/lib/logger';
 
 const SPRINT_COLUMNS =
@@ -122,26 +123,27 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       );
     }
 
-    const parsedBody = await parseJsonBody<{
-      name?: string;
-      start_at?: string;
-      end_at?: string;
-      status?: Database['public']['Enums']['sprint_status'];
-      capacity_points?: number | null;
-      goal?: string | null;
-    }>(request);
-    if (parsedBody.error !== null) {
-      return NextResponse.json({ error: parsedBody.error }, { status: 400 });
+    const { data: body, error: jsonError } = await parseJsonBody(request);
+    if (jsonError) {
+      return NextResponse.json({ error: jsonError }, { status: 400 });
     }
-    const { name, start_at, end_at, status, capacity_points, goal } = parsedBody.data;
+
+    const validationResult = updateSprintSchema.safeParse(body);
+    if (!validationResult.success) {
+      return NextResponse.json(
+        { error: 'Invalid sprint data', details: validationResult.error.errors },
+        { status: 400 }
+      );
+    }
+
+    const input = validationResult.data;
 
     const updates: Database['public']['Tables']['sprints']['Update'] = {};
-    if (name !== undefined) updates.name = name;
-    if (start_at !== undefined) updates.start_at = start_at;
-    if (end_at !== undefined) updates.end_at = end_at;
-    if (status !== undefined) updates.status = status;
-    if (capacity_points !== undefined) updates.capacity_points = capacity_points;
-    if (goal !== undefined) updates.goal = goal;
+    if (input.name !== undefined) updates.name = input.name;
+    if (input.start_at !== undefined) updates.start_at = input.start_at;
+    if (input.end_at !== undefined) updates.end_at = input.end_at;
+    if (input.capacity_points !== undefined) updates.capacity_points = input.capacity_points;
+    if (input.goal !== undefined) updates.goal = input.goal;
 
     const { data: sprint, error } = await supabase
       .from('sprints')

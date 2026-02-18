@@ -53,3 +53,34 @@ export type TokenSettingsInput = z.infer<typeof tokenSettingsSchema>;
 export type TreasurySettingsInput = z.infer<typeof treasurySettingsSchema>;
 export type GovernanceSettingsInput = z.infer<typeof governanceSettingsSchema>;
 export type SprintSettingsInput = z.infer<typeof sprintSettingsSchema>;
+
+// Server-side schema for the PATCH /api/settings route.
+// Accepts any combination of org + voting config fields in a flat payload.
+const orgFieldsSchema = z.object({
+  name: z.string().min(1).max(100),
+  description: z.string().max(500).nullable(),
+  logo_url: z.string().url().nullable().or(z.literal('')),
+  token_symbol: z.string().min(1).max(20),
+  token_mint: z.string().nullable().or(z.literal('')),
+  token_decimals: z.coerce.number().int().min(0).max(18),
+  token_total_supply: z.coerce.number().int().positive(),
+  treasury_wallet: z.string().nullable().or(z.literal('')),
+  treasury_allocations: z.array(treasuryAllocationItemSchema),
+  default_sprint_capacity: z.coerce.number().int().min(1),
+  default_sprint_duration_days: z.coerce.number().int().min(1).max(90),
+  organic_id_threshold: z.coerce.number().min(0).nullable(),
+  rewards_config: z.record(z.unknown()),
+});
+
+const votingFieldsSchema = z.object({
+  quorum_percentage: z.coerce.number().min(0).max(100),
+  approval_threshold: z.coerce.number().min(0).max(100),
+  voting_duration_days: z.coerce.number().int().min(1).max(90),
+  proposal_threshold_org: z.coerce.number().min(0),
+  proposer_cooldown_days: z.coerce.number().int().min(0).max(365),
+  max_live_proposals: z.coerce.number().int().min(1).max(100),
+  abstain_counts_toward_quorum: z.boolean(),
+});
+
+export const settingsPatchSchema = orgFieldsSchema.merge(votingFieldsSchema).partial();
+export type SettingsPatchInput = z.infer<typeof settingsPatchSchema>;

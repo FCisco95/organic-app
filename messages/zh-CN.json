@@ -79,7 +79,8 @@
     "changeWallet": "更换钱包",
     "disconnectWallet": "断开钱包",
     "rewards": "奖励",
-    "adminRewards": "管理奖励"
+    "adminRewards": "管理奖励",
+    "submissions": "提交审核"
   },
   "Wallet": {
     "toastConnected": "钱包已连接",
@@ -814,7 +815,9 @@
       "cancel": "取消",
       "confirmDelete": "确定要删除此模板吗？",
       "saveFailed": "保存模板失败",
-      "deleteFailed": "删除模板失败"
+      "deleteFailed": "删除模板失败",
+      "signInRequired": "需要登录",
+      "signInRequiredHint": "您需要登录才能查看模板。"
     },
     "taskTypes": {
       "development": "开发",
@@ -1786,7 +1789,11 @@
       "addComment": "添加评论",
       "originalReview": "原始审查",
       "qualityScore": "质量评分",
-      "rejectionReason": "拒绝原因"
+      "rejectionReason": "拒绝原因",
+      "notFound": "未找到争议",
+      "backToDisputes": "返回争议列表",
+      "loadFailed": "加载争议失败",
+      "noCommentsYet": "暂无评论。"
     },
     "stats": {
       "title": "仲裁员统计",
@@ -1801,5 +1808,10 @@
       "peacemaker": "和平使者",
       "vindicated": "正名者"
     }
+  },
+  "GlobalError": {
+    "title": "出了点问题",
+    "description": "我们已记录此错误。请重试或刷新页面。",
+    "tryAgain": "重试"
   }
 }

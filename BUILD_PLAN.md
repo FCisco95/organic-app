@@ -91,6 +91,167 @@
 - [x] Phase 12 bug fixes and query cache invalidation
 - [x] Templates page UX polish (header, cards, skeletons)
 
+## 🚦 Deployment Readiness Snapshot (2026-02-17)
+
+Current status:
+- Not ready for confident production launch.
+- Ready for preview/staging validation.
+
+### Baseline checks run
+
+- [x] `npm run lint` (pass)
+- [x] `npm run build` (pass)
+- [x] `npm run test:e2e` executes, but currently discovers 1 test and skips it
+
+### Blocking gaps before production
+
+- [ ] API input validation hardening on update/mutation routes still using untyped body passthrough (for example: `src/app/api/settings/route.ts`, `src/app/api/tasks/[id]/route.ts`, `src/app/api/sprints/route.ts`, `src/app/api/sprints/[id]/route.ts`)
+- [ ] E2E coverage is insufficient for release confidence (currently `tests/profile.spec.ts` only)
+- [ ] CI does not gate on automated tests yet (`.github/workflows/ci.yml` runs lint/build only)
+- [ ] i18n consistency gaps remain in user-visible UI (for example: `src/app/[locale]/tasks/templates/page.tsx`, `src/app/[locale]/disputes/[id]/page.tsx`, `src/app/global-error.tsx`, reputation toasts)
+- [ ] Security/log hygiene cleanup still needed for Twitter OAuth debug logging (`src/lib/twitter/client.ts`)
+- [ ] Manual QA artifact drift: `BUILD_PLAN.md` references `tests/phase16-disputes-user-stories.md`, but file is missing
+
+## 🧭 Phase 19: Professional UX + Quality + Release Program
+
+Detailed execution plan: `docs/plans/2026-02-17-professional-launch-readiness-plan.md`
+
+### Phase 19.1: Information Architecture & Navigation Coherence
+
+User stories:
+- As a new visitor, I can understand the platform and find sign-in/signup immediately.
+- As a member, I can discover the primary work areas (tasks, proposals, sprints, rewards) in one navigation system.
+- As an admin/council user, I can find configuration and moderation surfaces without page-hunting.
+
+Tests:
+- E2E nav smoke for all sidebar/mobile entries and role-conditional visibility.
+- Manual IA walkthrough for desktop and mobile on EN/PT/ZH locales.
+- Route map parity check between page files and reachable navigation entries.
+
+Exit criteria:
+- No dead-end route.
+- No duplicated/conflicting nav labels.
+- All role-gated pages are discoverable through intended navigation.
+
+### Phase 19.2: Identity, Auth, Wallet, and Organic ID
+
+User stories:
+- As a user, I can sign up, sign in, and sign out reliably.
+- As a token holder, I can link wallet, pass nonce/signature verification, and claim Organic ID.
+- As a returning user, I see consistent account, role, and wallet state after refresh.
+
+Tests:
+- API tests for nonce generation and wallet linking error/success paths.
+- E2E flow: signup/login -> profile -> connect wallet -> claim ID.
+- Negative tests: invalid nonce, replay nonce, invalid signature, already-linked wallet.
+
+Exit criteria:
+- Zero auth-blocking bugs in staging smoke runs.
+- Deterministic wallet-link error messaging.
+- Auth and wallet flows validated on mobile and desktop.
+
+### Phase 19.3: Task and Sprint Execution
+
+User stories:
+- As admin/council, I can create and manage tasks/sprints with valid constraints.
+- As a member, I can discover, join, submit, and track tasks without confusion.
+- As reviewer/admin, I can review submissions and see points/reputation updates consistently.
+
+Tests:
+- API integration tests for task create/update/claim/unclaim/submission/review.
+- E2E flow: create task -> join -> submit -> review -> points reflected.
+- Manual QA for board/list/timeline views, including localization and mobile layouts.
+
+Exit criteria:
+- Task lifecycle passes end-to-end for admin/member personas.
+- Sprint start/complete workflows validated with task data integrity.
+- No silent failures in status transitions or assignment behavior.
+
+### Phase 19.4: Governance and Voting
+
+User stories:
+- As a member, I can create proposals using the wizard and submit for voting.
+- As a voter, I can vote once with correct effective power/delegation.
+- As admin/council, I can start/finalize voting and trust outcome integrity.
+
+Tests:
+- API tests for proposal CRUD, status transitions, vote casting, and finalize rules.
+- E2E flow: create -> submit -> start voting -> vote -> finalize.
+- Edge tests for quorum/threshold behavior and invalid state transitions.
+
+Exit criteria:
+- Proposal lifecycle has deterministic outcomes across locales.
+- Voting/delegation math is reproducible from API payloads.
+- No broken states between proposal status and voting windows.
+
+### Phase 19.5: Disputes, Rewards, Reputation
+
+User stories:
+- As a disputant, I can file, track, and comment on a dispute with clear status.
+- As council/admin, I can triage, mediate/resolve, and see audit trail updates.
+- As contributor, I can claim rewards and understand threshold/conversion outcomes.
+
+Tests:
+- API integration tests for dispute create/respond/mediate/resolve/appeal flows.
+- E2E flow: rejected submission -> dispute -> resolution -> XP/points adjustments.
+- Rewards API tests for claim submission/review/payment paths.
+
+Exit criteria:
+- Dispute lifecycle passes for member/council/admin actors.
+- XP/reputation/rewards side effects remain consistent after dispute outcomes.
+- Evidence upload/access rules verified with role boundaries.
+
+### Phase 19.6: Members, Settings, Analytics, Treasury
+
+User stories:
+- As admin, I can update org settings safely and without corrupting config data.
+- As member/public visitor, I can use analytics/treasury/member pages with coherent data and empty states.
+- As council, I can access allowed settings while respecting role restrictions.
+
+Tests:
+- API tests for settings/member-role/privacy endpoints with strict validation.
+- E2E role-matrix tests for members directory and admin settings access control.
+- Data consistency checks between dashboard KPIs and source APIs.
+
+Exit criteria:
+- Settings writes are schema-validated and role-safe.
+- Public analytics/treasury pages are stable under empty and populated states.
+- Role permission matrix passes for admin/council/member/viewer.
+
+### Phase 19.7: UX, UI, i18n, and Accessibility Polish
+
+User stories:
+- As a non-English user, I can complete all critical flows without mixed-language UI.
+- As a keyboard/screen-reader user, I can navigate dialogs, drawers, and menus safely.
+- As any user, I can understand errors and recovery actions immediately.
+
+Tests:
+- i18n string audit for all critical paths and fallback states.
+- Accessibility QA: keyboard-only navigation, focus visibility/order, dialog dismissal behavior.
+- Visual regression snapshots for core pages (desktop/mobile).
+
+Exit criteria:
+- No critical hardcoded strings in primary flows.
+- Modal/drawer interactions pass keyboard and focus checks.
+- Core pages meet consistent visual hierarchy and spacing standards.
+
+### Phase 19.8: Security, Performance, and Release Gate
+
+User stories:
+- As platform owner, I can deploy with confidence that security controls and observability are active.
+- As operator, I can detect and triage production errors quickly.
+- As user, I experience stable page loads and responsive core workflows.
+
+Tests:
+- Security hardening checks: remove sensitive debug logs, validate all mutating endpoints with Zod.
+- Performance checks: API response budgets, route payload review, build-size monitoring.
+- Release gate run: lint, build, automated tests, manual smoke checklist, health endpoint, scheduler checks.
+
+Exit criteria:
+- Release gate passes in staging and production preflight.
+- Sentry/health/scheduler telemetry confirms operational readiness.
+- No P0/P1 findings open at launch decision point.
+
 ## 🚧 In Progress / Next Steps
 
 ### Phase 2.1: Task Management Audit Hardening (In Progress)
@@ -621,8 +782,17 @@
 
 ---
 
-Last Updated: 2026-02-16
-Version: 1.9.0
+Last Updated: 2026-02-17
+Version: 2.0.0
+
+## Recent Updates (2026-02-17)
+
+### Deploy Readiness Audit + Phase 19 Program
+
+- Added deployment readiness snapshot with validated baseline (`lint`, `build`, current E2E status).
+- Added explicit production blockers (validation hardening, test coverage, CI test gate, i18n/UX gaps, logging hygiene).
+- Added Phase 19 multi-phase professionalization roadmap with user stories, test plans, and exit criteria.
+- Linked detailed execution plan at `docs/plans/2026-02-17-professional-launch-readiness-plan.md`.
 
 ## Recent Updates (2026-02-16)
 

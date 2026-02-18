@@ -4,6 +4,7 @@ import { PublicKey } from '@solana/web3.js';
 import bs58 from 'bs58';
 import nacl from 'tweetnacl';
 import { parseJsonBody } from '@/lib/parse-json-body';
+import { linkWalletSchema } from '@/features/auth/schemas';
 import { applyIpRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
 
@@ -20,20 +21,20 @@ export async function POST(request: Request) {
       return rateLimited;
     }
 
-    const parsedBody = await parseJsonBody<{
-      walletAddress?: string;
-      signature?: string;
-      message?: string;
-    }>(request);
-    if (parsedBody.error !== null) {
-      return NextResponse.json({ error: parsedBody.error }, { status: 400 });
+    const { data: body, error: jsonError } = await parseJsonBody(request);
+    if (jsonError) {
+      return NextResponse.json({ error: jsonError }, { status: 400 });
     }
 
-    const { walletAddress, signature, message } = parsedBody.data;
-
-    if (!walletAddress || !signature || !message) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    const validationResult = linkWalletSchema.safeParse(body);
+    if (!validationResult.success) {
+      return NextResponse.json(
+        { error: 'Invalid wallet link data', details: validationResult.error.errors },
+        { status: 400 }
+      );
     }
+
+    const { walletAddress, signature, message } = validationResult.data;
 
     // Extract and validate nonce from message
     const nonce = extractNonceFromMessage(message);

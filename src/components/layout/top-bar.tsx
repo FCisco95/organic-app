@@ -100,7 +100,7 @@ export function TopBar() {
                       <AvatarImage src={profile.avatar_url} alt="User avatar" />
                     )}
                     <AvatarFallback className="bg-primary text-primary-foreground text-xs font-bold">
-                      {((profile as any)?.name || user?.email || 'U')[0].toUpperCase()}
+                      {(profile?.name || user?.email || 'U')[0].toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                 </Button>

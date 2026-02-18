@@ -28,6 +28,7 @@ import {
   User,
   LogOut,
   FileText,
+  ClipboardCheck,
 } from 'lucide-react';
 
 export function MobileSidebar() {
@@ -53,6 +54,7 @@ export function MobileSidebar() {
     { href: '/rewards', labelKey: 'rewards', icon: Gift, show: !!user },
     { href: '/disputes', labelKey: 'disputes', icon: Scale, show: !!user },
     { href: '/notifications', labelKey: 'notifications', icon: Bell, show: !!user },
+    { href: '/admin/submissions', labelKey: 'submissions', icon: ClipboardCheck, show: !!isAdminOrCouncil },
     { href: '/admin/rewards', labelKey: 'adminRewards', icon: Gift, show: !!isAdminOrCouncil },
     { href: '/admin/settings', labelKey: 'settings', icon: Settings, show: !!isAdminOrCouncil },
     { href: '/profile', labelKey: 'profile', icon: User, show: !!user },

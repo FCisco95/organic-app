@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { parseJsonBody } from '@/lib/parse-json-body';
+import { updateTaskSchema } from '@/features/tasks/schemas';
 import { logger } from '@/lib/logger';
 
 // GET - Fetch a single task with details
@@ -148,40 +149,35 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     if (jsonError) {
       return NextResponse.json({ error: jsonError }, { status: 400 });
     }
-    const {
-      title,
-      description,
-      status,
-      priority,
-      points,
-      base_points,
-      assignee_id,
-      sprint_id,
-      task_type,
-      is_team_task,
-      max_assignees,
-      due_date,
-      labels,
-    } = body as Record<string, unknown>;
+
+    const validationResult = updateTaskSchema.safeParse(body);
+    if (!validationResult.success) {
+      return NextResponse.json(
+        { error: 'Invalid task data', details: validationResult.error.errors },
+        { status: 400 }
+      );
+    }
+
+    const input = validationResult.data;
 
     // Build update object with only provided fields
     const updates: Record<string, unknown> = {};
-    if (title !== undefined) updates.title = title;
-    if (description !== undefined) updates.description = description;
-    if (status !== undefined) {
-      updates.status = status;
-      updates.completed_at = status === 'done' ? new Date().toISOString() : null;
+    if (input.title !== undefined) updates.title = input.title;
+    if (input.description !== undefined) updates.description = input.description;
+    if (input.status !== undefined) {
+      updates.status = input.status;
+      updates.completed_at = input.status === 'done' ? new Date().toISOString() : null;
     }
-    if (priority !== undefined) updates.priority = priority;
-    if (points !== undefined) updates.points = points;
-    if (base_points !== undefined) updates.base_points = base_points;
-    if (assignee_id !== undefined) updates.assignee_id = assignee_id;
-    if (sprint_id !== undefined) updates.sprint_id = sprint_id;
-    if (task_type !== undefined) updates.task_type = task_type;
-    if (is_team_task !== undefined) updates.is_team_task = is_team_task;
-    if (max_assignees !== undefined) updates.max_assignees = max_assignees;
-    if (due_date !== undefined) updates.due_date = due_date;
-    if (labels !== undefined) updates.labels = labels;
+    if (input.priority !== undefined) updates.priority = input.priority;
+    if (input.points !== undefined) updates.points = input.points;
+    if (input.base_points !== undefined) updates.base_points = input.base_points;
+    if (input.assignee_id !== undefined) updates.assignee_id = input.assignee_id;
+    if (input.sprint_id !== undefined) updates.sprint_id = input.sprint_id;
+    if (input.task_type !== undefined) updates.task_type = input.task_type;
+    if (input.is_team_task !== undefined) updates.is_team_task = input.is_team_task;
+    if (input.max_assignees !== undefined) updates.max_assignees = input.max_assignees;
+    if (input.due_date !== undefined) updates.due_date = input.due_date;
+    if (input.labels !== undefined) updates.labels = input.labels;
 
     const { data: task, error } = await supabase
       .from('tasks')

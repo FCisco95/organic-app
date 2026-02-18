@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { parseJsonBody } from '@/lib/parse-json-body';
+import { settingsPatchSchema } from '@/features/settings/schemas';
 import { logger } from '@/lib/logger';
 
 const ORG_COLUMNS =
@@ -70,6 +71,16 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: jsonError }, { status: 400 });
     }
 
+    const validationResult = settingsPatchSchema.safeParse(body);
+    if (!validationResult.success) {
+      return NextResponse.json(
+        { error: 'Invalid settings data', details: validationResult.error.errors },
+        { status: 400 }
+      );
+    }
+
+    const validated = validationResult.data;
+
     // Separate voting config fields from org fields
     const votingFields = [
       'quorum_percentage',
@@ -79,13 +90,13 @@ export async function PATCH(request: NextRequest) {
       'proposer_cooldown_days',
       'max_live_proposals',
       'abstain_counts_toward_quorum',
-    ];
+    ] as const;
 
     const orgUpdate: Record<string, unknown> = {};
     const votingUpdate: Record<string, unknown> = {};
 
-    for (const [key, value] of Object.entries(body)) {
-      if (votingFields.includes(key)) {
+    for (const [key, value] of Object.entries(validated)) {
+      if ((votingFields as readonly string[]).includes(key)) {
         votingUpdate[key] = value;
       } else {
         orgUpdate[key] = value;
