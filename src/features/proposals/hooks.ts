@@ -16,7 +16,10 @@ export const proposalKeys = {
 };
 
 /**
- * Fetch proposals with optional filters
+ * Fetch proposals with optional filters, with comment counts in one parallel round trip.
+ *
+ * get_comment_counts_for_type() needs no proposal IDs, so the two DB calls
+ * run concurrently via Promise.all instead of sequentially.
  */
 export function useProposals(filters: ProposalFilters = {}) {
   const supabase = createClient();
@@ -53,32 +56,29 @@ export function useProposals(filters: ProposalFilters = {}) {
         query = query.eq('created_by', filters.created_by);
       }
 
-      const { data, error } = await query;
-      if (error) throw error;
+      // Fetch proposals and all proposal comment counts in parallel.
+      // get_comment_counts_for_type() needs no IDs, eliminating the sequential dependency.
+      const [proposalsResult, countsResult] = await Promise.all([
+        query,
+        supabase.rpc('get_comment_counts_for_type', { p_subject_type: 'proposal' }),
+      ]);
 
-      const proposalIds = (data ?? []).map((proposal) => proposal.id);
-      if (proposalIds.length === 0) return [] as ProposalListItem[];
+      if (proposalsResult.error) throw proposalsResult.error;
+      if (countsResult.error) throw countsResult.error;
 
-      const { data: counts, error: countsError } = await supabase.rpc('get_comment_counts', {
-        p_subject_type: 'proposal',
-        p_subject_ids: proposalIds,
-      });
-
-      if (countsError) throw countsError;
+      if ((proposalsResult.data ?? []).length === 0) return [] as ProposalListItem[];
 
       const countMap = new Map(
-        (counts ?? []).map((row: { subject_id: string; count: number }) => [
+        (countsResult.data ?? []).map((row: { subject_id: string; count: number }) => [
           row.subject_id,
           row.count,
         ])
       );
 
-      const proposalsWithCounts = (data ?? []).map((proposal) => ({
+      return (proposalsResult.data ?? []).map((proposal) => ({
         ...proposal,
         comments_count: countMap.get(proposal.id) ?? 0,
-      }));
-
-      return proposalsWithCounts as unknown as ProposalListItem[];
+      })) as unknown as ProposalListItem[];
     },
   });
 }

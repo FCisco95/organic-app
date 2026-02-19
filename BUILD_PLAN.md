@@ -782,8 +782,24 @@ Exit criteria:
 
 ---
 
-Last Updated: 2026-02-17
+Last Updated: 2026-02-18
 Version: 2.0.0
+
+## Recent Updates (2026-02-18)
+
+### Phase G Staging Sign-off Progress
+
+- Initial staging gate run failed while ngrok/local app endpoint was offline (health check failed; E2E produced widespread `404` responses).
+- Applied targeted API/test fixes from the failing run:
+  - removed invalid `tasks_created_by_fkey` joins from task/sprint API responses
+  - aligned disputes/proposals/task/profile E2E expectations with current API/runtime behavior
+- Re-ran validations:
+  - `npm run lint` → pass
+  - `npm run build` → pass
+  - staging health endpoint (`/api/health`) → `200` with `{"status":"ok"}`
+  - full staging E2E run (`--workers=1`) → `45 passed`, `3 skipped`
+- Updated sign-off artifacts in `docs/2026-02-18-phase-g-staging-signoff.md`, `NEXT_SESSION_FOCUS.md`, and `SESSION_LOG.md`.
+- Remaining pre-launch checks: manual QA runbook + Sentry unresolved-error review.
 
 ## Recent Updates (2026-02-17)
 

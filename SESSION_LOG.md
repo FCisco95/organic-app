@@ -2,6 +2,103 @@
 
 Add newest entries at the top.
 
+## 2026-02-19 (Session: DB Performance & Optimization — Sessions 2–5 wrap-up)
+
+### Summary
+
+Completed the DB Performance & Optimization plan. Verified that Sessions 1–5 DB migrations were already applied to the live database in a prior session via Supabase MCP. Completed the remaining app-level code changes (Session 5c) and documented all migration drift.
+
+### DB state (verified 2026-02-19)
+
+All planned DB migrations are applied. Advisor results post-completion:
+
+- **Security errors**: Cleared — `market_snapshots` has RLS, `leaderboard_view` is no longer SECURITY DEFINER.
+- **Duplicate permissive policies**: Cleared — consolidated to 1 policy per table+cmd+role.
+- **RLS auth.uid() per-row**: Cleared — all 76 policies now use `(SELECT auth.uid())` initplan form.
+- **Missing FK indexes**: Added for `comments`, `dispute_comments`, `holder_snapshots`, `notification_batch_events`, `notifications`, `recurring_task_instances`, `reward_claims`.
+- **Remaining performance lints**: Only INFO-level unused-index warnings remain — these are expected in a dev/low-traffic environment and do not affect correctness.
+- **Remaining security warnings**: `leaderboard_materialized` accessible by anon (intentional — public leaderboard) and `auth_leaked_password_protection` disabled (Supabase dashboard setting, not code).
+
+### Code changes
+
+**`src/features/proposals/hooks.ts`** — `useProposals` (Session 5c)
+- Replaced sequential 2-query pattern (proposals → `get_comment_counts(ids)`) with parallel execution.
+- New DB function `get_comment_counts_for_type(p_subject_type)` fetches all counts for a subject type without needing IDs, eliminating the sequential dependency.
+- Both queries now run concurrently via `Promise.all`.
+
+**`src/features/tasks/hooks.ts`** — `usePendingReviewSubmissions` (Session 5b — completed in prior session)
+- Already uses a single nested select with submitter and task joined inline.
+
+**`src/lib/supabase/server.ts`** — Connection pooling (Session 5d)
+- Verified: this app uses `@supabase/ssr` with PostgREST (REST API), not direct Postgres. The pooler URL is only needed for direct psql/ORM connections. No change required.
+
+### Migration files added
+
+- `supabase/migrations/20260219222832_proposals_comment_counts_parallel_rpc.sql` — `get_comment_counts_for_type` function
+
+### Known migration file gap
+
+Sessions 1–5 DB migrations were applied via Supabase MCP in a prior session with auto-generated timestamps. The local repo has:
+- `20260219000000_rls_perf_fix_initplan.sql` and `20260219000001_rls_perf_fix_initplan_supplement.sql` — local files with different version numbers than what was applied to DB (`20260219215118`, `20260219215231`). All SQL is idempotent (DROP IF EXISTS + CREATE).
+- Sessions 2–5 DB migrations (`20260219215935` through `20260219221700`) have **no local SQL files** — they were applied directly via MCP.
+
+Impact: running `supabase db push` would re-apply the two Session 1 local files (idempotent, safe) and would not know about Sessions 2–5 (already applied, no conflict). This is a tracking/documentation gap, not a functional issue.
+
+### Validation
+
+- `npm run lint`: pass.
+
+## 2026-02-18 (Session: Phase G re-test + E2E stabilization)
+
+### Summary
+
+Continued Phase G after staging/ngrok recovery, fixed API/test mismatches uncovered in the first sign-off attempt, and reran the full E2E suite successfully against the staging URL.
+
+### Code and test updates
+
+- Fixed task detail/update API query shape to remove invalid `tasks_created_by_fkey` profile join:
+  - `src/app/api/tasks/[id]/route.ts`
+- Removed the same invalid created-by join from sprint detail task select:
+  - `src/app/api/sprints/[id]/route.ts`
+- Updated E2E tests for current API behavior and stability:
+  - `tests/disputes.spec.ts` (`config` shape assertion + allow `429` in re-file guard path)
+  - `tests/proposals.spec.ts` (proposal `solution` text now satisfies min length validation)
+  - `tests/tasks.spec.ts` (set Task CRUD describe to serial mode)
+  - `tests/profile.spec.ts` (set ngrok warning-skip header for browser flow)
+
+### Validation and evidence
+
+- `npm run lint`: pass.
+- `npm run build`: pass (after clearing stale `.next` artifacts from mixed dev/build state).
+- Staging health check: `GET /api/health` returned `{"status":"ok"}` (HTTP `200`).
+- Full staging E2E run (`npm run test:e2e -- --workers=1`): `45 passed`, `3 skipped`.
+
+### Remaining for final launch decision
+
+- Manual QA runbook still pending: `docs/qa-runbook.md` (desktop + mobile).
+- Sentry unresolved-error review still pending (local env still missing `SENTRY_AUTH_TOKEN`).
+
+## 2026-02-18 (Session: Phase G staging sign-off)
+
+### Summary
+
+Executed the launch sign-off gate from `NEXT_SESSION_FOCUS.md` and recorded a formal no-go decision because staging is not currently healthy.
+
+### Validation and evidence
+
+- `npm run lint`: pass.
+- `npm run build`: pass.
+- `npm run test:e2e` against staging target: fail (`10 failed`, `3 skipped`, `35 did not run`), with widespread unexpected `404` responses on critical API routes.
+- Direct health check to staging `/api/health`: returned ngrok offline page (`ERR_NGROK_3200`), HTTP `404`, not `{"status":"ok"}`.
+
+### Outcome
+
+- Launch decision: **No-go**.
+- Manual QA runbook blocked until staging is reachable/healthy.
+- Sentry unresolved-error review blocked in this environment (`SENTRY_AUTH_TOKEN` not configured and no successful staging smoke baseline).
+- Added sign-off report: `docs/2026-02-18-phase-g-staging-signoff.md`.
+- Updated `NEXT_SESSION_FOCUS.md` with gate status and blockers.
+
 ## 2026-02-18 (Session: Launch readiness execution — Phases B, D, E, F)
 
 ### Summary

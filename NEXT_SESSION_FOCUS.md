@@ -17,21 +17,30 @@ All Phase 19 launch-readiness tracks are done:
 
 Run the full pre-release gate and make the launch decision.
 
+### Status update (2026-02-18)
+
+- `npm run lint` and `npm run build` passed on the current branch.
+- Initial staging attempt failed while ngrok/local app was offline.
+- After bringing ngrok + local app back online, `npm run test:e2e` against staging passed: `45 passed`, `3 skipped`.
+- Staging health check now passes: `GET /api/health` returns `{"status":"ok"}` (HTTP `200`).
+- Current launch decision status: **Pending final sign-off** (manual QA + Sentry review still open).
+
 ### Checklist
 
-- [ ] Run `npm run lint` and `npm run build` on the latest main branch.
-- [ ] Run `npm run test:e2e` with Supabase credentials pointed at a staging environment.
+- [x] Run `npm run lint` and `npm run build` on the latest main branch.
+- [x] Run `npm run test:e2e` with Supabase credentials pointed at a staging environment. (Latest run: `45 passed`, `3 skipped`.)
 - [ ] Execute the manual QA runbook: `docs/qa-runbook.md` (desktop + mobile).
-- [ ] Confirm `/api/health` returns `{"status":"ok"}` on the staging URL.
-- [ ] Review Sentry for any unresolved errors from staging smoke run.
-- [ ] Document go/no-go decision and any open risks.
+- [x] Confirm `/api/health` returns `{"status":"ok"}` on the staging URL.
+- [ ] Review Sentry for any unresolved errors from staging smoke run. (`SENTRY_AUTH_TOKEN` still missing locally.)
+- [x] Document go/no-go decision and any open risks. (See report below; status now pending final manual/ops checks.)
 
 ### Reference files
 
 - Plan: `docs/plans/2026-02-17-professional-launch-readiness-plan.md`
+- Sign-off report: `docs/2026-02-18-phase-g-staging-signoff.md`
 - Manual runbook: `docs/qa-runbook.md`
 - Session history: `SESSION_LOG.md`
 
 ## Suggested first command next session
 
-Run the full E2E suite against staging, then walk through `docs/qa-runbook.md`.
+Execute `docs/qa-runbook.md` on desktop + mobile, then complete Sentry unresolved-error review for the staging smoke window.

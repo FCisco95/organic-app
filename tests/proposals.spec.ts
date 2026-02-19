@@ -87,7 +87,7 @@ test.describe('Proposal lifecycle', () => {
         motivation:
           'Currently the project has minimal automated test coverage, which creates risk for regressions during active development.',
         solution:
-          'Add Playwright E2E smoke tests grouped by domain: tasks, sprints, proposals, disputes, rewards.',
+          'Add Playwright E2E smoke tests grouped by domain: tasks, sprints, proposals, disputes, rewards, with CI gating and runbook-backed manual QA.',
       },
     });
 

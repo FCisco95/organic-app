@@ -30,6 +30,8 @@ import {
 // ─── Task CRUD ───────────────────────────────────────────────────────────────
 
 test.describe('Task CRUD', () => {
+  test.describe.configure({ mode: 'serial' });
+
   const missing = missingEnvVars();
 
   let adminUserId = '';

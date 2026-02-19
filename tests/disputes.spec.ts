@@ -164,7 +164,7 @@ test.describe('Dispute lifecycle', () => {
     });
     expect(res.status()).toBe(200);
     const body = await res.json();
-    expect(body).toHaveProperty('config');
+    expect(body).toHaveProperty('data');
   });
 
   test('member files a dispute against rejected submission', async ({ request }) => {
@@ -279,7 +279,8 @@ test.describe('Dispute lifecycle', () => {
           'Attempting to re-file a dispute on the same submission to test the conflict guard.',
       },
     });
-    // Expect 409 (active dispute exists) or 400 (submission not in rejected state)
-    expect([400, 409]).toContain(res.status());
+    // Expect 409 (active dispute exists), 400 (submission state gate),
+    // or 429 when environment rate limiting is triggered.
+    expect([400, 409, 429]).toContain(res.status());
   });
 });

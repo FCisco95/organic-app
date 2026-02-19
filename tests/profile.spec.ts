@@ -159,6 +159,7 @@ test.describe('Profile stats', () => {
           url: BASE_URL,
         },
       ]);
+      await page.context().setExtraHTTPHeaders({ 'ngrok-skip-browser-warning': '1' });
 
       await page.goto('/en/profile', { waitUntil: 'domcontentloaded' });
       await expect(page.getByRole('heading', { name: /my profile/i })).toBeVisible();

@@ -31,12 +31,6 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
           organic_id,
           avatar_url
         ),
-        created_by_user:user_profiles!tasks_created_by_fkey(
-          id,
-          name,
-          email,
-          organic_id
-        ),
         sprint:sprints(
           id,
           name,
@@ -192,12 +186,6 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
           email,
           organic_id,
           avatar_url
-        ),
-        created_by_user:user_profiles!tasks_created_by_fkey(
-          id,
-          name,
-          email,
-          organic_id
         ),
         sprint:sprints(
           id,

@@ -169,37 +169,39 @@ export function useMyTasks(userId: string) {
   return useQuery({
     queryKey: taskKeys.myTasks(userId),
     queryFn: async () => {
-      // Fetch solo tasks assigned to user
-      const { data: soloTasks, error: soloError } = await supabase
-        .from('tasks')
-        .select(
-          `
-          *,
-          sprint:sprints(id, name, status)
-        `
-        )
-        .eq('assignee_id', userId)
-        .neq('status', 'done')
-        .order('priority', { ascending: true });
-
-      if (soloError) throw soloError;
-
-      // Fetch team tasks where user is an assignee
-      const { data: teamAssignments, error: teamError } = (await supabase
-        .from('task_assignees')
-        .select(
-          `
-          task:tasks(
+      // Run both queries in parallel — they are independent
+      const [soloResult, teamResult] = await Promise.all([
+        supabase
+          .from('tasks')
+          .select(
+            `
             *,
             sprint:sprints(id, name, status)
+          `
           )
-        `
-        )
-        .eq('user_id', userId)) as unknown as {
+          .eq('assignee_id', userId)
+          .neq('status', 'done')
+          .order('priority', { ascending: true }),
+        supabase
+          .from('task_assignees')
+          .select(
+            `
+            task:tasks(
+              *,
+              sprint:sprints(id, name, status)
+            )
+          `
+          )
+          .eq('user_id', userId),
+      ]);
+
+      const { data: soloTasks, error: soloError } = soloResult;
+      const { data: teamAssignments, error: teamError } = teamResult as unknown as {
         data: { task: TaskWithRelations | null }[] | null;
         error: Error | null;
       };
 
+      if (soloError) throw soloError;
       if (teamError) throw teamError;
 
       const teamTasks = (teamAssignments ?? [])
@@ -228,38 +230,22 @@ export function usePendingReviewSubmissions() {
   return useQuery({
     queryKey: taskKeys.pendingReview(),
     queryFn: async () => {
-      const { data: submissions, error } = await supabase
+      // Single query: submissions + submitter profile + task info via nested select.
+      // Replaces the previous 3-round-trip pattern (submissions → users + tasks in parallel).
+      const { data, error } = await supabase
         .from('task_submissions')
-        .select(TASK_SUBMISSION_REVIEW_COLUMNS)
+        .select(
+          `
+          ${TASK_SUBMISSION_REVIEW_COLUMNS},
+          user:user_profiles!task_submissions_user_id_fkey(id, name, email, organic_id, avatar_url),
+          task:tasks!task_submissions_task_id_fkey(id, title, task_type, base_points)
+        `
+        )
         .eq('review_status', 'pending')
         .order('submitted_at', { ascending: true });
 
       if (error) throw error;
-      if (!submissions || submissions.length === 0) return [];
-
-      const userIds = Array.from(new Set(submissions.map((s) => s.user_id)));
-      const taskIds = Array.from(new Set(submissions.map((s) => s.task_id)));
-
-      const [{ data: users, error: userError }, { data: tasks, error: taskError }] =
-        await Promise.all([
-          supabase
-            .from('user_profiles')
-            .select('id, name, email, organic_id, avatar_url')
-            .in('id', userIds),
-          supabase.from('tasks').select('id, title, task_type, base_points').in('id', taskIds),
-        ]);
-
-      if (userError) throw userError;
-      if (taskError) throw taskError;
-
-      const userMap = new Map((users ?? []).map((user) => [user.id, user]));
-      const taskMap = new Map((tasks ?? []).map((task) => [task.id, task]));
-
-      return submissions.map((submission) => ({
-        ...submission,
-        user: userMap.get(submission.user_id) ?? null,
-        task: taskMap.get(submission.task_id) ?? null,
-      }));
+      return data ?? [];
     },
   });
 }
