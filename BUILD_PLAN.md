@@ -1,5 +1,173 @@
 # Organic DAO Platform - Build Plan
 
+## 🔄 2026-02-20 UI/UX Revamp Wave 2 (Disputes Slice Checkpoint)
+
+- Executed disputes revamp slice from `docs/plans/2026-02-20-ui-ux-revamp-wave2-master-plan.md`:
+  - Added triage-first disputes queue surface with SLA counters, SLA/tier filter rails, and escalation controls:
+    - `src/components/disputes/DisputeQueue.tsx`
+    - `src/components/disputes/DisputeCard.tsx`
+    - `src/app/[locale]/disputes/page.tsx`
+  - Added detail-page integrity rail with explicit response deadline posture, evidence chronology status, response state, and mediation/escalation path:
+    - `src/components/disputes/DisputeDetail.tsx`
+    - `src/components/disputes/DisputeTimeline.tsx`
+    - `src/app/[locale]/disputes/[id]/page.tsx`
+  - Improved action ergonomics and guardrails:
+    - `src/components/disputes/RespondPanel.tsx`
+    - `src/components/disputes/ResolvePanel.tsx`
+    - `src/components/disputes/CreateDisputeModal.tsx`
+  - Refined disputes stats surface posture:
+    - `src/components/disputes/DisputeStats.tsx`
+  - Added/updated disputes revamp tests:
+    - `tests/disputes-surface-revamp.spec.ts`
+    - `tests/disputes.spec.ts`
+    - `tests/dispute-sla.spec.ts`
+  - Added i18n copy updates for disputes revamp surfaces:
+    - `messages/en.json`
+    - `messages/pt-PT.json`
+    - `messages/zh-CN.json`
+
+### Disputes slice validation evidence
+
+- [x] `npm run lint` (pass)
+- [x] `npm run build` (pass)
+- [ ] `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3000 npx playwright test tests/disputes-surface-revamp.spec.ts tests/disputes.spec.ts tests/dispute-sla.spec.ts --workers=1` (all skipped in this environment due missing required Supabase env vars)
+
+### Next execution target
+
+- UI/UX Revamp Wave 2 - Feature 5 (Rewards surface revamp): `docs/plans/2026-02-20-rewards-ui-ux-revamp-plan.md`.
+
+## 🔄 2026-02-20 UI/UX Revamp Wave 2 (Sprints Slice Checkpoint)
+
+- Executed sprints revamp slice from `docs/plans/2026-02-20-ui-ux-revamp-wave2-master-plan.md`:
+  - Added sprint command deck (phase rail, countdown/status chips, settlement posture panel) and stable anchors:
+    - `src/app/[locale]/sprints/page.tsx`
+  - Revamped sprint board/list/timeline surfaces for clearer execution context:
+    - `src/components/sprints/sprint-board-view.tsx`
+    - `src/components/sprints/sprint-list-view.tsx`
+    - `src/components/sprints/sprint-timeline.tsx`
+  - Added sprint detail operator rail (phase timeline, blocker panel, readiness checklist) and stable anchors:
+    - `src/app/[locale]/sprints/[id]/page.tsx`
+  - Updated sprint lifecycle dialogs with explicit pre-flight/closeout checklists:
+    - `src/components/sprints/sprint-start-dialog.tsx`
+    - `src/components/sprints/sprint-complete-dialog.tsx`
+  - Added/updated sprint surface tests:
+    - `tests/sprints-surface-revamp.spec.ts`
+    - `tests/sprints.spec.ts`
+    - `tests/sprint-phase-engine.spec.ts`
+  - Added i18n copy updates for sprint revamp surfaces:
+    - `messages/en.json`
+    - `messages/pt-PT.json`
+    - `messages/zh-CN.json`
+
+### Sprints slice validation evidence
+
+- [x] `npm run lint` (pass)
+- [x] `npm run build` (pass)
+- [ ] `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3000 npx playwright test tests/sprints-surface-revamp.spec.ts tests/sprints.spec.ts tests/sprint-phase-engine.spec.ts --workers=1` (all skipped in this environment due missing required Supabase env vars)
+
+### Next execution target
+
+- UI/UX Revamp Wave 2 - Feature 4 (Disputes surface revamp): `docs/plans/2026-02-20-disputes-ui-ux-revamp-plan.md`.
+
+## 🔄 2026-02-20 UI/UX Revamp Wave 2 (Proposals Slice Checkpoint)
+
+- Executed proposals revamp slice from `docs/plans/2026-02-20-ui-ux-revamp-wave2-master-plan.md`:
+  - Added governance signal strip, stage chips, and explicit CTA hierarchy on proposals list:
+    - `src/app/[locale]/proposals/page.tsx`
+  - Added proposal card trust framing + stable test anchors:
+    - `src/components/proposals/ProposalCard.tsx`
+  - Added two-column decision rail (status window, version context, immutable provenance callout) + test anchors:
+    - `src/app/[locale]/proposals/[id]/page.tsx`
+    - `src/components/proposals/ProposalSections.tsx`
+  - Revamped proposal creation header/wizard state feedback:
+    - `src/app/[locale]/proposals/new/page.tsx`
+    - `src/components/proposals/ProposalWizard.tsx`
+  - Added/updated proposal surface tests:
+    - `tests/proposals-surface-revamp.spec.ts`
+    - `tests/proposals.spec.ts`
+    - `tests/proposals-lifecycle.spec.ts`
+  - Added i18n copy updates for proposals surfaces:
+    - `messages/en.json`
+    - `messages/pt-PT.json`
+    - `messages/zh-CN.json`
+
+### Proposals slice validation evidence
+
+- [x] `npm run lint` (pass)
+- [x] `npm run build` (pass)
+- [ ] `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3000 npx playwright test tests/proposals-surface-revamp.spec.ts tests/proposals.spec.ts tests/proposals-lifecycle.spec.ts --workers=1` (all skipped in this environment due missing required Supabase env vars)
+
+### Next execution target
+
+- UI/UX Revamp Wave 2 - Feature 2 (Tasks surface revamp): `docs/plans/2026-02-20-tasks-ui-ux-revamp-plan.md`.
+
+## ✅ 2026-02-20 Governance Integrity Update (Task 9 Complete)
+
+- Delivered trust-surface revamp across homepage, treasury, and analytics:
+  - `src/app/[locale]/page.tsx` now includes a dedicated trust pulse strip (sprint countdown, proposal stage mix, leaderboard snapshot, recent activity).
+  - `src/app/[locale]/treasury/page.tsx` now includes transparency/freshness context and trust metadata chips.
+  - `src/app/[locale]/analytics/page.tsx` now includes governance-health framing and freshness metadata chips.
+- Expanded trust components:
+  - `src/components/treasury/treasury-hero.tsx` now surfaces emission policy + latest settlement posture with audit link.
+  - `src/components/analytics/kpi-cards.tsx` now includes 30-day trust aggregates and contributor signals.
+- Expanded API trust payloads:
+  - `src/app/api/treasury/route.ts` now returns trust metadata (`emission_policy`, `latest_settlement`, audit link, update cadence).
+  - `src/app/api/analytics/route.ts` now returns trust aggregates (proposal throughput, disputes, vote participation, contributor signals).
+- Updated domain typing/schema coverage:
+  - `src/features/treasury/types.ts`, `src/features/treasury/schemas.ts`
+  - `src/features/analytics/types.ts`, `src/features/analytics/schemas.ts`
+  - refreshed query cadence in `src/features/treasury/hooks.ts` and `src/features/analytics/hooks.ts`.
+- Added Task 9 tests:
+  - `tests/home-trust-surface.spec.ts`
+  - `tests/treasury-transparency.spec.ts`
+  - `tests/analytics-liveness.spec.ts`
+- Updated i18n copy for Task 9 surfaces:
+  - `messages/en.json`, `messages/pt-PT.json`, `messages/zh-CN.json`
+
+### Task 9 validation evidence
+
+- [x] `npm run lint` (pass)
+- [x] `npm run build` (pass)
+- [x] `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3001 npx playwright test tests/home-trust-surface.spec.ts tests/treasury-transparency.spec.ts tests/analytics-liveness.spec.ts --workers=1` (3 passed)
+- [ ] `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3001 npx playwright test tests/profile.spec.ts --workers=1` (skipped in this environment due missing required Supabase env vars)
+
+### Next execution target
+
+- Task 10: Full release gate and sign-off (`docs/plans/2026-02-20-core-features-revamp-test-implementation-plan.md`).
+
+## ✅ 2026-02-20 Governance Integrity Update (Task 8 Complete)
+
+- Added admin config/audit migration (`20260220123000_admin_config_and_audit_events.sql`) with:
+  - new org-level policy knobs (`governance_policy`, `sprint_policy`),
+  - append-only `admin_config_audit_events` ledger,
+  - immutable update/delete guards for audit rows,
+  - admin-only audit inserts + admin/council audit reads via RLS.
+- Expanded settings validation/types:
+  - `src/features/settings/schemas.ts` now validates governance/sprint/rewards policy knobs.
+  - `PATCH /api/settings` now requires `reason` and at least one changed field.
+  - `src/features/settings/types.ts` now includes typed governance/sprint policy and extended rewards config fields.
+- Hardened settings API auditing:
+  - `src/app/api/settings/route.ts` now records per-scope audit rows (`org`, `voting_config`, `governance_policy`, `sprint_policy`, `rewards_config`) with previous/new payload snapshots and actor metadata.
+- Updated admin settings UX:
+  - `src/components/settings/settings-field.tsx` save bar now requires a change reason.
+  - `src/components/settings/*.tsx` tabs now submit `reason` and expose new governance/sprint/reward policy controls.
+  - `src/app/[locale]/admin/settings/page.tsx` now passes governance policy config to governance tab.
+  - Updated i18n keys in `messages/en.json`, `messages/pt-PT.json`, `messages/zh-CN.json`.
+- Added Task 8 tests:
+  - `src/features/settings/__tests__/config-validation.test.ts`
+  - `tests/admin-config-audit.spec.ts`
+
+### Task 8 validation evidence
+
+- [x] `npm run lint` (pass)
+- [x] `npm run build` (pass)
+- [ ] `node --test src/features/settings/__tests__/config-validation.test.ts` (repo lacks TS runtime wiring for `node --test` on `.ts` files)
+- [ ] `npx playwright test tests/admin-config-audit.spec.ts --workers=1` (skipped in this environment due missing required Supabase env vars)
+
+### Next execution target
+
+- Task 9: Trust-surface revamps (`docs/plans/2026-02-20-core-features-revamp-test-implementation-plan.md`).
+
 ## ✅ 2026-02-20 Governance Integrity Update (Task 7 Complete)
 
 - Added XP-first leaderboard migration (`20260220120000_xp_leaderboard_view_refresh.sql`) with deterministic tie-breakers:
