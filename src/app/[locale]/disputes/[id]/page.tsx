@@ -53,7 +53,7 @@ export default function DisputeDetailPage() {
   if (isLoading) {
     return (
       <PageContainer>
-        <div className="flex items-center justify-center py-20">
+        <div data-testid="dispute-detail-page" className="flex items-center justify-center py-20">
           <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
         </div>
       </PageContainer>
@@ -63,7 +63,7 @@ export default function DisputeDetailPage() {
   if (isError) {
     return (
       <PageContainer>
-        <div className="text-center py-20">
+        <div data-testid="dispute-detail-page" className="text-center py-20">
           <p className="text-red-600 text-sm">{(error as Error)?.message || td('loadFailed')}</p>
           <Link href="/disputes" className="text-orange-600 hover:underline mt-2 inline-block">
             {td('backToDisputes')}
@@ -76,7 +76,7 @@ export default function DisputeDetailPage() {
   if (!dispute) {
     return (
       <PageContainer>
-        <div className="text-center py-20">
+        <div data-testid="dispute-detail-page" className="text-center py-20">
           <p className="text-gray-500">{td('notFound')}</p>
           <Link href="/disputes" className="text-orange-600 hover:underline mt-2 inline-block">
             {td('backToDisputes')}
@@ -95,8 +95,10 @@ export default function DisputeDetailPage() {
 
   return (
     <PageContainer>
+      <div data-testid="dispute-detail-page">
       {/* Back link */}
       <Link
+        data-testid="dispute-detail-back-link"
         href="/disputes"
         className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 mb-6"
       >
@@ -114,7 +116,7 @@ export default function DisputeDetailPage() {
 
       {/* Comments section */}
       {isParty && (
-        <div className="mt-8">
+        <div data-testid="dispute-comments-panel" className="mt-8 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
           <h3 className="text-sm font-semibold text-gray-900 mb-4">
             {td('comments')}
           </h3>
@@ -127,6 +129,7 @@ export default function DisputeDetailPage() {
               {comments.map((comment) => (
                 <div
                   key={comment.id}
+                  data-testid={`dispute-comment-${comment.id}`}
                   className="flex gap-3 p-3 rounded-lg bg-gray-50"
                 >
                   <Avatar className="h-7 w-7 shrink-0">
@@ -157,7 +160,7 @@ export default function DisputeDetailPage() {
           )}
 
           {/* Add comment */}
-          <div className="flex gap-2">
+          <div className="flex gap-2" data-testid="dispute-comment-input-row">
             <input
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
@@ -184,6 +187,7 @@ export default function DisputeDetailPage() {
           </div>
         </div>
       )}
+      </div>
     </PageContainer>
   );
 }

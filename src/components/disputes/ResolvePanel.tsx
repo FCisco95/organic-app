@@ -5,7 +5,6 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { useResolveDispute } from '@/features/disputes/hooks';
 import type { DisputeResolution } from '@/features/disputes/types';
-import { DISPUTE_RESOLUTION_LABELS } from '@/features/disputes/types';
 import { Loader2 } from 'lucide-react';
 
 const RESOLUTIONS: DisputeResolution[] = ['overturned', 'upheld', 'compromise', 'dismissed'];
@@ -49,10 +48,11 @@ export function ResolvePanel({ disputeId, onSuccess }: ResolvePanelProps) {
     !resolve.isPending;
 
   return (
-    <div className="rounded-lg border-2 border-purple-200 bg-purple-50/30 p-5 space-y-4">
-      <h3 className="text-sm font-semibold text-purple-900">
+    <div data-testid="dispute-resolve-panel" className="space-y-4 rounded-xl border-2 border-orange-200 bg-orange-50/40 p-5">
+      <h3 className="text-sm font-semibold text-orange-900">
         {t('resolve')}
       </h3>
+      <p className="text-xs text-orange-800">{tf('resolutionGuardrail')}</p>
 
       {/* Resolution outcome */}
       <div>
@@ -63,14 +63,15 @@ export function ResolvePanel({ disputeId, onSuccess }: ResolvePanelProps) {
           {RESOLUTIONS.map((r) => (
             <button
               key={r}
+              type="button"
               onClick={() => setResolution(r)}
               className={`px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
                 resolution === r
-                  ? 'border-purple-500 bg-purple-100 text-purple-700'
+                  ? 'border-orange-500 bg-orange-100 text-orange-700'
                   : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
               }`}
             >
-              {DISPUTE_RESOLUTION_LABELS[r]}
+              {t(`resolution.${r}`)}
             </button>
           ))}
         </div>
@@ -87,10 +88,11 @@ export function ResolvePanel({ disputeId, onSuccess }: ResolvePanelProps) {
             {[1, 2, 3, 4, 5].map((score) => (
               <button
                 key={score}
+                type="button"
                 onClick={() => setQualityScore(score)}
                 className={`w-10 h-10 rounded-lg border text-sm font-bold transition-colors ${
                   qualityScore === score
-                    ? 'border-purple-500 bg-purple-100 text-purple-700'
+                    ? 'border-orange-500 bg-orange-100 text-orange-700'
                     : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
                 }`}
               >
@@ -112,15 +114,16 @@ export function ResolvePanel({ disputeId, onSuccess }: ResolvePanelProps) {
           placeholder={tf('resolutionNotesPlaceholder')}
           rows={3}
           maxLength={3000}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm resize-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm resize-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
         />
         <p className="text-xs text-gray-400 mt-1">{notes.length}/3000</p>
       </div>
 
       <Button
+        type="button"
         onClick={handleSubmit}
         disabled={!canSubmit}
-        className="bg-purple-600 hover:bg-purple-700 text-white"
+        className="bg-orange-600 hover:bg-orange-700 text-white"
       >
         {resolve.isPending && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
         {t('resolve')}

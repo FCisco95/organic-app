@@ -44,8 +44,9 @@ export function RespondPanel({ disputeId, onSuccess }: RespondPanelProps) {
   };
 
   return (
-    <div className="rounded-lg border border-gray-200 p-5 space-y-4">
+    <div data-testid="dispute-respond-panel" className="space-y-4 rounded-xl border border-gray-200 bg-white p-5">
       <h3 className="text-sm font-semibold text-gray-900">{tf('response')}</h3>
+      <p className="text-xs text-gray-500">{tf('responseGuardrail')}</p>
 
       <textarea
         value={responseText}
@@ -90,12 +91,13 @@ export function RespondPanel({ disputeId, onSuccess }: RespondPanelProps) {
       </div>
 
       <Button
+        type="button"
         onClick={handleSubmit}
         disabled={responseText.length < 20 || respond.isPending}
         className="bg-orange-600 hover:bg-orange-700 text-white"
       >
         {respond.isPending && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
-        Submit Response
+        {tf('submitResponse')}
       </Button>
 
       {respond.isError && (

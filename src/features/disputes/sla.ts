@@ -1,8 +1,10 @@
 export const DISPUTE_SUBMISSION_WINDOW_HOURS = 48;
 export const DISPUTE_REVIEWER_RESPONSE_HOURS = 72;
 export const DISPUTE_SLA_EXTENSION_HOURS = 24;
+const DEFAULT_AT_RISK_HOURS = 24;
 
 export type DisputeEvidenceLateReason = 'uploaded_after_response_deadline';
+export type DisputeSlaUrgency = 'overdue' | 'at_risk' | 'on_track' | 'no_deadline';
 
 function parseDateOrNull(value: string | null | undefined): Date | null {
   if (!value) return null;
@@ -25,6 +27,39 @@ export function isDisputeWindowClosed(
   now: Date = new Date()
 ): boolean {
   return isDeadlinePast(disputeWindowEndsAt, now);
+}
+
+export function getDisputeSlaUrgency(
+  responseDeadline: string | null | undefined,
+  now: Date = new Date(),
+  atRiskHours: number = DEFAULT_AT_RISK_HOURS
+): DisputeSlaUrgency {
+  const deadline = parseDateOrNull(responseDeadline);
+  if (!deadline) return 'no_deadline';
+
+  const diffMs = deadline.getTime() - now.getTime();
+  if (diffMs <= 0) return 'overdue';
+
+  if (diffMs <= atRiskHours * 60 * 60 * 1000) {
+    return 'at_risk';
+  }
+
+  return 'on_track';
+}
+
+export function isReviewerResponseTracked(status: string): boolean {
+  return ['open', 'mediation', 'awaiting_response'].includes(status);
+}
+
+export function isEscalationCandidate(
+  status: string,
+  responseDeadline: string | null | undefined,
+  now: Date = new Date()
+): boolean {
+  return (
+    isReviewerResponseTracked(status) &&
+    getDisputeSlaUrgency(responseDeadline, now) === 'overdue'
+  );
 }
 
 export function classifyEvidenceTimeliness(

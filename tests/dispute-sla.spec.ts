@@ -243,6 +243,8 @@ test.describe('Dispute SLA and evidence hardening', () => {
       (event: { is_late?: boolean }) => event.is_late
     );
     expect(lateEvents.length).toBeGreaterThanOrEqual(1);
+    expect(disputeDetailBody.data.response_deadline).toBeTruthy();
+    expect(lateEvents[0]).toHaveProperty('late_reason');
 
     const closedWindowStartIso = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
     const closedWindowEndIso = new Date(Date.now() - 60 * 60 * 1000).toISOString();

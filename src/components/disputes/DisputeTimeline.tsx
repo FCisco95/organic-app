@@ -114,10 +114,10 @@ export function DisputeTimeline({
   const disputeWindowEndsAtLabel = formatDateTime(disputeWindowEndsAt);
 
   return (
-    <div className={cn('space-y-2', className)}>
+    <div data-testid="dispute-phase-timeline" className={cn('space-y-2', className)}>
       <div className="flex items-center gap-1">
         {steps.map((step, i) => (
-          <div key={step.key} className="flex items-center gap-1">
+          <div key={step.key} data-testid={`dispute-phase-step-${step.key}`} className="flex items-center gap-1">
             <div className="flex flex-col items-center">
               <div
                 className={cn(
@@ -155,6 +155,7 @@ export function DisputeTimeline({
       <div className="flex flex-wrap items-center gap-2">
         {responseDeadlineLabel && (
           <span
+            data-testid="dispute-response-deadline-chip"
             className={cn(
               'rounded-full px-2 py-1 text-[11px] font-medium',
               isDeadlinePast(responseDeadline)
@@ -170,6 +171,7 @@ export function DisputeTimeline({
 
         {disputeWindowEndsAtLabel && (
           <span
+            data-testid="dispute-window-deadline-chip"
             className={cn(
               'rounded-full px-2 py-1 text-[11px] font-medium',
               isDeadlinePast(disputeWindowEndsAt)
@@ -184,7 +186,10 @@ export function DisputeTimeline({
         )}
 
         {lateEvidenceCount > 0 && (
-          <span className="rounded-full bg-orange-100 px-2 py-1 text-[11px] font-medium text-orange-700">
+          <span
+            data-testid="dispute-late-evidence-chip"
+            className="rounded-full bg-orange-100 px-2 py-1 text-[11px] font-medium text-orange-700"
+          >
             {t('lateEvidenceCount', { count: lateEvidenceCount })}
           </span>
         )}

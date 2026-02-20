@@ -5,7 +5,6 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { useCreateDispute, useDisputeEligibility } from '@/features/disputes/hooks';
 import type { DisputeReason } from '@/features/disputes/types';
-import { DISPUTE_REASON_LABELS } from '@/features/disputes/types';
 import { AlertCircle, X, Plus, Loader2, Upload, Paperclip } from 'lucide-react';
 
 interface CreateDisputeModalProps {
@@ -143,7 +142,10 @@ export function CreateDisputeModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto mx-4">
+      <div
+        data-testid="create-dispute-modal"
+        className="mx-4 max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl bg-white shadow-xl"
+      >
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b">
           <div>
@@ -154,17 +156,24 @@ export function CreateDisputeModal({
               {t('createDescription')}
             </p>
           </div>
-          <button onClick={onClose} className="p-1 rounded hover:bg-gray-100">
+          <button type="button" onClick={onClose} className="p-1 rounded hover:bg-gray-100">
             <X className="w-5 h-5 text-gray-400" />
           </button>
         </div>
 
         <div className="p-5 space-y-5">
+          <div
+            data-testid="create-dispute-sla-guardrail"
+            className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800"
+          >
+            {t('triage.createGuardrail')}
+          </div>
+
           {/* Eligibility check */}
           {checkingEligibility ? (
             <div className="flex items-center gap-2 text-gray-500 text-sm">
               <Loader2 className="w-4 h-4 animate-spin" />
-              Checking eligibility...
+              {tf('checkingEligibility')}
             </div>
           ) : !isEligible ? (
             <div className="flex items-start gap-2 p-3 rounded-lg bg-red-50 text-red-700 text-sm">
@@ -185,7 +194,7 @@ export function CreateDisputeModal({
                   {t('xpStakeInfo')}
                 </p>
                 <p className="text-xs mt-0.5 text-amber-600">
-                  Your XP: {eligibility.user_xp}
+                  {tf('yourXpLabel', { xp: eligibility.user_xp })}
                 </p>
               </div>
             </div>
@@ -205,7 +214,7 @@ export function CreateDisputeModal({
               <option value="">{tf('reasonPlaceholder')}</option>
               {REASONS.map((r) => (
                 <option key={r} value={r}>
-                  {DISPUTE_REASON_LABELS[r]}
+                  {t(`reason.${r}`)}
                 </option>
               ))}
             </select>
@@ -357,7 +366,7 @@ export function CreateDisputeModal({
         {/* Footer */}
         <div className="flex items-center justify-end gap-3 p-5 border-t">
           <Button variant="outline" onClick={onClose}>
-            Cancel
+            {tf('cancel')}
           </Button>
           <Button
             onClick={handleSubmit}

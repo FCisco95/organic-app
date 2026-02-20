@@ -227,6 +227,7 @@ test.describe('Dispute lifecycle', () => {
     expect(res.status()).toBe(200);
     const { data } = await res.json();
     expect(data).toHaveProperty('evidence_file_urls');
+    expect(data).toHaveProperty('evidence_events');
   });
 
   test('disputant adds a comment', async ({ request }) => {
