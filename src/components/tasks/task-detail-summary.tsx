@@ -56,7 +56,7 @@ export function TaskDetailSummary({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-testid="task-detail-summary">
       <div>
         <div className="flex flex-wrap items-center gap-3 mb-4">
           <h1 className="text-2xl font-bold text-gray-900">{task.title}</h1>

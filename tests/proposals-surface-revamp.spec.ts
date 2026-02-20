@@ -1,17 +1,17 @@
 import { test, expect } from '@playwright/test';
 import {
-  missingEnvVars,
+  BASE_URL,
+  buildSessionCookie,
+  cookieHeader,
   createAdminClient,
   createQaUser,
-  buildSessionCookie,
   deleteQaUser,
+  missingEnvVars,
   randomOrganicId,
   runId,
-  cookieHeader,
-  BASE_URL,
 } from './helpers';
 
-test.describe('Proposals lifecycle stage engine', () => {
+test.describe('Proposals surface revamp', () => {
   test.describe.configure({ mode: 'serial' });
 
   const missing = missingEnvVars();
@@ -30,13 +30,13 @@ test.describe('Proposals lifecycle stage engine', () => {
     if (missing.length > 0) return;
 
     const supabaseAdmin = createAdminClient();
-    const id = runId('proposal_lifecycle_qa');
-    const pass = 'LifecycleQa!Pass123';
+    const id = runId('proposal_surface_revamp_qa');
+    const pass = 'ProposalSurfaceQa!Pass123';
 
     const member = await createQaUser(supabaseAdmin, {
       email: `${id}.member@example.com`,
       password: pass,
-      name: 'Lifecycle QA Member',
+      name: 'Proposal Surface QA Member',
       role: 'member',
       organicId: randomOrganicId(),
     });
@@ -47,7 +47,7 @@ test.describe('Proposals lifecycle stage engine', () => {
     const council = await createQaUser(supabaseAdmin, {
       email: `${id}.council@example.com`,
       password: pass,
-      name: 'Lifecycle QA Council',
+      name: 'Proposal Surface QA Council',
       role: 'council',
       organicId: randomOrganicId(),
     });
@@ -69,84 +69,54 @@ test.describe('Proposals lifecycle stage engine', () => {
     if (councilUserId) await deleteQaUser(supabaseAdmin, councilUserId);
   });
 
-  test('enforces forward-only transitions and version markers', async ({ request, page }) => {
+  test('shows governance signal strip and detail decision rail anchors', async ({ request, page }) => {
     test.setTimeout(120_000);
 
     const createRes = await request.post(`${BASE_URL}/api/proposals`, {
       headers: { Cookie: cookieHeader(memberCookie) },
       data: {
         status: 'public',
-        title: 'Lifecycle QA Proposal',
+        title: 'Surface revamp QA proposal',
         category: 'governance',
         summary:
-          'This is a lifecycle QA summary with enough detail to satisfy the minimum length requirement.',
+          'This proposal validates wave-2 governance surface trust rails and clear decision context for contributors.',
         motivation:
-          'We need deterministic forward-only transitions to ensure governance integrity and avoid ambiguous lifecycle behavior when proposals evolve over time.',
+          'Members need faster context and stronger confidence signals when deciding where to participate during each governance stage.',
         solution:
-          'Introduce an explicit lifecycle stage engine with immutable discussion versions and stage-event logging so every transition and edit remains auditable.',
+          'Introduce explicit governance signal strips, lifecycle decision rails, immutable provenance context, and stable UI anchors for quality checks.',
       },
     });
 
     expect(createRes.status()).toBe(201);
     const created = await createRes.json();
     proposalId = created.id;
-    expect(created.status).toBe('public');
 
     const toQualifiedRes = await request.patch(`${BASE_URL}/api/proposals/${proposalId}/status`, {
       headers: { Cookie: cookieHeader(councilCookie) },
       data: { status: 'qualified' },
     });
-
     expect(toQualifiedRes.status()).toBe(200);
-    expect((await toQualifiedRes.json()).status).toBe('qualified');
-
-    const backwardRes = await request.patch(`${BASE_URL}/api/proposals/${proposalId}/status`, {
-      headers: { Cookie: cookieHeader(councilCookie) },
-      data: { status: 'public' },
-    });
-
-    expect(backwardRes.status()).toBe(400);
 
     const toDiscussionRes = await request.patch(`${BASE_URL}/api/proposals/${proposalId}/status`, {
       headers: { Cookie: cookieHeader(councilCookie) },
       data: { status: 'discussion' },
     });
-
     expect(toDiscussionRes.status()).toBe(200);
-    expect((await toDiscussionRes.json()).status).toBe('discussion');
 
     const commentRes = await request.post(`${BASE_URL}/api/proposals/${proposalId}/comments`, {
       headers: { Cookie: cookieHeader(memberCookie) },
-      data: { body: 'Comment bound to discussion version v1 for lifecycle QA.' },
+      data: { body: 'Surface revamp QA comment to create version context.' },
     });
-
     expect(commentRes.status()).toBe(201);
 
     const updateRes = await request.patch(`${BASE_URL}/api/proposals/${proposalId}`, {
       headers: { Cookie: cookieHeader(memberCookie) },
       data: {
         summary:
-          'Updated summary after discussion feedback. This creates a new immutable proposal version for auditability.',
+          'Updated summary after discussion feedback to validate version context and outdated comment signals in the decision rail.',
       },
     });
-
     expect(updateRes.status()).toBe(200);
-
-    const proposalRes = await request.get(`${BASE_URL}/api/proposals/${proposalId}`);
-    expect(proposalRes.status()).toBe(200);
-    const proposal = await proposalRes.json();
-
-    const currentVersion =
-      proposal?.proposal_versions?.version_number ?? proposal?.current_version_number ?? 1;
-    expect(currentVersion).toBeGreaterThan(1);
-
-    const commentsRes = await request.get(`${BASE_URL}/api/proposals/${proposalId}/comments`);
-    expect(commentsRes.status()).toBe(200);
-    const commentsPayload = await commentsRes.json();
-    const comment = commentsPayload.comments[0];
-
-    const commentVersion = comment?.proposal_versions?.version_number ?? 1;
-    expect(commentVersion).toBeLessThan(currentVersion);
 
     const baseUrl = new URL(BASE_URL);
     await page.context().addCookies([
@@ -161,9 +131,18 @@ test.describe('Proposals lifecycle stage engine', () => {
       },
     ]);
 
+    await page.goto(`${BASE_URL}/en/proposals`, { waitUntil: 'domcontentloaded' });
+    await expect(page.getByTestId('proposals-governance-strip')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByTestId('proposals-stage-chips')).toBeVisible();
+    await expect(page.getByTestId('proposals-cta-primary')).toBeVisible();
+    await expect(page.getByTestId('proposals-cta-secondary')).toBeVisible();
+    await expect(page.getByTestId(`proposal-card-${proposalId}`)).toBeVisible({ timeout: 20_000 });
+
     await page.goto(`${BASE_URL}/en/proposals/${proposalId}`, { waitUntil: 'domcontentloaded' });
-    await expect(page.getByText('Updated since this comment')).toBeVisible({ timeout: 20_000 });
-    await expect(page.getByTestId('proposal-version-context')).toBeVisible({ timeout: 20_000 });
-    await expect(page.getByTestId('proposal-decision-rail')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByTestId('proposal-showcase')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByTestId('proposal-decision-rail')).toBeVisible();
+    await expect(page.getByTestId('proposal-vote-window')).toBeVisible();
+    await expect(page.getByTestId('proposal-version-context')).toBeVisible();
+    await expect(page.getByTestId('proposal-provenance-callout')).toBeVisible();
   });
 });

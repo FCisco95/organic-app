@@ -78,6 +78,10 @@ export default function TaskDetailPage() {
   const submitEligibility = task
     ? canSubmitTask(task, Boolean(profile?.organic_id))
     : { canSubmit: false };
+  const dependenciesTotal = dependencyData?.dependencies?.length ?? 0;
+  const unresolvedDependencies = (dependencyData?.dependencies ?? []).filter(
+    (dependency) => dependency.blocking_task?.status !== 'done'
+  ).length;
 
   const [editForm, setEditForm] = useState({
     title: '',
@@ -635,7 +639,7 @@ export default function TaskDetailPage() {
   return (
     <PageContainer>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6" data-testid="task-detail-header">
         <Link href="/tasks" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
           <ArrowLeft className="w-4 h-4" />
           {t('backToTasks')}
@@ -675,125 +679,176 @@ export default function TaskDetailPage() {
         )}
       </div>
 
-      {/* Task Details */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-        {/* Blocked Badge - show if task has incomplete blockers */}
-        {dependencyData?.dependencies && dependencyData.dependencies.length > 0 && (
-          <BlockedBadge dependencies={dependencyData.dependencies} className="mb-4" />
-        )}
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]" data-testid="task-operator-layout">
+        <div className="min-w-0 space-y-6">
+          {/* Task Details */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6" data-testid="task-summary-surface">
+            {/* Blocked Badge - show if task has incomplete blockers */}
+            {dependencyData?.dependencies && dependencyData.dependencies.length > 0 && (
+              <BlockedBadge dependencies={dependencyData.dependencies} className="mb-4" />
+            )}
 
-        {isEditing ? (
-          <TaskEditForm
-            editForm={editForm}
-            labelInput={labelInput}
-            standardLabels={standardLabels}
-            members={members}
-            sprints={sprints}
-            isSaving={isSaving}
-            onChange={setEditForm}
-            onLabelInputChange={setLabelInput}
-            onAddLabel={handleAddLabel}
-            onToggleLabel={handleToggleLabel}
-            onRemoveLabel={handleRemoveLabel}
-            onCancel={() => setIsEditing(false)}
-            onSave={handleSaveTask}
-            getDisplayName={getDisplayName}
-          />
-        ) : (
-          <TaskDetailSummary
-            task={task}
-            contributors={contributors}
-            showAllContributors={showAllContributors}
-            likeCount={likeCount}
-            likedByUser={likedByUser}
-            canLike={canLike}
-            onToggleLike={handleToggleLike}
-            onToggleContributors={() => setShowAllContributors((prev) => !prev)}
-            onOpenContributorsModal={() => setShowContributorsModal(true)}
-            getStatusBadge={getStatusBadge}
-            getPriorityBadge={getPriorityBadge}
-            getDisplayName={getDisplayName}
-            formatDate={formatDate}
-          />
-        )}
-      </div>
-
-      {/* Dependencies - shown for non-subtask tasks, admin/council/creator can manage */}
-      {!task.parent_task_id && (
-        (profile?.role && ['admin', 'council'].includes(profile.role)) ||
-        (user && task.created_by === user.id)
-      ) && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-          <DependencyPicker taskId={taskId} />
-        </div>
-      )}
-
-      {/* Subtasks - shown for non-subtask tasks */}
-      {!task.parent_task_id && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-          <SubtaskList parentTaskId={taskId} />
-        </div>
-      )}
-
-      {/* Task Actions - Claim and Submit */}
-      {user && profile?.organic_id && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('actions')}</h2>
-
-          <div className="flex flex-wrap gap-3">
-            {/* Claim button - converts task to TaskWithRelations format for the component */}
-            <ClaimButton task={task} onSuccess={() => fetchTaskDetails()} />
-
-            {/* Submit work button - show for assigned users when task is in progress */}
-            {submitEligibility.canSubmit && !showSubmissionForm && (
-              <button
-                onClick={() => setShowSubmissionForm(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
-              >
-                <Send className="w-4 h-4" />
-                {t('submitWork')}
-              </button>
+            {isEditing ? (
+              <TaskEditForm
+                editForm={editForm}
+                labelInput={labelInput}
+                standardLabels={standardLabels}
+                members={members}
+                sprints={sprints}
+                isSaving={isSaving}
+                onChange={setEditForm}
+                onLabelInputChange={setLabelInput}
+                onAddLabel={handleAddLabel}
+                onToggleLabel={handleToggleLabel}
+                onRemoveLabel={handleRemoveLabel}
+                onCancel={() => setIsEditing(false)}
+                onSave={handleSaveTask}
+                getDisplayName={getDisplayName}
+              />
+            ) : (
+              <TaskDetailSummary
+                task={task}
+                contributors={contributors}
+                showAllContributors={showAllContributors}
+                likeCount={likeCount}
+                likedByUser={likedByUser}
+                canLike={canLike}
+                onToggleLike={handleToggleLike}
+                onToggleContributors={() => setShowAllContributors((prev) => !prev)}
+                onOpenContributorsModal={() => setShowContributorsModal(true)}
+                getStatusBadge={getStatusBadge}
+                getPriorityBadge={getPriorityBadge}
+                getDisplayName={getDisplayName}
+                formatDate={formatDate}
+              />
             )}
           </div>
 
-          {/* Team task status */}
-          {task.is_team_task && (
-            <div className="mt-4">
-              <TeamClaimStatus task={task} />
+          {/* Dependencies - shown for non-subtask tasks, admin/council/creator can manage */}
+          {!task.parent_task_id && (
+            (profile?.role && ['admin', 'council'].includes(profile.role)) ||
+            (user && task.created_by === user.id)
+          ) && (
+            <div
+              className="bg-white rounded-xl border border-gray-200 p-6"
+              data-testid="task-dependency-surface"
+            >
+              <DependencyPicker taskId={taskId} />
             </div>
           )}
+
+          {/* Subtasks - shown for non-subtask tasks */}
+          {!task.parent_task_id && (
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
+              <SubtaskList parentTaskId={taskId} />
+            </div>
+          )}
+
+          <TaskCommentsSection
+            comments={comments}
+            newComment={newComment}
+            isSubmitting={isSubmittingComment}
+            onChange={setNewComment}
+            onSubmit={handleSubmitComment}
+            getDisplayName={getDisplayName}
+            formatDate={formatDate}
+          />
         </div>
-      )}
 
-      {/* Submission Form */}
-      {showSubmissionForm && (
-        <TaskSubmissionForm
-          task={task}
-          onSuccess={() => {
-            setShowSubmissionForm(false);
-            fetchTaskDetails();
-          }}
-          onCancel={() => setShowSubmissionForm(false)}
-          className="mb-6"
-        />
-      )}
+        <aside className="space-y-4 xl:sticky xl:top-24 self-start">
+          <div
+            className="rounded-2xl border border-sky-200/80 bg-gradient-to-br from-sky-50 to-white p-5"
+            data-testid="task-delivery-checklist"
+          >
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-sky-700">
+              {t('deliveryChecklistLabel')}
+            </p>
+            <h3 className="mt-1 text-base font-bold text-slate-900">{t('deliveryChecklistTitle')}</h3>
+            <div className="mt-3 space-y-2 text-sm text-slate-700">
+              <p className="flex items-center justify-between gap-2">
+                <span>{t('checkAssignee')}</span>
+                <span className={task.assignee_id ? 'text-emerald-700' : 'text-amber-700'}>
+                  {task.assignee_id ? t('checkDone') : t('checkPending')}
+                </span>
+              </p>
+              <p className="flex items-center justify-between gap-2">
+                <span>{t('checkSprint')}</span>
+                <span className={task.sprint_id ? 'text-emerald-700' : 'text-amber-700'}>
+                  {task.sprint_id ? t('checkDone') : t('checkPending')}
+                </span>
+              </p>
+              <p className="flex items-center justify-between gap-2">
+                <span>{t('checkDependencies')}</span>
+                <span className={unresolvedDependencies === 0 ? 'text-emerald-700' : 'text-amber-700'}>
+                  {t('dependenciesOpenCount', { count: unresolvedDependencies })}
+                </span>
+              </p>
+              <p className="flex items-center justify-between gap-2">
+                <span>{t('checkSubmissions')}</span>
+                <span className="text-slate-700">
+                  {t('submissionsCount', { count: task.submissions?.length ?? 0 })}
+                </span>
+              </p>
+            </div>
+            {dependenciesTotal > 0 && (
+              <p className="mt-3 rounded-lg border border-sky-100 bg-white px-3 py-2 text-xs text-slate-600">
+                {t('dependencyHint', { count: dependenciesTotal })}
+              </p>
+            )}
+          </div>
 
-      <TaskSubmissionsSection
-        submissions={task.submissions ?? []}
-        getDisplayName={getDisplayName}
-        currentUserId={user?.id}
-        onDisputeCreated={() => fetchTaskDetails()}
-      />
+          {/* Task Actions - Claim and Submit */}
+          {user && profile?.organic_id && (
+            <div className="bg-white rounded-xl border border-gray-200 p-5" data-testid="task-submission-cta-block">
+              <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('actions')}</h2>
 
-      <TaskCommentsSection
-        comments={comments}
-        newComment={newComment}
-        isSubmitting={isSubmittingComment}
-        onChange={setNewComment}
-        onSubmit={handleSubmitComment}
-        getDisplayName={getDisplayName}
-        formatDate={formatDate}
-      />
+              <div className="flex flex-wrap gap-3">
+                {/* Claim button - converts task to TaskWithRelations format for the component */}
+                <ClaimButton task={task} onSuccess={() => fetchTaskDetails()} />
+
+                {/* Submit work button - show for assigned users when task is in progress */}
+                {submitEligibility.canSubmit && !showSubmissionForm && (
+                  <button
+                    onClick={() => setShowSubmissionForm(true)}
+                    className="flex items-center gap-2 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
+                    data-testid="task-submit-work-cta"
+                  >
+                    <Send className="w-4 h-4" />
+                    {t('submitWork')}
+                  </button>
+                )}
+              </div>
+
+              {/* Team task status */}
+              {task.is_team_task && (
+                <div className="mt-4">
+                  <TeamClaimStatus task={task} />
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Submission Form */}
+          {showSubmissionForm && (
+            <TaskSubmissionForm
+              task={task}
+              onSuccess={() => {
+                setShowSubmissionForm(false);
+                fetchTaskDetails();
+              }}
+              onCancel={() => setShowSubmissionForm(false)}
+              className="mb-0"
+            />
+          )}
+
+          <TaskSubmissionsSection
+            submissions={task.submissions ?? []}
+            getDisplayName={getDisplayName}
+            currentUserId={user?.id}
+            onDisputeCreated={() => fetchTaskDetails()}
+          />
+        </aside>
+      </div>
 
       <TaskContributorsModal
         open={showContributorsModal}

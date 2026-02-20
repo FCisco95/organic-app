@@ -3,7 +3,7 @@
 import { Calendar, CheckCircle2, Clock, Target } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import type { Sprint, SprintStats } from '@/features/tasks';
+import { SPRINT_PHASE_SEQUENCE, type Sprint, type SprintStats } from '@/features/sprints';
 
 type SprintListViewProps = {
   activeSprint: Sprint | undefined;
@@ -25,6 +25,13 @@ export function SprintListView({
   getCompletionPercent,
 }: SprintListViewProps) {
   const t = useTranslations('Sprints');
+  const phaseReference = activeSprint ?? planningSprints[0] ?? pastSprints[0] ?? null;
+  const phaseIndex = phaseReference?.status
+    ? SPRINT_PHASE_SEQUENCE.indexOf(
+        phaseReference.status as (typeof SPRINT_PHASE_SEQUENCE)[number]
+      )
+    : -1;
+
   const getStatusBadgeClass = (status: string | null) => {
     const styles = {
       planning: 'border-blue-200 bg-blue-50 text-blue-700',
@@ -40,7 +47,37 @@ export function SprintListView({
   };
 
   return (
-    <>
+    <div className="space-y-8" data-testid="sprints-list-view">
+      <section className="rounded-2xl border border-gray-200 bg-white p-4" data-testid="sprints-list-phase-rail">
+        <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+          {t('phaseRailTitle')}
+        </p>
+        <p className="mt-1 text-sm text-gray-600">{t('phaseRailSubtitle')}</p>
+        <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          {SPRINT_PHASE_SEQUENCE.map((phase, index) => {
+            const isCurrent = phaseIndex === index;
+            const isComplete = phaseIndex > -1 && index < phaseIndex;
+            return (
+              <div
+                key={phase}
+                className={`rounded-xl border px-3 py-2 text-sm ${
+                  isCurrent
+                    ? 'border-organic-orange/40 bg-orange-50 text-orange-700'
+                    : isComplete
+                      ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                      : 'border-gray-200 bg-gray-50 text-gray-600'
+                }`}
+              >
+                <p className="font-semibold">{t(`status.${phase}`)}</p>
+                <p className="mt-0.5 text-xs">
+                  {isCurrent ? t('phaseCurrent') : isComplete ? t('phaseCompleted') : t('phaseQueued')}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
       {activeSprint ? (
         (() => {
           const stats = sprintStats[activeSprint.id] || {
@@ -62,6 +99,7 @@ export function SprintListView({
               <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('activeSprint')}</h2>
               <Link
                 href={`/sprints/${activeSprint.id}`}
+                data-testid={`sprint-list-active-${activeSprint.id}`}
                 className="block bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md hover:border-gray-300 transition-all group"
               >
                 <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
@@ -172,6 +210,7 @@ export function SprintListView({
                 <Link
                   key={sprint.id}
                   href={`/sprints/${sprint.id}`}
+                  data-testid={`sprint-list-planning-${sprint.id}`}
                   className="block bg-white rounded-lg border border-gray-200 p-5 hover:shadow-md hover:border-gray-300 transition-all group"
                 >
                   <div className="flex items-center justify-between">
@@ -237,6 +276,7 @@ export function SprintListView({
                 <Link
                   key={sprint.id}
                   href={`/sprints/${sprint.id}`}
+                  data-testid={`sprint-list-completed-${sprint.id}`}
                   className="block bg-white rounded-lg border border-gray-200 p-5 hover:shadow-md hover:border-gray-300 transition-all group"
                 >
                   <div className="flex items-center justify-between">
@@ -278,6 +318,6 @@ export function SprintListView({
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 }

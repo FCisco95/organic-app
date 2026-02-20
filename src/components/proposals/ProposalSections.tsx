@@ -25,7 +25,7 @@ export function ProposalSections({ proposal }: ProposalSectionsProps) {
   // Legacy proposals: just show the body
   if (!hasStructuredContent) {
     return (
-      <div className="prose max-w-none">
+      <div className="prose max-w-none" data-testid="proposal-sections-legacy">
         <p className="text-gray-700 whitespace-pre-wrap">{proposal.body}</p>
       </div>
     );
@@ -40,7 +40,10 @@ export function ProposalSections({ proposal }: ProposalSectionsProps) {
   ].filter((s) => s.content);
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 divide-y divide-gray-100">
+    <div
+      className="bg-white rounded-xl border border-gray-200 divide-y divide-gray-100"
+      data-testid="proposal-sections-structured"
+    >
       {sections.map((section) => {
         const Icon = SECTION_ICONS[section.key];
 

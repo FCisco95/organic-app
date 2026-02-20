@@ -123,6 +123,27 @@ test.describe('Proposal lifecycle', () => {
     expect(body.title).toBe('QA Proposal: Improve test coverage');
   });
 
+  test('list page renders governance strip and proposal card anchors', async ({ page }) => {
+    test.skip(!proposalId, 'Requires proposal creation step');
+
+    const baseUrl = new URL(BASE_URL);
+    await page.context().addCookies([
+      {
+        name: memberCookie.name,
+        value: memberCookie.value,
+        domain: baseUrl.hostname,
+        path: '/',
+        httpOnly: true,
+        secure: baseUrl.protocol === 'https:',
+        sameSite: 'Lax',
+      },
+    ]);
+
+    await page.goto(`${BASE_URL}/en/proposals`, { waitUntil: 'domcontentloaded' });
+    await expect(page.getByTestId('proposals-governance-strip')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByTestId(`proposal-card-${proposalId}`)).toBeVisible({ timeout: 20_000 });
+  });
+
   test('invalid proposal payload returns 400', async ({ request }) => {
     const res = await request.post(`${BASE_URL}/api/proposals`, {
       headers: { Cookie: cookieHeader(memberCookie) },

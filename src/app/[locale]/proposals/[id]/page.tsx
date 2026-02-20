@@ -104,6 +104,18 @@ export default function ProposalDetailPage() {
   });
   const canCreateExecutionTask =
     Boolean(isAdmin) && lifecycleStatus === 'finalized' && proposal?.result === 'passed';
+  const statusLabelMap: Record<ProposalStatus, string> = {
+    draft: t('statusDraft'),
+    public: t('statusPublic'),
+    qualified: t('statusQualified'),
+    discussion: t('statusDiscussion'),
+    voting: t('statusVoting'),
+    finalized: t('statusFinalized'),
+    canceled: t('statusCanceled'),
+    submitted: t('statusSubmitted'),
+    approved: t('statusApproved'),
+    rejected: t('statusRejected'),
+  };
 
   const fetchExecutionTasks = useCallback(async () => {
     if (!proposalId) return;
@@ -250,7 +262,7 @@ export default function ProposalDetailPage() {
   }
 
   return (
-    <PageContainer width="narrow">
+    <PageContainer width="default">
       {/* Back Link */}
       <Link
         href="/proposals"
@@ -260,293 +272,365 @@ export default function ProposalDetailPage() {
         {t('backToProposals')}
       </Link>
 
-      {/* Proposal Header + Content */}
-      <div className="bg-white rounded-2xl overflow-hidden mb-6">
-        {/* Header */}
-        <div className="px-8 pt-8 pb-6">
-          {/* Badges Row */}
-          <div className="flex items-center gap-2 mb-4">
-            <CategoryBadge category={category} size="md" />
-            <StatusBadge status={proposal.status as ProposalStatus} />
-          </div>
-
-          {/* Title + Actions */}
-          <div className="flex items-start justify-between gap-4">
-            <h1 className="text-3xl font-bold text-gray-900 flex-1">{proposal.title}</h1>
-            <div className="flex gap-2 shrink-0">
-              {user && <FollowButton subjectType="proposal" subjectId={proposalId} />}
-              {(isAuthor || isAdmin) && ['draft', 'public', 'discussion'].includes(lifecycleStatus) && (
-                <>
-                  <Link
-                    href={`/proposals/new?edit=${proposal.id}`}
-                    className="flex items-center gap-1 px-3 py-1.5 text-sm bg-white/80 hover:bg-white text-gray-700 rounded-lg transition-colors ring-1 ring-gray-200"
-                  >
-                    <Edit2 className="w-4 h-4" />
-                    {t('edit')}
-                  </Link>
-                  <button
-                    onClick={() => setShowDeleteConfirm(true)}
-                    className="flex items-center gap-1 px-3 py-1.5 text-sm bg-red-50 hover:bg-red-100 text-red-700 rounded-lg transition-colors ring-1 ring-red-200"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    {t('delete')}
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* Meta Info Pills */}
-          <div className="flex items-center gap-3 mt-4 flex-wrap">
-            <div className="flex items-center gap-1.5 text-sm text-gray-600 bg-white/60 rounded-full px-3 py-1">
-              <User className="w-3.5 h-3.5" />
-              <span>
-                {proposal.user_profiles.organic_id
-                  ? t('organicId', { id: proposal.user_profiles.organic_id })
-                  : proposal.user_profiles.email.split('@')[0]}
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5 text-sm text-gray-600 bg-white/60 rounded-full px-3 py-1">
-              <Calendar className="w-3.5 h-3.5" />
-              <span>
-                {formatDistanceToNow(new Date(proposal.created_at!), { addSuffix: true })}
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5 text-sm text-gray-600 bg-white/60 rounded-full px-3 py-1">
-              <MessageCircle className="w-3.5 h-3.5" />
-              <span>{t('commentsCount', { count: comments.length })}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Content Area */}
-        <div className="px-8 py-6">
-          {/* Structured Sections */}
-          <ProposalSections proposal={proposal} />
-
-          {/* Admin Actions - Lifecycle Progression */}
-          {isAdmin && (lifecycleStatus === 'public' || lifecycleStatus === 'qualified') && (
-            <div className="mt-8 bg-amber-50 border border-amber-200 rounded-xl p-6">
+      <div
+        className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]"
+        data-testid="proposal-showcase"
+      >
+        <div className="min-w-0 space-y-6">
+          {/* Proposal Header + Content */}
+          <div className="bg-white rounded-2xl overflow-hidden" data-testid="proposal-header">
+            {/* Header */}
+            <div className="px-8 pt-8 pb-6">
+              {/* Badges Row */}
               <div className="flex items-center gap-2 mb-4">
-                <Shield className="w-5 h-5 text-amber-600" />
-                <p className="text-sm font-semibold text-amber-800">{t('councilActions')}</p>
+                <CategoryBadge category={category} size="md" />
+                <StatusBadge status={proposal.status as ProposalStatus} />
               </div>
-              <div className="flex flex-wrap gap-3">
-                {lifecycleStatus === 'public' && (
-                  <button
-                    onClick={() => handleStatusChange('qualified')}
-                    className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
-                  >
-                    <CheckCircle className="w-4 h-4" />
-                    {t('moveToQualified')}
-                  </button>
-                )}
-                {lifecycleStatus === 'qualified' && (
-                  <button
-                    onClick={() => handleStatusChange('discussion')}
-                    className="flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-medium transition-colors"
-                  >
-                    <MessageCircle className="w-4 h-4" />
-                    {t('moveToDiscussion')}
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
 
-          {/* Admin Actions - Voting Controls */}
-          {isAdmin &&
-            (proposal.status === 'voting' ||
-              proposal.status === 'submitted' ||
-              lifecycleStatus === 'public' ||
-              lifecycleStatus === 'qualified' ||
-              lifecycleStatus === 'discussion') && (
-            <div className="mt-8 bg-amber-50 border border-amber-200 rounded-xl p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Shield className="w-5 h-5 text-amber-600" />
-                <p className="text-sm font-semibold text-amber-800">{t('councilActions')}</p>
-              </div>
-              {lifecycleStatus === 'discussion' && (
-                <p className="text-sm text-amber-800 mb-3">{t('startVotingLabel')}</p>
-              )}
-              <AdminVotingControls
-                proposal={proposal as unknown as ProposalWithVoting}
-                onVotingStarted={() => refetchProposal()}
-                onVotingFinalized={() => refetchProposal()}
-              />
-            </div>
-            )}
-
-          {/* Create Task from Proposal */}
-          {canCreateExecutionTask && (
-            <div className="mt-8 bg-amber-50 border border-amber-200 rounded-xl p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Shield className="w-5 h-5 text-amber-600" />
-                <p className="text-sm font-semibold text-amber-800">{t('implementation')}</p>
-              </div>
-              <p className="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800 mb-3">
-                {t('taskProvenanceBadge', { version: currentVersionNumber })}
-              </p>
-              <button
-                onClick={createTaskFromProposal}
-                className="flex items-center gap-2 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
-              >
-                <ListTodo className="w-4 h-4" />
-                {t('createTask')}
-              </button>
-              <p className="text-xs text-amber-700 mt-2">{t('createTaskHelp')}</p>
-              <p className="text-xs text-amber-700 mt-1">
-                {t('taskProvenanceHelp', { version: currentVersionNumber })}
-              </p>
-            </div>
-          )}
-
-          {(isLoadingExecutionTasks || executionTasks.length > 0) && (
-            <div className="mt-8 rounded-xl border border-gray-200 p-6 bg-white">
-              <div className="flex items-center gap-2 mb-3">
-                <ListTodo className="w-5 h-5 text-gray-600" />
-                <p className="text-sm font-semibold text-gray-800">{t('linkedTasksTitle')}</p>
-              </div>
-              {isLoadingExecutionTasks ? (
-                <p className="text-sm text-gray-500">{t('linkedTasksLoading')}</p>
-              ) : (
-                <div className="space-y-2">
-                  {executionTasks.map((task) => (
-                    <div
-                      key={task.id}
-                      className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gray-200 px-3 py-2"
-                    >
-                      <Link
-                        href={`/tasks/${task.id}`}
-                        className="text-sm font-medium text-organic-orange hover:text-orange-600"
-                      >
-                        {task.title}
-                      </Link>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800">
-                          {t('taskSourceVersion', {
-                            version: task.proposal_versions?.version_number ?? currentVersionNumber,
-                          })}
-                        </span>
-                        <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-700">
-                          {(task.status ?? 'backlog').replace(/_/g, ' ')}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
+              {/* Title + Actions */}
+              <div className="flex items-start justify-between gap-4">
+                <h1 className="text-3xl font-bold text-gray-900 flex-1">{proposal.title}</h1>
+                <div className="flex gap-2 shrink-0">
+                  {user && <FollowButton subjectType="proposal" subjectId={proposalId} />}
+                  {(isAuthor || isAdmin) &&
+                    ['draft', 'public', 'discussion'].includes(lifecycleStatus) && (
+                      <>
+                        <Link
+                          href={`/proposals/new?edit=${proposal.id}`}
+                          className="flex items-center gap-1 px-3 py-1.5 text-sm bg-white/80 hover:bg-white text-gray-700 rounded-lg transition-colors ring-1 ring-gray-200"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                          {t('edit')}
+                        </Link>
+                        <button
+                          onClick={() => setShowDeleteConfirm(true)}
+                          className="flex items-center gap-1 px-3 py-1.5 text-sm bg-red-50 hover:bg-red-100 text-red-700 rounded-lg transition-colors ring-1 ring-red-200"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          {t('delete')}
+                        </button>
+                      </>
+                    )}
                 </div>
-              )}
+              </div>
+
+              {/* Meta Info Pills */}
+              <div className="flex items-center gap-3 mt-4 flex-wrap">
+                <div className="flex items-center gap-1.5 text-sm text-gray-600 bg-white/60 rounded-full px-3 py-1">
+                  <User className="w-3.5 h-3.5" />
+                  <span>
+                    {proposal.user_profiles.organic_id
+                      ? t('organicId', { id: proposal.user_profiles.organic_id })
+                      : proposal.user_profiles.email.split('@')[0]}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 text-sm text-gray-600 bg-white/60 rounded-full px-3 py-1">
+                  <Calendar className="w-3.5 h-3.5" />
+                  <span>
+                    {formatDistanceToNow(new Date(proposal.created_at!), { addSuffix: true })}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 text-sm text-gray-600 bg-white/60 rounded-full px-3 py-1">
+                  <MessageCircle className="w-3.5 h-3.5" />
+                  <span>{t('commentsCount', { count: comments.length })}</span>
+                </div>
+              </div>
             </div>
-          )}
-        </div>
-      </div>
 
-      {/* Voting Panel - Show during voting */}
-      {proposal.status === 'voting' && (
-        <div className="mb-6 space-y-4">
-          {user && (
-            <DelegatedPowerBadge proposalId={proposalId} userId={user.id} />
-          )}
-          <VotingPanel proposal={proposal as unknown as ProposalWithVoting} />
-          {user && <DelegationInfo />}
-        </div>
-      )}
+            {/* Content Area */}
+            <div className="px-8 py-6">
+              {/* Structured Sections */}
+              <ProposalSections proposal={proposal} />
 
-      {/* Vote Results - Show after voting has ended with a result */}
-      {proposal.result && (
-        <div className="mb-6">
-          <VoteResults proposal={proposal as unknown as ProposalWithVoting} />
-        </div>
-      )}
-
-      {/* Delegation Panel - Manage vote delegations */}
-      {user &&
-        (proposal.status === 'voting' ||
-          proposal.status === 'submitted' ||
-          lifecycleStatus === 'discussion') && (
-        <div className="bg-white rounded-2xl shadow-sm ring-1 ring-gray-200/60 p-6 mb-6">
-          <DelegationPanel />
-        </div>
-        )}
-
-      {/* Comments Section */}
-      <div className="bg-white rounded-2xl shadow-sm ring-1 ring-gray-200/60 p-8">
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">
-          {t('commentsTitle', { count: comments.length })}
-        </h2>
-
-        {/* Comment Form */}
-        {user ? (
-          <form onSubmit={handleSubmitComment} className="mb-6">
-            <textarea
-              value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
-              placeholder={t('commentPlaceholder')}
-              rows={3}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none mb-3 bg-gray-50/50"
-            />
-            <button
-              type="submit"
-              disabled={addComment.isPending || !commentText.trim()}
-              className="px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {addComment.isPending ? t('posting') : t('postComment')}
-            </button>
-          </form>
-        ) : (
-          <div className="mb-6 bg-gray-50 border border-gray-200 rounded-xl p-4 text-center">
-            <p className="text-gray-600 mb-3">{t('signInToJoin')}</p>
-            <Link
-              href="/login"
-              className="inline-block bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-            >
-              {t('signIn')}
-            </Link>
-          </div>
-        )}
-
-        {hasOutdatedComments && (
-          <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-            {t('updatedSinceComment', { version: currentVersionNumber })}
-          </div>
-        )}
-
-        {/* Comments List */}
-        <div className="space-y-3">
-          {comments.length === 0 ? (
-            <p className="text-gray-500 text-center py-8">{t('noComments')}</p>
-          ) : (
-            comments.map((comment) => {
-              const commentVersion = comment.proposal_versions?.version_number ?? 1;
-              const outdated = commentVersion < currentVersionNumber;
-
-              return (
-                <div key={comment.id} className="bg-gray-50 rounded-xl p-4">
-                  <div className="flex items-center gap-2 mb-2 flex-wrap">
-                    <div className="w-2 h-2 rounded-full bg-organic-orange/60" />
-                    <span className="font-medium text-gray-900 text-sm">
-                      {comment.user_profiles.organic_id
-                        ? t('organicId', { id: comment.user_profiles.organic_id })
-                        : comment.user_profiles.email.split('@')[0]}
-                    </span>
-                    <span className="text-xs text-gray-500">
-                      {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
-                    </span>
-                    <span className="rounded-full bg-gray-200 px-2 py-0.5 text-xs font-medium text-gray-700">
-                      {t('commentOnVersion', { version: commentVersion })}
-                    </span>
-                    {outdated && (
-                      <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
-                        {t('updatedMarker')}
-                      </span>
+              {/* Admin Actions - Lifecycle Progression */}
+              {isAdmin && (lifecycleStatus === 'public' || lifecycleStatus === 'qualified') && (
+                <div className="mt-8 bg-amber-50 border border-amber-200 rounded-xl p-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Shield className="w-5 h-5 text-amber-600" />
+                    <p className="text-sm font-semibold text-amber-800">{t('councilActions')}</p>
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    {lifecycleStatus === 'public' && (
+                      <button
+                        onClick={() => handleStatusChange('qualified')}
+                        className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
+                      >
+                        <CheckCircle className="w-4 h-4" />
+                        {t('moveToQualified')}
+                      </button>
+                    )}
+                    {lifecycleStatus === 'qualified' && (
+                      <button
+                        onClick={() => handleStatusChange('discussion')}
+                        className="flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-medium transition-colors"
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                        {t('moveToDiscussion')}
+                      </button>
                     )}
                   </div>
-                  <p className="text-gray-700 text-sm whitespace-pre-wrap pl-4">{comment.body}</p>
                 </div>
-              );
-            })
+              )}
+
+              {/* Admin Actions - Voting Controls */}
+              {isAdmin &&
+                (proposal.status === 'voting' ||
+                  proposal.status === 'submitted' ||
+                  lifecycleStatus === 'public' ||
+                  lifecycleStatus === 'qualified' ||
+                  lifecycleStatus === 'discussion') && (
+                  <div className="mt-8 bg-amber-50 border border-amber-200 rounded-xl p-6">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Shield className="w-5 h-5 text-amber-600" />
+                      <p className="text-sm font-semibold text-amber-800">{t('councilActions')}</p>
+                    </div>
+                    {lifecycleStatus === 'discussion' && (
+                      <p className="text-sm text-amber-800 mb-3">{t('startVotingLabel')}</p>
+                    )}
+                    <AdminVotingControls
+                      proposal={proposal as unknown as ProposalWithVoting}
+                      onVotingStarted={() => refetchProposal()}
+                      onVotingFinalized={() => refetchProposal()}
+                    />
+                  </div>
+                )}
+
+              {/* Create Task from Proposal */}
+              {canCreateExecutionTask && (
+                <div className="mt-8 bg-amber-50 border border-amber-200 rounded-xl p-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Shield className="w-5 h-5 text-amber-600" />
+                    <p className="text-sm font-semibold text-amber-800">{t('implementation')}</p>
+                  </div>
+                  <p className="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800 mb-3">
+                    {t('taskProvenanceBadge', { version: currentVersionNumber })}
+                  </p>
+                  <button
+                    onClick={createTaskFromProposal}
+                    className="flex items-center gap-2 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
+                  >
+                    <ListTodo className="w-4 h-4" />
+                    {t('createTask')}
+                  </button>
+                  <p className="text-xs text-amber-700 mt-2">{t('createTaskHelp')}</p>
+                  <p className="text-xs text-amber-700 mt-1">
+                    {t('taskProvenanceHelp', { version: currentVersionNumber })}
+                  </p>
+                </div>
+              )}
+
+              {(isLoadingExecutionTasks || executionTasks.length > 0) && (
+                <div
+                  className="mt-8 rounded-xl border border-gray-200 p-6 bg-white"
+                  data-testid="proposal-task-list"
+                >
+                  <div className="flex items-center gap-2 mb-3">
+                    <ListTodo className="w-5 h-5 text-gray-600" />
+                    <p className="text-sm font-semibold text-gray-800">{t('linkedTasksTitle')}</p>
+                  </div>
+                  {isLoadingExecutionTasks ? (
+                    <p className="text-sm text-gray-500">{t('linkedTasksLoading')}</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {executionTasks.map((task) => (
+                        <div
+                          key={task.id}
+                          className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gray-200 px-3 py-2"
+                        >
+                          <Link
+                            href={`/tasks/${task.id}`}
+                            className="text-sm font-medium text-organic-orange hover:text-orange-600"
+                          >
+                            {task.title}
+                          </Link>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800">
+                              {t('taskSourceVersion', {
+                                version:
+                                  task.proposal_versions?.version_number ?? currentVersionNumber,
+                              })}
+                            </span>
+                            <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-700">
+                              {(task.status ?? 'backlog').replace(/_/g, ' ')}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Voting Panel - Show during voting */}
+          {proposal.status === 'voting' && (
+            <div className="mb-6 space-y-4">
+              {user && <DelegatedPowerBadge proposalId={proposalId} userId={user.id} />}
+              <VotingPanel proposal={proposal as unknown as ProposalWithVoting} />
+              {user && <DelegationInfo />}
+            </div>
           )}
+
+          {/* Vote Results - Show after voting has ended with a result */}
+          {proposal.result && (
+            <div className="mb-6">
+              <VoteResults proposal={proposal as unknown as ProposalWithVoting} />
+            </div>
+          )}
+
+          {/* Comments Section */}
+          <div
+            className="bg-white rounded-2xl shadow-sm ring-1 ring-gray-200/60 p-8"
+            data-testid="proposal-comments"
+          >
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">
+              {t('commentsTitle', { count: comments.length })}
+            </h2>
+
+            {/* Comment Form */}
+            {user ? (
+              <form onSubmit={handleSubmitComment} className="mb-6">
+                <textarea
+                  value={commentText}
+                  onChange={(e) => setCommentText(e.target.value)}
+                  placeholder={t('commentPlaceholder')}
+                  rows={3}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none mb-3 bg-gray-50/50"
+                />
+                <button
+                  type="submit"
+                  disabled={addComment.isPending || !commentText.trim()}
+                  className="px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {addComment.isPending ? t('posting') : t('postComment')}
+                </button>
+              </form>
+            ) : (
+              <div className="mb-6 bg-gray-50 border border-gray-200 rounded-xl p-4 text-center">
+                <p className="text-gray-600 mb-3">{t('signInToJoin')}</p>
+                <Link
+                  href="/login"
+                  className="inline-block bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                >
+                  {t('signIn')}
+                </Link>
+              </div>
+            )}
+
+            {hasOutdatedComments && (
+              <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                {t('updatedSinceComment', { version: currentVersionNumber })}
+              </div>
+            )}
+
+            {/* Comments List */}
+            <div className="space-y-3">
+              {comments.length === 0 ? (
+                <p className="text-gray-500 text-center py-8">{t('noComments')}</p>
+              ) : (
+                comments.map((comment) => {
+                  const commentVersion = comment.proposal_versions?.version_number ?? 1;
+                  const outdated = commentVersion < currentVersionNumber;
+
+                  return (
+                    <div key={comment.id} className="bg-gray-50 rounded-xl p-4">
+                      <div className="flex items-center gap-2 mb-2 flex-wrap">
+                        <div className="w-2 h-2 rounded-full bg-organic-orange/60" />
+                        <span className="font-medium text-gray-900 text-sm">
+                          {comment.user_profiles.organic_id
+                            ? t('organicId', { id: comment.user_profiles.organic_id })
+                            : comment.user_profiles.email.split('@')[0]}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
+                        </span>
+                        <span className="rounded-full bg-gray-200 px-2 py-0.5 text-xs font-medium text-gray-700">
+                          {t('commentOnVersion', { version: commentVersion })}
+                        </span>
+                        {outdated && (
+                          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
+                            {t('updatedMarker')}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-gray-700 text-sm whitespace-pre-wrap pl-4">{comment.body}</p>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
         </div>
+
+        <aside
+          className="space-y-4 xl:sticky xl:top-24 self-start"
+          data-testid="proposal-decision-rail"
+        >
+          <div
+            className="rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50 to-white p-5"
+            data-testid="proposal-vote-window"
+          >
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-700">
+              {t('decisionRailLabel')}
+            </p>
+            <h3 className="mt-1 text-lg font-bold text-slate-900">{t('decisionRailTitle')}</h3>
+            <p className="mt-1 text-sm text-slate-600">{t('decisionRailSubtitle')}</p>
+            <div className="mt-4 space-y-3 rounded-xl border border-white/70 bg-white/80 p-4">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-xs uppercase tracking-wide text-slate-500">{t('railStatus')}</span>
+                <StatusBadge status={proposal.status as ProposalStatus} showIcon={false} />
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-xs uppercase tracking-wide text-slate-500">{t('railCurrentState')}</span>
+                <span className="text-sm font-semibold text-slate-800">
+                  {statusLabelMap[proposal.status as ProposalStatus]}
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-xs uppercase tracking-wide text-slate-500">{t('railComments')}</span>
+                <span className="text-sm font-semibold text-slate-800">
+                  {t('commentsCount', { count: comments.length })}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div
+            className="rounded-2xl border border-slate-200 bg-white p-5"
+            data-testid="proposal-version-context"
+          >
+            <h3 className="text-sm font-semibold text-slate-900">{t('versionContextTitle')}</h3>
+            <p className="mt-1 text-sm text-slate-600">
+              {t('versionContextDescription', { version: currentVersionNumber })}
+            </p>
+            {hasOutdatedComments && (
+              <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                {t('updatedSinceComment', { version: currentVersionNumber })}
+              </p>
+            )}
+          </div>
+
+          <div
+            className="rounded-2xl border border-slate-200 bg-slate-950 p-5 text-slate-100"
+            data-testid="proposal-provenance-callout"
+          >
+            <p className="text-xs uppercase tracking-[0.16em] text-slate-300">{t('governanceSource')}</p>
+            <h3 className="mt-1 text-base font-semibold text-white">{t('immutableProposalReference')}</h3>
+            <p className="mt-2 text-sm text-slate-300">
+              {t('taskProvenanceHelp', { version: currentVersionNumber })}
+            </p>
+          </div>
+
+          {user &&
+            (proposal.status === 'voting' ||
+              proposal.status === 'submitted' ||
+              lifecycleStatus === 'discussion') && (
+              <div className="rounded-2xl border border-gray-200 bg-white p-4">
+                <DelegationPanel />
+              </div>
+            )}
+        </aside>
       </div>
 
       {/* Delete Confirmation Modal */}

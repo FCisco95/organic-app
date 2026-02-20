@@ -46,7 +46,7 @@ export function TaskListSection({
   const t = useTranslations('Tasks');
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200">
+    <div className="bg-white rounded-xl border border-gray-200" data-testid="task-list-section">
       <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
         <div>
           <h2 className="text-lg font-semibold text-gray-900">{t(`tab.${activeView}`)}</h2>
@@ -74,7 +74,7 @@ export function TaskListSection({
               : t('noTasksInView')}
         </div>
       ) : (
-        <div className="divide-y divide-gray-100">
+        <div className="divide-y divide-gray-100" data-testid="task-list">
           {tasks.map((task) => {
             const isOverdue =
               task.due_date && new Date(task.due_date) < new Date() && task.status !== 'done';
@@ -87,6 +87,7 @@ export function TaskListSection({
               <Link
                 key={task.id}
                 href={`/tasks/${task.id}`}
+                data-testid={`task-card-${task.id}`}
                 className="block px-6 py-4 hover:bg-gray-50 transition-colors"
               >
                 <div className="flex items-start justify-between gap-4">
@@ -179,7 +180,13 @@ export function TaskListSection({
                       <span>👥 {activity.contributors}</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2">
+                    <span
+                      className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-600"
+                      data-testid={`task-status-lane-${task.id}`}
+                    >
+                      {t(`statusLane.${task.status ?? 'backlog'}`)}
+                    </span>
                     {task.points && (
                       <span className="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded-full">
                         {t('pointsShort', { points: task.points })}
@@ -191,6 +198,7 @@ export function TaskListSection({
                         event.preventDefault();
                         onToggleLike(task.id);
                       }}
+                      data-testid={`task-like-${task.id}`}
                       disabled={!canLike}
                       aria-label={likedTasks[task.id] ? t('likedTask') : t('likeTask')}
                       className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full border ${

@@ -57,7 +57,7 @@ export function SprintTimeline() {
 
   if (isLoading) {
     return (
-      <div className="text-center py-12">
+      <div className="text-center py-12" data-testid="sprints-timeline-view">
         <div className="w-8 h-8 border-3 border-organic-orange border-t-transparent rounded-full animate-spin mx-auto" />
         <p className="mt-4 text-gray-500">{t('loading')}</p>
       </div>
@@ -66,7 +66,7 @@ export function SprintTimeline() {
 
   if (!sprints || sprints.length === 0) {
     return (
-      <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
+      <div className="text-center py-12 bg-white rounded-xl border border-gray-200" data-testid="sprints-timeline-view">
         <Target className="w-12 h-12 text-gray-300 mx-auto mb-4" />
         <h3 className="text-lg font-medium text-gray-900 mb-2">{t('timelineAllEmpty')}</h3>
         <p className="text-gray-500">{t('timelineAllEmptyDesc')}</p>
@@ -75,13 +75,13 @@ export function SprintTimeline() {
   }
 
   return (
-    <div className="relative">
+    <div className="relative" data-testid="sprints-timeline-view">
       {/* Vertical line */}
       <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200" />
 
       <div className="space-y-6">
         {sprints.map((sprint) => (
-          <div key={sprint.id} className="relative pl-12">
+          <div key={sprint.id} className="relative pl-12" data-testid={`sprint-timeline-item-${sprint.id}`}>
             {/* Timeline dot */}
             <div className="absolute left-2.5 top-6 w-3 h-3 rounded-full bg-organic-orange border-2 border-white shadow" />
 

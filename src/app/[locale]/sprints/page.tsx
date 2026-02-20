@@ -5,6 +5,7 @@ import { useAuth } from '@/features/auth/context';
 import {
   Sprint,
   SprintFormData,
+  SPRINT_PHASE_SEQUENCE,
   SprintStats,
   getNextSprintPhase,
   isSprintExecutionPhase,
@@ -16,7 +17,15 @@ import {
   getCompletionPercent,
 } from '@/features/sprints/utils';
 
-import { Calendar, Plus, Play, CheckCircle2 } from 'lucide-react';
+import {
+  AlertTriangle,
+  Calendar,
+  CheckCircle2,
+  Play,
+  Plus,
+  ShieldCheck,
+  Timer,
+} from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
@@ -31,7 +40,7 @@ import { SprintCompleteDialog } from '@/components/sprints/sprint-complete-dialo
 import { PageContainer } from '@/components/layout';
 
 export default function SprintsPage() {
-  const { user, profile } = useAuth();
+  const { profile } = useAuth();
   const t = useTranslations('Sprints');
   const tTasks = useTranslations('Tasks');
   const searchParams = useSearchParams();
@@ -122,6 +131,20 @@ export default function SprintsPage() {
     const end = new Date(endDate);
     const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
     return `${days} days`;
+  };
+
+  const formatPhaseCountdown = (deadlineIso: string) => {
+    const diffMs = new Date(deadlineIso).getTime() - Date.now();
+    if (diffMs <= 0) return t('phaseDeadlinePassed');
+
+    const totalMinutes = Math.ceil(diffMs / (1000 * 60));
+    const days = Math.floor(totalMinutes / (60 * 24));
+    const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
+    const minutes = totalMinutes % 60;
+
+    if (days > 0) return `${days}d ${hours}h`;
+    if (hours > 0) return `${hours}h ${minutes}m`;
+    return `${Math.max(1, minutes)}m`;
   };
 
   const handleCreateSprint = async (e: React.FormEvent) => {
@@ -545,6 +568,26 @@ export default function SprintsPage() {
   const nextPhaseLabel = selectedSprint
     ? getNextSprintPhase(selectedSprint.status ?? 'planning')
     : null;
+  const referenceSprint = selectedSprint ?? activeSprint ?? planningSprints[0] ?? pastSprints[0] ?? null;
+  const referencePhase = referenceSprint?.status
+    ? (referenceSprint.status as (typeof SPRINT_PHASE_SEQUENCE)[number])
+    : null;
+  const referencePhaseIndex = referencePhase ? SPRINT_PHASE_SEQUENCE.indexOf(referencePhase) : -1;
+  const reviewDeadlineAt =
+    referenceSprint?.review_started_at && referenceSprint.status === 'review'
+      ? new Date(
+          new Date(referenceSprint.review_started_at).getTime() + 72 * 60 * 60 * 1000
+        ).toISOString()
+      : null;
+  const phaseDeadlineAt =
+    referenceSprint?.status === 'review'
+      ? reviewDeadlineAt
+      : referenceSprint?.status === 'dispute_window'
+        ? referenceSprint.dispute_window_ends_at
+        : null;
+  const phaseCountdown = phaseDeadlineAt ? formatPhaseCountdown(phaseDeadlineAt) : null;
+  const openExecutionCount = sprints.filter((sprint) => isSprintExecutionPhase(sprint.status)).length;
+  const blockedSettlementCount = sprints.filter((sprint) => Boolean(sprint.settlement_blocked_reason)).length;
 
   // Stats for complete dialog
   const completeStats = useMemo(() => {
@@ -569,8 +612,12 @@ export default function SprintsPage() {
 
   return (
     <PageContainer width="wide">
+      <div className="space-y-6" data-testid="sprints-page">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div
+        className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"
+        data-testid="sprints-command-header"
+      >
         <div>
           <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
           <p className="text-gray-600 mt-1">{t('subtitle')}</p>
@@ -616,6 +663,108 @@ export default function SprintsPage() {
         </div>
       </div>
 
+      <div
+        className="grid grid-cols-1 gap-4 xl:grid-cols-[2.1fr_1fr]"
+        data-testid="sprints-command-deck"
+      >
+        <section
+          className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm"
+          data-testid="sprints-phase-rail"
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                {t('phaseRailTitle')}
+              </p>
+              <p className="mt-1 text-sm text-gray-600">{t('phaseRailSubtitle')}</p>
+            </div>
+            {phaseCountdown && (
+              <div
+                className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700"
+                data-testid="sprints-phase-countdown"
+              >
+                <Timer className="h-3.5 w-3.5" />
+                {t('phaseTimeRemaining', { time: phaseCountdown })}
+              </div>
+            )}
+          </div>
+          <p className="mt-4 text-xs text-gray-500">
+            {referenceSprint
+              ? t('phaseReferenceSprint', { name: referenceSprint.name })
+              : t('phaseReferenceNone')}
+          </p>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {SPRINT_PHASE_SEQUENCE.map((phase, index) => {
+              const isCurrent = referencePhaseIndex === index;
+              const isComplete = referencePhaseIndex > -1 && index < referencePhaseIndex;
+              return (
+                <div
+                  key={phase}
+                  data-testid={`sprints-phase-chip-${phase}`}
+                  className={`rounded-xl border px-3 py-2 text-sm transition-colors ${
+                    isCurrent
+                      ? 'border-organic-orange/40 bg-orange-50 text-orange-700'
+                      : isComplete
+                        ? 'border-green-200 bg-green-50 text-green-700'
+                        : 'border-gray-200 bg-gray-50 text-gray-600'
+                  }`}
+                >
+                  <p className="font-semibold">{t(`status.${phase}`)}</p>
+                  <p className="mt-0.5 text-xs">
+                    {isCurrent
+                      ? t('phaseCurrent')
+                      : isComplete
+                        ? t('phaseCompleted')
+                        : t('phaseQueued')}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <section
+          className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm"
+          data-testid="sprints-settlement-panel"
+        >
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4 text-emerald-600" />
+            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+              {t('settlementPanelTitle')}
+            </p>
+          </div>
+          <div className="mt-4 space-y-3">
+            <div className="rounded-xl border border-gray-200 bg-gray-50 px-3 py-2">
+              <p className="text-xs text-gray-500">{t('metricOpenExecution')}</p>
+              <p className="text-2xl font-bold text-gray-900">{openExecutionCount}</p>
+            </div>
+            <div className="rounded-xl border border-gray-200 bg-gray-50 px-3 py-2">
+              <p className="text-xs text-gray-500">{t('settlementBlockedMetric')}</p>
+              <p className="text-2xl font-bold text-gray-900">{blockedSettlementCount}</p>
+            </div>
+            <div
+              data-testid="sprints-settlement-alert"
+              className={`rounded-xl border px-3 py-2 text-sm ${
+                referenceSprint?.settlement_blocked_reason
+                  ? 'border-red-200 bg-red-50 text-red-700'
+                  : 'border-emerald-200 bg-emerald-50 text-emerald-700'
+              }`}
+            >
+              <div className="flex items-start gap-2">
+                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+                <p>
+                  {referenceSprint?.settlement_blocked_reason
+                    ? t('settlementPanelBlocked', {
+                        reason: referenceSprint.settlement_blocked_reason,
+                      })
+                    : t('settlementReady')}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
       {isPageLoading ? (
         <div className="text-center py-12">
           <div className="w-8 h-8 border-3 border-organic-orange border-t-transparent rounded-full animate-spin mx-auto"></div>
@@ -640,7 +789,7 @@ export default function SprintsPage() {
         </div>
       ) : (
         <>
-          <div className="flex items-center gap-2 mb-6">
+          <div className="flex items-center gap-2 overflow-x-auto pb-1" data-testid="sprints-view-tabs">
             <button
               onClick={() => setActiveView('board')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
@@ -750,6 +899,7 @@ export default function SprintsPage() {
           onConfirm={handleCompleteSprint}
         />
       )}
+      </div>
     </PageContainer>
   );
 }

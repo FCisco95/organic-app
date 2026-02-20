@@ -55,6 +55,8 @@ export function useTasks(filters: TaskFilters = {}) {
 
   return useQuery({
     queryKey: taskKeys.list(filters),
+    staleTime: 30_000,
+    gcTime: 5 * 60_000,
     queryFn: async () => {
       let query = supabase
         .from('tasks')
@@ -117,6 +119,7 @@ export function useTask(taskId: string) {
 
   return useQuery({
     queryKey: taskKeys.detail(taskId),
+    staleTime: 15_000,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('tasks')

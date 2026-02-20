@@ -14,7 +14,7 @@ export function SprintSnapshotCard({ snapshot, compact = false }: SprintSnapshot
 
   if (compact) {
     return (
-      <div className="flex items-center gap-4 text-sm">
+      <div className="flex items-center gap-4 text-sm" data-testid="sprint-snapshot-compact">
         <span className="flex items-center gap-1 text-green-600">
           <CheckCircle2 className="w-3.5 h-3.5" />
           {snapshot.completed_tasks}/{snapshot.total_tasks}
@@ -29,7 +29,7 @@ export function SprintSnapshotCard({ snapshot, compact = false }: SprintSnapshot
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6">
+    <div className="bg-white rounded-xl border border-gray-200 p-6" data-testid="sprint-snapshot-card">
       <div className="flex items-center gap-2 mb-4">
         <Clock className="w-5 h-5 text-gray-400" />
         <h3 className="text-lg font-semibold text-gray-900">{t('snapshotTitle')}</h3>

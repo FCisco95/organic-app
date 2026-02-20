@@ -136,6 +136,31 @@ test.describe('Task CRUD', () => {
     expect(task).toHaveProperty('submissions');
   });
 
+  test('tasks surfaces render execution and operator anchors', async ({ page }) => {
+    test.skip(!createdTaskId, 'Requires task creation step');
+
+    const baseUrl = new URL(BASE_URL);
+    await page.context().addCookies([
+      {
+        name: adminCookie.name,
+        value: adminCookie.value,
+        domain: baseUrl.hostname,
+        path: '/',
+        httpOnly: true,
+        secure: baseUrl.protocol === 'https:',
+        sameSite: 'Lax',
+      },
+    ]);
+
+    await page.goto(`${BASE_URL}/en/tasks`, { waitUntil: 'domcontentloaded' });
+    await expect(page.getByTestId('tasks-execution-cockpit')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByTestId(`task-card-${createdTaskId}`)).toBeVisible({ timeout: 20_000 });
+
+    await page.goto(`${BASE_URL}/en/tasks/${createdTaskId}`, { waitUntil: 'domcontentloaded' });
+    await expect(page.getByTestId('task-operator-layout')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByTestId('task-delivery-checklist')).toBeVisible();
+  });
+
   test('admin updates a task', async ({ request }) => {
     test.skip(!createdTaskId, 'Requires task creation test to pass first');
 

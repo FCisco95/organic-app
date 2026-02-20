@@ -26,9 +26,10 @@ export default function TemplatesPage() {
 
   return (
     <PageContainer>
-      <div className="max-w-4xl mx-auto space-y-8">
+      <div className="max-w-4xl mx-auto space-y-8" data-testid="task-templates-page">
         <div className="rounded-2xl border border-organic-orange/20 bg-gradient-to-r from-organic-orange/10 via-white to-organic-yellow/10 p-6">
           <h1 className="text-2xl font-semibold text-gray-900">{t('title')}</h1>
+          <p className="mt-1 text-sm text-gray-600">{t('templateSurfaceHint')}</p>
           <div className="mt-2 h-1 w-20 rounded-full bg-gradient-to-r from-organic-orange to-organic-yellow" />
         </div>
 

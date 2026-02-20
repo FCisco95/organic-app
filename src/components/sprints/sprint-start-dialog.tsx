@@ -26,7 +26,10 @@ export function SprintStartDialog({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+    <div
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+      data-testid="sprint-start-dialog"
+    >
       <div className="bg-white rounded-xl max-w-md w-full p-6">
         <h2 className="text-xl font-bold text-gray-900 mb-4">{t('startSprintTitle')}</h2>
 
@@ -51,6 +54,16 @@ export function SprintStartDialog({
               <p className="text-sm text-gray-900">{sprint.goal}</p>
             </div>
           )}
+          <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">
+              {t('startChecklistTitle')}
+            </p>
+            <ul className="space-y-1.5 text-sm text-gray-600">
+              <li>{t('startChecklistTaskLoad', { count: taskCount })}</li>
+              <li>{t('startChecklistSingleActive')}</li>
+              <li>{t('startChecklistIrreversible')}</li>
+            </ul>
+          </div>
         </div>
 
         <p className="text-sm text-gray-500 mb-6">{t('startSprintDescription')}</p>

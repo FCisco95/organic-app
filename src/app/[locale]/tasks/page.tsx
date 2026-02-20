@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from '@/features/auth/context';
 import {
   TaskTab,
@@ -10,6 +10,7 @@ import {
   Sprint,
   TaskPriority,
   TaskStatus,
+  buildTaskStatusLaneCounts,
 } from '@/features/tasks';
 
 import { createClient } from '@/lib/supabase/client';
@@ -21,6 +22,8 @@ import { TaskListSection } from '@/components/tasks/task-list-section';
 import dynamic from 'next/dynamic';
 const TaskNewModal = dynamic(() => import('@/components/tasks/task-new-modal').then(m => m.TaskNewModal), { ssr: false });
 import { PageContainer } from '@/components/layout';
+
+const TASK_STATUS_LANES: TaskStatus[] = ['backlog', 'todo', 'in_progress', 'review', 'done'];
 
 export default function TasksPage() {
   const { user, profile } = useAuth();
@@ -462,6 +465,16 @@ export default function TasksPage() {
   };
 
   const tabTasks = getTabTasks(activeView);
+  const laneCounts = useMemo(
+    () => buildTaskStatusLaneCounts(tasks),
+    [tasks]
+  );
+  const openExecutionCount =
+    laneCounts.backlog + laneCounts.todo + laneCounts.in_progress + laneCounts.review;
+  const tasksNeedingAssignee = tasks.filter(
+    (task) => !task.assignee_id && normalizeTaskStatus(task.status) !== 'done'
+  ).length;
+  const communityQueueCount = laneCounts.backlog + laneCounts.todo;
   const hasActiveFilters =
     searchFilter.trim().length > 0 ||
     categoryFilter !== 'all' ||
@@ -514,12 +527,90 @@ export default function TasksPage() {
   };
 
   return (
-    <PageContainer width="wide">
+    <PageContainer width="wide" className="space-y-6">
+      <div data-testid="tasks-page" className="space-y-6">
+      <section
+        data-testid="tasks-execution-cockpit"
+        className="relative overflow-hidden rounded-3xl border border-sky-200/70 bg-gradient-to-br from-sky-50 via-white to-emerald-50 p-6 shadow-sm"
+      >
+        <div className="absolute -top-20 -right-20 h-48 w-48 rounded-full bg-sky-200/40 blur-3xl" />
+        <div className="relative z-10">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-sky-700">
+                {t('executionCockpitLabel')}
+              </p>
+              <h1 className="mt-1 text-3xl font-black text-slate-900">{t('title')}</h1>
+              <p className="mt-1 text-slate-700">{t('subtitle')}</p>
+            </div>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              <div className="rounded-xl border border-white/80 bg-white/85 px-3 py-2">
+                <p className="text-[11px] uppercase tracking-wide text-slate-500">{t('metricOpenExecution')}</p>
+                <p className="text-2xl font-black text-slate-900">{openExecutionCount}</p>
+              </div>
+              <div className="rounded-xl border border-white/80 bg-white/85 px-3 py-2">
+                <p className="text-[11px] uppercase tracking-wide text-slate-500">{t('metricPendingReview')}</p>
+                <p className="text-2xl font-black text-slate-900">{laneCounts.review}</p>
+              </div>
+              <div className="rounded-xl border border-white/80 bg-white/85 px-3 py-2">
+                <p className="text-[11px] uppercase tracking-wide text-slate-500">{t('metricNeedsAssignee')}</p>
+                <p className="text-2xl font-black text-slate-900">{tasksNeedingAssignee}</p>
+              </div>
+              <div className="rounded-xl border border-white/80 bg-white/85 px-3 py-2">
+                <p className="text-[11px] uppercase tracking-wide text-slate-500">{t('metricCommunityQueue')}</p>
+                <p className="text-2xl font-black text-slate-900">{communityQueueCount}</p>
+              </div>
+            </div>
+          </div>
+
+          <div
+            data-testid="tasks-status-lanes"
+            className="mt-4 flex flex-wrap gap-2 rounded-2xl border border-sky-100 bg-white/70 p-3"
+          >
+            {TASK_STATUS_LANES.map((lane) => (
+              <button
+                key={lane}
+                type="button"
+                onClick={() => {
+                  if (lane === 'done') setActiveView('completed');
+                  else if (lane === 'backlog') setActiveView('backlog');
+                  else setActiveView('activeSprint');
+                }}
+                className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 ring-1 ring-slate-200 transition-colors hover:bg-slate-50"
+                data-testid={`tasks-status-lane-${lane}`}
+              >
+                <span>{t(`statusLane.${lane}`)}</span>
+                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] text-slate-600">
+                  {laneCounts[lane]}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section
+        data-testid="tasks-sprint-context-banner"
+        className="rounded-2xl border border-gray-200 bg-white/85 p-4"
+      >
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">
+          {t('sprintContextLabel')}
+        </p>
+        <p className="mt-1 text-sm text-gray-700">
+          {currentSprint
+            ? t('sprintContextActive', {
+                name: currentSprint.name,
+                status: currentSprint.status ?? 'active',
+              })
+            : t('sprintContextNone')}
+        </p>
+      </section>
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
-          <p className="text-gray-600 mt-1">{t('subtitle')}</p>
+          <h2 className="text-2xl font-bold text-gray-900">{t('executionBoardTitle')}</h2>
+          <p className="text-gray-600 mt-1">{t('executionBoardSubtitle')}</p>
         </div>
 
         <div className="flex gap-3">
@@ -579,11 +670,12 @@ export default function TasksPage() {
       )}
 
       {/* Tabs */}
-      <div className="mb-6 flex gap-2 overflow-x-auto pb-2">
+      <div className="mb-6 flex gap-2 overflow-x-auto pb-2" data-testid="tasks-tab-bar">
         {visibleTabs.map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveView(tab)}
+            data-testid={`tasks-tab-${tab}`}
             className={`px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap transition-colors ${
               activeView === tab
                 ? 'bg-organic-orange text-white'
@@ -599,6 +691,7 @@ export default function TasksPage() {
       )}
 
       <TaskFiltersBar
+        dataTestIdPrefix="tasks-filter"
         searchFilter={searchFilter}
         onSearchChange={setSearchFilter}
         categoryFilter={categoryFilter}
@@ -646,6 +739,7 @@ export default function TasksPage() {
           userId={user?.id ?? null}
         />
       )}
+      </div>
     </PageContainer>
   );
 }

@@ -69,7 +69,10 @@ export function TaskSubmissionForm({
     : 'custom';
 
   return (
-    <div className={cn('bg-white rounded-lg border border-gray-200 p-6', className)}>
+    <div
+      className={cn('bg-white rounded-lg border border-gray-200 p-6', className)}
+      data-testid="task-submission-form"
+    >
       <h3 className="text-lg font-semibold text-gray-900 mb-4">
         {t('submitWorkFor', { type: tTasks(`taskTypes.${normalizedTaskType}`) })}
       </h3>
@@ -867,6 +870,7 @@ function FormActions({ isSubmitting, onCancel }: { isSubmitting: boolean; onCanc
       <button
         type="submit"
         disabled={isSubmitting}
+        data-testid="task-submission-submit"
         className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
       >
         {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}

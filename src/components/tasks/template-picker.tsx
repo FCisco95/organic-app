@@ -42,7 +42,10 @@ export function TemplatePicker({ sprintId, onTaskCreated, className }: TemplateP
 
   if (isLoading) {
     return (
-      <div className={cn('rounded-2xl border border-gray-200 bg-white/80 shadow-sm', className)}>
+      <div
+        className={cn('rounded-2xl border border-gray-200 bg-white/80 shadow-sm', className)}
+        data-testid="task-template-picker"
+      >
         <div className="border-b border-gray-100 bg-gradient-to-r from-organic-orange/10 via-white to-organic-yellow/10 px-5 py-4 rounded-t-2xl">
           <h3 className="text-lg font-semibold text-gray-900">{t('fromTemplate')}</h3>
         </div>
@@ -60,7 +63,10 @@ export function TemplatePicker({ sprintId, onTaskCreated, className }: TemplateP
 
   if (!templates || templates.length === 0) {
     return (
-      <div className={cn('rounded-2xl border border-gray-200 bg-white/80 shadow-sm', className)}>
+      <div
+        className={cn('rounded-2xl border border-gray-200 bg-white/80 shadow-sm', className)}
+        data-testid="task-template-picker"
+      >
         <div className="border-b border-gray-100 bg-gradient-to-r from-organic-orange/10 via-white to-organic-yellow/10 px-5 py-4 rounded-t-2xl">
           <h3 className="text-lg font-semibold text-gray-900">{t('fromTemplate')}</h3>
         </div>
@@ -74,16 +80,20 @@ export function TemplatePicker({ sprintId, onTaskCreated, className }: TemplateP
   }
 
   return (
-    <div className={cn('rounded-2xl border border-gray-200 bg-white/80 shadow-sm', className)}>
+    <div
+      className={cn('rounded-2xl border border-gray-200 bg-white/80 shadow-sm', className)}
+      data-testid="task-template-picker"
+    >
       <div className="border-b border-gray-100 bg-gradient-to-r from-organic-orange/10 via-white to-organic-yellow/10 px-5 py-4 rounded-t-2xl">
         <h3 className="text-lg font-semibold text-gray-900">{t('fromTemplate')}</h3>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 px-5 py-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 px-5 py-5" data-testid="task-template-picker-list">
         {templates.map((template) => (
           <button
             key={template.id}
             onClick={() => handleCreate(template)}
             disabled={createFromTemplate.isPending}
+            data-testid={`task-template-pick-${template.id}`}
             className={cn(
               'text-left p-4 rounded-xl border border-gray-200 bg-white hover:border-organic-orange/40',
               'hover:shadow-sm transition-all group',

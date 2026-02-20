@@ -23,7 +23,7 @@ export function TaskSubmissionsSection({
 
   if (submissions.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6" data-testid="task-submissions-surface">
         <h2 className="text-lg font-semibold text-gray-900 mb-2">{t('submissions')}</h2>
         <p className="text-sm text-gray-500">{tTasks('noSubmissionsYet')}</p>
       </div>
@@ -31,7 +31,7 @@ export function TaskSubmissionsSection({
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+    <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6" data-testid="task-submissions-surface">
       <h2 className="text-lg font-semibold text-gray-900 mb-4">
         {t('submissions')} ({submissions.length})
       </h2>

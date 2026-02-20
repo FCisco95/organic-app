@@ -175,6 +175,30 @@ test.describe('Sprint lifecycle', () => {
     expect((await res.json()).sprint.goal).toBe('Updated QA goal');
   });
 
+  test('sprint surfaces expose command deck anchors', async ({ page }) => {
+    test.skip(!createdSprintId, 'Requires sprint creation step');
+
+    const baseUrl = new URL(BASE_URL);
+    await page.context().addCookies([
+      {
+        name: adminCookie.name,
+        value: adminCookie.value,
+        domain: baseUrl.hostname,
+        path: '/',
+        httpOnly: true,
+        secure: baseUrl.protocol === 'https:',
+        sameSite: 'Lax',
+      },
+    ]);
+
+    await page.goto(`${BASE_URL}/en/sprints`, { waitUntil: 'domcontentloaded' });
+    await expect(page.getByTestId('sprints-page')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByTestId('sprints-command-deck')).toBeVisible();
+    await expect(page.getByTestId('sprints-phase-rail')).toBeVisible();
+    await expect(page.getByTestId('sprints-settlement-panel')).toBeVisible();
+    await expect(page.getByTestId('sprints-view-tabs')).toBeVisible();
+  });
+
   test('admin starts sprint (planning → active)', async ({ request }) => {
     test.skip(!createdSprintId, 'Requires sprint creation step');
     test.skip(!canStart, 'Skipped: another sprint is already active in this environment');

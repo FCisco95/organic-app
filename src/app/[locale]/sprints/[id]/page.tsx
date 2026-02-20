@@ -7,6 +7,7 @@ import { useAuth } from '@/features/auth/context';
 import {
   Sprint,
   SprintFormData,
+  SPRINT_PHASE_SEQUENCE,
   SprintTask,
   SprintSnapshot,
   getNextSprintPhase,
@@ -25,6 +26,9 @@ import {
   AlertCircle,
   Circle,
   Timer,
+  ShieldAlert,
+  ShieldCheck,
+  ListChecks,
   X,
   Save,
   Play,
@@ -40,7 +44,7 @@ import { SprintCompleteDialog } from '@/components/sprints/sprint-complete-dialo
 export default function SprintDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { user, profile } = useAuth();
+  const { profile } = useAuth();
   const t = useTranslations('SprintDetail');
   const tSprints = useTranslations('Sprints');
   const sprintId = typeof params.id === 'string' ? params.id : params.id?.[0];
@@ -374,6 +378,35 @@ export default function SprintDetailPage() {
     return `${Math.max(1, minutes)}m`;
   };
   const phaseTimeRemaining = phaseDeadlineAt ? formatTimeRemaining(phaseDeadlineAt) : null;
+  const currentPhase = (sprint.status ?? 'planning') as (typeof SPRINT_PHASE_SEQUENCE)[number];
+  const currentPhaseIndex = SPRINT_PHASE_SEQUENCE.indexOf(currentPhase);
+  const hasUnassignedTasks = tasks.some((task) => !task.assignee_id);
+  const hasIncompleteTasks = completeStats.incompleteTasks > 0;
+  const deadlineOpen =
+    phaseDeadlineAt != null ? new Date(phaseDeadlineAt).getTime() > Date.now() : false;
+  const settlementBlocked = Boolean(sprint.settlement_blocked_reason);
+  const readinessChecks = [
+    {
+      key: 'tasks',
+      label: t('checkTasksAssigned'),
+      ok: !hasUnassignedTasks,
+    },
+    {
+      key: 'completion',
+      label: t('checkCompletionReady'),
+      ok: !hasIncompleteTasks || currentPhase !== 'settlement',
+    },
+    {
+      key: 'deadline',
+      label: t('checkDeadlineWindow'),
+      ok: !deadlineOpen,
+    },
+    {
+      key: 'settlement',
+      label: t('checkSettlementBlocked'),
+      ok: !settlementBlocked,
+    },
+  ];
 
   const normalizeDate = (date: Date) =>
     new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -426,6 +459,7 @@ export default function SprintDetailPage() {
 
   return (
     <PageContainer width="wide">
+      <div className="space-y-6" data-testid="sprint-detail-page">
       {/* Back Button */}
       <Link
         href="/sprints"
@@ -436,7 +470,7 @@ export default function SprintDetailPage() {
       </Link>
 
       {/* Sprint Header */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+      <div className="bg-white rounded-xl border border-gray-200 p-6" data-testid="sprint-detail-header">
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">{sprint.name}</h1>
@@ -549,214 +583,315 @@ export default function SprintDetailPage() {
         </div>
       </div>
 
-      {/* Snapshot for completed sprints */}
-      {sprint.status === 'completed' && snapshot && (
-        <div className="mb-6">
-          <SprintSnapshotCard snapshot={snapshot} />
-        </div>
-      )}
+      <div
+        className="grid grid-cols-1 gap-6 xl:grid-cols-[2.05fr_1fr]"
+        data-testid="sprint-detail-operator-grid"
+      >
+        <div className="space-y-6">
+          {/* Snapshot for completed sprints */}
+          {sprint.status === 'completed' && snapshot && <SprintSnapshotCard snapshot={snapshot} />}
 
-      {/* Sprint Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Target className="w-5 h-5 text-blue-600" />
+          {/* Sprint Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div className="bg-white rounded-lg border border-gray-200 p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <Target className="w-5 h-5 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">{t('totalTasks')}</p>
+                  <p className="text-2xl font-bold text-gray-900">{totalTasks}</p>
+                </div>
+              </div>
             </div>
-            <div>
-              <p className="text-sm text-gray-600">{t('totalTasks')}</p>
-              <p className="text-2xl font-bold text-gray-900">{totalTasks}</p>
+
+            <div className="bg-white rounded-lg border border-gray-200 p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                  <CheckCircle2 className="w-5 h-5 text-green-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">{t('completed')}</p>
+                  <p className="text-2xl font-bold text-gray-900">{completedTasks}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg border border-gray-200 p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <Timer className="w-5 h-5 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">{t('inProgress')}</p>
+                  <p className="text-2xl font-bold text-gray-900">{inProgressTasks}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg border border-gray-200 p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-organic-orange/10 rounded-lg flex items-center justify-center">
+                  <span className="text-xl font-bold text-organic-orange">★</span>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">{t('points')}</p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {completedPoints}/{totalPoints}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg border border-gray-200 p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <Target className="w-5 h-5 text-gray-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">{t('capacity')}</p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {sprint.capacity_points != null ? sprint.capacity_points : t('uncapped')}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-              <CheckCircle2 className="w-5 h-5 text-green-600" />
+          {/* Burndown Chart */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">{t('burndownTitle')}</h2>
+              <div className="flex items-center gap-4 text-xs text-gray-500">
+                <span className="inline-flex items-center gap-2">
+                  <span className="w-3 h-0.5 bg-gray-300 block"></span>
+                  {t('burndownIdeal')}
+                </span>
+                <span className="inline-flex items-center gap-2">
+                  <span className="w-3 h-0.5 bg-organic-orange block"></span>
+                  {t('burndownActual')}
+                </span>
+              </div>
             </div>
-            <div>
-              <p className="text-sm text-gray-600">{t('completed')}</p>
-              <p className="text-2xl font-bold text-gray-900">{completedTasks}</p>
-            </div>
+            {totalPoints === 0 ? (
+              <div className="text-sm text-gray-500">{t('burndownEmpty')}</div>
+            ) : (
+              <div className="w-full overflow-x-auto">
+                <svg
+                  viewBox={`0 0 ${chartWidth} ${chartHeight}`}
+                  className="w-full h-56"
+                  role="img"
+                  aria-label={t('burndownChartLabel')}
+                >
+                  <rect x="0" y="0" width={chartWidth} height={chartHeight} fill="#ffffff" />
+                  <line
+                    x1={chartPadding}
+                    y1={chartPadding}
+                    x2={chartPadding}
+                    y2={chartHeight - chartPadding}
+                    stroke="#e5e7eb"
+                    strokeWidth="1"
+                  />
+                  <line
+                    x1={chartPadding}
+                    y1={chartHeight - chartPadding}
+                    x2={chartWidth - chartPadding}
+                    y2={chartHeight - chartPadding}
+                    stroke="#e5e7eb"
+                    strokeWidth="1"
+                  />
+                  <polyline
+                    fill="none"
+                    stroke="#d1d5db"
+                    strokeWidth="2"
+                    points={buildPolyline(burndownIdeal)}
+                  />
+                  <polyline
+                    fill="none"
+                    stroke="#f97316"
+                    strokeWidth="3"
+                    points={buildPolyline(burndownActual)}
+                  />
+                </svg>
+              </div>
+            )}
           </div>
-        </div>
 
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Timer className="w-5 h-5 text-blue-600" />
+          {/* Tasks List */}
+          <div className="bg-white rounded-xl border border-gray-200">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900">{t('sprintTasks')}</h2>
             </div>
-            <div>
-              <p className="text-sm text-gray-600">{t('inProgress')}</p>
-              <p className="text-2xl font-bold text-gray-900">{inProgressTasks}</p>
-            </div>
-          </div>
-        </div>
 
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-organic-orange/10 rounded-lg flex items-center justify-center">
-              <span className="text-xl font-bold text-organic-orange">★</span>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">{t('points')}</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {completedPoints}/{totalPoints}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-              <Target className="w-5 h-5 text-gray-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">{t('capacity')}</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {sprint.capacity_points != null ? sprint.capacity_points : t('uncapped')}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Burndown Chart */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">{t('burndownTitle')}</h2>
-          <div className="flex items-center gap-4 text-xs text-gray-500">
-            <span className="inline-flex items-center gap-2">
-              <span className="w-3 h-0.5 bg-gray-300 block"></span>
-              {t('burndownIdeal')}
-            </span>
-            <span className="inline-flex items-center gap-2">
-              <span className="w-3 h-0.5 bg-organic-orange block"></span>
-              {t('burndownActual')}
-            </span>
-          </div>
-        </div>
-        {totalPoints === 0 ? (
-          <div className="text-sm text-gray-500">{t('burndownEmpty')}</div>
-        ) : (
-          <div className="w-full overflow-x-auto">
-            <svg
-              viewBox={`0 0 ${chartWidth} ${chartHeight}`}
-              className="w-full h-56"
-              role="img"
-              aria-label={t('burndownChartLabel')}
-            >
-              <rect x="0" y="0" width={chartWidth} height={chartHeight} fill="#ffffff" />
-              <line
-                x1={chartPadding}
-                y1={chartPadding}
-                x2={chartPadding}
-                y2={chartHeight - chartPadding}
-                stroke="#e5e7eb"
-                strokeWidth="1"
-              />
-              <line
-                x1={chartPadding}
-                y1={chartHeight - chartPadding}
-                x2={chartWidth - chartPadding}
-                y2={chartHeight - chartPadding}
-                stroke="#e5e7eb"
-                strokeWidth="1"
-              />
-              <polyline
-                fill="none"
-                stroke="#d1d5db"
-                strokeWidth="2"
-                points={buildPolyline(burndownIdeal)}
-              />
-              <polyline
-                fill="none"
-                stroke="#f97316"
-                strokeWidth="3"
-                points={buildPolyline(burndownActual)}
-              />
-            </svg>
-          </div>
-        )}
-      </div>
-
-      {/* Tasks List */}
-      <div className="bg-white rounded-xl border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">{t('sprintTasks')}</h2>
-        </div>
-
-        {tasks.length === 0 ? (
-          <div className="p-8 text-center">
-            <Target className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('noTasksTitle')}</h3>
-            <p className="text-gray-500">{t('noTasksDescription')}</p>
-          </div>
-        ) : (
-          <div className="divide-y divide-gray-100">
-            {tasks.map((task) => (
-              <Link
-                key={task.id}
-                href={`/tasks/${task.id}`}
-                className="block px-6 py-4 hover:bg-gray-50 transition-colors"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-2">
-                      <h3 className="font-medium text-gray-900 hover:text-organic-orange transition-colors">
-                        {task.title}
-                      </h3>
-                      <span
-                        className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${getTaskStatusBadge(
-                          task.status
-                        )}`}
-                      >
-                        {getTaskStatusIcon(task.status)}
-                        {t(`taskStatus.${task.status}`)}
-                      </span>
-                      <span
-                        className={`px-2 py-0.5 rounded-full text-xs font-medium ${getPriorityBadge(task.priority)}`}
-                      >
-                        {t(`priority.${task.priority}`)}
-                      </span>
-                    </div>
-                    {task.description && (
-                      <p className="text-sm text-gray-600 line-clamp-2 mb-2">{task.description}</p>
-                    )}
-                    <div className="flex items-center gap-4 text-xs text-gray-500">
-                      {task.assignee && (
-                        <div className="flex items-center gap-2">
-                          {task.assignee.avatar_url ? (
-                            <Image
-                              src={task.assignee.avatar_url}
-                              alt={getDisplayName(task.assignee)}
-                              width={20}
-                              height={20}
-                              className="rounded-full"
-                            />
-                          ) : (
-                            <div className="w-5 h-5 rounded-full bg-gradient-to-br from-organic-orange to-organic-yellow flex items-center justify-center">
-                              <span className="text-white text-xs font-bold">
-                                {getDisplayName(task.assignee)[0].toUpperCase()}
-                              </span>
+            {tasks.length === 0 ? (
+              <div className="p-8 text-center">
+                <Target className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">{t('noTasksTitle')}</h3>
+                <p className="text-gray-500">{t('noTasksDescription')}</p>
+              </div>
+            ) : (
+              <div className="divide-y divide-gray-100">
+                {tasks.map((task) => (
+                  <Link
+                    key={task.id}
+                    href={`/tasks/${task.id}`}
+                    className="block px-6 py-4 hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h3 className="font-medium text-gray-900 hover:text-organic-orange transition-colors">
+                            {task.title}
+                          </h3>
+                          <span
+                            className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${getTaskStatusBadge(
+                              task.status
+                            )}`}
+                          >
+                            {getTaskStatusIcon(task.status)}
+                            {t(`taskStatus.${task.status}`)}
+                          </span>
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-xs font-medium ${getPriorityBadge(task.priority)}`}
+                          >
+                            {t(`priority.${task.priority}`)}
+                          </span>
+                        </div>
+                        {task.description && (
+                          <p className="text-sm text-gray-600 line-clamp-2 mb-2">
+                            {task.description}
+                          </p>
+                        )}
+                        <div className="flex items-center gap-4 text-xs text-gray-500">
+                          {task.assignee && (
+                            <div className="flex items-center gap-2">
+                              {task.assignee.avatar_url ? (
+                                <Image
+                                  src={task.assignee.avatar_url}
+                                  alt={getDisplayName(task.assignee)}
+                                  width={20}
+                                  height={20}
+                                  className="rounded-full"
+                                />
+                              ) : (
+                                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-organic-orange to-organic-yellow flex items-center justify-center">
+                                  <span className="text-white text-xs font-bold">
+                                    {getDisplayName(task.assignee)[0].toUpperCase()}
+                                  </span>
+                                </div>
+                              )}
+                              <span>{getDisplayName(task.assignee)}</span>
                             </div>
                           )}
-                          <span>{getDisplayName(task.assignee)}</span>
+                          <span className="flex items-center gap-1">
+                            <span className="text-organic-orange">★</span>
+                            {t('pointsLabel', { points: task.points ?? 0 })}
+                          </span>
                         </div>
-                      )}
-                      <span className="flex items-center gap-1">
-                        <span className="text-organic-orange">★</span>
-                        {t('pointsLabel', { points: task.points ?? 0 })}
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <aside className="space-y-4">
+          <section
+            className="rounded-xl border border-gray-200 bg-white p-4"
+            data-testid="sprint-detail-phase-timeline"
+          >
+            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+              {t('phaseTimelineTitle')}
+            </p>
+            <p className="mt-1 text-sm text-gray-600">{t('phaseTimelineHint')}</p>
+            <div className="mt-3 space-y-2">
+              {SPRINT_PHASE_SEQUENCE.map((phase, index) => {
+                const isCurrent = currentPhaseIndex === index;
+                const isComplete = currentPhaseIndex > -1 && index < currentPhaseIndex;
+                return (
+                  <div
+                    key={phase}
+                    className={`rounded-lg border px-3 py-2 text-sm ${
+                      isCurrent
+                        ? 'border-organic-orange/40 bg-orange-50 text-orange-700'
+                        : isComplete
+                          ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                          : 'border-gray-200 bg-gray-50 text-gray-600'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-medium">{t(`status.${phase}`)}</span>
+                      <span className="text-xs">
+                        {isCurrent
+                          ? t('phaseTimelineCurrent')
+                          : isComplete
+                            ? t('phaseTimelineComplete')
+                            : t('phaseTimelineAwaiting')}
                       </span>
                     </div>
                   </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
+                );
+              })}
+            </div>
+          </section>
+
+          <section
+            className="rounded-xl border border-gray-200 bg-white p-4"
+            data-testid="sprint-detail-blockers-panel"
+          >
+            <div className="flex items-center gap-2">
+              {settlementBlocked ? (
+                <ShieldAlert className="h-4 w-4 text-red-600" />
+              ) : (
+                <ShieldCheck className="h-4 w-4 text-emerald-600" />
+              )}
+              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                {t('blockersPanelTitle')}
+              </p>
+            </div>
+            <p
+              className={`mt-3 rounded-lg border px-3 py-2 text-sm ${
+                settlementBlocked
+                  ? 'border-red-200 bg-red-50 text-red-700'
+                  : 'border-emerald-200 bg-emerald-50 text-emerald-700'
+              }`}
+            >
+              {settlementBlocked
+                ? t('blockersPanelActive', { reason: sprint.settlement_blocked_reason ?? '' })
+                : t('blockersPanelClear')}
+            </p>
+          </section>
+
+          <section
+            className="rounded-xl border border-gray-200 bg-white p-4"
+            data-testid="sprint-detail-readiness-checklist"
+          >
+            <div className="flex items-center gap-2">
+              <ListChecks className="h-4 w-4 text-gray-500" />
+              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                {t('readinessChecklistTitle')}
+              </p>
+            </div>
+            <ul className="mt-3 space-y-2">
+              {readinessChecks.map((item) => (
+                <li
+                  key={item.key}
+                  data-testid={`sprint-readiness-item-${item.key}`}
+                  className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm ${
+                    item.ok
+                      ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                      : 'border-amber-200 bg-amber-50 text-amber-700'
+                  }`}
+                >
+                  {item.ok ? <CheckCircle2 className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
+                  <span>{item.label}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </aside>
       </div>
 
       {/* Edit Sprint Modal */}
@@ -912,6 +1047,7 @@ export default function SprintDetailPage() {
           onConfirm={handleCompleteSprint}
         />
       )}
+      </div>
     </PageContainer>
   );
 }

@@ -80,7 +80,7 @@ export default function NewProposalPage() {
   return (
     <PageContainer>
       {/* Header */}
-      <div className="mb-8">
+      <div className="mb-8 rounded-2xl border border-gray-200 bg-gradient-to-br from-orange-50 via-white to-amber-50 p-6">
         <Link
           href="/proposals"
           className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
@@ -89,9 +89,15 @@ export default function NewProposalPage() {
           {t('backToProposals')}
         </Link>
         <h1 className="text-3xl font-bold text-gray-900">
-          {editId ? t('title').replace('Create New', 'Edit') : t('title')}
+          {editId ? t('editTitle') : t('title')}
         </h1>
         <p className="text-gray-600 mt-1">{t('subtitle')}</p>
+        <div className="mt-4 rounded-xl border border-white/80 bg-white/85 px-4 py-3">
+          <p className="text-xs uppercase tracking-[0.16em] text-amber-700 font-semibold">
+            {t('lifecycleHintLabel')}
+          </p>
+          <p className="text-sm text-gray-700 mt-1">{t('lifecycleHintText')}</p>
+        </div>
       </div>
 
       {/* Wizard */}

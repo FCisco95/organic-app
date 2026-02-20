@@ -111,6 +111,7 @@ export function TemplateManager({ className }: TemplateManagerProps) {
         'rounded-2xl border border-gray-200 bg-white/80 shadow-sm backdrop-blur',
         className
       )}
+      data-testid="task-template-manager"
     >
       <div className="flex items-center justify-between gap-3 border-b border-gray-100 bg-gradient-to-r from-organic-orange/10 via-white to-organic-yellow/10 px-5 py-4 rounded-t-2xl">
         <div className="flex items-center gap-3">
@@ -137,12 +138,16 @@ export function TemplateManager({ className }: TemplateManagerProps) {
 
       {/* Form */}
       {showForm && (
-        <div className="mx-5 mt-5 border border-gray-200 rounded-xl p-4 space-y-4 bg-white">
+        <div
+          className="mx-5 mt-5 border border-gray-200 rounded-xl p-4 space-y-4 bg-white"
+          data-testid="task-template-form"
+        >
           <div className="flex items-center justify-between">
             <h4 className="font-medium text-gray-900">
               {editingId ? t('editTemplate') : t('newTemplate')}
             </h4>
             <button onClick={resetForm} className="text-gray-400 hover:text-gray-600">
+              <span className="sr-only">{t('cancel')}</span>
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -293,10 +298,11 @@ export function TemplateManager({ className }: TemplateManagerProps) {
             ))}
           </div>
         ) : templates && templates.length > 0 ? (
-          <div className="space-y-2">
+          <div className="space-y-2" data-testid="task-template-list">
             {templates.map((template) => (
               <div
                 key={template.id}
+                data-testid={`task-template-row-${template.id}`}
                 className="group flex items-center gap-3 p-3 rounded-xl border border-gray-200 bg-white hover:border-organic-orange/40 hover:shadow-sm transition-all"
               >
                 <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-organic-orange/10 text-organic-orange">
@@ -327,6 +333,7 @@ export function TemplateManager({ className }: TemplateManagerProps) {
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => handleEdit(template)}
+                    aria-label={t('editTemplate')}
                     className="p-1.5 text-gray-400 hover:text-gray-700 rounded"
                   >
                     <Pencil className="w-4 h-4" />
@@ -334,6 +341,7 @@ export function TemplateManager({ className }: TemplateManagerProps) {
                   <button
                     onClick={() => handleDelete(template.id)}
                     disabled={deleteTemplate.isPending}
+                    aria-label={t('confirmDelete')}
                     className="p-1.5 text-gray-400 hover:text-red-500 rounded"
                   >
                     <Trash2 className="w-4 h-4" />

@@ -165,9 +165,10 @@ export function ProposalWizard({ initialData, proposalId, onSuccess }: ProposalW
     t('stepBudgetTimeline'),
     t('stepReview'),
   ];
+  const hasErrors = Object.keys(errors).length > 0;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8" data-testid={`proposal-wizard-step-${step}`}>
       {/* Progress Bar */}
       <div className="flex items-center justify-between">
         {stepLabels.map((label, i) => {
@@ -215,6 +216,24 @@ export function ProposalWizard({ initialData, proposalId, onSuccess }: ProposalW
         })}
       </div>
 
+      <div className="rounded-xl border border-gray-200 bg-gray-50/70 px-4 py-3">
+        <p className="text-xs uppercase tracking-[0.16em] text-gray-500">{t('workflowTitle')}</p>
+        <p className="mt-1 text-sm text-gray-700">
+          {t('workflowStepContext', {
+            step: step,
+            total: stepLabels.length,
+            label: stepLabels[step - 1],
+          })}
+        </p>
+      </div>
+
+      {hasErrors && (
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3">
+          <p className="text-sm font-semibold text-red-700">{t('validationSummaryTitle')}</p>
+          <p className="mt-1 text-xs text-red-600">{t('validationSummaryDescription')}</p>
+        </div>
+      )}
+
       {/* Step Content */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         {step === 1 && (
@@ -260,6 +279,7 @@ export function ProposalWizard({ initialData, proposalId, onSuccess }: ProposalW
                 type="button"
                 onClick={() => handleSubmit('public')}
                 disabled={isSubmitting}
+                data-testid="proposal-wizard-submit"
                 className="flex items-center gap-2 px-6 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
               >
                 <Send className="w-4 h-4" />
@@ -270,6 +290,7 @@ export function ProposalWizard({ initialData, proposalId, onSuccess }: ProposalW
             <button
               type="button"
               onClick={goNext}
+              data-testid="proposal-wizard-next"
               className="flex items-center gap-2 px-6 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
             >
               {t('next')}
@@ -557,6 +578,9 @@ function Step4Review({ formData, goToStep, t }: Step4Props) {
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('reviewTitle')}</h3>
+      <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+        {t('reviewCheckpointHint')}
+      </div>
       {sections.map((section) => (
         <div
           key={section.key}

@@ -252,4 +252,27 @@ test.describe('Sprint phase engine', () => {
     expect(toCompletedBody.sprint.status).toBe('completed');
     expect(toCompletedBody).toHaveProperty('snapshot');
   });
+
+  test('sprint detail exposes phase timeline and readiness anchors', async ({ page }) => {
+    test.skip(!createdSprintId, 'Requires lifecycle sprint fixture');
+
+    const baseUrl = new URL(BASE_URL);
+    await page.context().addCookies([
+      {
+        name: adminCookie.name,
+        value: adminCookie.value,
+        domain: baseUrl.hostname,
+        path: '/',
+        httpOnly: true,
+        secure: baseUrl.protocol === 'https:',
+        sameSite: 'Lax',
+      },
+    ]);
+
+    await page.goto(`${BASE_URL}/en/sprints/${createdSprintId}`, { waitUntil: 'domcontentloaded' });
+    await expect(page.getByTestId('sprint-detail-page')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByTestId('sprint-detail-phase-timeline')).toBeVisible();
+    await expect(page.getByTestId('sprint-detail-blockers-panel')).toBeVisible();
+    await expect(page.getByTestId('sprint-detail-readiness-checklist')).toBeVisible();
+  });
 });

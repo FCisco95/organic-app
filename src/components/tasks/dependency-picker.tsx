@@ -75,7 +75,7 @@ export function DependencyPicker({ taskId, className }: DependencyPickerProps) {
   };
 
   return (
-    <div className={cn('space-y-3', className)}>
+    <div className={cn('space-y-3', className)} data-testid="task-dependency-picker">
       <div className="flex items-center justify-between">
         <h4 className="text-sm font-medium text-gray-700 flex items-center gap-2">
           <Link2 className="w-4 h-4" />
@@ -83,6 +83,7 @@ export function DependencyPicker({ taskId, className }: DependencyPickerProps) {
         </h4>
         <button
           onClick={() => setIsAdding(!isAdding)}
+          data-testid="task-dependency-toggle"
           className="text-xs text-organic-orange hover:text-orange-600 font-medium"
         >
           {isAdding ? t('done') : `+ ${t('addBlocker')}`}
@@ -119,6 +120,7 @@ export function DependencyPicker({ taskId, className }: DependencyPickerProps) {
                 </span>
                 <button
                   onClick={() => handleRemove(dep)}
+                  aria-label={t('removeDependency')}
                   className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-opacity"
                   title={t('dependencyRemoved')}
                 >
@@ -144,6 +146,7 @@ export function DependencyPicker({ taskId, className }: DependencyPickerProps) {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={t('searchTasks')}
+              data-testid="task-dependency-search"
               className="w-full pl-9 pr-3 py-2 text-sm border-b border-gray-200 focus:outline-none focus:border-organic-orange"
               autoFocus
             />

@@ -35,6 +35,7 @@ export type { TaskType, TaskStatus, TaskPriority, ReviewStatus, SprintStatus };
 
 // UI-specific types
 export type TaskTab = 'all' | 'backlog' | 'activeSprint' | 'completed';
+export type TaskStatusLaneCounts = Record<TaskStatus, number>;
 
 // Assignee type (user eligible for task assignment)
 export interface Assignee {
@@ -279,6 +280,23 @@ export const CLAIMABLE_STATUSES: TaskStatus[] = ['backlog', 'todo', 'in_progress
 
 // Task status that indicates work is in progress
 export const IN_PROGRESS_STATUSES: TaskStatus[] = ['in_progress', 'review'];
+
+export function buildTaskStatusLaneCounts(tasks: Array<Pick<Task, 'status'>>): TaskStatusLaneCounts {
+  return tasks.reduce<TaskStatusLaneCounts>(
+    (acc, task) => {
+      const lane = task.status ?? 'backlog';
+      acc[lane] = (acc[lane] ?? 0) + 1;
+      return acc;
+    },
+    {
+      backlog: 0,
+      todo: 0,
+      in_progress: 0,
+      review: 0,
+      done: 0,
+    }
+  );
+}
 
 // ============================================
 // Phase 12: Dependencies, Subtasks, Templates

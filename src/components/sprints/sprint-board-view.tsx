@@ -1,10 +1,10 @@
 'use client';
 
-import { Plus, Target } from 'lucide-react';
+import { AlertTriangle, Plus, ShieldCheck, Target } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { TaskBoard, TaskBoardTask, TaskStatus } from '@/components/tasks/task-board';
-import type { Sprint } from '@/features/tasks';
+import type { Sprint } from '@/features/sprints';
 
 type ActivityCounts = Record<
   string,
@@ -65,7 +65,7 @@ export function SprintBoardView({
 
   if (!selectedSprint) {
     return (
-      <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
+      <div className="text-center py-12 bg-white rounded-xl border border-gray-200" data-testid="sprints-board-view">
         <Target className="w-12 h-12 text-gray-300 mx-auto mb-3" />
         <p className="text-gray-500">{t('noActiveOrUpcoming')}</p>
         {canCreateSprint && (
@@ -82,8 +82,12 @@ export function SprintBoardView({
   }
 
   return (
-    <>
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <div className="space-y-5" data-testid="sprints-board-view">
+      <div
+        className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm"
+        data-testid="sprints-board-context"
+      >
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex flex-col gap-2">
           <label className="text-xs font-semibold uppercase tracking-wide text-gray-500">
             {t('assignToSprint')}
@@ -92,6 +96,7 @@ export function SprintBoardView({
             <select
               value={selectedSprintId ?? ''}
               onChange={(event) => onSelectSprintId(event.target.value)}
+              data-testid="sprints-board-sprint-select"
               className="min-w-[220px] rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:border-organic-orange focus:ring-2 focus:ring-organic-orange"
             >
               {activeSprint && (
@@ -114,6 +119,12 @@ export function SprintBoardView({
                 {t('planningMode')}
               </span>
             )}
+            <span
+              data-testid={`sprints-board-status-chip-${selectedSprint.status ?? 'planning'}`}
+              className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-700"
+            >
+              {t(`status.${selectedSprint.status ?? 'planning'}`)}
+            </span>
           </div>
         </div>
         {canCreateSprint && planningSprints.length === 0 && !activeSprint && (
@@ -126,8 +137,10 @@ export function SprintBoardView({
           </button>
         )}
       </div>
+        <p className="text-xs text-gray-500">{t('boardCommandHint')}</p>
+      </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="bg-white rounded-xl border border-gray-200 p-4 mb-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-xs font-medium text-gray-500">{t('selectedSprint')}</p>
           <h2 className="text-xl font-semibold text-gray-900">{selectedSprint.name}</h2>
@@ -165,6 +178,28 @@ export function SprintBoardView({
         </Link>
       </div>
 
+      <div
+        className={`rounded-xl border px-4 py-3 text-sm ${
+          selectedSprint.settlement_blocked_reason
+            ? 'border-red-200 bg-red-50 text-red-700'
+            : 'border-emerald-200 bg-emerald-50 text-emerald-700'
+        }`}
+        data-testid="sprints-board-settlement-panel"
+      >
+        <div className="flex items-start gap-2">
+          {selectedSprint.settlement_blocked_reason ? (
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+          ) : (
+            <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" />
+          )}
+          <p>
+            {selectedSprint.settlement_blocked_reason
+              ? t('settlementPanelBlocked', { reason: selectedSprint.settlement_blocked_reason })
+              : t('settlementReady')}
+          </p>
+        </div>
+      </div>
+
       <TaskBoard
         tasks={boardTasks}
         loading={tasksLoading}
@@ -177,7 +212,8 @@ export function SprintBoardView({
       />
 
       <div
-        className="mt-8 bg-white rounded-xl border border-gray-200"
+        className="mt-4 bg-white rounded-xl border border-gray-200"
+        data-testid="sprints-backlog-surface"
         onDragOver={(event) => {
           if (!canAssignToSprint) return;
           event.preventDefault();
@@ -321,6 +357,6 @@ export function SprintBoardView({
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 }
