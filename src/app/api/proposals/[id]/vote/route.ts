@@ -4,17 +4,55 @@ import { castVoteSchema } from '@/features/voting/schemas';
 import { parseJsonBody } from '@/lib/parse-json-body';
 import { logger } from '@/lib/logger';
 
+type WeightSource = 'voter_snapshot' | 'holder_snapshot' | 'none';
+
+async function getVotingWeight(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  proposalId: string,
+  userId: string,
+  walletPubkey: string | null | undefined
+): Promise<{ weight: number; source: WeightSource }> {
+  const { data: voterSnapshot } = await supabase
+    .from('proposal_voter_snapshots')
+    .select('total_weight')
+    .eq('proposal_id', proposalId)
+    .eq('voter_id', userId)
+    .maybeSingle();
+
+  const snapshotWeight = Number(voterSnapshot?.total_weight ?? 0);
+  if (snapshotWeight > 0) {
+    return { weight: snapshotWeight, source: 'voter_snapshot' };
+  }
+
+  if (!walletPubkey) {
+    return { weight: 0, source: 'none' };
+  }
+
+  const { data: holderSnapshot } = await supabase
+    .from('holder_snapshots')
+    .select('balance_ui')
+    .eq('proposal_id', proposalId)
+    .eq('wallet_pubkey', walletPubkey)
+    .maybeSingle();
+
+  const holderWeight = Number(holderSnapshot?.balance_ui ?? 0);
+  if (holderWeight > 0) {
+    return { weight: holderWeight, source: 'holder_snapshot' };
+  }
+
+  return { weight: 0, source: 'none' };
+}
+
 /**
  * POST /api/proposals/[id]/vote
  * Cast or update a vote on a proposal.
- * Vote weight is determined by token balance at snapshot time.
+ * Vote weight is determined by the frozen voting snapshot.
  */
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: proposalId } = await params;
     const supabase = await createClient();
 
-    // Check authentication
     const {
       data: { user },
       error: authError,
@@ -24,11 +62,11 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Parse and validate request body
     const { data: body, error: jsonError } = await parseJsonBody(request);
     if (jsonError) {
       return NextResponse.json({ error: jsonError }, { status: 400 });
     }
+
     const parseResult = castVoteSchema.safeParse(body);
 
     if (!parseResult.success) {
@@ -40,7 +78,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     const { value } = parseResult.data;
 
-    // Get user profile with wallet
     const { data: profile, error: profileError } = await supabase
       .from('user_profiles')
       .select('role, wallet_pubkey')
@@ -51,7 +88,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       return NextResponse.json({ error: 'User profile not found' }, { status: 404 });
     }
 
-    // Check if user is a member
     if (!profile.role || !['member', 'council', 'admin'].includes(profile.role)) {
       return NextResponse.json(
         {
@@ -61,12 +97,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       );
     }
 
-    // Check if user has linked wallet
-    if (!profile.wallet_pubkey) {
-      return NextResponse.json({ error: 'You must link a wallet to vote' }, { status: 400 });
-    }
-
-    // Check if proposal is in voting status
     const { data: proposal, error: proposalError } = await supabase
       .from('proposals')
       .select('id, status, voting_starts_at, voting_ends_at')
@@ -81,34 +111,28 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       return NextResponse.json({ error: 'Voting is not open for this proposal' }, { status: 400 });
     }
 
-    // Check if voting period is still open
     const now = new Date();
     if (proposal.voting_ends_at && new Date(proposal.voting_ends_at) < now) {
       return NextResponse.json({ error: 'Voting period has ended' }, { status: 400 });
     }
 
-    // Get user's voting weight from snapshot
-    const { data: snapshot, error: snapshotError } = await supabase
-      .from('holder_snapshots')
-      .select('balance_ui')
-      .eq('proposal_id', proposalId)
-      .eq('wallet_pubkey', profile.wallet_pubkey)
-      .single();
+    const { weight, source } = await getVotingWeight(
+      supabase,
+      proposalId,
+      user.id,
+      profile.wallet_pubkey
+    );
 
-    if (snapshotError || !snapshot) {
+    if (weight <= 0) {
       return NextResponse.json(
-        { error: 'You did not hold $ORG tokens at the time of the snapshot and cannot vote' },
+        {
+          error:
+            'You are not eligible in this voting snapshot and cannot vote on this proposal.',
+        },
         { status: 403 }
       );
     }
 
-    const weight = snapshot.balance_ui;
-
-    if (weight <= 0) {
-      return NextResponse.json({ error: 'You must hold $ORG tokens to vote' }, { status: 403 });
-    }
-
-    // Check if user already voted
     const { data: existingVote } = await supabase
       .from('votes')
       .select('id, value')
@@ -119,7 +143,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     let vote;
 
     if (existingVote) {
-      // Update existing vote
       const { data: updatedVote, error: updateError } = await supabase
         .from('votes')
         .update({ value, weight })
@@ -133,7 +156,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
       vote = updatedVote;
     } else {
-      // Create new vote
       const { data: newVote, error: insertError } = await supabase
         .from('votes')
         .insert({
@@ -160,6 +182,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         weight: vote.weight,
         created_at: vote.created_at,
       },
+      weight_source: source,
     });
   } catch (error) {
     logger.error('Vote POST error:', error);
@@ -169,14 +192,13 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
 /**
  * GET /api/proposals/[id]/vote
- * Get the current user's vote for a proposal.
+ * Get the current user's vote and frozen voting weight for a proposal.
  */
-export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: proposalId } = await params;
     const supabase = await createClient();
 
-    // Check authentication
     const {
       data: { user },
       error: authError,
@@ -186,7 +208,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get user's vote
     const { data: vote, error: voteError } = await supabase
       .from('votes')
       .select('id, value, weight, created_at')
@@ -198,29 +219,24 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: 'Failed to fetch vote' }, { status: 500 });
     }
 
-    // Get user's voting weight from snapshot (even if they haven't voted)
     const { data: profile } = await supabase
       .from('user_profiles')
       .select('wallet_pubkey')
       .eq('id', user.id)
       .single();
 
-    let votingWeight = 0;
-    if (profile?.wallet_pubkey) {
-      const { data: snapshot } = await supabase
-        .from('holder_snapshots')
-        .select('balance_ui')
-        .eq('proposal_id', proposalId)
-        .eq('wallet_pubkey', profile.wallet_pubkey)
-        .maybeSingle();
-
-      votingWeight = snapshot?.balance_ui || 0;
-    }
+    const { weight, source } = await getVotingWeight(
+      supabase,
+      proposalId,
+      user.id,
+      profile?.wallet_pubkey
+    );
 
     return NextResponse.json({
       vote: vote || null,
-      voting_weight: votingWeight,
-      can_vote: votingWeight > 0,
+      voting_weight: weight,
+      can_vote: weight > 0,
+      weight_source: source,
     });
   } catch (error) {
     logger.error('Vote GET error:', error);

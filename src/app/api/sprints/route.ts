@@ -5,7 +5,7 @@ import { createSprintSchema } from '@/features/sprints/schemas';
 import { logger } from '@/lib/logger';
 
 const SPRINT_COLUMNS =
-  'id, org_id, name, start_at, end_at, status, capacity_points, goal, created_at, updated_at';
+  'id, org_id, name, start_at, end_at, status, capacity_points, goal, active_started_at, review_started_at, dispute_window_started_at, dispute_window_ends_at, settlement_started_at, settlement_integrity_flags, settlement_blocked_reason, completed_at, created_at, updated_at';
 
 // GET - Fetch sprints with pagination
 export async function GET(request: Request) {

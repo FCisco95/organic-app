@@ -5,22 +5,55 @@ import { startVotingSchema } from '@/features/voting/schemas';
 import { parseJsonBody } from '@/lib/parse-json-body';
 import { logger } from '@/lib/logger';
 
-const START_VOTING_CONFIG_COLUMNS = 'quorum_percentage, approval_threshold, voting_duration_days';
-const START_VOTING_PROPOSAL_COLUMNS = 'id, title, status';
-const START_VOTING_UPDATE_COLUMNS =
-  'id, title, status, voting_starts_at, voting_ends_at, snapshot_taken_at, total_circulating_supply, quorum_required, approval_threshold, result';
+const START_VOTING_PROPOSAL_COLUMNS =
+  'id, title, status, voting_starts_at, server_voting_started_at, voting_ends_at, snapshot_taken_at, total_circulating_supply, quorum_required, approval_threshold, result';
+
+type StartVotingRpcResult = {
+  ok: boolean;
+  code: string;
+  message: string;
+  proposal_id?: string;
+  voting_starts_at?: string;
+  voting_ends_at?: string;
+  snapshot?: {
+    holders_count: number;
+    voters_count: number;
+    total_supply: number;
+    quorum_required: number;
+    approval_threshold: number;
+  };
+};
+
+function mapStartVotingErrorStatus(code: string): number {
+  switch (code) {
+    case 'UNAUTHORIZED':
+      return 401;
+    case 'FORBIDDEN':
+      return 403;
+    case 'NOT_FOUND':
+      return 404;
+    case 'SNAPSHOT_EXISTS':
+      return 409;
+    case 'INVALID_STATUS':
+    case 'INVALID_SNAPSHOT':
+    case 'INVALID_DURATION':
+    case 'EMPTY_SNAPSHOT':
+      return 400;
+    default:
+      return 500;
+  }
+}
 
 /**
  * POST /api/proposals/[id]/start-voting
- * Admin-only endpoint to start voting on a proposal.
- * Captures token holder snapshot and sets voting period.
+ * Admin/council endpoint.
+ * Captures deterministic voting snapshot and flips proposal to voting in one DB transaction.
  */
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: proposalId } = await params;
     const supabase = await createClient();
 
-    // Check authentication
     const {
       data: { user },
       error: authError,
@@ -30,7 +63,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Check if user is admin or council
     const { data: profile, error: profileError } = await supabase
       .from('user_profiles')
       .select('role')
@@ -44,7 +76,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       );
     }
 
-    // Parse and validate request body
     const { data: body, error: jsonError } = await parseJsonBody(request);
     if (jsonError) {
       return NextResponse.json({ error: jsonError, code: 'INVALID_JSON' }, { status: 400 });
@@ -59,20 +90,33 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       );
     }
 
-    // Get voting config
-    const { data: config, error: configError } = await supabase
-      .from('voting_config')
-      .select(START_VOTING_CONFIG_COLUMNS)
-      .limit(1)
-      .single();
+    const input = parseResult.data;
+    const holders = input.snapshot_holders ?? (await getAllTokenHolders());
 
-    if (configError) {
-      return NextResponse.json({ error: 'Failed to fetch voting config' }, { status: 500 });
+    const { data: rpcData, error: rpcError } = await supabase.rpc('start_proposal_voting_integrity', {
+      p_proposal_id: proposalId,
+      p_voting_duration_days: input.voting_duration_days || undefined,
+      p_snapshot_holders: holders,
+    });
+
+    if (rpcError) {
+      logger.error('start_proposal_voting_integrity RPC error', rpcError);
+      return NextResponse.json({ error: 'Failed to start voting' }, { status: 500 });
     }
 
-    const votingDurationDays = parseResult.data.voting_duration_days || config.voting_duration_days;
+    const result = rpcData as StartVotingRpcResult | null;
 
-    // Check if proposal exists and is in 'submitted' status
+    if (!result || !result.ok) {
+      const code = result?.code ?? 'UNKNOWN';
+      return NextResponse.json(
+        {
+          error: result?.message ?? 'Failed to start voting',
+          code,
+        },
+        { status: mapStartVotingErrorStatus(code) }
+      );
+    }
+
     const { data: proposal, error: proposalError } = await supabase
       .from('proposals')
       .select(START_VOTING_PROPOSAL_COLUMNS)
@@ -80,93 +124,29 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       .single();
 
     if (proposalError || !proposal) {
-      return NextResponse.json({ error: 'Proposal not found' }, { status: 404 });
-    }
-
-    if (proposal.status !== 'submitted') {
       return NextResponse.json(
-        { error: `Cannot start voting on a proposal with status '${proposal.status}'` },
-        { status: 400 }
+        {
+          message: result.message,
+          snapshot: result.snapshot ?? null,
+          voting_ends_at: result.voting_ends_at ?? null,
+          integrity: {
+            server_voting_started_at: result.voting_starts_at ?? null,
+            snapshot_source: input.snapshot_holders ? 'request' : 'chain',
+          },
+        },
+        { status: 200 }
       );
-    }
-
-    // Check if snapshot already exists
-    const { count: existingSnapshotCount } = await supabase
-      .from('holder_snapshots')
-      .select('id', { head: true, count: 'exact' })
-      .eq('proposal_id', proposalId)
-      .limit(1);
-
-    if ((existingSnapshotCount ?? 0) > 0) {
-      return NextResponse.json(
-        { error: 'Snapshot already taken for this proposal' },
-        { status: 400 }
-      );
-    }
-
-    // Capture token holder snapshot
-    const holders = await getAllTokenHolders();
-
-    if (holders.length === 0) {
-      return NextResponse.json(
-        { error: 'No token holders found. Cannot start voting.' },
-        { status: 400 }
-      );
-    }
-
-    // Calculate total circulating supply
-    const totalSupply = holders.reduce((sum, h) => sum + h.balance, 0);
-    const quorumRequired = (totalSupply * config.quorum_percentage) / 100;
-
-    // Calculate voting period
-    const now = new Date();
-    const votingEndsAt = new Date(now.getTime() + votingDurationDays * 24 * 60 * 60 * 1000);
-
-    // Insert holder snapshots
-    const snapshotInserts = holders.map((holder) => ({
-      proposal_id: proposalId,
-      wallet_pubkey: holder.address,
-      balance_ui: holder.balance,
-      taken_at: now.toISOString(),
-    }));
-
-    const { error: snapshotError } = await supabase
-      .from('holder_snapshots')
-      .insert(snapshotInserts);
-
-    if (snapshotError) {
-      return NextResponse.json({ error: 'Failed to capture snapshot' }, { status: 500 });
-    }
-
-    // Update proposal with voting info
-    const { data: updatedProposal, error: updateError } = await supabase
-      .from('proposals')
-      .update({
-        status: 'voting',
-        voting_starts_at: now.toISOString(),
-        voting_ends_at: votingEndsAt.toISOString(),
-        snapshot_taken_at: now.toISOString(),
-        total_circulating_supply: totalSupply,
-        quorum_required: quorumRequired,
-        approval_threshold: config.approval_threshold,
-      })
-      .eq('id', proposalId)
-      .select(START_VOTING_UPDATE_COLUMNS)
-      .single();
-
-    if (updateError) {
-      return NextResponse.json({ error: 'Failed to update proposal' }, { status: 500 });
     }
 
     return NextResponse.json({
-      message: 'Voting started successfully',
-      proposal: updatedProposal,
-      snapshot: {
-        holders_count: holders.length,
-        total_supply: totalSupply,
-        quorum_required: quorumRequired,
+      message: result.message,
+      proposal,
+      snapshot: result.snapshot ?? null,
+      voting_ends_at: proposal.voting_ends_at,
+      integrity: {
+        server_voting_started_at: proposal.server_voting_started_at,
+        snapshot_source: input.snapshot_holders ? 'request' : 'chain',
       },
-      voting_ends_at: votingEndsAt.toISOString(),
     });
   } catch (error) {
     logger.error('Start voting error:', error);

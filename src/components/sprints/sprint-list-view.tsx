@@ -25,6 +25,19 @@ export function SprintListView({
   getCompletionPercent,
 }: SprintListViewProps) {
   const t = useTranslations('Sprints');
+  const getStatusBadgeClass = (status: string | null) => {
+    const styles = {
+      planning: 'border-blue-200 bg-blue-50 text-blue-700',
+      active: 'border-green-200 bg-green-50 text-green-700',
+      review: 'border-amber-200 bg-amber-50 text-amber-700',
+      dispute_window: 'border-orange-200 bg-orange-50 text-orange-700',
+      settlement: 'border-purple-200 bg-purple-50 text-purple-700',
+      completed: 'border-gray-200 bg-gray-100 text-gray-700',
+    };
+
+    if (!status) return styles.planning;
+    return styles[status as keyof typeof styles] ?? styles.planning;
+  };
 
   return (
     <>
@@ -54,9 +67,13 @@ export function SprintListView({
                 <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-3">
-                      <span className="inline-flex items-center gap-1 rounded-full border border-green-200 bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700">
+                      <span
+                        className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium ${getStatusBadgeClass(
+                          activeSprint.status
+                        )}`}
+                      >
                         <Target className="w-3 h-3" />
-                        {t('status.active')}
+                        {t(`status.${activeSprint.status ?? 'planning'}`)}
                       </span>
                     </div>
                     <h3 className="text-2xl font-semibold text-gray-900 group-hover:text-organic-orange transition-colors mb-2">

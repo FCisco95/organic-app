@@ -58,7 +58,7 @@ export interface Sprint {
   name: string;
   start_date: string;
   end_date: string;
-  status: 'planning' | 'active' | 'completed';
+  status: 'planning' | 'active' | 'review' | 'dispute_window' | 'settlement' | 'completed';
   created_at: string;
   updated_at: string;
 }

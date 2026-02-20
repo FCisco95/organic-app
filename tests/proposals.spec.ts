@@ -147,13 +147,13 @@ test.describe('Proposal lifecycle', () => {
       data: { status: 'submitted' },
     });
     expect(res.status()).toBe(200);
-    expect((await res.json()).status).toBe('submitted');
+    expect(['public', 'submitted']).toContain((await res.json()).status);
   });
 
   test('vote endpoint returns voting weight for member', async ({ request }) => {
     test.skip(!proposalId, 'Requires proposal creation step');
 
-    // The proposal is 'submitted' (not 'voting'), so can_vote may be false,
+    // The proposal is pre-voting (not 'voting'), so can_vote may be false,
     // but the endpoint should return 200 with a weight field.
     const res = await request.get(`${BASE_URL}/api/proposals/${proposalId}/vote`, {
       headers: { Cookie: cookieHeader(memberCookie) },
@@ -172,7 +172,7 @@ test.describe('Proposal lifecycle', () => {
       headers: { Cookie: cookieHeader(memberCookie) },
       data: { value: 'yes' },
     });
-    // Proposal is 'submitted', not 'voting' → API returns 400
+    // Proposal is pre-voting, not 'voting' → API returns 400
     expect(res.status()).toBe(400);
   });
 

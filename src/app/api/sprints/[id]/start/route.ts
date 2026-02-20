@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { logger } from '@/lib/logger';
+import type { SprintStatus } from '@/types/database';
+
+const EXECUTION_STATUSES: SprintStatus[] = ['active', 'review', 'dispute_window', 'settlement'];
+const SPRINT_COLUMNS =
+  'id, name, status, active_started_at, review_started_at, dispute_window_started_at, dispute_window_ends_at, settlement_started_at, settlement_integrity_flags, settlement_blocked_reason, completed_at';
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -34,7 +39,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     // Verify sprint exists and is in planning status
     const { data: sprint, error: sprintError } = await supabase
       .from('sprints')
-      .select('id, name, status')
+      .select(SPRINT_COLUMNS)
       .eq('id', id)
       .single();
 
@@ -53,13 +58,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     const { data: activeSprints } = await supabase
       .from('sprints')
       .select('id, name')
-      .eq('status', 'active')
+      .in('status', EXECUTION_STATUSES)
+      .neq('id', id)
       .limit(1);
 
     if (activeSprints && activeSprints.length > 0) {
       return NextResponse.json(
         {
-          error: `Cannot start sprint — "${activeSprints[0].name}" is already active`,
+          error: `Cannot start sprint — "${activeSprints[0].name}" is already in progress`,
           active_sprint: activeSprints[0],
         },
         { status: 409 }
@@ -69,9 +75,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     // Update sprint to active
     const { data: updatedSprint, error: updateError } = await supabase
       .from('sprints')
-      .update({ status: 'active' })
+      .update({
+        status: 'active',
+        active_started_at: new Date().toISOString(),
+        settlement_blocked_reason: null,
+      })
       .eq('id', id)
-      .select()
+      .select(SPRINT_COLUMNS)
       .single();
 
     if (updateError) {

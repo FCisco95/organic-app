@@ -39,7 +39,13 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         proposal:proposals(
           id,
           title,
-          status
+          status,
+          result
+        ),
+        proposal_version:proposal_versions!tasks_proposal_version_id_fkey(
+          id,
+          version_number,
+          created_at
         )
       `
       )
@@ -191,6 +197,17 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
           id,
           name,
           status
+        ),
+        proposal:proposals(
+          id,
+          title,
+          status,
+          result
+        ),
+        proposal_version:proposal_versions!tasks_proposal_version_id_fkey(
+          id,
+          version_number,
+          created_at
         )
       `
       )

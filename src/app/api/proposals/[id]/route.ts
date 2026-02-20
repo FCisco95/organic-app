@@ -1,32 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { updateProposalSchema } from '@/features/proposals/schemas';
+import { normalizeProposalStatus } from '@/features/proposals/types';
 import { parseJsonBody } from '@/lib/parse-json-body';
 import { logger } from '@/lib/logger';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
+const PROPOSAL_DETAIL_SELECT = `
+  *,
+  proposal_versions!proposals_current_version_id_fkey(
+    id,
+    version_number,
+    created_at
+  ),
+  user_profiles!proposals_created_by_fkey(
+    organic_id,
+    email,
+    wallet_pubkey
+  )
+`;
+
 /**
  * GET /api/proposals/[id]
- * Fetch a single proposal with author profile.
+ * Fetch a single proposal with author profile and current version metadata.
  */
 export async function GET(_request: NextRequest, { params }: RouteParams) {
   try {
     const { id: proposalId } = await params;
     const supabase = await createClient();
 
+    // Best-effort TTL expiry sweep so stale override promotions auto-revert.
+    await supabase.rpc('expire_proposal_override_promotions');
+
     const { data, error } = await supabase
       .from('proposals')
-      .select(
-        `
-        *,
-        user_profiles!proposals_created_by_fkey(
-          organic_id,
-          email,
-          wallet_pubkey
-        )
-      `
-      )
+      .select(PROPOSAL_DETAIL_SELECT)
       .eq('id', proposalId)
       .single();
 
@@ -46,7 +55,7 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 
 /**
  * PATCH /api/proposals/[id]
- * Update a proposal. Author can update drafts; admins can update any.
+ * Update proposal content. Draft/public edits are mutable; discussion edits are versioned.
  */
 export async function PATCH(request: NextRequest, { params }: RouteParams) {
   try {
@@ -62,16 +71,23 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Fetch the current proposal
+    // Best-effort TTL expiry sweep so edits happen against fresh lifecycle state.
+    await supabase.rpc('expire_proposal_override_promotions');
+
+    // Fetch current proposal state for permissions and merged-body updates.
     const { data: proposal, error: fetchError } = await supabase
       .from('proposals')
-      .select('created_by, status')
+      .select(
+        'id, created_by, status, title, body, category, summary, motivation, solution, budget, timeline'
+      )
       .eq('id', proposalId)
       .single();
 
     if (fetchError || !proposal) {
       return NextResponse.json({ error: 'Proposal not found' }, { status: 404 });
     }
+
+    const lifecycleStatus = normalizeProposalStatus(proposal.status);
 
     // Check permissions
     const { data: profile } = await supabase
@@ -81,15 +97,25 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       .single();
 
     const isAuthor = user.id === proposal.created_by;
-    const isAdmin = profile?.role && ['admin', 'council'].includes(profile.role);
+    const isAdmin = Boolean(profile?.role && ['admin', 'council'].includes(profile.role));
 
     if (!isAuthor && !isAdmin) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    // Authors can only edit drafts
-    if (isAuthor && !isAdmin && proposal.status !== 'draft') {
-      return NextResponse.json({ error: 'Only draft proposals can be edited' }, { status: 400 });
+    if (lifecycleStatus === 'voting' || lifecycleStatus === 'finalized' || lifecycleStatus === 'canceled') {
+      return NextResponse.json(
+        { error: 'Proposal content is locked after voting starts' },
+        { status: 400 }
+      );
+    }
+
+    // Non-admin authors can only edit mutable author stages.
+    if (isAuthor && !isAdmin && !['draft', 'public', 'discussion'].includes(lifecycleStatus)) {
+      return NextResponse.json(
+        { error: 'Only draft, public, or discussion proposals can be edited' },
+        { status: 400 }
+      );
     }
 
     // Parse and validate
@@ -97,7 +123,8 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     if (parsedBody.error !== null) {
       return NextResponse.json({ error: parsedBody.error }, { status: 400 });
     }
-    const { status: newStatus, ...fields } = parsedBody.data;
+
+    const { status: nextStatusRaw, ...fields } = parsedBody.data;
     const parseResult = updateProposalSchema.safeParse(fields);
 
     if (!parseResult.success) {
@@ -108,23 +135,38 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     }
 
     const input = parseResult.data;
-
-    // Build update object
     const updates: Record<string, unknown> = {
       ...input,
       updated_at: new Date().toISOString(),
     };
 
-    // Update legacy body if structured fields changed
-    if (input.summary || input.motivation || input.solution) {
-      // Fetch full current data to merge
-      const { data: current } = await supabase
-        .from('proposals')
-        .select('summary, motivation, solution, budget, timeline')
-        .eq('id', proposalId)
-        .single();
+    if (typeof nextStatusRaw === 'string') {
+      if (nextStatusRaw === 'public' || nextStatusRaw === 'submitted') {
+        if (!['draft', 'public'].includes(lifecycleStatus)) {
+          return NextResponse.json(
+            { error: 'Only draft/public proposals can be moved to public from this endpoint' },
+            { status: 400 }
+          );
+        }
+        updates.status = 'public';
+      } else if (nextStatusRaw === 'draft') {
+        if (lifecycleStatus !== 'draft') {
+          return NextResponse.json(
+            { error: 'Only draft proposals can remain draft from this endpoint' },
+            { status: 400 }
+          );
+        }
+      } else {
+        return NextResponse.json(
+          { error: `Use /api/proposals/${proposalId}/status for lifecycle transition to '${nextStatusRaw}'` },
+          { status: 400 }
+        );
+      }
+    }
 
-      const merged = { ...current, ...input };
+    // Rebuild legacy body text when structured sections changed.
+    if (input.summary || input.motivation || input.solution || input.budget !== undefined || input.timeline !== undefined) {
+      const merged = { ...proposal, ...input };
       updates.body = [
         merged.summary || '',
         '',
@@ -138,19 +180,22 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       ].join('\n');
     }
 
-    // Allow status change to submitted (author submitting a draft)
-    if (newStatus === 'submitted' && proposal.status === 'draft') {
-      updates.status = 'submitted';
-    }
-
-    const { data, error } = await supabase
+    const { error: updateError } = await supabase
       .from('proposals')
       .update(updates)
       .eq('id', proposalId)
-      .select()
+      .select('id')
       .single();
 
-    if (error) throw error;
+    if (updateError) throw updateError;
+
+    const { data, error: refetchError } = await supabase
+      .from('proposals')
+      .select(PROPOSAL_DETAIL_SELECT)
+      .eq('id', proposalId)
+      .single();
+
+    if (refetchError) throw refetchError;
 
     return NextResponse.json(data);
   } catch (error) {

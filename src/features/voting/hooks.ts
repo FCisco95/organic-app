@@ -23,6 +23,15 @@ import {
 const VOTING_CONFIG_COLUMNS =
   'id, org_id, quorum_percentage, approval_threshold, voting_duration_days, proposal_threshold_org, proposer_cooldown_days, max_live_proposals, abstain_counts_toward_quorum, created_at, updated_at';
 
+function toApiError(data: unknown, fallback: string): Error {
+  const payload = (data ?? {}) as { error?: string; code?: string };
+  const err = new Error(payload.error || fallback);
+  if (payload.code) {
+    (err as Error & { code?: string }).code = payload.code;
+  }
+  return err;
+}
+
 // Query keys
 export const votingKeys = {
   all: ['voting'] as const,
@@ -138,25 +147,22 @@ export function useUserVote(proposalId: string, userId: string | undefined) {
 /**
  * Fetch user's voting weight from snapshot
  */
-export function useUserVotingWeight(proposalId: string, walletPubkey: string | undefined) {
-  const supabase = createClient();
-
+export function useUserVotingWeight(proposalId: string, userId: string | undefined) {
   return useQuery({
-    queryKey: [...votingKeys.snapshot(proposalId), walletPubkey],
+    queryKey: [...votingKeys.snapshot(proposalId), userId],
     queryFn: async () => {
-      if (!walletPubkey) return 0;
+      if (!userId) return 0;
 
-      const { data, error } = await supabase
-        .from('holder_snapshots')
-        .select('balance_ui')
-        .eq('proposal_id', proposalId)
-        .eq('wallet_pubkey', walletPubkey)
-        .maybeSingle();
+      const response = await fetch(`/api/proposals/${proposalId}/vote`);
+      if (!response.ok) {
+        const data = await response.json();
+        throw toApiError(data, 'Failed to fetch voting weight');
+      }
 
-      if (error) throw error;
-      return data?.balance_ui || 0;
+      const data = (await response.json()) as { voting_weight?: number };
+      return Number(data.voting_weight ?? 0);
     },
-    enabled: !!proposalId && !!walletPubkey,
+    enabled: !!proposalId && !!userId,
   });
 }
 
@@ -176,7 +182,7 @@ export function useStartVoting() {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || 'Failed to start voting');
+        throw toApiError(data, 'Failed to start voting');
       }
 
       return response.json();
@@ -245,7 +251,7 @@ export function useFinalizeVoting() {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || 'Failed to finalize voting');
+        throw toApiError(data, 'Failed to finalize voting');
       }
 
       return response.json();

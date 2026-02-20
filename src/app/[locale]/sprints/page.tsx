@@ -2,7 +2,13 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/features/auth/context';
-import { Sprint, SprintFormData, SprintStats } from '@/features/sprints';
+import {
+  Sprint,
+  SprintFormData,
+  SprintStats,
+  getNextSprintPhase,
+  isSprintExecutionPhase,
+} from '@/features/sprints';
 import { useSprints, useStartSprint, useCompleteSprint } from '@/features/sprints';
 import {
   formatSprintDate,
@@ -181,7 +187,10 @@ export default function SprintsPage() {
 
   const canCreateSprint = profile?.role === 'admin' || profile?.role === 'council';
 
-  const activeSprint = useMemo(() => sprints.find((s) => s.status === 'active'), [sprints]);
+  const activeSprint = useMemo(
+    () => sprints.find((s) => isSprintExecutionPhase(s.status)),
+    [sprints]
+  );
   const planningSprints = useMemo(
     () =>
       sprints
@@ -506,18 +515,23 @@ export default function SprintsPage() {
   };
 
   const handleCompleteSprint = async (
-    incompleteAction: 'backlog' | 'next_sprint',
+    incompleteAction?: 'backlog' | 'next_sprint',
     nextSprintId?: string
   ) => {
     if (!selectedSprint) return;
     try {
-      await completeSprintMutation.mutateAsync({
+      const result = await completeSprintMutation.mutateAsync({
         sprintId: selectedSprint.id,
         incompleteAction,
         nextSprintId,
       });
       setShowCompleteDialog(false);
-      toast.success(t('completeSprintButton'));
+      const nextPhase = result.phase_transition?.to;
+      if (nextPhase) {
+        toast.success(t('phaseAdvancedTo', { phase: t(`status.${nextPhase}`) }));
+      } else {
+        toast.success(t('phaseAdvanced'));
+      }
       await refetchSprints();
     } catch (err: any) {
       toast.error(err.message);
@@ -526,7 +540,11 @@ export default function SprintsPage() {
 
   const canManageSprint = profile?.role === 'admin' || profile?.role === 'council';
   const showStartButton = canManageSprint && selectedSprint?.status === 'planning' && !activeSprint;
-  const showCompleteButton = canManageSprint && selectedSprint?.status === 'active';
+  const showCompleteButton =
+    canManageSprint && isSprintExecutionPhase(selectedSprint?.status ?? null);
+  const nextPhaseLabel = selectedSprint
+    ? getNextSprintPhase(selectedSprint.status ?? 'planning')
+    : null;
 
   // Stats for complete dialog
   const completeStats = useMemo(() => {
@@ -569,11 +587,21 @@ export default function SprintsPage() {
           )}
           {showCompleteButton && (
             <button
-              onClick={() => setShowCompleteDialog(true)}
+              onClick={() => {
+                if (selectedSprint?.status === 'settlement') {
+                  setShowCompleteDialog(true);
+                  return;
+                }
+                void handleCompleteSprint();
+              }}
               className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors font-medium"
             >
               <CheckCircle2 className="w-4 h-4" />
-              {t('completeSprintButton')}
+              {selectedSprint?.status === 'settlement'
+                ? t('completeSprintButton')
+                : t('advancePhaseButton', {
+                    phase: nextPhaseLabel ? t(`status.${nextPhaseLabel}`) : t('status.review'),
+                  })}
             </button>
           )}
           {canCreateSprint && (

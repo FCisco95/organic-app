@@ -223,6 +223,7 @@ If you plan to use Twitter/X engagement verification, also configure:
 - `TWITTER_REDIRECT_URI` (primary)
 - `TWITTER_CALLBACK_URL` (optional compatibility alias)
 - `TWITTER_TOKEN_ENCRYPTION_KEY`
+- `TWITTER_OAUTH_SCOPE` (quote it if sourcing via shell, e.g. `TWITTER_OAUTH_SCOPE="users.read tweet.read like.read offline.access"`)
 
 For local tunnels (ngrok, Cloudflare Tunnel, etc.), use your public HTTPS domain:
 
@@ -303,6 +304,8 @@ Optional:
 Production launch checks:
 
 - Confirm Supabase migrations are applied in production.
+- For migrations that add enum values, run enum additions in a committed migration step before any SQL that references new enum literals.
+- If a migration uses deferred constraints plus large backfills, flush deferred checks (`SET CONSTRAINTS ALL IMMEDIATE;`) before `ALTER TABLE ... ENABLE ROW LEVEL SECURITY`.
 - Confirm Vercel CI passes (`lint` and `build`) for the release commit.
 - Confirm `GET /api/health` returns `200`.
 - Confirm GitHub Actions workflow `Market Cache Refresh` is active and successful.

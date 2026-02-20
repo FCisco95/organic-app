@@ -362,11 +362,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get current sprint (for sprint-bound deadline)
+    // Get current in-flight sprint (for sprint-bound deadline)
     const { data: activeSprint } = await supabase
       .from('sprints')
       .select('id')
-      .eq('status', 'active')
+      .in('status', ['active', 'review', 'dispute_window', 'settlement'])
+      .order('start_at', { ascending: false })
       .limit(1)
       .maybeSingle();
 

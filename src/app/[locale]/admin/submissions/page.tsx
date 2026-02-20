@@ -33,7 +33,7 @@ export default function SubmissionReviewQueuePage() {
   const canReview = !!profile?.role && ['admin', 'council'].includes(profile.role);
 
   const groups = useMemo(() => {
-    const submissions = (data ?? []) as PendingSubmission[];
+    const submissions = (data ?? []) as unknown as PendingSubmission[];
     return submissions.reduce<Record<string, SubmissionGroup>>((acc, submission) => {
       const task = submission.task;
       if (!task) return acc;

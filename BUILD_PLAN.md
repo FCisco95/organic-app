@@ -1,5 +1,121 @@
 # Organic DAO Platform - Build Plan
 
+## ✅ 2026-02-20 Governance Integrity Update (Task 4 Complete)
+
+- Added sprint phase engine migration (`20260220103000_sprint_phase_engine.sql`) with:
+  - expanded sprint phases (`planning`, `active`, `review`, `dispute_window`, `settlement`, `completed`),
+  - phase timestamps on `sprints`,
+  - forward-only transition trigger (`trg_sprints_enforce_phase_rules`),
+  - settlement blocker RPC (`get_sprint_settlement_blockers`),
+  - reviewer SLA escalation RPC (`apply_sprint_reviewer_sla`) with admin notification fan-out.
+- Updated sprint/dispute APIs for phased lifecycle:
+  - `src/app/api/sprints/[id]/start/route.ts` now blocks start when any sprint is in-flight across execution phases.
+  - `src/app/api/sprints/[id]/complete/route.ts` now advances sprint phase-by-phase and only performs snapshot/closure at `settlement -> completed`.
+  - `src/app/api/disputes/route.ts` now binds disputes to any in-flight sprint (`active/review/dispute_window/settlement`).
+- Updated sprint UI surfaces:
+  - `src/app/[locale]/sprints/page.tsx` and `src/app/[locale]/sprints/[id]/page.tsx` now expose phase-advance actions and phase-aware labels.
+  - `src/components/sprints/sprint-timeline.tsx` now shows current phase, countdowns, and settlement block reasons.
+  - `src/components/sprints/sprint-list-view.tsx` now renders dynamic phase badges.
+- Added Task 4 tests:
+  - `tests/sprint-phase-engine.spec.ts`
+  - `src/features/sprints/__tests__/phase-engine.test.ts`
+  - Updated `tests/sprints.spec.ts` for phased completion assertions.
+- Updated i18n + DB typings:
+  - `messages/en.json`, `messages/pt-PT.json`, `messages/zh-CN.json`
+  - `src/types/database.ts`, `src/types/index.ts`
+
+### Task 4 validation evidence
+
+- [x] `npm run lint` (pass)
+- [x] `npm run build` (pass; non-fatal existing leaderboard revalidation log still appears in this environment)
+- [ ] `node --test src/features/sprints/__tests__/phase-engine.test.ts` (repo lacks TS runtime wiring for `node --test` on `.ts` files)
+- [ ] `npx playwright test tests/sprint-phase-engine.spec.ts tests/sprints.spec.ts tests/disputes.spec.ts` (env-loaded run blocked by external DNS/network to Supabase: `getaddrinfo EAI_AGAIN`)
+
+### Next execution target
+
+- Task 5: Review and disputes SLA hardening (`docs/plans/2026-02-20-core-features-revamp-test-implementation-plan.md`).
+
+## ✅ 2026-02-20 Governance Integrity Update (Task 3 Complete)
+
+- Added immutable proposal-task provenance migration (`20260220100000_proposal_task_linkage.sql`) with:
+  - `tasks.proposal_version_id`,
+  - composite provenance FK (`proposal_id`, `proposal_version_id`) to `proposal_versions`,
+  - immutable linkage trigger (`trg_tasks_enforce_proposal_provenance`),
+  - finalized/passed proposal gate for proposal-generated tasks.
+- Updated task APIs and schemas for provenance integrity:
+  - `src/app/api/tasks/route.ts` now validates finalized/passed lifecycle gate and current-version linkage before insert.
+  - `src/app/api/tasks/[id]/route.ts` now returns proposal + proposal version provenance relations.
+  - `src/features/tasks/schemas.ts` now supports `proposal_version_id` on create and blocks proposal linkage fields on updates.
+  - `src/app/api/tasks/[id]/subtasks/route.ts` now inherits proposal provenance from parent tasks.
+- Updated task/proposal UIs with immutable provenance references:
+  - task detail shows governance source badge and proposal version marker.
+  - proposal detail creates tasks via `/api/tasks` and shows linked execution tasks with source version badges.
+- Added Task 3 tests:
+  - `tests/proposal-task-flow.spec.ts`
+  - `src/features/tasks/__tests__/proposal-linkage.test.ts`
+- Updated i18n copy for provenance UX in EN/PT/ZH.
+
+### Task 3 validation evidence
+
+- [x] `npm run lint` (pass)
+- [x] `npm run build` (pass)
+- [ ] `node --test src/features/tasks/__tests__/proposal-linkage.test.ts` (repo lacks TS runtime wiring for `node --test` on `.ts` files)
+- [ ] `npx playwright test tests/proposal-task-flow.spec.ts tests/tasks.spec.ts` (all tests skipped in this environment due missing required Supabase env vars)
+
+### Next execution target
+
+- Task 4: Sprint phase engine revamp (`docs/plans/2026-02-20-core-features-revamp-test-implementation-plan.md`).
+
+## ✅ 2026-02-20 Governance Integrity Update (Task 1 Complete)
+
+- Proposal lifecycle stage engine implemented across DB/domain/API/UI.
+- Added immutable `proposal_versions` and append-only `proposal_stage_events`.
+- Added proposal comment version binding and "updated since this comment" UX marker.
+- Added override TTL auto-revert RPC (`expire_proposal_override_promotions`).
+- Updated proposal lifecycle i18n copy in EN/PT/ZH.
+
+### Migration execution notes
+
+- Applied using split migration execution:
+  - Migration A: enum additions only (`proposal_status` new values).
+  - Migration B: lifecycle schema/functions/triggers/backfill/RLS.
+- Resolved migration-B runtime error (`pending trigger events`) by forcing deferred constraint checks before RLS alter statements.
+
+### Validation evidence
+
+- [x] `npm run lint` (pass)
+- [x] `npm run build` (pass)
+- [x] `npx playwright test tests/proposals-lifecycle.spec.ts` (pass after env load + local app server)
+
+### Next execution target
+
+- Task 4: Sprint phase engine revamp (`docs/plans/2026-02-20-core-features-revamp-test-implementation-plan.md`).
+
+## ✅ 2026-02-20 Governance Integrity Update (Task 2 Complete)
+
+- Added deterministic voter snapshot layer (`proposal_voter_snapshots`) and proposal integrity metadata (`server_voting_started_at`, finalization dedupe/attempt/freeze fields).
+- Added transactional RPC voting start (`start_proposal_voting_integrity`) with:
+  - advisory lock,
+  - atomic snapshot + proposal transition commit,
+  - delegation resolution with deterministic cycle break to self-power,
+  - per-wallet minimum threshold (>= 1 ORG) for snapshot voting weight.
+- Added idempotent finalize RPC (`finalize_proposal_voting_integrity`) with:
+  - advisory lock + dedupe key enforcement,
+  - retry-once behavior,
+  - proposal freeze + audit event on second failure.
+- Updated proposal voting APIs to consume integrity RPCs and frozen voter snapshots.
+- Updated admin voting UX to surface frozen finalization state.
+- Added Task 2 tests:
+  - `tests/voting-integrity.spec.ts`
+  - `src/features/voting/__tests__/snapshot-integrity.test.ts`
+
+### Task 2 validation evidence
+
+- [ ] `node --test src/features/voting/__tests__/snapshot-integrity.test.ts` (repo lacks TS runtime wiring for `node --test` on `.ts` files)
+- [x] `npm run lint` (pass)
+- [x] `npm run build` (pass)
+- [ ] `npx playwright test tests/voting-integrity.spec.ts` (env-only run skipped without vars; env-loaded run blocked by external DNS/network to Supabase in this environment)
+
 ## ✅ Completed Features
 
 ### Phase 1: Foundation (Completed)

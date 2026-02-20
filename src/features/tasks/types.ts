@@ -117,6 +117,12 @@ export interface TaskWithRelations extends Task {
     id: string;
     title: string;
     status: string;
+    result: string | null;
+  } | null;
+  proposal_version?: {
+    id: string;
+    version_number: number;
+    created_at: string | null;
   } | null;
   assignees?: TaskAssigneeWithUser[];
   submissions?: TaskSubmissionWithReviewer[];

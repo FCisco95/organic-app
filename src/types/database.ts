@@ -105,6 +105,7 @@ export type Database = {
           created_at: string | null
           id: string
           org_id: string | null
+          proposal_version_id: string | null
           subject_id: string
           subject_type: string
           updated_at: string | null
@@ -116,6 +117,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           org_id?: string | null
+          proposal_version_id?: string | null
           subject_id: string
           subject_type: string
           updated_at?: string | null
@@ -127,12 +129,20 @@ export type Database = {
           created_at?: string | null
           id?: string
           org_id?: string | null
+          proposal_version_id?: string | null
           subject_id?: string
           subject_type?: string
           updated_at?: string | null
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "comments_proposal_version_id_fkey"
+            columns: ["proposal_version_id"]
+            isOneToOne: false
+            referencedRelation: "proposal_versions"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "comments_org_id_fkey"
             columns: ["org_id"]
@@ -736,6 +746,192 @@ export type Database = {
         }
         Relationships: []
       }
+      proposal_stage_events: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          from_status: Database["public"]["Enums"]["proposal_status"] | null
+          id: string
+          metadata: Json
+          proposal_id: string
+          reason: string | null
+          to_status: Database["public"]["Enums"]["proposal_status"]
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          from_status?: Database["public"]["Enums"]["proposal_status"] | null
+          id?: string
+          metadata?: Json
+          proposal_id: string
+          reason?: string | null
+          to_status: Database["public"]["Enums"]["proposal_status"]
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          from_status?: Database["public"]["Enums"]["proposal_status"] | null
+          id?: string
+          metadata?: Json
+          proposal_id?: string
+          reason?: string | null
+          to_status?: Database["public"]["Enums"]["proposal_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposal_stage_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proposal_stage_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proposal_stage_events_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      proposal_versions: {
+        Row: {
+          body: string
+          budget: string | null
+          category: Database["public"]["Enums"]["proposal_category"] | null
+          created_at: string
+          created_by: string
+          id: string
+          motivation: string | null
+          proposal_id: string
+          solution: string | null
+          summary: string | null
+          timeline: string | null
+          title: string
+          version_number: number
+        }
+        Insert: {
+          body: string
+          budget?: string | null
+          category?: Database["public"]["Enums"]["proposal_category"] | null
+          created_at?: string
+          created_by: string
+          id?: string
+          motivation?: string | null
+          proposal_id: string
+          solution?: string | null
+          summary?: string | null
+          timeline?: string | null
+          title: string
+          version_number: number
+        }
+        Update: {
+          body?: string
+          budget?: string | null
+          category?: Database["public"]["Enums"]["proposal_category"] | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          motivation?: string | null
+          proposal_id?: string
+          solution?: string | null
+          summary?: string | null
+          timeline?: string | null
+          title?: string
+          version_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposal_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proposal_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proposal_versions_proposal_fk"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      proposal_voter_snapshots: {
+        Row: {
+          created_at: string
+          cycle_broken: boolean
+          delegated_weight: number
+          delegator_count: number
+          id: string
+          own_weight: number
+          proposal_id: string
+          taken_at: string
+          total_weight: number
+          voter_id: string
+        }
+        Insert: {
+          created_at?: string
+          cycle_broken?: boolean
+          delegated_weight?: number
+          delegator_count?: number
+          id?: string
+          own_weight?: number
+          proposal_id: string
+          taken_at?: string
+          total_weight?: number
+          voter_id: string
+        }
+        Update: {
+          created_at?: string
+          cycle_broken?: boolean
+          delegated_weight?: number
+          delegator_count?: number
+          id?: string
+          own_weight?: number
+          proposal_id?: string
+          taken_at?: string
+          total_weight?: number
+          voter_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposal_voter_snapshots_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proposal_voter_snapshots_voter_id_fkey"
+            columns: ["voter_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proposal_voter_snapshots_voter_id_fkey"
+            columns: ["voter_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       proposals: {
         Row: {
           approval_threshold: number | null
@@ -745,11 +941,23 @@ export type Database = {
           closes_at: string | null
           created_at: string | null
           created_by: string
+          current_version_id: string | null
+          current_version_number: number
+          finalization_attempts: number
+          finalization_dedupe_key: string | null
+          finalization_failure_reason: string | null
+          finalization_frozen_at: string | null
+          finalization_last_attempt_at: string | null
+          finalized_at: string | null
           id: string
           motivation: string | null
           org_id: string | null
+          qualification_locked_at: string | null
+          qualification_override_expires_at: string | null
+          qualification_override_reason: string | null
           quorum_required: number | null
           result: string | null
+          server_voting_started_at: string | null
           search_vector: unknown
           snapshot_taken_at: string | null
           solution: string | null
@@ -758,6 +966,7 @@ export type Database = {
           timeline: string | null
           title: string
           total_circulating_supply: number | null
+          upvotes_frozen_at: string | null
           updated_at: string | null
           voting_ends_at: string | null
           voting_starts_at: string | null
@@ -770,11 +979,23 @@ export type Database = {
           closes_at?: string | null
           created_at?: string | null
           created_by: string
+          current_version_id?: string | null
+          current_version_number?: number
+          finalization_attempts?: number
+          finalization_dedupe_key?: string | null
+          finalization_failure_reason?: string | null
+          finalization_frozen_at?: string | null
+          finalization_last_attempt_at?: string | null
+          finalized_at?: string | null
           id?: string
           motivation?: string | null
           org_id?: string | null
+          qualification_locked_at?: string | null
+          qualification_override_expires_at?: string | null
+          qualification_override_reason?: string | null
           quorum_required?: number | null
           result?: string | null
+          server_voting_started_at?: string | null
           search_vector?: unknown
           snapshot_taken_at?: string | null
           solution?: string | null
@@ -783,6 +1004,7 @@ export type Database = {
           timeline?: string | null
           title: string
           total_circulating_supply?: number | null
+          upvotes_frozen_at?: string | null
           updated_at?: string | null
           voting_ends_at?: string | null
           voting_starts_at?: string | null
@@ -795,11 +1017,23 @@ export type Database = {
           closes_at?: string | null
           created_at?: string | null
           created_by?: string
+          current_version_id?: string | null
+          current_version_number?: number
+          finalization_attempts?: number
+          finalization_dedupe_key?: string | null
+          finalization_failure_reason?: string | null
+          finalization_frozen_at?: string | null
+          finalization_last_attempt_at?: string | null
+          finalized_at?: string | null
           id?: string
           motivation?: string | null
           org_id?: string | null
+          qualification_locked_at?: string | null
+          qualification_override_expires_at?: string | null
+          qualification_override_reason?: string | null
           quorum_required?: number | null
           result?: string | null
+          server_voting_started_at?: string | null
           search_vector?: unknown
           snapshot_taken_at?: string | null
           solution?: string | null
@@ -808,11 +1042,19 @@ export type Database = {
           timeline?: string | null
           title?: string
           total_circulating_supply?: number | null
+          upvotes_frozen_at?: string | null
           updated_at?: string | null
           voting_ends_at?: string | null
           voting_starts_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "proposals_current_version_id_fkey"
+            columns: ["current_version_id"]
+            isOneToOne: false
+            referencedRelation: "proposal_versions"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "proposals_created_by_fkey"
             columns: ["created_by"]
@@ -1059,40 +1301,64 @@ export type Database = {
       }
       sprints: {
         Row: {
+          active_started_at: string | null
           capacity_points: number | null
+          completed_at: string | null
           created_at: string | null
+          dispute_window_ends_at: string | null
+          dispute_window_started_at: string | null
           end_at: string
           goal: string | null
           id: string
           name: string
           org_id: string | null
+          review_started_at: string | null
           reward_pool: number | null
+          settlement_blocked_reason: string | null
+          settlement_integrity_flags: Json
+          settlement_started_at: string | null
           start_at: string
           status: Database["public"]["Enums"]["sprint_status"] | null
           updated_at: string | null
         }
         Insert: {
+          active_started_at?: string | null
           capacity_points?: number | null
+          completed_at?: string | null
           created_at?: string | null
+          dispute_window_ends_at?: string | null
+          dispute_window_started_at?: string | null
           end_at: string
           goal?: string | null
           id?: string
           name: string
           org_id?: string | null
+          review_started_at?: string | null
           reward_pool?: number | null
+          settlement_blocked_reason?: string | null
+          settlement_integrity_flags?: Json
+          settlement_started_at?: string | null
           start_at: string
           status?: Database["public"]["Enums"]["sprint_status"] | null
           updated_at?: string | null
         }
         Update: {
+          active_started_at?: string | null
           capacity_points?: number | null
+          completed_at?: string | null
           created_at?: string | null
+          dispute_window_ends_at?: string | null
+          dispute_window_started_at?: string | null
           end_at?: string
           goal?: string | null
           id?: string
           name?: string
           org_id?: string | null
+          review_started_at?: string | null
           reward_pool?: number | null
+          settlement_blocked_reason?: string | null
+          settlement_integrity_flags?: Json
+          settlement_started_at?: string | null
           start_at?: string
           status?: Database["public"]["Enums"]["sprint_status"] | null
           updated_at?: string | null
@@ -1420,6 +1686,7 @@ export type Database = {
           points: number | null
           priority: Database["public"]["Enums"]["task_priority"] | null
           proposal_id: string | null
+          proposal_version_id: string | null
           search_vector: unknown
           sprint_id: string | null
           status: Database["public"]["Enums"]["task_status"] | null
@@ -1446,6 +1713,7 @@ export type Database = {
           points?: number | null
           priority?: Database["public"]["Enums"]["task_priority"] | null
           proposal_id?: string | null
+          proposal_version_id?: string | null
           search_vector?: unknown
           sprint_id?: string | null
           status?: Database["public"]["Enums"]["task_status"] | null
@@ -1472,6 +1740,7 @@ export type Database = {
           points?: number | null
           priority?: Database["public"]["Enums"]["task_priority"] | null
           proposal_id?: string | null
+          proposal_version_id?: string | null
           search_vector?: unknown
           sprint_id?: string | null
           status?: Database["public"]["Enums"]["task_status"] | null
@@ -1514,6 +1783,20 @@ export type Database = {
             columns: ["proposal_id"]
             isOneToOne: false
             referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_proposal_provenance_fkey"
+            columns: ["proposal_id", "proposal_version_id"]
+            isOneToOne: false
+            referencedRelation: "proposal_versions"
+            referencedColumns: ["proposal_id", "id"]
+          },
+          {
+            foreignKeyName: "tasks_proposal_version_id_fkey"
+            columns: ["proposal_version_id"]
+            isOneToOne: false
+            referencedRelation: "proposal_versions"
             referencedColumns: ["id"]
           },
           {
@@ -2260,6 +2543,14 @@ export type Database = {
           escalated_count: number
         }[]
       }
+      apply_sprint_reviewer_sla: {
+        Args: { p_extension_hours?: number; p_sprint_id: string }
+        Returns: {
+          admin_notified_count: number
+          escalated_count: number
+          extended_count: number
+        }[]
+      }
       cleanup_expired_nonces: { Args: never; Returns: number }
       clone_recurring_templates: {
         Args: { p_sprint_id: string }
@@ -2268,6 +2559,16 @@ export type Database = {
       distribute_epoch_rewards: {
         Args: { p_sprint_id: string }
         Returns: number
+      }
+      expire_proposal_override_promotions: { Args: never; Returns: number }
+      finalize_proposal_voting_integrity: {
+        Args: {
+          p_dedupe_key?: string
+          p_force?: boolean
+          p_proposal_id: string
+          p_test_fail_mode?: string
+        }
+        Returns: Json
       }
       get_activity_trends: {
         Args: { days?: number }
@@ -2300,6 +2601,13 @@ export type Database = {
       }
       get_comment_counts: {
         Args: { p_subject_ids: string[]; p_subject_type: string }
+        Returns: {
+          count: number
+          subject_id: string
+        }[]
+      }
+      get_comment_counts_for_type: {
+        Args: { p_subject_type: string }
         Returns: {
           count: number
           subject_id: string
@@ -2347,6 +2655,16 @@ export type Database = {
         }[]
       }
       get_rewards_summary: { Args: never; Returns: Json }
+      resolve_proposal_snapshot_delegate: {
+        Args: {
+          p_proposal_category: Database["public"]["Enums"]["proposal_category"]
+          p_source_user_id: string
+        }
+        Returns: {
+          cycle_broken: boolean
+          resolved_voter_id: string
+        }[]
+      }
       get_sprint_stats: {
         Args: { p_sprint_ids: string[] }
         Returns: {
@@ -2357,6 +2675,10 @@ export type Database = {
           total: number
           total_points: number
         }[]
+      }
+      get_sprint_settlement_blockers: {
+        Args: { p_sprint_id: string }
+        Returns: Json
       }
       get_subtask_progress: {
         Args: { p_parent_task_id: string }
@@ -2390,6 +2712,14 @@ export type Database = {
           yes_count: number
           yes_votes: number
         }[]
+      }
+      start_proposal_voting_integrity: {
+        Args: {
+          p_proposal_id: string
+          p_snapshot_holders?: Json
+          p_voting_duration_days?: number
+        }
+        Returns: Json
       }
       get_voting_participation: {
         Args: { result_limit?: number }
@@ -2471,7 +2801,12 @@ export type Database = {
         | "development"
       proposal_status:
         | "draft"
+        | "public"
+        | "qualified"
+        | "discussion"
         | "submitted"
+        | "finalized"
+        | "canceled"
         | "approved"
         | "rejected"
         | "voting"
@@ -2483,7 +2818,13 @@ export type Database = {
         | "monthly"
       review_status: "pending" | "approved" | "rejected" | "disputed"
       reward_claim_status: "pending" | "approved" | "rejected" | "paid"
-      sprint_status: "planning" | "active" | "completed"
+      sprint_status:
+        | "planning"
+        | "active"
+        | "review"
+        | "dispute_window"
+        | "settlement"
+        | "completed"
       task_priority: "low" | "medium" | "high" | "critical"
       task_status: "backlog" | "todo" | "in_progress" | "review" | "done"
       task_type: "development" | "content" | "design" | "custom" | "twitter"
@@ -2676,7 +3017,18 @@ export const Constants = {
         "community",
         "development",
       ],
-      proposal_status: ["draft", "submitted", "approved", "rejected", "voting"],
+      proposal_status: [
+        "draft",
+        "public",
+        "qualified",
+        "discussion",
+        "submitted",
+        "finalized",
+        "canceled",
+        "approved",
+        "rejected",
+        "voting",
+      ],
       recurrence_rule: [
         "sprint_start",
         "daily",
@@ -2686,7 +3038,14 @@ export const Constants = {
       ],
       review_status: ["pending", "approved", "rejected", "disputed"],
       reward_claim_status: ["pending", "approved", "rejected", "paid"],
-      sprint_status: ["planning", "active", "completed"],
+      sprint_status: [
+        "planning",
+        "active",
+        "review",
+        "dispute_window",
+        "settlement",
+        "completed",
+      ],
       task_priority: ["low", "medium", "high", "critical"],
       task_status: ["backlog", "todo", "in_progress", "review", "done"],
       task_type: ["development", "content", "design", "custom", "twitter"],

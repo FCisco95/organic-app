@@ -10,6 +10,65 @@ export type SprintSnapshot = Database['public']['Tables']['sprint_snapshots']['R
 // Re-export for convenience
 export type { SprintStatus };
 
+export const SPRINT_PHASE_SEQUENCE: SprintStatus[] = [
+  'planning',
+  'active',
+  'review',
+  'dispute_window',
+  'settlement',
+  'completed',
+];
+
+export const SPRINT_EXECUTION_PHASES: SprintStatus[] = [
+  'active',
+  'review',
+  'dispute_window',
+  'settlement',
+];
+
+export const SPRINT_TERMINAL_PHASES: SprintStatus[] = ['completed'];
+
+const PHASE_INDEX = new Map<SprintStatus, number>(
+  SPRINT_PHASE_SEQUENCE.map((phase, index) => [phase, index])
+);
+
+export function sprintPhaseRank(status: SprintStatus): number {
+  return PHASE_INDEX.get(status) ?? -1;
+}
+
+export function canTransitionSprintPhase(from: SprintStatus, to: SprintStatus): boolean {
+  if (from === to) return true;
+
+  const allowed: Record<SprintStatus, SprintStatus[]> = {
+    planning: ['active'],
+    active: ['review'],
+    review: ['dispute_window'],
+    dispute_window: ['settlement'],
+    settlement: ['completed'],
+    completed: [],
+  };
+
+  return allowed[from].includes(to);
+}
+
+export function getNextSprintPhase(status: SprintStatus): SprintStatus | null {
+  const currentIndex = sprintPhaseRank(status);
+  if (currentIndex < 0 || currentIndex >= SPRINT_PHASE_SEQUENCE.length - 1) {
+    return null;
+  }
+
+  return SPRINT_PHASE_SEQUENCE[currentIndex + 1] ?? null;
+}
+
+export function isSprintExecutionPhase(status: SprintStatus | null | undefined): boolean {
+  if (!status) return false;
+  return SPRINT_EXECUTION_PHASES.includes(status);
+}
+
+export function isSprintCompleted(status: SprintStatus | null | undefined): boolean {
+  return status === 'completed';
+}
+
 // Sprint form data (for create/edit modals)
 export interface SprintFormData {
   name: string;

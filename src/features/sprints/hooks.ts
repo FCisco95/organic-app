@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client';
 import type { Sprint, SprintSnapshot, SprintWithSnapshot } from './types';
 
 const SPRINT_COLUMNS =
-  'id, org_id, name, start_at, end_at, status, capacity_points, reward_pool, goal, created_at, updated_at';
+  'id, org_id, name, start_at, end_at, status, capacity_points, reward_pool, goal, active_started_at, review_started_at, dispute_window_started_at, dispute_window_ends_at, settlement_started_at, settlement_integrity_flags, settlement_blocked_reason, completed_at, created_at, updated_at';
 const SPRINT_SNAPSHOT_COLUMNS =
   'id, sprint_id, completed_by, completed_at, total_tasks, completed_tasks, incomplete_tasks, total_points, completed_points, completion_rate, task_summary, incomplete_action, created_at';
 
@@ -98,21 +98,27 @@ export function useSprintTimeline() {
       const { data: sprints, error: sprintError } = await supabase
         .from('sprints')
         .select(SPRINT_COLUMNS)
-        .eq('status', 'completed')
-        .order('end_at', { ascending: false });
+        .order('start_at', { ascending: false });
 
       if (sprintError) throw sprintError;
       if (!sprints || sprints.length === 0) return [];
 
-      const sprintIds = sprints.map((s) => s.id);
-      const { data: snapshots, error: snapError } = await supabase
-        .from('sprint_snapshots')
-        .select(SPRINT_SNAPSHOT_COLUMNS)
-        .in('sprint_id', sprintIds);
+      const completedSprintIds = sprints
+        .filter((sprint) => sprint.status === 'completed')
+        .map((sprint) => sprint.id);
+      let snapshots: SprintSnapshot[] = [];
 
-      if (snapError) throw snapError;
+      if (completedSprintIds.length > 0) {
+        const { data: snapshotData, error: snapError } = await supabase
+          .from('sprint_snapshots')
+          .select(SPRINT_SNAPSHOT_COLUMNS)
+          .in('sprint_id', completedSprintIds);
 
-      const snapshotMap = new Map((snapshots ?? []).map((s: SprintSnapshot) => [s.sprint_id, s]));
+        if (snapError) throw snapError;
+        snapshots = (snapshotData ?? []) as SprintSnapshot[];
+      }
+
+      const snapshotMap = new Map(snapshots.map((snapshot) => [snapshot.sprint_id, snapshot]));
 
       return sprints.map(
         (sprint): SprintWithSnapshot => ({
@@ -257,16 +263,17 @@ export function useCompleteSprint() {
       nextSprintId,
     }: {
       sprintId: string;
-      incompleteAction: 'backlog' | 'next_sprint';
+      incompleteAction?: 'backlog' | 'next_sprint';
       nextSprintId?: string;
     }) => {
+      const payload: Record<string, unknown> = {};
+      if (incompleteAction) payload.incomplete_action = incompleteAction;
+      if (nextSprintId) payload.next_sprint_id = nextSprintId;
+
       const response = await fetch(`/api/sprints/${sprintId}/complete`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          incomplete_action: incompleteAction,
-          next_sprint_id: nextSprintId,
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -274,8 +281,16 @@ export function useCompleteSprint() {
         throw new Error(data.error || 'Failed to complete sprint');
       }
 
-      const { sprint, snapshot } = await response.json();
-      return { sprint: sprint as Sprint, snapshot };
+      const data = await response.json();
+      return {
+        sprint: data.sprint as Sprint,
+        snapshot: (data.snapshot ?? null) as SprintSnapshot | null,
+        phase_transition: (data.phase_transition ?? null) as
+          | { from: string; to: string }
+          | null,
+        reviewer_sla: data.reviewer_sla ?? null,
+        settlement_blockers: data.settlement_blockers ?? null,
+      };
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: sprintKeys.lists() });

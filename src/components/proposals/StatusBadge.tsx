@@ -9,6 +9,11 @@ import { useTranslations } from 'next-intl';
 
 const STATUS_ICON_MAP: Record<ProposalStatus, LucideIcon> = {
   draft: Clock,
+  public: Clock,
+  qualified: CheckCircle,
+  discussion: MessageCircle,
+  finalized: CheckCircle,
+  canceled: XCircle,
   submitted: Clock,
   approved: CheckCircle,
   rejected: XCircle,
@@ -28,6 +33,11 @@ export function StatusBadge({ status, showIcon = true, className }: StatusBadgeP
 
   const labelMap: Record<ProposalStatus, string> = {
     draft: t('statusDraft'),
+    public: t('statusPublic'),
+    qualified: t('statusQualified'),
+    discussion: t('statusDiscussion'),
+    finalized: t('statusFinalized'),
+    canceled: t('statusCanceled'),
     submitted: t('statusSubmitted'),
     approved: t('statusApproved'),
     rejected: t('statusRejected'),

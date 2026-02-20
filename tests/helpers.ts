@@ -175,13 +175,14 @@ export async function getFirstOrgId(supabaseAdmin: SupabaseClient): Promise<stri
 }
 
 /**
- * Returns the id of the currently active sprint, or null if none.
+ * Returns the id of the current in-flight sprint, or null if none.
  */
 export async function getActiveSprintId(supabaseAdmin: SupabaseClient): Promise<string | null> {
   const { data } = await supabaseAdmin
     .from('sprints')
     .select('id')
-    .eq('status', 'active')
+    .in('status', ['active', 'review', 'dispute_window', 'settlement'])
+    .order('start_at', { ascending: false })
     .limit(1)
     .maybeSingle();
   return data?.id ?? null;

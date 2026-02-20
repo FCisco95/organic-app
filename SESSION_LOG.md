@@ -2,6 +2,190 @@
 
 Add newest entries at the top.
 
+## 2026-02-20 (Session: Governance integrity Task 4 implementation)
+
+### Summary
+
+Implemented Task 4 from `docs/plans/2026-02-20-core-features-revamp-test-implementation-plan.md` (Sprint Phase Engine Revamp), including DB phase transitions, settlement safety gates, reviewer-SLA automation, phased sprint APIs, and phase-aware sprint UI.
+
+### Implementation highlights
+
+- Added migration: `supabase/migrations/20260220103000_sprint_phase_engine.sql`
+  - extended sprint phases: `planning`, `active`, `review`, `dispute_window`, `settlement`, `completed`
+  - new sprint phase timestamps + settlement integrity metadata
+  - forward-only DB trigger: `trg_sprints_enforce_phase_rules`
+  - settlement blocker RPC: `get_sprint_settlement_blockers`
+  - reviewer SLA RPC: `apply_sprint_reviewer_sla` (+24h extension + admin notifications)
+- Updated sprint APIs:
+  - `src/app/api/sprints/[id]/start/route.ts` now blocks starts when any sprint is in an execution phase.
+  - `src/app/api/sprints/[id]/complete/route.ts` now advances phase-by-phase and only snapshots/closes during `settlement -> completed`.
+  - `src/app/api/sprints/[id]/route.ts` and `src/app/api/sprints/route.ts` now return phase metadata fields.
+- Updated dispute linkage:
+  - `src/app/api/disputes/route.ts` now attaches new disputes to current in-flight sprint phases, not only `active`.
+- Updated sprint UI:
+  - `src/app/[locale]/sprints/page.tsx` and `src/app/[locale]/sprints/[id]/page.tsx` now support phase advance actions and phase feedback.
+  - `src/components/sprints/sprint-timeline.tsx` now shows phase badges, countdowns, and settlement blocked reasons.
+  - `src/components/sprints/sprint-list-view.tsx` now renders dynamic phase badges.
+- Added/updated tests:
+  - `tests/sprint-phase-engine.spec.ts`
+  - `src/features/sprints/__tests__/phase-engine.test.ts`
+  - `tests/sprints.spec.ts` updated for phased completion flow
+  - `tests/helpers.ts` updated to resolve current in-flight sprint across new phases
+- Updated typing/i18n surfaces:
+  - `src/features/sprints/types.ts`, `src/features/sprints/schemas.ts`, `src/features/sprints/hooks.ts`
+  - `src/types/database.ts`, `src/types/index.ts`
+  - `messages/en.json`, `messages/pt-PT.json`, `messages/zh-CN.json`
+
+### Validation evidence
+
+- `npm run lint`: pass.
+- `npm run build`: pass (non-fatal existing leaderboard revalidation warning appears during build in this environment).
+- `node --test src/features/sprints/__tests__/phase-engine.test.ts`: blocked (`.ts` test runner wiring not configured for `node --test`).
+- `npx playwright test tests/sprint-phase-engine.spec.ts tests/sprints.spec.ts tests/disputes.spec.ts`: failed due external DNS/network resolution to Supabase (`getaddrinfo EAI_AGAIN ...supabase.co`), not due local phase-engine assertions.
+
+## 2026-02-20 (Session: Governance integrity Task 3 implementation)
+
+### Summary
+
+Implemented Task 3 from `docs/plans/2026-02-20-core-features-revamp-test-implementation-plan.md` (Proposal-Task Linkage Revamp), including immutable DB provenance constraints, API creation gating, provenance UI surfaces, and new linkage tests.
+
+### Implementation highlights
+
+- Added migration: `supabase/migrations/20260220100000_proposal_task_linkage.sql`
+  - new `tasks.proposal_version_id` column
+  - composite provenance constraints from `tasks(proposal_id, proposal_version_id)` to `proposal_versions(proposal_id, id)`
+  - immutable proposal-link trigger: `trg_tasks_enforce_proposal_provenance`
+  - creation gate in trigger: proposal-linked tasks require finalized/passed proposal state (legacy `approved` handled as finalized/passed compatibility)
+- Updated task APIs and schemas:
+  - `src/app/api/tasks/route.ts` validates proposal lifecycle gate and current-version binding before insert.
+  - `src/app/api/tasks/[id]/route.ts` includes proposal/proposal-version provenance in response payloads.
+  - `src/app/api/tasks/[id]/subtasks/route.ts` inherits proposal provenance from parent tasks.
+  - `src/features/tasks/schemas.ts` adds `proposal_version_id` to create schema and removes proposal-link fields from update schema.
+  - `src/features/tasks/types.ts` and `src/types/database.ts` updated for new provenance types/relationships.
+- Updated UI surfaces:
+  - `src/components/tasks/task-detail-summary.tsx` now shows governance source + immutable version badge.
+  - `src/app/[locale]/tasks/[id]/page.tsx` fetch/update queries now include provenance relations.
+  - `src/app/[locale]/proposals/[id]/page.tsx` now creates tasks via `/api/tasks`, enforces finalized/passed creation path, and shows linked execution tasks with source version badges.
+- Added tests:
+  - `tests/proposal-task-flow.spec.ts`
+  - `src/features/tasks/__tests__/proposal-linkage.test.ts`
+- Added provenance i18n keys in:
+  - `messages/en.json`
+  - `messages/pt-PT.json`
+  - `messages/zh-CN.json`
+
+### Validation evidence
+
+- `npm run lint`: pass.
+- `npm run build`: pass.
+- `node --test src/features/tasks/__tests__/proposal-linkage.test.ts`: blocked (`.ts` test runner wiring not configured for `node --test`).
+- `npx playwright test tests/proposal-task-flow.spec.ts tests/tasks.spec.ts`: skipped in this environment because required Supabase env vars are not loaded.
+
+## 2026-02-20 (Session: Governance integrity Task 2 implementation)
+
+### Summary
+
+Implemented Task 2 from `docs/plans/2026-02-20-core-features-revamp-test-implementation-plan.md` (Voting Snapshot and Finalization Integrity), including DB migration, API hardening, voting UI updates, and new integrity-focused tests.
+
+### Implementation highlights
+
+- Added migration: `supabase/migrations/20260220093000_voting_snapshot_integrity.sql`
+  - new proposal integrity metadata:
+    - `server_voting_started_at`
+    - `finalization_dedupe_key`
+    - `finalization_attempts`
+    - `finalization_last_attempt_at`
+    - `finalization_failure_reason`
+    - `finalization_frozen_at`
+  - new immutable effective-power snapshot table:
+    - `proposal_voter_snapshots`
+  - new RPCs:
+    - `resolve_proposal_snapshot_delegate` (deterministic cycle break to self-power)
+    - `start_proposal_voting_integrity` (atomic snapshot + transition to `voting`)
+    - `finalize_proposal_voting_integrity` (idempotent lock + dedupe + retry + freeze)
+- Updated voting APIs:
+  - `src/app/api/proposals/[id]/start-voting/route.ts` now uses transactional snapshot RPC.
+  - `src/app/api/proposals/[id]/finalize/route.ts` now uses idempotent finalize RPC and returns idempotency/freeze metadata.
+  - `src/app/api/proposals/[id]/vote/route.ts` now reads weight from `proposal_voter_snapshots` first (legacy fallback to `holder_snapshots`).
+  - `src/app/api/proposals/[id]/effective-power/route.ts` now uses snapshot power once voting starts/finalizes.
+- Updated voting domain/UI:
+  - `src/features/voting/schemas.ts` and `src/features/voting/types.ts` expanded for dedupe/freeze/snapshot payloads.
+  - `src/features/voting/hooks.ts` now propagates API error codes.
+  - `src/components/voting/AdminVotingControls.tsx` now surfaces frozen-finalization state.
+  - `src/components/voting/VotingPanel.tsx` now fetches user voting weight from `/api/proposals/[id]/vote`.
+- Added tests:
+  - `tests/voting-integrity.spec.ts`
+  - `src/features/voting/__tests__/snapshot-integrity.test.ts`
+- Updated i18n keys for frozen finalization messaging:
+  - `messages/en.json`
+  - `messages/pt-PT.json`
+  - `messages/zh-CN.json`
+
+### Validation evidence
+
+- `npm run lint`: pass.
+- `npm run build`: pass.
+- `node --test src/features/voting/__tests__/snapshot-integrity.test.ts`: blocked (`.ts` test runner wiring not configured for `node --test`).
+- `npx playwright test tests/voting-integrity.spec.ts`:
+  - first run skipped (missing env vars).
+  - env-loaded run attempted, but failed in this environment due external DNS/network resolution to Supabase (`getaddrinfo EAI_AGAIN ...supabase.co`).
+
+## 2026-02-20 (Session: Governance integrity Task 1 implementation + migration execution)
+
+### Summary
+
+Completed Task 1 from `docs/plans/2026-02-20-core-features-revamp-test-implementation-plan.md` (Proposal Lifecycle Stage Engine), including DB schema/RPC/trigger work, proposal domain/API/UI updates, lifecycle i18n additions, and dedicated lifecycle tests.
+
+### Implementation highlights
+
+- Added migration: `supabase/migrations/20260220090000_proposal_stage_engine.sql`
+  - lifecycle status extensions for `proposal_status`
+  - proposal versioning model (`proposal_versions`)
+  - append-only transition ledger (`proposal_stage_events`)
+  - override TTL expiry RPC (`expire_proposal_override_promotions`)
+  - comment-to-version linkage via `comments.proposal_version_id`
+- Added tests:
+  - `src/features/proposals/__tests__/lifecycle.test.ts`
+  - `tests/proposals-lifecycle.spec.ts`
+- Updated proposal surfaces:
+  - domain schemas/types/hooks
+  - proposal API routes (`/api/proposals`, `/api/proposals/[id]`, `/api/proposals/[id]/status`, comments + start-voting compatibility)
+  - proposal detail/list UI and status badge
+  - voting admin controls start condition (`discussion` compatibility)
+- Added/updated proposal lifecycle copy in:
+  - `messages/en.json`
+  - `messages/pt-PT.json`
+  - `messages/zh-CN.json`
+- Updated generated DB types in `src/types/database.ts`.
+
+### Migration execution chronology
+
+- Migration A (enum-only step) applied successfully.
+- Migration B initially failed in SQL editor with:
+  - `cannot ALTER TABLE "proposal_versions" because it has pending trigger events`
+- Resolution:
+  - run enum additions in separate committed step (A)
+  - in B, flush deferred constraints before RLS table alteration (`SET CONSTRAINTS ALL IMMEDIATE;`)
+- Result: Migration B applied successfully after fix.
+
+### Validation evidence
+
+- `npm run lint`: pass.
+- `npm run build`: pass.
+- `npx playwright test tests/proposals-lifecycle.spec.ts`:
+  - initially skipped (missing env vars)
+  - then failed with `ECONNREFUSED` until app server was running
+  - final run passed with env loaded and `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3000`.
+
+### Environment/setup note
+
+- `.env.local` sourcing error (`tweet.read: command not found`) traced to unquoted `TWITTER_OAUTH_SCOPE`.
+- Local fix used: quote scope value so shell `source` works.
+
+### Related non-governance adjustment
+
+- Build validation surfaced an unrelated strict-cast issue in `src/app/[locale]/admin/submissions/page.tsx`; applied minimal type-cast compatibility fix to unblock production build validation during this workstream.
+
 ## 2026-02-19 (Session: DB Performance & Optimization — Sessions 2–5 wrap-up)
 
 ### Summary

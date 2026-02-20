@@ -93,7 +93,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     // Verify parent task exists and is not itself a subtask
     const { data: parentTask, error: parentError } = await supabase
       .from('tasks')
-      .select('id, parent_task_id, sprint_id')
+      .select('id, parent_task_id, sprint_id, proposal_id, proposal_version_id')
       .eq('id', parentTaskId)
       .single();
 
@@ -127,6 +127,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         ...parsed.data,
         parent_task_id: parentTaskId,
         sprint_id: parentTask.sprint_id,
+        proposal_id: parentTask.proposal_id,
+        proposal_version_id: parentTask.proposal_version_id,
         points: parsed.data.base_points,
         created_by: user.id,
       })

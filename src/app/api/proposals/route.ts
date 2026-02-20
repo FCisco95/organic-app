@@ -56,7 +56,8 @@ export async function POST(request: NextRequest) {
     }
 
     const input = parseResult.data;
-    const proposalStatus = submitStatus === 'submitted' ? 'submitted' : 'draft';
+    const proposalStatus =
+      submitStatus === 'submitted' || submitStatus === 'public' ? 'public' : 'draft';
 
     // Build legacy body from structured sections
     const bodyText = [

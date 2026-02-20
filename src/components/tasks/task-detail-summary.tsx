@@ -70,6 +70,28 @@ export function TaskDetailSummary({
         )}
       </div>
 
+      {task.proposal && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+          <div className="flex flex-wrap items-center gap-2 mb-2">
+            <span className="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-800">
+              {t('governanceSource')}
+            </span>
+            {task.proposal_version?.version_number ? (
+              <span className="inline-flex items-center rounded-full bg-white px-2.5 py-1 text-xs font-medium text-amber-900 ring-1 ring-amber-200">
+                {t('proposalVersionSource', { version: task.proposal_version.version_number })}
+              </span>
+            ) : null}
+            <span className="text-xs text-amber-800">{t('provenanceLocked')}</span>
+          </div>
+          <Link
+            href={`/proposals/${task.proposal.id}`}
+            className="text-sm font-medium text-amber-900 underline decoration-amber-300 underline-offset-2 hover:text-amber-700"
+          >
+            {task.proposal.title}
+          </Link>
+        </div>
+      )}
+
       <div className="flex flex-wrap gap-2">
         <span
           className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusBadge(task.status ?? 'backlog')}`}

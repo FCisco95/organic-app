@@ -11,11 +11,38 @@ export const proposalCategorySchema = z.enum([
 
 export const proposalStatusSchema = z.enum([
   'draft',
+  'public',
+  'qualified',
+  'discussion',
+  'voting',
+  'finalized',
+  'canceled',
+  // Legacy statuses kept for backwards compatibility.
   'submitted',
   'approved',
   'rejected',
-  'voting',
 ]);
+
+export const proposalLifecycleStatusSchema = z.enum([
+  'draft',
+  'public',
+  'qualified',
+  'discussion',
+  'voting',
+  'finalized',
+  'canceled',
+]);
+
+export const proposalResultSchema = z.enum(['passed', 'failed', 'quorum_not_met']);
+
+export const proposalStatusChangeSchema = z.object({
+  status: proposalStatusSchema,
+  result: proposalResultSchema.optional(),
+  reason: z.string().trim().min(3).max(500).optional(),
+  override: z.boolean().optional(),
+});
+
+export type ProposalStatusChangeInput = z.infer<typeof proposalStatusChangeSchema>;
 
 // Step 1: Category + Title + Summary
 export const proposalStep1Schema = z.object({

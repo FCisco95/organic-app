@@ -36,6 +36,7 @@ const createTaskSchemaBase = z.object({
   labels: z.array(z.string().max(50)).max(10).default([]),
   sprint_id: z.string().uuid().optional().nullable(),
   proposal_id: z.string().uuid().optional().nullable(),
+  proposal_version_id: z.string().uuid().optional().nullable(),
   assignee_id: z.string().uuid().optional().nullable(),
   twitter_task: twitterTaskConfigSchema.optional(),
 });
@@ -69,15 +70,22 @@ export const createTaskSchema = createTaskSchemaBase
       message: 'Auto-approve requires auto-verify for twitter tasks',
       path: ['twitter_task', 'auto_approve'],
     }
-  );
+  )
+  .refine((data) => !data.proposal_version_id || !!data.proposal_id, {
+    message: 'proposal_version_id requires proposal_id',
+    path: ['proposal_version_id'],
+  });
 
 export type CreateTaskInput = z.infer<typeof createTaskSchema>;
 
 // Update task schema
-export const updateTaskSchema = createTaskSchemaBase.partial().extend({
-  status: taskStatusSchema.optional(),
-  points: z.number().int().min(0).optional().nullable(),
-});
+export const updateTaskSchema = createTaskSchemaBase
+  .omit({ proposal_id: true, proposal_version_id: true })
+  .partial()
+  .extend({
+    status: taskStatusSchema.optional(),
+    points: z.number().int().min(0).optional().nullable(),
+  });
 
 export type UpdateTaskInput = z.infer<typeof updateTaskSchema>;
 

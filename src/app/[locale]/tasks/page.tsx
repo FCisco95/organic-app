@@ -310,7 +310,10 @@ export default function TasksPage() {
   }, [submissions]);
 
   const currentSprint =
-    sprints.find((s) => s.status === 'active') || sprints.find((s) => s.status === 'planning');
+    sprints.find((s) =>
+      ['active', 'review', 'dispute_window', 'settlement'].includes(s.status ?? '')
+    ) ||
+    sprints.find((s) => s.status === 'planning');
   const tabOptions: TaskTab[] = ['all', 'backlog', 'activeSprint', 'completed'];
   const visibleTabs = isOrgMember ? tabOptions : tabOptions.filter((tab) => tab !== 'backlog');
   const categoryOptions = [

@@ -7,7 +7,7 @@ import { logger } from '@/lib/logger';
 const TASK_TEMPLATE_INSTANTIATE_COLUMNS =
   'id, name, description, task_type, priority, base_points, labels, is_team_task, max_assignees, default_assignee_id';
 const TASK_INSERT_COLUMNS =
-  'id, title, description, task_type, priority, base_points, points, labels, is_team_task, max_assignees, assignee_id, sprint_id, template_id, status, created_by, created_at, updated_at, due_date, proposal_id, parent_task_id, claimed_at, completed_at';
+  'id, title, description, task_type, priority, base_points, points, labels, is_team_task, max_assignees, assignee_id, sprint_id, template_id, status, created_by, created_at, updated_at, due_date, proposal_id, proposal_version_id, parent_task_id, claimed_at, completed_at';
 
 const instantiateSchema = z.object({
   sprint_id: z.string().uuid().optional().nullable(),

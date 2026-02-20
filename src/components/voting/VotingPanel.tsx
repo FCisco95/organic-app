@@ -30,15 +30,12 @@ const VOTE_OPTIONS: { value: VoteValue; icon: typeof CheckCircle; color: string 
 
 export function VotingPanel({ proposal }: VotingPanelProps) {
   const t = useTranslations('Voting');
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
   const [selectedVote, setSelectedVote] = useState<VoteValue | null>(null);
 
   const { data: results, isLoading: resultsLoading } = useVoteResults(proposal.id);
   const { data: userVote, isLoading: userVoteLoading } = useUserVote(proposal.id, user?.id);
-  const { data: votingWeight } = useUserVotingWeight(
-    proposal.id,
-    profile?.wallet_pubkey || undefined
-  );
+  const { data: votingWeight } = useUserVotingWeight(proposal.id, user?.id);
   const { data: timeRemaining } = useVotingTimeRemaining(proposal.voting_ends_at);
   const castVoteMutation = useCastVote();
 
@@ -93,8 +90,6 @@ export function VotingPanel({ proposal }: VotingPanelProps) {
         <div className="mb-6">
           {!user ? (
             <p className="text-sm text-gray-500 text-center py-4">{t('signInToVote')}</p>
-          ) : !profile?.wallet_pubkey ? (
-            <p className="text-sm text-gray-500 text-center py-4">{t('linkWalletToVote')}</p>
           ) : votingWeight === 0 ? (
             <p className="text-sm text-gray-500 text-center py-4">{t('noTokensAtSnapshot')}</p>
           ) : (

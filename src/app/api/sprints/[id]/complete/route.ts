@@ -3,9 +3,87 @@ import { createClient } from '@/lib/supabase/server';
 import { parseJsonBody } from '@/lib/parse-json-body';
 import { completeSprintSchema } from '@/features/sprints/schemas';
 import { logger } from '@/lib/logger';
+import type { Json } from '@/types/database';
 
 const SPRINT_COLUMNS =
-  'id, name, status, start_at, end_at, goal, capacity_points, reward_pool, org_id, created_at, updated_at';
+  'id, name, status, start_at, end_at, goal, capacity_points, reward_pool, org_id, active_started_at, review_started_at, dispute_window_started_at, dispute_window_ends_at, settlement_started_at, settlement_integrity_flags, settlement_blocked_reason, completed_at, created_at, updated_at';
+
+const TERMINAL_DISPUTE_STATUSES = ['resolved', 'dismissed', 'withdrawn', 'mediated'];
+const DEFAULT_DISPUTE_WINDOW_HOURS = 48;
+
+type SettlementBlockers = {
+  blocked: boolean;
+  unresolved_disputes: number;
+  integrity_flag_count: number;
+  integrity_flags: Json[];
+  reasons: string[];
+};
+
+function parseSettlementBlockers(data: unknown): SettlementBlockers {
+  const raw = (data ?? {}) as Record<string, unknown>;
+  const reasons = Array.isArray(raw.reasons)
+    ? raw.reasons.map((value) => String(value))
+    : [];
+  const integrityFlags = Array.isArray(raw.integrity_flags)
+    ? (raw.integrity_flags as Json[])
+    : [];
+
+  return {
+    blocked: Boolean(raw.blocked),
+    unresolved_disputes: Number(raw.unresolved_disputes ?? 0),
+    integrity_flag_count: Number(raw.integrity_flag_count ?? integrityFlags.length),
+    integrity_flags: integrityFlags,
+    reasons,
+  };
+}
+
+async function resolveSettlementBlockers(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  sprintId: string
+): Promise<SettlementBlockers> {
+  const { data, error } = await supabase.rpc('get_sprint_settlement_blockers', {
+    p_sprint_id: sprintId,
+  });
+
+  if (!error && data) {
+    return parseSettlementBlockers(data);
+  }
+
+  // Fallback if RPC is not available yet in a partially migrated environment.
+  const [{ count: unresolvedCount }, { data: sprint }] = await Promise.all([
+    supabase
+      .from('disputes')
+      .select('id', { count: 'exact', head: true })
+      .eq('sprint_id', sprintId)
+      .not('status', 'in', `("${TERMINAL_DISPUTE_STATUSES.join('","')}")`),
+    supabase
+      .from('sprints')
+      .select('settlement_integrity_flags')
+      .eq('id', sprintId)
+      .maybeSingle(),
+  ]);
+
+  const integrityFlags = Array.isArray(sprint?.settlement_integrity_flags)
+    ? (sprint.settlement_integrity_flags as Json[])
+    : [];
+  const unresolvedDisputes = unresolvedCount ?? 0;
+  const reasons: string[] = [];
+
+  if (unresolvedDisputes > 0) {
+    reasons.push(`${unresolvedDisputes} unresolved dispute(s)`);
+  }
+  if (integrityFlags.length > 0) {
+    reasons.push('unresolved integrity flags are present');
+  }
+
+  return {
+    blocked: reasons.length > 0,
+    unresolved_disputes: unresolvedDisputes,
+    integrity_flag_count: integrityFlags.length,
+    integrity_flags: integrityFlags,
+    reasons,
+  };
+}
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -36,11 +114,17 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       );
     }
 
-    // Parse and validate body
-    const { data: body, error: jsonError } = await parseJsonBody(request);
-    if (jsonError) {
-      return NextResponse.json({ error: jsonError }, { status: 400 });
+    // Parse and validate body (optional for non-settlement transitions).
+    let body: Record<string, unknown> = {};
+    const contentLength = Number(request.headers.get('content-length') ?? '0');
+    if (contentLength > 0) {
+      const { data, error: jsonError } = await parseJsonBody(request);
+      if (jsonError) {
+        return NextResponse.json({ error: jsonError }, { status: 400 });
+      }
+      body = data;
     }
+
     const parsed = completeSprintSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
@@ -49,9 +133,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       );
     }
 
-    const { incomplete_action, next_sprint_id } = parsed.data;
+    const incompleteAction = parsed.data.incomplete_action ?? 'backlog';
+    const nextSprintId = parsed.data.next_sprint_id;
 
-    // Verify sprint exists and is active
+    // Verify sprint exists and is in an execution phase
     const { data: sprint, error: sprintError } = await supabase
       .from('sprints')
       .select(SPRINT_COLUMNS)
@@ -62,13 +147,161 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: 'Sprint not found' }, { status: 404 });
     }
 
-    if (sprint.status !== 'active') {
-      return NextResponse.json({ error: 'Only active sprints can be completed' }, { status: 400 });
+    if (
+      sprint.status !== 'active' &&
+      sprint.status !== 'review' &&
+      sprint.status !== 'dispute_window' &&
+      sprint.status !== 'settlement'
+    ) {
+      return NextResponse.json(
+        { error: 'Sprint is not in a completable phase', status: sprint.status },
+        { status: 400 }
+      );
     }
 
-    // If moving to next sprint, validate it exists and is in planning
-    if (incomplete_action === 'next_sprint') {
-      if (!next_sprint_id) {
+    if (sprint.status === 'active') {
+      const { data: updatedSprint, error: updateError } = await supabase
+        .from('sprints')
+        .update({
+          status: 'review',
+          review_started_at: new Date().toISOString(),
+          settlement_blocked_reason: null,
+        })
+        .eq('id', id)
+        .select(SPRINT_COLUMNS)
+        .single();
+
+      if (updateError || !updatedSprint) {
+        return NextResponse.json({ error: 'Failed to start review phase' }, { status: 500 });
+      }
+
+      return NextResponse.json({
+        sprint: updatedSprint,
+        snapshot: null,
+        phase_transition: { from: 'active', to: 'review' },
+      });
+    }
+
+    if (sprint.status === 'review') {
+      let reviewerSla = {
+        escalated_count: 0,
+        extended_count: 0,
+        admin_notified_count: 0,
+      };
+
+      const { data: slaData, error: slaError } = await supabase.rpc('apply_sprint_reviewer_sla', {
+        p_sprint_id: id,
+        p_extension_hours: 24,
+      });
+
+      if (slaError) {
+        logger.error('Error applying sprint reviewer SLA:', slaError);
+      } else if (Array.isArray(slaData) && slaData.length > 0) {
+        reviewerSla = {
+          escalated_count: Number(slaData[0]?.escalated_count ?? 0),
+          extended_count: Number(slaData[0]?.extended_count ?? 0),
+          admin_notified_count: Number(slaData[0]?.admin_notified_count ?? 0),
+        };
+      }
+
+      const now = Date.now();
+      const disputeWindowEndsAt =
+        sprint.dispute_window_ends_at ??
+        new Date(now + DEFAULT_DISPUTE_WINDOW_HOURS * 60 * 60 * 1000).toISOString();
+
+      const { data: updatedSprint, error: updateError } = await supabase
+        .from('sprints')
+        .update({
+          status: 'dispute_window',
+          dispute_window_started_at: new Date(now).toISOString(),
+          dispute_window_ends_at: disputeWindowEndsAt,
+          settlement_blocked_reason: null,
+        })
+        .eq('id', id)
+        .select(SPRINT_COLUMNS)
+        .single();
+
+      if (updateError || !updatedSprint) {
+        return NextResponse.json({ error: 'Failed to start dispute window phase' }, { status: 500 });
+      }
+
+      return NextResponse.json({
+        sprint: updatedSprint,
+        snapshot: null,
+        reviewer_sla: reviewerSla,
+        phase_transition: { from: 'review', to: 'dispute_window' },
+      });
+    }
+
+    if (sprint.status === 'dispute_window') {
+      if (sprint.dispute_window_ends_at && new Date(sprint.dispute_window_ends_at) > new Date()) {
+        return NextResponse.json(
+          {
+            error: 'Dispute window is still open',
+            dispute_window_ends_at: sprint.dispute_window_ends_at,
+          },
+          { status: 409 }
+        );
+      }
+
+      const settlementBlockers = await resolveSettlementBlockers(supabase, id);
+      if (settlementBlockers.blocked) {
+        const blockedReason =
+          settlementBlockers.reasons.join('; ') || 'unknown settlement blocker';
+
+        await supabase
+          .from('sprints')
+          .update({ settlement_blocked_reason: blockedReason })
+          .eq('id', id);
+
+        return NextResponse.json(
+          { error: 'Settlement is blocked', settlement_blockers: settlementBlockers },
+          { status: 409 }
+        );
+      }
+
+      const { data: updatedSprint, error: updateError } = await supabase
+        .from('sprints')
+        .update({
+          status: 'settlement',
+          settlement_started_at: new Date().toISOString(),
+          settlement_blocked_reason: null,
+        })
+        .eq('id', id)
+        .select(SPRINT_COLUMNS)
+        .single();
+
+      if (updateError || !updatedSprint) {
+        return NextResponse.json({ error: 'Failed to start settlement phase' }, { status: 500 });
+      }
+
+      return NextResponse.json({
+        sprint: updatedSprint,
+        snapshot: null,
+        settlement_blockers: settlementBlockers,
+        phase_transition: { from: 'dispute_window', to: 'settlement' },
+      });
+    }
+
+    // settlement -> completed
+    const settlementBlockers = await resolveSettlementBlockers(supabase, id);
+    if (settlementBlockers.blocked) {
+      const blockedReason = settlementBlockers.reasons.join('; ') || 'unknown settlement blocker';
+
+      await supabase
+        .from('sprints')
+        .update({ settlement_blocked_reason: blockedReason })
+        .eq('id', id);
+
+      return NextResponse.json(
+        { error: 'Settlement is blocked', settlement_blockers: settlementBlockers },
+        { status: 409 }
+      );
+    }
+
+    // If moving to next sprint, validate it exists and is in planning.
+    if (incompleteAction === 'next_sprint') {
+      if (!nextSprintId) {
         return NextResponse.json(
           { error: 'next_sprint_id is required when incomplete_action is next_sprint' },
           { status: 400 }
@@ -77,11 +310,17 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       const { data: nextSprint } = await supabase
         .from('sprints')
         .select('id, status')
-        .eq('id', next_sprint_id)
+        .eq('id', nextSprintId)
         .single();
 
       if (!nextSprint) {
         return NextResponse.json({ error: 'Next sprint not found' }, { status: 404 });
+      }
+      if (nextSprint.id === id) {
+        return NextResponse.json(
+          { error: 'Next sprint must be different from the sprint being completed' },
+          { status: 400 }
+        );
       }
       if (nextSprint.status !== 'planning') {
         return NextResponse.json(
@@ -139,7 +378,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         completed_points: completedPoints,
         completion_rate: completionRate,
         task_summary: taskSummary,
-        incomplete_action: incomplete_action,
+        incomplete_action: incompleteAction,
       })
       .select()
       .single();
@@ -153,7 +392,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     if (incompleteTasks.length > 0) {
       const incompleteIds = incompleteTasks.map((t) => t.id);
 
-      if (incomplete_action === 'backlog') {
+      if (incompleteAction === 'backlog') {
         const { error: backlogError } = await supabase
           .from('tasks')
           .update({ sprint_id: null, status: 'backlog' })
@@ -166,10 +405,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
             { status: 500 }
           );
         }
-      } else if (incomplete_action === 'next_sprint' && next_sprint_id) {
+      } else if (incompleteAction === 'next_sprint' && nextSprintId) {
         const { error: moveError } = await supabase
           .from('tasks')
-          .update({ sprint_id: next_sprint_id })
+          .update({ sprint_id: nextSprintId })
           .in('id', incompleteIds);
 
         if (moveError) {
@@ -182,10 +421,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       }
     }
 
-    // Update sprint to completed
+    // Update sprint to completed (settlement -> completed).
     const { data: updatedSprint, error: updateError } = await supabase
       .from('sprints')
-      .update({ status: 'completed' })
+      .update({
+        status: 'completed',
+        completed_at: new Date().toISOString(),
+        settlement_blocked_reason: null,
+      })
       .eq('id', id)
       .select(SPRINT_COLUMNS)
       .single();
@@ -212,7 +455,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     // Phase 12: Auto-clone recurring task templates into next sprint
     let recurringTasksCloned = 0;
     const targetSprintId =
-      incomplete_action === 'next_sprint' && next_sprint_id ? next_sprint_id : null;
+      incompleteAction === 'next_sprint' && nextSprintId ? nextSprintId : null;
 
     if (targetSprintId) {
       const { data: cloneResult, error: cloneError } = await supabase.rpc(
@@ -249,6 +492,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       epoch_distributions: epochDistributions,
       disputes_escalated: disputesEscalated,
       admin_dispute_extensions: adminDisputeExtensions,
+      settlement_blockers: settlementBlockers,
+      phase_transition: { from: 'settlement', to: 'completed' },
     });
   } catch (error) {
     logger.error('Sprint complete error:', error);

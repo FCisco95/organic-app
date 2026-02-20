@@ -135,6 +135,17 @@ export default function TaskDetailPage() {
             id,
             name,
             status
+          ),
+          proposal:proposals(
+            id,
+            title,
+            status,
+            result
+          ),
+          proposal_version:proposal_versions!tasks_proposal_version_id_fkey(
+            id,
+            version_number,
+            created_at
           )
         `
         )
@@ -352,6 +363,17 @@ export default function TaskDetailPage() {
             id,
             name,
             status
+          ),
+          proposal:proposals(
+            id,
+            title,
+            status,
+            result
+          ),
+          proposal_version:proposal_versions!tasks_proposal_version_id_fkey(
+            id,
+            version_number,
+            created_at
           )
         `
         )
@@ -489,6 +511,17 @@ export default function TaskDetailPage() {
             id,
             name,
             status
+          ),
+          proposal:proposals(
+            id,
+            title,
+            status,
+            result
+          ),
+          proposal_version:proposal_versions!tasks_proposal_version_id_fkey(
+            id,
+            version_number,
+            created_at
           )
         `
         )

@@ -31,6 +31,7 @@ export function AdminVotingControls({
   const finalizeVotingMutation = useFinalizeVoting();
 
   const status = getVotingStatus(proposal);
+  const isFinalizationFrozen = Boolean(proposal.finalization_frozen_at);
 
   const handleStartVoting = async () => {
     try {
@@ -57,12 +58,16 @@ export function AdminVotingControls({
       setShowFinalizeConfirm(false);
       onVotingFinalized?.();
     } catch (error) {
+      const apiError = error as Error & { code?: string };
+      if (apiError.code === 'FINALIZATION_FROZEN') {
+        onVotingFinalized?.();
+      }
       toast.error(error instanceof Error ? error.message : t('toast.finalizeFailed'));
     }
   };
 
-  // Show start voting button for submitted proposals
-  if (proposal.status === 'submitted') {
+  // Show start voting button for pre-voting lifecycle statuses.
+  if (['public', 'qualified', 'discussion', 'submitted'].includes(proposal.status)) {
     return (
       <div className="space-y-4">
         <p className="text-sm text-gray-600">{t('admin.startDescription')}</p>
@@ -90,6 +95,22 @@ export function AdminVotingControls({
   // Show finalize button for voting proposals
   if (status === 'voting_open' || status === 'voting_closed') {
     const canFinalize = status === 'voting_closed';
+
+    if (isFinalizationFrozen) {
+      return (
+        <div className="space-y-4">
+          <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-sm">
+            <AlertTriangle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+            <p className="text-red-700">
+              {t('admin.finalizationFrozen', {
+                attempts: proposal.finalization_attempts ?? 0,
+              })}
+            </p>
+          </div>
+          <p className="text-xs text-gray-500">{t('admin.finalizationFrozenHelp')}</p>
+        </div>
+      );
+    }
 
     return (
       <div className="space-y-4">

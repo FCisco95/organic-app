@@ -5,7 +5,8 @@
  *  1. List and get sprints (authenticated)
  *  2. Create sprint as admin
  *  3. Start sprint (planning → active), with 409 conflict guard
- *  4. Complete sprint (active → completed + snapshot)
+ *  4. Complete sprint across phased engine
+ *     (active → review → dispute_window → settlement → completed)
  *  5. Auth and role enforcement
  *
  * All tests skip when Supabase env vars are absent.
@@ -211,16 +212,48 @@ test.describe('Sprint lifecycle', () => {
     await supabaseAdmin.from('sprints').delete().eq('id', conflictSprintId);
   });
 
-  test('admin completes sprint (active → completed + snapshot)', async ({ request }) => {
+  test('admin completes sprint through phased engine and snapshot is created', async ({
+    request,
+  }) => {
     test.skip(!createdSprintId, 'Requires sprint creation step');
     test.skip(!canStart, 'Skipped: sprint start was not tested in this environment');
 
-    const res = await request.post(`${BASE_URL}/api/sprints/${createdSprintId}/complete`, {
+    const toReviewRes = await request.post(`${BASE_URL}/api/sprints/${createdSprintId}/complete`, {
+      headers: { Cookie: cookieHeader(adminCookie) },
+      data: {},
+    });
+    expect(toReviewRes.status()).toBe(200);
+    expect((await toReviewRes.json()).sprint.status).toBe('review');
+
+    const toWindowRes = await request.post(`${BASE_URL}/api/sprints/${createdSprintId}/complete`, {
+      headers: { Cookie: cookieHeader(adminCookie) },
+      data: {},
+    });
+    expect(toWindowRes.status()).toBe(200);
+    expect((await toWindowRes.json()).sprint.status).toBe('dispute_window');
+
+    const supabaseAdmin = createAdminClient();
+    await supabaseAdmin
+      .from('sprints')
+      .update({ dispute_window_ends_at: new Date(Date.now() - 60 * 1000).toISOString() })
+      .eq('id', createdSprintId);
+
+    const toSettlementRes = await request.post(
+      `${BASE_URL}/api/sprints/${createdSprintId}/complete`,
+      {
+        headers: { Cookie: cookieHeader(adminCookie) },
+        data: {},
+      }
+    );
+    expect(toSettlementRes.status()).toBe(200);
+    expect((await toSettlementRes.json()).sprint.status).toBe('settlement');
+
+    const toCompletedRes = await request.post(`${BASE_URL}/api/sprints/${createdSprintId}/complete`, {
       headers: { Cookie: cookieHeader(adminCookie) },
       data: { incomplete_action: 'backlog' },
     });
-    expect(res.status()).toBe(200);
-    const body = await res.json();
+    expect(toCompletedRes.status()).toBe(200);
+    const body = await toCompletedRes.json();
     expect(body.sprint.status).toBe('completed');
     expect(body).toHaveProperty('snapshot');
     expect(body.snapshot).toHaveProperty('completion_rate');

@@ -97,6 +97,11 @@ export function useProposal(proposalId: string) {
         .select(
           `
           *,
+          proposal_versions!proposals_current_version_id_fkey(
+            id,
+            version_number,
+            created_at
+          ),
           user_profiles!proposals_created_by_fkey(
             organic_id,
             email,
@@ -128,6 +133,9 @@ export function useProposalComments(proposalId: string) {
         .select(
           `
           *,
+          proposal_versions(
+            version_number
+          ),
           user_profiles!comments_user_id_fkey(
             organic_id,
             email
@@ -152,7 +160,7 @@ export function useCreateProposal() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (input: CreateProposalInput & { status?: 'draft' | 'submitted' }) => {
+    mutationFn: async (input: CreateProposalInput & { status?: 'draft' | 'public' | 'submitted' }) => {
       const response = await fetch('/api/proposals', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

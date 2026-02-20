@@ -5,6 +5,32 @@ import { extractTweetIdFromUrl } from '@/lib/twitter/utils';
 import { parseJsonBody } from '@/lib/parse-json-body';
 import { logger } from '@/lib/logger';
 
+type ProposalLifecycleStatus =
+  | 'draft'
+  | 'public'
+  | 'qualified'
+  | 'discussion'
+  | 'voting'
+  | 'finalized'
+  | 'canceled';
+
+function normalizeProposalLifecycleStatus(status: string | null): ProposalLifecycleStatus {
+  if (status === 'submitted') return 'public';
+  if (status === 'approved' || status === 'rejected') return 'finalized';
+  if (
+    status === 'public' ||
+    status === 'qualified' ||
+    status === 'discussion' ||
+    status === 'voting' ||
+    status === 'finalized' ||
+    status === 'canceled'
+  ) {
+    return status;
+  }
+
+  return 'draft';
+}
+
 // POST - Create a new task
 export async function POST(request: Request) {
   try {
@@ -48,6 +74,57 @@ export async function POST(request: Request) {
     }
 
     const input = validationResult.data;
+    let resolvedProposalVersionId: string | null = input.proposal_version_id || null;
+
+    if (!input.proposal_id && input.proposal_version_id) {
+      return NextResponse.json(
+        { error: 'proposal_version_id requires proposal_id' },
+        { status: 400 }
+      );
+    }
+
+    if (input.proposal_id) {
+      const { data: proposal, error: proposalError } = await supabase
+        .from('proposals')
+        .select('id, status, result, current_version_id')
+        .eq('id', input.proposal_id)
+        .single();
+
+      if (proposalError || !proposal) {
+        return NextResponse.json({ error: 'Proposal not found' }, { status: 400 });
+      }
+
+      const lifecycleStatus = normalizeProposalLifecycleStatus(proposal.status);
+      const isPassedFinalized =
+        lifecycleStatus === 'finalized' &&
+        (proposal.result === 'passed' || proposal.status === 'approved');
+
+      if (!isPassedFinalized) {
+        return NextResponse.json(
+          { error: 'Proposal-generated tasks require a finalized passed proposal' },
+          { status: 400 }
+        );
+      }
+
+      if (!proposal.current_version_id) {
+        return NextResponse.json(
+          { error: 'Proposal current version metadata is missing' },
+          { status: 400 }
+        );
+      }
+
+      if (
+        input.proposal_version_id &&
+        input.proposal_version_id !== proposal.current_version_id
+      ) {
+        return NextResponse.json(
+          { error: 'Proposal-generated tasks must reference the proposal current version' },
+          { status: 400 }
+        );
+      }
+
+      resolvedProposalVersionId = proposal.current_version_id;
+    }
 
     // Get org_id
     const { data: org } = await supabase
@@ -74,6 +151,7 @@ export async function POST(request: Request) {
         sprint_id: input.sprint_id || null,
         assignee_id: input.assignee_id || null,
         proposal_id: input.proposal_id || null,
+        proposal_version_id: resolvedProposalVersionId,
         org_id: org?.id || null,
         created_by: user.id,
         status: 'backlog',
@@ -84,13 +162,24 @@ export async function POST(request: Request) {
         assignee:user_profiles!tasks_assignee_id_fkey(
           id, name, email, organic_id, avatar_url
         ),
-        sprint:sprints(id, name, status)
+        sprint:sprints(id, name, status),
+        proposal:proposals(id, title, status, result),
+        proposal_version:proposal_versions!tasks_proposal_version_id_fkey(
+          id,
+          version_number,
+          created_at
+        )
       `
       )
       .single();
 
     if (insertError) {
       logger.error('Error creating task:', insertError);
+
+      if (['23503', '23514', 'P0001'].includes(insertError.code ?? '')) {
+        return NextResponse.json({ error: insertError.message }, { status: 400 });
+      }
+
       return NextResponse.json({ error: 'Failed to create task' }, { status: 500 });
     }
 

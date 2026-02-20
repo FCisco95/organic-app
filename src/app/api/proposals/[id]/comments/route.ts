@@ -24,6 +24,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       .select(
         `
         *,
+        proposal_versions(
+          version_number
+        ),
         user_profiles!comments_user_id_fkey(
           organic_id,
           email
@@ -93,7 +96,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     // Verify proposal exists
     const { data: proposal, error: fetchError } = await supabase
       .from('proposals')
-      .select('id')
+      .select('id, current_version_id')
       .eq('id', proposalId)
       .single();
 
@@ -106,12 +109,16 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       .insert({
         subject_type: 'proposal',
         subject_id: proposalId,
+        proposal_version_id: proposal.current_version_id,
         user_id: user.id,
         body: parseResult.data.body,
       })
       .select(
         `
         *,
+        proposal_versions(
+          version_number
+        ),
         user_profiles!comments_user_id_fkey(
           organic_id,
           email

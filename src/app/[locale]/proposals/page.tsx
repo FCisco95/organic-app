@@ -55,7 +55,8 @@ export default function ProposalsPage() {
 
       {/* Status Filter Tabs */}
       <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
-        {['all', 'submitted', 'voting', 'approved', 'rejected'].map((status) => (
+        {['all', 'public', 'qualified', 'discussion', 'voting', 'finalized', 'canceled'].map(
+          (status) => (
           <button
             key={status}
             onClick={() => setStatusFilter(status)}
@@ -70,13 +71,16 @@ export default function ProposalsPage() {
               : t(
                   `status${status.charAt(0).toUpperCase() + status.slice(1)}` as
                     | `statusDraft`
-                    | `statusSubmitted`
-                    | `statusApproved`
-                    | `statusRejected`
+                    | `statusPublic`
+                    | `statusQualified`
+                    | `statusDiscussion`
                     | `statusVoting`
+                    | `statusFinalized`
+                    | `statusCanceled`
                 )}
           </button>
-        ))}
+          )
+        )}
       </div>
 
       {/* Category Filter Tabs */}

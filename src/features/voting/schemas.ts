@@ -14,15 +14,27 @@ export const castVoteSchema = z.object({
 });
 export type CastVoteInput = z.infer<typeof castVoteSchema>;
 
+export const snapshotHolderInputSchema = z.object({
+  address: z.string().min(1).optional(),
+  wallet_pubkey: z.string().min(1).optional(),
+  balance: z.number().nonnegative().optional(),
+  balance_ui: z.number().nonnegative().optional(),
+});
+export type SnapshotHolderInput = z.infer<typeof snapshotHolderInputSchema>;
+
 // Start voting schema
 export const startVotingSchema = z.object({
   voting_duration_days: z.number().int().min(1).max(30).optional(),
+  snapshot_holders: z.array(snapshotHolderInputSchema).optional(),
 });
 export type StartVotingInput = z.infer<typeof startVotingSchema>;
 
 // Finalize voting schema
 export const finalizeVotingSchema = z.object({
   force: z.boolean().optional().default(false),
+  dedupe_key: z.string().trim().min(3).max(200).optional(),
+  // Debug-only knob used by integrity tests; ignored in production.
+  test_fail_mode: z.enum(['none', 'once', 'always']).optional(),
 });
 export type FinalizeVotingInput = z.infer<typeof finalizeVotingSchema>;
 

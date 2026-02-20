@@ -128,9 +128,9 @@ export function ProposalWizard({ initialData, proposalId, onSuccess }: ProposalW
   );
 
   const handleSubmit = useCallback(
-    async (status: 'draft' | 'submitted') => {
+    async (status: 'draft' | 'public') => {
       // For submit, validate all steps
-      if (status === 'submitted') {
+      if (status === 'public') {
         for (const s of [1, 2, 3] as const) {
           if (!validateStep(s)) {
             setStep(s);
@@ -258,7 +258,7 @@ export function ProposalWizard({ initialData, proposalId, onSuccess }: ProposalW
               </button>
               <button
                 type="button"
-                onClick={() => handleSubmit('submitted')}
+                onClick={() => handleSubmit('public')}
                 disabled={isSubmitting}
                 className="flex items-center gap-2 px-6 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
               >

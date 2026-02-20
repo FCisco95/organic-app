@@ -4,7 +4,14 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import { Link, useRouter } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
-import { Sprint, SprintFormData, SprintTask, SprintSnapshot } from '@/features/sprints';
+import {
+  Sprint,
+  SprintFormData,
+  SprintTask,
+  SprintSnapshot,
+  getNextSprintPhase,
+  isSprintExecutionPhase,
+} from '@/features/sprints';
 import { useStartSprint, useCompleteSprint } from '@/features/sprints';
 
 import {
@@ -190,18 +197,23 @@ export default function SprintDetailPage() {
   };
 
   const handleCompleteSprint = async (
-    incompleteAction: 'backlog' | 'next_sprint',
+    incompleteAction?: 'backlog' | 'next_sprint',
     nextSprintId?: string
   ) => {
     if (!sprint) return;
     try {
-      await completeSprintMutation.mutateAsync({
+      const result = await completeSprintMutation.mutateAsync({
         sprintId: sprint.id,
         incompleteAction,
         nextSprintId,
       });
       setShowCompleteDialog(false);
-      toast.success(tSprints('completeSprintButton'));
+      const nextPhase = result.phase_transition?.to;
+      if (nextPhase) {
+        toast.success(tSprints('phaseAdvancedTo', { phase: tSprints(`status.${nextPhase}`) }));
+      } else {
+        toast.success(tSprints('phaseAdvanced'));
+      }
       await fetchSprintDetails();
     } catch (err: any) {
       toast.error(err.message);
@@ -260,6 +272,9 @@ export default function SprintDetailPage() {
     const styles = {
       planning: 'bg-blue-100 text-blue-700 border-blue-200',
       active: 'bg-green-100 text-green-700 border-green-200',
+      review: 'bg-amber-100 text-amber-700 border-amber-200',
+      dispute_window: 'bg-orange-100 text-orange-700 border-orange-200',
+      settlement: 'bg-purple-100 text-purple-700 border-purple-200',
       completed: 'bg-gray-100 text-gray-700 border-gray-200',
     };
     return styles[status as keyof typeof styles] || styles.planning;
@@ -334,6 +349,31 @@ export default function SprintDetailPage() {
           capacity: sprint.capacity_points,
         })
       : t('capacityUncapped', { used: totalPoints });
+  const showAdvanceButton = canManageSprint && isSprintExecutionPhase(sprint.status ?? null);
+  const nextPhaseLabel = getNextSprintPhase(sprint.status ?? 'planning');
+  const reviewDeadlineAt = sprint.review_started_at
+    ? new Date(new Date(sprint.review_started_at).getTime() + 72 * 60 * 60 * 1000).toISOString()
+    : null;
+  const phaseDeadlineAt =
+    sprint.status === 'review'
+      ? reviewDeadlineAt
+      : sprint.status === 'dispute_window'
+        ? sprint.dispute_window_ends_at
+        : null;
+  const formatTimeRemaining = (deadlineIso: string): string => {
+    const diffMs = new Date(deadlineIso).getTime() - Date.now();
+    if (diffMs <= 0) return t('phaseDeadlinePassed');
+
+    const totalMinutes = Math.ceil(diffMs / (1000 * 60));
+    const days = Math.floor(totalMinutes / (60 * 24));
+    const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
+    const minutes = totalMinutes % 60;
+
+    if (days > 0) return `${days}d ${hours}h`;
+    if (hours > 0) return `${hours}h ${minutes}m`;
+    return `${Math.max(1, minutes)}m`;
+  };
+  const phaseTimeRemaining = phaseDeadlineAt ? formatTimeRemaining(phaseDeadlineAt) : null;
 
   const normalizeDate = (date: Date) =>
     new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -414,6 +454,20 @@ export default function SprintDetailPage() {
               </div>
             </div>
             <div className="text-sm text-gray-500 mt-2">{capacityUsedLabel}</div>
+            {phaseDeadlineAt && (
+              <div className="mt-3 inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs text-gray-700">
+                <Timer className="h-3.5 w-3.5 text-gray-500" />
+                <span>{t('phaseDeadline', { date: formatDate(phaseDeadlineAt) })}</span>
+                <span className="font-medium text-gray-900">
+                  {t('phaseTimeRemaining', { time: phaseTimeRemaining ?? t('phaseDeadlinePassed') })}
+                </span>
+              </div>
+            )}
+            {sprint.settlement_blocked_reason && (
+              <div className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+                {t('settlementBlocked', { reason: sprint.settlement_blocked_reason })}
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-3">
             <span
@@ -433,14 +487,30 @@ export default function SprintDetailPage() {
                 {t('startSprint')}
               </button>
             )}
-            {canManageSprint && sprint.status === 'active' && (
+            {showAdvanceButton && (
               <button
-                onClick={() => setShowCompleteDialog(true)}
+                onClick={() => {
+                  if (sprint.status === 'settlement') {
+                    setShowCompleteDialog(true);
+                    return;
+                  }
+                  void handleCompleteSprint();
+                }}
                 className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
-                title={t('completeSprint')}
+                title={
+                  sprint.status === 'settlement'
+                    ? t('completeSprint')
+                    : t('advancePhaseButton', {
+                        phase: nextPhaseLabel ? t(`status.${nextPhaseLabel}`) : t('status.review'),
+                      })
+                }
               >
                 <CheckCircle2 className="w-4 h-4" />
-                {t('completeSprint')}
+                {sprint.status === 'settlement'
+                  ? t('completeSprint')
+                  : t('advancePhaseButton', {
+                      phase: nextPhaseLabel ? t(`status.${nextPhaseLabel}`) : t('status.review'),
+                    })}
               </button>
             )}
             {canManageSprint && sprint.status !== 'completed' && (

@@ -24,12 +24,21 @@ export interface ProposalWithRelations extends Proposal {
     email: string;
     wallet_pubkey: string | null;
   };
+  proposal_versions?: {
+    id: string;
+    version_number: number;
+    created_at: string;
+  } | null;
 }
 
 // Proposal comment
 export interface ProposalComment {
   id: string;
   body: string;
+  proposal_version_id: string | null;
+  proposal_versions?: {
+    version_number: number;
+  } | null;
   user_id: string;
   created_at: string;
   user_profiles: {
@@ -72,21 +81,80 @@ export const PROPOSAL_CATEGORY_ICONS: Record<ProposalCategory, string> = {
   development: 'Code',
 };
 
+export type LifecycleProposalStatus =
+  | 'draft'
+  | 'public'
+  | 'qualified'
+  | 'discussion'
+  | 'voting'
+  | 'finalized'
+  | 'canceled';
+
+export const LEGACY_TO_LIFECYCLE_STATUS: Record<ProposalStatus, LifecycleProposalStatus> = {
+  draft: 'draft',
+  public: 'public',
+  qualified: 'qualified',
+  discussion: 'discussion',
+  voting: 'voting',
+  finalized: 'finalized',
+  canceled: 'canceled',
+  submitted: 'public',
+  approved: 'finalized',
+  rejected: 'finalized',
+};
+
+export function normalizeProposalStatus(
+  status: ProposalStatus | null | undefined
+): LifecycleProposalStatus {
+  if (!status) return 'draft';
+  return LEGACY_TO_LIFECYCLE_STATUS[status];
+}
+
+export const FORWARD_LIFECYCLE_TRANSITIONS: Record<
+  LifecycleProposalStatus,
+  readonly LifecycleProposalStatus[]
+> = {
+  draft: ['public', 'canceled'],
+  public: ['qualified', 'discussion', 'voting', 'canceled'],
+  qualified: ['discussion', 'voting', 'canceled'],
+  discussion: ['voting', 'canceled'],
+  voting: ['finalized'],
+  finalized: [],
+  canceled: [],
+};
+
+export function canTransitionLifecycleStatus(
+  from: LifecycleProposalStatus,
+  to: LifecycleProposalStatus
+): boolean {
+  return FORWARD_LIFECYCLE_TRANSITIONS[from].includes(to);
+}
+
 // Status metadata
 export const PROPOSAL_STATUS_COLORS: Record<ProposalStatus, string> = {
   draft: 'bg-gray-100 text-gray-700',
+  public: 'bg-sky-100 text-sky-700',
+  qualified: 'bg-indigo-100 text-indigo-700',
+  discussion: 'bg-amber-100 text-amber-700',
+  voting: 'bg-purple-100 text-purple-700',
+  finalized: 'bg-emerald-100 text-emerald-700',
+  canceled: 'bg-zinc-200 text-zinc-700',
   submitted: 'bg-blue-100 text-blue-700',
   approved: 'bg-green-100 text-green-700',
   rejected: 'bg-red-100 text-red-700',
-  voting: 'bg-purple-100 text-purple-700',
 };
 
 export const PROPOSAL_STATUS_LABELS: Record<ProposalStatus, string> = {
   draft: 'Draft',
+  public: 'Public',
+  qualified: 'Qualified',
+  discussion: 'Discussion',
+  voting: 'Voting',
+  finalized: 'Finalized',
+  canceled: 'Canceled',
   submitted: 'Submitted',
   approved: 'Approved',
   rejected: 'Rejected',
-  voting: 'Voting',
 };
 
 // Category border colors (left accent bar on section cards)

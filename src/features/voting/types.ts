@@ -24,6 +24,7 @@ export interface VoteTally {
 
 // Voting info for a proposal
 export interface ProposalVotingInfo {
+  server_voting_started_at: string | null;
   voting_starts_at: string | null;
   voting_ends_at: string | null;
   snapshot_taken_at: string | null;
@@ -31,6 +32,11 @@ export interface ProposalVotingInfo {
   quorum_required: number | null;
   approval_threshold: number | null;
   result: ProposalResult | null;
+  finalization_dedupe_key: string | null;
+  finalization_attempts: number;
+  finalization_last_attempt_at: string | null;
+  finalization_failure_reason: string | null;
+  finalization_frozen_at: string | null;
 }
 
 // User's vote with weight
@@ -64,6 +70,7 @@ export interface ProposalWithVoting {
   created_by: string;
   created_at: string;
   updated_at: string;
+  server_voting_started_at: string | null;
   voting_starts_at: string | null;
   voting_ends_at: string | null;
   snapshot_taken_at: string | null;
@@ -71,6 +78,11 @@ export interface ProposalWithVoting {
   quorum_required: number | null;
   approval_threshold: number | null;
   result: ProposalResult | null;
+  finalization_dedupe_key: string | null;
+  finalization_attempts: number;
+  finalization_last_attempt_at: string | null;
+  finalization_failure_reason: string | null;
+  finalization_frozen_at: string | null;
   user_profiles: {
     organic_id: number | null;
     email: string;
@@ -81,6 +93,12 @@ export interface ProposalWithVoting {
 // Start voting request
 export interface StartVotingRequest {
   voting_duration_days?: number;
+  snapshot_holders?: Array<{
+    address?: string;
+    wallet_pubkey?: string;
+    balance?: number;
+    balance_ui?: number;
+  }>;
 }
 
 // Cast vote request
@@ -91,6 +109,8 @@ export interface CastVoteRequest {
 // Finalize voting request
 export interface FinalizeVotingRequest {
   force?: boolean; // Force finalize even if voting period not ended (admin only)
+  dedupe_key?: string;
+  test_fail_mode?: 'none' | 'once' | 'always';
 }
 
 // Snapshot holder for display
@@ -224,4 +244,5 @@ export interface EffectiveVotingPower {
   delegated_weight: number;
   total_weight: number;
   delegator_count: number;
+  source?: 'snapshot' | 'live_estimate';
 }
