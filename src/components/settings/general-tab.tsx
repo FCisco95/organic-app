@@ -24,8 +24,8 @@ export function GeneralTab({ org }: GeneralTabProps) {
 
   const dirty = name !== org.name || description !== (org.description ?? '');
 
-  const handleSave = () => {
-    updateOrg.mutate({ name, description: description || null });
+  const handleSave = (reason: string) => {
+    updateOrg.mutate({ reason, name, description: description || null });
   };
 
   const handleReset = () => {
@@ -61,6 +61,9 @@ export function GeneralTab({ org }: GeneralTabProps) {
         onSave={handleSave}
         onReset={handleReset}
         saveLabel={t('save')}
+        reasonLabel={t('auditReasonLabel')}
+        reasonPlaceholder={t('auditReasonPlaceholder')}
+        reasonHelp={t('auditReasonHelp')}
       />
     </div>
   );

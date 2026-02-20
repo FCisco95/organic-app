@@ -4,6 +4,31 @@ export interface TreasuryAllocationConfig {
   color: string;
 }
 
+export interface GovernancePolicyConfig {
+  qualification_threshold_percent: number;
+  anti_spam_min_hours_between_proposals: number;
+  override_ttl_days: number;
+  override_requires_council_review: boolean;
+}
+
+export interface SprintPolicyConfig {
+  dispute_window_hours: number;
+  reviewer_sla_hours: number;
+  reviewer_sla_extension_hours: number;
+}
+
+export interface RewardsConfig {
+  enabled: boolean;
+  points_to_token_rate: number;
+  min_claim_threshold: number;
+  default_epoch_pool: number;
+  claim_requires_wallet: boolean;
+  settlement_emission_percent?: number;
+  settlement_fixed_cap_per_sprint?: number;
+  settlement_carryover_sprint_cap?: number;
+  treasury_balance_for_emission?: number;
+}
+
 export interface Organization {
   id: string;
   name: string;
@@ -23,14 +48,10 @@ export interface Organization {
   default_sprint_duration_days: number;
   // Organic ID config
   organic_id_threshold: number | null;
+  governance_policy: GovernancePolicyConfig | null;
+  sprint_policy: SprintPolicyConfig | null;
   // Rewards config
-  rewards_config: {
-    enabled: boolean;
-    points_to_token_rate: number;
-    min_claim_threshold: number;
-    default_epoch_pool: number;
-    claim_requires_wallet: boolean;
-  } | null;
+  rewards_config: RewardsConfig | null;
   // Timestamps
   created_at: string | null;
   updated_at: string | null;

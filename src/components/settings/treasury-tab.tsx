@@ -47,8 +47,9 @@ export function TreasuryTab({ org }: TreasuryTabProps) {
     setAllocations((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleSave = () => {
+  const handleSave = (reason: string) => {
     updateOrg.mutate({
+      reason,
       treasury_wallet: wallet || null,
       treasury_allocations: allocations,
     });
@@ -135,6 +136,9 @@ export function TreasuryTab({ org }: TreasuryTabProps) {
         onSave={handleSave}
         onReset={handleReset}
         saveLabel={t('save')}
+        reasonLabel={t('auditReasonLabel')}
+        reasonPlaceholder={t('auditReasonPlaceholder')}
+        reasonHelp={t('auditReasonHelp')}
       />
     </div>
   );

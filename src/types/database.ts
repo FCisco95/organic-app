@@ -98,6 +98,67 @@ export type Database = {
           },
         ]
       }
+      admin_config_audit_events: {
+        Row: {
+          actor_id: string
+          actor_role: Database["public"]["Enums"]["user_role"]
+          change_scope: string
+          created_at: string
+          id: string
+          metadata: Json
+          new_payload: Json
+          org_id: string
+          previous_payload: Json
+          reason: string
+        }
+        Insert: {
+          actor_id: string
+          actor_role: Database["public"]["Enums"]["user_role"]
+          change_scope: string
+          created_at?: string
+          id?: string
+          metadata?: Json
+          new_payload?: Json
+          org_id: string
+          previous_payload?: Json
+          reason: string
+        }
+        Update: {
+          actor_id?: string
+          actor_role?: Database["public"]["Enums"]["user_role"]
+          change_scope?: string
+          created_at?: string
+          id?: string
+          metadata?: Json
+          new_payload?: Json
+          org_id?: string
+          previous_payload?: Json
+          reason?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_config_audit_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_config_audit_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_config_audit_events_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "orgs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comments: {
         Row: {
           attachments: Json | null
@@ -748,12 +809,14 @@ export type Database = {
           default_sprint_duration_days: number
           description: string | null
           gamification_config: Json
+          governance_policy: Json
           id: string
           logo_url: string | null
           name: string
           organic_id_threshold: number | null
           rewards_config: Json | null
           slug: string
+          sprint_policy: Json
           theme: Json | null
           token_decimals: number
           token_mint: string | null
@@ -769,12 +832,14 @@ export type Database = {
           default_sprint_duration_days?: number
           description?: string | null
           gamification_config?: Json
+          governance_policy?: Json
           id?: string
           logo_url?: string | null
           name: string
           organic_id_threshold?: number | null
           rewards_config?: Json | null
           slug: string
+          sprint_policy?: Json
           theme?: Json | null
           token_decimals?: number
           token_mint?: string | null
@@ -790,12 +855,14 @@ export type Database = {
           default_sprint_duration_days?: number
           description?: string | null
           gamification_config?: Json
+          governance_policy?: Json
           id?: string
           logo_url?: string | null
           name?: string
           organic_id_threshold?: number | null
           rewards_config?: Json | null
           slug?: string
+          sprint_policy?: Json
           theme?: Json | null
           token_decimals?: number
           token_mint?: string | null

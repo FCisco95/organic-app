@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { OrganizationWithVoting } from './types';
+import type { SettingsPatchInput } from './schemas';
 
 export const settingsKeys = {
   all: ['settings'] as const,
@@ -25,7 +26,7 @@ export function useUpdateOrganization() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: Record<string, unknown>) => {
+    mutationFn: async (data: SettingsPatchInput) => {
       const res = await fetch('/api/settings', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },

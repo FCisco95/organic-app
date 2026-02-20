@@ -19,6 +19,31 @@ const treasuryAllocationItemSchema = z.object({
   color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
 });
 
+export const governancePolicySchema = z.object({
+  qualification_threshold_percent: z.coerce.number().min(0).max(100),
+  anti_spam_min_hours_between_proposals: z.coerce.number().int().min(0).max(720),
+  override_ttl_days: z.coerce.number().int().min(1).max(30),
+  override_requires_council_review: z.boolean(),
+});
+
+export const sprintPolicySchema = z.object({
+  dispute_window_hours: z.coerce.number().int().min(1).max(168),
+  reviewer_sla_hours: z.coerce.number().int().min(1).max(168),
+  reviewer_sla_extension_hours: z.coerce.number().int().min(1).max(168),
+});
+
+export const rewardsConfigSchema = z.object({
+  enabled: z.boolean(),
+  points_to_token_rate: z.coerce.number().positive(),
+  min_claim_threshold: z.coerce.number().min(0),
+  default_epoch_pool: z.coerce.number().min(0),
+  claim_requires_wallet: z.boolean(),
+  settlement_emission_percent: z.coerce.number().gt(0).lte(1).optional(),
+  settlement_fixed_cap_per_sprint: z.coerce.number().min(0).optional(),
+  settlement_carryover_sprint_cap: z.coerce.number().int().min(1).max(3).optional(),
+  treasury_balance_for_emission: z.coerce.number().min(0).optional(),
+});
+
 export const treasurySettingsSchema = z
   .object({
     treasury_wallet: z.string().nullable().or(z.literal('')),
@@ -46,6 +71,7 @@ export const sprintSettingsSchema = z.object({
   default_sprint_capacity: z.coerce.number().int().min(1),
   default_sprint_duration_days: z.coerce.number().int().min(1).max(90),
   organic_id_threshold: z.coerce.number().min(0).nullable(),
+  sprint_policy: sprintPolicySchema,
 });
 
 export type GeneralSettingsInput = z.infer<typeof generalSettingsSchema>;
@@ -53,6 +79,9 @@ export type TokenSettingsInput = z.infer<typeof tokenSettingsSchema>;
 export type TreasurySettingsInput = z.infer<typeof treasurySettingsSchema>;
 export type GovernanceSettingsInput = z.infer<typeof governanceSettingsSchema>;
 export type SprintSettingsInput = z.infer<typeof sprintSettingsSchema>;
+export type GovernancePolicyInput = z.infer<typeof governancePolicySchema>;
+export type SprintPolicyInput = z.infer<typeof sprintPolicySchema>;
+export type RewardsConfigInput = z.infer<typeof rewardsConfigSchema>;
 
 // Server-side schema for the PATCH /api/settings route.
 // Accepts any combination of org + voting config fields in a flat payload.
@@ -69,7 +98,9 @@ const orgFieldsSchema = z.object({
   default_sprint_capacity: z.coerce.number().int().min(1),
   default_sprint_duration_days: z.coerce.number().int().min(1).max(90),
   organic_id_threshold: z.coerce.number().min(0).nullable(),
-  rewards_config: z.record(z.unknown()),
+  governance_policy: governancePolicySchema,
+  sprint_policy: sprintPolicySchema,
+  rewards_config: rewardsConfigSchema,
 });
 
 const votingFieldsSchema = z.object({
@@ -82,5 +113,14 @@ const votingFieldsSchema = z.object({
   abstain_counts_toward_quorum: z.boolean(),
 });
 
-export const settingsPatchSchema = orgFieldsSchema.merge(votingFieldsSchema).partial();
+export const settingsPatchSchema = orgFieldsSchema
+  .merge(votingFieldsSchema)
+  .partial()
+  .extend({
+    reason: z.string().trim().min(8).max(500),
+  })
+  .refine((value) => Object.keys(value).some((key) => key !== 'reason'), {
+    message: 'At least one settings field must be provided',
+    path: ['reason'],
+  });
 export type SettingsPatchInput = z.infer<typeof settingsPatchSchema>;

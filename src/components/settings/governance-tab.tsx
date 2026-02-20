@@ -4,13 +4,21 @@ import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { SettingsField, SettingsInput, SettingsSaveBar } from './settings-field';
 import { useUpdateOrganization } from '@/features/settings';
-import type { VotingConfig } from '@/features/settings';
+import type { GovernancePolicyConfig, VotingConfig } from '@/features/settings';
 
 interface GovernanceTabProps {
   votingConfig: VotingConfig | null;
+  governancePolicy: GovernancePolicyConfig | null;
 }
 
-export function GovernanceTab({ votingConfig }: GovernanceTabProps) {
+const DEFAULT_GOVERNANCE_POLICY: GovernancePolicyConfig = {
+  qualification_threshold_percent: 5,
+  anti_spam_min_hours_between_proposals: 24,
+  override_ttl_days: 7,
+  override_requires_council_review: false,
+};
+
+export function GovernanceTab({ votingConfig, governancePolicy }: GovernanceTabProps) {
   const t = useTranslations('Settings');
   const updateOrg = useUpdateOrganization();
 
@@ -25,6 +33,18 @@ export function GovernanceTab({ votingConfig }: GovernanceTabProps) {
   };
 
   const vc = votingConfig ?? defaults;
+  const policy: GovernancePolicyConfig = {
+    qualification_threshold_percent:
+      governancePolicy?.qualification_threshold_percent ??
+      DEFAULT_GOVERNANCE_POLICY.qualification_threshold_percent,
+    anti_spam_min_hours_between_proposals:
+      governancePolicy?.anti_spam_min_hours_between_proposals ??
+      DEFAULT_GOVERNANCE_POLICY.anti_spam_min_hours_between_proposals,
+    override_ttl_days: governancePolicy?.override_ttl_days ?? DEFAULT_GOVERNANCE_POLICY.override_ttl_days,
+    override_requires_council_review:
+      governancePolicy?.override_requires_council_review ??
+      DEFAULT_GOVERNANCE_POLICY.override_requires_council_review,
+  };
 
   const [quorum, setQuorum] = useState(String(vc.quorum_percentage));
   const [approval, setApproval] = useState(String(vc.approval_threshold));
@@ -33,6 +53,16 @@ export function GovernanceTab({ votingConfig }: GovernanceTabProps) {
   const [cooldown, setCooldown] = useState(String(vc.proposer_cooldown_days));
   const [maxLive, setMaxLive] = useState(String(vc.max_live_proposals));
   const [abstainQuorum, setAbstainQuorum] = useState(vc.abstain_counts_toward_quorum);
+  const [qualificationThreshold, setQualificationThreshold] = useState(
+    String(policy.qualification_threshold_percent)
+  );
+  const [antiSpamHours, setAntiSpamHours] = useState(
+    String(policy.anti_spam_min_hours_between_proposals)
+  );
+  const [overrideTtlDays, setOverrideTtlDays] = useState(String(policy.override_ttl_days));
+  const [overrideRequiresCouncilReview, setOverrideRequiresCouncilReview] = useState(
+    policy.override_requires_council_review
+  );
 
   useEffect(() => {
     setQuorum(String(vc.quorum_percentage));
@@ -42,7 +72,11 @@ export function GovernanceTab({ votingConfig }: GovernanceTabProps) {
     setCooldown(String(vc.proposer_cooldown_days));
     setMaxLive(String(vc.max_live_proposals));
     setAbstainQuorum(vc.abstain_counts_toward_quorum);
-  }, [votingConfig]); // eslint-disable-line react-hooks/exhaustive-deps
+    setQualificationThreshold(String(policy.qualification_threshold_percent));
+    setAntiSpamHours(String(policy.anti_spam_min_hours_between_proposals));
+    setOverrideTtlDays(String(policy.override_ttl_days));
+    setOverrideRequiresCouncilReview(policy.override_requires_council_review);
+  }, [votingConfig, governancePolicy]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const dirty =
     quorum !== String(vc.quorum_percentage) ||
@@ -51,10 +85,15 @@ export function GovernanceTab({ votingConfig }: GovernanceTabProps) {
     threshold !== String(vc.proposal_threshold_org) ||
     cooldown !== String(vc.proposer_cooldown_days) ||
     maxLive !== String(vc.max_live_proposals) ||
-    abstainQuorum !== vc.abstain_counts_toward_quorum;
+    abstainQuorum !== vc.abstain_counts_toward_quorum ||
+    qualificationThreshold !== String(policy.qualification_threshold_percent) ||
+    antiSpamHours !== String(policy.anti_spam_min_hours_between_proposals) ||
+    overrideTtlDays !== String(policy.override_ttl_days) ||
+    overrideRequiresCouncilReview !== policy.override_requires_council_review;
 
-  const handleSave = () => {
+  const handleSave = (reason: string) => {
     updateOrg.mutate({
+      reason,
       quorum_percentage: Number(quorum),
       approval_threshold: Number(approval),
       voting_duration_days: Number(duration),
@@ -62,6 +101,12 @@ export function GovernanceTab({ votingConfig }: GovernanceTabProps) {
       proposer_cooldown_days: Number(cooldown),
       max_live_proposals: Number(maxLive),
       abstain_counts_toward_quorum: abstainQuorum,
+      governance_policy: {
+        qualification_threshold_percent: Number(qualificationThreshold),
+        anti_spam_min_hours_between_proposals: Number(antiSpamHours),
+        override_ttl_days: Number(overrideTtlDays),
+        override_requires_council_review: overrideRequiresCouncilReview,
+      },
     });
   };
 
@@ -73,6 +118,10 @@ export function GovernanceTab({ votingConfig }: GovernanceTabProps) {
     setCooldown(String(vc.proposer_cooldown_days));
     setMaxLive(String(vc.max_live_proposals));
     setAbstainQuorum(vc.abstain_counts_toward_quorum);
+    setQualificationThreshold(String(policy.qualification_threshold_percent));
+    setAntiSpamHours(String(policy.anti_spam_min_hours_between_proposals));
+    setOverrideTtlDays(String(policy.override_ttl_days));
+    setOverrideRequiresCouncilReview(policy.override_requires_council_review);
   };
 
   return (
@@ -187,12 +236,81 @@ export function GovernanceTab({ votingConfig }: GovernanceTabProps) {
         </label>
       </SettingsField>
 
+      <SettingsField
+        label={t('governance.qualificationThreshold')}
+        description={t('governance.qualificationThresholdDescription')}
+      >
+        <div className="flex items-center gap-2">
+          <SettingsInput
+            type="number"
+            value={qualificationThreshold}
+            onChange={(e) => setQualificationThreshold(e.target.value)}
+            min={0}
+            max={100}
+            className="w-24"
+          />
+          <span className="text-sm text-gray-500">%</span>
+        </div>
+      </SettingsField>
+
+      <SettingsField
+        label={t('governance.antiSpamHours')}
+        description={t('governance.antiSpamHoursDescription')}
+      >
+        <div className="flex items-center gap-2">
+          <SettingsInput
+            type="number"
+            value={antiSpamHours}
+            onChange={(e) => setAntiSpamHours(e.target.value)}
+            min={0}
+            max={720}
+            className="w-24"
+          />
+          <span className="text-sm text-gray-500">{t('governance.hours')}</span>
+        </div>
+      </SettingsField>
+
+      <SettingsField
+        label={t('governance.overrideTtl')}
+        description={t('governance.overrideTtlDescription')}
+      >
+        <div className="flex items-center gap-2">
+          <SettingsInput
+            type="number"
+            value={overrideTtlDays}
+            onChange={(e) => setOverrideTtlDays(e.target.value)}
+            min={1}
+            max={30}
+            className="w-24"
+          />
+          <span className="text-sm text-gray-500">{t('governance.days')}</span>
+        </div>
+      </SettingsField>
+
+      <SettingsField
+        label={t('governance.overrideCouncilReview')}
+        description={t('governance.overrideCouncilReviewDescription')}
+      >
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={overrideRequiresCouncilReview}
+            onChange={(e) => setOverrideRequiresCouncilReview(e.target.checked)}
+            className="w-4 h-4 rounded border-gray-300 text-organic-orange focus:ring-organic-orange"
+          />
+          <span className="text-sm text-gray-700">{t('governance.overrideCouncilReviewLabel')}</span>
+        </label>
+      </SettingsField>
+
       <SettingsSaveBar
         dirty={dirty}
         saving={updateOrg.isPending}
         onSave={handleSave}
         onReset={handleReset}
         saveLabel={t('save')}
+        reasonLabel={t('auditReasonLabel')}
+        reasonPlaceholder={t('auditReasonPlaceholder')}
+        reasonHelp={t('auditReasonHelp')}
       />
     </div>
   );

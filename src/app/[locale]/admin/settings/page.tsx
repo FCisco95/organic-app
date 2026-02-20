@@ -66,7 +66,7 @@ export default function AdminSettingsPage() {
       case 'treasury':
         return <TreasuryTab org={org} />;
       case 'governance':
-        return <GovernanceTab votingConfig={org.voting_config} />;
+        return <GovernanceTab votingConfig={org.voting_config} governancePolicy={org.governance_policy} />;
       case 'sprints':
         return <SprintsTab org={org} />;
       case 'members':

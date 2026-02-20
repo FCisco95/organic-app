@@ -32,8 +32,9 @@ export function TokenTab({ org }: TokenTabProps) {
     tokenDecimals !== String(org.token_decimals) ||
     tokenTotalSupply !== String(org.token_total_supply);
 
-  const handleSave = () => {
+  const handleSave = (reason: string) => {
     updateOrg.mutate({
+      reason,
       token_symbol: tokenSymbol,
       token_mint: tokenMint || null,
       token_decimals: Number(tokenDecimals),
@@ -95,6 +96,9 @@ export function TokenTab({ org }: TokenTabProps) {
         onSave={handleSave}
         onReset={handleReset}
         saveLabel={t('save')}
+        reasonLabel={t('auditReasonLabel')}
+        reasonPlaceholder={t('auditReasonPlaceholder')}
+        reasonHelp={t('auditReasonHelp')}
       />
     </div>
   );
