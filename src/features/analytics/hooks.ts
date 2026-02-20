@@ -17,8 +17,8 @@ export function useAnalytics() {
       const json = await res.json();
       return json.data;
     },
-    staleTime: 300_000, // 5 minutes — analytics data is slow-changing
-    refetchInterval: 300_000,
+    staleTime: 120_000,
+    refetchInterval: 120_000,
     refetchOnWindowFocus: false,
   });
 }

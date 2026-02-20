@@ -17,8 +17,8 @@ export function useTreasury() {
       const json = await res.json();
       return json.data;
     },
-    staleTime: 300_000, // 5 minutes — on-chain data doesn't change that fast
-    refetchInterval: 300_000,
+    staleTime: 60_000,
+    refetchInterval: 60_000,
     refetchOnWindowFocus: false,
   });
 }

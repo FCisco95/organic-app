@@ -7,6 +7,40 @@ export interface AnalyticsKPIs {
   market_cap: number | null;
 }
 
+export interface ProposalThroughput30d {
+  created: number;
+  finalized: number;
+  passed: number;
+}
+
+export interface DisputeAggregate30d {
+  opened: number;
+  resolved: number;
+  unresolved: number;
+}
+
+export interface VoteParticipation30d {
+  eligible_voters: number;
+  voters_cast: number;
+  participation_rate: number;
+}
+
+export interface ActiveContributorSignals30d {
+  active_members: number;
+  task_submitters: number;
+  commenters: number;
+  voters: number;
+}
+
+export interface AnalyticsTrustMeta {
+  proposal_throughput_30d: ProposalThroughput30d;
+  dispute_aggregate_30d: DisputeAggregate30d;
+  vote_participation_30d: VoteParticipation30d;
+  active_contributor_signals_30d: ActiveContributorSignals30d;
+  updated_at: string;
+  refresh_interval_seconds: number;
+}
+
 export interface ActivityTrendPoint {
   day: string;
   task_events: number;
@@ -47,4 +81,5 @@ export interface AnalyticsData {
   task_completions: TaskCompletionPoint[];
   proposals_by_category: ProposalCategoryData[];
   voting_participation: VotingParticipationData[];
+  trust: AnalyticsTrustMeta;
 }

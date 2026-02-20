@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
 import { useAnalytics } from '@/features/analytics';
 import { KPICards } from '@/components/analytics/kpi-cards';
+import { Activity, TimerReset } from 'lucide-react';
 
 const ActivityTrendChart = dynamic(
   () => import('@/components/analytics/activity-trend-chart').then((mod) => mod.ActivityTrendChart),
@@ -34,6 +35,8 @@ const VotingParticipationList = dynamic(
 export default function AnalyticsPage() {
   const t = useTranslations('Analytics');
   const { data, isLoading } = useAnalytics();
+  const trust = data?.trust;
+  const updatedAtLabel = trust?.updated_at ? new Date(trust.updated_at).toLocaleString() : t('notAvailable');
 
   return (
     <PageContainer width="wide">
@@ -44,8 +47,38 @@ export default function AnalyticsPage() {
       </div>
 
       <div className="space-y-6">
+        <section
+          className="rounded-2xl border border-gray-200 bg-gradient-to-br from-white via-sky-50/30 to-orange-50/20 p-5"
+          data-testid="analytics-governance-health"
+        >
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-gray-700">
+                {t('governanceHealthTitle')}
+              </h2>
+              <p className="mt-1 text-sm text-gray-600">{t('governanceHealthDescription')}</p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <span
+                className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white px-2.5 py-1 text-[11px] text-gray-600"
+                data-testid="analytics-trust-updated"
+              >
+                <TimerReset className="h-3.5 w-3.5 text-gray-500" />
+                {t('updatedAt', { date: updatedAtLabel })}
+              </span>
+              <span
+                className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white px-2.5 py-1 text-[11px] text-gray-600"
+                data-testid="analytics-trust-cadence"
+              >
+                <Activity className="h-3.5 w-3.5 text-emerald-500" />
+                {t('refreshCadence', { seconds: trust?.refresh_interval_seconds ?? 120 })}
+              </span>
+            </div>
+          </div>
+        </section>
+
         {/* KPI Cards */}
-        <KPICards kpis={data?.kpis} loading={isLoading} />
+        <KPICards kpis={data?.kpis} trust={trust} loading={isLoading} />
 
         {/* Activity Trends — full width */}
         <ActivityTrendChart data={data?.activity_trends} loading={isLoading} />

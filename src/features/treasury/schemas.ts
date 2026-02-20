@@ -26,9 +26,34 @@ export const treasuryTransactionSchema = z.object({
   direction: z.enum(['in', 'out']),
 });
 
+export const treasuryEmissionPolicySchema = z.object({
+  settlement_emission_percent: z.number(),
+  settlement_fixed_cap_per_sprint: z.number(),
+  settlement_carryover_sprint_cap: z.number(),
+});
+
+export const treasuryLatestSettlementSchema = z.object({
+  sprint_id: z.string().nullable(),
+  status: z.enum(['pending', 'committed', 'held', 'killed']).nullable(),
+  committed_at: z.string().nullable(),
+  kill_switch_at: z.string().nullable(),
+  blocked_reason: z.string().nullable(),
+  emission_cap: z.number().nullable(),
+  carryover_amount: z.number().nullable(),
+});
+
+export const treasuryTrustMetaSchema = z.object({
+  emission_policy: treasuryEmissionPolicySchema,
+  latest_settlement: treasuryLatestSettlementSchema,
+  audit_log_link: z.string(),
+  updated_at: z.string(),
+  refresh_interval_seconds: z.number(),
+});
+
 export const treasuryDataSchema = z.object({
   balances: treasuryBalanceSchema,
   allocations: z.array(treasuryAllocationSchema),
   transactions: z.array(treasuryTransactionSchema),
   wallet_address: z.string(),
+  trust: treasuryTrustMetaSchema,
 });

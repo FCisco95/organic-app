@@ -1,9 +1,15 @@
 import { NextResponse } from 'next/server';
 import { PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { getConnection, getTokenBalance } from '@/lib/solana';
+import { createAnonClient } from '@/lib/supabase/server';
 import { TOKEN_CONFIG, TREASURY_ALLOCATIONS } from '@/config/token';
 import type { TreasuryTransaction } from '@/features/treasury/types';
 import { logger } from '@/lib/logger';
+import {
+  DEFAULT_SETTLEMENT_EMISSION_PERCENT,
+  DEFAULT_SETTLEMENT_FIXED_CAP,
+  MAX_SETTLEMENT_CARRYOVER_SPRINTS,
+} from '@/features/rewards/settlement';
 import {
   buildMarketDataHeaders,
   getMarketPriceSnapshot,
@@ -19,6 +25,15 @@ const TRANSACTION_CACHE_TTL = 10 * 60_000;
 const TRANSACTION_RATE_LIMIT_BACKOFF_MS = 5 * 60_000;
 const TRANSACTION_FETCH_TIMEOUT_MS = 2_500;
 const RESPONSE_CACHE_CONTROL = 'public, s-maxage=60, stale-while-revalidate=120';
+
+function parseNumeric(value: unknown): number | null {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value === 'string' && value.trim().length > 0) {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return null;
+}
 
 function isRpcRateLimitError(error: unknown): boolean {
   if (typeof error === 'string') {
@@ -108,13 +123,37 @@ export async function GET() {
     const wallet = TOKEN_CONFIG.treasuryWallet;
     const connection = getConnection();
     const pubkey = new PublicKey(wallet);
+    const supabase = createAnonClient();
 
-    const [solBalance, orgBalance, solPriceSnapshot, orgPriceSnapshot, transactions] = await Promise.all([
+    const [
+      solBalance,
+      orgBalance,
+      solPriceSnapshot,
+      orgPriceSnapshot,
+      transactions,
+      orgConfigResult,
+      latestSettlementResult,
+    ] = await Promise.all([
       connection.getBalance(pubkey),
       getTokenBalance(wallet),
       getMarketPriceSnapshot('sol_price'),
       getMarketPriceSnapshot('org_price'),
       getRecentTransactionsWithTimeout(wallet),
+      supabase
+        .from('orgs')
+        .select('rewards_config')
+        .order('created_at', { ascending: true })
+        .limit(1)
+        .maybeSingle(),
+      supabase
+        .from('sprints')
+        .select(
+          'id, reward_settlement_status, reward_settlement_committed_at, reward_settlement_kill_switch_at, settlement_blocked_reason, reward_emission_cap, reward_carryover_amount, updated_at'
+        )
+        .not('reward_settlement_status', 'is', null)
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        .maybeSingle(),
     ]);
 
     const solPrice = solPriceSnapshot.value;
@@ -132,6 +171,22 @@ export async function GET() {
       amount_usd: totalUsd != null ? (totalUsd * a.percentage) / 100 : null,
     }));
 
+    const rewardsConfig =
+      orgConfigResult.data?.rewards_config && typeof orgConfigResult.data.rewards_config === 'object'
+        ? (orgConfigResult.data.rewards_config as Record<string, unknown>)
+        : {};
+
+    const settlementEmissionPercentRaw = parseNumeric(rewardsConfig.settlement_emission_percent);
+    const settlementFixedCapRaw = parseNumeric(rewardsConfig.settlement_fixed_cap_per_sprint);
+    const settlementCarryoverRaw = parseNumeric(rewardsConfig.settlement_carryover_sprint_cap);
+
+    const settlementCarryoverCap =
+      settlementCarryoverRaw != null
+        ? Math.max(1, Math.min(MAX_SETTLEMENT_CARRYOVER_SPRINTS, Math.trunc(settlementCarryoverRaw)))
+        : MAX_SETTLEMENT_CARRYOVER_SPRINTS;
+
+    const latestSettlement = latestSettlementResult.data;
+
     const data = {
       balances: {
         sol: solAmount,
@@ -143,6 +198,34 @@ export async function GET() {
       allocations,
       transactions,
       wallet_address: wallet,
+      trust: {
+        emission_policy: {
+          settlement_emission_percent:
+            settlementEmissionPercentRaw != null
+              ? settlementEmissionPercentRaw
+              : DEFAULT_SETTLEMENT_EMISSION_PERCENT,
+          settlement_fixed_cap_per_sprint:
+            settlementFixedCapRaw != null ? settlementFixedCapRaw : DEFAULT_SETTLEMENT_FIXED_CAP,
+          settlement_carryover_sprint_cap: settlementCarryoverCap,
+        },
+        latest_settlement: {
+          sprint_id: latestSettlement?.id ?? null,
+          status: (latestSettlement?.reward_settlement_status as
+            | 'pending'
+            | 'committed'
+            | 'held'
+            | 'killed'
+            | null) ?? null,
+          committed_at: latestSettlement?.reward_settlement_committed_at ?? null,
+          kill_switch_at: latestSettlement?.reward_settlement_kill_switch_at ?? null,
+          blocked_reason: latestSettlement?.settlement_blocked_reason ?? null,
+          emission_cap: latestSettlement?.reward_emission_cap ?? null,
+          carryover_amount: latestSettlement?.reward_carryover_amount ?? null,
+        },
+        audit_log_link: '/admin/settings',
+        updated_at: new Date().toISOString(),
+        refresh_interval_seconds: 60,
+      },
     };
 
     const response = { data };

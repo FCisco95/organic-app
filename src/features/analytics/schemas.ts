@@ -42,6 +42,40 @@ export const votingParticipationDataSchema = z.object({
   abstain_votes: z.number(),
 });
 
+export const proposalThroughput30dSchema = z.object({
+  created: z.number(),
+  finalized: z.number(),
+  passed: z.number(),
+});
+
+export const disputeAggregate30dSchema = z.object({
+  opened: z.number(),
+  resolved: z.number(),
+  unresolved: z.number(),
+});
+
+export const voteParticipation30dSchema = z.object({
+  eligible_voters: z.number(),
+  voters_cast: z.number(),
+  participation_rate: z.number(),
+});
+
+export const activeContributorSignals30dSchema = z.object({
+  active_members: z.number(),
+  task_submitters: z.number(),
+  commenters: z.number(),
+  voters: z.number(),
+});
+
+export const analyticsTrustMetaSchema = z.object({
+  proposal_throughput_30d: proposalThroughput30dSchema,
+  dispute_aggregate_30d: disputeAggregate30dSchema,
+  vote_participation_30d: voteParticipation30dSchema,
+  active_contributor_signals_30d: activeContributorSignals30dSchema,
+  updated_at: z.string(),
+  refresh_interval_seconds: z.number(),
+});
+
 export const analyticsDataSchema = z.object({
   kpis: analyticsKPIsSchema,
   activity_trends: z.array(activityTrendPointSchema),
@@ -49,4 +83,5 @@ export const analyticsDataSchema = z.object({
   task_completions: z.array(taskCompletionPointSchema),
   proposals_by_category: z.array(proposalCategoryDataSchema),
   voting_participation: z.array(votingParticipationDataSchema),
+  trust: analyticsTrustMetaSchema,
 });
