@@ -11,9 +11,11 @@ export const reviewClaimSchema = z.object({
 
 export const payClaimSchema = z.object({
   tx_signature: z.string().min(1, 'Transaction signature is required'),
+  idempotency_key: z.string().min(8).max(128).optional(),
 });
 
 export const manualDistributionSchema = z.object({
+  idempotency_key: z.string().min(8).max(128).optional(),
   distributions: z
     .array(
       z.object({

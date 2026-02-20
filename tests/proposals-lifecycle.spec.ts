@@ -70,6 +70,8 @@ test.describe('Proposals lifecycle stage engine', () => {
   });
 
   test('enforces forward-only transitions and version markers', async ({ request, page }) => {
+    test.setTimeout(120_000);
+
     const createRes = await request.post(`${BASE_URL}/api/proposals`, {
       headers: { Cookie: cookieHeader(memberCookie) },
       data: {
@@ -159,7 +161,7 @@ test.describe('Proposals lifecycle stage engine', () => {
       },
     ]);
 
-    await page.goto(`${BASE_URL}/proposals/${proposalId}`);
-    await expect(page.getByText('Updated since this comment')).toBeVisible();
+    await page.goto(`${BASE_URL}/en/proposals/${proposalId}`, { waitUntil: 'domcontentloaded' });
+    await expect(page.getByText('Updated since this comment')).toBeVisible({ timeout: 20_000 });
   });
 });

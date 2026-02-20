@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createHash } from 'node:crypto';
 import { createClient } from '@/lib/supabase/server';
 import { manualDistributionSchema } from '@/features/rewards/schemas';
 import { parseJsonBody } from '@/lib/parse-json-body';
@@ -40,16 +41,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { distributions } = parsed.data;
+    const { distributions, idempotency_key } = parsed.data;
+    const dedupeSeed = idempotency_key ?? createHash('sha256')
+      .update(
+        JSON.stringify(
+          distributions.map((entry) => ({
+            user_id: entry.user_id,
+            token_amount: entry.token_amount,
+            category: entry.category,
+            reason: entry.reason.trim(),
+          }))
+        )
+      )
+      .digest('hex')
+      .slice(0, 24);
+    const dedupePrefix = `manual:${user.id}:${dedupeSeed}`;
 
     // Insert all distributions
-    const rows = distributions.map((d) => ({
+    const rows = distributions.map((d, index) => ({
       user_id: d.user_id,
       type: 'manual' as const,
       token_amount: d.token_amount,
       category: d.category,
       reason: d.reason,
       created_by: user.id,
+      idempotency_key: `${dedupePrefix}:${index}`,
     }));
 
     const { data: created, error: insertError } = await supabase
@@ -59,6 +75,12 @@ export async function POST(request: NextRequest) {
 
     if (insertError) {
       logger.error('Manual distribution error:', insertError);
+      if (insertError.code === '23505') {
+        return NextResponse.json(
+          { error: 'Duplicate manual distribution request detected' },
+          { status: 409 }
+        );
+      }
       return NextResponse.json({ error: 'Failed to create distributions' }, { status: 500 });
     }
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Gift, Coins, Clock, ArrowRight } from 'lucide-react';
+import { Gift, Coins, Clock, ArrowRight, CheckCircle2, ShieldAlert } from 'lucide-react';
 import type { UserRewardsInfo } from '@/features/rewards';
 
 interface RewardsOverviewProps {
@@ -17,6 +17,14 @@ export function RewardsOverview({ rewards, onClaim }: RewardsOverviewProps) {
     rewards.rewards_enabled &&
     rewards.claimable_points >= rewards.min_threshold &&
     (!rewards.claim_requires_wallet || !!rewards.wallet_address);
+
+  const settlementStatus = rewards.latest_reward_settlement_status;
+  const settlementReason = rewards.latest_reward_settlement_reason;
+  const settlementBlocked = settlementStatus === 'held' || settlementStatus === 'killed';
+  const SettlementIcon = settlementBlocked ? ShieldAlert : CheckCircle2;
+  const settlementStatusLabel = settlementStatus
+    ? t(`overview.settlementStatus.${settlementStatus}`)
+    : t('overview.settlementStatus.unknown');
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-6">
@@ -81,6 +89,38 @@ export function RewardsOverview({ rewards, onClaim }: RewardsOverviewProps) {
           </span>
         )}
       </div>
+
+      {settlementStatus && (
+        <div
+          className={`flex items-start gap-3 border rounded-lg px-4 py-3 mb-4 ${
+            settlementBlocked
+              ? 'bg-amber-50 border-amber-200 text-amber-800'
+              : 'bg-emerald-50 border-emerald-200 text-emerald-800'
+          }`}
+        >
+          <SettlementIcon className="w-4 h-4 mt-0.5" />
+          <div className="space-y-1">
+            <p className="text-sm font-medium">
+              {t('overview.settlementIntegrity')}: {settlementStatusLabel}
+            </p>
+            <p className="text-xs opacity-80">
+              {t('overview.settlementCapAndCarryover', {
+                cap: rewards.latest_reward_emission_cap.toLocaleString(undefined, {
+                  maximumFractionDigits: 4,
+                }),
+                carryover: rewards.latest_reward_carryover_amount.toLocaleString(undefined, {
+                  maximumFractionDigits: 4,
+                }),
+              })}
+            </p>
+            {settlementReason && (
+              <p className="text-xs opacity-80">
+                {t('overview.settlementReason', { reason: settlementReason })}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Claim Button */}
       <button

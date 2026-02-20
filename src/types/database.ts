@@ -1240,6 +1240,9 @@ export type Database = {
           created_at: string
           created_by: string | null
           id: string
+          idempotency_key: string | null
+          integrity_hold: boolean
+          integrity_reason: string | null
           points_earned: number | null
           reason: string | null
           sprint_id: string | null
@@ -1253,6 +1256,9 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           id?: string
+          idempotency_key?: string | null
+          integrity_hold?: boolean
+          integrity_reason?: string | null
           points_earned?: number | null
           reason?: string | null
           sprint_id?: string | null
@@ -1266,6 +1272,9 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           id?: string
+          idempotency_key?: string | null
+          integrity_hold?: boolean
+          integrity_reason?: string | null
           points_earned?: number | null
           reason?: string | null
           sprint_id?: string | null
@@ -1283,6 +1292,71 @@ export type Database = {
           },
           {
             foreignKeyName: "reward_distributions_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "sprints"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reward_settlement_events: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          event_type: string
+          id: string
+          idempotency_key: string
+          metadata: Json
+          org_id: string | null
+          reason: string
+          sprint_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          event_type: string
+          id?: string
+          idempotency_key: string
+          metadata?: Json
+          org_id?: string | null
+          reason: string
+          sprint_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          event_type?: string
+          id?: string
+          idempotency_key?: string
+          metadata?: Json
+          org_id?: string | null
+          reason?: string
+          sprint_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reward_settlement_events_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reward_settlement_events_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reward_settlement_events_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "orgs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reward_settlement_events_sprint_id_fkey"
             columns: ["sprint_id"]
             isOneToOne: false
             referencedRelation: "sprints"
@@ -1374,6 +1448,13 @@ export type Database = {
           name: string
           org_id: string | null
           review_started_at: string | null
+          reward_carryover_amount: number
+          reward_carryover_sprint_count: number
+          reward_emission_cap: number
+          reward_settlement_committed_at: string | null
+          reward_settlement_idempotency_key: string | null
+          reward_settlement_kill_switch_at: string | null
+          reward_settlement_status: string
           reward_pool: number | null
           settlement_blocked_reason: string | null
           settlement_integrity_flags: Json
@@ -1395,6 +1476,13 @@ export type Database = {
           name: string
           org_id?: string | null
           review_started_at?: string | null
+          reward_carryover_amount?: number
+          reward_carryover_sprint_count?: number
+          reward_emission_cap?: number
+          reward_settlement_committed_at?: string | null
+          reward_settlement_idempotency_key?: string | null
+          reward_settlement_kill_switch_at?: string | null
+          reward_settlement_status?: string
           reward_pool?: number | null
           settlement_blocked_reason?: string | null
           settlement_integrity_flags?: Json
@@ -1416,6 +1504,13 @@ export type Database = {
           name?: string
           org_id?: string | null
           review_started_at?: string | null
+          reward_carryover_amount?: number
+          reward_carryover_sprint_count?: number
+          reward_emission_cap?: number
+          reward_settlement_committed_at?: string | null
+          reward_settlement_idempotency_key?: string | null
+          reward_settlement_kill_switch_at?: string | null
+          reward_settlement_status?: string
           reward_pool?: number | null
           settlement_blocked_reason?: string | null
           settlement_integrity_flags?: Json
@@ -2611,6 +2706,14 @@ export type Database = {
           escalated_count: number
           extended_count: number
         }[]
+      }
+      commit_sprint_reward_settlement: {
+        Args: {
+          p_actor_id?: string
+          p_reason?: string
+          p_sprint_id: string
+        }
+        Returns: Json
       }
       sweep_overdue_dispute_reviewer_sla: {
         Args: { p_extension_hours?: number }

@@ -6,7 +6,7 @@ import { updateSprintSchema } from '@/features/sprints/schemas';
 import { logger } from '@/lib/logger';
 
 const SPRINT_COLUMNS =
-  'id, org_id, name, start_at, end_at, status, capacity_points, goal, active_started_at, review_started_at, dispute_window_started_at, dispute_window_ends_at, settlement_started_at, settlement_integrity_flags, settlement_blocked_reason, completed_at, created_at, updated_at';
+  'id, org_id, name, start_at, end_at, status, capacity_points, goal, active_started_at, review_started_at, dispute_window_started_at, dispute_window_ends_at, settlement_started_at, settlement_integrity_flags, settlement_blocked_reason, reward_settlement_status, reward_settlement_committed_at, reward_settlement_idempotency_key, reward_settlement_kill_switch_at, reward_emission_cap, reward_carryover_amount, reward_carryover_sprint_count, completed_at, created_at, updated_at';
 const SPRINT_SNAPSHOT_COLUMNS =
   'id, sprint_id, completed_by, completed_at, total_tasks, completed_tasks, incomplete_tasks, total_points, completed_points, completion_rate, task_summary, incomplete_action, created_at';
 

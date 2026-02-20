@@ -26,6 +26,8 @@ export const DISTRIBUTION_TYPE_LABELS: Record<DistributionType, string> = {
   claim: 'Claim Payout',
 };
 
+export type RewardSettlementStatus = 'pending' | 'committed' | 'held' | 'killed';
+
 export type DistributionCategory =
   | 'epoch_reward'
   | 'bonus'
@@ -92,9 +94,14 @@ export interface RewardDistribution {
   reason: string | null;
   created_by: string | null;
   created_at: string;
+  idempotency_key?: string | null;
+  integrity_hold?: boolean;
+  integrity_reason?: string | null;
   // Joined fields (optional)
   user_name?: string | null;
   sprint_name?: string | null;
+  reward_settlement_status?: RewardSettlementStatus | null;
+  reward_settlement_reason?: string | null;
 }
 
 // ─── Composite Types ────────────────────────────────────────────────
@@ -110,6 +117,11 @@ export interface UserRewardsInfo {
   wallet_address: string | null;
   rewards_enabled: boolean;
   claim_requires_wallet: boolean;
+  latest_reward_settlement_status: RewardSettlementStatus | null;
+  latest_reward_settlement_reason: string | null;
+  latest_reward_settlement_at: string | null;
+  latest_reward_emission_cap: number;
+  latest_reward_carryover_amount: number;
 }
 
 export interface RewardsSummary {

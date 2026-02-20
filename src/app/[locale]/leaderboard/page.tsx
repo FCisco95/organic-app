@@ -1,51 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useAuth } from '@/features/auth/context';
 
-import { Trophy, Medal, Award, User, Star, TrendingUp } from 'lucide-react';
+import { Trophy, Medal, Award, Star, TrendingUp } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
 import { LevelBadge } from '@/components/reputation/level-badge';
-import { formatXp } from '@/features/reputation';
-
-type LeaderboardEntry = {
-  id: string;
-  name: string | null;
-  email: string;
-  organic_id: number | null;
-  avatar_url: string | null;
-  total_points: number;
-  tasks_completed: number;
-  role: string;
-  rank: number;
-  xp_total: number | null;
-  level: number | null;
-  current_streak: number | null;
-};
+import { formatXp, useLeaderboard, type LeaderboardEntry } from '@/features/reputation';
 
 export default function LeaderboardPage() {
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
   const t = useTranslations('Leaderboard');
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchLeaderboard();
-  }, []);
-
-  const fetchLeaderboard = async () => {
-    try {
-      const response = await fetch('/api/leaderboard');
-      const data = await response.json();
-      setLeaderboard(data.leaderboard || []);
-    } catch (error) {
-      console.error('Error fetching leaderboard:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: leaderboard = [], isLoading: loading } = useLeaderboard();
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
@@ -113,9 +80,12 @@ export default function LeaderboardPage() {
               </div>
             </div>
             <div className="text-right">
-              <p className="text-sm text-gray-600">{t('yourPoints')}</p>
+              <p className="text-sm text-gray-600">{t('yourXp')}</p>
               <p className="font-bold text-organic-orange text-xl">
-                {t('pointsLabel', { points: currentUserRank.total_points })}
+                {t('xpLabel', { xp: formatXp(currentUserRank.xp_total) })}
+              </p>
+              <p className="text-xs text-gray-500">
+                {t('pointsSecondaryLabel', { points: currentUserRank.total_points })}
               </p>
             </div>
           </div>
@@ -130,7 +100,7 @@ export default function LeaderboardPage() {
           <div className="col-span-4">{t('tableMember')}</div>
           <div className="col-span-2 text-center">{t('tableLevel')}</div>
           <div className="col-span-2 text-center">{t('tableTasks')}</div>
-          <div className="col-span-3 text-right">{t('tablePoints')}</div>
+          <div className="col-span-3 text-right">{t('tableXp')}</div>
         </div>
 
         {/* Leaderboard Entries */}
@@ -198,9 +168,7 @@ export default function LeaderboardPage() {
                     {entry.level != null && entry.level > 0 && (
                       <LevelBadge level={entry.level} size="sm" />
                     )}
-                    {entry.xp_total != null && (
-                      <span className="text-xs text-gray-400">{formatXp(entry.xp_total)}</span>
-                    )}
+                    <span className="text-xs text-gray-400">{formatXp(entry.xp_total)}</span>
                   </div>
 
                   {/* Tasks Completed */}
@@ -212,7 +180,7 @@ export default function LeaderboardPage() {
 
                   {/* Points */}
                   <div className="col-span-3 text-right">
-                    <span
+                    <p
                       className={`font-bold text-lg ${
                         entry.rank === 1
                           ? 'text-yellow-600'
@@ -223,8 +191,11 @@ export default function LeaderboardPage() {
                               : 'text-gray-900'
                       }`}
                     >
-                      {t('pointsLabel', { points: entry.total_points })}
-                    </span>
+                      {t('xpLabel', { xp: formatXp(entry.xp_total) })}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {t('pointsSecondaryLabel', { points: entry.total_points })}
+                    </p>
                   </div>
                 </div>
               );
@@ -235,12 +206,12 @@ export default function LeaderboardPage() {
 
       {/* Info Box */}
       <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h4 className="font-medium text-blue-900 mb-2">{t('howPointsTitle')}</h4>
+        <h4 className="font-medium text-blue-900 mb-2">{t('howRankingTitle')}</h4>
         <ul className="text-sm text-blue-700 space-y-1">
-          <li>{t('howPointsItem1')}</li>
-          <li>{t('howPointsItem2')}</li>
-          <li>{t('howPointsItem3')}</li>
-          <li>{t('howPointsItem4')}</li>
+          <li>{t('howRankingItem1')}</li>
+          <li>{t('howRankingItem2')}</li>
+          <li>{t('howRankingItem3')}</li>
+          <li>{t('howRankingItem4')}</li>
         </ul>
       </div>
     </PageContainer>

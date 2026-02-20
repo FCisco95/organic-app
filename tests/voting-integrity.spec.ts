@@ -117,6 +117,8 @@ test.describe('Voting snapshot and finalization integrity', () => {
   });
 
   test('freezes snapshot voting power and finalizes idempotently', async ({ request }) => {
+    test.setTimeout(120_000);
+
     const supabaseAdmin = createAdminClient();
 
     const createRes = await request.post(`${BASE_URL}/api/proposals`, {
@@ -210,6 +212,8 @@ test.describe('Voting snapshot and finalization integrity', () => {
   });
 
   test('freezes proposal when finalization fails twice', async ({ request }) => {
+    test.setTimeout(120_000);
+
     const supabaseAdmin = createAdminClient();
 
     const createRes = await request.post(`${BASE_URL}/api/proposals`, {

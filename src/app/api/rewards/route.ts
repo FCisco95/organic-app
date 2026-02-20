@@ -95,6 +95,22 @@ export async function GET() {
       0
     );
 
+    const { data: latestSettlement } = await supabase
+      .from('sprints')
+      .select(
+        'reward_settlement_status, settlement_blocked_reason, reward_settlement_committed_at, reward_settlement_kill_switch_at, reward_emission_cap, reward_carryover_amount, updated_at'
+      )
+      .in('status', ['settlement', 'completed'])
+      .order('updated_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    const latestSettlementAt =
+      latestSettlement?.reward_settlement_committed_at ??
+      latestSettlement?.reward_settlement_kill_switch_at ??
+      latestSettlement?.updated_at ??
+      null;
+
     return NextResponse.json({
       claimable_points: profile.claimable_points,
       total_points: profile.total_points,
@@ -106,6 +122,11 @@ export async function GET() {
       wallet_address: profile.wallet_pubkey,
       rewards_enabled: config.enabled,
       claim_requires_wallet: config.claim_requires_wallet,
+      latest_reward_settlement_status: latestSettlement?.reward_settlement_status ?? null,
+      latest_reward_settlement_reason: latestSettlement?.settlement_blocked_reason ?? null,
+      latest_reward_settlement_at: latestSettlementAt,
+      latest_reward_emission_cap: Number(latestSettlement?.reward_emission_cap ?? 0),
+      latest_reward_carryover_amount: Number(latestSettlement?.reward_carryover_amount ?? 0),
     });
   } catch (err) {
     logger.error('Rewards GET error:', err);

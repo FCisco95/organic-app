@@ -72,7 +72,7 @@ test.describe('Sprint lifecycle', () => {
     const { data: active } = await supabaseAdmin
       .from('sprints')
       .select('id')
-      .eq('status', 'active')
+      .in('status', ['active', 'review', 'dispute_window', 'settlement'])
       .limit(1)
       .maybeSingle();
     canStart = !active;

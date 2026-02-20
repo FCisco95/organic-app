@@ -2,6 +2,82 @@
 
 Add newest entries at the top.
 
+## 2026-02-20 (Session: Governance integrity Task 7 implementation)
+
+### Summary
+
+Implemented Task 7 from `docs/plans/2026-02-20-core-features-revamp-test-implementation-plan.md` (XP-first leaderboard revamp), including DB ranking semantics, API-level deterministic ranking fallback, leaderboard hook/type additions, and XP-priority UX copy updates.
+
+### Implementation highlights
+
+- Added migration: `supabase/migrations/20260220120000_xp_leaderboard_view_refresh.sql`
+  - refreshed `leaderboard_view` ranking to XP-first ordering with deterministic tie-breakers (`xp_total`, `total_points`, `tasks_completed`, `id`)
+  - refreshes `leaderboard_materialized` when present.
+- Updated leaderboard API:
+  - `src/app/api/leaderboard/route.ts` now:
+    - orders leaderboard rows by XP-first posture,
+    - computes rank deterministically in server code,
+    - falls back from `leaderboard_materialized` to `leaderboard_view` on query failure,
+    - supports `?fresh=1` to bypass `unstable_cache` for deterministic test runs.
+- Updated reputation domain layer:
+  - `src/features/reputation/types.ts` now includes `LeaderboardEntry` types and XP-first ranking helpers.
+  - `src/features/reputation/hooks.ts` now includes `useLeaderboard`.
+- Updated leaderboard/reputation UI:
+  - `src/app/[locale]/leaderboard/page.tsx` now consumes `useLeaderboard` and presents XP as primary metric, points as secondary context.
+  - `src/components/reputation/reputation-summary.tsx` now includes points-as-tie-break context and XP-priority hint.
+  - i18n updates in `messages/en.json`, `messages/pt-PT.json`, `messages/zh-CN.json`.
+- Added tests:
+  - `src/features/reputation/__tests__/leaderboard-ordering.test.ts`
+  - `tests/leaderboard-xp-priority.spec.ts`
+
+### Validation evidence
+
+- `npm run lint`: pass.
+- `npm run build`: pass.
+- `npx playwright test tests/leaderboard-xp-priority.spec.ts --workers=1`: blocked in this environment due external DNS/network resolution to Supabase (`getaddrinfo EAI_AGAIN ...supabase.co`).
+
+## 2026-02-20 (Session: Governance integrity Task 6 implementation)
+
+### Summary
+
+Implemented Task 6 from `docs/plans/2026-02-20-core-features-revamp-test-implementation-plan.md` (Rewards Settlement and Emission Safety), including DB-level settlement integrity controls, append-only reward settlement ledger events, payout idempotency hardening, sprint settlement orchestration updates, and rewards UX integrity visibility.
+
+### Implementation highlights
+
+- Added migration: `supabase/migrations/20260220113000_rewards_settlement_integrity.sql`
+  - new settlement integrity metadata fields on `sprints`,
+  - append-only `reward_settlement_events` with immutable update/delete guards,
+  - distribution idempotency fields on `reward_distributions`,
+  - settlement commit RPC: `commit_sprint_reward_settlement` (emission cap, carryover policy, debt prohibition, integrity hold, kill-switch).
+- Updated sprint completion orchestration:
+  - `src/app/api/sprints/[id]/complete/route.ts` now commits reward settlement integrity before closure and returns explicit settlement hold payloads.
+- Updated reward APIs:
+  - `src/app/api/rewards/route.ts` now returns latest settlement posture fields for UI.
+  - `src/app/api/rewards/distributions/route.ts` now enriches epoch rows with settlement integrity status/reason.
+  - `src/app/api/rewards/distributions/manual/route.ts` now applies deterministic dedupe keys and returns `409` for duplicate inserts.
+  - `src/app/api/rewards/claims/[id]/pay/route.ts` now blocks duplicate payout distributions per claim.
+- Updated rewards domain and UI:
+  - Added settlement policy helpers: `src/features/rewards/settlement.ts`.
+  - Added unit coverage: `src/features/rewards/__tests__/settlement.test.ts`.
+  - Added e2e coverage scaffold: `tests/rewards-settlement-integrity.spec.ts`.
+  - `src/components/rewards/rewards-overview.tsx` now surfaces settlement status/cap/carryover/hold reason.
+  - `src/components/rewards/distributions-table.tsx` now displays settlement posture for epoch payouts.
+- Updated supporting surfaces:
+  - `src/features/rewards/schemas.ts`, `src/features/rewards/types.ts`, `src/features/rewards/index.ts`
+  - `src/features/sprints/hooks.ts`, `src/app/api/sprints/route.ts`, `src/app/api/sprints/[id]/route.ts`, `src/app/api/sprints/[id]/start/route.ts`
+  - `src/types/database.ts`
+  - `messages/en.json`, `messages/pt-PT.json`, `messages/zh-CN.json`
+
+### Validation evidence
+
+- `npm run lint`: pass.
+- `npm run build`: pass (non-fatal existing leaderboard revalidation warning appears during build in this environment).
+- `npx playwright test tests/rewards-settlement-integrity.spec.ts tests/rewards.spec.ts --workers=1`: pass with partial execution (6 passed, 2 skipped due in-flight sprint guard in the Task 6 integrity spec).
+
+### Follow-up fix (same day)
+
+- Added migration `supabase/migrations/20260220114500_rewards_settlement_integrity_lock_fix.sql` to update `commit_sprint_reward_settlement` from `FOR UPDATE` to `FOR UPDATE OF s`, resolving Postgres error `0A000: FOR UPDATE cannot be applied to the nullable side of an outer join`.
+
 ## 2026-02-20 (Session: Governance integrity Task 5 implementation)
 
 ### Summary

@@ -82,14 +82,30 @@ export async function GET(request: NextRequest) {
       userMap = new Map((users ?? []).map((userProfile) => [userProfile.id, { name: userProfile.name }]));
     }
 
-    let sprintMap = new Map<string, { name: string | null }>();
+    let sprintMap = new Map<
+      string,
+      {
+        name: string | null;
+        reward_settlement_status: string | null;
+        settlement_blocked_reason: string | null;
+      }
+    >();
     if (sprintIds.length > 0) {
       const { data: sprints } = await supabase
         .from('sprints')
-        .select('id, name')
+        .select('id, name, reward_settlement_status, settlement_blocked_reason')
         .in('id', sprintIds);
 
-      sprintMap = new Map((sprints ?? []).map((sprint) => [sprint.id, { name: sprint.name }]));
+      sprintMap = new Map(
+        (sprints ?? []).map((sprint) => [
+          sprint.id,
+          {
+            name: sprint.name,
+            reward_settlement_status: sprint.reward_settlement_status,
+            settlement_blocked_reason: sprint.settlement_blocked_reason,
+          },
+        ])
+      );
     }
 
     const mapped = (distributions ?? []).map((d) => {
@@ -99,6 +115,8 @@ export async function GET(request: NextRequest) {
         ...d,
         user_name: userInfo?.name ?? null,
         sprint_name: sprintInfo?.name ?? null,
+        reward_settlement_status: sprintInfo?.reward_settlement_status ?? null,
+        reward_settlement_reason: sprintInfo?.settlement_blocked_reason ?? null,
       };
     });
 

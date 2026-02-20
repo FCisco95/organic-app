@@ -6,6 +6,8 @@ import type {
   AchievementWithStatus,
   XpEvent,
   CheckLevelUpResponse,
+  LeaderboardEntry,
+  LeaderboardResponse,
 } from './types';
 
 // ─── Query Key Factory ─────────────────────────────────────────────────
@@ -14,6 +16,8 @@ export const reputationKeys = {
   all: ['reputation'] as const,
   user: (userId?: string) => [...reputationKeys.all, 'user', userId ?? 'me'] as const,
   achievements: (userId?: string) => [...reputationKeys.all, 'achievements', userId ?? 'me'] as const,
+  leaderboard: (fresh?: boolean) =>
+    [...reputationKeys.all, 'leaderboard', fresh ? 'fresh' : 'cached'] as const,
   xpHistory: (userId?: string, limit?: number) =>
     [...reputationKeys.all, 'xp-history', userId ?? 'me', limit] as const,
   levelUp: () => [...reputationKeys.all, 'level-up'] as const,
@@ -48,6 +52,25 @@ export function useAchievements(userId?: string, options?: { enabled?: boolean }
       return data.achievements;
     },
     staleTime: 60_000,
+    enabled: options?.enabled,
+  });
+}
+
+// ─── useLeaderboard ────────────────────────────────────────────────────
+
+export function useLeaderboard(options?: { enabled?: boolean; fresh?: boolean }) {
+  const fresh = options?.fresh === true;
+  const querySuffix = fresh ? '?fresh=1' : '';
+
+  return useQuery({
+    queryKey: reputationKeys.leaderboard(fresh),
+    queryFn: async (): Promise<LeaderboardEntry[]> => {
+      const res = await fetch(`/api/leaderboard${querySuffix}`);
+      if (!res.ok) throw new Error('Failed to fetch leaderboard');
+      const data: LeaderboardResponse = await res.json();
+      return data.leaderboard ?? [];
+    },
+    staleTime: fresh ? 0 : 30_000,
     enabled: options?.enabled,
   });
 }

@@ -134,6 +134,68 @@ export interface UserReputation {
   recent_achievements: AchievementWithStatus[];
 }
 
+// ─── Leaderboard (XP-first posture) ───────────────────────────────────────
+
+export interface LeaderboardEntry {
+  id: string;
+  name: string | null;
+  email: string;
+  organic_id: number | null;
+  avatar_url: string | null;
+  total_points: number;
+  tasks_completed: number;
+  role: string;
+  rank: number;
+  xp_total: number;
+  level: number | null;
+  current_streak: number | null;
+}
+
+export interface LeaderboardResponse {
+  leaderboard: LeaderboardEntry[];
+}
+
+type LeaderboardSortInput = Pick<LeaderboardEntry, 'id' | 'xp_total' | 'total_points' | 'tasks_completed'>;
+
+function toNonNegativeNumber(value: number | null | undefined): number {
+  if (typeof value !== 'number' || Number.isNaN(value)) {
+    return 0;
+  }
+  return Math.max(0, value);
+}
+
+/**
+ * Sort order for public leaderboard:
+ * 1) XP total (desc), 2) points (desc), 3) tasks completed (desc), 4) id (asc).
+ */
+export function compareLeaderboardEntries(
+  left: LeaderboardSortInput,
+  right: LeaderboardSortInput
+): number {
+  const xpDiff = toNonNegativeNumber(right.xp_total) - toNonNegativeNumber(left.xp_total);
+  if (xpDiff !== 0) return xpDiff;
+
+  const pointsDiff =
+    toNonNegativeNumber(right.total_points) - toNonNegativeNumber(left.total_points);
+  if (pointsDiff !== 0) return pointsDiff;
+
+  const tasksDiff =
+    toNonNegativeNumber(right.tasks_completed) - toNonNegativeNumber(left.tasks_completed);
+  if (tasksDiff !== 0) return tasksDiff;
+
+  return left.id.localeCompare(right.id);
+}
+
+export function rankLeaderboardEntries<T extends LeaderboardSortInput>(
+  entries: T[]
+): Array<T & { rank: number }> {
+  const sorted = [...entries].sort(compareLeaderboardEntries);
+  return sorted.map((entry, index) => ({
+    ...entry,
+    rank: index + 1,
+  }));
+}
+
 // ─── Check Level-Up Response ───────────────────────────────────────────
 
 export interface NewAchievement {

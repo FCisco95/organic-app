@@ -79,9 +79,14 @@ test.describe('Rewards API', () => {
     await deleteQaUser(supabaseAdmin, memberUserId);
   });
 
-  test('unauthenticated rewards request returns 401', async ({ request }) => {
-    const res = await request.get(`${BASE_URL}/api/rewards`);
-    expect(res.status()).toBe(401);
+  test('unauthenticated rewards request returns 401', async ({ playwright }) => {
+    const anonContext = await playwright.request.newContext({ baseURL: BASE_URL });
+    try {
+      const res = await anonContext.get('/api/rewards');
+      expect(res.status()).toBe(401);
+    } finally {
+      await anonContext.dispose();
+    }
   });
 
   test('member fetches rewards summary', async ({ request }) => {

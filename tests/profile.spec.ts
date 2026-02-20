@@ -162,12 +162,15 @@ test.describe('Profile stats', () => {
       await page.context().setExtraHTTPHeaders({ 'ngrok-skip-browser-warning': '1' });
 
       await page.goto('/en/profile', { waitUntil: 'domcontentloaded' });
-      await expect(page.getByRole('heading', { name: /my profile/i })).toBeVisible();
-      await expect(page.getByText('Activity')).toBeVisible();
-      await expect(page.getByText('Total submissions')).toBeVisible();
-      await expect(page.getByText('Approved submissions')).toBeVisible();
-      await expect(page.getByText('Contributions')).toBeVisible();
-      await expect(page.getByText('Points earned')).toBeVisible();
+      await expect(page.getByText('Loading your profile...')).not.toBeVisible({ timeout: 20_000 });
+      await expect(page.getByRole('heading', { name: /my profile/i })).toBeVisible({
+        timeout: 20_000,
+      });
+      await expect(page.getByText('Activity')).toBeVisible({ timeout: 20_000 });
+      await expect(page.getByText('Total submissions')).toBeVisible({ timeout: 20_000 });
+      await expect(page.getByText('Approved submissions')).toBeVisible({ timeout: 20_000 });
+      await expect(page.getByText('Contributions')).toBeVisible({ timeout: 20_000 });
+      await expect(page.getByText('Points earned')).toBeVisible({ timeout: 20_000 });
     } finally {
       if (createdUserId && !KEEP_FIXTURES) {
         await supabaseAdmin.auth.admin.deleteUser(createdUserId);

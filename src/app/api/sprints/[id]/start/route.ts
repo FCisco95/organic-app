@@ -5,7 +5,7 @@ import type { SprintStatus } from '@/types/database';
 
 const EXECUTION_STATUSES: SprintStatus[] = ['active', 'review', 'dispute_window', 'settlement'];
 const SPRINT_COLUMNS =
-  'id, name, status, active_started_at, review_started_at, dispute_window_started_at, dispute_window_ends_at, settlement_started_at, settlement_integrity_flags, settlement_blocked_reason, completed_at';
+  'id, name, status, active_started_at, review_started_at, dispute_window_started_at, dispute_window_ends_at, settlement_started_at, settlement_integrity_flags, settlement_blocked_reason, reward_settlement_status, reward_settlement_committed_at, reward_settlement_idempotency_key, reward_settlement_kill_switch_at, reward_emission_cap, reward_carryover_amount, reward_carryover_sprint_count, completed_at';
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {

@@ -45,7 +45,7 @@ export async function POST(
       );
     }
 
-    const { tx_signature } = parsed.data;
+    const { tx_signature, idempotency_key } = parsed.data;
 
     // Fetch claim
     const { data: claim, error: claimError } = await supabase
@@ -62,6 +62,23 @@ export async function POST(
       return NextResponse.json(
         { error: 'Only approved claims can be marked as paid' },
         { status: 400 }
+      );
+    }
+
+    const payoutIdempotencyKey =
+      idempotency_key?.trim() || `claim:${claim.id}:payout`;
+
+    const { data: existingDistribution } = await supabase
+      .from('reward_distributions')
+      .select('id')
+      .eq('claim_id', claim.id)
+      .eq('type', 'claim')
+      .maybeSingle();
+
+    if (existingDistribution) {
+      return NextResponse.json(
+        { error: 'Claim already has a recorded payout distribution' },
+        { status: 409 }
       );
     }
 
@@ -97,11 +114,18 @@ export async function POST(
       category: 'claim_payout',
       reason: `Claim payout - tx: ${tx_signature.slice(0, 16)}...`,
       created_by: user.id,
+      idempotency_key: payoutIdempotencyKey,
     });
 
     if (distError) {
       logger.error('Distribution record error:', distError);
-      // Don't fail the pay action since the claim is already marked as paid
+      if (distError.code === '23505') {
+        return NextResponse.json(
+          { error: 'Duplicate claim payout distribution detected' },
+          { status: 409 }
+        );
+      }
+      // Keep backwards-compatibility behavior: claim is already marked as paid.
     }
 
     return NextResponse.json({ claim: updated });

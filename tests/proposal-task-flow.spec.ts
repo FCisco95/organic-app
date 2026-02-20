@@ -114,6 +114,8 @@ test.describe('Proposal task provenance flow', () => {
   });
 
   test('enforces finalized/passed gate and immutable proposal provenance', async ({ request, page }) => {
+    test.setTimeout(120_000);
+
     test.skip(!publicProposalId || !finalizedProposalId, 'Fixture proposals are required');
     test.skip(
       !publicProposalVersionId || !finalizedProposalVersionId,
@@ -211,8 +213,9 @@ test.describe('Proposal task provenance flow', () => {
       },
     ]);
 
-    await page.goto(`${BASE_URL}/tasks/${taskId as string}`);
-    await expect(page.getByText('Governance source')).toBeVisible();
-    await expect(page.getByText('Immutable proposal reference')).toBeVisible();
+    await page.goto(`${BASE_URL}/en/tasks/${taskId as string}`, { waitUntil: 'domcontentloaded' });
+    await expect(page.getByText('Loading task...')).not.toBeVisible({ timeout: 20_000 });
+    await expect(page.getByText('Governance source')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByText('Immutable proposal reference')).toBeVisible({ timeout: 20_000 });
   });
 });

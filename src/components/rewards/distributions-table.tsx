@@ -39,6 +39,9 @@ export function DistributionsTable({
               {t('distributions.category')}
             </th>
             <th className="text-left py-3 px-4 font-medium text-gray-500">
+              {t('distributions.settlement')}
+            </th>
+            <th className="text-left py-3 px-4 font-medium text-gray-500">
               {t('distributions.tokens')}
             </th>
             <th className="text-left py-3 px-4 font-medium text-gray-500">
@@ -64,6 +67,29 @@ export function DistributionsTable({
               </td>
               <td className="py-3 px-4 text-gray-700">
                 {dist.category ? t(`distributionCategory.${dist.category}`) : '—'}
+              </td>
+              <td className="py-3 px-4 text-gray-700">
+                {dist.type === 'epoch' && dist.reward_settlement_status ? (
+                  <div className="space-y-1">
+                    <span
+                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                        dist.reward_settlement_status === 'held' ||
+                        dist.reward_settlement_status === 'killed'
+                          ? 'bg-amber-100 text-amber-800'
+                          : 'bg-emerald-100 text-emerald-800'
+                      }`}
+                    >
+                      {t(`overview.settlementStatus.${dist.reward_settlement_status}`)}
+                    </span>
+                    {dist.reward_settlement_reason && (
+                      <p className="text-xs text-amber-700 max-w-[220px] truncate">
+                        {dist.reward_settlement_reason}
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  '—'
+                )}
               </td>
               <td className="py-3 px-4 text-gray-900 font-medium">
                 {Number(dist.token_amount).toLocaleString(undefined, {

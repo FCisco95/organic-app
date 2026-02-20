@@ -45,6 +45,10 @@ export function ReputationSummary({ className }: ReputationSummaryProps) {
           <span className="text-sm text-gray-400">{t('xp')}</span>
         </div>
 
+        <p className="text-xs text-gray-500 mb-3">
+          {t('pointsSecondary', { points: data.total_points })}
+        </p>
+
         <XpProgressBar xpTotal={data.xp_total} level={data.level} />
 
         <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
@@ -54,6 +58,8 @@ export function ReputationSummary({ className }: ReputationSummaryProps) {
             {t('achievementsUnlocked', { count: data.achievement_count })}
           </span>
         </div>
+
+        <p className="mt-3 text-[11px] text-gray-400">{t('leaderboardPriorityHint')}</p>
       </div>
     </div>
   );

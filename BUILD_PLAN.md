@@ -1,5 +1,73 @@
 # Organic DAO Platform - Build Plan
 
+## ✅ 2026-02-20 Governance Integrity Update (Task 7 Complete)
+
+- Added XP-first leaderboard migration (`20260220120000_xp_leaderboard_view_refresh.sql`) with deterministic tie-breakers:
+  - primary: `xp_total` (desc),
+  - secondary: `total_points` (desc),
+  - tertiary: `tasks_completed` (desc),
+  - final deterministic key: `id` (asc).
+- Hardened leaderboard API behavior:
+  - `src/app/api/leaderboard/route.ts` now computes rank server-side with XP-first ordering.
+  - Added source fallback (`leaderboard_materialized` -> `leaderboard_view`) for resilience.
+  - Added `?fresh=1` support to bypass server cache during deterministic QA/test runs.
+- Added leaderboard domain support:
+  - `src/features/reputation/types.ts` now includes XP-first comparator/ranking helpers.
+  - `src/features/reputation/hooks.ts` now includes `useLeaderboard` query hook.
+- Updated leaderboard/reputation UX copy and surfaces:
+  - `src/app/[locale]/leaderboard/page.tsx` now presents XP as primary ranking metric with points as secondary context.
+  - `src/components/reputation/reputation-summary.tsx` now shows points as tie-break context and explicit XP-priority hint.
+  - Updated i18n keys in `messages/en.json`, `messages/pt-PT.json`, `messages/zh-CN.json`.
+- Added tests:
+  - `src/features/reputation/__tests__/leaderboard-ordering.test.ts`
+  - `tests/leaderboard-xp-priority.spec.ts`
+
+### Task 7 validation evidence
+
+- [x] `npm run lint` (pass)
+- [x] `npm run build` (pass)
+- [ ] `npx playwright test tests/leaderboard-xp-priority.spec.ts --workers=1` (blocked in this environment due external DNS/network resolution to Supabase: `getaddrinfo EAI_AGAIN ...supabase.co`)
+
+### Next execution target
+
+- Task 8: Admin configurability and audit trail expansion (`docs/plans/2026-02-20-core-features-revamp-test-implementation-plan.md`).
+
+## ✅ 2026-02-20 Governance Integrity Update (Task 6 Complete)
+
+- Added rewards settlement integrity migration (`20260220113000_rewards_settlement_integrity.sql`) with:
+  - sprint settlement integrity metadata (`reward_settlement_status`, cap/carryover fields, kill-switch timestamps),
+  - append-only `reward_settlement_events` ledger,
+  - distribution idempotency metadata (`reward_distributions.idempotency_key`, integrity flags),
+  - settlement commit RPC (`commit_sprint_reward_settlement`) enforcing emission/carryover/debt/kill-switch invariants.
+- Hardened settlement orchestration:
+  - `src/app/api/sprints/[id]/complete/route.ts` now calls `commit_sprint_reward_settlement` before sprint completion closure and returns explicit integrity hold payloads.
+- Hardened rewards payout APIs:
+  - `src/app/api/rewards/distributions/manual/route.ts` now applies deterministic dedupe keys and returns `409` on duplicates.
+  - `src/app/api/rewards/claims/[id]/pay/route.ts` now blocks duplicate payout-distribution paths for claims.
+  - `src/app/api/rewards/distributions/route.ts` now enriches epoch distributions with sprint settlement integrity status.
+  - `src/app/api/rewards/route.ts` now exposes latest reward settlement posture for UI.
+- Updated rewards UX:
+  - `src/components/rewards/rewards-overview.tsx` now surfaces settlement status/cap/carryover/hold reason.
+  - `src/components/rewards/distributions-table.tsx` now surfaces settlement status for epoch rows.
+- Added/updated tests:
+  - `tests/rewards-settlement-integrity.spec.ts`
+  - `src/features/rewards/__tests__/settlement.test.ts`
+  - `src/features/rewards/settlement.ts`
+- Updated typing/i18n:
+  - `src/types/database.ts`
+  - `messages/en.json`, `messages/pt-PT.json`, `messages/zh-CN.json`
+- Added follow-up migration hotfix (`20260220114500_rewards_settlement_integrity_lock_fix.sql`) to patch `commit_sprint_reward_settlement` lock scope (`FOR UPDATE OF s`) and avoid Postgres `0A000` on settlement commit.
+
+### Task 6 validation evidence
+
+- [x] `npm run lint` (pass)
+- [x] `npm run build` (pass; non-fatal existing leaderboard revalidation log still appears in this environment)
+- [x] `npx playwright test tests/rewards-settlement-integrity.spec.ts tests/rewards.spec.ts --workers=1` (6 passed, 2 skipped due existing in-flight sprint guard in `tests/rewards-settlement-integrity.spec.ts`)
+
+### Next execution target
+
+- Task 7: XP-first leaderboard revamp (`docs/plans/2026-02-20-core-features-revamp-test-implementation-plan.md`).
+
 ## ✅ 2026-02-20 Governance Integrity Update (Task 5 Complete)
 
 - Added dispute SLA/evidence hardening migration (`20260220110000_dispute_sla_and_evidence_rules.sql`) with:
