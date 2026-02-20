@@ -1814,7 +1814,12 @@
       "appealReview": "Recurso em Revisão",
       "withdrawn": "Retirada",
       "mediated": "Mediada",
-      "deadline": "Prazo: {date}"
+      "deadline": "Prazo: {date}",
+      "responseDue": "Resposta até: {date}",
+      "responseOverdue": "Resposta em atraso desde {date}",
+      "disputeWindowCloses": "Janela de disputa termina: {date}",
+      "disputeWindowClosed": "Janela de disputa encerrada: {date}",
+      "lateEvidenceCount": "{count} ficheiro(s) de evidência tardia"
     },
     "detail": {
       "task": "Tarefa",
@@ -1825,6 +1830,9 @@
       "unassigned": "Não atribuído",
       "evidence": "Evidências",
       "evidenceFiles": "Ficheiros Carregados",
+      "evidenceTimeline": "Linha temporal de evidências",
+      "lateEvidenceTag": "Tardia",
+      "uploadedAt": "Carregado: {date}",
       "reviewerResponse": "Resposta do Revisor",
       "noResponse": "Nenhuma resposta submetida ainda",
       "responseDeadline": "Prazo de resposta: {date}",

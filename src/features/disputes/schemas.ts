@@ -53,6 +53,30 @@ export const createDisputeSchema = z.object({
 });
 export type CreateDisputeInput = z.infer<typeof createDisputeSchema>;
 
+// ─── Dispute evidence upload metadata ─────────────────────────────────────
+
+export const disputeEvidenceUploadMetadataSchema = z.object({
+  dispute_id: z.string().uuid('Invalid dispute ID').optional(),
+});
+export type DisputeEvidenceUploadMetadataInput = z.infer<
+  typeof disputeEvidenceUploadMetadataSchema
+>;
+
+export const disputeEvidenceEventSchema = z.object({
+  id: z.string().uuid(),
+  dispute_id: z.string().uuid(),
+  uploaded_by: z.string().uuid(),
+  storage_path: z.string().min(1),
+  file_name: z.string().min(1),
+  mime_type: z.string().min(1),
+  file_size_bytes: z.number().int().positive(),
+  is_late: z.boolean(),
+  late_reason: z.string().nullable(),
+  created_at: z.string(),
+  url: z.string().url().optional(),
+});
+export type DisputeEvidenceEventInput = z.infer<typeof disputeEvidenceEventSchema>;
+
 // ─── Respond to dispute (reviewer counter-argument) ───────────────────────
 
 export const respondToDisputeSchema = z.object({

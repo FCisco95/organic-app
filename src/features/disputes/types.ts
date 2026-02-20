@@ -124,6 +124,20 @@ export interface DisputeEvidenceFile {
   file_name: string;
 }
 
+export interface DisputeEvidenceEvent {
+  id: string;
+  dispute_id: string;
+  uploaded_by: string;
+  storage_path: string;
+  file_name: string;
+  mime_type: string;
+  file_size_bytes: number;
+  is_late: boolean;
+  late_reason: string | null;
+  created_at: string;
+  url?: string;
+}
+
 export interface DisputeComment {
   id: string;
   dispute_id: string;
@@ -170,6 +184,11 @@ export interface DisputeWithRelations extends Dispute {
     status: string;
     base_points: number;
   };
+  sprint?: {
+    id: string;
+    status: string;
+    dispute_window_ends_at: string | null;
+  } | null;
   submission?: {
     id: string;
     review_status: string;
@@ -179,6 +198,7 @@ export interface DisputeWithRelations extends Dispute {
     rejection_reason: string | null;
   };
   evidence_file_urls?: DisputeEvidenceFile[];
+  evidence_events?: DisputeEvidenceEvent[];
 }
 
 export interface DisputeListItem extends Dispute {
@@ -227,7 +247,7 @@ export const DEFAULT_DISPUTE_CONFIG: DisputeConfig = {
   xp_dispute_reviewer_penalty: 30,
   xp_dispute_withdrawal_fee: 10,
   dispute_mediation_hours: 24,
-  dispute_response_hours: 48,
+  dispute_response_hours: 72,
   dispute_appeal_hours: 48,
   dispute_cooldown_days: 7,
   dispute_dismissed_cooldown_days: 14,

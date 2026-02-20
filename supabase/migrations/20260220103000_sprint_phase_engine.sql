@@ -62,7 +62,12 @@ CREATE INDEX IF NOT EXISTS idx_sprints_dispute_window_ends_at
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_sprints_single_execution_phase
   ON public.sprints((1))
-  WHERE status::TEXT IN ('active', 'review', 'dispute_window', 'settlement');
+  WHERE status IN (
+    'active'::public.sprint_status,
+    'review'::public.sprint_status,
+    'dispute_window'::public.sprint_status,
+    'settlement'::public.sprint_status
+  );
 
 -- 5) Settlement blockers helper RPC.
 CREATE OR REPLACE FUNCTION public.get_sprint_settlement_blockers(p_sprint_id UUID)
@@ -217,7 +222,7 @@ BEGIN
       'disputes',
       NULL,
       'sprint',
-      p_sprint_id::TEXT,
+      p_sprint_id,
       jsonb_build_object(
         'source', 'apply_sprint_reviewer_sla',
         'sprint_id', p_sprint_id,
@@ -231,7 +236,16 @@ BEGIN
       )
     FROM public.user_profiles up
     WHERE up.role = 'admin'
-    ON CONFLICT (user_id, dedupe_key) DO NOTHING;
+      AND NOT EXISTS (
+        SELECT 1
+        FROM public.notifications n
+        WHERE n.user_id = up.id
+          AND n.dedupe_key = format(
+            'sprint:%s:reviewer_sla:%s',
+            p_sprint_id::TEXT,
+            to_char(NOW(), 'YYYYMMDDHH24')
+          )
+      );
 
     GET DIAGNOSTICS v_notified_count = ROW_COUNT;
   END IF;

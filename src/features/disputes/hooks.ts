@@ -8,6 +8,7 @@ import type {
   DisputeConfig,
   ArbitratorStats,
   ReviewerAccuracyStats,
+  DisputeEvidenceEvent,
 } from './types';
 import type {
   DisputeFilters,
@@ -17,6 +18,7 @@ import type {
   AppealDisputeInput,
   MediateDisputeInput,
   DisputeCommentInput,
+  DisputeEvidenceUploadMetadataInput,
 } from './schemas';
 
 // ─── Query keys ───────────────────────────────────────────────────────────
@@ -333,6 +335,51 @@ export function useAddDisputeComment() {
       }),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: disputeKeys.comments(variables.disputeId) });
+    },
+  });
+}
+
+/** Upload an evidence file (optionally bound to an existing dispute) */
+export function useUploadDisputeEvidence() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      file,
+      metadata,
+    }: {
+      file: File;
+      metadata?: DisputeEvidenceUploadMetadataInput;
+    }) => {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      if (metadata?.dispute_id) {
+        formData.append('dispute_id', metadata.dispute_id);
+      }
+
+      return fetchJson<{
+        data: {
+          path: string;
+          name: string;
+          mime_type: string;
+          size: number;
+          dispute_id?: string;
+          is_late?: boolean;
+          late_reason?: string | null;
+          event?: DisputeEvidenceEvent;
+        };
+      }>('/api/disputes/evidence', {
+        method: 'POST',
+        body: formData,
+      });
+    },
+    onSuccess: (_, variables) => {
+      if (variables.metadata?.dispute_id) {
+        queryClient.invalidateQueries({
+          queryKey: disputeKeys.detail(variables.metadata.dispute_id),
+        });
+      }
     },
   });
 }

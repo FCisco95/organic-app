@@ -1,5 +1,41 @@
 # Organic DAO Platform - Build Plan
 
+## ✅ 2026-02-20 Governance Integrity Update (Task 5 Complete)
+
+- Added dispute SLA/evidence hardening migration (`20260220110000_dispute_sla_and_evidence_rules.sql`) with:
+  - append-only `dispute_evidence_events`,
+  - deadline integrity checks on disputes,
+  - global overdue reviewer SLA sweep RPC (`sweep_overdue_dispute_reviewer_sla`),
+  - scheduled pg_cron job (`sweep-overdue-dispute-reviewer-sla`).
+- Hardened dispute APIs:
+  - `src/app/api/disputes/route.ts` now requires filing during `dispute_window` and enforces fixed 72h reviewer response SLA.
+  - `src/app/api/disputes/evidence/route.ts` now enforces PNG/JPG/PDF-only uploads, dispute-bound late markers, and hard-close checks.
+  - `src/app/api/disputes/[id]/respond/route.ts` and `src/app/api/disputes/[id]/resolve/route.ts` now enforce deadline/window guards.
+  - `src/app/api/disputes/[id]/route.ts` now returns evidence-event timelines with signed URLs.
+- Updated disputes domain/UI:
+  - Added shared SLA helpers (`src/features/disputes/sla.ts`) and schema/type support for evidence events.
+  - `src/components/disputes/DisputeTimeline.tsx` now shows response due/overdue and dispute-window state.
+  - `src/components/disputes/DisputeDetail.tsx` now shows evidence timeline + late badges and supports post-file uploads.
+  - `src/components/disputes/CreateDisputeModal.tsx` now aligns accepted types with server policy.
+- Added/updated tests:
+  - `tests/dispute-sla.spec.ts`
+  - `src/features/disputes/__tests__/sla-rules.test.ts`
+  - `tests/disputes.spec.ts`
+  - `tests/helpers.ts` (dispute-window sprint fixtures)
+- Updated typings/i18n:
+  - `src/types/database.ts`
+  - `messages/en.json`, `messages/pt-PT.json`, `messages/zh-CN.json`
+
+### Task 5 validation evidence
+
+- [x] `npm run lint` (pass)
+- [x] `npm run build` (pass; non-fatal existing leaderboard revalidation log still appears in this environment)
+- [ ] `npx playwright test tests/dispute-sla.spec.ts tests/disputes.spec.ts --workers=1` (blocked in this environment due external DNS/network resolution to Supabase: `getaddrinfo EAI_AGAIN`)
+
+### Next execution target
+
+- Task 6: Rewards settlement and emission safety (`docs/plans/2026-02-20-core-features-revamp-test-implementation-plan.md`).
+
 ## ✅ 2026-02-20 Governance Integrity Update (Task 4 Complete)
 
 - Added sprint phase engine migration (`20260220103000_sprint_phase_engine.sql`) with:

@@ -25,10 +25,42 @@ const DISPUTE_DETAIL_SELECT = `
   task:tasks!disputes_task_id_fkey(
     id, title, status, base_points
   ),
+  sprint:sprints!disputes_sprint_id_fkey(
+    id, status, dispute_window_ends_at
+  ),
   submission:task_submissions!disputes_submission_id_fkey(
     id, review_status, quality_score, earned_points, reviewer_notes, rejection_reason
   )
 `;
+
+async function createSignedEvidenceUrl(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  serviceClient: Awaited<ReturnType<typeof createServiceClient>> | null,
+  path: string
+): Promise<string | null> {
+  const clients = [supabase, serviceClient].filter(
+    (client): client is typeof supabase => client !== null
+  );
+
+  for (const client of clients) {
+    try {
+      const { data, error: signedUrlError } = await client.storage
+        .from(EVIDENCE_BUCKET)
+        .createSignedUrl(path, EVIDENCE_URL_TTL_SECONDS);
+
+      if (!signedUrlError && data?.signedUrl) {
+        return data.signedUrl;
+      }
+    } catch (signedUrlError) {
+      logger.warn('Failed to generate dispute evidence signed URL', {
+        path,
+        error: signedUrlError instanceof Error ? signedUrlError.message : String(signedUrlError),
+      });
+    }
+  }
+
+  return null;
+}
 
 /**
  * GET /api/disputes/[id]
@@ -93,9 +125,19 @@ export async function GET(
     }
 
     const evidenceFiles = Array.isArray(dispute.evidence_files) ? dispute.evidence_files : [];
+    const { data: evidenceEvents, error: evidenceEventsError } = await supabase
+      .from('dispute_evidence_events')
+      .select(
+        'id, dispute_id, uploaded_by, storage_path, file_name, mime_type, file_size_bytes, is_late, late_reason, created_at'
+      )
+      .eq('dispute_id', dispute.id)
+      .order('created_at', { ascending: true });
 
-    if (evidenceFiles.length === 0) {
-      return NextResponse.json({ data: { ...dispute, evidence_file_urls: [] } });
+    if (evidenceEventsError) {
+      logger.warn('Failed to fetch dispute evidence events', {
+        dispute_id: dispute.id,
+        error: evidenceEventsError.message,
+      });
     }
 
     const serviceClient = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -103,36 +145,29 @@ export async function GET(
       : null;
     const signedUrls = await Promise.all(
       evidenceFiles.map(async (path) => {
-        const clients = [supabase, serviceClient].filter(
-          (client): client is typeof supabase => client !== null
-        );
-
-        for (const client of clients) {
-          try {
-            const { data, error: signedUrlError } = await client.storage
-              .from(EVIDENCE_BUCKET)
-              .createSignedUrl(path, EVIDENCE_URL_TTL_SECONDS);
-
-            if (!signedUrlError && data?.signedUrl) {
-              return {
-                path,
-                url: data.signedUrl,
-                file_name: getEvidenceFileName(path),
-              };
-            }
-          } catch (signedUrlError) {
-            console.warn('Failed to generate dispute evidence signed URL', {
-              dispute_id: dispute.id,
-              path,
-              error:
-                signedUrlError instanceof Error
-                  ? signedUrlError.message
-                  : String(signedUrlError),
-            });
-          }
+        const signedUrl = await createSignedEvidenceUrl(supabase, serviceClient, path);
+        if (!signedUrl) {
+          return null;
         }
+        return {
+          path,
+          url: signedUrl,
+          file_name: getEvidenceFileName(path),
+        };
+      })
+    );
 
-        return null;
+    const evidenceEventsWithUrls = await Promise.all(
+      (evidenceEvents ?? []).map(async (event) => {
+        const signedUrl = await createSignedEvidenceUrl(
+          supabase,
+          serviceClient,
+          event.storage_path
+        );
+        return {
+          ...event,
+          url: signedUrl ?? undefined,
+        };
       })
     );
 
@@ -142,6 +177,7 @@ export async function GET(
         evidence_file_urls: signedUrls.filter(
           (entry): entry is { path: string; url: string; file_name: string } => entry !== null
         ),
+        evidence_events: evidenceEventsWithUrls,
       },
     });
   } catch (error) {

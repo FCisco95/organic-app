@@ -25,8 +25,8 @@ import {
   randomOrganicId,
   runId,
   getFirstOrgId,
-  getActiveSprintId,
-  insertActiveSprint,
+  getDisputeWindowSprintId,
+  insertDisputeWindowSprint,
   cookieHeader,
   BASE_URL,
 } from './helpers';
@@ -84,13 +84,28 @@ test.describe('Dispute lifecycle', () => {
     memberUserId = member.id;
     memberCookie = await buildSessionCookie(member.email, pass);
 
-    // Set up an active sprint (reuse or create)
-    let sprintId = await getActiveSprintId(supabaseAdmin);
+    // Set up an open dispute-window sprint (reuse or create)
+    let sprintId = await getDisputeWindowSprintId(supabaseAdmin);
     if (!sprintId) {
-      const orgId = await getFirstOrgId(supabaseAdmin);
-      if (orgId) {
-        ownedSprintId = await insertActiveSprint(supabaseAdmin, orgId, `QA Disputes Sprint ${id}`);
-        sprintId = ownedSprintId;
+      const { data: inFlightSprint } = await supabaseAdmin
+        .from('sprints')
+        .select('id, status')
+        .in('status', ['active', 'review', 'dispute_window', 'settlement'])
+        .limit(1)
+        .maybeSingle();
+
+      if (inFlightSprint?.status === 'dispute_window') {
+        sprintId = inFlightSprint.id;
+      } else if (!inFlightSprint) {
+        const orgId = await getFirstOrgId(supabaseAdmin);
+        if (orgId) {
+          ownedSprintId = await insertDisputeWindowSprint(
+            supabaseAdmin,
+            orgId,
+            `QA Disputes Sprint ${id}`
+          );
+          sprintId = ownedSprintId;
+        }
       }
     }
 

@@ -1,9 +1,10 @@
 'use client';
 
+import { useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { formatDistanceToNow, format } from 'date-fns';
-import { ExternalLink, User, Clock, Paperclip } from 'lucide-react';
+import { ExternalLink, User, Clock, Paperclip, Upload, Loader2 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import type { DisputeWithRelations, DisputeResolution } from '@/features/disputes/types';
@@ -18,6 +19,7 @@ import {
   useAppealDispute,
   useAssignArbitrator,
   useMediateDispute,
+  useUploadDisputeEvidence,
 } from '@/features/disputes/hooks';
 
 interface DisputeDetailProps {
@@ -53,6 +55,7 @@ export function DisputeDetail({
   const appeal = useAppealDispute();
   const assignArbitrator = useAssignArbitrator();
   const mediate = useMediateDispute();
+  const uploadDisputeEvidence = useUploadDisputeEvidence();
 
   const isDisputant = currentUserId === dispute.disputant_id;
   const isReviewer = currentUserId === dispute.reviewer_id;
@@ -60,11 +63,17 @@ export function DisputeDetail({
   const isAdmin = currentUserRole === 'admin';
   const isCouncil = currentUserRole === 'council';
   const isTerminal = TERMINAL_STATUSES.includes(dispute.status);
+  const canUploadEvidence =
+    (isDisputant || isReviewer || isArbitrator || isAdmin || isCouncil) && !isTerminal;
   const evidenceLinks = Array.isArray(dispute.evidence_links) ? dispute.evidence_links : [];
   const evidenceFileUrls = Array.isArray(dispute.evidence_file_urls)
     ? dispute.evidence_file_urls
     : [];
+  const evidenceEvents = Array.isArray(dispute.evidence_events) ? dispute.evidence_events : [];
+  const lateEvidenceCount = evidenceEvents.filter((event) => event.is_late).length;
   const responseLinks = Array.isArray(dispute.response_links) ? dispute.response_links : [];
+  const evidenceFileInputRef = useRef<HTMLInputElement | null>(null);
+  const [evidenceUploadError, setEvidenceUploadError] = useState<string | null>(null);
   const reasonLabel =
     dispute.reason in {
       rejected_unfairly: true,
@@ -102,6 +111,25 @@ export function DisputeDetail({
   const canMediate =
     (isDisputant || isReviewer) &&
     ['open', 'mediation', 'awaiting_response'].includes(dispute.status);
+
+  const handleDisputeEvidenceUpload = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+
+    setEvidenceUploadError(null);
+    try {
+      await uploadDisputeEvidence.mutateAsync({
+        file: files[0],
+        metadata: { dispute_id: dispute.id },
+      });
+      onRefresh();
+    } catch (error) {
+      setEvidenceUploadError(error instanceof Error ? error.message : t('form.uploadFailed'));
+    } finally {
+      if (evidenceFileInputRef.current) {
+        evidenceFileInputRef.current.value = '';
+      }
+    }
+  };
 
   const renderUser = (
     label: string,
@@ -155,6 +183,9 @@ export function DisputeDetail({
       <DisputeTimeline
         status={dispute.status}
         tier={dispute.tier}
+        responseDeadline={dispute.response_deadline}
+        disputeWindowEndsAt={dispute.sprint?.dispute_window_ends_at ?? null}
+        lateEvidenceCount={lateEvidenceCount}
       />
 
       {/* Parties */}
@@ -221,6 +252,73 @@ export function DisputeDetail({
                 </li>
               ))}
             </ul>
+          </div>
+        )}
+        {evidenceEvents.length > 0 && (
+          <div className="mt-3">
+            <p className="text-xs font-medium text-gray-500 mb-1">{td('evidenceTimeline')}</p>
+            <ul className="space-y-2">
+              {evidenceEvents.map((event) => (
+                <li
+                  key={event.id}
+                  className="rounded-md border border-gray-200 bg-gray-50 px-2 py-1 text-xs text-gray-700"
+                >
+                  <div className="flex items-center gap-2">
+                    <Paperclip className="h-3 w-3 text-gray-400 shrink-0" />
+                    {event.url ? (
+                      <a
+                        href={event.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="truncate text-blue-600 hover:underline"
+                      >
+                        {event.file_name}
+                      </a>
+                    ) : (
+                      <span className="truncate">{event.file_name}</span>
+                    )}
+                    {event.is_late && (
+                      <span className="rounded-full bg-orange-100 px-1.5 py-0.5 text-[10px] font-semibold text-orange-700">
+                        {td('lateEvidenceTag')}
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-1 text-[10px] text-gray-500">
+                    {td('uploadedAt', { date: formatDateTime(event.created_at) ?? '—' })}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {canUploadEvidence && (
+          <div className="mt-3">
+            <input
+              ref={evidenceFileInputRef}
+              type="file"
+              accept=".png,.jpg,.jpeg,.pdf"
+              className="hidden"
+              onChange={(event) => handleDisputeEvidenceUpload(event.target.files)}
+              disabled={uploadDisputeEvidence.isPending}
+            />
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="h-8"
+              onClick={() => evidenceFileInputRef.current?.click()}
+              disabled={uploadDisputeEvidence.isPending}
+            >
+              {uploadDisputeEvidence.isPending ? (
+                <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+              ) : (
+                <Upload className="h-3.5 w-3.5 mr-1.5" />
+              )}
+              {uploadDisputeEvidence.isPending ? t('form.uploadingEvidence') : t('form.uploadEvidence')}
+            </Button>
+            {evidenceUploadError && (
+              <p className="mt-1 text-xs text-red-600">{evidenceUploadError}</p>
+            )}
           </div>
         )}
       </div>

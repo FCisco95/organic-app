@@ -1814,7 +1814,12 @@
       "appealReview": "申诉审查中",
       "withdrawn": "已撤回",
       "mediated": "已调解",
-      "deadline": "截止日期：{date}"
+      "deadline": "截止日期：{date}",
+      "responseDue": "回复截止：{date}",
+      "responseOverdue": "回复已逾期（自 {date} 起）",
+      "disputeWindowCloses": "争议窗口关闭时间：{date}",
+      "disputeWindowClosed": "争议窗口已关闭：{date}",
+      "lateEvidenceCount": "{count} 个迟交证据文件"
     },
     "detail": {
       "task": "任务",
@@ -1825,6 +1830,9 @@
       "unassigned": "未分配",
       "evidence": "证据",
       "evidenceFiles": "已上传文件",
+      "evidenceTimeline": "证据时间线",
+      "lateEvidenceTag": "迟交",
+      "uploadedAt": "上传时间：{date}",
       "reviewerResponse": "审查者回复",
       "noResponse": "尚未提交回复",
       "responseDeadline": "回复截止：{date}",

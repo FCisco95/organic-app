@@ -208,6 +208,67 @@ export type Database = {
           },
         ]
       }
+      dispute_evidence_events: {
+        Row: {
+          created_at: string
+          dispute_id: string
+          file_name: string
+          file_size_bytes: number
+          id: string
+          is_late: boolean
+          late_reason: string | null
+          mime_type: string
+          storage_path: string
+          uploaded_by: string
+        }
+        Insert: {
+          created_at?: string
+          dispute_id: string
+          file_name: string
+          file_size_bytes: number
+          id?: string
+          is_late?: boolean
+          late_reason?: string | null
+          mime_type: string
+          storage_path: string
+          uploaded_by: string
+        }
+        Update: {
+          created_at?: string
+          dispute_id?: string
+          file_name?: string
+          file_size_bytes?: number
+          id?: string
+          is_late?: boolean
+          late_reason?: string | null
+          mime_type?: string
+          storage_path?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dispute_evidence_events_dispute_id_fkey"
+            columns: ["dispute_id"]
+            isOneToOne: false
+            referencedRelation: "disputes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dispute_evidence_events_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dispute_evidence_events_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       disputes: {
         Row: {
           appeal_deadline: string | null
@@ -2545,6 +2606,14 @@ export type Database = {
       }
       apply_sprint_reviewer_sla: {
         Args: { p_extension_hours?: number; p_sprint_id: string }
+        Returns: {
+          admin_notified_count: number
+          escalated_count: number
+          extended_count: number
+        }[]
+      }
+      sweep_overdue_dispute_reviewer_sla: {
+        Args: { p_extension_hours?: number }
         Returns: {
           admin_notified_count: number
           escalated_count: number

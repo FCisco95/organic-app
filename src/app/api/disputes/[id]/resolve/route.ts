@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { resolveDisputeSchema } from '@/features/disputes/schemas';
+import { isDisputeWindowClosed } from '@/features/disputes/sla';
 import { parseJsonBody } from '@/lib/parse-json-body';
 import { logger } from '@/lib/logger';
 
@@ -37,6 +38,7 @@ export async function POST(
         { status: 403 }
       );
     }
+    const isAdmin = profile.role === 'admin';
 
     // Load dispute
     const { data: dispute, error: fetchError } = await supabase
@@ -50,7 +52,7 @@ export async function POST(
     }
 
     // Verify the user is the assigned arbitrator (or admin for appeal_review)
-    if (dispute.arbitrator_id !== user.id && profile.role !== 'admin') {
+    if (dispute.arbitrator_id !== user.id && !isAdmin) {
       return NextResponse.json(
         { error: 'You are not the assigned arbitrator for this dispute' },
         { status: 403 }
@@ -72,6 +74,24 @@ export async function POST(
         { error: 'Dispute is not in a resolvable state' },
         { status: 400 }
       );
+    }
+
+    if (dispute.sprint_id && !isAdmin) {
+      const { data: sprint } = await supabase
+        .from('sprints')
+        .select('dispute_window_ends_at')
+        .eq('id', dispute.sprint_id)
+        .maybeSingle();
+
+      if (isDisputeWindowClosed(sprint?.dispute_window_ends_at)) {
+        return NextResponse.json(
+          {
+            error: 'Dispute window is closed; only admins can resolve after close',
+            dispute_window_ends_at: sprint?.dispute_window_ends_at ?? null,
+          },
+          { status: 409 }
+        );
+      }
     }
 
     // Parse input

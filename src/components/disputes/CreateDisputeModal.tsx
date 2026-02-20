@@ -283,7 +283,7 @@ export function CreateDisputeModal({
                 type="file"
                 className="hidden"
                 multiple
-                accept=".png,.jpg,.jpeg,.webp,.pdf,.txt"
+                accept=".png,.jpg,.jpeg,.pdf"
                 onChange={(event) => handleEvidenceFileUpload(event.target.files)}
                 disabled={!isEligible || isUploadingEvidence}
               />

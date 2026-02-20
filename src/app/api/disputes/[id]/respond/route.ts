@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { respondToDisputeSchema } from '@/features/disputes/schemas';
+import { isDeadlinePast, isDisputeWindowClosed } from '@/features/disputes/sla';
 import { parseJsonBody } from '@/lib/parse-json-body';
 import { logger } from '@/lib/logger';
 
@@ -58,6 +59,31 @@ export async function POST(
         { error: 'Dispute is not in a state that accepts responses' },
         { status: 400 }
       );
+    }
+
+    if (isDeadlinePast(dispute.response_deadline)) {
+      return NextResponse.json(
+        { error: 'Reviewer response deadline has passed' },
+        { status: 409 }
+      );
+    }
+
+    if (dispute.sprint_id) {
+      const { data: sprint } = await supabase
+        .from('sprints')
+        .select('dispute_window_ends_at')
+        .eq('id', dispute.sprint_id)
+        .maybeSingle();
+
+      if (isDisputeWindowClosed(sprint?.dispute_window_ends_at)) {
+        return NextResponse.json(
+          {
+            error: 'Dispute window is closed for this sprint',
+            dispute_window_ends_at: sprint?.dispute_window_ends_at ?? null,
+          },
+          { status: 409 }
+        );
+      }
     }
 
     // Parse input

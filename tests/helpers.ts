@@ -189,6 +189,28 @@ export async function getActiveSprintId(supabaseAdmin: SupabaseClient): Promise<
 }
 
 /**
+ * Returns the id of the latest open dispute-window sprint, or null if none.
+ */
+export async function getDisputeWindowSprintId(
+  supabaseAdmin: SupabaseClient
+): Promise<string | null> {
+  const { data } = await supabaseAdmin
+    .from('sprints')
+    .select('id, dispute_window_ends_at')
+    .eq('status', 'dispute_window')
+    .order('start_at', { ascending: false })
+    .limit(10);
+
+  const now = Date.now();
+  const openWindowSprint = (data ?? []).find((sprint) => {
+    if (!sprint.dispute_window_ends_at) return true;
+    return new Date(sprint.dispute_window_ends_at).getTime() > now;
+  });
+
+  return openWindowSprint?.id ?? null;
+}
+
+/**
  * Creates a sprint directly in the DB via service role (bypasses API auth/conflict checks).
  * Useful for fixture setup when an active sprint is needed for submissions.
  */
@@ -211,6 +233,64 @@ export async function insertActiveSprint(
     .select('id')
     .single();
   return data?.id ?? null;
+}
+
+/**
+ * Creates a sprint and advances it to dispute_window using valid phase transitions.
+ * Returns null when an in-flight sprint already blocks activation.
+ */
+export async function insertDisputeWindowSprint(
+  supabaseAdmin: SupabaseClient,
+  orgId: string,
+  name: string
+): Promise<string | null> {
+  const now = new Date();
+  const end = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
+  const disputeWindowEnd = new Date(now.getTime() + 48 * 60 * 60 * 1000).toISOString();
+
+  const { data: sprint, error: insertError } = await supabaseAdmin
+    .from('sprints')
+    .insert({
+      org_id: orgId,
+      name,
+      start_at: now.toISOString(),
+      end_at: end.toISOString(),
+      status: 'planning',
+    })
+    .select('id')
+    .single();
+
+  if (insertError || !sprint?.id) {
+    return null;
+  }
+
+  try {
+    const { error: toActiveError } = await supabaseAdmin
+      .from('sprints')
+      .update({ status: 'active' })
+      .eq('id', sprint.id);
+    if (toActiveError) throw toActiveError;
+
+    const { error: toReviewError } = await supabaseAdmin
+      .from('sprints')
+      .update({ status: 'review' })
+      .eq('id', sprint.id);
+    if (toReviewError) throw toReviewError;
+
+    const { error: toWindowError } = await supabaseAdmin
+      .from('sprints')
+      .update({
+        status: 'dispute_window',
+        dispute_window_ends_at: disputeWindowEnd,
+      })
+      .eq('id', sprint.id);
+    if (toWindowError) throw toWindowError;
+  } catch {
+    await supabaseAdmin.from('sprints').delete().eq('id', sprint.id);
+    return null;
+  }
+
+  return sprint.id;
 }
 
 /** Cookie header string from a session cookie object. */

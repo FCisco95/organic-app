@@ -2,6 +2,45 @@
 
 Add newest entries at the top.
 
+## 2026-02-20 (Session: Governance integrity Task 5 implementation)
+
+### Summary
+
+Implemented Task 5 from `docs/plans/2026-02-20-core-features-revamp-test-implementation-plan.md` (Review and Disputes SLA Hardening), including DB SLA sweep automation, dispute-window filing gates, late-evidence lifecycle tracking, and disputes timeline transparency updates.
+
+### Implementation highlights
+
+- Added migration: `supabase/migrations/20260220110000_dispute_sla_and_evidence_rules.sql`
+  - new append-only `dispute_evidence_events` table with late markers (`is_late`, `late_reason`)
+  - deadline integrity constraints on `disputes`
+  - overdue reviewer sweep RPC: `sweep_overdue_dispute_reviewer_sla`
+  - pg_cron schedule: `sweep-overdue-dispute-reviewer-sla` (every 15 minutes)
+- Updated dispute APIs:
+  - `src/app/api/disputes/route.ts` now enforces dispute filing only during sprint `dispute_window` and uses fixed 72h reviewer response SLA.
+  - `src/app/api/disputes/evidence/route.ts` now enforces PNG/JPG/PDF uploads, per-dispute max files, hard-close checks, and dispute-bound late-evidence events.
+  - `src/app/api/disputes/[id]/respond/route.ts` now rejects responses after response deadline or window close.
+  - `src/app/api/disputes/[id]/resolve/route.ts` now enforces window-close guard (admin override retained).
+  - `src/app/api/disputes/[id]/route.ts` now returns signed evidence event timeline data.
+- Added domain/test helpers:
+  - `src/features/disputes/sla.ts` and `src/features/disputes/__tests__/sla-rules.test.ts`
+  - `tests/dispute-sla.spec.ts`
+  - `tests/helpers.ts` now supports dispute-window sprint fixture provisioning.
+- Updated disputes UI:
+  - `src/components/disputes/DisputeTimeline.tsx` now surfaces response due/overdue and dispute-window open/closed state.
+  - `src/components/disputes/DisputeDetail.tsx` now shows evidence timeline + late badges and supports post-file evidence uploads.
+  - `src/components/disputes/CreateDisputeModal.tsx` upload accept list aligned with API policy.
+- Updated supporting surfaces:
+  - `src/features/disputes/schemas.ts`, `src/features/disputes/types.ts`, `src/features/disputes/hooks.ts`
+  - `src/types/database.ts`
+  - `messages/en.json`, `messages/pt-PT.json`, `messages/zh-CN.json`
+  - `tests/disputes.spec.ts`
+
+### Validation evidence
+
+- `npm run lint`: pass.
+- `npm run build`: pass (non-fatal existing leaderboard revalidation warning appears during build in this environment).
+- `npx playwright test tests/dispute-sla.spec.ts tests/disputes.spec.ts --workers=1`: blocked by external DNS/network resolution to Supabase (`getaddrinfo EAI_AGAIN ...supabase.co`).
+
 ## 2026-02-20 (Session: Governance integrity Task 4 implementation)
 
 ### Summary

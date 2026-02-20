@@ -3,11 +3,17 @@ import { createClient } from '@/lib/supabase/server';
 import { createDisputeSchema, disputeFilterSchema } from '@/features/disputes/schemas';
 import type { DisputeConfig } from '@/features/disputes/types';
 import { DEFAULT_DISPUTE_CONFIG } from '@/features/disputes/types';
+import {
+  computeReviewerResponseDeadline,
+  DISPUTE_REVIEWER_RESPONSE_HOURS,
+  isDisputeWindowClosed,
+} from '@/features/disputes/sla';
 import { parseJsonBody } from '@/lib/parse-json-body';
 import { logger } from '@/lib/logger';
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const MAX_EVIDENCE_FILES = 5;
+const EXECUTION_SPRINT_STATUSES = ['active', 'review', 'dispute_window', 'settlement'] as const;
 
 type RecentDispute = {
   created_at: string;
@@ -93,6 +99,7 @@ export async function GET(request: NextRequest) {
       const config: DisputeConfig = {
         ...DEFAULT_DISPUTE_CONFIG,
         ...(org?.gamification_config as Partial<DisputeConfig>),
+        dispute_response_hours: DISPUTE_REVIEWER_RESPONSE_HOURS,
       };
 
       return NextResponse.json({ data: config });
@@ -272,6 +279,7 @@ export async function POST(request: NextRequest) {
     const config: DisputeConfig = {
       ...DEFAULT_DISPUTE_CONFIG,
       ...(org?.gamification_config as Partial<DisputeConfig>),
+      dispute_response_hours: DISPUTE_REVIEWER_RESPONSE_HOURS,
     };
 
     // Check minimum XP
@@ -362,14 +370,39 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get current in-flight sprint (for sprint-bound deadline)
+    // Get current in-flight sprint (for sprint-bound filing window)
     const { data: activeSprint } = await supabase
       .from('sprints')
-      .select('id')
-      .in('status', ['active', 'review', 'dispute_window', 'settlement'])
+      .select('id, status, dispute_window_ends_at')
+      .in('status', EXECUTION_SPRINT_STATUSES)
       .order('start_at', { ascending: false })
       .limit(1)
       .maybeSingle();
+
+    if (!activeSprint) {
+      return NextResponse.json(
+        { error: 'No sprint is currently in an execution phase' },
+        { status: 409 }
+      );
+    }
+
+    if (activeSprint.status !== 'dispute_window') {
+      return NextResponse.json(
+        { error: 'Disputes can only be filed during the sprint dispute window' },
+        { status: 409 }
+      );
+    }
+
+    const now = new Date();
+    if (isDisputeWindowClosed(activeSprint.dispute_window_ends_at, now)) {
+      return NextResponse.json(
+        {
+          error: 'Dispute window is closed for the current sprint',
+          dispute_window_ends_at: activeSprint.dispute_window_ends_at,
+        },
+        { status: 409 }
+      );
+    }
 
     // Deduct XP stake
     const { error: xpError } = await supabase
@@ -382,13 +415,10 @@ export async function POST(request: NextRequest) {
     if (xpError) throw xpError;
 
     // Calculate deadlines
-    const now = new Date();
     const mediationDeadline = input.request_mediation
       ? new Date(now.getTime() + config.dispute_mediation_hours * 60 * 60 * 1000).toISOString()
       : null;
-    const responseDeadline = new Date(
-      now.getTime() + config.dispute_response_hours * 60 * 60 * 1000
-    ).toISOString();
+    const responseDeadline = computeReviewerResponseDeadline(now);
 
     // Create the dispute
     const { data: dispute, error: insertError } = await supabase
@@ -396,7 +426,7 @@ export async function POST(request: NextRequest) {
       .insert({
         submission_id: input.submission_id,
         task_id: submission.task_id,
-        sprint_id: activeSprint?.id ?? null,
+        sprint_id: activeSprint.id,
         disputant_id: user.id,
         reviewer_id: submission.reviewer_id,
         status: input.request_mediation ? 'mediation' : 'open',
@@ -444,6 +474,7 @@ async function handleEligibilityCheck(
   const config: DisputeConfig = {
     ...DEFAULT_DISPUTE_CONFIG,
     ...(org?.gamification_config as Partial<DisputeConfig>),
+    dispute_response_hours: DISPUTE_REVIEWER_RESPONSE_HOURS,
   };
 
   // Get user XP
@@ -509,6 +540,41 @@ async function handleEligibilityCheck(
     return NextResponse.json({
       eligible: false,
       reason: 'An active dispute already exists for this submission',
+      xp_stake: config.xp_dispute_stake,
+      user_xp: profile.xp_total,
+    });
+  }
+
+  const { data: activeSprint } = await supabase
+    .from('sprints')
+    .select('id, status, dispute_window_ends_at')
+    .in('status', EXECUTION_SPRINT_STATUSES)
+    .order('start_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (!activeSprint) {
+    return NextResponse.json({
+      eligible: false,
+      reason: 'No sprint is currently in an execution phase',
+      xp_stake: config.xp_dispute_stake,
+      user_xp: profile.xp_total,
+    });
+  }
+
+  if (activeSprint.status !== 'dispute_window') {
+    return NextResponse.json({
+      eligible: false,
+      reason: 'Disputes can only be filed during the sprint dispute window',
+      xp_stake: config.xp_dispute_stake,
+      user_xp: profile.xp_total,
+    });
+  }
+
+  if (isDisputeWindowClosed(activeSprint.dispute_window_ends_at)) {
+    return NextResponse.json({
+      eligible: false,
+      reason: 'Dispute window is closed for the current sprint',
       xp_stake: config.xp_dispute_stake,
       user_xp: profile.xp_total,
     });

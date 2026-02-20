@@ -1814,7 +1814,12 @@
       "appealReview": "Appeal Under Review",
       "withdrawn": "Withdrawn",
       "mediated": "Mediated",
-      "deadline": "Deadline: {date}"
+      "deadline": "Deadline: {date}",
+      "responseDue": "Response due: {date}",
+      "responseOverdue": "Response overdue since {date}",
+      "disputeWindowCloses": "Dispute window closes: {date}",
+      "disputeWindowClosed": "Dispute window closed: {date}",
+      "lateEvidenceCount": "{count} late evidence file(s)"
     },
     "detail": {
       "task": "Task",
@@ -1825,6 +1830,9 @@
       "unassigned": "Unassigned",
       "evidence": "Evidence",
       "evidenceFiles": "Uploaded Files",
+      "evidenceTimeline": "Evidence Timeline",
+      "lateEvidenceTag": "Late",
+      "uploadedAt": "Uploaded: {date}",
       "reviewerResponse": "Reviewer Response",
       "noResponse": "No response submitted yet",
       "responseDeadline": "Response deadline: {date}",
