@@ -56,6 +56,7 @@ export default function NotificationsPage() {
 
   return (
     <PageContainer width="narrow">
+      <div data-testid="notifications-page">
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-1">
@@ -81,6 +82,7 @@ export default function NotificationsPage() {
               size="icon"
               className="h-8 w-8"
               onClick={() => setShowPrefs(!showPrefs)}
+              data-testid="notifications-preferences-toggle"
             >
               <Settings className="h-4 w-4" />
             </Button>
@@ -98,7 +100,7 @@ export default function NotificationsPage() {
       )}
 
       {/* Category tabs */}
-      <div className="flex gap-1 overflow-x-auto pb-2 mb-4 border-b border-border">
+      <div className="flex gap-1 overflow-x-auto pb-2 mb-4 border-b border-border" data-testid="notifications-filter-tabs">
         {tabs.map((tab) => (
           <button
             key={tab.key}
@@ -137,7 +139,7 @@ export default function NotificationsPage() {
         </div>
       ) : (
         <>
-          <div className="space-y-0.5">
+          <div className="space-y-0.5" data-testid="notifications-list">
             {notifications.map((notification) => (
               <NotificationItem
                 key={notification.id}
@@ -159,6 +161,7 @@ export default function NotificationsPage() {
           )}
         </>
       )}
+      </div>
     </PageContainer>
   );
 }
