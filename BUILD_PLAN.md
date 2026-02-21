@@ -1,5 +1,39 @@
 # Organic DAO Platform - Build Plan
 
+## ✅ 2026-02-21 UI/UX Revamp Wave 2 — Complete Sign-Off
+
+All 8 feature-vertical slices of Wave 2 delivered and validated. Wave 2 is closed.
+
+### Slices delivered
+
+| Slice | Surface | Status |
+|---|---|---|
+| 1 | Tasks | ✅ Done |
+| 2 | Proposals | ✅ Done |
+| 3 | Sprints | ✅ Done |
+| 4 | Disputes | ✅ Done |
+| 5 | Rewards | ✅ Done |
+| 6 | Members & Profile | ✅ Done |
+| 7 | Notifications & Auth | ✅ Done |
+| 8 | Admin Ops | ✅ Done |
+
+### Post-slice work
+
+- [x] Cross-feature consistency pass: `--transition-ui`, `--section-radius`, `--section-padding` tokens + section card pattern documentation in `globals.css`.
+- [x] Wave 2 sign-off document: `docs/plans/2026-02-20-ui-ux-revamp-wave2-signoff.md`.
+
+### Wave 2 validation
+
+- [x] `npm run lint` (no ESLint warnings or errors)
+- [x] `npm run build` (production build passes, all pages compile)
+- [ ] `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3000 npx playwright test tests/members-profile-surface-revamp.spec.ts tests/profile.spec.ts --workers=1` (skipped in this environment — missing Supabase env vars)
+- [ ] `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3000 npx playwright test tests/notifications-auth-surface-revamp.spec.ts --workers=1` (skipped in this environment — missing Supabase env vars)
+- [ ] `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3000 npx playwright test tests/admin-ops-surface-revamp.spec.ts tests/admin-config-audit.spec.ts --workers=1` (skipped in this environment — missing Supabase env vars)
+
+### Next execution target
+
+- Post-Wave 2: Performance baseline, accessibility audit, or feature work per roadmap.
+
 ## 🔄 2026-02-21 Governance Integrity Update (Task 10 Release Gate Checkpoint)
 
 - Implemented release-gate workflow split in CI:

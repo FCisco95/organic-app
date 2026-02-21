@@ -2,6 +2,64 @@
 
 Add newest entries at the top.
 
+## 2026-02-21 (Session: UI/UX revamp wave 2 - slices 6–8 + sign-off)
+
+### Summary
+
+Completed the remaining three feature-vertical UI/UX revamp slices (Members & Profile, Notifications & Auth, Admin Ops) plus the cross-feature consistency pass, closing Wave 2.
+
+### Slice 6 — Members and Profile
+
+- Task 1 (failing tests):
+  - Created `tests/members-profile-surface-revamp.spec.ts` with three serial tests: members directory filters/trust-cues, member profile header/stats/reputation, profile page identity/activity/preferences sections.
+  - Extended `tests/profile.spec.ts` with new `Profile section layout` describe block asserting section test IDs.
+- Task 2 (members directory and member profile revamp):
+  - `src/components/members/member-filters.tsx`: added `data-testid="members-filter-search"` and `data-testid="members-filter-role"`.
+  - `src/components/members/member-grid.tsx`: added `data-testid="members-grid"` and `data-testid="members-pagination"`.
+  - `src/components/members/member-card.tsx`: added `data-testid="member-card-${id}"`, `data-testid="member-role-badge"`, `data-testid="member-level-badge"`.
+  - `src/app/[locale]/members/page.tsx`: added `data-testid="members-page"` wrapper.
+  - `src/app/[locale]/members/[id]/page.tsx`: added `data-testid="member-profile-page"`, `member-profile-header`, `member-stats-grid`, `member-reputation-section`, `member-achievements-grid`.
+- Task 3 (profile page structure and preferences flows):
+  - `src/app/[locale]/profile/page.tsx`: imported `ReputationSummary`; added `data-testid="profile-page"`, `profile-identity-section`, `profile-reputation-section` (new section using `ReputationSummary`), `profile-activity-section`, `profile-preferences-section`.
+  - `src/components/reputation/reputation-summary.tsx`: added `data-testid="reputation-summary"`.
+  - `src/components/notifications/notification-preferences.tsx`: added `data-testid="notification-preferences"`.
+
+### Slice 7 — Notifications and Auth
+
+- Task 1 (failing tests):
+  - Created `tests/notifications-auth-surface-revamp.spec.ts` with four serial tests: notifications filter tabs/preferences toggle, login page form, signup page form, auth error page recovery actions.
+  - Extended `tests/proposals.spec.ts` with `Auth page structure` describe block.
+- Task 2 (notifications page revamp):
+  - `src/app/[locale]/notifications/page.tsx`: added `data-testid="notifications-page"`, `notifications-preferences-toggle`, `notifications-filter-tabs`, `notifications-list`.
+- Task 3 (auth pages revamp):
+  - `src/app/[locale]/login/page.tsx`: added `data-testid="login-page"` and `login-form`.
+  - `src/app/[locale]/signup/page.tsx`: added `data-testid="signup-page"` and `signup-form`.
+  - `src/app/[locale]/auth/error/page.tsx`: added `data-testid="auth-error-page"`.
+
+### Slice 8 — Admin Ops
+
+- Task 1 (failing tests):
+  - Created `tests/admin-ops-surface-revamp.spec.ts` with two serial tests: admin settings page tabs/content panel, admin submissions page.
+  - Extended `tests/admin-config-audit.spec.ts` with `Admin settings page structure` describe block.
+  - Extended `tests/tasks.spec.ts` with `Admin submission review page structure` describe block.
+- Task 2 (admin revamp):
+  - `src/app/[locale]/admin/settings/page.tsx`: added `data-testid="admin-settings-page"`, `admin-settings-tabs` wrapper, `admin-settings-content`.
+  - `src/app/[locale]/admin/submissions/page.tsx`: added `data-testid="admin-submissions-page"` wrapper.
+  - `src/components/tasks/task-review-panel.tsx`: added `data-testid="task-review-panel"`.
+
+### Cross-feature consistency pass
+
+- `src/app/[locale]/globals.css`: added Wave 2 consistency token block (`--transition-ui`, `--section-radius`, `--section-padding`) and documenting comment for section card pattern and type scale conventions.
+
+### Validation
+
+- `npm run lint`: passed (no ESLint warnings or errors).
+- `npm run build`: passed (production build clean, all pages compiled successfully).
+
+### Sign-off document
+
+- `docs/plans/2026-02-20-ui-ux-revamp-wave2-signoff.md`
+
 ## 2026-02-20 (Session: UI/UX revamp wave 2 - disputes slice)
 
 ### Summary
