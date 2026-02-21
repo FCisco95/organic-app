@@ -117,3 +117,17 @@
 .stagger-5 { animation-delay: 320ms; }
 .stagger-6 { animation-delay: 400ms; }
 .stagger-7 { animation-delay: 480ms; }
+
+/*
+ * Wave 2 cross-feature consistency tokens
+ * These align spacing, type scale, and motion across all revamped surfaces.
+ *
+ * Section card pattern: bg-white rounded-xl border border-gray-200 p-6
+ * Motion: transition-colors 150ms ease, transition-all 150ms ease
+ * Type scale: text-2xl/bold (page title), text-lg/semibold (section), text-sm (body)
+ */
+:root {
+  --transition-ui: 150ms ease;
+  --section-radius: 0.75rem; /* rounded-xl */
+  --section-padding: 1.5rem; /* p-6 */
+}
