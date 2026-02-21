@@ -30,6 +30,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
 import { NotificationPreferences } from '@/components/notifications/notification-preferences';
+import { ReputationSummary } from '@/components/reputation/reputation-summary';
 
 // Client-side balance cache TTL (15 seconds)
 const BALANCE_CACHE_TTL_MS = 15 * 1000;
@@ -562,6 +563,7 @@ export default function ProfilePage() {
 
   return (
     <PageContainer>
+      <div data-testid="profile-page">
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>
@@ -598,6 +600,8 @@ export default function ProfilePage() {
         )}
       </div>
 
+      {/* Identity Section — avatar, name, bio, account details, social */}
+      <div data-testid="profile-identity-section">
       {/* Profile Header Card */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <div className="flex items-start gap-6">
@@ -694,8 +698,15 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+      </div>
+
+      {/* Reputation Section */}
+      <div data-testid="profile-reputation-section" className="mb-6">
+        <ReputationSummary />
+      </div>
+
+      {/* Activity Section — submission and contribution stats */}
+      <div data-testid="profile-activity-section" className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('statsTitle')}</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="relative rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
@@ -1087,7 +1098,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Notification Preferences */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+      <div data-testid="profile-preferences-section" className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-2">
           {t('notificationPreferencesTitle')}
         </h2>
@@ -1132,6 +1143,7 @@ export default function ProfilePage() {
           <p className="text-sm text-gray-600">{t('verifiedMemberDescription')}</p>
         </div>
       )}
+      </div>
     </PageContainer>
   );
 }

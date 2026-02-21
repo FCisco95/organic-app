@@ -40,7 +40,7 @@ export function NotificationPreferences() {
   };
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-1" data-testid="notification-preferences">
       {/* Header row */}
       <div className="flex items-center justify-between px-1 pb-2 border-b border-border">
         <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
