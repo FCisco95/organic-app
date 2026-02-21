@@ -78,6 +78,7 @@ export default function AdminSettingsPage() {
 
   return (
     <PageContainer width="wide">
+      <div data-testid="admin-settings-page">
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-1">
@@ -94,10 +95,13 @@ export default function AdminSettingsPage() {
 
       {/* Layout: sidebar tabs + content */}
       <div className="flex flex-col md:flex-row gap-6">
-        <SettingsTabs activeTab={activeTab} onTabChange={setActiveTab} />
-        <div className="flex-1 bg-white rounded-xl border border-gray-200 p-6 min-w-0">
+        <div data-testid="admin-settings-tabs">
+          <SettingsTabs activeTab={activeTab} onTabChange={setActiveTab} />
+        </div>
+        <div className="flex-1 bg-white rounded-xl border border-gray-200 p-6 min-w-0" data-testid="admin-settings-content">
           {renderTabContent()}
         </div>
+      </div>
       </div>
     </PageContainer>
   );

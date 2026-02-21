@@ -47,7 +47,7 @@ export function TaskReviewPanel({
   const reviewedSubmissions = submissions.filter((s) => s.review_status !== 'pending');
 
   return (
-    <div className={cn('space-y-6', className)}>
+    <div className={cn('space-y-6', className)} data-testid="task-review-panel">
       {/* Pending Submissions */}
       {pendingSubmissions.length > 0 && (
         <div>

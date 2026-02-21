@@ -77,6 +77,7 @@ export default function SubmissionReviewQueuePage() {
 
   return (
     <PageContainer>
+      <div data-testid="admin-submissions-page">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
         <p className="text-gray-600 mt-2">{t('subtitle')}</p>
@@ -129,6 +130,7 @@ export default function SubmissionReviewQueuePage() {
           })}
         </div>
       )}
+      </div>
     </PageContainer>
   );
 }
