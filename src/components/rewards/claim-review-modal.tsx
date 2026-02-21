@@ -32,7 +32,10 @@ export function ClaimReviewModal({ claim, open, onClose }: ClaimReviewModalProps
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      data-testid="rewards-claim-review-modal"
+    >
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-xl border border-gray-200 shadow-xl w-full max-w-md mx-4 p-6">
         {/* Header */}
@@ -89,6 +92,13 @@ export function ClaimReviewModal({ claim, open, onClose }: ClaimReviewModalProps
             placeholder={t('reviewModal.notePlaceholder')}
             className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-organic-orange/30 focus:border-organic-orange resize-none"
           />
+        </div>
+
+        <div
+          className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800"
+          data-testid="rewards-claim-review-guardrail"
+        >
+          {t('reviewModal.guardrail')}
         </div>
 
         {/* Error */}

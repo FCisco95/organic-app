@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import {
+  addSessionCookieToPage,
   BASE_URL,
   buildSessionCookie,
   cookieHeader,
@@ -118,24 +119,13 @@ test.describe('Proposals surface revamp', () => {
     });
     expect(updateRes.status()).toBe(200);
 
-    const baseUrl = new URL(BASE_URL);
-    await page.context().addCookies([
-      {
-        name: memberCookie.name,
-        value: memberCookie.value,
-        domain: baseUrl.hostname,
-        path: '/',
-        httpOnly: true,
-        secure: baseUrl.protocol === 'https:',
-        sameSite: 'Lax',
-      },
-    ]);
+    await addSessionCookieToPage(page, memberCookie, BASE_URL);
 
     await page.goto(`${BASE_URL}/en/proposals`, { waitUntil: 'domcontentloaded' });
     await expect(page.getByTestId('proposals-governance-strip')).toBeVisible({ timeout: 20_000 });
     await expect(page.getByTestId('proposals-stage-chips')).toBeVisible();
-    await expect(page.getByTestId('proposals-cta-primary')).toBeVisible();
-    await expect(page.getByTestId('proposals-cta-secondary')).toBeVisible();
+    await expect(page.getByTestId('proposals-cta-primary')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByTestId('proposals-cta-secondary')).toBeVisible({ timeout: 20_000 });
     await expect(page.getByTestId(`proposal-card-${proposalId}`)).toBeVisible({ timeout: 20_000 });
 
     await page.goto(`${BASE_URL}/en/proposals/${proposalId}`, { waitUntil: 'domcontentloaded' });

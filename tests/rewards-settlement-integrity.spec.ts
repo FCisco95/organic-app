@@ -203,6 +203,13 @@ test.describe('Rewards settlement integrity', () => {
     expect(sprintRow?.status).toBe('settlement');
     expect(sprintRow?.reward_settlement_status).toBe('held');
 
+    const rewardsRes = await request.get(`${BASE_URL}/api/rewards`, {
+      headers: { Cookie: cookieHeader(adminCookie) },
+    });
+    expect(rewardsRes.status()).toBe(200);
+    const rewardsBody = await rewardsRes.json();
+    expect(rewardsBody.latest_reward_settlement_status).toBe('held');
+
     await cleanupSprintArtifacts(sprintId);
   });
 
@@ -262,6 +269,13 @@ test.describe('Rewards settlement integrity', () => {
       .single();
     expect(sprintRow?.status).toBe('settlement');
     expect(sprintRow?.reward_settlement_status).toBe('killed');
+
+    const rewardsRes = await request.get(`${BASE_URL}/api/rewards`, {
+      headers: { Cookie: cookieHeader(adminCookie) },
+    });
+    expect(rewardsRes.status()).toBe(200);
+    const rewardsBody = await rewardsRes.json();
+    expect(rewardsBody.latest_reward_settlement_status).toBe('killed');
 
     await cleanupSprintArtifacts(sprintId);
   });

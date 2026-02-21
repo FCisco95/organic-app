@@ -13,6 +13,7 @@
 
 import { test, expect } from '@playwright/test';
 import {
+  addSessionCookieToPage,
   missingEnvVars,
   createAdminClient,
   createQaUser,
@@ -139,18 +140,7 @@ test.describe('Task CRUD', () => {
   test('tasks surfaces render execution and operator anchors', async ({ page }) => {
     test.skip(!createdTaskId, 'Requires task creation step');
 
-    const baseUrl = new URL(BASE_URL);
-    await page.context().addCookies([
-      {
-        name: adminCookie.name,
-        value: adminCookie.value,
-        domain: baseUrl.hostname,
-        path: '/',
-        httpOnly: true,
-        secure: baseUrl.protocol === 'https:',
-        sameSite: 'Lax',
-      },
-    ]);
+    await addSessionCookieToPage(page, adminCookie, BASE_URL);
 
     await page.goto(`${BASE_URL}/en/tasks`, { waitUntil: 'domcontentloaded' });
     await expect(page.getByTestId('tasks-execution-cockpit')).toBeVisible({ timeout: 20_000 });

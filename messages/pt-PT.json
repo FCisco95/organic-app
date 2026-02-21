@@ -1780,18 +1780,37 @@
   "Rewards": {
     "title": "Recompensas",
     "subtitle": "Reclamar tokens ORG pelas suas contribuições à DAO",
+    "trustPanel": {
+      "settlementLabel": "Última liquidação: {value}",
+      "thresholdLabel": "Reclamação mínima: {value} pontos",
+      "reviewLabel": "Todas as reclamações são revistas antes do pagamento"
+    },
     "signInRequired": "Início de Sessão Necessário",
     "signInDescription": "Inicie sessão para ver as suas recompensas e reclamar tokens.",
     "loadError": "Falha ao carregar dados de recompensas",
     "overview": {
       "title": "As Suas Recompensas",
       "subtitle": "Converter pontos ganhos em tokens ORG",
+      "claimabilityTitle": "Checklist de elegibilidade",
+      "claimabilitySubtitle": "Conclua cada requisito antes de submeter uma reclamação.",
       "claimable": "Pontos Reclamáveis",
       "tokenEquivalent": "≈ {amount} ORG",
       "pending": "Reclamações Pendentes",
       "pendingLabel": "A aguardar revisão",
       "distributed": "Total Recebido",
       "tokensReceived": "Tokens ORG distribuídos",
+      "pointsChecklist": "Pontos prontos: {points} disponíveis / {min} mínimo",
+      "walletChecklist": {
+        "required": "A carteira deve estar ligada para pagamento",
+        "optional": "Ligação de carteira opcional nesta organização"
+      },
+      "settlementChecklist": "O estado de liquidação permite pagamento seguro",
+      "ready": "Pronto",
+      "actionRequired": "Ação necessária",
+      "flowTitle": "Como uma reclamação avança",
+      "flowStepSubmit": "Submeta a reclamação com o montante de pontos.",
+      "flowStepReview": "Admin revê e aprova ou rejeita.",
+      "flowStepPayout": "Reclamações aprovadas são pagas com prova de transação registada.",
       "conversionRate": "{rate} pontos = 1 token ORG",
       "minThreshold": "Mín: {min} pontos",
       "claimButton": "Reclamar Recompensas",
@@ -1800,7 +1819,15 @@
       "belowThreshold": "Necessário mínimo de {min} pontos",
       "settlementIntegrity": "Integridade da liquidação",
       "settlementCapAndCarryover": "Limite: {cap} ORG • Carryover: {carryover} ORG",
+      "lastSettlementAt": "Última atualização: {value}",
       "settlementReason": "Motivo do bloqueio: {reason}",
+      "guidance": {
+        "disabled": "As reclamações estão em pausa porque as recompensas estão desativadas nas definições da organização.",
+        "wallet": "Ligue a sua carteira antes de submeter para que o pagamento possa ser liquidado.",
+        "threshold": "Está abaixo do limiar mínimo de reclamação. Continue a contribuir para desbloquear elegibilidade.",
+        "settlementBlocked": "As reclamações continuam visíveis, mas a integridade de liquidação está bloqueada. Verifique o motivo antes de escalar.",
+        "ready": "O fluxo de reclamação está pronto. Submeta quando quiser."
+      },
       "settlementStatus": {
         "pending": "Pendente",
         "committed": "Concluída",
@@ -1811,7 +1838,9 @@
     },
     "sections": {
       "myClaims": "Minhas Reclamações",
-      "myDistributions": "Minhas Distribuições"
+      "myDistributions": "Minhas Distribuições",
+      "myClaimsWithCount": "Minhas Reclamações ({count})",
+      "myDistributionsWithCount": "Minhas Distribuições ({count})"
     },
     "claimStatus": {
       "pending": "Pendente",
@@ -1837,6 +1866,12 @@
       "points": "Pontos",
       "tokens": "Tokens",
       "status": "Estado",
+      "queueAge": "Tempo em fila",
+      "risk": "Risco",
+      "ageHours": "{hours}h",
+      "riskNone": "Saudável",
+      "riskWatch": "Atenção",
+      "riskUrgent": "Urgente",
       "date": "Data",
       "actions": "Ações",
       "review": "Rever",
@@ -1848,6 +1883,9 @@
       "type": "Tipo",
       "category": "Categoria",
       "settlement": "Liquidação",
+      "integrity": "Integridade",
+      "integrityClean": "Limpa",
+      "integrityHold": "Bloqueio",
       "tokens": "Tokens",
       "reason": "Motivo",
       "date": "Data"
@@ -1862,6 +1900,7 @@
       "conversionRate": "Taxa de conversão",
       "pointsPerToken": "pts/ORG",
       "walletLabel": "Carteira de pagamento:",
+      "guardrail": "Submeter uma reclamação deduz pontos reclamáveis imediatamente. Reclamações rejeitadas são reembolsadas no fluxo de revisão.",
       "cancel": "Cancelar",
       "submit": "Submeter Reclamação",
       "submitting": "A submeter..."
@@ -1874,6 +1913,7 @@
       "wallet": "Carteira",
       "noteLabel": "Nota do Admin (opcional)",
       "notePlaceholder": "Adicione uma nota sobre esta decisão...",
+      "guardrail": "Aprovar uma reclamação abre o fluxo de pagamento. A rejeição reembolsa pontos e deve incluir motivo claro.",
       "approve": "Aprovar",
       "reject": "Rejeitar"
     },
@@ -1884,6 +1924,7 @@
       "wallet": "Carteira",
       "txLabel": "Assinatura da Transação",
       "txPlaceholder": "Cole a assinatura tx Solana...",
+      "guardrail": "A confirmação de pagamento é irreversível. Verifique destinatário, montante e assinatura antes de submeter.",
       "cancel": "Cancelar",
       "confirm": "Confirmar Pagamento",
       "processing": "A processar..."
@@ -1895,6 +1936,7 @@
       "tokenAmountPlaceholder": "Quantidade de tokens",
       "reasonPlaceholder": "Motivo da distribuição",
       "addRecipient": "Adicionar Destinatário",
+      "guardrail": "Distribuições manuais são auditadas e devem ser usadas apenas para bónus, recompensas ou correções explícitas.",
       "cancel": "Cancelar",
       "submit": "Enviar Distribuição",
       "sending": "A enviar..."
@@ -1906,7 +1948,13 @@
       "accessDeniedDesc": "Acesso de admin ou conselho necessário.",
       "totalDistributed": "Total Distribuído",
       "pendingClaims": "Reclamações Pendentes",
+      "atRiskClaims": "Fila em risco",
+      "urgentClaims": "{count} urgentes",
       "approvedClaims": "Aprovadas (Não Pagas)",
+      "payoutGuardrailsTitle": "Guardrails de pagamento",
+      "payoutGuardrailsBody": "Confirme estado da reclamação, montante e assinatura da transação antes de marcar como pago.",
+      "distributionIntegrityTitle": "Estado de integridade da distribuição",
+      "distributionIntegrityBody": "Mantenha correções manuais raras e documentadas. Bloqueios de liquidação e kill-switch devem ser resolvidos antes de novos pagamentos.",
       "manualDistribute": "Distribuição Manual",
       "manualTitle": "Distribuição Manual",
       "manualDescription": "Enviar recompensas em tokens diretamente a contribuidores para bónus, recompensas ou correções.",

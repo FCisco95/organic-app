@@ -27,6 +27,7 @@ export const DISTRIBUTION_TYPE_LABELS: Record<DistributionType, string> = {
 };
 
 export type RewardSettlementStatus = 'pending' | 'committed' | 'held' | 'killed';
+export type ClaimQueueRisk = 'none' | 'watch' | 'urgent';
 
 export type DistributionCategory =
   | 'epoch_reward'
@@ -80,6 +81,8 @@ export interface RewardClaim {
   // Joined fields (optional)
   user_name?: string | null;
   user_email?: string | null;
+  queue_risk?: ClaimQueueRisk;
+  age_hours?: number;
 }
 
 export interface RewardDistribution {

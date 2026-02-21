@@ -35,11 +35,12 @@ export function RewardsSummaryCards({ summary }: RewardsSummaryCardsProps) {
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3" data-testid="rewards-admin-summary-cards">
       {cards.map((card) => (
         <div
           key={card.label}
-          className="bg-white rounded-xl border border-gray-200 p-4"
+          className="rounded-xl border border-gray-200 bg-white p-4"
+          data-testid="rewards-admin-summary-card"
         >
           <div className="flex items-center gap-2 mb-2">
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${card.color}`}>

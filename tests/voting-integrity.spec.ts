@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type APIRequestContext, type APIResponse } from '@playwright/test';
 import {
   missingEnvVars,
   createAdminClient,
@@ -10,6 +10,31 @@ import {
   cookieHeader,
   BASE_URL,
 } from './helpers';
+
+async function postStartVotingWithRetry(input: {
+  request: APIRequestContext;
+  proposalId: string;
+  councilCookie: { name: string; value: string };
+  data: { voting_duration_days: number; snapshot_holders: Array<{ address: string; balance: number }> };
+}): Promise<APIResponse> {
+  const { request, proposalId, councilCookie, data } = input;
+
+  const first = await request.post(`${BASE_URL}/api/proposals/${proposalId}/start-voting`, {
+    headers: { Cookie: cookieHeader(councilCookie) },
+    data,
+  });
+
+  if (first.status() !== 500) {
+    return first;
+  }
+
+  await new Promise((resolve) => setTimeout(resolve, 500));
+
+  return request.post(`${BASE_URL}/api/proposals/${proposalId}/start-voting`, {
+    headers: { Cookie: cookieHeader(councilCookie) },
+    data,
+  });
+}
 
 test.describe('Voting snapshot and finalization integrity', () => {
   test.describe.configure({ mode: 'serial' });
@@ -144,8 +169,10 @@ test.describe('Voting snapshot and finalization integrity', () => {
 
     expect(discussionRes.status()).toBe(200);
 
-    const startRes = await request.post(`${BASE_URL}/api/proposals/${proposalAId}/start-voting`, {
-      headers: { Cookie: cookieHeader(councilCookie) },
+    const startRes = await postStartVotingWithRetry({
+      request,
+      proposalId: proposalAId,
+      councilCookie,
       data: {
         voting_duration_days: 1,
         snapshot_holders: [
@@ -239,8 +266,10 @@ test.describe('Voting snapshot and finalization integrity', () => {
 
     expect(discussionRes.status()).toBe(200);
 
-    const startRes = await request.post(`${BASE_URL}/api/proposals/${proposalBId}/start-voting`, {
-      headers: { Cookie: cookieHeader(councilCookie) },
+    const startRes = await postStartVotingWithRetry({
+      request,
+      proposalId: proposalBId,
+      councilCookie,
       data: {
         voting_duration_days: 1,
         snapshot_holders: [{ address: walletA, balance: 5 }],

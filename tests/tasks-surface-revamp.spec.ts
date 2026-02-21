@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import {
+  addSessionCookieToPage,
   BASE_URL,
   buildSessionCookie,
   cookieHeader,
@@ -136,18 +137,7 @@ test.describe('Tasks surface revamp', () => {
   test('shows execution cockpit and filter hierarchy on tasks list', async ({ page }) => {
     test.skip(!primaryTaskId, 'Requires primary task fixture');
 
-    const baseUrl = new URL(BASE_URL);
-    await page.context().addCookies([
-      {
-        name: adminCookie.name,
-        value: adminCookie.value,
-        domain: baseUrl.hostname,
-        path: '/',
-        httpOnly: true,
-        secure: baseUrl.protocol === 'https:',
-        sameSite: 'Lax',
-      },
-    ]);
+    await addSessionCookieToPage(page, adminCookie, BASE_URL);
 
     await page.goto(`${BASE_URL}/en/tasks`, { waitUntil: 'domcontentloaded' });
     await expect(page.getByTestId('tasks-page')).toBeVisible({ timeout: 20_000 });
@@ -162,18 +152,7 @@ test.describe('Tasks surface revamp', () => {
   test('shows operator action zones on task detail', async ({ page }) => {
     test.skip(!primaryTaskId, 'Requires primary task fixture');
 
-    const baseUrl = new URL(BASE_URL);
-    await page.context().addCookies([
-      {
-        name: adminCookie.name,
-        value: adminCookie.value,
-        domain: baseUrl.hostname,
-        path: '/',
-        httpOnly: true,
-        secure: baseUrl.protocol === 'https:',
-        sameSite: 'Lax',
-      },
-    ]);
+    await addSessionCookieToPage(page, adminCookie, BASE_URL);
 
     await page.goto(`${BASE_URL}/en/tasks/${primaryTaskId}`, { waitUntil: 'domcontentloaded' });
     await expect(page.getByTestId('task-detail-header')).toBeVisible({ timeout: 20_000 });

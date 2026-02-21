@@ -44,7 +44,7 @@ export function ClaimModal({ rewards, open, onClose }: ClaimModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center" data-testid="rewards-claim-modal">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-xl border border-gray-200 shadow-xl w-full max-w-md mx-4 p-6">
         {/* Header */}
@@ -117,6 +117,13 @@ export function ClaimModal({ rewards, open, onClose }: ClaimModalProps) {
             </span>
           </div>
         )}
+
+        <div
+          className="mb-4 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-800"
+          data-testid="rewards-claim-modal-guardrail"
+        >
+          {t('claimModal.guardrail')}
+        </div>
 
         {/* Error */}
         {submitClaim.isError && (

@@ -1780,18 +1780,37 @@
   "Rewards": {
     "title": "Rewards",
     "subtitle": "Claim ORG tokens for your contributions to the DAO",
+    "trustPanel": {
+      "settlementLabel": "Latest settlement: {value}",
+      "thresholdLabel": "Minimum claim: {value} points",
+      "reviewLabel": "All claims are reviewed before payout"
+    },
     "signInRequired": "Sign in Required",
     "signInDescription": "Sign in to view your rewards and claim tokens.",
     "loadError": "Failed to load rewards data",
     "overview": {
       "title": "Your Rewards",
       "subtitle": "Convert earned points into ORG tokens",
+      "claimabilityTitle": "Claimability checklist",
+      "claimabilitySubtitle": "Complete each requirement before submitting a claim.",
       "claimable": "Claimable Points",
       "tokenEquivalent": "≈ {amount} ORG",
       "pending": "Pending Claims",
       "pendingLabel": "Awaiting review",
       "distributed": "Total Received",
       "tokensReceived": "ORG tokens distributed",
+      "pointsChecklist": "Points ready: {points} available / {min} minimum",
+      "walletChecklist": {
+        "required": "Wallet must be linked for payout",
+        "optional": "Wallet link optional for this org"
+      },
+      "settlementChecklist": "Settlement posture allows safe payout",
+      "ready": "Ready",
+      "actionRequired": "Action required",
+      "flowTitle": "How claims move",
+      "flowStepSubmit": "Submit a claim with your points amount.",
+      "flowStepReview": "Admin reviews and approves or rejects.",
+      "flowStepPayout": "Approved claims are paid with recorded tx proof.",
       "conversionRate": "{rate} points = 1 ORG token",
       "minThreshold": "Min: {min} points",
       "claimButton": "Claim Rewards",
@@ -1800,7 +1819,15 @@
       "belowThreshold": "Need {min} points minimum",
       "settlementIntegrity": "Settlement integrity",
       "settlementCapAndCarryover": "Cap: {cap} ORG • Carryover: {carryover} ORG",
+      "lastSettlementAt": "Last update: {value}",
       "settlementReason": "Hold reason: {reason}",
+      "guidance": {
+        "disabled": "Claims are paused because rewards are currently disabled in org settings.",
+        "wallet": "Link your wallet before submitting a claim so payout can be settled.",
+        "threshold": "You are below the minimum claim threshold. Continue contributing to unlock claimability.",
+        "settlementBlocked": "Claims remain visible, but settlement integrity is currently blocked. Check hold reason before escalating.",
+        "ready": "Your claim path is clear. Submit when you are ready."
+      },
       "settlementStatus": {
         "pending": "Pending",
         "committed": "Committed",
@@ -1811,7 +1838,9 @@
     },
     "sections": {
       "myClaims": "My Claims",
-      "myDistributions": "My Distributions"
+      "myDistributions": "My Distributions",
+      "myClaimsWithCount": "My Claims ({count})",
+      "myDistributionsWithCount": "My Distributions ({count})"
     },
     "claimStatus": {
       "pending": "Pending",
@@ -1837,6 +1866,12 @@
       "points": "Points",
       "tokens": "Tokens",
       "status": "Status",
+      "queueAge": "Queue Age",
+      "risk": "Risk",
+      "ageHours": "{hours}h",
+      "riskNone": "Healthy",
+      "riskWatch": "Watch",
+      "riskUrgent": "Urgent",
       "date": "Date",
       "actions": "Actions",
       "review": "Review",
@@ -1848,6 +1883,9 @@
       "type": "Type",
       "category": "Category",
       "settlement": "Settlement",
+      "integrity": "Integrity",
+      "integrityClean": "Clean",
+      "integrityHold": "Hold",
       "tokens": "Tokens",
       "reason": "Reason",
       "date": "Date"
@@ -1862,6 +1900,7 @@
       "conversionRate": "Conversion rate",
       "pointsPerToken": "pts/ORG",
       "walletLabel": "Payout wallet:",
+      "guardrail": "Submitting a claim deducts claimable points immediately. Rejected claims are refunded by the review path.",
       "cancel": "Cancel",
       "submit": "Submit Claim",
       "submitting": "Submitting..."
@@ -1874,6 +1913,7 @@
       "wallet": "Wallet",
       "noteLabel": "Admin Note (optional)",
       "notePlaceholder": "Add a note about this decision...",
+      "guardrail": "Approving a claim unlocks payout. Rejection refunds points and should include a clear reason.",
       "approve": "Approve",
       "reject": "Reject"
     },
@@ -1884,6 +1924,7 @@
       "wallet": "Wallet",
       "txLabel": "Transaction Signature",
       "txPlaceholder": "Paste Solana tx signature...",
+      "guardrail": "Payment confirmation is irreversible. Verify recipient, amount, and transaction signature before submitting.",
       "cancel": "Cancel",
       "confirm": "Confirm Payment",
       "processing": "Processing..."
@@ -1895,6 +1936,7 @@
       "tokenAmountPlaceholder": "Token amount",
       "reasonPlaceholder": "Reason for distribution",
       "addRecipient": "Add Recipient",
+      "guardrail": "Manual distributions are audited and should only be used for explicit bonuses, bounties, or corrections.",
       "cancel": "Cancel",
       "submit": "Send Distribution",
       "sending": "Sending..."
@@ -1906,7 +1948,13 @@
       "accessDeniedDesc": "Admin or council access required.",
       "totalDistributed": "Total Distributed",
       "pendingClaims": "Pending Claims",
+      "atRiskClaims": "At-risk queue",
+      "urgentClaims": "{count} urgent",
       "approvedClaims": "Approved (Unpaid)",
+      "payoutGuardrailsTitle": "Payout guardrails",
+      "payoutGuardrailsBody": "Confirm claim status, payout amount, and tx signature before marking a claim as paid.",
+      "distributionIntegrityTitle": "Distribution integrity posture",
+      "distributionIntegrityBody": "Keep manual corrections rare and documented. Settlement holds or kill-switch states should be resolved before new payout waves.",
       "manualDistribute": "Manual Distribution",
       "manualTitle": "Manual Distribution",
       "manualDescription": "Send token rewards directly to contributors for bonuses, bounties, or corrections.",

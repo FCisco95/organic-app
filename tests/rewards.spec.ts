@@ -101,6 +101,10 @@ test.describe('Rewards API', () => {
     expect(body).toHaveProperty('conversion_rate');
     expect(body).toHaveProperty('min_threshold');
     expect(body).toHaveProperty('rewards_enabled');
+    expect(body).toHaveProperty('latest_reward_settlement_status');
+    expect(body).toHaveProperty('latest_reward_settlement_reason');
+    expect(body).toHaveProperty('latest_reward_emission_cap');
+    expect(body).toHaveProperty('latest_reward_carryover_amount');
     expect(typeof body.claimable_points).toBe('number');
 
     minThreshold = body.min_threshold;

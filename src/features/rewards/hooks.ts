@@ -8,6 +8,18 @@ import type {
   RewardsSummary,
 } from './types';
 
+function buildQueryString(filters: Record<string, unknown>): string {
+  const params = new URLSearchParams();
+
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === '') return;
+    params.set(key, String(value));
+  });
+
+  const query = params.toString();
+  return query ? `?${query}` : '';
+}
+
 // ─── Query Key Factory ─────────────────────────────────────────────
 
 export const rewardsKeys = {
@@ -29,7 +41,9 @@ export function useUserRewards(options?: { enabled?: boolean }) {
       if (!res.ok) throw new Error('Failed to fetch rewards info');
       return res.json();
     },
-    staleTime: 30_000,
+    staleTime: 20_000,
+    refetchInterval: options?.enabled ? 60_000 : false,
+    refetchOnWindowFocus: false,
     enabled: options?.enabled,
   });
 }
@@ -40,15 +54,19 @@ export function useRewardClaims(filters?: { status?: string; page?: number; limi
   return useQuery({
     queryKey: rewardsKeys.claims(filters),
     queryFn: async (): Promise<{ claims: RewardClaim[]; total: number }> => {
-      const params = new URLSearchParams();
-      if (filters?.status) params.set('status', filters.status);
-      if (filters?.page) params.set('page', String(filters.page));
-      if (filters?.limit) params.set('limit', String(filters.limit));
-      const res = await fetch(`/api/rewards/claims?${params.toString()}`);
+      const res = await fetch(
+        `/api/rewards/claims${buildQueryString({
+          status: filters?.status,
+          page: filters?.page,
+          limit: filters?.limit,
+        })}`
+      );
       if (!res.ok) throw new Error('Failed to fetch claims');
       return res.json();
     },
     staleTime: 15_000,
+    placeholderData: (previous) => previous,
+    refetchOnWindowFocus: false,
   });
 }
 
@@ -143,16 +161,20 @@ export function useDistributions(filters?: {
   return useQuery({
     queryKey: rewardsKeys.distributions(filters),
     queryFn: async (): Promise<{ distributions: RewardDistribution[]; total: number }> => {
-      const params = new URLSearchParams();
-      if (filters?.type) params.set('type', filters.type);
-      if (filters?.sprint_id) params.set('sprint_id', filters.sprint_id);
-      if (filters?.page) params.set('page', String(filters.page));
-      if (filters?.limit) params.set('limit', String(filters.limit));
-      const res = await fetch(`/api/rewards/distributions?${params.toString()}`);
+      const res = await fetch(
+        `/api/rewards/distributions${buildQueryString({
+          type: filters?.type,
+          sprint_id: filters?.sprint_id,
+          page: filters?.page,
+          limit: filters?.limit,
+        })}`
+      );
       if (!res.ok) throw new Error('Failed to fetch distributions');
       return res.json();
     },
     staleTime: 30_000,
+    placeholderData: (previous) => previous,
+    refetchOnWindowFocus: false,
   });
 }
 
@@ -199,7 +221,9 @@ export function useRewardsSummary(options?: { enabled?: boolean }) {
       if (!res.ok) throw new Error('Failed to fetch rewards summary');
       return res.json();
     },
-    staleTime: 60_000,
+    staleTime: 45_000,
+    refetchInterval: options?.enabled ? 90_000 : false,
+    refetchOnWindowFocus: false,
     enabled: options?.enabled,
   });
 }

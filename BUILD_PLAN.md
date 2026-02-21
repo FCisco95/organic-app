@@ -1,5 +1,68 @@
 # Organic DAO Platform - Build Plan
 
+## 🔄 2026-02-21 Governance Integrity Update (Task 10 Release Gate Checkpoint)
+
+- Implemented release-gate workflow split in CI:
+  - required blocker: `e2e-integrity` (proposal/voting/task-linkage/sprint/dispute/rewards/admin-config integrity specs),
+  - non-blocking evidence: `e2e-full-evidence` (full Playwright suite with artifact upload).
+- Added release-gate guidance to `README.md`:
+  - blocking commands and required env vars for integrity E2E.
+- Added local release-gate evidence draft in ignored docs path:
+  - `docs/plans/2026-02-20-core-features-revamp-release-gate.md` (not git-tracked due `.gitignore` policy).
+
+### Task 10 validation evidence
+
+- [x] `npm run lint` (pass)
+- [x] `npm run build` (pass)
+- [x] `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3000 npx playwright test tests/proposals-lifecycle.spec.ts tests/voting-integrity.spec.ts tests/proposal-task-flow.spec.ts tests/sprint-phase-engine.spec.ts tests/dispute-sla.spec.ts tests/rewards-settlement-integrity.spec.ts tests/admin-config-audit.spec.ts --workers=1` (13 skipped in this environment due missing required Supabase env vars for these fixtures)
+- [ ] `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3000 npm run test:e2e -- --workers=1` (4 failed, 73 skipped in this environment; failures caused by Chromium sandbox constraint: `sandbox_host_linux.cc:41 ... Operation not permitted`)
+
+### Task 10 status
+
+- ⏳ Release gate implementation complete; final sign-off remains blocked on environment-capable E2E execution + manual QA matrix evidence.
+
+### Next execution target
+
+- UI/UX Revamp Wave 2 - Feature 6 (Members and Profile revamp): `docs/plans/2026-02-20-members-profile-ui-ux-revamp-plan.md`.
+
+## 🔄 2026-02-21 UI/UX Revamp Wave 2 (Rewards Slice Checkpoint)
+
+- Executed rewards revamp slice from `docs/plans/2026-02-20-ui-ux-revamp-wave2-master-plan.md`:
+  - Added trust-first member rewards surface with settlement posture, claimability checklist, and claim flow guidance:
+    - `src/app/[locale]/rewards/page.tsx`
+    - `src/components/rewards/rewards-overview.tsx`
+  - Added admin triage command deck with pending risk cues and payout/distribution guardrail rails:
+    - `src/app/[locale]/admin/rewards/page.tsx`
+    - `src/components/rewards/rewards-summary-cards.tsx`
+  - Added risk and integrity cues in rewards tables and modal guardrails:
+    - `src/components/rewards/claims-table.tsx`
+    - `src/components/rewards/distributions-table.tsx`
+    - `src/components/rewards/claim-modal.tsx`
+    - `src/components/rewards/claim-review-modal.tsx`
+    - `src/components/rewards/claim-pay-modal.tsx`
+    - `src/components/rewards/manual-distribution-modal.tsx`
+  - Tightened rewards query posture and typings:
+    - `src/features/rewards/hooks.ts`
+    - `src/features/rewards/types.ts`
+  - Added/updated rewards revamp tests:
+    - `tests/rewards-surface-revamp.spec.ts`
+    - `tests/rewards.spec.ts`
+    - `tests/rewards-settlement-integrity.spec.ts`
+  - Updated rewards i18n copy for member/admin trust and guardrail messaging:
+    - `messages/en.json`
+    - `messages/pt-PT.json`
+    - `messages/zh-CN.json`
+
+### Rewards slice validation evidence
+
+- [x] `npm run lint` (pass)
+- [x] `npm run build` (pass)
+- [x] `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3000 npx playwright test tests/rewards-surface-revamp.spec.ts tests/rewards.spec.ts tests/rewards-settlement-integrity.spec.ts --workers=1` (10 skipped in this environment due missing required Supabase env vars for these fixtures)
+
+### Next execution target
+
+- UI/UX Revamp Wave 2 - Feature 6 (Members and Profile revamp): `docs/plans/2026-02-20-members-profile-ui-ux-revamp-plan.md`.
+
 ## 🔄 2026-02-20 UI/UX Revamp Wave 2 (Disputes Slice Checkpoint)
 
 - Executed disputes revamp slice from `docs/plans/2026-02-20-ui-ux-revamp-wave2-master-plan.md`:

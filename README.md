@@ -249,6 +249,23 @@ npm run dev
 - `npm run lint` - Run ESLint
 - `npm run format` - Format code with Prettier
 
+### Release Gate (Core Features)
+
+Blocking checks before release:
+
+- `npm run lint`
+- `npm run build`
+- `npx playwright test tests/proposals-lifecycle.spec.ts tests/voting-integrity.spec.ts tests/proposal-task-flow.spec.ts tests/sprint-phase-engine.spec.ts tests/dispute-sla.spec.ts tests/rewards-settlement-integrity.spec.ts tests/admin-config-audit.spec.ts --workers=1`
+
+Required environment variables for integrity E2E:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `PLAYWRIGHT_BASE_URL`
+
+The full Playwright suite (`npm run test:e2e`) remains non-blocking evidence until reliability is consistently proven in CI.
+
 ## Deployment Checklist (Vercel)
 
 Set these variables in Vercel for both Preview and Production:

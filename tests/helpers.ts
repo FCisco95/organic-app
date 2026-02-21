@@ -7,6 +7,7 @@
  */
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import type { Page } from '@playwright/test';
 
 export type QaUser = {
   id: string;
@@ -296,4 +297,43 @@ export async function insertDisputeWindowSprint(
 /** Cookie header string from a session cookie object. */
 export function cookieHeader(cookie: { name: string; value: string }): string {
   return `${cookie.name}=${cookie.value}`;
+}
+
+/**
+ * Adds a Supabase auth session cookie to a Playwright page context.
+ * Cookie must be browser-readable (httpOnly=false) because createBrowserClient
+ * uses document.cookie for auth storage in client-side pages.
+ */
+export async function addSessionCookieToPage(
+  page: Page,
+  cookie: { name: string; value: string },
+  baseUrl: string = BASE_URL
+): Promise<void> {
+  const parsed = new URL(baseUrl);
+  const secure = parsed.protocol === 'https:';
+  const isLocalHost = parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1';
+  const alternateHost = parsed.hostname === 'localhost' ? '127.0.0.1' : 'localhost';
+
+  await page.context().addCookies([
+    {
+      name: cookie.name,
+      value: cookie.value,
+      url: `${parsed.protocol}//${parsed.host}`,
+      httpOnly: false,
+      secure,
+      sameSite: 'Lax',
+    },
+    ...(isLocalHost
+      ? [
+          {
+            name: cookie.name,
+            value: cookie.value,
+            url: `${parsed.protocol}//${alternateHost}:${parsed.port || (secure ? '443' : '80')}`,
+            httpOnly: false as const,
+            secure,
+            sameSite: 'Lax' as const,
+          },
+        ]
+      : []),
+  ]);
 }

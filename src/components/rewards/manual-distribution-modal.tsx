@@ -70,7 +70,10 @@ export function ManualDistributionModal({ open, onClose }: ManualDistributionMod
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      data-testid="rewards-manual-distribution-modal"
+    >
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-xl border border-gray-200 shadow-xl w-full max-w-2xl mx-4 p-6 max-h-[80vh] overflow-y-auto">
         {/* Header */}
@@ -151,6 +154,13 @@ export function ManualDistributionModal({ open, onClose }: ManualDistributionMod
           <Plus className="w-4 h-4" />
           {t('manualModal.addRecipient')}
         </button>
+
+        <div
+          className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800"
+          data-testid="rewards-manual-distribution-guardrail"
+        >
+          {t('manualModal.guardrail')}
+        </div>
 
         {/* Error */}
         {manualDist.isError && (

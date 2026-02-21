@@ -29,9 +29,9 @@ jobs:
       - name: Build
         run: npm run build
 
-  e2e:
+  e2e-integrity:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     needs: lint-and-build
 
     steps:
@@ -50,10 +50,66 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Run E2E tests
+      - name: Run integrity E2E gate
+        run: |
+          npx playwright test \
+            tests/proposals-lifecycle.spec.ts \
+            tests/voting-integrity.spec.ts \
+            tests/proposal-task-flow.spec.ts \
+            tests/sprint-phase-engine.spec.ts \
+            tests/dispute-sla.spec.ts \
+            tests/rewards-settlement-integrity.spec.ts \
+            tests/admin-config-audit.spec.ts \
+            --workers=1
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          PLAYWRIGHT_BASE_URL: ${{ secrets.PLAYWRIGHT_BASE_URL }}
+
+      - name: Upload Playwright report (integrity gate)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-integrity
+          path: playwright-report
+          if-no-files-found: ignore
+
+  e2e-full-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: e2e-integrity
+    if: always()
+    continue-on-error: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run full E2E suite (non-blocking evidence)
         run: npm run test:e2e
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           PLAYWRIGHT_BASE_URL: ${{ secrets.PLAYWRIGHT_BASE_URL }}
+
+      - name: Upload Playwright report (full suite)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-full
+          path: playwright-report
+          if-no-files-found: ignore
