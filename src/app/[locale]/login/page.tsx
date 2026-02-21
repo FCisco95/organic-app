@@ -58,7 +58,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0d1117] p-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#0d1117] p-4" data-testid="login-page">
       <div className="w-full max-w-[340px]">
         {/* Logo */}
         <div className="text-center mb-6">
@@ -78,7 +78,7 @@ export default function LoginPage() {
         <div className="bg-[#161b22] rounded-md border border-[#30363d] p-6">
           <h1 className="text-2xl font-light text-white mb-2 text-center">{t('title')}</h1>
 
-          <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+          <form onSubmit={handleSubmit} className="space-y-4 mt-4" data-testid="login-form">
             {/* Email */}
             <div>
               <label htmlFor="email" className="block text-sm font-normal text-[#c9d1d9] mb-2">
