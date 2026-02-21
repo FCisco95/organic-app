@@ -1,5 +1,16 @@
 import { test, expect } from '@playwright/test';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import {
+  addSessionCookieToPage,
+  BASE_URL as HELPERS_BASE_URL,
+  buildSessionCookie as helpersBuildSessionCookie,
+  createAdminClient,
+  createQaUser as helpersCreateQaUser,
+  deleteQaUser,
+  missingEnvVars,
+  randomOrganicId,
+  runId,
+} from './helpers';
 
 type QaUser = {
   id: string;
@@ -113,6 +124,52 @@ async function buildSessionCookie(
     value: `base64-${toBase64Url(rawValue)}`,
   };
 }
+
+test.describe('Profile section layout', () => {
+  test.describe.configure({ mode: 'serial' });
+
+  const missing = missingEnvVars();
+  let userId = '';
+  let cookie = { name: '', value: '' };
+
+  test.beforeEach(async () => {
+    test.skip(missing.length > 0, `Missing env vars: ${missing.join(', ')}`);
+  });
+
+  test.beforeAll(async () => {
+    if (missing.length > 0) return;
+    const supabaseAdmin = createAdminClient();
+    const id = runId('profile_sections_qa');
+    const pass = 'ProfileSectionsQa!Pass123';
+    const user = await helpersCreateQaUser(supabaseAdmin, {
+      email: `${id}.member@example.com`,
+      password: pass,
+      name: 'Profile Sections QA Member',
+      organicId: randomOrganicId(),
+    });
+    userId = user.id;
+    cookie = await helpersBuildSessionCookie(user.email, pass);
+  });
+
+  test.afterAll(async () => {
+    if (missing.length > 0 || !userId) return;
+    const supabaseAdmin = createAdminClient();
+    await deleteQaUser(supabaseAdmin, userId);
+  });
+
+  test('shows distinct sections for identity, activity, and preferences', async ({ page }) => {
+    test.skip(!userId, 'Requires user fixture');
+    test.setTimeout(120_000);
+
+    await addSessionCookieToPage(page, cookie, HELPERS_BASE_URL);
+    await page.goto(`${HELPERS_BASE_URL}/en/profile`, { waitUntil: 'domcontentloaded' });
+
+    await expect(page.getByText('Loading your profile...')).not.toBeVisible({ timeout: 20_000 });
+    await expect(page.getByTestId('profile-identity-section')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByTestId('profile-activity-section')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByTestId('profile-preferences-section')).toBeVisible({ timeout: 20_000 });
+  });
+});
 
 test.describe('Profile stats', () => {
   test('shows submissions, contributions, and points earned', async ({ page }) => {
