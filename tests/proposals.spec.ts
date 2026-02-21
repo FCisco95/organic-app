@@ -25,6 +25,14 @@ import {
   BASE_URL,
 } from './helpers';
 
+test.describe('Auth page structure', () => {
+  test('login page renders with testable form', async ({ page }) => {
+    await page.goto(`${BASE_URL}/en/login`, { waitUntil: 'domcontentloaded' });
+    await expect(page.getByTestId('login-page')).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByTestId('login-form')).toBeVisible();
+  });
+});
+
 test.describe('Proposal lifecycle', () => {
   test.describe.configure({ mode: 'serial' });
 
