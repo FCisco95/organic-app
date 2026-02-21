@@ -39,6 +39,7 @@ export function MemberCard({ member }: MemberCardProps) {
   return (
     <Link
       href={`/${locale}/members/${member.id}`}
+      data-testid={`member-card-${member.id}`}
       className="block bg-white rounded-xl border border-gray-200 p-5 hover:border-organic-orange/40 hover:shadow-sm transition-all"
     >
       <div className="flex items-center gap-3">
@@ -62,13 +63,16 @@ export function MemberCard({ member }: MemberCardProps) {
             <p className="font-medium text-gray-900 truncate">{displayName}</p>
             {member.role && member.role !== 'guest' && (
               <span
+                data-testid="member-role-badge"
                 className={`text-xs px-2 py-0.5 rounded-full border ${ROLE_COLORS[member.role as UserRole]}`}
               >
                 {ROLE_LABELS[member.role as UserRole]}
               </span>
             )}
             {member.level > 1 && (
-              <LevelBadge level={member.level} showName={false} />
+              <span data-testid="member-level-badge">
+                <LevelBadge level={member.level} showName={false} />
+              </span>
             )}
           </div>
           {member.organic_id && <p className="text-sm text-gray-500">ORG-{member.organic_id}</p>}

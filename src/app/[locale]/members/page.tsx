@@ -29,6 +29,7 @@ export default function MembersPage() {
 
   return (
     <PageContainer width="wide">
+      <div data-testid="members-page">
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-1">
@@ -60,6 +61,7 @@ export default function MembersPage() {
         limit={18}
         onPageChange={setPage}
       />
+      </div>
     </PageContainer>
   );
 }

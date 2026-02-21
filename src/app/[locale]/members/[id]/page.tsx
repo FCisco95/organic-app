@@ -82,6 +82,7 @@ export default function MemberProfilePage() {
 
   return (
     <PageContainer width="narrow">
+      <div data-testid="member-profile-page">
       {/* Back link */}
       <Link
         href={`/${locale}/members`}
@@ -91,7 +92,7 @@ export default function MemberProfilePage() {
       </Link>
 
       {/* Profile header */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6" data-testid="member-profile-header">
         <div className="flex items-start gap-5">
           {member.avatar_url ? (
             <Image
@@ -180,7 +181,7 @@ export default function MemberProfilePage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4" data-testid="member-stats-grid">
         <div className="bg-white rounded-xl border border-gray-200 p-5 text-center">
           <Star className="w-5 h-5 text-organic-orange mx-auto mb-2" />
           <p className="text-2xl font-bold text-gray-900">{member.total_points}</p>
@@ -195,7 +196,7 @@ export default function MemberProfilePage() {
 
       {/* Reputation */}
       {reputation && (
-        <div className="mt-6 bg-white rounded-xl border border-gray-200 p-6">
+        <div className="mt-6 bg-white rounded-xl border border-gray-200 p-6" data-testid="member-reputation-section">
           <h2 className="text-sm font-semibold text-gray-900 mb-4">{tRep('title')}</h2>
           <div className="flex items-center gap-4 mb-4">
             <LevelBadge level={reputation.level} size="lg" />
@@ -207,11 +208,12 @@ export default function MemberProfilePage() {
 
       {/* Achievements */}
       {achievements && achievements.length > 0 && (
-        <div className="mt-6 bg-white rounded-xl border border-gray-200 p-6">
+        <div className="mt-6 bg-white rounded-xl border border-gray-200 p-6" data-testid="member-achievements-grid">
           <h2 className="text-sm font-semibold text-gray-900 mb-4">{tRep('achievements')}</h2>
           <AchievementGrid achievements={achievements} />
         </div>
       )}
+      </div>
     </PageContainer>
   );
 }

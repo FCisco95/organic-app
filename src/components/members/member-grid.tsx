@@ -59,7 +59,7 @@ export function MemberGrid({
 
   return (
     <div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" data-testid="members-grid">
         {members.map((member) => (
           <MemberCard key={member.id} member={member} />
         ))}
@@ -67,7 +67,7 @@ export function MemberGrid({
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-6">
+        <div className="flex items-center justify-center gap-2 mt-6" data-testid="members-pagination">
           <button
             onClick={() => onPageChange(page - 1)}
             disabled={page <= 1}
