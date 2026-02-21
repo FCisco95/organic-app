@@ -350,3 +350,46 @@ test.describe('Task submission and review lifecycle', () => {
     expect(res.status()).toBe(400);
   });
 });
+
+test.describe('Admin submission review page structure', () => {
+  test.describe.configure({ mode: 'serial' });
+
+  const missing = missingEnvVars();
+  let adminUserId2 = '';
+  let adminCookie2 = { name: '', value: '' };
+
+  test.beforeEach(async () => {
+    test.skip(missing.length > 0, `Missing env vars: ${missing.join(', ')}`);
+  });
+
+  test.beforeAll(async () => {
+    if (missing.length > 0) return;
+    const supabaseAdmin = createAdminClient();
+    const id = runId('admin_review_page_qa');
+    const pass = 'AdminReviewPageQa!123';
+    const admin = await createQaUser(supabaseAdmin, {
+      email: `${id}.admin@example.com`,
+      password: pass,
+      name: 'Admin Review Page QA',
+      role: 'admin',
+      organicId: randomOrganicId(),
+    });
+    adminUserId2 = admin.id;
+    adminCookie2 = await buildSessionCookie(admin.email, pass);
+  });
+
+  test.afterAll(async () => {
+    if (missing.length > 0 || !adminUserId2) return;
+    const supabaseAdmin = createAdminClient();
+    await deleteQaUser(supabaseAdmin, adminUserId2);
+  });
+
+  test('admin submissions page renders with testable container', async ({ page }) => {
+    test.skip(!adminUserId2, 'Requires admin fixture');
+
+    await addSessionCookieToPage(page, adminCookie2);
+    await page.goto(`${BASE_URL}/en/admin/submissions`, { waitUntil: 'domcontentloaded' });
+
+    await expect(page.getByTestId('admin-submissions-page')).toBeVisible({ timeout: 20_000 });
+  });
+});

@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import {
   BASE_URL,
+  addSessionCookieToPage,
   buildSessionCookie,
   cookieHeader,
   createAdminClient,
@@ -10,6 +11,51 @@ import {
   randomOrganicId,
   runId,
 } from './helpers';
+
+test.describe('Admin settings page structure', () => {
+  test.describe.configure({ mode: 'serial' });
+
+  const missing = missingEnvVars();
+  let adminUserId = '';
+  let adminCookie = { name: '', value: '' };
+
+  test.beforeEach(async () => {
+    test.skip(missing.length > 0, `Missing env vars: ${missing.join(', ')}`);
+  });
+
+  test.beforeAll(async () => {
+    if (missing.length > 0) return;
+    const supabaseAdmin = createAdminClient();
+    const id = runId('admin_settings_page_qa');
+    const pass = 'AdminSettingsPageQa!123';
+    const admin = await createQaUser(supabaseAdmin, {
+      email: `${id}.admin@example.com`,
+      password: pass,
+      name: 'Admin Settings Page QA',
+      role: 'admin',
+      organicId: randomOrganicId(),
+    });
+    adminUserId = admin.id;
+    adminCookie = await buildSessionCookie(admin.email, pass);
+  });
+
+  test.afterAll(async () => {
+    if (missing.length > 0 || !adminUserId) return;
+    const supabaseAdmin = createAdminClient();
+    await deleteQaUser(supabaseAdmin, adminUserId);
+  });
+
+  test('settings page exposes tabs and content panel', async ({ page }) => {
+    test.skip(!adminUserId, 'Requires admin fixture');
+
+    await addSessionCookieToPage(page, adminCookie);
+    await page.goto(`${BASE_URL}/en/admin/settings`, { waitUntil: 'domcontentloaded' });
+
+    await expect(page.getByTestId('admin-settings-page')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByTestId('admin-settings-tabs')).toBeVisible();
+    await expect(page.getByTestId('admin-settings-content')).toBeVisible();
+  });
+});
 
 test.describe('Admin settings config audit requirements', () => {
   test.describe.configure({ mode: 'serial' });
