@@ -30,7 +30,7 @@ export default function AdminSettingsPage() {
     return (
       <PageContainer width="narrow">
         <div className="text-center py-16">
-          <ShieldAlert className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <ShieldAlert aria-hidden="true" className="w-16 h-16 text-gray-300 mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-gray-900 mb-2">{t('accessDenied')}</h2>
           <p className="text-gray-500">{t('accessDeniedDescription')}</p>
         </div>
@@ -82,13 +82,13 @@ export default function AdminSettingsPage() {
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-1">
-          <Settings className="w-6 h-6 text-organic-orange" />
+          <Settings aria-hidden="true" className="w-6 h-6 text-organic-orange" />
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">{t('title')}</h1>
         </div>
         <p className="text-sm text-gray-500">{t('description')}</p>
         {isCouncil && !isAdmin && (
           <div className="mt-2 inline-flex items-center gap-1.5 text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded-full border border-amber-200">
-            <ShieldAlert className="w-3 h-3" /> {t('readOnlyNotice')}
+            <ShieldAlert aria-hidden="true" className="w-3 h-3" /> {t('readOnlyNotice')}
           </div>
         )}
       </div>

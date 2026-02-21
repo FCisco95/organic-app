@@ -82,9 +82,10 @@ export default function NotificationsPage() {
               size="icon"
               className="h-8 w-8"
               onClick={() => setShowPrefs(!showPrefs)}
+              aria-label={t('preferences.title')}
               data-testid="notifications-preferences-toggle"
             >
-              <Settings className="h-4 w-4" />
+              <Settings aria-hidden="true" className="h-4 w-4" />
             </Button>
           </div>
         </div>

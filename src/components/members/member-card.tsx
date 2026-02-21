@@ -25,7 +25,7 @@ export function MemberCard({ member }: MemberCardProps) {
       <div className="bg-white rounded-xl border border-gray-200 p-5 opacity-60">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
-            <Lock className="w-5 h-5 text-gray-400" />
+            <Lock aria-hidden="true" className="w-5 h-5 text-gray-400" />
           </div>
           <div>
             <p className="font-medium text-gray-500">{t('privateMember')}</p>
@@ -81,7 +81,7 @@ export function MemberCard({ member }: MemberCardProps) {
 
       <div className="mt-4 flex items-center gap-4 text-sm text-gray-500">
         <span className="flex items-center gap-1">
-          <Star className="w-3.5 h-3.5 text-organic-orange" />
+          <Star aria-hidden="true" className="w-3.5 h-3.5 text-organic-orange" />
           {member.total_points} {t('points')}
         </span>
         <span>

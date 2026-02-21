@@ -635,6 +635,7 @@ export default function ProfilePage() {
               disabled={uploading}
               className="absolute -bottom-1 -right-1 p-2 bg-organic-orange hover:bg-orange-600 text-white rounded-full shadow-lg transition-colors disabled:opacity-50"
               title={t('changeProfilePicture')}
+              aria-label={t('changeProfilePicture')}
             >
               {uploading ? (
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -844,7 +845,7 @@ export default function ProfilePage() {
                   {t('locationLabel')}
                 </label>
                 <div className="relative">
-                  <MapPin className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <MapPin aria-hidden="true" className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input
                     type="text"
                     value={editForm.location}
@@ -860,7 +861,7 @@ export default function ProfilePage() {
                   {t('websiteLabel')}
                 </label>
                 <div className="relative">
-                  <Globe className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <Globe aria-hidden="true" className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input
                     type="url"
                     value={editForm.website}
@@ -876,7 +877,7 @@ export default function ProfilePage() {
                   {t('discordLabel')}
                 </label>
                 <div className="relative">
-                  <MessageCircle className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <MessageCircle aria-hidden="true" className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input
                     type="text"
                     value={editForm.discord}

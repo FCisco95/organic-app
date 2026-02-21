@@ -162,7 +162,7 @@ function SubmissionReviewCard({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-organic-orange/10 rounded-full flex items-center justify-center">
-              <User className="w-4 h-4 text-organic-orange" />
+              <User aria-hidden="true" className="w-4 h-4 text-organic-orange" />
             </div>
             <div>
               <p className="font-medium text-gray-900">
@@ -172,7 +172,7 @@ function SubmissionReviewCard({
                     : submission.user?.email)}
               </p>
               <p className="text-xs text-gray-500 flex items-center gap-1">
-                <Clock className="w-3 h-3" />
+                <Clock aria-hidden="true" className="w-3 h-3" />
                 {submission.submitted_at ? new Date(submission.submitted_at).toLocaleString() : '-'}
               </p>
             </div>
@@ -240,7 +240,7 @@ function SubmissionReviewCard({
                 disabled={isSubmitting}
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-2 border border-red-300 text-red-600 rounded-lg font-medium hover:bg-red-50 transition-colors disabled:opacity-50"
               >
-                <X className="w-4 h-4" />
+                <X aria-hidden="true" className="w-4 h-4" />
                 {t('reject')}
               </button>
               <button
@@ -249,9 +249,9 @@ function SubmissionReviewCard({
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
               >
                 {isSubmitting ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 aria-hidden="true" className="w-4 h-4 animate-spin" />
                 ) : (
-                  <Check className="w-4 h-4" />
+                  <Check aria-hidden="true" className="w-4 h-4" />
                 )}
                 {t('approve')}
               </button>
@@ -271,9 +271,9 @@ function SubmissionReviewCard({
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
               >
                 {isSubmitting ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 aria-hidden="true" className="w-4 h-4 animate-spin" />
                 ) : (
-                  <X className="w-4 h-4" />
+                  <X aria-hidden="true" className="w-4 h-4" />
                 )}
                 {t('confirmReject')}
               </button>
@@ -296,7 +296,7 @@ function SubmissionHistoryCard({ submission }: { submission: TaskSubmissionWithR
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-              <User className="w-4 h-4 text-gray-600" />
+              <User aria-hidden="true" className="w-4 h-4 text-gray-600" />
             </div>
             <div>
               <p className="font-medium text-gray-900">
@@ -335,14 +335,14 @@ function SubmissionHistoryCard({ submission }: { submission: TaskSubmissionWithR
 
         {submission.reviewer_notes && (
           <div className="flex items-start gap-2 text-sm">
-            <MessageSquare className="w-4 h-4 text-gray-400 mt-0.5" />
+            <MessageSquare aria-hidden="true" className="w-4 h-4 text-gray-400 mt-0.5" />
             <p className="text-gray-600">{submission.reviewer_notes}</p>
           </div>
         )}
 
         {submission.rejection_reason && (
           <div className="flex items-start gap-2 text-sm bg-red-50 p-3 rounded-lg">
-            <X className="w-4 h-4 text-red-500 mt-0.5" />
+            <X aria-hidden="true" className="w-4 h-4 text-red-500 mt-0.5" />
             <p className="text-red-700">{submission.rejection_reason}</p>
           </div>
         )}
@@ -402,9 +402,9 @@ function SubmissionContent({
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium"
           >
-            <Code className="w-4 h-4" />
+            <Code aria-hidden="true" className="w-4 h-4" />
             {t('viewPullRequest')}
-            <ExternalLink className="w-3 h-3" />
+            <ExternalLink aria-hidden="true" className="w-3 h-3" />
           </a>
           {!compact && submission.testing_notes && (
             <p className="mt-2 text-sm text-gray-600">
@@ -424,9 +424,9 @@ function SubmissionContent({
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium"
             >
-              <FileText className="w-4 h-4" />
+              <FileText aria-hidden="true" className="w-4 h-4" />
               {t('viewContent')}
-              <ExternalLink className="w-3 h-3" />
+              <ExternalLink aria-hidden="true" className="w-3 h-3" />
             </a>
           )}
           {!compact && submission.content_text && (
@@ -438,19 +438,19 @@ function SubmissionContent({
             <div className="mt-2 flex items-center gap-4 text-sm text-gray-600">
               {(submission.reach_metrics as Record<string, number>).views !== undefined && (
                 <span className="flex items-center gap-1">
-                  <Eye className="w-3 h-3" />
+                  <Eye aria-hidden="true" className="w-3 h-3" />
                   {(submission.reach_metrics as Record<string, number>).views} {t('views')}
                 </span>
               )}
               {(submission.reach_metrics as Record<string, number>).likes !== undefined && (
                 <span className="flex items-center gap-1">
-                  <ThumbsUp className="w-3 h-3" />
+                  <ThumbsUp aria-hidden="true" className="w-3 h-3" />
                   {(submission.reach_metrics as Record<string, number>).likes} {t('likes')}
                 </span>
               )}
               {(submission.reach_metrics as Record<string, number>).shares !== undefined && (
                 <span className="flex items-center gap-1">
-                  <Share2 className="w-3 h-3" />
+                  <Share2 aria-hidden="true" className="w-3 h-3" />
                   {(submission.reach_metrics as Record<string, number>).shares} {t('shares')}
                 </span>
               )}
@@ -471,9 +471,9 @@ function SubmissionContent({
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 text-sm"
                 >
-                  <Palette className="w-4 h-4" />
+                  <Palette aria-hidden="true" className="w-4 h-4" />
                   {t('designFile', { index: index + 1 })}
-                  <ExternalLink className="w-3 h-3" />
+                  <ExternalLink aria-hidden="true" className="w-3 h-3" />
                 </a>
               </li>
             ))}
@@ -496,9 +496,9 @@ function SubmissionContent({
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium"
             >
-              <AtSign className="w-4 h-4" />
+              <AtSign aria-hidden="true" className="w-4 h-4" />
               {t('viewEvidence')}
-              <ExternalLink className="w-3 h-3" />
+              <ExternalLink aria-hidden="true" className="w-3 h-3" />
             </a>
           )}
           {twitterEngagementType && (
@@ -524,9 +524,9 @@ function SubmissionContent({
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium"
             >
-              <LinkIcon className="w-4 h-4" />
+              <LinkIcon aria-hidden="true" className="w-4 h-4" />
               {t('viewSubmission')}
-              <ExternalLink className="w-3 h-3" />
+              <ExternalLink aria-hidden="true" className="w-3 h-3" />
             </a>
           )}
           {!compact && customFields && (

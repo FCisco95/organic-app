@@ -119,6 +119,7 @@ export default function SignUpPage() {
               {errors.email && (
                 <p className="mt-2 text-xs text-[#f85149] flex items-start">
                   <svg
+                    aria-hidden="true"
                     className="w-4 h-4 mr-1 mt-0.5 flex-shrink-0"
                     fill="currentColor"
                     viewBox="0 0 16 16"
@@ -152,6 +153,7 @@ export default function SignUpPage() {
               {errors.password && (
                 <p className="mt-2 text-xs text-[#f85149] flex items-start">
                   <svg
+                    aria-hidden="true"
                     className="w-4 h-4 mr-1 mt-0.5 flex-shrink-0"
                     fill="currentColor"
                     viewBox="0 0 16 16"
@@ -187,6 +189,7 @@ export default function SignUpPage() {
               {errors.username && (
                 <p className="mt-2 text-xs text-[#f85149] flex items-start">
                   <svg
+                    aria-hidden="true"
                     className="w-4 h-4 mr-1 mt-0.5 flex-shrink-0"
                     fill="currentColor"
                     viewBox="0 0 16 16"

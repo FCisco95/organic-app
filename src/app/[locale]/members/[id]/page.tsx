@@ -137,7 +137,7 @@ export default function MemberProfilePage() {
         <div className="flex flex-wrap gap-4 mt-5 text-sm text-gray-500">
           {member.location && (
             <span className="flex items-center gap-1">
-              <MapPin className="w-3.5 h-3.5" /> {member.location}
+              <MapPin aria-hidden="true" className="w-3.5 h-3.5" /> {member.location}
             </span>
           )}
           {member.website && (
@@ -147,8 +147,8 @@ export default function MemberProfilePage() {
               rel="noopener noreferrer"
               className="flex items-center gap-1 hover:text-organic-orange"
             >
-              <Globe className="w-3.5 h-3.5" /> {t('website')}
-              <ExternalLink className="w-3 h-3" />
+              <Globe aria-hidden="true" className="w-3.5 h-3.5" /> {t('website')}
+              <ExternalLink aria-hidden="true" className="w-3 h-3" />
             </a>
           )}
           {member.twitter && (
@@ -168,7 +168,7 @@ export default function MemberProfilePage() {
           )}
           {member.created_at && (
             <span className="flex items-center gap-1">
-              <Calendar className="w-3.5 h-3.5" />{' '}
+              <Calendar aria-hidden="true" className="w-3.5 h-3.5" />{' '}
               {t('memberSince', {
                 date: new Date(member.created_at).toLocaleDateString(locale, {
                   year: 'numeric',
@@ -183,12 +183,12 @@ export default function MemberProfilePage() {
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4" data-testid="member-stats-grid">
         <div className="bg-white rounded-xl border border-gray-200 p-5 text-center">
-          <Star className="w-5 h-5 text-organic-orange mx-auto mb-2" />
+          <Star aria-hidden="true" className="w-5 h-5 text-organic-orange mx-auto mb-2" />
           <p className="text-2xl font-bold text-gray-900">{member.total_points}</p>
           <p className="text-sm text-gray-500">{t('totalPoints')}</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-200 p-5 text-center">
-          <Star className="w-5 h-5 text-green-500 mx-auto mb-2" />
+          <Star aria-hidden="true" className="w-5 h-5 text-green-500 mx-auto mb-2" />
           <p className="text-2xl font-bold text-gray-900">{member.tasks_completed}</p>
           <p className="text-sm text-gray-500">{t('tasksCompleted')}</p>
         </div>
