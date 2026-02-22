@@ -54,11 +54,9 @@ The focus is long-term: build solid foundations first, avoid shortcuts that brea
 
 ## Boundaries & Expectations
 
-- Do not invent product requirements
-- Do not assume future features unless discussed
-- Do not bypass validation, auth, or token checks
-- Do not suggest committing secrets or editing `.env.local`
+- Do not invent product requirements or assume future features
 - Prefer proposing a plan before implementing large changes
+- Security and auth rules: see `AGENTS.md`
 
 ## Context to Remember
 
@@ -70,15 +68,6 @@ The focus is long-term: build solid foundations first, avoid shortcuts that brea
 - Tailwind + shadcn/ui for UI consistency
 - Migrations live in `supabase/migrations/`
 
+See `AGENTS.md` for the full folder map and command reference.
+
 This workspace is about building Organic _slowly, correctly, and intentionally_.
-
-## Quick Navigation
-
-- App Router root: `src/app/`
-- Localized routes: `src/app/[locale]/`
-- API routes: `src/app/api/`
-- Features: `src/features/`
-- UI components: `src/components/`
-- Shared libs: `src/lib/`
-- i18n helpers: `src/i18n/`
-- Supabase migrations: `supabase/migrations/`
