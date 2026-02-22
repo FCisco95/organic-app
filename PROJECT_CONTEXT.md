@@ -69,32 +69,33 @@ Role systems are **not finalized** and expected to evolve.
 
 ### 5. Current State (Reality Check)
 
-**What exists today:**
+**What is fully implemented:**
 
-- User authentication
-- Organic ID
-- Basic task creation and editing
-- Core pages and flows are mostly implemented
-- Points concept exists
-- Supabase backend is in place
-- Solana wallet integration exists at a basic level
+- Auth (email/password + Solana wallet link, nonce-protected SIWS)
+- Organic ID assignment with on-chain token holder verification
+- Task management: CRUD, kanban, claim/submit/review lifecycle, subtasks, dependencies, templates, recurring tasks
+- Proposals: wizard, lifecycle (draft → voting → passed/rejected), token-weighted voting, delegation
+- Sprint phase engine (planning → active → review → dispute\_window → settlement → completed)
+- Dispute resolution: 3-tier escalation, SLA enforcement, evidence lifecycle, XP effects
+- Rewards: epoch pool distribution, point-to-token claiming, manual distributions, settlement integrity
+- Reputation: XP, levels, achievements, streaks, leaderboard
+- Notifications: in-app realtime, batching, voting reminders, follow model, preferences
+- Member directory, admin settings (6 tabs), role management
+- Treasury dashboard (on-chain balances, allocation chart, transaction history)
+- Analytics dashboard (KPI cards, activity trends, member growth, proposal/voting charts)
+- Twitter/X engagement verification (OAuth linking, evidence submission)
+- Wave 2 UI/UX revamp complete across all surfaces
+- Accessibility pass (WCAG 2.1 AA aria-labels, aria-hidden)
+- Internationalization: en, pt-PT, zh-CN
 
-**What is incomplete or fragile:**
+**What is still open or incomplete:**
 
-- Task flow logic is not fully tested
-- Proposals → backlog → waves flow is not automated
-- Voting logic needs refinement
-- Security hardening is incomplete
-- UI/UX is functional but not polished
-
-**What does NOT exist yet:**
-
-- Automated sprint/wave management
-- AI/agent-based task scoring
-- Revenue distribution logic
-- Multi-sig treasury logic
-- Certification system
-- Multi-project / multi-tenant setup
+- Email notification digests (Resend integration not built)
+- Multi-sig treasury (Squads or similar — not started)
+- Proposal threshold / anti-abuse cooldown enforcement
+- Member onboarding flow
+- Discord bot / GitHub contribution tracking
+- Multi-tenant / white-label support (future)
 
 ---
 
@@ -154,28 +155,7 @@ UI revamp is explicitly desired.
 
 ---
 
-### 10. How Agents Should Work
-
-**Agents are encouraged to:**
-
-- Ask clarifying questions
-- Challenge assumptions respectfully
-- Propose better architectures or flows
-- Help structure systems before coding
-- Improve planning and sequencing
-
-**Agents should avoid:**
-
-- Over-engineering early features
-- Rewriting large parts without discussion
-- Assuming finality in governance rules
-- Locking decisions prematurely
-
-For major changes: **ask first**.
-
----
-
-### 11. Open Questions (Intentionally Open)
+### 10. Open Questions (Intentionally Open)
 
 - What governance rules make sense at each stage?
 - How automated should the system become, and when?
@@ -187,8 +167,8 @@ These are areas where agent input is explicitly welcome.
 
 ---
 
-### 12. Project Status Summary
+### 11. Project Status Summary
 
-Organic is an early-stage but functioning platform with a strong vision, partial implementation, and many open design decisions. The current priority is **improving structure, flow, UX, and planning**, not rushing features.
+Organic is a functioning platform with all core DAO flows built, tested, and UX-revamped. The foundation is solid. Current priority is production hardening, manual QA, and shipping the remaining open items in `BUILD_PLAN.md`.
 
-The goal is to build the _best possible version_ of this system, starting with clarity.
+The goal remains: build the _best possible version_ of this system — correctly and intentionally.

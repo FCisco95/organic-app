@@ -75,37 +75,6 @@ For each task:
 7. Validate with repo scripts before handoff when change impact warrants it.
 8. Report exactly what changed and where.
 
-## Architecture fast map
-
-App routes and APIs:
-
-- `src/app/[locale]/` localized App Router pages/layouts
-- `src/app/api/` API route handlers
-
-Domain logic:
-
-- `src/features/` business logic, schemas, hooks, feature types
-
-UI layer:
-
-- `src/components/` feature UI and shared UI primitives
-- `src/components/ui/` shadcn/ui primitives
-- `src/components/layout/` shell, sidebar, top bar
-
-Shared code:
-
-- `src/lib/` shared helpers and integrations (Supabase/Solana)
-- `src/hooks/` shared hooks
-- `src/config/` app configuration
-- `src/types/` shared/generated types
-- `src/i18n/` localization helpers
-- `messages/` translation files (`en.json`, `pt-PT.json`, `zh-CN.json`)
-
-Data layer:
-
-- `supabase/migrations/` incremental SQL migrations
-- `supabase/functions/` edge functions
-
 ## Validation matrix
 
 Run checks proportional to risk.
@@ -149,12 +118,9 @@ Ask for confirmation before:
 - Public API contract changes
 - Cross-domain migrations or data model redesign
 
-## Standard commands
+## Architecture and commands
 
-- `npm run dev`
-- `npm run lint`
-- `npm run build`
-- `npm run format`
+See `AGENTS.md` for the full folder map and standard command reference (`npm run dev/lint/build/format`).
 
 ## Living references
 
