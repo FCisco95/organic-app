@@ -39,7 +39,7 @@ export default function AnalyticsPage() {
   const updatedAtLabel = trust?.updated_at ? new Date(trust.updated_at).toLocaleString() : t('notAvailable');
 
   return (
-    <PageContainer width="wide">
+    <PageContainer layout="fluid">
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold tracking-tight text-gray-900">{t('title')}</h1>

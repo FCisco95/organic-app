@@ -1,6 +1,6 @@
 'use client';
 
-import { Link } from '@/i18n/navigation';
+import { Link, usePathname } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
@@ -17,13 +17,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Menu, User, LogOut } from 'lucide-react';
+import { Menu, User, LogOut, Sparkles } from 'lucide-react';
 import { NotificationBell } from '@/components/notifications/notification-bell';
 
 export function TopBar() {
   const { user, profile, loading, signOut } = useAuth();
+  const pathname = usePathname();
   const t = useTranslations('Navigation');
   const { toggle, setMobileOpen } = useSidebar();
+  const progressionSource = pathname.startsWith('/tasks')
+    ? 'tasks'
+    : pathname.startsWith('/proposals')
+      ? 'proposals'
+      : pathname.startsWith('/profile')
+        ? 'profile'
+        : null;
+  const progressionHref = progressionSource
+    ? `/profile/progression?from=${progressionSource}`
+    : '/profile/progression';
 
   return (
     <header className="sticky top-0 z-40 flex h-14 items-center border-b border-border bg-card/80 backdrop-blur-sm px-4">
@@ -110,6 +121,12 @@ export function TopBar() {
                   <Link href="/profile" className="flex items-center gap-2">
                     <User className="h-4 w-4" />
                     {t('profile')}
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href={progressionHref} className="flex items-center gap-2">
+                    <Sparkles className="h-4 w-4" />
+                    {t('progression')}
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />

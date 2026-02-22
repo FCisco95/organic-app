@@ -22,15 +22,25 @@ export function MemberCard({ member }: MemberCardProps) {
 
   if (!member.profile_visible) {
     return (
-      <div className="bg-white rounded-xl border border-gray-200 p-5 opacity-60">
+      <div className="bg-white rounded-xl border border-gray-200 p-5" data-testid="member-card-private">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
             <Lock aria-hidden="true" className="w-5 h-5 text-gray-400" />
           </div>
-          <div>
-            <p className="font-medium text-gray-500">{t('privateMember')}</p>
+          <div className="min-w-0">
+            <p className="font-medium text-gray-700">{t('privateMember')}</p>
             {member.organic_id && <p className="text-sm text-gray-400">ORG-{member.organic_id}</p>}
+            <p className="text-xs text-gray-500 mt-1">{t('privateMemberDescription')}</p>
           </div>
+        </div>
+        <div className="mt-4 flex items-center gap-4 text-sm text-gray-500">
+          <span className="flex items-center gap-1">
+            <Star aria-hidden="true" className="w-3.5 h-3.5 text-gray-400" />
+            {member.total_points} {t('points')}
+          </span>
+          <span>
+            {member.tasks_completed} {t('tasks')}
+          </span>
         </div>
       </div>
     );

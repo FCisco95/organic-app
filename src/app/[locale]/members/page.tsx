@@ -28,7 +28,7 @@ export default function MembersPage() {
   };
 
   return (
-    <PageContainer width="wide">
+    <PageContainer layout="fluid">
       <div data-testid="members-page">
       {/* Header */}
       <div className="mb-6">

@@ -15,12 +15,27 @@ import {
   CLAIMABLE_STATUSES,
 } from './types';
 
+export const DEFAULT_XP_PER_TASK_POINT = 10;
+
 /**
  * Calculate earned points based on base points and quality score
  */
 export function calculateEarnedPoints(basePoints: number, qualityScore: number): number {
   const multiplier = QUALITY_MULTIPLIERS[qualityScore] ?? 0;
   return Math.floor(basePoints * multiplier);
+}
+
+/**
+ * Estimate XP granted from points.
+ * Uses the default gamification multiplier when org-level config is not available in the client.
+ */
+export function estimateXpFromPoints(
+  points: number,
+  xpPerTaskPoint: number = DEFAULT_XP_PER_TASK_POINT
+): number {
+  const safePoints = Number.isFinite(points) ? Math.max(0, points) : 0;
+  const safeMultiplier = Number.isFinite(xpPerTaskPoint) ? Math.max(0, xpPerTaskPoint) : 0;
+  return Math.round(safePoints * safeMultiplier);
 }
 
 /**

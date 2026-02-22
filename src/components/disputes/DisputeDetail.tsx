@@ -23,16 +23,20 @@ import { DisputeStatusBadge } from './DisputeStatusBadge';
 import { DisputeTierBadge } from './DisputeTierBadge';
 import { DisputeTimeline } from './DisputeTimeline';
 import { RespondPanel } from './RespondPanel';
-import { ResolvePanel } from './ResolvePanel';
+import { ResolvePanel, type DisputeActionImpactSummary } from './ResolvePanel';
 import {
   useWithdrawDispute,
   useAppealDispute,
   useAssignArbitrator,
   useMediateDispute,
   useUploadDisputeEvidence,
+  useDisputeConfig,
 } from '@/features/disputes/hooks';
 import { cn } from '@/lib/utils';
 import { getDisputeSlaUrgency, isDeadlinePast } from '@/features/disputes/sla';
+import { useCheckLevelUp } from '@/features/reputation';
+import { showAchievementToast } from '@/components/reputation/achievement-unlock-toast';
+import { showLevelUpToast } from '@/components/reputation/level-up-toast';
 
 interface DisputeDetailProps {
   dispute: DisputeWithRelations;
@@ -63,11 +67,14 @@ export function DisputeDetail({
 }: DisputeDetailProps) {
   const t = useTranslations('Disputes');
   const td = useTranslations('Disputes.detail');
+  const tReputation = useTranslations('Reputation');
   const withdraw = useWithdrawDispute();
   const appeal = useAppealDispute();
   const assignArbitrator = useAssignArbitrator();
   const mediate = useMediateDispute();
   const uploadDisputeEvidence = useUploadDisputeEvidence();
+  const checkLevelUp = useCheckLevelUp();
+  const { data: disputeConfigData } = useDisputeConfig();
 
   const isDisputant = currentUserId === dispute.disputant_id;
   const isReviewer = currentUserId === dispute.reviewer_id;
@@ -110,6 +117,9 @@ export function DisputeDetail({
 
   const evidenceFileInputRef = useRef<HTMLInputElement | null>(null);
   const [evidenceUploadError, setEvidenceUploadError] = useState<string | null>(null);
+  const [actionImpactSummary, setActionImpactSummary] = useState<DisputeActionImpactSummary | null>(
+    null
+  );
 
   const responseDeadlineLabel = formatDateTime(dispute.response_deadline);
   const responseSubmittedLabel = formatDateTime(dispute.response_submitted_at);
@@ -140,6 +150,103 @@ export function DisputeDetail({
       : td('responseNoDeadline');
 
   const escalationPosture = responseIsOverdue && dispute.tier !== 'admin';
+  const disputeConfig = disputeConfigData?.data;
+  const reviewerPenaltyXp = disputeConfig?.xp_dispute_reviewer_penalty ?? 30;
+  const arbitratorRewardXp = disputeConfig?.xp_dispute_arbitrator_reward ?? 25;
+  const withdrawalFeeXp = disputeConfig?.xp_dispute_withdrawal_fee ?? 10;
+
+  const maybeResolveAchievementName = (achievementId: string, fallback: string) => {
+    try {
+      return tReputation(`achievementNames.${achievementId}`);
+    } catch {
+      return fallback;
+    }
+  };
+
+  const maybeResolveLevelName = (level: number) => {
+    try {
+      return tReputation(`levels.${level}`);
+    } catch {
+      return String(level);
+    }
+  };
+
+  const runProgressionFeedback = async () => {
+    try {
+      const result = await checkLevelUp.mutateAsync();
+      const newLevelName = maybeResolveLevelName(result.newLevel);
+
+      if (result.leveledUp) {
+        showLevelUpToast(result.newLevel, newLevelName, {
+          title: tReputation('toast.levelUpTitle'),
+          description: tReputation('toast.levelUp', {
+            level: result.newLevel,
+            name: newLevelName,
+          }),
+        });
+      }
+
+      result.newAchievements.forEach((achievement) => {
+        const achievementName = maybeResolveAchievementName(
+          achievement.achievement_id,
+          achievement.achievement_name
+        );
+        showAchievementToast(achievementName, achievement.icon, achievement.xp_reward, {
+          title: tReputation('toast.achievementUnlockedTitle'),
+        });
+      });
+    } catch {
+      // Feedback toasts are best-effort and should never block core dispute actions
+    }
+  };
+
+  const handleMediate = async () => {
+    try {
+      const result = await mediate.mutateAsync({
+        disputeId: dispute.id,
+        input: { agreed_outcome: 'Mediated resolution' },
+      });
+
+      if (result.pending_confirmation) {
+        setActionImpactSummary({
+          tone: 'neutral',
+          lines: [t('impact.mediationPendingLine'), t('impact.noNetXpLine')],
+        });
+      } else {
+        setActionImpactSummary({
+          tone: 'positive',
+          lines: [
+            t('impact.disputantRefundLine', { xp: dispute.xp_stake.toLocaleString() }),
+            t('impact.questHintLine'),
+          ],
+        });
+      }
+
+      await runProgressionFeedback();
+      onRefresh();
+    } catch {
+      // Error handled by mutation
+    }
+  };
+
+  const handleWithdraw = async () => {
+    try {
+      await withdraw.mutateAsync(dispute.id);
+      const refundedXp = Math.max(0, dispute.xp_stake - withdrawalFeeXp);
+      setActionImpactSummary({
+        tone: 'neutral',
+        lines: [
+          t('impact.withdrawalFeeLine', { xp: Math.min(withdrawalFeeXp, dispute.xp_stake) }),
+          t('impact.withdrawRefundLine', { xp: refundedXp.toLocaleString() }),
+        ],
+      });
+
+      await runProgressionFeedback();
+      onRefresh();
+    } catch {
+      // Error handled by mutation
+    }
+  };
 
   const handleDisputeEvidenceUpload = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -451,7 +558,19 @@ export function DisputeDetail({
           )}
 
           {canRespond && <RespondPanel disputeId={dispute.id} onSuccess={onRefresh} />}
-          {canResolve && <ResolvePanel disputeId={dispute.id} onSuccess={onRefresh} />}
+          {canResolve && (
+            <ResolvePanel
+              disputeId={dispute.id}
+              basePoints={dispute.task?.base_points ?? 0}
+              xpStake={dispute.xp_stake}
+              reviewerPenaltyXp={reviewerPenaltyXp}
+              arbitratorRewardXp={arbitratorRewardXp}
+              hasArbitrator={Boolean(dispute.arbitrator_id)}
+              onImpact={setActionImpactSummary}
+              onPostAction={runProgressionFeedback}
+              onSuccess={onRefresh}
+            />
+          )}
 
           <div className="flex flex-wrap gap-3">
             {canAssign && (
@@ -467,14 +586,10 @@ export function DisputeDetail({
 
             {canMediate && (
               <Button
-                onClick={() =>
-                  mediate.mutate(
-                    { disputeId: dispute.id, input: { agreed_outcome: 'Mediated resolution' } },
-                    { onSuccess: onRefresh }
-                  )
-                }
+                onClick={handleMediate}
                 disabled={mediate.isPending}
                 variant="outline"
+                data-testid="dispute-mediate-action"
               >
                 {t('mediate')}
               </Button>
@@ -482,10 +597,11 @@ export function DisputeDetail({
 
             {canWithdraw && (
               <Button
-                onClick={() => withdraw.mutate(dispute.id, { onSuccess: onRefresh })}
+                onClick={handleWithdraw}
                 disabled={withdraw.isPending}
                 variant="outline"
                 className="text-red-600 hover:text-red-700"
+                data-testid="dispute-withdraw-action"
               >
                 {t('withdrawDispute')}
               </Button>
@@ -506,6 +622,25 @@ export function DisputeDetail({
               </Button>
             )}
           </div>
+
+          {actionImpactSummary && (
+            <div
+              data-testid="dispute-action-impact-summary"
+              className={cn(
+                'rounded-lg border px-3 py-2 text-xs',
+                actionImpactSummary.tone === 'positive'
+                  ? 'border-emerald-200 bg-emerald-50 text-emerald-900'
+                  : 'border-amber-200 bg-amber-50 text-amber-900'
+              )}
+            >
+              <p className="font-semibold">{t('impact.whatChangedTitle')}</p>
+              <ul className="mt-1 space-y-1">
+                {actionImpactSummary.lines.map((line) => (
+                  <li key={line}>{line}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
 
         <aside data-testid="dispute-integrity-rail" className="space-y-3">

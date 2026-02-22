@@ -1,5 +1,81 @@
 # Organic DAO Platform - Build Plan
 
+## 🔄 2026-02-21 Gamification Revamp Checkpoint (Quest UI Grouping + Timers)
+
+- Wired grouped quest objectives into progression experience:
+  - `src/components/gamification/progression-shell.tsx`
+  - Added per-cadence columns (`daily`, `weekly`, `long_term`), per-quest progress bars, reset timers, and contextual CTA hints.
+- Added localized quest copy and cadence/action labels:
+  - `messages/en.json`
+  - `messages/pt-PT.json`
+  - `messages/zh-CN.json`
+- Removed non-localized quest summary note emission from quest engine:
+  - `src/features/gamification/quest-engine.ts`
+- Expanded progression assertions:
+  - `tests/profile.spec.ts`
+
+### Validation evidence
+
+- [x] `npm run lint` (pass)
+- [x] `npm run build` (pass)
+- [x] `npx playwright test tests/profile.spec.ts` (all skipped in this environment due missing required Supabase env vars/fixtures)
+
+### Next execution target
+
+- Add explicit quest CTA deep-links and optional claim/reward affordances tied to completed objectives.
+
+## 🔄 2026-02-21 Gamification Revamp Checkpoint (Quest Model + Quest Progress API)
+
+- Implemented quest domain model and progress evaluator for `daily`, `weekly`, and `long_term` objectives:
+  - `src/features/gamification/quest-engine.ts`
+  - `src/features/gamification/types.ts`
+  - `src/features/gamification/schemas.ts`
+- Added authenticated quest progress API:
+  - `src/app/api/gamification/quests/route.ts`
+- Wired quest summary fallback into progression overview payload:
+  - `src/app/api/gamification/overview/route.ts`
+- Added client query hook for quest API:
+  - `src/features/gamification/hooks.ts`
+- Added endpoint regression spec:
+  - `tests/gamification-quests-api.spec.ts`
+- Added implementation plan doc:
+  - `docs/plans/2026-02-21-gamification-quest-model-api.md`
+
+### Validation evidence
+
+- [x] `npm run lint` (pass)
+- [x] `npm run build` (pass)
+- [x] `npx playwright test tests/gamification-quests-api.spec.ts` (all skipped in this environment due missing required Supabase env vars/fixtures)
+
+### Next execution target
+
+- Connect quest API payload to richer progression UI blocks (grouped cards + reset timers + CTA hints).
+
+## 🔄 2026-02-21 Gamification Revamp Checkpoint (Members/Profile Readability + Privacy)
+
+- Implemented profile progression discoverability follow-up with members/profile clarity hardening:
+  - `src/app/[locale]/members/[id]/page.tsx`
+  - `src/components/members/member-card.tsx`
+  - `src/app/[locale]/profile/page.tsx`
+- Added privacy-safe unlock-status gating for achievements API lookups:
+  - `src/app/api/achievements/route.ts`
+- Added i18n copy for section navigation and profile visibility controls:
+  - `messages/en.json`
+  - `messages/pt-PT.json`
+  - `messages/zh-CN.json`
+- Expanded members/profile revamp spec assertions for new UI anchors:
+  - `tests/members-profile-surface-revamp.spec.ts`
+
+### Validation evidence
+
+- [x] `npm run lint` (pass)
+- [x] `npm run build` (pass)
+- [x] `npx playwright test tests/members-profile-surface-revamp.spec.ts` (all skipped in this environment due missing required Supabase env vars/fixtures)
+
+### Next execution target
+
+- Continue gamification revamp roadmap with quest model + XP event feed unification across profile/progression surfaces.
+
 ## ✅ 2026-02-21 UI/UX Revamp Wave 2 — Complete Sign-Off
 
 All 8 feature-vertical slices of Wave 2 delivered and validated. Wave 2 is closed.
@@ -1323,6 +1399,20 @@ Version: 2.0.0
 ### Infrastructure TODO
 
 - Set `NEXT_PUBLIC_SOLANA_RPC_URL` in `.env.local`
+
+## Recent Updates (2026-02-21)
+
+### Gamification Quests and Progression Flow
+
+- Added quest progress API at `/api/gamification/quests` with cadence-grouped objectives (`daily`, `weekly`, `long_term`).
+- Added gamification quest schemas/hooks and integrated quest progress fetching into the progression UI.
+- Updated `src/components/gamification/progression-shell.tsx` with grouped quest objective cards, reset timers, and contextual quest CTA hints.
+- Added fallback quest CTA mapping for unknown quest IDs and locale-safe summary note behavior.
+- Added source-context support on progression (`from=tasks|proposals|profile`) with an in-page orientation banner and return link.
+- Wired contextual progression links in profile, sidebar, mobile sidebar, top bar, and shared navigation.
+- Added lightweight periodic quest refresh (`useQuestProgress` live refetch interval).
+- Added quest/source-context translation keys across `messages/en.json`, `messages/pt-PT.json`, and `messages/zh-CN.json`.
+- Updated profile Playwright coverage for progression quick-action deep link + source-context banner assertion.
 
 ## Recent Updates (2026-02-08)
 

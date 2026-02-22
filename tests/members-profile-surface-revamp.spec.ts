@@ -74,8 +74,13 @@ test.describe('Members and profile surface revamp', () => {
 
     await expect(page.getByTestId('member-profile-page')).toBeVisible({ timeout: 20_000 });
     await expect(page.getByTestId('member-profile-header')).toBeVisible();
+    await expect(page.getByTestId('member-section-nav')).toBeVisible();
+    await expect(
+      page.getByTestId('member-section-nav').getByRole('link', { name: 'Overview' })
+    ).toBeVisible();
     await expect(page.getByTestId('member-stats-grid')).toBeVisible();
     await expect(page.getByTestId('member-reputation-section')).toBeVisible();
+    await expect(page.getByTestId('member-achievements-grid')).toBeVisible();
   });
 
   test('my profile page shows distinct sections for identity, activity, and preferences', async ({
@@ -89,6 +94,8 @@ test.describe('Members and profile surface revamp', () => {
     await expect(page.getByTestId('profile-page')).toBeVisible({ timeout: 20_000 });
     await expect(page.getByTestId('profile-identity-section')).toBeVisible();
     await expect(page.getByTestId('profile-activity-section')).toBeVisible();
+    await expect(page.getByTestId('profile-privacy-section')).toBeVisible();
+    await expect(page.getByTestId('profile-privacy-toggle')).toBeVisible();
     await expect(page.getByTestId('profile-preferences-section')).toBeVisible();
   });
 });

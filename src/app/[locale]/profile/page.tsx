@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { useRouter } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useSearchParams } from 'next/navigation';
@@ -31,6 +31,7 @@ import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
 import { NotificationPreferences } from '@/components/notifications/notification-preferences';
 import { ReputationSummary } from '@/components/reputation/reputation-summary';
+import { useUpdatePrivacy } from '@/features/members';
 
 // Client-side balance cache TTL (15 seconds)
 const BALANCE_CACHE_TTL_MS = 15 * 1000;
@@ -74,6 +75,7 @@ export default function ProfilePage() {
   const [twitterLoading, setTwitterLoading] = useState(false);
   const [twitterLinking, setTwitterLinking] = useState(false);
   const [twitterUnlinking, setTwitterUnlinking] = useState(false);
+  const updatePrivacyMutation = useUpdatePrivacy();
 
   // Edit form states
   const [editForm, setEditForm] = useState({
@@ -543,6 +545,20 @@ export default function ProfilePage() {
     }
   };
 
+  const handleToggleProfileVisibility = async () => {
+    if (!profile) return;
+
+    const nextVisibility = !profile.profile_visible;
+
+    try {
+      await updatePrivacyMutation.mutateAsync(nextVisibility);
+      await refreshProfile();
+      toast.success(nextVisibility ? t('toastProfileVisible') : t('toastProfileHidden'));
+    } catch {
+      toast.error(t('toastFailedUpdatePrivacy'));
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -565,39 +581,48 @@ export default function ProfilePage() {
     <PageContainer>
       <div data-testid="profile-page">
       {/* Header */}
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">{t('pageTitle')}</h1>
           <p className="text-sm text-gray-600 mt-1">{t('pageSubtitle')}</p>
         </div>
-        {!isEditing && (
-          <button
-            onClick={() => setIsEditing(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition-colors"
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          <Link
+            href="/profile/progression?from=profile"
+            data-testid="profile-progression-link"
+            className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
           >
-            <Edit2 className="w-4 h-4" />
-            {t('editProfile')}
-          </button>
-        )}
-        {isEditing && (
-          <div className="flex gap-2">
+            {t('viewProgression')}
+          </Link>
+          {!isEditing && (
             <button
-              onClick={handleCancelEdit}
+              onClick={() => setIsEditing(true)}
               className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition-colors"
             >
-              <X className="w-4 h-4" />
-              {t('cancel')}
+              <Edit2 className="w-4 h-4" />
+              {t('editProfile')}
             </button>
-            <button
-              onClick={handleSaveProfile}
-              disabled={saving}
-              className="flex items-center gap-2 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
-            >
-              <Save className="w-4 h-4" />
-              {saving ? t('saving') : t('saveChanges')}
-            </button>
-          </div>
-        )}
+          )}
+          {isEditing && (
+            <div className="flex gap-2">
+              <button
+                onClick={handleCancelEdit}
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition-colors"
+              >
+                <X className="w-4 h-4" />
+                {t('cancel')}
+              </button>
+              <button
+                onClick={handleSaveProfile}
+                disabled={saving}
+                className="flex items-center gap-2 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+              >
+                <Save className="w-4 h-4" />
+                {saving ? t('saving') : t('saveChanges')}
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Identity Section — avatar, name, bio, account details, social */}
@@ -1034,6 +1059,37 @@ export default function ProfilePage() {
             </button>
           </div>
         )}
+      </div>
+
+      {/* Profile Privacy */}
+      <div data-testid="profile-privacy-section" className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">{t('privacyTitle')}</h2>
+        <p className="text-sm text-gray-600 mb-4">{t('privacyDescription')}</p>
+
+        <div className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-gray-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-medium text-gray-900">
+              {profile.profile_visible ? t('privacyPublicStatus') : t('privacyPrivateStatus')}
+            </p>
+            <p className="text-xs text-gray-600 mt-1">
+              {profile.profile_visible ? t('privacyPublicHint') : t('privacyPrivateHint')}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            data-testid="profile-privacy-toggle"
+            onClick={handleToggleProfileVisibility}
+            disabled={updatePrivacyMutation.isPending}
+            className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+          >
+            {updatePrivacyMutation.isPending
+              ? t('updatingPrivacy')
+              : profile.profile_visible
+                ? t('setPrivate')
+                : t('setPublic')}
+          </button>
+        </div>
       </div>
 
       {/* Wallet Section */}

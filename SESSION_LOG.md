@@ -2,6 +2,151 @@
 
 Add newest entries at the top.
 
+## 2026-02-21 (Session: gamification revamp checkpoint - progression source context + navigation wiring)
+
+### Summary
+
+Completed the follow-up implementation pass for progression usability by wiring source-aware navigation, source-context messaging, and quest CTA fallback coverage across the app shell.
+
+### Implementation highlights
+
+- Progression source context + routing:
+  - `src/app/[locale]/profile/progression/page.tsx`
+  - Parses `from` query param (`tasks | proposals | profile`) and passes source context into progression UI.
+- Progression shell enhancements:
+  - `src/components/gamification/progression-shell.tsx`
+  - Added source-context banner + return CTA.
+  - Added default quest CTA fallback for unmapped quest IDs.
+- Navigation wiring:
+  - `src/components/layout/sidebar.tsx`
+  - `src/components/layout/mobile-sidebar.tsx`
+  - `src/components/layout/top-bar.tsx`
+  - `src/components/navigation.tsx`
+  - Progression links now append `?from=` based on current section and preserve active-state matching by normalizing query-bearing hrefs.
+- Profile quick action:
+  - `src/app/[locale]/profile/page.tsx`
+  - Progression shortcut now deep links with `?from=profile`.
+- Quest data freshness:
+  - `src/features/gamification/hooks.ts`
+  - Added optional live refetch interval to `useQuestProgress`.
+- Localization + tests:
+  - `messages/en.json`, `messages/pt-PT.json`, `messages/zh-CN.json`
+  - Added source-context/fallback CTA translation keys.
+  - `tests/profile.spec.ts` now asserts progression deep link query and source-context banner visibility.
+
+### Validation evidence
+
+- `npm run lint`: pass.
+- `npm run build`: pass.
+- `npx playwright test tests/profile.spec.ts --workers=1`: all skipped in this environment due missing required Supabase env vars/fixtures.
+
+## 2026-02-21 (Session: gamification revamp checkpoint - grouped quest objectives in progression UI)
+
+### Summary
+
+Wired grouped quest objectives into the progression shell with cadence buckets, reset timers, and context-aware CTA hints, using the new quests API payload.
+
+### Implementation highlights
+
+- Progression quest UI revamp:
+  - `src/components/gamification/progression-shell.tsx`
+  - Added grouped quest columns (`daily`, `weekly`, `long_term`) with:
+    - cadence completion counters,
+    - per-objective progress bars and remaining counts,
+    - relative reset timers (`Intl.RelativeTimeFormat`),
+    - quest-level CTA links to relevant flows (`tasks`, `proposals`, `profile`),
+    - fallback rendering from overview summary if detailed quest endpoint data is unavailable.
+- Localization coverage for new quest UI:
+  - `messages/en.json`
+  - `messages/pt-PT.json`
+  - `messages/zh-CN.json`
+  - Added cadence labels, status labels, fallback notice, CTA labels, and per-quest localized title/description copy.
+- Quest summary i18n hygiene:
+  - `src/features/gamification/quest-engine.ts`
+  - Removed hard-coded English summary note (`note` now `null`) so UI remains locale-controlled.
+- Test updates:
+  - `tests/profile.spec.ts`
+  - Added progression assertions for cadence quest sections.
+
+### Validation evidence
+
+- `npm run lint`: pass.
+- `npm run build`: pass.
+- `npx playwright test tests/profile.spec.ts`: all skipped in this environment due missing required Supabase env vars/fixtures.
+
+## 2026-02-21 (Session: gamification revamp checkpoint - quest model + quest progress API)
+
+### Summary
+
+Implemented the quest model and authenticated quest progress API for daily, weekly, and long-term objectives, using existing activity/reputation data sources.
+
+### Implementation highlights
+
+- Quest model and evaluator:
+  - `src/features/gamification/quest-engine.ts`
+  - Added static objective catalog (`daily | weekly | long_term`) and server evaluator to compute progress, completion, remaining, progress percent, and reset timestamps.
+  - Progress data derives from `activity_log`, `xp_events`, `user_activity_counts`, `user_profiles`, and `user_achievements`.
+- Gamification contracts:
+  - `src/features/gamification/types.ts`
+  - `src/features/gamification/schemas.ts`
+  - Added typed/schematized quest cadence, quest progress item payload, grouped objective response, and summary shape.
+- New API endpoint:
+  - `src/app/api/gamification/quests/route.ts`
+  - Authenticated `GET` route returning quest progress payload with private cache headers.
+- Overview integration:
+  - `src/app/api/gamification/overview/route.ts`
+  - Replaced static quest summary placeholder with quest-engine summary (graceful fallback if quest computation fails).
+- Client hook:
+  - `src/features/gamification/hooks.ts`
+  - Added `useQuestProgress` and query key for `/api/gamification/quests`.
+- Tests:
+  - `tests/gamification-quests-api.spec.ts`
+  - Added authenticated payload-shape and unauthenticated `401` checks.
+- Plan artifact:
+  - `docs/plans/2026-02-21-gamification-quest-model-api.md`
+
+### Validation evidence
+
+- `npm run lint`: pass.
+- `npm run build`: pass.
+- `npx playwright test tests/gamification-quests-api.spec.ts`: all skipped in this environment due missing required Supabase env vars/fixtures.
+
+## 2026-02-21 (Session: gamification revamp checkpoint - members/profile readability + privacy)
+
+### Summary
+
+Completed the next gamification revamp checkpoint focused on making member/profile progression surfaces easier to read and safer for private profiles.
+
+### Implementation highlights
+
+- Member detail readability and navigation:
+  - `src/app/[locale]/members/[id]/page.tsx`
+  - Added section jump nav (`overview`, `reputation`, `achievements`) and stable test anchor.
+  - Improved private-profile state copy and added a direct link to profile privacy settings for the owner.
+  - Achievements section now renders an explicit empty state when no unlocks exist.
+- Member card privacy clarity:
+  - `src/components/members/member-card.tsx`
+  - Added explanatory private-profile copy and retained high-signal stats preview.
+- Profile privacy controls:
+  - `src/app/[locale]/profile/page.tsx`
+  - Integrated `useUpdatePrivacy` mutation to let users toggle profile visibility directly from profile.
+  - Added dedicated privacy panel with status, hints, action CTA, and success/error toasts.
+- API privacy hardening:
+  - `src/app/api/achievements/route.ts`
+  - Added unlock-status gating for `?userId=` requests so private profiles do not leak achievement unlock status.
+- i18n coverage:
+  - `messages/en.json`, `messages/pt-PT.json`, `messages/zh-CN.json`
+  - Added copy for profile visibility controls, private-profile explanations, and member section navigation labels.
+- Tests:
+  - `tests/members-profile-surface-revamp.spec.ts`
+  - Added assertions for member section navigation and profile privacy panel/toggle.
+
+### Validation evidence
+
+- `npm run lint`: pass.
+- `npm run build`: pass.
+- `npx playwright test tests/members-profile-surface-revamp.spec.ts`: all skipped in this environment due missing required Supabase env vars/fixtures.
+
 ## 2026-02-21 (Session: UI/UX revamp wave 2 - slices 6–8 + sign-off)
 
 ### Summary

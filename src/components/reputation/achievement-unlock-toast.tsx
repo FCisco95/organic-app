@@ -2,7 +2,18 @@
 
 import toast from 'react-hot-toast';
 
-export function showAchievementToast(name: string, icon: string, xpReward: number) {
+type AchievementToastCopy = {
+  title?: string;
+};
+
+export function showAchievementToast(
+  name: string,
+  icon: string,
+  xpReward: number,
+  copy?: AchievementToastCopy
+) {
+  const title = copy?.title ?? 'Achievement Unlocked!';
+
   toast.custom(
     (toastInstance) => (
       <div
@@ -16,7 +27,7 @@ export function showAchievementToast(name: string, icon: string, xpReward: numbe
               {icon}
             </div>
             <div>
-              <p className="text-sm font-semibold text-gray-900">Achievement Unlocked!</p>
+              <p className="text-sm font-semibold text-gray-900">{title}</p>
               <p className="text-xs text-gray-500">{name}</p>
               {xpReward > 0 && (
                 <span className="text-[10px] font-medium text-amber-600">+{xpReward} XP</span>

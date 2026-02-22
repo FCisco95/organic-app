@@ -24,10 +24,14 @@ import {
   useReviewSubmission,
   calculateEarnedPoints,
   getQualityMultiplierPercent,
+  estimateXpFromPoints,
 } from '@/features/tasks';
 import { QualityRating } from './quality-rating';
 import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
+import { useCheckLevelUp } from '@/features/reputation';
+import { showAchievementToast } from '@/components/reputation/achievement-unlock-toast';
+import { showLevelUpToast } from '@/components/reputation/level-up-toast';
 
 interface TaskReviewPanelProps {
   submissions: TaskSubmissionWithReviewer[];
@@ -35,6 +39,11 @@ interface TaskReviewPanelProps {
   onReviewComplete?: () => void;
   className?: string;
 }
+
+type ReviewImpactSummary = {
+  tone: 'positive' | 'neutral';
+  lines: string[];
+};
 
 export function TaskReviewPanel({
   submissions,
@@ -45,9 +54,29 @@ export function TaskReviewPanel({
   const t = useTranslations('Tasks.review');
   const pendingSubmissions = submissions.filter((s) => s.review_status === 'pending');
   const reviewedSubmissions = submissions.filter((s) => s.review_status !== 'pending');
+  const [lastImpactSummary, setLastImpactSummary] = useState<ReviewImpactSummary | null>(null);
 
   return (
     <div className={cn('space-y-6', className)} data-testid="task-review-panel">
+      {lastImpactSummary && (
+        <div
+          data-testid="task-review-last-impact"
+          className={cn(
+            'rounded-lg border px-4 py-3 text-sm',
+            lastImpactSummary.tone === 'positive'
+              ? 'border-emerald-200 bg-emerald-50 text-emerald-900'
+              : 'border-amber-200 bg-amber-50 text-amber-900'
+          )}
+        >
+          <p className="font-semibold">{t('whatChangedTitle')}</p>
+          <ul className="mt-1 space-y-1">
+            {lastImpactSummary.lines.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {/* Pending Submissions */}
       {pendingSubmissions.length > 0 && (
         <div>
@@ -62,6 +91,7 @@ export function TaskReviewPanel({
                 submission={submission}
                 basePoints={basePoints}
                 onReviewComplete={onReviewComplete}
+                onImpact={setLastImpactSummary}
               />
             ))}
           </div>
@@ -94,13 +124,17 @@ function SubmissionReviewCard({
   submission,
   basePoints,
   onReviewComplete,
+  onImpact,
 }: {
   submission: TaskSubmissionWithReviewer;
   basePoints: number;
   onReviewComplete?: () => void;
+  onImpact?: (summary: ReviewImpactSummary) => void;
 }) {
   const t = useTranslations('Tasks.review');
+  const tReputation = useTranslations('Reputation');
   const reviewSubmission = useReviewSubmission();
+  const checkLevelUp = useCheckLevelUp();
   const [qualityScore, setQualityScore] = useState<number>(3);
   const [reviewerNotes, setReviewerNotes] = useState('');
   const [rejectionReason, setRejectionReason] = useState('');
@@ -108,6 +142,52 @@ function SubmissionReviewCard({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const estimatedPoints = calculateEarnedPoints(basePoints, qualityScore);
+  const estimatedXp = estimateXpFromPoints(estimatedPoints);
+
+  const maybeResolveAchievementName = (achievementId: string, fallback: string) => {
+    try {
+      return tReputation(`achievementNames.${achievementId}`);
+    } catch {
+      return fallback;
+    }
+  };
+
+  const maybeResolveLevelName = (level: number) => {
+    try {
+      return tReputation(`levels.${level}`);
+    } catch {
+      return String(level);
+    }
+  };
+
+  const runProgressionFeedback = async () => {
+    try {
+      const result = await checkLevelUp.mutateAsync();
+      const newLevelName = maybeResolveLevelName(result.newLevel);
+
+      if (result.leveledUp) {
+        showLevelUpToast(result.newLevel, newLevelName, {
+          title: tReputation('toast.levelUpTitle'),
+          description: tReputation('toast.levelUp', {
+            level: result.newLevel,
+            name: newLevelName,
+          }),
+        });
+      }
+
+      result.newAchievements.forEach((achievement) => {
+        const achievementName = maybeResolveAchievementName(
+          achievement.achievement_id,
+          achievement.achievement_name
+        );
+        showAchievementToast(achievementName, achievement.icon, achievement.xp_reward, {
+          title: tReputation('toast.achievementUnlockedTitle'),
+        });
+      });
+    } catch {
+      // Feedback toasts are best-effort and should not block the review flow
+    }
+  };
 
   const handleApprove = async () => {
     setIsSubmitting(true);
@@ -121,6 +201,15 @@ function SubmissionReviewCard({
         },
       });
       toast.success(t('approved'));
+      onImpact?.({
+        tone: 'positive',
+        lines: [
+          t('whatChangedPoints', { points: estimatedPoints.toLocaleString() }),
+          t('whatChangedXp', { xp: estimatedXp.toLocaleString() }),
+          t('whatChangedQuestHint'),
+        ],
+      });
+      await runProgressionFeedback();
       onReviewComplete?.();
     } catch {
       toast.error(t('approveFailed'));
@@ -147,6 +236,11 @@ function SubmissionReviewCard({
         },
       });
       toast.success(t('rejected'));
+      onImpact?.({
+        tone: 'neutral',
+        lines: [t('whatChangedNoRewards'), t('whatChangedDisputeHint')],
+      });
+      await runProgressionFeedback();
       onReviewComplete?.();
     } catch {
       toast.error(t('rejectFailed'));
@@ -196,8 +290,11 @@ function SubmissionReviewCard({
               ({t('multiplier', { percent: getQualityMultiplierPercent(qualityScore) })})
             </span>
           </div>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-gray-600" data-testid={`task-review-impact-estimate-${submission.id}`}>
             {t('estimatedPoints')}: <strong>{estimatedPoints}</strong> ({t('base')}: {basePoints})
+          </p>
+          <p className="mt-1 text-sm text-gray-600">
+            {t('estimatedXp')}: <strong>{estimatedXp}</strong>
           </p>
         </div>
 
@@ -226,6 +323,7 @@ function SubmissionReviewCard({
               onChange={(e) => setRejectionReason(e.target.value)}
               rows={2}
               placeholder={t('rejectionReasonPlaceholder')}
+              data-testid={`task-review-rejection-reason-${submission.id}`}
               className="w-full px-3 py-2 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
             />
           </div>
@@ -238,6 +336,7 @@ function SubmissionReviewCard({
               <button
                 onClick={() => setIsRejecting(true)}
                 disabled={isSubmitting}
+                data-testid={`task-review-reject-${submission.id}`}
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-2 border border-red-300 text-red-600 rounded-lg font-medium hover:bg-red-50 transition-colors disabled:opacity-50"
               >
                 <X aria-hidden="true" className="w-4 h-4" />
@@ -246,6 +345,7 @@ function SubmissionReviewCard({
               <button
                 onClick={handleApprove}
                 disabled={isSubmitting}
+                data-testid={`task-review-approve-${submission.id}`}
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
               >
                 {isSubmitting ? (
@@ -268,6 +368,7 @@ function SubmissionReviewCard({
               <button
                 onClick={handleReject}
                 disabled={isSubmitting || !rejectionReason.trim()}
+                data-testid={`task-review-confirm-reject-${submission.id}`}
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
               >
                 {isSubmitting ? (

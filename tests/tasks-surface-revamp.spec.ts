@@ -27,6 +27,8 @@ test.describe('Tasks surface revamp', () => {
   let activeSprintId: string | null = null;
   let blockerTaskId: string | null = null;
   let primaryTaskId: string | null = null;
+  let pendingSubmissionIdA: string | null = null;
+  let pendingSubmissionIdB: string | null = null;
 
   test.beforeEach(async () => {
     test.skip(missing.length > 0, `Missing env vars: ${missing.join(', ')}`);
@@ -107,6 +109,34 @@ test.describe('Tasks surface revamp', () => {
         created_by: adminUserId,
       });
     }
+
+    if (primaryTaskId) {
+      const { data: pendingA } = await supabaseAdmin
+        .from('task_submissions')
+        .insert({
+          task_id: primaryTaskId,
+          user_id: memberUserId,
+          submission_type: 'custom',
+          review_status: 'pending',
+          description: 'Pending submission A for XP feedback coverage.',
+        })
+        .select('id')
+        .single();
+      pendingSubmissionIdA = pendingA?.id ?? null;
+
+      const { data: pendingB } = await supabaseAdmin
+        .from('task_submissions')
+        .insert({
+          task_id: primaryTaskId,
+          user_id: memberUserId,
+          submission_type: 'custom',
+          review_status: 'pending',
+          description: 'Pending submission B for XP feedback coverage.',
+        })
+        .select('id')
+        .single();
+      pendingSubmissionIdB = pendingB?.id ?? null;
+    }
   });
 
   test.afterAll(async () => {
@@ -116,6 +146,14 @@ test.describe('Tasks surface revamp', () => {
 
     if (primaryTaskId) {
       await supabaseAdmin.from('task_dependencies').delete().eq('task_id', primaryTaskId);
+    }
+
+    if (pendingSubmissionIdA) {
+      await supabaseAdmin.from('task_submissions').delete().eq('id', pendingSubmissionIdA);
+    }
+
+    if (pendingSubmissionIdB) {
+      await supabaseAdmin.from('task_submissions').delete().eq('id', pendingSubmissionIdB);
     }
 
     if (primaryTaskId) {
@@ -161,5 +199,28 @@ test.describe('Tasks surface revamp', () => {
     await expect(page.getByTestId('task-submission-cta-block')).toBeVisible();
     await expect(page.getByTestId('task-dependency-surface')).toBeVisible();
     await expect(page.getByTestId('task-submissions-surface')).toBeVisible();
+    await expect(page.getByTestId('task-estimated-xp-chip')).toBeVisible();
+  });
+
+  test('admin review queue shows XP estimators and what-changed summary after review action', async ({
+    page,
+  }) => {
+    test.skip(!pendingSubmissionIdA || !pendingSubmissionIdB, 'Requires pending submission fixtures');
+
+    await addSessionCookieToPage(page, adminCookie, BASE_URL);
+
+    await page.goto(`${BASE_URL}/en/admin/submissions`, { waitUntil: 'domcontentloaded' });
+    await expect(page.getByTestId('admin-submissions-page')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByTestId(`task-review-impact-estimate-${pendingSubmissionIdA}`)).toBeVisible({
+      timeout: 20_000,
+    });
+
+    await page.getByTestId(`task-review-reject-${pendingSubmissionIdA}`).click();
+    await page
+      .getByTestId(`task-review-rejection-reason-${pendingSubmissionIdA}`)
+      .fill('QA rejection to validate contextual XP feedback summary rendering.');
+    await page.getByTestId(`task-review-confirm-reject-${pendingSubmissionIdA}`).click();
+
+    await expect(page.getByTestId('task-review-last-impact')).toBeVisible({ timeout: 20_000 });
   });
 });

@@ -16,7 +16,29 @@ export async function GET(request: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    const userId = targetUserId || user?.id;
+    let unlocksUserId: string | null = null;
+    let canReadUnlockStatus = false;
+
+    if (targetUserId) {
+      if (user?.id && targetUserId === user.id) {
+        unlocksUserId = targetUserId;
+        canReadUnlockStatus = true;
+      } else {
+        const { data: targetProfile, error: targetProfileError } = await supabase
+          .from('user_profiles')
+          .select('profile_visible')
+          .eq('id', targetUserId)
+          .maybeSingle();
+
+        if (!targetProfileError && targetProfile?.profile_visible) {
+          unlocksUserId = targetUserId;
+          canReadUnlockStatus = true;
+        }
+      }
+    } else if (user?.id) {
+      unlocksUserId = user.id;
+      canReadUnlockStatus = true;
+    }
 
     // Fetch all achievement definitions
     const { data: achievements, error } = await supabase
@@ -31,11 +53,11 @@ export async function GET(request: NextRequest) {
 
     // If we have a user, fetch their unlocked achievements
     let unlockedMap: Record<string, string> = {};
-    if (userId) {
+    if (canReadUnlockStatus && unlocksUserId) {
       const { data: unlocked } = await supabase
         .from('user_achievements')
         .select('achievement_id, unlocked_at')
-        .eq('user_id', userId);
+        .eq('user_id', unlocksUserId);
 
       if (unlocked) {
         unlockedMap = Object.fromEntries(

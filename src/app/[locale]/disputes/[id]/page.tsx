@@ -52,7 +52,7 @@ export default function DisputeDetailPage() {
 
   if (isLoading) {
     return (
-      <PageContainer>
+      <PageContainer layout="structured">
         <div data-testid="dispute-detail-page" className="flex items-center justify-center py-20">
           <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
         </div>
@@ -62,7 +62,7 @@ export default function DisputeDetailPage() {
 
   if (isError) {
     return (
-      <PageContainer>
+      <PageContainer layout="structured">
         <div data-testid="dispute-detail-page" className="text-center py-20">
           <p className="text-red-600 text-sm">{(error as Error)?.message || td('loadFailed')}</p>
           <Link href="/disputes" className="text-orange-600 hover:underline mt-2 inline-block">
@@ -75,7 +75,7 @@ export default function DisputeDetailPage() {
 
   if (!dispute) {
     return (
-      <PageContainer>
+      <PageContainer layout="structured">
         <div data-testid="dispute-detail-page" className="text-center py-20">
           <p className="text-gray-500">{td('notFound')}</p>
           <Link href="/disputes" className="text-orange-600 hover:underline mt-2 inline-block">
@@ -94,7 +94,7 @@ export default function DisputeDetailPage() {
     profile?.role === 'admin';
 
   return (
-    <PageContainer>
+    <PageContainer layout="structured">
       <div data-testid="dispute-detail-page">
       {/* Back link */}
       <Link

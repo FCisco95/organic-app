@@ -13,6 +13,7 @@ import { XpProgressBar } from '@/components/reputation/xp-progress-bar';
 import { StreakDisplay } from '@/components/reputation/streak-display';
 import { AchievementGrid } from '@/components/reputation/achievement-grid';
 import { useParams } from 'next/navigation';
+import { useAuth } from '@/features/auth/context';
 
 // Brand icons as simple text since we don't have react-icons
 function TwitterIcon() {
@@ -28,6 +29,7 @@ export default function MemberProfilePage() {
   const id = Array.isArray(idParam) ? idParam[0] : idParam ?? '';
   const locale = useLocale();
   const t = useTranslations('Members');
+  const { user } = useAuth();
   const { data: member, isLoading } = useMember(id);
   const tRep = useTranslations('Reputation');
   const profileVisible = member?.profile_visible ?? false;
@@ -60,6 +62,8 @@ export default function MemberProfilePage() {
   }
 
   if (!member.profile_visible) {
+    const isOwnProfile = user?.id === member.id;
+
     return (
       <PageContainer width="narrow">
         <Link
@@ -72,6 +76,15 @@ export default function MemberProfilePage() {
           <Lock className="w-16 h-16 text-gray-300 mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-gray-900 mb-2">{t('privateProfile')}</h2>
           <p className="text-gray-500">{t('privateProfileDescription')}</p>
+          <p className="text-sm text-gray-500 mt-2">{t('privateProfileScope')}</p>
+          {isOwnProfile && (
+            <Link
+              href={`/${locale}/profile`}
+              className="inline-flex items-center gap-1.5 mt-5 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+              {t('managePrivacySettings')}
+            </Link>
+          )}
         </div>
       </PageContainer>
     );
@@ -180,8 +193,40 @@ export default function MemberProfilePage() {
         </div>
       </div>
 
+      <nav
+        data-testid="member-section-nav"
+        aria-label={t('sectionNavigationLabel')}
+        className="mb-6 rounded-xl border border-gray-200 bg-white p-4"
+      >
+        <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+          {t('sectionNavigationLabel')}
+        </p>
+        <div className="mt-2 flex flex-wrap gap-2">
+          <a
+            href="#member-overview-section"
+            className="rounded-md border border-gray-200 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
+          >
+            {t('sections.overview')}
+          </a>
+          {reputation && (
+            <a
+              href="#member-reputation-section"
+              className="rounded-md border border-gray-200 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
+            >
+              {t('sections.reputation')}
+            </a>
+          )}
+          <a
+            href="#member-achievements-section"
+            className="rounded-md border border-gray-200 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
+          >
+            {t('sections.achievements')}
+          </a>
+        </div>
+      </nav>
+
       {/* Stats */}
-      <div className="grid grid-cols-2 gap-4" data-testid="member-stats-grid">
+      <div id="member-overview-section" className="grid grid-cols-2 gap-4" data-testid="member-stats-grid">
         <div className="bg-white rounded-xl border border-gray-200 p-5 text-center">
           <Star aria-hidden="true" className="w-5 h-5 text-organic-orange mx-auto mb-2" />
           <p className="text-2xl font-bold text-gray-900">{member.total_points}</p>
@@ -196,7 +241,11 @@ export default function MemberProfilePage() {
 
       {/* Reputation */}
       {reputation && (
-        <div className="mt-6 bg-white rounded-xl border border-gray-200 p-6" data-testid="member-reputation-section">
+        <div
+          id="member-reputation-section"
+          className="mt-6 bg-white rounded-xl border border-gray-200 p-6"
+          data-testid="member-reputation-section"
+        >
           <h2 className="text-sm font-semibold text-gray-900 mb-4">{tRep('title')}</h2>
           <div className="flex items-center gap-4 mb-4">
             <LevelBadge level={reputation.level} size="lg" />
@@ -207,12 +256,18 @@ export default function MemberProfilePage() {
       )}
 
       {/* Achievements */}
-      {achievements && achievements.length > 0 && (
-        <div className="mt-6 bg-white rounded-xl border border-gray-200 p-6" data-testid="member-achievements-grid">
+      <div
+        id="member-achievements-section"
+        className="mt-6 bg-white rounded-xl border border-gray-200 p-6"
+        data-testid="member-achievements-grid"
+      >
           <h2 className="text-sm font-semibold text-gray-900 mb-4">{tRep('achievements')}</h2>
-          <AchievementGrid achievements={achievements} />
-        </div>
-      )}
+          {achievements && achievements.length > 0 ? (
+            <AchievementGrid achievements={achievements} />
+          ) : (
+            <p className="text-sm text-gray-500">{tRep('noAchievementsYet')}</p>
+          )}
+      </div>
       </div>
     </PageContainer>
   );

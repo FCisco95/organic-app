@@ -21,6 +21,7 @@ import {
   Zap,
   Vote,
   Trophy,
+  Sparkles,
   Gift,
   Bell,
   Scale,
@@ -40,6 +41,16 @@ export function MobileSidebar() {
   const isAdminOrCouncil = profile?.role === 'admin' || profile?.role === 'council';
   const { data: pendingData } = usePendingDisputeCount(!!user && isAdminOrCouncil);
   const pendingCount = pendingData?.count ?? 0;
+  const progressionSource = pathname.startsWith('/tasks')
+    ? 'tasks'
+    : pathname.startsWith('/proposals')
+      ? 'proposals'
+      : pathname.startsWith('/profile')
+        ? 'profile'
+        : null;
+  const progressionHref = progressionSource
+    ? `/profile/progression?from=${progressionSource}`
+    : '/profile/progression';
 
   const navItems = [
     { href: '/', labelKey: 'home', icon: Home, show: true },
@@ -51,6 +62,7 @@ export function MobileSidebar() {
     { href: '/sprints', labelKey: 'sprints', icon: Zap, show: !!profile?.organic_id },
     { href: '/proposals', labelKey: 'proposals', icon: Vote, show: !!user },
     { href: '/leaderboard', labelKey: 'leaderboard', icon: Trophy, show: !!user },
+    { href: progressionHref, labelKey: 'progression', icon: Sparkles, show: !!user },
     { href: '/rewards', labelKey: 'rewards', icon: Gift, show: !!user },
     { href: '/disputes', labelKey: 'disputes', icon: Scale, show: !!user },
     { href: '/notifications', labelKey: 'notifications', icon: Bell, show: !!user },
@@ -60,7 +72,11 @@ export function MobileSidebar() {
     { href: '/profile', labelKey: 'profile', icon: User, show: !!user },
   ];
 
-  const isActive = (href: string) => (href === '/' ? pathname === '/' : pathname.startsWith(href));
+  const isActive = (href: string) => {
+    const normalizedHref = href.split('?')[0];
+    if (normalizedHref === '/') return pathname === '/';
+    return pathname === normalizedHref || pathname.startsWith(`${normalizedHref}/`);
+  };
 
   return (
     <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>

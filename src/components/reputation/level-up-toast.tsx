@@ -3,8 +3,15 @@
 import toast from 'react-hot-toast';
 import { getLevelInfo } from '@/features/reputation';
 
-export function showLevelUpToast(newLevel: number, levelName: string) {
+type LevelUpToastCopy = {
+  title?: string;
+  description?: string;
+};
+
+export function showLevelUpToast(newLevel: number, levelName: string, copy?: LevelUpToastCopy) {
   const info = getLevelInfo(newLevel);
+  const title = copy?.title ?? 'Level Up!';
+  const description = copy?.description ?? `You reached Level ${newLevel} — ${levelName}`;
 
   toast.custom(
     (toastInstance) => (
@@ -23,10 +30,8 @@ export function showLevelUpToast(newLevel: number, levelName: string) {
               {newLevel}
             </div>
             <div>
-              <p className="text-sm font-semibold text-gray-900">Level Up!</p>
-              <p className="text-xs text-gray-500">
-                You reached Level {newLevel} — {levelName}
-              </p>
+              <p className="text-sm font-semibold text-gray-900">{title}</p>
+              <p className="text-xs text-gray-500">{description}</p>
             </div>
           </div>
         </div>

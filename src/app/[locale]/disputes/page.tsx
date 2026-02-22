@@ -20,7 +20,7 @@ export default function DisputesPage() {
   );
 
   return (
-    <PageContainer>
+    <PageContainer layout="fluid">
       <div data-testid="disputes-page" className="space-y-6">
       {/* Header */}
       <div className="mb-2">

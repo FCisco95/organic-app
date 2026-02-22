@@ -21,6 +21,7 @@ test.describe('Disputes surface revamp', () => {
 
   let adminUserId = '';
   let memberUserId = '';
+  let councilUserId = '';
   let adminCookie = { name: '', value: '' };
   let memberCookie = { name: '', value: '' };
 
@@ -29,6 +30,9 @@ test.describe('Disputes surface revamp', () => {
   let taskId: string | null = null;
   let submissionId: string | null = null;
   let disputeId: string | null = null;
+  let resolvableTaskId: string | null = null;
+  let resolvableSubmissionId: string | null = null;
+  let resolvableDisputeId: string | null = null;
 
   test.beforeEach(async () => {
     test.skip(missing.length > 0, `Missing env vars: ${missing.join(', ')}`);
@@ -61,6 +65,16 @@ test.describe('Disputes surface revamp', () => {
     });
     memberUserId = member.id;
     memberCookie = await buildSessionCookie(member.email, pass);
+
+    const council = await createQaUser(supabaseAdmin, {
+      email: `${id}.council@example.com`,
+      password: pass,
+      name: 'Disputes Surface QA Council',
+      role: 'council',
+      organicId: randomOrganicId(),
+      xpTotal: 20_000,
+    });
+    councilUserId = council.id;
 
     sprintId = await getDisputeWindowSprintId(supabaseAdmin);
     if (!sprintId) {
@@ -154,6 +168,67 @@ test.describe('Disputes surface revamp', () => {
         },
       },
     });
+
+    const { data: resolvableTask } = await supabaseAdmin
+      .from('tasks')
+      .insert({
+        title: `Disputes Resolve Task ${id}`,
+        task_type: 'custom',
+        org_id: orgId,
+        created_by: adminUserId,
+        sprint_id: sprintId,
+        status: 'review',
+        base_points: 120,
+        priority: 'high',
+      })
+      .select('id')
+      .single();
+    resolvableTaskId = resolvableTask?.id ?? null;
+    if (!resolvableTaskId) return;
+
+    const { data: resolvableSubmission } = await supabaseAdmin
+      .from('task_submissions')
+      .insert({
+        task_id: resolvableTaskId,
+        user_id: memberUserId,
+        submission_type: 'custom',
+        review_status: 'rejected',
+        reviewer_id: councilUserId,
+        quality_score: 2,
+        rejection_reason: 'Resolve-flow fixture rejection.',
+        reviewed_at: new Date().toISOString(),
+        submitted_at: new Date().toISOString(),
+      })
+      .select('id')
+      .single();
+    resolvableSubmissionId = resolvableSubmission?.id ?? null;
+    if (!resolvableSubmissionId) return;
+
+    const createResolvableDisputeRes = await request.post(`${BASE_URL}/api/disputes`, {
+      headers: { Cookie: cookieHeader(memberCookie) },
+      data: {
+        submission_id: resolvableSubmissionId,
+        reason: 'rejected_unfairly',
+        evidence_text:
+          'Resolvable dispute fixture payload with detailed evidence to exercise resolve impact summary and feedback hooks.',
+        evidence_links: [],
+        request_mediation: false,
+      },
+    });
+
+    if (createResolvableDisputeRes.status() !== 201) return;
+    const createResolvableDisputeBody = await createResolvableDisputeRes.json();
+    resolvableDisputeId = createResolvableDisputeBody.data.id as string;
+
+    await supabaseAdmin
+      .from('disputes')
+      .update({
+        status: 'under_review',
+        tier: 'council',
+        arbitrator_id: adminUserId,
+        response_submitted_at: new Date().toISOString(),
+      })
+      .eq('id', resolvableDisputeId);
   });
 
   test.afterAll(async () => {
@@ -166,12 +241,25 @@ test.describe('Disputes surface revamp', () => {
       await supabaseAdmin.from('disputes').delete().eq('id', disputeId);
     }
 
+    if (resolvableDisputeId) {
+      await supabaseAdmin.from('dispute_comments').delete().eq('dispute_id', resolvableDisputeId);
+      await supabaseAdmin.from('disputes').delete().eq('id', resolvableDisputeId);
+    }
+
     if (submissionId) {
       await supabaseAdmin.from('task_submissions').delete().eq('id', submissionId);
     }
 
+    if (resolvableSubmissionId) {
+      await supabaseAdmin.from('task_submissions').delete().eq('id', resolvableSubmissionId);
+    }
+
     if (taskId) {
       await supabaseAdmin.from('tasks').delete().eq('id', taskId);
+    }
+
+    if (resolvableTaskId) {
+      await supabaseAdmin.from('tasks').delete().eq('id', resolvableTaskId);
     }
 
     if (ownedSprintId) {
@@ -180,6 +268,7 @@ test.describe('Disputes surface revamp', () => {
 
     if (adminUserId) await deleteQaUser(supabaseAdmin, adminUserId);
     if (memberUserId) await deleteQaUser(supabaseAdmin, memberUserId);
+    if (councilUserId) await deleteQaUser(supabaseAdmin, councilUserId);
   });
 
   test('queue page exposes triage counters, SLA filters, and escalation controls', async ({ page }) => {
@@ -240,5 +329,40 @@ test.describe('Disputes surface revamp', () => {
     await expect(page.getByTestId('dispute-mediation-path-panel')).toBeVisible();
     await expect(page.getByTestId('dispute-evidence-chronology')).toBeVisible();
     await expect(page.getByTestId('dispute-late-evidence-tag')).toBeVisible();
+  });
+
+  test('detail page resolves dispute with XP impact estimate and post-action summary', async ({ page }) => {
+    test.skip(!resolvableDisputeId, 'Requires resolvable dispute fixture');
+
+    const baseUrl = new URL(BASE_URL);
+    await page.context().addCookies([
+      {
+        name: adminCookie.name,
+        value: adminCookie.value,
+        domain: baseUrl.hostname,
+        path: '/',
+        httpOnly: true,
+        secure: baseUrl.protocol === 'https:',
+        sameSite: 'Lax',
+      },
+    ]);
+
+    await page.goto(`${BASE_URL}/en/disputes/${resolvableDisputeId}`, {
+      waitUntil: 'domcontentloaded',
+    });
+
+    await expect(page.getByTestId('dispute-detail-page')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByTestId('dispute-resolve-panel')).toBeVisible({ timeout: 20_000 });
+
+    await page.getByTestId('dispute-resolve-option-overturned').click();
+    await page
+      .getByTestId('dispute-resolve-notes')
+      .fill('QA validation notes for overturned resolution impact summary coverage.');
+    await expect(page.getByTestId('dispute-resolve-impact-estimate')).toBeVisible();
+
+    await page.getByTestId('dispute-resolve-submit').click();
+    await expect(page.getByTestId('dispute-action-impact-summary')).toBeVisible({
+      timeout: 20_000,
+    });
   });
 });

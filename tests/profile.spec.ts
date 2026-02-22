@@ -169,6 +169,28 @@ test.describe('Profile section layout', () => {
     await expect(page.getByTestId('profile-activity-section')).toBeVisible({ timeout: 20_000 });
     await expect(page.getByTestId('profile-preferences-section')).toBeVisible({ timeout: 20_000 });
   });
+
+  test('opens progression hub from profile quick action', async ({ page }) => {
+    test.skip(!userId, 'Requires user fixture');
+    test.setTimeout(120_000);
+
+    await addSessionCookieToPage(page, cookie, HELPERS_BASE_URL);
+    await page.goto(`${HELPERS_BASE_URL}/en/profile`, { waitUntil: 'domcontentloaded' });
+
+    await expect(page.getByTestId('profile-progression-link')).toBeVisible({ timeout: 20_000 });
+    await page.getByTestId('profile-progression-link').click();
+
+    await expect(page).toHaveURL(/\/en\/profile\/progression\?from=profile/);
+    await expect(page.getByTestId('profile-progression-page')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByTestId('progression-source-context')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByTestId('progression-overview-cards')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByTestId('progression-quests-section')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByTestId('progression-quests-daily')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByTestId('progression-quests-weekly')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByTestId('progression-quests-long_term')).toBeVisible({
+      timeout: 20_000,
+    });
+  });
 });
 
 test.describe('Profile stats', () => {

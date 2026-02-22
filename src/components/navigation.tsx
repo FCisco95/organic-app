@@ -17,6 +17,16 @@ export function Navigation() {
   const t = useTranslations('Navigation');
   const { connected, publicKey, disconnect } = useWallet();
   const [isWalletDrawerOpen, setIsWalletDrawerOpen] = useState(false);
+  const progressionSource = pathname.startsWith('/tasks')
+    ? 'tasks'
+    : pathname.startsWith('/proposals')
+      ? 'proposals'
+      : pathname.startsWith('/profile')
+        ? 'profile'
+        : null;
+  const progressionHref = progressionSource
+    ? `/profile/progression?from=${progressionSource}`
+    : '/profile/progression';
 
   const navLinks = [
     { href: '/', label: t('home'), show: true },
@@ -25,6 +35,7 @@ export function Navigation() {
     { href: '/tasks', label: t('tasks'), show: !!profile?.organic_id },
     { href: '/sprints', label: t('sprints'), show: !!profile?.organic_id },
     { href: '/leaderboard', label: t('leaderboard'), show: !!user },
+    { href: progressionHref, label: t('progression'), show: !!user },
   ];
 
   return (
@@ -55,7 +66,8 @@ export function Navigation() {
                     href={link.href}
                     className={cn(
                       'px-4 py-2 rounded-md text-sm font-medium transition-colors',
-                      pathname === link.href
+                      pathname === link.href.split('?')[0] ||
+                        pathname.startsWith(`${link.href.split('?')[0]}/`)
                         ? 'bg-organic-orange/10 text-organic-orange'
                         : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                     )}
@@ -180,7 +192,8 @@ export function Navigation() {
                     href={link.href}
                     className={cn(
                       'block px-3 py-2 rounded-md text-sm font-medium transition-colors',
-                      pathname === link.href
+                      pathname === link.href.split('?')[0] ||
+                        pathname.startsWith(`${link.href.split('?')[0]}/`)
                         ? 'bg-organic-orange/10 text-organic-orange'
                         : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                     )}

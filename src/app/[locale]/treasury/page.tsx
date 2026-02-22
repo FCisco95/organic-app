@@ -25,7 +25,7 @@ export default function TreasuryPage() {
   const updatedAtLabel = trust?.updated_at ? new Date(trust.updated_at).toLocaleString() : t('notAvailable');
 
   return (
-    <PageContainer width="wide">
+    <PageContainer layout="fluid">
       <div className="space-y-6">
         {/* Hero explainer */}
         <TreasuryHero walletAddress={TOKEN_CONFIG.treasuryWallet} trust={trust} />

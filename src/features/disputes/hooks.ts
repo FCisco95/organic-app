@@ -304,7 +304,11 @@ export function useMediateDispute() {
       disputeId: string;
       input: MediateDisputeInput;
     }) =>
-      fetchJson<{ data: DisputeWithRelations }>(`/api/disputes/${disputeId}/mediate`, {
+      fetchJson<{
+        data: DisputeWithRelations;
+        pending_confirmation?: boolean;
+        message?: string;
+      }>(`/api/disputes/${disputeId}/mediate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(input),
