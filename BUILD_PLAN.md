@@ -360,6 +360,207 @@ These phases address the core gaps in crypto community SaaS platforms: contribut
 
 ---
 
+## Mobile App Roadmap
+
+These phases take the platform from a web-only product to a fully shipped mobile app (PWA + native). Follow the phases in order — each builds on the previous.
+
+> **Rule:** Do not start a later phase until the prior phase's core items are validated on a real device.
+
+---
+
+### Phase 28 — Mobile Responsiveness Foundation
+
+**Goal:** Fix every existing surface so it works correctly on a 375px viewport before any native work begins. This is the non-negotiable prerequisite for all mobile phases.
+
+**Audit and fix:**
+- [ ] Mobile viewport audit across all core surfaces: tasks, proposals, sprints, treasury, members, profile, notifications, admin
+- [ ] Navigation: collapse sidebar to off-canvas drawer on `< md`, hamburger trigger
+- [ ] All touch targets minimum 44×44px (buttons, links, icon actions)
+- [ ] Tables and data grids: horizontal scroll or card-stack collapse on mobile
+- [ ] Modals and dialogs: full-screen on mobile, avoid fixed heights that clip content
+- [ ] Forms: correct `inputmode` and `type` attributes for mobile keyboards (number, email, url, search)
+- [ ] Safe area insets: apply `env(safe-area-inset-*)` to fixed headers, bottom bars, and sticky footers
+- [ ] Wallet connect modal: verify it renders correctly on mobile browsers (Safari iOS, Chrome Android)
+- [ ] i18n layout: verify all three locales (en, pt-PT, zh-CN) on narrow viewports
+- [ ] Manual QA sweep on iOS Safari and Chrome for Android for every core flow
+
+---
+
+### Phase 29 — Progressive Web App (PWA)
+
+**Goal:** Make the web app installable on iOS and Android home screens with offline resilience and push notification capability.
+
+**Infrastructure:**
+- [ ] Add `next-pwa` or custom service worker setup (choose: Workbox via next-pwa recommended)
+- [ ] Web app manifest: `name`, `short_name`, `icons` (192×192, 512×512, maskable), `theme_color`, `background_color`, `display: standalone`, `start_url`
+- [ ] App icons set: generate full icon set from brand assets (all required sizes for iOS + Android)
+- [ ] Splash screens for iOS (`apple-touch-startup-image` meta tags)
+- [ ] Service worker: cache app shell and static assets on install
+- [ ] Offline fallback page (`/offline`) for uncached navigations
+- [ ] Background sync: queue failed API writes (task updates, votes) and retry when online
+- [ ] "Add to Home Screen" install prompt: intercept `beforeinstallprompt`, show branded CTA banner
+- [ ] Web Push API: VAPID key generation, push subscription endpoint (`POST /api/push/subscribe`), notification dispatch
+- [ ] Hook web push into existing notification system (Phase 11 backend already exists — add push channel)
+- [ ] Audit and fix any `https`-only APIs blocked on PWA installs
+
+---
+
+### Phase 30 — Mobile UX Patterns
+
+**Goal:** Adapt the interaction layer to feel native on touch devices. The web shell should behave like an app, not a shrunk desktop site.
+
+**Navigation:**
+- [ ] Bottom navigation bar on mobile (≤ md): Home, Tasks, Proposals, Notifications, Profile — replaces sidebar on small screens
+- [ ] Active state + badge count on bottom nav items
+- [ ] Sidebar retained on tablet/desktop; bottom nav only on phone breakpoints
+
+**Interactions:**
+- [ ] Pull-to-refresh on list views (tasks, proposals, notifications)
+- [ ] Swipe-to-dismiss on notification items and toast alerts
+- [ ] Swipe-left/right on task cards (kanban column navigation on mobile)
+- [ ] Sheet/bottom-drawer modals for action menus instead of centered overlay dialogs on mobile
+- [ ] Skeleton loading states on all list and detail views (improve perceived perf on slow mobile connections)
+
+**Forms and inputs:**
+- [ ] Sticky action bar (Submit / Cancel) fixed to bottom of screen on long forms
+- [ ] Keyboard-aware scroll: ensure active input is not obscured by virtual keyboard (especially on iOS Safari)
+- [ ] Numeric inputs use `inputmode="decimal"` where appropriate
+
+**Feedback:**
+- [ ] Haptic feedback on native-feeling actions via `navigator.vibrate` (short pulses on confirm/error)
+- [ ] Touch ripple or press feedback on interactive cards
+
+---
+
+### Phase 31 — React Native / Expo App
+
+**Goal:** Build a cross-platform native app that reuses all existing API and business logic. The native app is a client — it does not duplicate server logic.
+
+**Setup:**
+- [ ] Expo managed workflow scaffold in `/mobile` directory (or separate repo — confirm with team)
+- [ ] Expo Router for file-based navigation (mirrors Next.js App Router mental model)
+- [ ] Shared TypeScript types: extract `src/types/` into a shared package or copy-sync to mobile
+- [ ] Shared API client: move all `fetch` calls into a platform-agnostic `api/` module usable from both Next.js and React Native
+- [ ] TanStack Query on mobile: same query keys and mutation patterns as web
+
+**Auth:**
+- [ ] Supabase `@supabase/supabase-js` on React Native with `AsyncStorage` session persistence
+- [ ] Sign-in flow: email magic link + wallet (adapted for mobile)
+- [ ] Biometric unlock (Face ID / fingerprint) via `expo-local-authentication` as a session re-auth shortcut
+- [ ] Secure token storage via `expo-secure-store` (never AsyncStorage for credentials)
+
+**Core screens (MVP):**
+- [ ] Home / dashboard feed
+- [ ] Task list + task detail
+- [ ] Proposal list + voting
+- [ ] Notifications inbox
+- [ ] Profile + reputation card
+- [ ] Sprint overview
+
+**UI components:**
+- [ ] Design token parity: port color and spacing tokens from `globals.css` to a React Native `theme.ts`
+- [ ] Component library for mobile: Button, Card, Badge, Avatar, Sheet, Toast — matching web design language
+- [ ] React Native safe area setup (`react-native-safe-area-context`)
+- [ ] Accessibility: `accessibilityLabel` on all interactive elements, `accessibilityRole` set correctly
+
+---
+
+### Phase 32 — Solana Mobile Wallet Adapter
+
+**Goal:** Enable native Solana wallet signing on Android via the Mobile Wallet Adapter (MWA) protocol, and handle iOS wallet connections via deep links / WalletConnect.
+
+**Android (MWA):**
+- [ ] Install `@solana-mobile/mobile-wallet-adapter-protocol-web3js`
+- [ ] Implement `transact()` session for signing messages (wallet auth) and transactions
+- [ ] Test against Phantom Mobile, Solflare Mobile, and any MWA-compatible wallets
+- [ ] Graceful fallback if no MWA-compatible wallet is installed (prompt to install Phantom)
+
+**iOS (deep link approach):**
+- [ ] WalletConnect v2 integration for iOS wallet connections (Phantom, Backpack support WC)
+- [ ] Universal link / custom URL scheme handling for wallet callback redirects
+- [ ] Test on iOS with Phantom and Backpack
+
+**Shared auth:**
+- [ ] Reuse server-side `verify-wallet` signature check endpoint — no changes needed server-side
+- [ ] Store wallet public key in Supabase session via existing `wallet_link` flow
+
+---
+
+### Phase 33 — Native Push Notifications and Deep Links
+
+**Goal:** Deliver timely, actionable push notifications to native app users and link them directly to the relevant screen.
+
+**Push notifications:**
+- [ ] `expo-notifications` setup: request permissions, register device push token
+- [ ] Push token registration endpoint: `POST /api/push/device-token` — store token per user in `push_subscriptions` table
+- [ ] Notification dispatch: extend existing notification system to send via APNs (iOS) and FCM (Android) using Expo Push API
+- [ ] Notification categories with actions (e.g. "View Task", "Vote Now") — actionable from lock screen
+- [ ] Notification handler: when app is foregrounded, show in-app banner; when backgrounded/killed, route on tap
+
+**Deep links:**
+- [ ] Expo Router deep link config for all core routes: `/tasks/:id`, `/proposals/:id`, `/profile/:id`, `/notifications`
+- [ ] Universal links (iOS) and App Links (Android): associate domain `organic.app` with the native app
+- [ ] QR code support: scan a DAO invite or task share link and open the correct screen in-app
+- [ ] Share sheet integration: "Share Task" and "Share Proposal" open native share sheet with deep link URL
+
+---
+
+### Phase 34 — App Store Release Pipeline
+
+**Goal:** Ship the app to the iOS App Store and Google Play Store with a repeatable, automated build and release process.
+
+**Build infrastructure:**
+- [ ] EAS Build setup (`eas.json`): development, preview, and production profiles
+- [ ] iOS: Apple Developer account, app bundle ID, provisioning profiles, push certificates
+- [ ] Android: Google Play Console account, keystore generation and secure storage, signing config
+- [ ] Environment variables: use EAS Secrets for all `SUPABASE_*`, `SOLANA_*`, and API keys — never in source
+
+**App store assets:**
+- [ ] Privacy policy page (`/legal/privacy`) — required for both stores
+- [ ] Terms of service page (`/legal/terms`)
+- [ ] App store screenshots: iPhone 6.5", iPhone 5.5", iPad 12.9" (iOS); phone + 7" tablet (Android)
+- [ ] App store description, keywords, category selection
+- [ ] App icon (1024×1024 no-alpha for iOS; 512×512 for Android)
+
+**Testing tracks:**
+- [ ] TestFlight internal testing: invite core team and testers
+- [ ] Google Play internal testing track: same group
+- [ ] Staged rollout plan (10% → 50% → 100%) for first production release
+
+**CI/CD:**
+- [ ] GitHub Actions workflow: on merge to `release/mobile`, trigger EAS Build + EAS Submit
+- [ ] OTA update channel (`eas update`) for JS-only changes without full store resubmission
+- [ ] Semantic versioning + build number auto-increment in CI
+
+---
+
+### Phase 35 — Mobile Observability and Analytics
+
+**Goal:** Instrument the native app for crash detection, performance insight, and product analytics before public launch.
+
+**Error and crash tracking:**
+- [ ] `@sentry/react-native` SDK: automatic JS crash capture + native crash reporting
+- [ ] Sentry release tracking tied to EAS build versions
+- [ ] Source map upload in EAS Build pipeline for readable stack traces
+
+**Performance:**
+- [ ] Sentry Performance: slow screen renders, long tasks, navigation timing
+- [ ] React Native profiler integration in development build
+- [ ] Bundle size tracking: alert on regressions > 10% in EAS build output
+
+**Product analytics:**
+- [ ] Decide on analytics provider (PostHog recommended — same provider as web for unified funnels)
+- [ ] `posthog-react-native` integration
+- [ ] Track core funnel events: app open, wallet connect, first task view, first vote, first task submission
+- [ ] Mobile-specific events: notification tap, deep link open, biometric auth used
+
+**Quality gates before public launch:**
+- [ ] Crash-free rate ≥ 99% on TestFlight / internal track (7-day soak)
+- [ ] P75 screen render < 100ms for core screens (home, tasks, proposals)
+- [ ] All critical flows pass manual QA on iPhone (latest iOS) and Pixel (latest Android)
+
+---
+
 ## Technical Improvement Backlog
 
 ### Performance
