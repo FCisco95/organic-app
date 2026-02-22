@@ -77,6 +77,7 @@
   "Navigation": {
     "home": "Início",
     "profile": "Perfil",
+    "progression": "Progressão",
     "proposals": "Propostas",
     "tasks": "Tarefas",
     "sprints": "Sprints",
@@ -725,6 +726,17 @@
     "allContributors": "Todos os colaboradores",
     "sprintFilter": "Sprint",
     "allSprints": "Todas as sprints",
+    "sortBy": "Ordenar por",
+    "sort": {
+      "newest": "Mais recentes",
+      "oldest": "Mais antigas",
+      "dueSoon": "Prazo mais próximo",
+      "pointsHigh": "Mais pontos",
+      "mostLiked": "Mais curtidas"
+    },
+    "showAdvancedFilters": "Mais filtros",
+    "hideAdvancedFilters": "Menos filtros",
+    "clearFilters": "Limpar filtros",
     "filterHierarchyLabel": "Hierarquia de filtros",
     "filterHierarchyHint": "Comece amplo pela busca e refine por categoria, colaborador, sprint e datas.",
     "dateFrom": "De",
@@ -792,10 +804,10 @@
     "leaveFailed": "Falha ao sair da tarefa",
     "joinRequiresOrganicId": "Precisa de um Organic ID para participar em tarefas",
     "standardLabels": {
-      "growth": "📣 Crescimento",
-      "design": "🎨 Design",
-      "dev": "💻 Desenvolvimento",
-      "research": "🧠 Pesquisa"
+      "growth": "Crescimento",
+      "design": "Design",
+      "dev": "Desenvolvimento",
+      "research": "Pesquisa"
     },
     "participantCount": "{count, plural, one {# participante} other {# participantes}}",
     "infoBanner": {
@@ -805,6 +817,20 @@
       "earn": "Ganhe pontos com base na sua pontuação de qualidade",
       "dismiss": "Entendido"
     },
+    "columnTask": "Tarefa",
+    "columnStatus": "Estado",
+    "columnDue": "Prazo",
+    "columnPoints": "Pontos",
+    "columnActivity": "Atividade",
+    "emptyFilteredTitle": "Nenhuma tarefa corresponde a estes filtros",
+    "emptyFilteredDescription": "Ajuste os filtros para ampliar os resultados.",
+    "emptyNoSprintTitle": "Ainda não há sprint ativa",
+    "emptyNoSprintDescription": "Inicie uma sprint para preencher esta visão de execução.",
+    "emptyNoTasksTitle": "Sem tarefas neste segmento",
+    "emptyNoTasksDescription": "Este segmento está vazio neste momento.",
+    "pageStatus": "Página {page} de {total}",
+    "previousPage": "Anterior",
+    "nextPage": "Seguinte",
     "noTasksFiltered": "Nenhuma tarefa encontrada. Tente ajustar os filtros.",
     "noSubmissionsYet": "Ninguém submeteu trabalho ainda. Participe e seja o primeiro!",
     "noDependenciesAvailable": "Nenhuma tarefa disponível para adicionar como dependência.",
@@ -820,7 +846,14 @@
       "qualityScoreLabel": "Pontuação de Qualidade",
       "multiplier": "multiplicador de {percent}",
       "estimatedPoints": "Pontos estimados",
+      "estimatedXp": "XP estimado",
       "base": "base",
+      "whatChangedTitle": "O que mudou",
+      "whatChangedPoints": "+{points} pontos atribuídos ao colaborador.",
+      "whatChangedXp": "~+{xp} XP atribuídos com este resultado da revisão.",
+      "whatChangedNoRewards": "Nenhum ponto ou XP foi atribuído nesta decisão.",
+      "whatChangedDisputeHint": "O colaborador pode abrir uma disputa se discordar.",
+      "whatChangedQuestHint": "O progresso das missões atualiza no hub de progressão.",
       "reviewerNotesLabel": "Notas do Revisor (opcional)",
       "reviewerNotesPlaceholder": "Adicionar feedback ou notas...",
       "rejectionReasonLabel": "Motivo da Rejeição",
@@ -1076,6 +1109,7 @@
     "saveChanges": "Salvar alterações",
     "priorityLabel": "{priority} prioridade",
     "pointsLabel": "{points} pontos",
+    "estimatedXpLabel": "Est. {xp} XP",
     "category": "Categoria",
     "noCategory": "Sem categoria",
     "governanceSource": "Origem de governança",
@@ -1140,10 +1174,10 @@
     "labelPlaceholder": "Adicionar etiqueta",
     "addLabel": "Adicionar",
     "standardLabels": {
-      "growth": "📣 Crescimento",
-      "design": "🎨 Design",
-      "dev": "💻 Desenvolvimento",
-      "research": "🧠 Pesquisa"
+      "growth": "Crescimento",
+      "design": "Design",
+      "dev": "Desenvolvimento",
+      "research": "Pesquisa"
     }
   },
   "Profile": {
@@ -1151,6 +1185,7 @@
     "pageTitle": "Meu Perfil",
     "pageSubtitle": "Gerencie sua conta e informações pessoais",
     "editProfile": "Editar Perfil",
+    "viewProgression": "Ver progressão",
     "statsTitle": "Atividade",
     "totalSubmissionsLabel": "Total de envios",
     "approvedSubmissionsLabel": "Envios aprovados",
@@ -1220,6 +1255,18 @@
     "linkedWalletHoldsTokens": "Sua carteira vinculada possui {balance} tokens $ORG",
     "notificationPreferencesTitle": "Preferências de Notificação",
     "notificationPreferencesDescription": "Escolha quais categorias você quer receber e como.",
+    "privacyTitle": "Visibilidade do perfil",
+    "privacyDescription": "Escolha se outros membros podem abrir o seu perfil completo.",
+    "privacyPublicStatus": "O seu perfil está público",
+    "privacyPrivateStatus": "O seu perfil está privado",
+    "privacyPublicHint": "Os membros podem ver os seus detalhes, reputação e conquistas.",
+    "privacyPrivateHint": "Os membros só conseguem ver informação limitada no diretório.",
+    "setPrivate": "Tornar perfil privado",
+    "setPublic": "Tornar perfil público",
+    "updatingPrivacy": "A atualizar...",
+    "toastProfileVisible": "O seu perfil está agora público.",
+    "toastProfileHidden": "O seu perfil está agora privado.",
+    "toastFailedUpdatePrivacy": "Falha ao atualizar a visibilidade do perfil.",
     "twitterAccountTitle": "Conta Twitter/X",
     "twitterAccountDescription": "Ligue a sua conta Twitter/X para verificar tarefas de engagement.",
     "twitterAccountNotLinked": "Ainda não há conta Twitter/X ligada.",
@@ -1234,6 +1281,91 @@
     "toastFailedLinkTwitter": "Falha ao ligar conta Twitter/X",
     "toastTwitterUnlinked": "Conta Twitter/X desligada",
     "toastFailedUnlinkTwitter": "Falha ao desligar conta Twitter/X"
+  },
+  "Gamification": {
+    "title": "Progressão",
+    "subtitle": "Acompanhe seu XP, evolução de nível e prontidão para recompensas num só lugar.",
+    "loading": "A carregar progressão...",
+    "errorLoad": "Falha ao carregar dados de progressão.",
+    "backToProfile": "Voltar ao perfil",
+    "viewLeaderboard": "Ver ranking",
+    "levelCard": "Nível atual",
+    "xpToNextCard": "XP para o próximo nível",
+    "streakCard": "Sequência atual",
+    "claimablePointsCard": "Pontos reclamáveis",
+    "totalPointsLine": "Pontos totais: {points}",
+    "nextLevelTitle": "Objetivo do próximo nível",
+    "nextLevelBody": "Continue a contribuir para chegar ao Nível {level}.",
+    "questsTitle": "Missões",
+    "questsEmpty": "O sistema de missões está quase pronto. As suas missões vão aparecer em breve.",
+    "rewardsReadinessTitle": "Prontidão para recompensas",
+    "rewardsReady": "Já pode submeter um pedido de recompensas.",
+    "rewardsNotReady": "Precisa de mais {points} pontos para submeter um pedido.",
+    "openRewards": "Abrir recompensas",
+    "recentXpTitle": "Atividade XP recente",
+    "questsSummary": "{completed}/{total} missões concluídas",
+    "questCadenceProgress": "{completed}/{total} concluídas",
+    "questCadenceEmpty": "Não há objetivos nesta cadência neste momento.",
+    "questResetsLabel": "Reinicia {time}",
+    "questResetsSoon": "em breve",
+    "questCompleted": "Concluída",
+    "questProgressCounter": "{progress}/{target}",
+    "questRemaining": "faltam {remaining}",
+    "questsFallbackNotice": "Os temporizadores detalhados estão indisponíveis. A mostrar apenas o resumo do progresso.",
+    "questCadences": {
+      "daily": "Diária",
+      "weekly": "Semanal",
+      "long_term": "Longo prazo"
+    },
+    "questCtaTasks": "Abrir tarefas",
+    "questCtaProposals": "Abrir propostas",
+    "questCtaProfile": "Abrir perfil",
+    "questCtaDefault": "Abrir tarefas",
+    "questSourceContext": "Você veio de {source}. Continue lá para avançar nas missões relacionadas.",
+    "questSourceCta": "Voltar para {source}",
+    "questSourceNames": {
+      "tasks": "Tarefas",
+      "proposals": "Propostas",
+      "profile": "Perfil"
+    },
+    "questCopy": {
+      "daily_task_push": {
+        "title": "Construtor diário",
+        "description": "Conclua pelo menos 1 tarefa hoje."
+      },
+      "daily_vote_signal": {
+        "title": "Sinal diário",
+        "description": "Registe pelo menos 1 voto de governança hoje."
+      },
+      "daily_xp_burst": {
+        "title": "Explosão de XP",
+        "description": "Ganhe 150 XP num único dia."
+      },
+      "weekly_task_momentum": {
+        "title": "Impulso semanal",
+        "description": "Conclua 5 tarefas esta semana."
+      },
+      "weekly_governance_actions": {
+        "title": "Pulso de governança",
+        "description": "Faça 3 ações de governança esta semana."
+      },
+      "weekly_active_days": {
+        "title": "Presença consistente",
+        "description": "Esteja ativo em 4 dias diferentes esta semana."
+      },
+      "long_term_level_five": {
+        "title": "Alcançar nível 5",
+        "description": "Evolua a sua conta até ao nível 5."
+      },
+      "long_term_achievements_ten": {
+        "title": "Caçador de conquistas",
+        "description": "Desbloqueie 10 conquistas."
+      },
+      "long_term_streak_thirty": {
+        "title": "Mestre de sequência",
+        "description": "Mantenha uma sequência de atividade de 30 dias."
+      }
+    }
   },
   "Voting": {
     "title": "Votação Ponderada por Tokens",
@@ -1473,6 +1605,7 @@
     "points": "pts",
     "tasks": "tarefas",
     "privateMember": "Membro Privado",
+    "privateMemberDescription": "Este membro mantém os detalhes do perfil ocultos.",
     "anonymous": "Anónimo",
     "emptyTitle": "Nenhum membro encontrado",
     "emptyDescription": "Tente ajustar a pesquisa ou filtros",
@@ -1483,6 +1616,14 @@
     "memberNotFound": "Membro não encontrado",
     "privateProfile": "Perfil Privado",
     "privateProfileDescription": "Este membro escolheu manter o seu perfil privado.",
+    "privateProfileScope": "Detalhes de reputação, conquistas e links sociais estão ocultos.",
+    "managePrivacySettings": "Gerir definições de privacidade",
+    "sectionNavigationLabel": "Navegação rápida",
+    "sections": {
+      "overview": "Visão geral",
+      "reputation": "Reputação",
+      "achievements": "Conquistas"
+    },
     "website": "Website",
     "memberSince": "Membro desde {date}",
     "totalPoints": "Total de Pontos",
@@ -1771,7 +1912,9 @@
       "achievement_unlocked": "Bónus de conquista"
     },
     "toast": {
+      "levelUpTitle": "Subida de nível!",
       "levelUp": "Subiu de nível! Alcançou {level} — {name}",
+      "achievementUnlockedTitle": "Conquista desbloqueada!",
       "achievementUnlocked": "Conquista desbloqueada: {name}"
     },
     "locked": "Bloqueada",
@@ -2023,6 +2166,22 @@
       "plagiarism_claim": "Alegação de Plágio",
       "reviewer_bias": "Parcialidade do Revisor",
       "other": "Outro"
+    },
+    "impact": {
+      "estimateTitle": "Impacto estimado de XP",
+      "whatChangedTitle": "O que mudou",
+      "submissionApprovalLine": "Submissão aprovada em {score}/5 (+{points} pontos, cerca de +{xp} XP).",
+      "disputantRefundLine": "Disputante: +{xp} XP devolvidos do depósito.",
+      "disputantStakeLockedLine": "Disputante: o depósito mantém-se gasto (sem devolução de XP).",
+      "reviewerPenaltyLine": "Revisor: penalização de -{xp} XP.",
+      "reviewerNoPenaltyLine": "Revisor: sem penalização de XP neste resultado.",
+      "arbitratorRewardLine": "Árbitro: recompensa de +{xp} XP.",
+      "arbitratorNoRewardLine": "A recompensa do árbitro só é aplicada quando houver árbitro atribuído.",
+      "withdrawalFeeLine": "Taxa de retirada aplicada: -{xp} XP.",
+      "withdrawRefundLine": "Depósito devolvido após taxa: +{xp} XP.",
+      "mediationPendingLine": "Proposta de mediação enviada. A aguardar confirmação da outra parte.",
+      "questHintLine": "As missões de progressão atualizam automaticamente após esta ação.",
+      "noNetXpLine": "Nenhuma alteração adicional de XP é aplicada neste momento."
     },
     "form": {
       "reason": "Motivo da Disputa",

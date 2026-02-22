@@ -77,6 +77,7 @@
   "Navigation": {
     "home": "Home",
     "profile": "Profile",
+    "progression": "Progression",
     "proposals": "Proposals",
     "tasks": "Tasks",
     "sprints": "Sprints",
@@ -725,6 +726,17 @@
     "allContributors": "All contributors",
     "sprintFilter": "Sprint",
     "allSprints": "All sprints",
+    "sortBy": "Sort by",
+    "sort": {
+      "newest": "Newest first",
+      "oldest": "Oldest first",
+      "dueSoon": "Due date (soonest)",
+      "pointsHigh": "Highest points",
+      "mostLiked": "Most liked"
+    },
+    "showAdvancedFilters": "More filters",
+    "hideAdvancedFilters": "Fewer filters",
+    "clearFilters": "Clear filters",
     "filterHierarchyLabel": "Filter hierarchy",
     "filterHierarchyHint": "Start broad with search, then narrow by category, contributor, sprint, and dates.",
     "dateFrom": "From",
@@ -792,10 +804,10 @@
     "leaveFailed": "Failed to leave task",
     "joinRequiresOrganicId": "You need an Organic ID to join tasks",
     "standardLabels": {
-      "growth": "📣 Growth",
-      "design": "🎨 Design",
-      "dev": "💻 Dev",
-      "research": "🧠 Research"
+      "growth": "Growth",
+      "design": "Design",
+      "dev": "Dev",
+      "research": "Research"
     },
     "participantCount": "{count, plural, one {# participant} other {# participants}}",
     "infoBanner": {
@@ -805,6 +817,20 @@
       "earn": "Earn points based on your quality score",
       "dismiss": "Got it"
     },
+    "columnTask": "Task",
+    "columnStatus": "Status",
+    "columnDue": "Due",
+    "columnPoints": "Points",
+    "columnActivity": "Activity",
+    "emptyFilteredTitle": "No tasks match these filters",
+    "emptyFilteredDescription": "Try broadening your filters to surface more work.",
+    "emptyNoSprintTitle": "No active sprint yet",
+    "emptyNoSprintDescription": "Start a sprint to populate this execution view.",
+    "emptyNoTasksTitle": "No tasks in this segment",
+    "emptyNoTasksDescription": "This segment is currently empty.",
+    "pageStatus": "Page {page} of {total}",
+    "previousPage": "Previous",
+    "nextPage": "Next",
     "noTasksFiltered": "No tasks found. Try adjusting your filters.",
     "noSubmissionsYet": "No one has submitted work yet. Join and be the first!",
     "noDependenciesAvailable": "No tasks available to add as dependencies.",
@@ -820,7 +846,14 @@
       "qualityScoreLabel": "Quality Score",
       "multiplier": "{percent} multiplier",
       "estimatedPoints": "Estimated points",
+      "estimatedXp": "Estimated XP",
       "base": "base",
+      "whatChangedTitle": "What changed",
+      "whatChangedPoints": "+{points} points awarded to the contributor.",
+      "whatChangedXp": "~+{xp} XP awarded from this review outcome.",
+      "whatChangedNoRewards": "No points or XP awarded from this decision.",
+      "whatChangedDisputeHint": "The contributor can open a dispute if they disagree.",
+      "whatChangedQuestHint": "Quest progress updates in the progression hub.",
       "reviewerNotesLabel": "Reviewer Notes (optional)",
       "reviewerNotesPlaceholder": "Add feedback or notes...",
       "rejectionReasonLabel": "Rejection Reason",
@@ -1076,6 +1109,7 @@
     "saveChanges": "Save Changes",
     "priorityLabel": "{priority} priority",
     "pointsLabel": "{points} points",
+    "estimatedXpLabel": "Est. {xp} XP",
     "category": "Category",
     "noCategory": "Uncategorized",
     "governanceSource": "Governance source",
@@ -1140,10 +1174,10 @@
     "labelPlaceholder": "Add a label",
     "addLabel": "Add",
     "standardLabels": {
-      "growth": "📣 Growth",
-      "design": "🎨 Design",
-      "dev": "💻 Dev",
-      "research": "🧠 Research"
+      "growth": "Growth",
+      "design": "Design",
+      "dev": "Dev",
+      "research": "Research"
     }
   },
   "Profile": {
@@ -1151,6 +1185,7 @@
     "pageTitle": "My Profile",
     "pageSubtitle": "Manage your account and personal information",
     "editProfile": "Edit Profile",
+    "viewProgression": "View Progression",
     "statsTitle": "Activity",
     "totalSubmissionsLabel": "Total submissions",
     "approvedSubmissionsLabel": "Approved submissions",
@@ -1220,6 +1255,18 @@
     "linkedWalletHoldsTokens": "Your linked wallet holds {balance} $ORG tokens",
     "notificationPreferencesTitle": "Notification Preferences",
     "notificationPreferencesDescription": "Choose which categories you want to hear about and how.",
+    "privacyTitle": "Profile Visibility",
+    "privacyDescription": "Choose whether other members can open your full member profile.",
+    "privacyPublicStatus": "Your profile is public",
+    "privacyPrivateStatus": "Your profile is private",
+    "privacyPublicHint": "Members can view your profile details, reputation, and achievements.",
+    "privacyPrivateHint": "Members can only see limited directory information.",
+    "setPrivate": "Set profile to private",
+    "setPublic": "Set profile to public",
+    "updatingPrivacy": "Updating...",
+    "toastProfileVisible": "Your profile is now public.",
+    "toastProfileHidden": "Your profile is now private.",
+    "toastFailedUpdatePrivacy": "Failed to update profile visibility.",
     "twitterAccountTitle": "Twitter/X Account",
     "twitterAccountDescription": "Link your Twitter/X account to verify engagement tasks.",
     "twitterAccountNotLinked": "No Twitter/X account linked yet.",
@@ -1234,6 +1281,91 @@
     "toastFailedLinkTwitter": "Failed to link Twitter/X account",
     "toastTwitterUnlinked": "Twitter/X account unlinked",
     "toastFailedUnlinkTwitter": "Failed to unlink Twitter/X account"
+  },
+  "Gamification": {
+    "title": "Progression",
+    "subtitle": "Track your XP, level growth, and reward readiness in one place.",
+    "loading": "Loading progression...",
+    "errorLoad": "Failed to load progression data.",
+    "backToProfile": "Back to profile",
+    "viewLeaderboard": "View leaderboard",
+    "levelCard": "Current level",
+    "xpToNextCard": "XP to next level",
+    "streakCard": "Current streak",
+    "claimablePointsCard": "Claimable points",
+    "totalPointsLine": "Total points: {points}",
+    "nextLevelTitle": "Next level target",
+    "nextLevelBody": "Keep contributing to reach Level {level}.",
+    "questsTitle": "Quests",
+    "questsEmpty": "Quest system is almost ready. Your missions will appear here soon.",
+    "rewardsReadinessTitle": "Rewards readiness",
+    "rewardsReady": "You are ready to submit a rewards claim.",
+    "rewardsNotReady": "You need {points} more points to submit a claim.",
+    "openRewards": "Open rewards",
+    "recentXpTitle": "Recent XP activity",
+    "questsSummary": "{completed}/{total} quests completed",
+    "questCadenceProgress": "{completed}/{total} completed",
+    "questCadenceEmpty": "No objectives in this cadence right now.",
+    "questResetsLabel": "Resets {time}",
+    "questResetsSoon": "soon",
+    "questCompleted": "Completed",
+    "questProgressCounter": "{progress}/{target}",
+    "questRemaining": "{remaining} left",
+    "questsFallbackNotice": "Detailed quest timers are temporarily unavailable. Showing summary progress only.",
+    "questCadences": {
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "long_term": "Long-term"
+    },
+    "questCtaTasks": "Open tasks",
+    "questCtaProposals": "Open proposals",
+    "questCtaProfile": "Open profile",
+    "questCtaDefault": "Open tasks",
+    "questSourceContext": "You came from {source}. Continue there to advance related quests.",
+    "questSourceCta": "Back to {source}",
+    "questSourceNames": {
+      "tasks": "Tasks",
+      "proposals": "Proposals",
+      "profile": "Profile"
+    },
+    "questCopy": {
+      "daily_task_push": {
+        "title": "Daily Builder",
+        "description": "Complete at least 1 task today."
+      },
+      "daily_vote_signal": {
+        "title": "Daily Signal",
+        "description": "Cast at least 1 governance vote today."
+      },
+      "daily_xp_burst": {
+        "title": "XP Burst",
+        "description": "Earn 150 XP in one day."
+      },
+      "weekly_task_momentum": {
+        "title": "Weekly Momentum",
+        "description": "Complete 5 tasks this week."
+      },
+      "weekly_governance_actions": {
+        "title": "Governance Pulse",
+        "description": "Take 3 governance actions this week."
+      },
+      "weekly_active_days": {
+        "title": "Consistent Presence",
+        "description": "Be active on 4 different days this week."
+      },
+      "long_term_level_five": {
+        "title": "Reach Level 5",
+        "description": "Progress your account to level 5."
+      },
+      "long_term_achievements_ten": {
+        "title": "Achievement Hunter",
+        "description": "Unlock 10 achievements."
+      },
+      "long_term_streak_thirty": {
+        "title": "Streak Master",
+        "description": "Maintain a 30-day activity streak."
+      }
+    }
   },
   "Voting": {
     "title": "Token-Weighted Voting",
@@ -1473,6 +1605,7 @@
     "points": "pts",
     "tasks": "tasks",
     "privateMember": "Private Member",
+    "privateMemberDescription": "This member keeps profile details hidden.",
     "anonymous": "Anonymous",
     "emptyTitle": "No members found",
     "emptyDescription": "Try adjusting your search or filters",
@@ -1483,6 +1616,14 @@
     "memberNotFound": "Member not found",
     "privateProfile": "Private Profile",
     "privateProfileDescription": "This member has chosen to keep their profile private.",
+    "privateProfileScope": "Reputation details, achievements, and social links are hidden.",
+    "managePrivacySettings": "Manage privacy settings",
+    "sectionNavigationLabel": "Quick navigation",
+    "sections": {
+      "overview": "Overview",
+      "reputation": "Reputation",
+      "achievements": "Achievements"
+    },
     "website": "Website",
     "memberSince": "Joined {date}",
     "totalPoints": "Total Points",
@@ -1771,7 +1912,9 @@
       "achievement_unlocked": "Achievement bonus"
     },
     "toast": {
+      "levelUpTitle": "Level up!",
       "levelUp": "Level up! You reached {level} — {name}",
+      "achievementUnlockedTitle": "Achievement unlocked!",
       "achievementUnlocked": "Achievement unlocked: {name}"
     },
     "locked": "Locked",
@@ -2023,6 +2166,22 @@
       "plagiarism_claim": "Plagiarism Claim",
       "reviewer_bias": "Reviewer Bias",
       "other": "Other"
+    },
+    "impact": {
+      "estimateTitle": "Estimated XP impact",
+      "whatChangedTitle": "What changed",
+      "submissionApprovalLine": "Submission approved at {score}/5 (+{points} points, about +{xp} XP).",
+      "disputantRefundLine": "Disputant: +{xp} XP stake refunded.",
+      "disputantStakeLockedLine": "Disputant: stake remains spent (no XP refund).",
+      "reviewerPenaltyLine": "Reviewer: -{xp} XP penalty.",
+      "reviewerNoPenaltyLine": "Reviewer: no XP penalty on this outcome.",
+      "arbitratorRewardLine": "Arbitrator: +{xp} XP reward.",
+      "arbitratorNoRewardLine": "Arbitrator reward is skipped until one is assigned.",
+      "withdrawalFeeLine": "Withdrawal fee applied: -{xp} XP.",
+      "withdrawRefundLine": "Stake refunded after fee: +{xp} XP.",
+      "mediationPendingLine": "Mediation proposal submitted. Waiting for the other party confirmation.",
+      "questHintLine": "Progression quests refresh automatically after this action.",
+      "noNetXpLine": "No additional XP changes are applied right now."
     },
     "form": {
       "reason": "Dispute Reason",

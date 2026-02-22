@@ -77,6 +77,7 @@
   "Navigation": {
     "home": "首页",
     "profile": "个人资料",
+    "progression": "成长进度",
     "proposals": "提案",
     "tasks": "任务",
     "sprints": "冲刺",
@@ -725,6 +726,17 @@
     "allContributors": "所有贡献者",
     "sprintFilter": "冲刺",
     "allSprints": "所有冲刺",
+    "sortBy": "排序方式",
+    "sort": {
+      "newest": "最新优先",
+      "oldest": "最早优先",
+      "dueSoon": "截止时间（最近）",
+      "pointsHigh": "最高积分",
+      "mostLiked": "最多点赞"
+    },
+    "showAdvancedFilters": "更多筛选",
+    "hideAdvancedFilters": "收起筛选",
+    "clearFilters": "清除筛选",
     "filterHierarchyLabel": "筛选层级",
     "filterHierarchyHint": "先用搜索做大范围筛选，再按分类、贡献者、冲刺和日期细化。",
     "dateFrom": "起始",
@@ -792,10 +804,10 @@
     "leaveFailed": "退出任务失败",
     "joinRequiresOrganicId": "您需要 Organic ID 才能加入任务",
     "standardLabels": {
-      "growth": "📣 增长",
-      "design": "🎨 设计",
-      "dev": "💻 开发",
-      "research": "🧠 研究"
+      "growth": "增长",
+      "design": "设计",
+      "dev": "开发",
+      "research": "研究"
     },
     "participantCount": "{count} 位参与者",
     "infoBanner": {
@@ -805,6 +817,20 @@
       "earn": "根据质量评分获得积分",
       "dismiss": "知道了"
     },
+    "columnTask": "任务",
+    "columnStatus": "状态",
+    "columnDue": "截止",
+    "columnPoints": "积分",
+    "columnActivity": "活动",
+    "emptyFilteredTitle": "没有任务符合当前筛选条件",
+    "emptyFilteredDescription": "请放宽筛选条件以查看更多任务。",
+    "emptyNoSprintTitle": "当前还没有进行中的冲刺",
+    "emptyNoSprintDescription": "启动冲刺后，这个执行视图会显示任务。",
+    "emptyNoTasksTitle": "此分段暂无任务",
+    "emptyNoTasksDescription": "该分段当前为空。",
+    "pageStatus": "第 {page} / {total} 页",
+    "previousPage": "上一页",
+    "nextPage": "下一页",
     "noTasksFiltered": "未找到任务。请尝试调整筛选条件。",
     "noSubmissionsYet": "暂无人提交工作。加入并成为第一个！",
     "noDependenciesAvailable": "没有可用任务可添加为依赖项。",
@@ -820,7 +846,14 @@
       "qualityScoreLabel": "质量评分",
       "multiplier": "{percent} 倍率",
       "estimatedPoints": "预计积分",
+      "estimatedXp": "预计 XP",
       "base": "基础",
+      "whatChangedTitle": "变更摘要",
+      "whatChangedPoints": "为贡献者增加 +{points} 积分。",
+      "whatChangedXp": "本次审核结果预计带来 ~+{xp} XP。",
+      "whatChangedNoRewards": "此决定不会发放积分或 XP。",
+      "whatChangedDisputeHint": "若贡献者不同意，可发起争议流程。",
+      "whatChangedQuestHint": "任务挑战进度会在成长中心自动更新。",
       "reviewerNotesLabel": "审核备注（可选）",
       "reviewerNotesPlaceholder": "添加反馈或备注...",
       "rejectionReasonLabel": "拒绝原因",
@@ -1076,6 +1109,7 @@
     "saveChanges": "保存更改",
     "priorityLabel": "{priority} 优先级",
     "pointsLabel": "{points} 积分",
+    "estimatedXpLabel": "预计 {xp} XP",
     "category": "分类",
     "noCategory": "未分类",
     "governanceSource": "治理来源",
@@ -1140,10 +1174,10 @@
     "labelPlaceholder": "添加标签",
     "addLabel": "添加",
     "standardLabels": {
-      "growth": "📣 增长",
-      "design": "🎨 设计",
-      "dev": "💻 开发",
-      "research": "🧠 研究"
+      "growth": "增长",
+      "design": "设计",
+      "dev": "开发",
+      "research": "研究"
     }
   },
   "Profile": {
@@ -1151,6 +1185,7 @@
     "pageTitle": "我的个人资料",
     "pageSubtitle": "管理您的帐户和个人信息",
     "editProfile": "编辑个人资料",
+    "viewProgression": "查看成长进度",
     "statsTitle": "活动",
     "totalSubmissionsLabel": "提交总数",
     "approvedSubmissionsLabel": "已批准提交",
@@ -1220,6 +1255,18 @@
     "linkedWalletHoldsTokens": "您已关联的钱包持有 {balance} 个 $ORG 代币",
     "notificationPreferencesTitle": "通知偏好设置",
     "notificationPreferencesDescription": "选择您想接收的类别以及接收方式。",
+    "privacyTitle": "资料可见性",
+    "privacyDescription": "选择其他成员是否可以打开你的完整成员资料。",
+    "privacyPublicStatus": "你的资料为公开",
+    "privacyPrivateStatus": "你的资料为私密",
+    "privacyPublicHint": "成员可以查看你的资料详情、声望和成就。",
+    "privacyPrivateHint": "成员只能在成员目录中看到有限信息。",
+    "setPrivate": "设为私密资料",
+    "setPublic": "设为公开资料",
+    "updatingPrivacy": "更新中...",
+    "toastProfileVisible": "你的资料已设为公开。",
+    "toastProfileHidden": "你的资料已设为私密。",
+    "toastFailedUpdatePrivacy": "更新资料可见性失败。",
     "twitterAccountTitle": "Twitter/X 账号",
     "twitterAccountDescription": "关联你的 Twitter/X 账号以验证互动任务。",
     "twitterAccountNotLinked": "尚未关联 Twitter/X 账号。",
@@ -1234,6 +1281,91 @@
     "toastFailedLinkTwitter": "关联 Twitter/X 账号失败",
     "toastTwitterUnlinked": "Twitter/X 账号已取消关联",
     "toastFailedUnlinkTwitter": "取消关联 Twitter/X 账号失败"
+  },
+  "Gamification": {
+    "title": "成长进度",
+    "subtitle": "在一个页面里查看你的 XP、等级成长和奖励准备状态。",
+    "loading": "正在加载成长进度...",
+    "errorLoad": "加载成长进度数据失败。",
+    "backToProfile": "返回个人资料",
+    "viewLeaderboard": "查看排行榜",
+    "levelCard": "当前等级",
+    "xpToNextCard": "距离下一级的 XP",
+    "streakCard": "当前连续天数",
+    "claimablePointsCard": "可领取积分",
+    "totalPointsLine": "总积分：{points}",
+    "nextLevelTitle": "下一级目标",
+    "nextLevelBody": "继续贡献即可达到等级 {level}。",
+    "questsTitle": "任务挑战",
+    "questsEmpty": "任务挑战系统即将上线，你的任务会很快出现在这里。",
+    "rewardsReadinessTitle": "奖励准备状态",
+    "rewardsReady": "你已经可以提交奖励申请。",
+    "rewardsNotReady": "还需要 {points} 积分才能提交申请。",
+    "openRewards": "打开奖励页面",
+    "recentXpTitle": "最近 XP 活动",
+    "questsSummary": "已完成 {completed}/{total} 个任务挑战",
+    "questCadenceProgress": "已完成 {completed}/{total}",
+    "questCadenceEmpty": "当前节奏暂无目标。",
+    "questResetsLabel": "{time}重置",
+    "questResetsSoon": "即将",
+    "questCompleted": "已完成",
+    "questProgressCounter": "{progress}/{target}",
+    "questRemaining": "还差 {remaining}",
+    "questsFallbackNotice": "详细计时暂时不可用，当前仅显示摘要进度。",
+    "questCadences": {
+      "daily": "每日",
+      "weekly": "每周",
+      "long_term": "长期"
+    },
+    "questCtaTasks": "打开任务",
+    "questCtaProposals": "打开提案",
+    "questCtaProfile": "打开资料",
+    "questCtaDefault": "打开任务",
+    "questSourceContext": "你来自{source}，继续在那里推进相关任务挑战。",
+    "questSourceCta": "返回{source}",
+    "questSourceNames": {
+      "tasks": "任务",
+      "proposals": "提案",
+      "profile": "个人资料"
+    },
+    "questCopy": {
+      "daily_task_push": {
+        "title": "每日建设者",
+        "description": "今天至少完成 1 个任务。"
+      },
+      "daily_vote_signal": {
+        "title": "每日治理信号",
+        "description": "今天至少完成 1 次治理投票。"
+      },
+      "daily_xp_burst": {
+        "title": "XP 冲刺",
+        "description": "单日获得 150 XP。"
+      },
+      "weekly_task_momentum": {
+        "title": "每周推进",
+        "description": "本周完成 5 个任务。"
+      },
+      "weekly_governance_actions": {
+        "title": "治理脉冲",
+        "description": "本周完成 3 次治理动作。"
+      },
+      "weekly_active_days": {
+        "title": "稳定参与",
+        "description": "本周在 4 个不同日期保持活跃。"
+      },
+      "long_term_level_five": {
+        "title": "达到 5 级",
+        "description": "将账号成长到 5 级。"
+      },
+      "long_term_achievements_ten": {
+        "title": "成就猎人",
+        "description": "解锁 10 个成就。"
+      },
+      "long_term_streak_thirty": {
+        "title": "连胜大师",
+        "description": "保持 30 天连续活跃。"
+      }
+    }
   },
   "Voting": {
     "title": "代币加权投票",
@@ -1473,6 +1605,7 @@
     "points": "分",
     "tasks": "任务",
     "privateMember": "私密成员",
+    "privateMemberDescription": "该成员选择隐藏资料详情。",
     "anonymous": "匿名",
     "emptyTitle": "未找到成员",
     "emptyDescription": "尝试调整搜索条件或筛选器",
@@ -1483,6 +1616,14 @@
     "memberNotFound": "未找到成员",
     "privateProfile": "私密资料",
     "privateProfileDescription": "该成员选择了隐藏个人资料。",
+    "privateProfileScope": "声望详情、成就和社交链接已隐藏。",
+    "managePrivacySettings": "管理隐私设置",
+    "sectionNavigationLabel": "快速导航",
+    "sections": {
+      "overview": "概览",
+      "reputation": "声望",
+      "achievements": "成就"
+    },
     "website": "网站",
     "memberSince": "加入于 {date}",
     "totalPoints": "总积分",
@@ -1771,7 +1912,9 @@
       "achievement_unlocked": "成就奖励"
     },
     "toast": {
+      "levelUpTitle": "升级！",
       "levelUp": "升级了！你达到了 {level} — {name}",
+      "achievementUnlockedTitle": "成就解锁！",
       "achievementUnlocked": "成就解锁：{name}"
     },
     "locked": "未解锁",
@@ -2023,6 +2166,22 @@
       "plagiarism_claim": "抄袭指控",
       "reviewer_bias": "审查者偏见",
       "other": "其他"
+    },
+    "impact": {
+      "estimateTitle": "预计 XP 影响",
+      "whatChangedTitle": "变更摘要",
+      "submissionApprovalLine": "提交按 {score}/5 通过（+{points} 积分，约 +{xp} XP）。",
+      "disputantRefundLine": "争议方：退还 +{xp} XP 押金。",
+      "disputantStakeLockedLine": "争议方：押金保持扣除（不退还 XP）。",
+      "reviewerPenaltyLine": "审查者：- {xp} XP 处罚。",
+      "reviewerNoPenaltyLine": "审查者：该结果不触发 XP 处罚。",
+      "arbitratorRewardLine": "仲裁员：+{xp} XP 奖励。",
+      "arbitratorNoRewardLine": "未分配仲裁员前不会发放仲裁奖励。",
+      "withdrawalFeeLine": "撤回手续费：- {xp} XP。",
+      "withdrawRefundLine": "扣除手续费后退还押金：+{xp} XP。",
+      "mediationPendingLine": "调解提案已提交，等待对方确认。",
+      "questHintLine": "执行该动作后，成长任务会自动刷新。",
+      "noNetXpLine": "当前不会产生额外 XP 变动。"
     },
     "form": {
       "reason": "争议原因",
