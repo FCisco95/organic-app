@@ -48,6 +48,20 @@ Core domains: auth, tasks, proposals, voting, sprints, members, notifications, r
 - Ask before changing public APIs, route contracts, or DB schema strategy.
 - Do not change npm scripts without approval.
 
+## UX/UI work rules
+
+Any request involving UI, UX, design, layout, copy, interactions, or visual behavior must follow these rules:
+
+- **Always ask first.** Before writing any UI code or making any design decisions, ask clarifying questions. Do not assume intent, layout preference, interaction pattern, copy, color treatment, or component choice.
+- **Use organic-ux skills.** All UX/UI work must draw from the project's `organic-ux` skill/document (see `docs/organic-ux.md` or equivalent when available). This defines the design language, component patterns, motion, spacing, and tone for this project.
+- **Minimum questions before any UI task:**
+  1. What is the goal or user need this UI change serves?
+  2. Which surface/screen does it affect, and who sees it?
+  3. Are there existing components or patterns to reuse?
+  4. Any specific visual or interaction constraints?
+- **Never guess on:** layout structure, icon choice, copy/labels, color variants, empty states, loading states, error states, or mobile behavior. Ask if unclear.
+- After gathering answers, confirm your intended approach before building.
+
 ## Execution playbook
 
 For each task:
