@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 const EVENT_ACCENT: Record<string, string> = {
   task_completed: 'bg-emerald-500',
   vote_cast: 'bg-emerald-500',
-  proposal_created: 'bg-orange-500',
+  proposal_created: 'bg-organic-terracotta',
   task_created: 'bg-blue-500',
   submission_created: 'bg-violet-500',
 };
@@ -39,7 +39,7 @@ export function ActivityItem({
     ? `Organic #${event.actor.organic_id}`
     : event.actor?.name || 'Someone';
   const title = (event.metadata?.title as string) || '';
-  const accent = EVENT_ACCENT[event.event_type] || 'bg-gray-300';
+  const accent = EVENT_ACCENT[event.event_type] || 'bg-muted-foreground/40';
 
   const messageKey = event.event_type as string;
   let description: string;
@@ -50,9 +50,9 @@ export function ActivityItem({
   }
 
   return (
-    <div className={cn('py-3', !isLast && 'border-b border-gray-100')}>
-      <p className="text-[13px] leading-relaxed text-gray-600">{description}</p>
-      <span className="mt-1 flex items-center gap-1.5 text-[11px] text-gray-400">
+    <div className={cn('py-3', !isLast && 'border-b border-border/50')}>
+      <p className="text-[13px] leading-relaxed text-foreground">{description}</p>
+      <span className="mt-1 flex items-center gap-1.5 text-[11px] text-muted-foreground">
         <span className={cn('inline-block h-1.5 w-1.5 rounded-full', accent)} />
         {formatTimeAgo(event.created_at)}
       </span>

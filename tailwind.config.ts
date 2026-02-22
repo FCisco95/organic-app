@@ -45,7 +45,15 @@ const config: Config = {
           foreground: 'hsl(var(--card-foreground))',
         },
         organic: {
+          terracotta: {
+            DEFAULT: '#D95D39',
+            hover: '#B94E2F',
+            active: '#8F3B24',
+            light: '#F6C1B4',
+            lightest: '#FDF0EC',
+          },
           orange: '#FF7A00',
+          golden: '#F0A202',
           yellow: '#FFE500',
           black: '#000000',
           white: '#FFFFFF',

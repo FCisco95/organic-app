@@ -12,9 +12,9 @@ export function ActivityFeed() {
     return (
       <div className="space-y-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="space-y-2 py-3 border-b border-gray-100 last:border-0">
-            <div className="h-3.5 rounded bg-gray-100 animate-pulse" style={{ width: `${70 - i * 8}%` }} />
-            <div className="h-3 w-16 rounded bg-gray-50 animate-pulse" />
+          <div key={i} className="space-y-2 py-3 border-b border-border/50 last:border-0">
+            <div className="h-3.5 rounded bg-muted animate-pulse" style={{ width: `${70 - i * 8}%` }} />
+            <div className="h-3 w-16 rounded bg-muted/60 animate-pulse" />
           </div>
         ))}
       </div>
@@ -23,7 +23,9 @@ export function ActivityFeed() {
 
   if (!events || events.length === 0) {
     return (
-      <p className="py-8 text-sm text-gray-400 italic">{t('empty')}</p>
+      <div className="flex flex-col items-center justify-center py-10 text-center">
+        <p className="text-sm text-muted-foreground">{t('empty')}</p>
+      </div>
     );
   }
 

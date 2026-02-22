@@ -19,10 +19,10 @@ export function ReputationSummary({ className }: ReputationSummaryProps) {
   if (isLoading) {
     return (
       <div className={className}>
-        <div className="rounded-2xl border border-gray-200 bg-white p-4 animate-pulse">
-          <div className="h-4 bg-gray-100 rounded w-20 mb-3" />
-          <div className="h-8 bg-gray-100 rounded w-32 mb-2" />
-          <div className="h-2 bg-gray-100 rounded w-full" />
+        <div className="rounded-xl border border-border bg-card p-4 animate-pulse">
+          <div className="h-4 bg-muted rounded w-20 mb-3" />
+          <div className="h-8 bg-muted rounded w-32 mb-2" />
+          <div className="h-2 bg-muted rounded w-full" />
         </div>
       </div>
     );
@@ -32,34 +32,36 @@ export function ReputationSummary({ className }: ReputationSummaryProps) {
 
   return (
     <div className={className} data-testid="reputation-summary">
-      <div className="rounded-2xl border border-gray-200 bg-white p-4">
+      <div className="rounded-xl border border-border bg-muted/30 p-4">
         <div className="flex items-center justify-between mb-3">
-          <p className="text-[11px] uppercase tracking-[0.2em] text-gray-500">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             {t('title')}
           </p>
           <LevelBadge level={data.level} size="md" />
         </div>
 
         <div className="flex items-baseline gap-2 mb-3">
-          <span className="text-2xl font-bold text-gray-900">{formatXp(data.xp_total)}</span>
-          <span className="text-sm text-gray-400">{t('xp')}</span>
+          <span className="text-2xl font-bold font-mono tabular-nums text-foreground">
+            {formatXp(data.xp_total)}
+          </span>
+          <span className="text-sm text-muted-foreground">{t('xp')}</span>
         </div>
 
-        <p className="text-xs text-gray-500 mb-3">
+        <p className="text-xs text-muted-foreground mb-3">
           {t('pointsSecondary', { points: data.total_points })}
         </p>
 
         <XpProgressBar xpTotal={data.xp_total} level={data.level} />
 
-        <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+        <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/50">
           <StreakDisplay streak={data.current_streak} showLabel={false} />
-          <span className="flex items-center gap-1 text-xs text-gray-500">
+          <span className="flex items-center gap-1 text-xs text-muted-foreground">
             <Trophy className="w-3.5 h-3.5 text-amber-500" />
             {t('achievementsUnlocked', { count: data.achievement_count })}
           </span>
         </div>
 
-        <p className="mt-3 text-[11px] text-gray-400">{t('leaderboardPriorityHint')}</p>
+        <p className="mt-3 text-[11px] text-muted-foreground/70">{t('leaderboardPriorityHint')}</p>
       </div>
     </div>
   );

@@ -9,7 +9,7 @@ export function StatsBar() {
   const t = useTranslations('dashboard.stats');
 
   if (isLoading) {
-    return <div className="h-5 w-72 rounded bg-gray-200/60 animate-pulse" />;
+    return <div className="h-5 w-72 rounded bg-muted animate-pulse" />;
   }
 
   const items = [
@@ -20,12 +20,12 @@ export function StatsBar() {
   ];
 
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-500">
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
       {items.map((item, i) => (
         <Fragment key={item.label}>
-          {i > 0 && <span className="text-gray-300">&middot;</span>}
+          {i > 0 && <span className="text-border">&middot;</span>}
           <span>
-            <span className="font-semibold tabular-nums text-gray-800">{item.value}</span>{' '}
+            <span className="font-semibold tabular-nums text-foreground">{item.value}</span>{' '}
             {item.label}
           </span>
         </Fragment>
