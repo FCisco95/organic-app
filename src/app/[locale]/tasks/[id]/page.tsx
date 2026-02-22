@@ -612,7 +612,7 @@ export default function TaskDetailPage() {
 
   if (loading) {
     return (
-      <PageContainer>
+      <PageContainer layout="fluid">
         <div className="text-center py-12">
           <div className="w-8 h-8 border-3 border-organic-orange border-t-transparent rounded-full animate-spin mx-auto"></div>
           <p className="mt-4 text-gray-500">{t('loading')}</p>
@@ -623,7 +623,7 @@ export default function TaskDetailPage() {
 
   if (!task) {
     return (
-      <PageContainer>
+      <PageContainer layout="fluid">
         <div className="text-center py-12">
           <AlertCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">{t('notFoundTitle')}</h3>
@@ -637,7 +637,7 @@ export default function TaskDetailPage() {
   }
 
   return (
-    <PageContainer>
+    <PageContainer layout="fluid">
       {/* Header */}
       <div className="flex items-center justify-between mb-6" data-testid="task-detail-header">
         <Link href="/tasks" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
@@ -646,40 +646,38 @@ export default function TaskDetailPage() {
         </Link>
 
         {!isEditing && (
-          <div className="flex gap-3">
+          <div className="flex items-center gap-2">
             {user && <FollowButton subjectType="task" subjectId={taskId} />}
+            {profile?.role === 'admin' && (
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg border border-transparent transition-colors"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                {t('delete')}
+              </button>
+            )}
             {profile?.role && ['admin', 'council'].includes(profile.role) && (
-              <>
-                <button
-                  onClick={() => setShowAssignModal(true)}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-                >
-                  <UserPlus className="w-4 h-4" />
-                  {t('assign')}
-                </button>
-                {profile.role === 'admin' && (
-                  <button
-                    onClick={() => setShowDeleteConfirm(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    {t('delete')}
-                  </button>
-                )}
-              </>
+              <button
+                onClick={() => setShowAssignModal(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 rounded-lg transition-colors"
+              >
+                <UserPlus className="w-3.5 h-3.5" />
+                {t('assign')}
+              </button>
             )}
             <button
               onClick={() => setIsEditing(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-organic-orange hover:bg-orange-600 text-white rounded-lg transition-colors"
             >
-              <Edit2 className="w-4 h-4" />
+              <Edit2 className="w-3.5 h-3.5" />
               {t('editTask')}
             </button>
           </div>
         )}
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]" data-testid="task-operator-layout">
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]" data-testid="task-operator-layout">
         <div className="min-w-0 space-y-6">
           {/* Task Details */}
           <div className="bg-white rounded-xl border border-gray-200 p-6" data-testid="task-summary-surface">
@@ -757,10 +755,10 @@ export default function TaskDetailPage() {
 
         <aside className="space-y-4 xl:sticky xl:top-24 self-start">
           <div
-            className="rounded-2xl border border-sky-200/80 bg-gradient-to-br from-sky-50 to-white p-5"
+            className="rounded-xl border border-border bg-card p-6"
             data-testid="task-delivery-checklist"
           >
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-sky-700">
+            <p className="text-sm font-semibold text-foreground">
               {t('deliveryChecklistLabel')}
             </p>
             <h3 className="mt-1 text-base font-bold text-slate-900">{t('deliveryChecklistTitle')}</h3>
@@ -785,13 +783,13 @@ export default function TaskDetailPage() {
               </p>
               <p className="flex items-center justify-between gap-2">
                 <span>{t('checkSubmissions')}</span>
-                <span className="text-slate-700">
+                <span className="font-mono tabular-nums text-slate-700">
                   {t('submissionsCount', { count: task.submissions?.length ?? 0 })}
                 </span>
               </p>
             </div>
             {dependenciesTotal > 0 && (
-              <p className="mt-3 rounded-lg border border-sky-100 bg-white px-3 py-2 text-xs text-slate-600">
+              <p className="mt-3 rounded-lg border border-border bg-muted/50 px-3 py-2 text-xs text-slate-600">
                 {t('dependencyHint', { count: dependenciesTotal })}
               </p>
             )}
@@ -799,7 +797,7 @@ export default function TaskDetailPage() {
 
           {/* Task Actions - Claim and Submit */}
           {user && profile?.organic_id && (
-            <div className="bg-white rounded-xl border border-gray-200 p-5" data-testid="task-submission-cta-block">
+            <div className="bg-white rounded-xl border border-gray-200 p-6" data-testid="task-submission-cta-block">
               <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('actions')}</h2>
 
               <div className="flex flex-wrap gap-3">
