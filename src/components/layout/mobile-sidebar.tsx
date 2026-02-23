@@ -29,22 +29,10 @@ export function MobileSidebar() {
   const isAdminOrCouncil = profile?.role === 'admin' || profile?.role === 'council';
   const { data: pendingData } = usePendingDisputeCount(!!user && isAdminOrCouncil);
   const pendingCount = pendingData?.count ?? 0;
-  const progressionSource = pathname.startsWith('/tasks')
-    ? 'tasks'
-    : pathname.startsWith('/proposals')
-      ? 'proposals'
-      : pathname.startsWith('/profile')
-        ? 'profile'
-        : null;
-  const progressionHref = progressionSource
-    ? `/profile/progression?from=${progressionSource}`
-    : '/profile/progression';
-
   const sections = getSidebarNavSections({
     isAuthenticated: !!user,
     hasOrganicId: !!profile?.organic_id,
     isAdminOrCouncil,
-    progressionHref,
   });
   const navItems = [...sections.main, ...sections.admin, ...sections.utility];
 

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { achievementCategorySchema } from '@/features/reputation/schemas';
 
-export const questCadenceSchema = z.enum(['daily', 'weekly', 'long_term']);
+export const questCadenceSchema = z.enum(['daily', 'weekly', 'long_term', 'event']);
 
 export const gamificationXpEventSchema = z.object({
   id: z.string().uuid(),
@@ -87,6 +87,9 @@ export const questProgressItemSchema = questSummaryItemSchema.extend({
   progress_percent: z.number().min(0).max(100),
   remaining: z.number().int().nonnegative(),
   reset_at: z.string().nullable(),
+  xp_reward: z.number().int().nonnegative(),
+  points_reward: z.number().int().nonnegative(),
+  icon: z.string(),
 });
 
 export const questProgressResponseSchema = z.object({
@@ -95,6 +98,101 @@ export const questProgressResponseSchema = z.object({
     daily: z.array(questProgressItemSchema),
     weekly: z.array(questProgressItemSchema),
     long_term: z.array(questProgressItemSchema),
+    event: z.array(questProgressItemSchema),
   }),
   summary: questSummarySchema,
 });
+
+// ─── Referral Schemas ───────────────────────────────────────────────────
+
+export const referralTierSchema = z.object({
+  name: z.string(),
+  min: z.number().int().min(0),
+  max: z.number().int().min(1).nullable(),
+  multiplier: z.number().positive(),
+});
+
+export const referralStatsSchema = z.object({
+  code: z.string(),
+  referral_link: z.string(),
+  total_referrals: z.number().int().nonnegative(),
+  completed_referrals: z.number().int().nonnegative(),
+  pending_referrals: z.number().int().nonnegative(),
+  total_xp_earned: z.number().int().nonnegative(),
+  total_points_earned: z.number().int().nonnegative(),
+  current_tier: referralTierSchema,
+});
+
+// ─── Burn Schemas ───────────────────────────────────────────────────────
+
+export const burnCostSchema = z.object({
+  current_level: z.number().int().min(1),
+  next_level: z.number().int().min(1),
+  current_xp: z.number().int().nonnegative(),
+  xp_for_next_level: z.number().int().nonnegative(),
+  points_cost: z.number().int().nonnegative(),
+  available_points: z.number().int().nonnegative(),
+  can_burn: z.boolean(),
+  leveling_mode: z.enum(['auto', 'manual_burn']),
+});
+
+// ─── Quest Definition Row Schema ────────────────────────────────────────
+
+export const questDefinitionRowSchema = z.object({
+  id: z.string().uuid(),
+  org_id: z.string().uuid().nullable(),
+  title: z.string().min(1).max(200),
+  description: z.string().max(1000),
+  cadence: questCadenceSchema,
+  metric_type: z.string().min(1),
+  target_value: z.number().int().positive(),
+  unit: z.string(),
+  xp_reward: z.number().int().nonnegative(),
+  points_reward: z.number().int().nonnegative(),
+  is_active: z.boolean(),
+  start_date: z.string().nullable(),
+  end_date: z.string().nullable(),
+  icon: z.string(),
+  sort_order: z.number().int(),
+  created_at: z.string(),
+  updated_at: z.string(),
+});
+
+// ─── Admin Request Schemas ──────────────────────────────────────────────
+
+export const createQuestSchema = z.object({
+  title: z.string().min(1).max(200),
+  description: z.string().max(1000).default(''),
+  cadence: questCadenceSchema,
+  metric_type: z.string().min(1),
+  target_value: z.number().int().positive(),
+  unit: z.string().default(''),
+  xp_reward: z.number().int().nonnegative().default(0),
+  points_reward: z.number().int().nonnegative().default(0),
+  is_active: z.boolean().default(true),
+  start_date: z.string().nullable().default(null),
+  end_date: z.string().nullable().default(null),
+  icon: z.string().default('🎯'),
+  sort_order: z.number().int().default(100),
+});
+
+export const updateQuestSchema = createQuestSchema.partial();
+
+export const gamificationConfigSchema = z.object({
+  enabled: z.boolean().optional(),
+  xp_per_task_point: z.number().int().positive().optional(),
+  xp_vote_cast: z.number().int().nonnegative().optional(),
+  xp_proposal_created: z.number().int().nonnegative().optional(),
+  xp_comment_created: z.number().int().nonnegative().optional(),
+  leveling_mode: z.enum(['auto', 'manual_burn']).optional(),
+  burn_cost_multiplier: z.number().positive().optional(),
+  referral_enabled: z.boolean().optional(),
+  referral_xp_per_signup: z.number().int().nonnegative().optional(),
+  referral_point_share_percent: z.number().min(0).max(100).optional(),
+  referral_share_duration_days: z.number().int().positive().optional(),
+  referral_tiers: z.array(referralTierSchema).optional(),
+});
+
+export type CreateQuestInput = z.infer<typeof createQuestSchema>;
+export type UpdateQuestInput = z.infer<typeof updateQuestSchema>;
+export type GamificationConfigInput = z.infer<typeof gamificationConfigSchema>;

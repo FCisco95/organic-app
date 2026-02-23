@@ -2,6 +2,73 @@
 
 Add newest entries at the top.
 
+## 2026-02-23 (Session: quests + referrals rollout, admin gamification controls, and QA runbook update)
+
+### Summary
+
+Finalized and packaged the full quests/referrals revamp session into a single delivery, including DB-backed quests, referral program, burn-to-level mechanics, admin gamification controls, new `/quests` experience, navigation rewiring, and documentation updates.
+
+### Implementation highlights
+
+- Quests and referrals platform foundation:
+  - `supabase/migrations/20260223100000_quests_referrals_burns.sql`
+  - Added `quests`, `referral_codes`, `referrals`, `referral_rewards`, `point_burns`.
+  - Extended `orgs.gamification_config` and updated `award_xp` trigger for `manual_burn` mode.
+- Gamification engines and contracts:
+  - `src/features/gamification/quest-engine.ts`
+  - `src/features/gamification/referral-engine.ts`
+  - `src/features/gamification/burn-engine.ts`
+  - `src/features/gamification/types.ts`
+  - `src/features/gamification/schemas.ts`
+  - `src/features/gamification/hooks.ts`
+  - Refactored quest loading to DB-driven objectives and added referral/burn query + mutation hooks.
+- API surfaces:
+  - `src/app/api/referrals/route.ts`
+  - `src/app/api/referrals/validate/route.ts`
+  - `src/app/api/referrals/complete/route.ts`
+  - `src/app/api/gamification/burn-cost/route.ts`
+  - `src/app/api/gamification/burn/route.ts`
+  - `src/app/api/admin/quests/route.ts`
+  - `src/app/api/admin/quests/[id]/route.ts`
+  - `src/app/api/admin/gamification/config/route.ts`
+- Quests + referral UX delivery:
+  - `src/app/[locale]/quests/page.tsx`
+  - `src/components/gamification/quests-page.tsx`
+  - `src/components/gamification/referral-section.tsx`
+  - `src/components/gamification/quest-level-sidebar.tsx`
+  - `src/components/gamification/quest-grid.tsx`
+  - `src/components/gamification/quest-card.tsx`
+  - `src/components/gamification/burn-confirm-dialog.tsx`
+- Route and navigation rewiring:
+  - `src/app/[locale]/join/page.tsx`
+  - `src/app/[locale]/signup/page.tsx`
+  - `src/app/[locale]/profile/progression/page.tsx` (legacy redirect to `/quests`)
+  - `src/components/layout/nav-config.ts`
+  - `src/components/layout/sidebar.tsx`
+  - `src/components/layout/mobile-sidebar.tsx`
+  - `src/components/layout/top-bar.tsx`
+  - `src/components/settings/settings-tabs.tsx`
+  - `src/app/[locale]/admin/settings/page.tsx`
+  - `src/components/settings/gamification-tab.tsx`
+- i18n and docs:
+  - `messages/en.json`
+  - `messages/pt-PT.json`
+  - `messages/zh-CN.json`
+  - `docs/qa-runbook.md` updated with a dedicated manual test section for referrals/quests/admin-gamification (`4.15`).
+
+### Post-implementation hardening (same session)
+
+- Referral completion authorization guard added to prevent unauthorized completion calls.
+- Referral link origin generation aligned to request origin / app URL fallback instead of hardcoded domain.
+- Referral code generation race-condition handling added for parallel requests.
+
+### Validation evidence
+
+- `npm run lint`: pass.
+- `npm run build`: pass.
+- `npx playwright test tests/gamification-quests-api.spec.ts`: blocked in this environment due Supabase DNS resolution error (`EAI_AGAIN`).
+- Local dev runtime smoke from this environment was also constrained by sandbox port binding (`EPERM` on `0.0.0.0` bind), so live HTTP route checks were limited.
+
 ## 2026-02-21 (Session: gamification revamp checkpoint - progression source context + navigation wiring)
 
 ### Summary

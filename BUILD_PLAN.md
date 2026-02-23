@@ -6,16 +6,19 @@ For session-by-session implementation notes see `SESSION_LOG.md`.
 
 ## Current Status
 
-### Gamification Revamp — 🔄 In Progress (2026-02-21)
+### Gamification Revamp — ✅ Complete (2026-02-23)
 
-Quest model, progress API, and grouped quest UI shipped. Source-context navigation wired.
+Referral + quests experience is now implemented as a dedicated `/quests` surface with admin controls and referral/burn infrastructure.
 
-- [x] Quest domain model + evaluator (`daily`, `weekly`, `long_term` objectives)
-- [x] Quest progress API (`/api/gamification/quests`)
-- [x] Grouped quest UI in progression shell (cadence columns, reset timers, CTA hints)
-- [x] Source-context progression links from sidebar, top bar, profile, tasks, proposals
-- [x] Members/profile readability + privacy-safe achievement gating
-- [ ] Quest CTA deep-links and claim/reward affordances tied to completed objectives
+- [x] DB migration for `quests`, `referral_codes`, `referrals`, `referral_rewards`, `point_burns`, and gamification config extensions
+- [x] Quest engine refactor from hardcoded definitions to DB-driven quests (including `event` cadence)
+- [x] Referral engine and API routes (`/api/referrals`, `/api/referrals/validate`, `/api/referrals/complete`)
+- [x] Burn-to-level engine and API routes (`/api/gamification/burn-cost`, `/api/gamification/burn`)
+- [x] New `Ref & Quests` UI route (`/quests`) with referral section, quest grid filters, and burn dialog
+- [x] Signup referral param ingestion (`/join?ref=...` -> `/signup?ref=...`)
+- [x] Admin Settings Gamification tab with quest CRUD and gamification config controls
+- [x] Navigation updates from progression to `Ref & Quests` while keeping Rewards UX untouched
+- [x] Legacy progression route redirect (`/profile/progression` -> `/quests`)
 
 ### Wave 2 UI/UX Revamp — ✅ Complete (2026-02-21)
 
@@ -38,7 +41,7 @@ Cross-feature consistency pass complete: `--transition-ui`, `--section-radius`, 
 
 Full release gate implemented. Final sign-off pending:
 - [ ] Environment-capable E2E run (Supabase env vars + Playwright browser)
-- [ ] Manual QA runbook (`docs/qa-runbook.md`)
+- [x] Manual QA runbook (`docs/qa-runbook.md`) updated with referrals/quests coverage
 - [ ] Sentry unresolved-error review
 
 ---
@@ -69,10 +72,6 @@ Full release gate implemented. Final sign-off pending:
 ---
 
 ## Open / In Progress
-
-### Gamification Revamp (Active)
-
-- [ ] Quest CTA deep-links and claim/reward affordances tied to completed objectives
 
 ### Phase 2.1 — Task Management Hardening
 

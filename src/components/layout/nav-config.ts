@@ -22,7 +22,6 @@ export interface NavContext {
   isAuthenticated: boolean;
   hasOrganicId: boolean;
   isAdminOrCouncil: boolean;
-  progressionHref: string;
 }
 
 export interface NavItem {
@@ -39,7 +38,7 @@ export interface NavSections {
 }
 
 export function getSidebarNavSections(context: NavContext): NavSections {
-  const { isAuthenticated, hasOrganicId, isAdminOrCouncil, progressionHref } = context;
+  const { isAuthenticated, hasOrganicId, isAdminOrCouncil } = context;
 
   const main: NavItem[] = [
     { id: 'home', href: '/', labelKey: 'home', icon: Home },
@@ -51,7 +50,7 @@ export function getSidebarNavSections(context: NavContext): NavSections {
     { id: 'sprints', href: '/sprints', labelKey: 'sprints', icon: Zap },
     { id: 'proposals', href: '/proposals', labelKey: 'proposals', icon: Vote },
     { id: 'leaderboard', href: '/leaderboard', labelKey: 'leaderboard', icon: Trophy },
-    { id: 'progression', href: progressionHref, labelKey: 'progression', icon: Sparkles },
+    { id: 'quests', href: '/quests', labelKey: 'refAndQuests', icon: Sparkles },
     { id: 'rewards', href: '/rewards', labelKey: 'rewards', icon: Gift },
     { id: 'disputes', href: '/disputes', labelKey: 'disputes', icon: Scale },
     { id: 'notifications', href: '/notifications', labelKey: 'notifications', icon: Bell },
@@ -63,7 +62,7 @@ export function getSidebarNavSections(context: NavContext): NavSections {
     if (
       item.id === 'proposals' ||
       item.id === 'leaderboard' ||
-      item.id === 'progression' ||
+      item.id === 'quests' ||
       item.id === 'rewards' ||
       item.id === 'disputes' ||
       item.id === 'notifications'

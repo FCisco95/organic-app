@@ -588,7 +588,7 @@ export default function ProfilePage() {
         </div>
         <div className="flex items-center gap-2 self-start sm:self-auto">
           <Link
-            href="/profile/progression?from=profile"
+            href="/quests?from=profile"
             data-testid="profile-progression-link"
             className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
           >

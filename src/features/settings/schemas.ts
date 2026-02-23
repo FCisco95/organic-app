@@ -44,6 +44,20 @@ export const rewardsConfigSchema = z.object({
   treasury_balance_for_emission: z.coerce.number().min(0).optional(),
 });
 
+export const gamificationConfigPatchSchema = z.object({
+  enabled: z.boolean().optional(),
+  xp_per_task_point: z.coerce.number().int().positive().optional(),
+  xp_vote_cast: z.coerce.number().int().nonnegative().optional(),
+  xp_proposal_created: z.coerce.number().int().nonnegative().optional(),
+  xp_comment_created: z.coerce.number().int().nonnegative().optional(),
+  leveling_mode: z.enum(['auto', 'manual_burn']).optional(),
+  burn_cost_multiplier: z.coerce.number().positive().optional(),
+  referral_enabled: z.boolean().optional(),
+  referral_xp_per_signup: z.coerce.number().int().nonnegative().optional(),
+  referral_point_share_percent: z.coerce.number().min(0).max(100).optional(),
+  referral_share_duration_days: z.coerce.number().int().positive().optional(),
+});
+
 export const treasurySettingsSchema = z
   .object({
     treasury_wallet: z.string().nullable().or(z.literal('')),

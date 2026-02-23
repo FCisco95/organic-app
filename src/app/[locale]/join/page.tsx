@@ -4,15 +4,15 @@ import { useEffect } from 'react';
 import { useRouter } from '@/i18n/navigation';
 import { useSearchParams } from 'next/navigation';
 
-export default function ProfileProgressionPage() {
+export default function JoinPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const from = searchParams.get('from');
+  const ref = searchParams.get('ref');
 
   useEffect(() => {
-    const target = from ? `/quests?from=${encodeURIComponent(from)}` : '/quests';
+    const target = ref ? `/signup?ref=${encodeURIComponent(ref)}` : '/signup';
     router.replace(target);
-  }, [from, router]);
+  }, [ref, router]);
 
   return null;
 }

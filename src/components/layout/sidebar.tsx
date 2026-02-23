@@ -23,22 +23,10 @@ export function Sidebar() {
   const { data: pendingData } = usePendingDisputeCount(!!user && isAdminOrCouncil);
   const pendingCount = pendingData?.count ?? 0;
 
-  const progressionSource = pathname.startsWith('/tasks')
-    ? 'tasks'
-    : pathname.startsWith('/proposals')
-      ? 'proposals'
-      : pathname.startsWith('/profile')
-        ? 'profile'
-        : null;
-  const progressionHref = progressionSource
-    ? `/profile/progression?from=${progressionSource}`
-    : '/profile/progression';
-
   const sections = getSidebarNavSections({
     isAuthenticated: !!user,
     hasOrganicId: !!profile?.organic_id,
     isAdminOrCouncil,
-    progressionHref,
   });
 
   const isActive = (href: string) => {

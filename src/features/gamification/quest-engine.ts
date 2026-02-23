@@ -5,6 +5,7 @@ import type {
   QuestProgressItem,
   QuestProgressResponse,
   QuestSummary,
+  QuestDefinitionRow,
 } from './types';
 
 type DbClient = SupabaseClient<Database>;
@@ -22,17 +23,6 @@ type QuestMetricKey =
   | 'long_term_level'
   | 'long_term_achievements'
   | 'long_term_streak';
-
-interface QuestDefinition {
-  id: string;
-  cadence: QuestCadence;
-  title: string;
-  description: string;
-  target: number;
-  unit: string;
-  metric: QuestMetricKey;
-  sort_order: number;
-}
 
 interface WindowMetrics {
   tasks_completed: number;
@@ -57,99 +47,6 @@ interface QuestContext {
     proposals_created: number;
   };
 }
-
-const QUEST_DEFINITIONS: QuestDefinition[] = [
-  {
-    id: 'daily_task_push',
-    cadence: 'daily',
-    title: 'Daily Builder',
-    description: 'Complete at least 1 task today.',
-    target: 1,
-    unit: 'tasks',
-    metric: 'daily_tasks_completed',
-    sort_order: 10,
-  },
-  {
-    id: 'daily_vote_signal',
-    cadence: 'daily',
-    title: 'Daily Signal',
-    description: 'Cast at least 1 governance vote today.',
-    target: 1,
-    unit: 'votes',
-    metric: 'daily_votes_cast',
-    sort_order: 20,
-  },
-  {
-    id: 'daily_xp_burst',
-    cadence: 'daily',
-    title: 'XP Burst',
-    description: 'Earn 150 XP in one day.',
-    target: 150,
-    unit: 'xp',
-    metric: 'daily_xp_earned',
-    sort_order: 30,
-  },
-  {
-    id: 'weekly_task_momentum',
-    cadence: 'weekly',
-    title: 'Weekly Momentum',
-    description: 'Complete 5 tasks this week.',
-    target: 5,
-    unit: 'tasks',
-    metric: 'weekly_tasks_completed',
-    sort_order: 40,
-  },
-  {
-    id: 'weekly_governance_actions',
-    cadence: 'weekly',
-    title: 'Governance Pulse',
-    description: 'Take 3 governance actions (votes or proposals) this week.',
-    target: 3,
-    unit: 'actions',
-    metric: 'weekly_governance_actions',
-    sort_order: 50,
-  },
-  {
-    id: 'weekly_active_days',
-    cadence: 'weekly',
-    title: 'Consistent Presence',
-    description: 'Be active on 4 different days this week.',
-    target: 4,
-    unit: 'days',
-    metric: 'weekly_active_days',
-    sort_order: 60,
-  },
-  {
-    id: 'long_term_level_five',
-    cadence: 'long_term',
-    title: 'Reach Level 5',
-    description: 'Progress your account to level 5.',
-    target: 5,
-    unit: 'level',
-    metric: 'long_term_level',
-    sort_order: 70,
-  },
-  {
-    id: 'long_term_achievements_ten',
-    cadence: 'long_term',
-    title: 'Achievement Hunter',
-    description: 'Unlock 10 achievements.',
-    target: 10,
-    unit: 'achievements',
-    metric: 'long_term_achievements',
-    sort_order: 80,
-  },
-  {
-    id: 'long_term_streak_thirty',
-    cadence: 'long_term',
-    title: 'Streak Master',
-    description: 'Maintain a 30-day activity streak.',
-    target: 30,
-    unit: 'days',
-    metric: 'long_term_streak',
-    sort_order: 90,
-  },
-];
 
 const TRACKED_ACTIVITY_EVENTS: Database['public']['Enums']['activity_event_type'][] = [
   'task_completed',
@@ -212,8 +109,8 @@ function getWindowMetrics(
   };
 }
 
-function resolveQuestMetric(definition: QuestDefinition, context: QuestContext): number {
-  switch (definition.metric) {
+function resolveQuestMetric(metricType: string, context: QuestContext): number {
+  switch (metricType as QuestMetricKey) {
     case 'daily_tasks_completed':
       return context.daily.tasks_completed;
     case 'daily_votes_cast':
@@ -238,35 +135,38 @@ function resolveQuestMetric(definition: QuestDefinition, context: QuestContext):
 }
 
 function toProgressItem(
-  definition: QuestDefinition,
+  quest: QuestDefinitionRow,
   context: QuestContext,
   nextDailyResetIso: string,
   nextWeeklyResetIso: string
 ): QuestProgressItem {
-  const rawProgress = Math.max(0, Math.floor(resolveQuestMetric(definition, context)));
-  const target = Math.max(1, definition.target);
+  const rawProgress = Math.max(0, Math.floor(resolveQuestMetric(quest.metric_type, context)));
+  const target = Math.max(1, quest.target_value);
   const progress = Math.min(rawProgress, target);
   const completed = rawProgress >= target;
   const progressPercent = Math.min(100, Math.round((progress / target) * 100));
   const remaining = Math.max(0, target - rawProgress);
 
   return {
-    id: definition.id,
-    cadence: definition.cadence,
-    title: definition.title,
-    description: definition.description,
+    id: quest.id,
+    cadence: quest.cadence,
+    title: quest.title,
+    description: quest.description,
     progress,
     target,
-    unit: definition.unit,
+    unit: quest.unit,
     completed,
     progress_percent: progressPercent,
     remaining,
     reset_at:
-      definition.cadence === 'daily'
+      quest.cadence === 'daily'
         ? nextDailyResetIso
-        : definition.cadence === 'weekly'
+        : quest.cadence === 'weekly'
           ? nextWeeklyResetIso
           : null,
+    xp_reward: quest.xp_reward,
+    points_reward: quest.points_reward,
+    icon: quest.icon,
   };
 }
 
@@ -290,6 +190,33 @@ function buildQuestSummary(items: QuestProgressItem[]): QuestSummary {
   };
 }
 
+/** Load active quest definitions from DB, filtering event quests by date window */
+export async function loadQuestDefinitions(
+  supabase: DbClient,
+  now: Date = new Date()
+): Promise<QuestDefinitionRow[]> {
+  const { data, error } = await supabase
+    .from('quests' as any)
+    .select('*')
+    .eq('is_active', true)
+    .order('sort_order', { ascending: true });
+
+  if (error) {
+    throw new Error(`Failed to load quest definitions: ${error.message}`);
+  }
+
+  const nowIso = now.toISOString();
+  const rows = (data ?? []) as unknown as QuestDefinitionRow[];
+  return rows.filter((quest) => {
+    // Filter event quests by active date window
+    if (quest.cadence === 'event') {
+      if (quest.start_date && quest.start_date > nowIso) return false;
+      if (quest.end_date && quest.end_date < nowIso) return false;
+    }
+    return true;
+  });
+}
+
 export async function getQuestProgress(
   supabase: DbClient,
   userId: string,
@@ -303,8 +230,9 @@ export async function getQuestProgress(
   const nextWeekStart = new Date(weekStart);
   nextWeekStart.setUTCDate(nextWeekStart.getUTCDate() + 7);
 
-  const [profileResult, activityCountsResult, achievementsCountResult, weeklyActivityResult, weeklyXpResult] =
+  const [questDefs, profileResult, activityCountsResult, achievementsCountResult, weeklyActivityResult, weeklyXpResult] =
     await Promise.all([
+      loadQuestDefinitions(supabase, now),
       supabase
         .from('user_profiles')
         .select('level, current_streak, tasks_completed')
@@ -357,18 +285,15 @@ export async function getQuestProgress(
     },
   };
 
-  const items = QUEST_DEFINITIONS.map((definition) =>
-    toProgressItem(definition, context, nextDayStart.toISOString(), nextWeekStart.toISOString())
-  ).sort((a, b) => {
-    const aDef = QUEST_DEFINITIONS.find((definition) => definition.id === a.id);
-    const bDef = QUEST_DEFINITIONS.find((definition) => definition.id === b.id);
-    return (aDef?.sort_order ?? 0) - (bDef?.sort_order ?? 0);
-  });
+  const items = questDefs.map((quest) =>
+    toProgressItem(quest, context, nextDayStart.toISOString(), nextWeekStart.toISOString())
+  );
 
   const objectives = {
     daily: items.filter((item) => item.cadence === 'daily'),
     weekly: items.filter((item) => item.cadence === 'weekly'),
     long_term: items.filter((item) => item.cadence === 'long_term'),
+    event: items.filter((item) => item.cadence === 'event'),
   };
 
   return {

@@ -444,6 +444,52 @@ Action Candidates:
 - Candidate 1:
 - Candidate 2:
 
+## 4.15 Referrals, Quests, and Gamification Controls
+Routes: `/quests`, `/join?ref=CODE`, `/signup?ref=CODE`, `/admin/settings` (Gamification tab), `/profile/progression` (legacy redirect).
+
+Pre-flight checks:
+- [ ] Migration `supabase/migrations/20260223100000_quests_referrals_burns.sql` is applied.
+- [ ] At least one active quest exists in `quests`.
+- [ ] One admin account and at least two member accounts are available for referral testing.
+
+P0 checks:
+- [ ] Authenticated member can open `/quests` and see referral + quests sections.
+- [ ] `/profile/progression` redirects to `/quests` without blank/error page.
+- [ ] Member referral link/code is generated and copy actions work.
+- [ ] `in_progress / done / all` quest tabs load and filter cards.
+- [ ] `Burn Points to Level Up` button behavior matches mode:
+- [ ] `auto` mode: disabled with auto-level hint.
+- [ ] `manual_burn` mode: enabled only when points are sufficient.
+- [ ] Referral join flow works end-to-end:
+- [ ] Open `/join?ref=CODE` and verify redirect to `/signup?ref=CODE`.
+- [ ] Complete signup with referral code present in metadata.
+- [ ] Admin can open Settings > Gamification tab and load quests/config sections.
+
+P1 checks:
+- [ ] Referral stats update after referral completion (pending/completed/xp/points/tier).
+- [ ] Burn confirmation dialog shows correct level transition and points math.
+- [ ] Quest rewards and progress values match API payload (`/api/gamification/quests`).
+- [ ] Navigation label is `Ref & Quests` and links to `/quests` (desktop + mobile + top-bar profile menu).
+- [ ] i18n keys render correctly in `en`, `pt-PT`, and `zh-CN`.
+
+P2 checks:
+- [ ] Empty states are clear when no quests/referrals exist.
+- [ ] Referral and quest cards remain readable on 375 px mobile width.
+- [ ] Copy/link actions gracefully handle clipboard denial.
+- [ ] Unauthorized access to admin quest/config APIs returns 401/403.
+
+Your Thoughts:
+1. Was the relationship between referral rewards, quests, and level progression clear?
+2. Was the burn-to-level mechanic understandable before confirming the action?
+3. Which part of `/quests` felt visually dense or unclear?
+4. What single change would improve conversion from invite to completed referral?
+5. Severity for this section: `S0/S1/S2/S3`
+6. Confidence score (1-5):
+
+Action Candidates:
+- Candidate 1:
+- Candidate 2:
+
 ---
 
 ## 5) UX Finding Ticket Template (copy per issue)

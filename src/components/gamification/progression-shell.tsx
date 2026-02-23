@@ -48,7 +48,7 @@ const SOURCE_CONTEXT_HREF: Record<SourceContext, '/tasks' | '/proposals' | '/pro
   profile: '/profile',
 };
 
-const QUEST_CADENCE_ORDER: QuestCadence[] = ['daily', 'weekly', 'long_term'];
+const QUEST_CADENCE_ORDER = ['daily', 'weekly', 'long_term'] as const;
 
 export function ProgressionShell({ sourceContext = null }: { sourceContext?: SourceContext | null }) {
   const locale = useLocale();
@@ -89,6 +89,9 @@ export function ProgressionShell({ sourceContext = null }: { sourceContext?: Sou
           progress_percent: item.target > 0 ? Math.min(100, Math.round((item.progress / item.target) * 100)) : 0,
           remaining: Math.max(0, item.target - item.progress),
           reset_at: null,
+          xp_reward: 0,
+          points_reward: 0,
+          icon: '🎯',
         })
       ),
     weekly: data.quest_summary.items
@@ -100,6 +103,9 @@ export function ProgressionShell({ sourceContext = null }: { sourceContext?: Sou
           progress_percent: item.target > 0 ? Math.min(100, Math.round((item.progress / item.target) * 100)) : 0,
           remaining: Math.max(0, item.target - item.progress),
           reset_at: null,
+          xp_reward: 0,
+          points_reward: 0,
+          icon: '🎯',
         })
       ),
     long_term: data.quest_summary.items
@@ -111,6 +117,9 @@ export function ProgressionShell({ sourceContext = null }: { sourceContext?: Sou
           progress_percent: item.target > 0 ? Math.min(100, Math.round((item.progress / item.target) * 100)) : 0,
           remaining: Math.max(0, item.target - item.progress),
           reset_at: null,
+          xp_reward: 0,
+          points_reward: 0,
+          icon: '🎯',
         })
       ),
   };
