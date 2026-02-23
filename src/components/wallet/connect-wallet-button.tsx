@@ -13,9 +13,14 @@ import toast from 'react-hot-toast';
 interface ConnectWalletButtonProps {
   className?: string;
   variant?: 'default' | 'compact';
+  mobileIconOnly?: boolean;
 }
 
-export function ConnectWalletButton({ className, variant = 'default' }: ConnectWalletButtonProps) {
+export function ConnectWalletButton({
+  className,
+  variant = 'default',
+  mobileIconOnly = false,
+}: ConnectWalletButtonProps) {
   const { connected, publicKey, disconnect, select, wallet } = useWallet();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -57,9 +62,11 @@ export function ConnectWalletButton({ className, variant = 'default' }: ConnectW
         <button
           type="button"
           onClick={() => setShowDropdown(!showDropdown)}
+          aria-label={t('changeWalletAction')}
           className={cn(
             'flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200',
             'bg-gray-800 hover:bg-gray-700 text-white border border-gray-700',
+            mobileIconOnly && 'px-2.5 sm:px-4',
             className
           )}
         >
@@ -74,9 +81,14 @@ export function ConnectWalletButton({ className, variant = 'default' }: ConnectW
               unoptimized
             />
           )}
-          <span>{truncatedAddress}</span>
+          <span className={cn(mobileIconOnly && 'hidden sm:inline')}>{truncatedAddress}</span>
+          {mobileIconOnly && <span className="sr-only sm:hidden">{t('changeWalletAction')}</span>}
           <ChevronDown
-            className={cn('w-4 h-4 transition-transform', showDropdown && 'rotate-180')}
+            className={cn(
+              'w-4 h-4 transition-transform',
+              mobileIconOnly && 'hidden sm:block',
+              showDropdown && 'rotate-180'
+            )}
           />
         </button>
 
@@ -140,15 +152,18 @@ export function ConnectWalletButton({ className, variant = 'default' }: ConnectW
       <button
         type="button"
         onClick={() => setIsDrawerOpen(true)}
+        aria-label={t('connectWalletAction')}
         className={cn(
           'flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200',
           'bg-organic-orange hover:bg-orange-600 text-white',
           variant === 'compact' && 'px-3 py-1.5',
+          mobileIconOnly && 'px-2.5 sm:px-3',
           className
         )}
       >
         <Wallet className={cn('w-4 h-4', variant === 'compact' && 'w-3.5 h-3.5')} />
-        <span>{t('connectWalletAction')}</span>
+        <span className={cn(mobileIconOnly && 'hidden sm:inline')}>{t('connectWalletAction')}</span>
+        {mobileIconOnly && <span className="sr-only sm:hidden">{t('connectWalletAction')}</span>}
       </button>
       <WalletConnectDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
     </>

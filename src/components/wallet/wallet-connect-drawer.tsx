@@ -13,6 +13,7 @@ import { useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 
 const RECENT_WALLET_KEY = 'wallet_recent';
+const CONNECTABLE_READY_STATES = new Set([WalletReadyState.Installed, WalletReadyState.Loadable]);
 
 // Popular wallets in priority order
 const POPULAR_WALLET_NAMES = [
@@ -79,10 +80,11 @@ export function WalletConnectDrawer({ isOpen, onClose }: WalletConnectDrawerProp
     }
   }, [connected, isConnecting, isOpen, onClose]);
 
-  // Get all available wallets sorted by ready state
+  // Only show wallets that can actually connect from the drawer.
+  // Excluding NotDetected avoids fallback URL redirects to wallet websites.
   const availableWallets = useMemo(() => {
     return wallets
-      .filter((wallet) => wallet.readyState !== WalletReadyState.Unsupported)
+      .filter((wallet) => CONNECTABLE_READY_STATES.has(wallet.readyState))
       .sort((a, b) => {
         // Installed wallets first
         const aInstalled = a.readyState === WalletReadyState.Installed;
@@ -140,9 +142,10 @@ export function WalletConnectDrawer({ isOpen, onClose }: WalletConnectDrawerProp
   // Handle wallet selection and connect via wallet context
   const handleSelectWallet = useCallback(
     async (walletName: string) => {
-      const selectedWallet = wallets.find((w) => w.adapter.name === walletName);
+      const selectedWallet = availableWallets.find((w) => w.adapter.name === walletName);
       if (!selectedWallet) {
-        console.error('Wallet not found:', walletName);
+        console.error('Wallet is not connectable:', walletName);
+        setView('get-started');
         return;
       }
 
@@ -183,7 +186,7 @@ export function WalletConnectDrawer({ isOpen, onClose }: WalletConnectDrawerProp
       }
     },
     [
-      wallets,
+      availableWallets,
       select,
       connect,
       connected,
@@ -192,6 +195,7 @@ export function WalletConnectDrawer({ isOpen, onClose }: WalletConnectDrawerProp
       waitForWalletSelection,
       wallet,
       onClose,
+      setView,
     ]
   );
 
@@ -216,6 +220,7 @@ export function WalletConnectDrawer({ isOpen, onClose }: WalletConnectDrawerProp
 
       const currentList = view === 'all' ? filteredWallets : popularWallets;
       const listLength = currentList.length + (recentWallet && view === 'main' ? 1 : 0);
+      if (listLength === 0) return;
 
       if (e.key === 'ArrowDown') {
         e.preventDefault();
@@ -297,6 +302,7 @@ export function WalletConnectDrawer({ isOpen, onClose }: WalletConnectDrawerProp
 
   const content = (
     <div
+      data-wallet-drawer-root="true"
       className="fixed inset-0 z-[200] flex justify-end"
       onClick={handleBackdropClick}
       role="dialog"

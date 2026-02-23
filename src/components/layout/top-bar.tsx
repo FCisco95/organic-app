@@ -95,8 +95,8 @@ export function TopBar() {
             )}
 
             {/* Wallet */}
-            <div className="hidden lg:block">
-              <ConnectWalletButton />
+            <div className="shrink-0">
+              <ConnectWalletButton mobileIconOnly />
             </div>
 
             {/* Notifications */}
