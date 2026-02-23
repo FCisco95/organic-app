@@ -145,6 +145,32 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       });
     }
 
+    // ── Set execution window for passed proposals ────────────────────
+    if (result.result === 'passed') {
+      const { data: config } = await supabase
+        .from('voting_config')
+        .select('execution_window_days')
+        .limit(1)
+        .single();
+
+      const windowDays = config?.execution_window_days ?? 7;
+      const deadline = new Date(Date.now() + windowDays * 24 * 60 * 60 * 1000).toISOString();
+
+      const { error: execError } = await supabase
+        .from('proposals')
+        .update({
+          execution_status: 'pending_execution',
+          execution_deadline: deadline,
+        })
+        .eq('id', proposalId);
+
+      if (execError) {
+        logger.error('Failed to set execution window on passed proposal', execError);
+        // Non-fatal: finalization already succeeded, log and continue
+      }
+    }
+    // ── End execution window ─────────────────────────────────────────
+
     return NextResponse.json({
       message: 'Voting finalized successfully',
       proposal: {

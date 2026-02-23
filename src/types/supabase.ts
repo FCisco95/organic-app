@@ -162,6 +162,10 @@ export type Database = {
           updated_at: string | null;
           voting_ends_at: string | null;
           voting_starts_at: string | null;
+          execution_deadline: string | null;
+          execution_status: string | null;
+          execution_notes: string | null;
+          executed_at: string | null;
         };
         Insert: {
           approval_threshold?: number | null;
@@ -180,6 +184,10 @@ export type Database = {
           updated_at?: string | null;
           voting_ends_at?: string | null;
           voting_starts_at?: string | null;
+          execution_deadline?: string | null;
+          execution_status?: string | null;
+          execution_notes?: string | null;
+          executed_at?: string | null;
         };
         Update: {
           approval_threshold?: number | null;
@@ -198,6 +206,10 @@ export type Database = {
           updated_at?: string | null;
           voting_ends_at?: string | null;
           voting_starts_at?: string | null;
+          execution_deadline?: string | null;
+          execution_status?: string | null;
+          execution_notes?: string | null;
+          executed_at?: string | null;
         };
         Relationships: [
           {
@@ -219,6 +231,65 @@ export type Database = {
             columns: ['org_id'];
             isOneToOne: false;
             referencedRelation: 'orgs';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      proposal_templates: {
+        Row: {
+          id: string;
+          name: string;
+          description: string | null;
+          category: string;
+          title_hint: string | null;
+          summary_hint: string | null;
+          motivation_template: string | null;
+          solution_template: string | null;
+          budget_template: string | null;
+          timeline_template: string | null;
+          is_active: boolean;
+          created_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          description?: string | null;
+          category: string;
+          title_hint?: string | null;
+          summary_hint?: string | null;
+          motivation_template?: string | null;
+          solution_template?: string | null;
+          budget_template?: string | null;
+          timeline_template?: string | null;
+          is_active?: boolean;
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          description?: string | null;
+          category?: string;
+          title_hint?: string | null;
+          summary_hint?: string | null;
+          motivation_template?: string | null;
+          solution_template?: string | null;
+          budget_template?: string | null;
+          timeline_template?: string | null;
+          is_active?: boolean;
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'proposal_templates_created_by_fkey';
+            columns: ['created_by'];
+            isOneToOne: false;
+            referencedRelation: 'user_profiles';
             referencedColumns: ['id'];
           },
         ];
@@ -682,6 +753,7 @@ export type Database = {
           abstain_counts_toward_quorum: boolean;
           approval_threshold: number;
           created_at: string | null;
+          execution_window_days: number;
           id: string;
           max_live_proposals: number;
           org_id: string | null;
@@ -695,6 +767,7 @@ export type Database = {
           abstain_counts_toward_quorum?: boolean;
           approval_threshold?: number;
           created_at?: string | null;
+          execution_window_days?: number;
           id?: string;
           max_live_proposals?: number;
           org_id?: string | null;
@@ -708,6 +781,7 @@ export type Database = {
           abstain_counts_toward_quorum?: boolean;
           approval_threshold?: number;
           created_at?: string | null;
+          execution_window_days?: number;
           id?: string;
           max_live_proposals?: number;
           org_id?: string | null;
@@ -798,6 +872,7 @@ export type Database = {
           yes_votes: number;
         }[];
       };
+      expire_pending_executions: { Args: Record<string, never>; Returns: undefined };
     };
     Enums: {
       proposal_status: 'draft' | 'submitted' | 'approved' | 'rejected' | 'voting';

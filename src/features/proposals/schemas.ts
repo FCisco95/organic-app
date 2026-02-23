@@ -101,3 +101,26 @@ export const wizardStepSchemas = {
   2: proposalStep2Schema,
   3: proposalStep3Schema,
 } as const;
+
+// Execute proposal schema (admin marks a passed proposal as executed)
+export const executeProposalSchema = z.object({
+  notes: z.string().trim().min(1, 'Execution notes are required').max(2000),
+});
+export type ExecuteProposalInput = z.infer<typeof executeProposalSchema>;
+
+// Proposal template schemas
+export const createProposalTemplateSchema = z.object({
+  name: z.string().min(1, 'Template name is required').max(200),
+  description: z.string().max(1000).optional(),
+  category: proposalCategorySchema,
+  title_hint: z.string().max(200).optional(),
+  summary_hint: z.string().max(300).optional(),
+  motivation_template: z.string().max(5000).optional(),
+  solution_template: z.string().max(5000).optional(),
+  budget_template: z.string().max(5000).optional(),
+  timeline_template: z.string().max(5000).optional(),
+});
+export type CreateProposalTemplateInput = z.infer<typeof createProposalTemplateSchema>;
+
+export const updateProposalTemplateSchema = createProposalTemplateSchema.partial();
+export type UpdateProposalTemplateInput = z.infer<typeof updateProposalTemplateSchema>;

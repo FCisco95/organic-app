@@ -46,6 +46,7 @@ export const votingConfigSchema = z.object({
   proposal_threshold_org: z.number().min(0).default(0),
   proposer_cooldown_days: z.number().int().min(0).max(365).default(7),
   max_live_proposals: z.number().int().min(1).max(10).default(1),
+  execution_window_days: z.number().int().min(1).max(30).default(7),
   abstain_counts_toward_quorum: z.boolean().default(true),
 });
 export type VotingConfigInput = z.infer<typeof votingConfigSchema>;
