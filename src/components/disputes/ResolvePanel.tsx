@@ -134,7 +134,7 @@ export function ResolvePanel({
         <label className="block text-xs font-medium text-gray-700 mb-1.5">
           {tf('resolutionOutcome')}
         </label>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           {RESOLUTIONS.map((r) => (
             <button
               key={r}

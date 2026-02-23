@@ -141,7 +141,7 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div className="bg-white rounded-lg max-w-2xl w-full p-6 my-8">
+      <div className="bg-white rounded-lg max-w-2xl w-full p-6 my-8 max-h-[calc(100dvh-2rem)] overflow-y-auto">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('createTaskTitle')}</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -172,7 +172,7 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-1">
                 {t('labelTaskType')}
@@ -284,7 +284,7 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-1">
                 {t('labelPoints')}
@@ -300,7 +300,7 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-1">
                 {t('labelAssignee')}
@@ -373,7 +373,7 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
                 </button>
               ))}
             </div>
-            <div className="flex gap-2 mb-2">
+            <div className="flex flex-col sm:flex-row gap-2 mb-2">
               <input
                 type="text"
                 value={labelInput}
@@ -416,7 +416,7 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
             )}
           </div>
 
-          <div className="flex gap-3 pt-4">
+          <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4">
             <button
               type="button"
               onClick={onClose}

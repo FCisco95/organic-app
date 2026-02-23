@@ -918,7 +918,7 @@ export default function ProfilePage() {
                   {t('twitterLabel')}
                 </label>
                 {linkedTwitterHandle ? (
-                  <div className="flex items-center justify-between gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2">
+                  <div className="flex flex-col items-start justify-between gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 sm:flex-row sm:items-center">
                     <div className="flex items-center gap-2 text-sm text-gray-700 min-w-0">
                       <Twitter className="w-4 h-4 text-gray-400" />
                       <span className="truncate">{linkedTwitterHandle}</span>
@@ -988,7 +988,7 @@ export default function ProfilePage() {
 
       {/* Twitter/X Account Linking */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <div className="flex items-center justify-between gap-3 mb-4">
+        <div className="flex flex-col items-start justify-between gap-3 mb-4 sm:flex-row sm:items-center">
           <div>
             <h3 className="text-lg font-semibold text-gray-900">{t('twitterAccountTitle')}</h3>
             <p className="text-sm text-gray-600">{t('twitterAccountDescription')}</p>
@@ -998,7 +998,7 @@ export default function ProfilePage() {
 
         {twitterAccount ? (
           <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
               <div className="flex items-center gap-3 min-w-0">
                 <div className="w-10 h-10 rounded-full overflow-hidden bg-white border border-emerald-200 flex-shrink-0">
                   {twitterAccount.profile_image_url ? (

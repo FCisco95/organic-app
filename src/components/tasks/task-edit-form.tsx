@@ -80,7 +80,7 @@ export function TaskEditForm({
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">{t('labelStatus')}</label>
           <select
@@ -122,7 +122,7 @@ export function TaskEditForm({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">{t('labelPoints')}</label>
           <input
@@ -195,7 +195,7 @@ export function TaskEditForm({
             </button>
           ))}
         </div>
-        <div className="flex gap-2 mb-2">
+        <div className="flex flex-col sm:flex-row gap-2 mb-2">
           <input
             type="text"
             value={labelInput}
@@ -238,7 +238,7 @@ export function TaskEditForm({
         )}
       </div>
 
-      <div className="flex gap-3 pt-4">
+      <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4">
         <button
           onClick={onCancel}
           disabled={isSaving}

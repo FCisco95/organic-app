@@ -280,7 +280,7 @@ function ContentSubmissionForm({
         <label className="block text-sm font-medium text-gray-700 mb-2">
           {t('reachMetricsLabel')}
         </label>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <label className="block text-xs text-gray-500 mb-1">{t('views')}</label>
             <input
@@ -383,7 +383,7 @@ function DesignSubmissionForm({
         </label>
         <p className="text-xs text-gray-500 mb-2">{t('fileUrlsHint')}</p>
 
-        <div className="flex gap-2 mb-2">
+        <div className="flex flex-col sm:flex-row gap-2 mb-2">
           <div className="relative flex-1">
             <ImageIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input

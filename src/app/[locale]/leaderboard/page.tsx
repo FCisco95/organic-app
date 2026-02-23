@@ -67,7 +67,7 @@ export default function LeaderboardPage() {
       {/* Current User Stats */}
       {currentUserRank && (
         <div className="bg-gradient-to-r from-organic-orange/10 to-organic-yellow/10 border border-organic-orange/20 rounded-xl p-4 mb-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-organic-orange rounded-full flex items-center justify-center">
                 <Star className="w-5 h-5 text-white" />

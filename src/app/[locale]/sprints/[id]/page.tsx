@@ -935,7 +935,7 @@ export default function SprintDetailPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     {t('formStartDate')}
@@ -976,7 +976,7 @@ export default function SprintDetailPage() {
               </div>
             </div>
 
-            <div className="flex gap-3 justify-end px-6 py-4 border-t border-gray-200">
+            <div className="flex flex-col-reverse gap-3 px-6 py-4 border-t border-gray-200 sm:flex-row sm:justify-end">
               <button
                 onClick={() => setShowEditModal(false)}
                 disabled={isSaving}

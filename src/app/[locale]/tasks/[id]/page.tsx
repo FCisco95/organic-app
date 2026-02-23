@@ -639,14 +639,17 @@ export default function TaskDetailPage() {
   return (
     <PageContainer layout="fluid">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6" data-testid="task-detail-header">
+      <div
+        className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+        data-testid="task-detail-header"
+      >
         <Link href="/tasks" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
           <ArrowLeft className="w-4 h-4" />
           {t('backToTasks')}
         </Link>
 
         {!isEditing && (
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-start gap-2 sm:justify-end">
             {user && <FollowButton subjectType="task" subjectId={taskId} />}
             {profile?.role === 'admin' && (
               <button

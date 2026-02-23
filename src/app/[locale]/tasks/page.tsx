@@ -598,7 +598,7 @@ export default function TasksPage() {
               <h1 className="mt-1 text-3xl font-bold text-foreground">{t('title')}</h1>
               <p className="mt-1 text-sm text-muted-foreground">{t('subtitle')}</p>
             </div>
-            <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
               <div className="rounded-xl border border-border bg-muted/40 px-3 py-2.5">
                 <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
                   {t('metricOpenExecution')}

@@ -115,7 +115,7 @@ export function VoteResults({ proposal }: VoteResultsProps) {
           </div>
 
           {/* Summary Stats */}
-          <div className="pt-4 border-t border-gray-300/50 grid grid-cols-2 gap-4 text-sm">
+          <div className="pt-4 border-t border-gray-300/50 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2 sm:gap-4">
             <div>
               <span className="text-gray-600">{t('stats.totalVoters')}</span>
               <p className="font-semibold text-gray-900">{results.tally.total_count}</p>

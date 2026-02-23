@@ -12,25 +12,8 @@ import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { ConnectWalletButton } from '@/components/wallet';
-import {
-  Home,
-  BarChart3,
-  Wallet,
-  Users,
-  CheckSquare,
-  Zap,
-  Vote,
-  Trophy,
-  Sparkles,
-  Gift,
-  Bell,
-  Scale,
-  Settings,
-  User,
-  LogOut,
-  FileText,
-  ClipboardCheck,
-} from 'lucide-react';
+import { LogOut } from 'lucide-react';
+import { getSidebarNavSections } from './nav-config';
 
 export function MobileSidebar() {
   const { user, profile, signOut } = useAuth();
@@ -52,25 +35,13 @@ export function MobileSidebar() {
     ? `/profile/progression?from=${progressionSource}`
     : '/profile/progression';
 
-  const navItems = [
-    { href: '/', labelKey: 'home', icon: Home, show: true },
-    { href: '/analytics', labelKey: 'analytics', icon: BarChart3, show: true },
-    { href: '/treasury', labelKey: 'treasury', icon: Wallet, show: true },
-    { href: '/members', labelKey: 'members', icon: Users, show: !!user },
-    { href: '/tasks', labelKey: 'tasks', icon: CheckSquare, show: !!profile?.organic_id },
-    { href: '/tasks/templates', labelKey: 'templates', icon: FileText, show: !!isAdminOrCouncil },
-    { href: '/sprints', labelKey: 'sprints', icon: Zap, show: !!profile?.organic_id },
-    { href: '/proposals', labelKey: 'proposals', icon: Vote, show: !!user },
-    { href: '/leaderboard', labelKey: 'leaderboard', icon: Trophy, show: !!user },
-    { href: progressionHref, labelKey: 'progression', icon: Sparkles, show: !!user },
-    { href: '/rewards', labelKey: 'rewards', icon: Gift, show: !!user },
-    { href: '/disputes', labelKey: 'disputes', icon: Scale, show: !!user },
-    { href: '/notifications', labelKey: 'notifications', icon: Bell, show: !!user },
-    { href: '/admin/submissions', labelKey: 'submissions', icon: ClipboardCheck, show: !!isAdminOrCouncil },
-    { href: '/admin/rewards', labelKey: 'adminRewards', icon: Gift, show: !!isAdminOrCouncil },
-    { href: '/admin/settings', labelKey: 'settings', icon: Settings, show: !!isAdminOrCouncil },
-    { href: '/profile', labelKey: 'profile', icon: User, show: !!user },
-  ];
+  const sections = getSidebarNavSections({
+    isAuthenticated: !!user,
+    hasOrganicId: !!profile?.organic_id,
+    isAdminOrCouncil,
+    progressionHref,
+  });
+  const navItems = [...sections.main, ...sections.admin, ...sections.utility];
 
   const isActive = (href: string) => {
     const normalizedHref = href.split('?')[0];
@@ -80,7 +51,7 @@ export function MobileSidebar() {
 
   return (
     <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-      <SheetContent side="left" className="w-72 p-0 bg-sidebar">
+      <SheetContent side="left" className="w-72 h-dvh p-0 bg-sidebar flex flex-col overflow-hidden">
         {/* Logo */}
         <div className="flex items-center h-20 gap-3 px-4">
           <Link href="/" onClick={() => setMobileOpen(false)} className="flex items-center gap-3">
@@ -100,37 +71,34 @@ export function MobileSidebar() {
 
         <Separator className="bg-sidebar-border" />
 
-        <ScrollArea className="flex-1 py-2">
+        <ScrollArea className="flex-1 min-h-0 py-2">
           <nav className="flex flex-col gap-1 px-2">
-            {navItems.map(
-              (item) =>
-                item.show && (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setMobileOpen(false)}
-                    className={cn(
-                      'flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors',
-                      isActive(item.href)
-                        ? 'bg-sidebar-accent text-sidebar-accent-foreground'
-                        : 'text-sidebar-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
-                    )}
-                  >
-                    <item.icon className="h-4 w-4 shrink-0" />
-                    <span>{t(item.labelKey)}</span>
-                    {item.href === '/disputes' && isAdminOrCouncil && pendingCount > 0 ? (
-                      <Badge className="ml-auto min-w-5 h-5 px-1.5 bg-orange-600 text-white text-[10px] leading-none flex items-center justify-center">
-                        {pendingCount > 99 ? '99+' : pendingCount}
-                      </Badge>
-                    ) : null}
-                  </Link>
-                )
-            )}
+            {navItems.map((item) => (
+              <Link
+                key={item.id}
+                href={item.href}
+                onClick={() => setMobileOpen(false)}
+                className={cn(
+                  'flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors',
+                  isActive(item.href)
+                    ? 'bg-sidebar-accent text-sidebar-accent-foreground'
+                    : 'text-sidebar-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                )}
+              >
+                <item.icon className="h-4 w-4 shrink-0" />
+                <span>{t(item.labelKey)}</span>
+                {item.id === 'disputes' && isAdminOrCouncil && pendingCount > 0 ? (
+                  <Badge className="ml-auto min-w-5 h-5 px-1.5 bg-orange-600 text-white text-[10px] leading-none flex items-center justify-center">
+                    {pendingCount > 99 ? '99+' : pendingCount}
+                  </Badge>
+                ) : null}
+              </Link>
+            ))}
           </nav>
         </ScrollArea>
 
         {/* Bottom */}
-        <div className="mt-auto border-t border-sidebar-border p-2 space-y-2">
+        <div className="mt-auto border-t border-sidebar-border p-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] space-y-2">
           <div className="px-2">
             <ConnectWalletButton />
           </div>

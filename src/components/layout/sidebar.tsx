@@ -10,32 +10,8 @@ import { useSidebar } from './sidebar-context';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import {
-  Home,
-  BarChart3,
-  Wallet,
-  Users,
-  CheckSquare,
-  Zap,
-  Vote,
-  Trophy,
-  Sparkles,
-  Gift,
-  Bell,
-  Settings,
-  User,
-  LogOut,
-  FileText,
-  Scale,
-  ClipboardCheck,
-} from 'lucide-react';
-
-interface NavItem {
-  href: string;
-  labelKey: string;
-  icon: React.ElementType;
-  show: boolean;
-}
+import { LogOut } from 'lucide-react';
+import { getSidebarNavSections } from './nav-config';
 
 export function Sidebar() {
   const { user, profile, signOut } = useAuth();
@@ -58,28 +34,12 @@ export function Sidebar() {
     ? `/profile/progression?from=${progressionSource}`
     : '/profile/progression';
 
-  const navItems: NavItem[] = [
-    { href: '/', labelKey: 'home', icon: Home, show: true },
-    { href: '/analytics', labelKey: 'analytics', icon: BarChart3, show: true },
-    { href: '/treasury', labelKey: 'treasury', icon: Wallet, show: true },
-    { href: '/members', labelKey: 'members', icon: Users, show: !!user },
-    { href: '/tasks', labelKey: 'tasks', icon: CheckSquare, show: !!profile?.organic_id },
-    { href: '/tasks/templates', labelKey: 'templates', icon: FileText, show: !!isAdminOrCouncil },
-    { href: '/sprints', labelKey: 'sprints', icon: Zap, show: !!profile?.organic_id },
-    { href: '/proposals', labelKey: 'proposals', icon: Vote, show: !!user },
-    { href: '/leaderboard', labelKey: 'leaderboard', icon: Trophy, show: !!user },
-    { href: progressionHref, labelKey: 'progression', icon: Sparkles, show: !!user },
-    { href: '/rewards', labelKey: 'rewards', icon: Gift, show: !!user },
-    { href: '/disputes', labelKey: 'disputes', icon: Scale, show: !!user },
-    { href: '/notifications', labelKey: 'notifications', icon: Bell, show: !!user },
-  ];
-
-  const bottomItems: NavItem[] = [
-    { href: '/admin/submissions', labelKey: 'submissions', icon: ClipboardCheck, show: !!isAdminOrCouncil },
-    { href: '/admin/rewards', labelKey: 'adminRewards', icon: Gift, show: !!isAdminOrCouncil },
-    { href: '/admin/settings', labelKey: 'settings', icon: Settings, show: !!isAdminOrCouncil },
-    { href: '/profile', labelKey: 'profile', icon: User, show: !!user },
-  ];
+  const sections = getSidebarNavSections({
+    isAuthenticated: !!user,
+    hasOrganicId: !!profile?.organic_id,
+    isAdminOrCouncil,
+    progressionHref,
+  });
 
   const isActive = (href: string) => {
     const normalizedHref = href.split('?')[0];
@@ -118,25 +78,20 @@ export function Sidebar() {
       <div className="mx-3 h-px bg-sidebar-border" />
 
       {/* Main nav */}
-      <ScrollArea className="flex-1 pt-4 pb-2">
+      <ScrollArea className="flex-1 min-h-0 pt-4 pb-2">
         <TooltipProvider delayDuration={0}>
           <nav className={cn('flex flex-col gap-0.5', collapsed ? 'px-2' : 'px-3')}>
-            {navItems.map(
-              (item) =>
-                item.show && (
-                  <NavLink
-                    key={item.href}
-                    href={item.href}
-                    label={t(item.labelKey)}
-                    icon={item.icon}
-                    active={isActive(item.href)}
-                    collapsed={collapsed}
-                    badgeCount={
-                      item.href === '/disputes' && isAdminOrCouncil ? pendingCount : undefined
-                    }
-                  />
-                )
-            )}
+            {sections.main.map((item) => (
+              <NavLink
+                key={item.id}
+                href={item.href}
+                label={t(item.labelKey)}
+                icon={item.icon}
+                active={isActive(item.href)}
+                collapsed={collapsed}
+                badgeCount={item.id === 'disputes' && isAdminOrCouncil ? pendingCount : undefined}
+              />
+            ))}
           </nav>
         </TooltipProvider>
       </ScrollArea>
@@ -146,19 +101,16 @@ export function Sidebar() {
         <div className="mx-3 h-px bg-sidebar-border" />
         <TooltipProvider delayDuration={0}>
           <nav className={cn('flex flex-col gap-0.5 py-3', collapsed ? 'px-2' : 'px-3')}>
-            {bottomItems.map(
-              (item) =>
-                item.show && (
-                  <NavLink
-                    key={item.href}
-                    href={item.href}
-                    label={t(item.labelKey)}
-                    icon={item.icon}
-                    active={isActive(item.href)}
-                    collapsed={collapsed}
-                  />
-                )
-            )}
+            {[...sections.admin, ...sections.utility].map((item) => (
+              <NavLink
+                key={item.id}
+                href={item.href}
+                label={t(item.labelKey)}
+                icon={item.icon}
+                active={isActive(item.href)}
+                collapsed={collapsed}
+              />
+            ))}
             {user && (
               <SignOutButton label={t('signOut')} collapsed={collapsed} onSignOut={signOut} />
             )}

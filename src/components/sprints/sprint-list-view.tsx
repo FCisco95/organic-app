@@ -154,7 +154,7 @@ export function SprintListView({
                       style={{ width: `${progress}%` }}
                     ></div>
                   </div>
-                  <div className="mt-4 grid grid-cols-3 gap-4">
+                  <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
                     <div className="text-center">
                       <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
                       <div className="text-xs text-gray-500">{t('totalTasks')}</div>

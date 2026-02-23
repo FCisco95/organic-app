@@ -138,7 +138,7 @@ export function TaskDetailSummary({
         </button>
       </div>
 
-      <dl className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+      <dl className="mt-4 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <dt className="text-muted-foreground text-xs">{t('category')}</dt>
           <dd className="font-medium text-gray-900">

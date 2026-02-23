@@ -67,7 +67,7 @@ export function SprintCompleteDialog({
 
         {step === 'summary' && (
           <div className="space-y-3 mb-6">
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="bg-gray-50 rounded-lg p-4 text-center">
                 <p className="text-2xl font-bold text-gray-900">{stats.totalTasks}</p>
                 <p className="text-xs text-gray-500">{t('completeSummaryTotal')}</p>
@@ -171,7 +171,7 @@ export function SprintCompleteDialog({
           </div>
         )}
 
-        <div className="flex gap-3">
+        <div className="flex flex-col-reverse gap-3 sm:flex-row">
           {step === 'incomplete' ? (
             <button
               type="button"

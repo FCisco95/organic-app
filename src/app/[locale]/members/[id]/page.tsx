@@ -226,7 +226,11 @@ export default function MemberProfilePage() {
       </nav>
 
       {/* Stats */}
-      <div id="member-overview-section" className="grid grid-cols-2 gap-4" data-testid="member-stats-grid">
+      <div
+        id="member-overview-section"
+        className="grid grid-cols-1 gap-4 sm:grid-cols-2"
+        data-testid="member-stats-grid"
+      >
         <div className="bg-white rounded-xl border border-gray-200 p-5 text-center">
           <Star aria-hidden="true" className="w-5 h-5 text-organic-orange mx-auto mb-2" />
           <p className="text-2xl font-bold text-gray-900">{member.total_points}</p>

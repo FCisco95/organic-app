@@ -64,7 +64,7 @@ export default function AdminRewardsPage() {
       <PageContainer width="wide">
         <div className="space-y-6 animate-pulse" data-testid="rewards-admin-loading-skeleton">
           <div className="h-8 w-1/4 rounded bg-gray-200" />
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div className="h-24 rounded-xl bg-gray-200" />
             <div className="h-24 rounded-xl bg-gray-200" />
             <div className="h-24 rounded-xl bg-gray-200" />
@@ -89,12 +89,12 @@ export default function AdminRewardsPage() {
           className="rounded-2xl border border-gray-200 bg-gradient-to-br from-white to-gray-50 p-5 sm:p-6"
           data-testid="rewards-admin-command-deck"
         >
-          <div className="mb-2 flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
+          <div className="mb-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3 min-w-0">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-organic-orange/10">
                 <Gift className="h-5 w-5 text-organic-orange" />
               </div>
-              <div>
+              <div className="min-w-0">
                 <h1 className="text-2xl font-bold tracking-tight text-gray-900">{t('admin.title')}</h1>
                 <p className="text-sm text-gray-600">{t('admin.subtitle')}</p>
               </div>
@@ -102,7 +102,7 @@ export default function AdminRewardsPage() {
             {isAdmin && (
               <button
                 onClick={() => setManualOpen(true)}
-                className="rounded-lg bg-organic-orange px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-organic-orange/90"
+                className="w-full rounded-lg bg-organic-orange px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-organic-orange/90 sm:w-auto"
                 data-testid="rewards-admin-manual-action"
               >
                 {t('admin.manualDistribute')}

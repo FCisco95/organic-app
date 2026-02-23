@@ -101,7 +101,7 @@ export function VotingPanel({ proposal }: VotingPanelProps) {
                 </span>
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-3">
                 {VOTE_OPTIONS.map(({ value, icon: Icon, color }) => {
                   const isSelected = userVote?.value === value;
                   const isLoading = castVoteMutation.isPending && selectedVote === value;
@@ -196,7 +196,7 @@ export function VotingPanel({ proposal }: VotingPanelProps) {
           </div>
 
           {/* Stats */}
-          <div className="pt-4 border-t border-gray-200 grid grid-cols-2 gap-4 text-sm">
+          <div className="pt-4 border-t border-gray-200 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2 sm:gap-4">
             <div>
               <span className="text-gray-500">{t('stats.participation')}</span>
               <p className="font-semibold text-gray-900">

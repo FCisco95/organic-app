@@ -35,7 +35,7 @@ export function SprintSnapshotCard({ snapshot, compact = false }: SprintSnapshot
         <h3 className="text-lg font-semibold text-gray-900">{t('snapshotTitle')}</h3>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+      <div className="grid grid-cols-1 gap-4 mb-4 sm:grid-cols-2 md:grid-cols-4">
         <div className="bg-gray-50 rounded-lg p-3 text-center">
           <p className="text-2xl font-bold text-gray-900">{snapshot.total_tasks}</p>
           <p className="text-xs text-gray-500">{t('snapshotTotal')}</p>
