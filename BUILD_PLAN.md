@@ -81,10 +81,10 @@ Full release gate implemented. Final sign-off pending:
 
 ### Phase 7 — Proposals Remaining Items
 
-- [ ] Proposal threshold gate (fixed or % supply)
-- [ ] Anti-abuse: one live proposal per proposer + 7-day cooldown
-- [ ] Execution window (3–7 days) + off-chain result handoff
-- [ ] Proposal templates
+- [x] Proposal threshold gate (fixed or % supply)
+- [x] Anti-abuse: one live proposal per proposer + 7-day cooldown
+- [x] Execution window (3–7 days) + off-chain result handoff
+- [x] Proposal templates
 
 ### Phase 8 — Treasury Remaining Items
 
@@ -371,12 +371,12 @@ These phases address the core gaps in crypto community SaaS platforms: contribut
 ### Security
 
 - [ ] CSRF protection review
-- [ ] Security headers configuration
+- [x] Security headers configuration
 - [ ] Regular dependency updates
 
 ### Testing
 
-- [ ] Unit tests for utility functions
+- [x] Unit tests for utility functions
 - [ ] Component testing with React Testing Library
 - [ ] Test coverage reporting
 
