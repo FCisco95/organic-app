@@ -94,8 +94,8 @@ export default function LeaderboardPage() {
 
       {/* Leaderboard Table */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-        {/* Table Header */}
-        <div className="grid grid-cols-12 gap-4 px-6 py-4 bg-gray-50 border-b border-gray-200 text-sm font-medium text-gray-500">
+        {/* Table Header — hidden on mobile */}
+        <div className="hidden sm:grid grid-cols-12 gap-4 px-6 py-4 bg-gray-50 border-b border-gray-200 text-sm font-medium text-gray-500">
           <div className="col-span-1">{t('tableRank')}</div>
           <div className="col-span-4">{t('tableMember')}</div>
           <div className="col-span-2 text-center">{t('tableLevel')}</div>
@@ -120,82 +120,151 @@ export default function LeaderboardPage() {
             {leaderboard.map((entry) => {
               const isCurrentUser = entry.id === user?.id;
               return (
-                <div
-                  key={entry.id}
-                  className={`grid grid-cols-12 gap-4 px-6 py-4 items-center transition-colors ${getRankStyle(
-                    entry.rank
-                  )} ${isCurrentUser ? 'ring-2 ring-organic-orange ring-inset' : ''}`}
-                >
-                  {/* Rank */}
-                  <div className="col-span-1 flex items-center">{getRankIcon(entry.rank)}</div>
-
-                  {/* Member Info */}
-                  <div className="col-span-4 flex items-center gap-3">
-                    {entry.avatar_url ? (
-                      <Image
-                        src={entry.avatar_url}
-                        alt={getDisplayName(entry)}
-                        width={40}
-                        height={40}
-                        className="rounded-full object-cover border-2 border-gray-200"
-                      />
-                    ) : (
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-organic-orange to-organic-yellow flex items-center justify-center border-2 border-gray-200">
-                        <span className="text-white font-bold">
-                          {getDisplayName(entry)[0].toUpperCase()}
-                        </span>
-                      </div>
-                    )}
-                    <div>
-                      <p className="font-medium text-gray-900">
-                        {getDisplayName(entry)}
-                        {isCurrentUser && (
-                          <span className="ml-2 text-xs bg-organic-orange text-white px-2 py-0.5 rounded-full">
-                            {t('youBadge')}
+                <div key={entry.id}>
+                  {/* Mobile card — visible only below sm */}
+                  <div
+                    className={`sm:hidden px-4 py-3 transition-colors ${getRankStyle(entry.rank)} ${isCurrentUser ? 'ring-2 ring-organic-orange ring-inset' : ''}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="shrink-0">{getRankIcon(entry.rank)}</div>
+                      {entry.avatar_url ? (
+                        <Image
+                          src={entry.avatar_url}
+                          alt={getDisplayName(entry)}
+                          width={36}
+                          height={36}
+                          className="shrink-0 rounded-full object-cover border-2 border-gray-200"
+                        />
+                      ) : (
+                        <div className="w-9 h-9 shrink-0 rounded-full bg-gradient-to-br from-organic-orange to-organic-yellow flex items-center justify-center border-2 border-gray-200">
+                          <span className="text-white font-bold text-sm">
+                            {getDisplayName(entry)[0].toUpperCase()}
                           </span>
-                        )}
-                      </p>
-                      {entry.organic_id && (
-                        <p className="text-sm text-gray-500">
-                          {t('organicId', { id: entry.organic_id })}
-                        </p>
+                        </div>
                       )}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium text-gray-900 truncate">
+                            {getDisplayName(entry)}
+                          </p>
+                          {isCurrentUser && (
+                            <span className="shrink-0 text-xs bg-organic-orange text-white px-2 py-0.5 rounded-full">
+                              {t('youBadge')}
+                            </span>
+                          )}
+                          {entry.level != null && entry.level > 0 && (
+                            <LevelBadge level={entry.level} size="sm" />
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          {entry.organic_id && (
+                            <span className="text-xs text-gray-500">
+                              {t('organicId', { id: entry.organic_id })}
+                            </span>
+                          )}
+                          <span className="text-xs text-gray-400">
+                            {t('tasksCompleted', { count: entry.tasks_completed })}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <p
+                          className={`font-bold ${
+                            entry.rank === 1
+                              ? 'text-yellow-600'
+                              : entry.rank === 2
+                                ? 'text-gray-500'
+                                : entry.rank === 3
+                                  ? 'text-amber-600'
+                                  : 'text-gray-900'
+                          }`}
+                        >
+                          {formatXp(entry.xp_total)}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {t('pointsSecondaryLabel', { points: entry.total_points })}
+                        </p>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Level */}
-                  <div className="col-span-2 flex items-center justify-center gap-2">
-                    {entry.level != null && entry.level > 0 && (
-                      <LevelBadge level={entry.level} size="sm" />
-                    )}
-                    <span className="text-xs text-gray-400">{formatXp(entry.xp_total)}</span>
-                  </div>
+                  {/* Desktop row — hidden below sm */}
+                  <div
+                    className={`hidden sm:grid grid-cols-12 gap-4 px-6 py-4 items-center transition-colors ${getRankStyle(
+                      entry.rank
+                    )} ${isCurrentUser ? 'ring-2 ring-organic-orange ring-inset' : ''}`}
+                  >
+                    {/* Rank */}
+                    <div className="col-span-1 flex items-center">{getRankIcon(entry.rank)}</div>
 
-                  {/* Tasks Completed */}
-                  <div className="col-span-2 text-center">
-                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">
-                      {t('tasksCompleted', { count: entry.tasks_completed })}
-                    </span>
-                  </div>
+                    {/* Member Info */}
+                    <div className="col-span-4 flex items-center gap-3">
+                      {entry.avatar_url ? (
+                        <Image
+                          src={entry.avatar_url}
+                          alt={getDisplayName(entry)}
+                          width={40}
+                          height={40}
+                          className="rounded-full object-cover border-2 border-gray-200"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-organic-orange to-organic-yellow flex items-center justify-center border-2 border-gray-200">
+                          <span className="text-white font-bold">
+                            {getDisplayName(entry)[0].toUpperCase()}
+                          </span>
+                        </div>
+                      )}
+                      <div>
+                        <p className="font-medium text-gray-900">
+                          {getDisplayName(entry)}
+                          {isCurrentUser && (
+                            <span className="ml-2 text-xs bg-organic-orange text-white px-2 py-0.5 rounded-full">
+                              {t('youBadge')}
+                            </span>
+                          )}
+                        </p>
+                        {entry.organic_id && (
+                          <p className="text-sm text-gray-500">
+                            {t('organicId', { id: entry.organic_id })}
+                          </p>
+                        )}
+                      </div>
+                    </div>
 
-                  {/* Points */}
-                  <div className="col-span-3 text-right">
-                    <p
-                      className={`font-bold text-lg ${
-                        entry.rank === 1
-                          ? 'text-yellow-600'
-                          : entry.rank === 2
-                            ? 'text-gray-500'
-                            : entry.rank === 3
-                              ? 'text-amber-600'
-                              : 'text-gray-900'
-                      }`}
-                    >
-                      {t('xpLabel', { xp: formatXp(entry.xp_total) })}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {t('pointsSecondaryLabel', { points: entry.total_points })}
-                    </p>
+                    {/* Level */}
+                    <div className="col-span-2 flex items-center justify-center gap-2">
+                      {entry.level != null && entry.level > 0 && (
+                        <LevelBadge level={entry.level} size="sm" />
+                      )}
+                      <span className="text-xs text-gray-400">{formatXp(entry.xp_total)}</span>
+                    </div>
+
+                    {/* Tasks Completed */}
+                    <div className="col-span-2 text-center">
+                      <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">
+                        {t('tasksCompleted', { count: entry.tasks_completed })}
+                      </span>
+                    </div>
+
+                    {/* Points */}
+                    <div className="col-span-3 text-right">
+                      <p
+                        className={`font-bold text-lg ${
+                          entry.rank === 1
+                            ? 'text-yellow-600'
+                            : entry.rank === 2
+                              ? 'text-gray-500'
+                              : entry.rank === 3
+                                ? 'text-amber-600'
+                                : 'text-gray-900'
+                        }`}
+                      >
+                        {t('xpLabel', { xp: formatXp(entry.xp_total) })}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {t('pointsSecondaryLabel', { points: entry.total_points })}
+                      </p>
+                    </div>
                   </div>
                 </div>
               );

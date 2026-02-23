@@ -280,7 +280,7 @@ export default function ProposalDetailPage() {
           {/* Proposal Header + Content */}
           <div className="bg-white rounded-2xl overflow-hidden" data-testid="proposal-header">
             {/* Header */}
-            <div className="px-8 pt-8 pb-6">
+            <div className="px-4 sm:px-8 pt-6 sm:pt-8 pb-4 sm:pb-6">
               {/* Badges Row */}
               <div className="flex items-center gap-2 mb-4">
                 <CategoryBadge category={category} size="md" />
@@ -288,8 +288,8 @@ export default function ProposalDetailPage() {
               </div>
 
               {/* Title + Actions */}
-              <div className="flex items-start justify-between gap-4">
-                <h1 className="text-3xl font-bold text-gray-900 flex-1">{proposal.title}</h1>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex-1">{proposal.title}</h1>
                 <div className="flex gap-2 shrink-0">
                   {user && <FollowButton subjectType="proposal" subjectId={proposalId} />}
                   {(isAuthor || isAdmin) &&
@@ -338,7 +338,7 @@ export default function ProposalDetailPage() {
             </div>
 
             {/* Content Area */}
-            <div className="px-8 py-6">
+            <div className="px-4 sm:px-8 py-6">
               {/* Structured Sections */}
               <ProposalSections proposal={proposal} />
 
@@ -481,7 +481,7 @@ export default function ProposalDetailPage() {
 
           {/* Comments Section */}
           <div
-            className="bg-white rounded-2xl shadow-sm ring-1 ring-gray-200/60 p-8"
+            className="bg-white rounded-2xl shadow-sm ring-1 ring-gray-200/60 p-4 sm:p-8"
             data-testid="proposal-comments"
           >
             <h2 className="text-xl font-semibold text-gray-900 mb-6">

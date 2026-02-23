@@ -7,9 +7,17 @@ import { getMessages, setRequestLocale } from 'next-intl/server';
 import { LayoutClient } from '@/components/layout-client';
 import { QueryProvider } from '@/components/query-provider';
 
+import type { Viewport } from 'next';
+
 export const metadata: Metadata = {
   title: 'Organic App',
   description: 'DAO governance and task management platform for Organic DAO',
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
 };
 
 export default async function RootLayout({

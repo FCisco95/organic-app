@@ -6,6 +6,16 @@
       "sourceType": "github",
       "computedHash": "7311ed85870f37e9af1e8354c500e7c4161893d845031eed43dd1d55157da83a"
     },
+    "mobile-android-design": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "03ea37d709b89168792e8ea59e1344cf0b695967d2c66651011fa99bc36ef6e4"
+    },
+    "mobile-ios-design": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "b7652af80989c86dd8945a89c6cb188acf6de8a3ca2205c427adf2ed478e63c3"
+    },
     "skill-creator": {
       "source": "anthropics/skills",
       "sourceType": "github",

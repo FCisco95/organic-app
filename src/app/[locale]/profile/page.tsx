@@ -629,7 +629,7 @@ export default function ProfilePage() {
       <div data-testid="profile-identity-section">
       {/* Profile Header Card */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <div className="flex items-start gap-6">
+        <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start sm:gap-6">
           {/* Avatar */}
           <div className="relative">
             <div className="w-24 h-24 rounded-full overflow-hidden bg-gradient-to-br from-organic-orange to-yellow-400 flex items-center justify-center">
@@ -1034,7 +1034,7 @@ export default function ProfilePage() {
                 type="button"
                 onClick={handleUnlinkTwitter}
                 disabled={twitterUnlinking || twitterLinking}
-                className="inline-flex items-center gap-1 rounded-md border border-emerald-300 px-3 py-1.5 text-sm text-emerald-800 hover:bg-emerald-100 disabled:opacity-50"
+                className="inline-flex items-center gap-1 rounded-md border border-emerald-300 px-3 py-2 sm:py-1.5 text-sm text-emerald-800 hover:bg-emerald-100 disabled:opacity-50"
               >
                 {twitterUnlinking ? (
                   <Loader2 className="w-4 h-4 animate-spin" />

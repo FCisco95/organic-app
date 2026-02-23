@@ -110,7 +110,7 @@ export function MobileSidebar() {
                     href={item.href}
                     onClick={() => setMobileOpen(false)}
                     className={cn(
-                      'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                      'flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors',
                       isActive(item.href)
                         ? 'bg-sidebar-accent text-sidebar-accent-foreground'
                         : 'text-sidebar-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
@@ -140,7 +140,7 @@ export function MobileSidebar() {
                 signOut();
                 setMobileOpen(false);
               }}
-              className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-sidebar-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
+              className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-sidebar-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
             >
               <LogOut className="h-4 w-4 shrink-0" />
               <span>{t('signOut')}</span>

@@ -151,7 +151,7 @@ export default function ProposalsPage() {
                 type="button"
                 data-testid={`proposals-stage-chip-${status}`}
                 onClick={() => setStatusFilter(status)}
-                className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
+                className={`inline-flex items-center gap-2 rounded-full px-3 py-2 sm:py-1.5 text-xs font-semibold transition-colors ${
                   statusFilter === status
                     ? 'bg-slate-900 text-white'
                     : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50'

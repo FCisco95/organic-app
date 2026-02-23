@@ -8,7 +8,7 @@ import { TopBar } from './top-bar';
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
-      <div className="flex h-screen overflow-hidden">
+      <div className="flex h-dvh overflow-hidden">
         <Sidebar />
         <MobileSidebar />
         <div className="flex flex-1 flex-col overflow-hidden">

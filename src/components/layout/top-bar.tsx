@@ -54,7 +54,7 @@ export function TopBar() {
         <Button
           variant="ghost"
           size="icon"
-          className="md:hidden h-8 w-8"
+          className="md:hidden h-10 w-10"
           onClick={() => setMobileOpen(true)}
         >
           <Menu className="h-4 w-4" />
@@ -105,8 +105,8 @@ export function TopBar() {
             {/* Avatar dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
-                  <Avatar className="h-8 w-8">
+                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full">
+                  <Avatar className="h-10 w-10">
                     {profile?.avatar_url && (
                       <AvatarImage src={profile.avatar_url} alt="User avatar" />
                     )}
