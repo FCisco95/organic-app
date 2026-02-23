@@ -29,10 +29,14 @@ test('createTaskSchema rejects proposal_version_id without proposal_id', () => {
   assert.equal(parsed.success, false);
 });
 
-test('updateTaskSchema rejects proposal_id mutation', () => {
+test('updateTaskSchema strips proposal_id (omitted field)', () => {
   const parsed = updateTaskSchema.safeParse({
     proposal_id: '33333333-3333-3333-3333-333333333333',
   });
 
-  assert.equal(parsed.success, false);
+  // Zod strips unknown/omitted keys by default — parse succeeds but field is dropped
+  assert.equal(parsed.success, true);
+  if (parsed.success) {
+    assert.equal('proposal_id' in parsed.data, false);
+  }
 });

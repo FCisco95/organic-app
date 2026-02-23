@@ -1,6 +1,12 @@
 import { z } from 'zod';
 import { extractTweetIdFromUrl } from '@/lib/twitter/utils';
 
+// Task comment schema
+export const createCommentSchema = z.object({
+  content: z.string().trim().min(1, 'Comment content is required').max(5000, 'Comment too long'),
+});
+export type CreateCommentInput = z.infer<typeof createCommentSchema>;
+
 // Task type enum
 export const taskTypeSchema = z.enum(['development', 'content', 'design', 'custom', 'twitter']);
 export const taskStatusSchema = z.enum(['backlog', 'todo', 'in_progress', 'review', 'done']);
