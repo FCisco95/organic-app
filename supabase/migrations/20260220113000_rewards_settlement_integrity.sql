@@ -354,7 +354,7 @@ BEGIN
     v_hold_reason := 'negative reward pool is not allowed (debt emissions are forbidden)';
   ELSIF v_target_pool > (v_emission_cap + 0.000000001::NUMERIC) THEN
     v_hold_reason := format(
-      'reward pool %.9f exceeds emission cap %.9f',
+      'reward pool %s exceeds emission cap %s',
       v_target_pool,
       v_emission_cap
     );
