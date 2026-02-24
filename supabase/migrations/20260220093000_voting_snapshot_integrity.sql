@@ -220,6 +220,12 @@ BEGIN
     );
   END IF;
 
+  -- Drop any leftover temp tables from prior calls in the same session
+  DROP TABLE IF EXISTS tmp_voter_allocations;
+  DROP TABLE IF EXISTS tmp_user_wallet_weights;
+  DROP TABLE IF EXISTS tmp_snapshot_holders_agg;
+  DROP TABLE IF EXISTS tmp_snapshot_holders;
+
   CREATE TEMP TABLE tmp_snapshot_holders (
     wallet_pubkey TEXT NOT NULL,
     balance_ui NUMERIC NOT NULL
@@ -242,7 +248,7 @@ BEGIN
   INTO v_raw_holder_rows
   FROM tmp_snapshot_holders;
 
-  CREATE TEMP TABLE tmp_snapshot_holders_agg AS
+  CREATE TEMP TABLE tmp_snapshot_holders_agg ON COMMIT DROP AS
   SELECT wallet_pubkey, SUM(balance_ui)::NUMERIC AS balance_ui
   FROM tmp_snapshot_holders
   GROUP BY wallet_pubkey;
@@ -272,7 +278,7 @@ BEGIN
     v_now
   FROM tmp_snapshot_holders_agg h;
 
-  CREATE TEMP TABLE tmp_user_wallet_weights AS
+  CREATE TEMP TABLE tmp_user_wallet_weights ON COMMIT DROP AS
   SELECT
     up.id AS user_id,
     SUM(h.balance_ui)::NUMERIC AS own_weight
