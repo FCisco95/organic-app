@@ -63,7 +63,10 @@ const nextConfig = {
 };
 
 const sentryBuildOptions = {
-  silent: true,
+  org: process.env.SENTRY_ORG || 'organic-xk',
+  project: process.env.SENTRY_PROJECT || 'javascript-nextjs',
+  silent: !process.env.CI,
+  widenClientFileUpload: true,
   webpack: {
     treeshake: {
       removeDebugLogging: true,
@@ -77,7 +80,4 @@ const sentryBuildOptions = {
   },
 };
 
-module.exports = withSentryConfig(
-  withBundleAnalyzer(withNextIntl(nextConfig)),
-  sentryBuildOptions
-);
+module.exports = withSentryConfig(withBundleAnalyzer(withNextIntl(nextConfig)), sentryBuildOptions);
