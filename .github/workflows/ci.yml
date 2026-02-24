@@ -86,7 +86,11 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          PLAYWRIGHT_BASE_URL: ${{ secrets.PLAYWRIGHT_BASE_URL }}
+          PLAYWRIGHT_BASE_URL: http://localhost:3000
+          NEXT_PUBLIC_APP_URL: http://localhost:3000
+          NEXT_PUBLIC_SOLANA_RPC_URL: https://api.mainnet-beta.solana.com
+          NEXT_PUBLIC_SOLANA_NETWORK: mainnet-beta
+          NEXT_PUBLIC_ORG_TOKEN_MINT: DuXugm4oTXrGDopgxgudyhboaf6uUg1GVbJ6jk6qbonk
 
       - name: Upload Playwright report (integrity gate)
         if: always()
@@ -125,7 +129,11 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          PLAYWRIGHT_BASE_URL: ${{ secrets.PLAYWRIGHT_BASE_URL }}
+          PLAYWRIGHT_BASE_URL: http://localhost:3000
+          NEXT_PUBLIC_APP_URL: http://localhost:3000
+          NEXT_PUBLIC_SOLANA_RPC_URL: https://api.mainnet-beta.solana.com
+          NEXT_PUBLIC_SOLANA_NETWORK: mainnet-beta
+          NEXT_PUBLIC_ORG_TOKEN_MINT: DuXugm4oTXrGDopgxgudyhboaf6uUg1GVbJ6jk6qbonk
 
       - name: Upload Playwright report (full suite)
         if: always()
