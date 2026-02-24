@@ -40,9 +40,9 @@ Cross-feature consistency pass complete: `--transition-ui`, `--section-radius`, 
 ### Governance Integrity Program — ✅ Complete (Tasks 1–10)
 
 Full release gate implemented. Final sign-off pending:
-- [ ] Environment-capable E2E run (Supabase env vars + Playwright browser)
+- [x] Environment-capable E2E run (Supabase env vars + Playwright browser)
 - [x] Manual QA runbook (`docs/qa-runbook.md`) updated with referrals/quests coverage
-- [ ] Sentry unresolved-error review
+- [x] Sentry unresolved-error review
 
 ---
 
@@ -376,6 +376,8 @@ These phases address the core gaps in crypto community SaaS platforms: contribut
 ### Testing
 
 - [x] Unit tests for utility functions
+- [x] E2E CI pipeline (Playwright, 4-job workflow: lint-build → unit → integrity gate → full evidence)
+- [x] Sentry error monitoring (env-var-gated, source map uploads in CI)
 - [ ] Component testing with React Testing Library
 - [ ] Test coverage reporting
 
