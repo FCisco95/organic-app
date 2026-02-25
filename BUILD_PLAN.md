@@ -376,7 +376,7 @@ These phases address the core gaps in crypto community SaaS platforms: contribut
 ### Testing
 
 - [x] Unit tests for utility functions
-- [x] E2E CI pipeline (Playwright, 4-job workflow: lint-build → unit → integrity gate → full evidence) — see `CI_SETUP_PLAN.md` for remaining 2 UI test fixes
+- [x] E2E CI pipeline (Playwright, 4-job workflow: lint-build → unit → integrity gate → full evidence) — all tests passing, setup archived to `docs/plans/complete/2026-02-25-ci-supabase-setup.md`
 - [x] Sentry error monitoring (env-var-gated, source map uploads in CI)
 - [ ] Component testing with React Testing Library
 - [ ] Test coverage reporting
