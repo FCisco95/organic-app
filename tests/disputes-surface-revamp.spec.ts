@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import {
+  addSessionCookieToPage,
   BASE_URL,
   buildSessionCookie,
   cookieHeader,
@@ -148,14 +149,21 @@ test.describe('Disputes surface revamp', () => {
     const createDisputeBody = await createDisputeRes.json();
     disputeId = createDisputeBody.data.id as string;
 
-    await supabaseAdmin
+    const overdueCreatedAt = new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString();
+    const overdueResponseDeadline = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
+
+    const { error: overdueFixtureError } = await supabaseAdmin
       .from('disputes')
       .update({
+        created_at: overdueCreatedAt,
         status: 'awaiting_response',
         tier: 'council',
-        response_deadline: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+        response_deadline: overdueResponseDeadline,
       })
       .eq('id', disputeId);
+    if (overdueFixtureError) {
+      throw overdueFixtureError;
+    }
 
     await request.post(`${BASE_URL}/api/disputes/evidence`, {
       headers: { Cookie: cookieHeader(memberCookie) },
@@ -274,18 +282,7 @@ test.describe('Disputes surface revamp', () => {
   test('queue page exposes triage counters, SLA filters, and escalation controls', async ({ page }) => {
     test.skip(!disputeId, 'Requires dispute fixture');
 
-    const baseUrl = new URL(BASE_URL);
-    await page.context().addCookies([
-      {
-        name: adminCookie.name,
-        value: adminCookie.value,
-        domain: baseUrl.hostname,
-        path: '/',
-        httpOnly: true,
-        secure: baseUrl.protocol === 'https:',
-        sameSite: 'Lax',
-      },
-    ]);
+    await addSessionCookieToPage(page, adminCookie);
 
     await page.goto(`${BASE_URL}/en/disputes`, { waitUntil: 'domcontentloaded' });
 
@@ -306,18 +303,7 @@ test.describe('Disputes surface revamp', () => {
   test('detail page exposes integrity rail and late evidence chronology', async ({ page }) => {
     test.skip(!disputeId, 'Requires dispute fixture');
 
-    const baseUrl = new URL(BASE_URL);
-    await page.context().addCookies([
-      {
-        name: adminCookie.name,
-        value: adminCookie.value,
-        domain: baseUrl.hostname,
-        path: '/',
-        httpOnly: true,
-        secure: baseUrl.protocol === 'https:',
-        sameSite: 'Lax',
-      },
-    ]);
+    await addSessionCookieToPage(page, adminCookie);
 
     await page.goto(`${BASE_URL}/en/disputes/${disputeId}`, { waitUntil: 'domcontentloaded' });
 
@@ -334,18 +320,7 @@ test.describe('Disputes surface revamp', () => {
   test('detail page resolves dispute with XP impact estimate and post-action summary', async ({ page }) => {
     test.skip(!resolvableDisputeId, 'Requires resolvable dispute fixture');
 
-    const baseUrl = new URL(BASE_URL);
-    await page.context().addCookies([
-      {
-        name: adminCookie.name,
-        value: adminCookie.value,
-        domain: baseUrl.hostname,
-        path: '/',
-        httpOnly: true,
-        secure: baseUrl.protocol === 'https:',
-        sameSite: 'Lax',
-      },
-    ]);
+    await addSessionCookieToPage(page, adminCookie);
 
     await page.goto(`${BASE_URL}/en/disputes/${resolvableDisputeId}`, {
       waitUntil: 'domcontentloaded',
