@@ -13,11 +13,48 @@ import {
 
 async function cleanupSprintArtifacts(sprintId: string) {
   const supabaseAdmin = createAdminClient();
-  await supabaseAdmin.from('reward_settlement_events').delete().eq('sprint_id', sprintId);
-  await supabaseAdmin.from('reward_distributions').delete().eq('sprint_id', sprintId);
-  await supabaseAdmin.from('sprint_snapshots').delete().eq('sprint_id', sprintId);
-  await supabaseAdmin.from('tasks').delete().eq('sprint_id', sprintId);
-  await supabaseAdmin.from('sprints').delete().eq('id', sprintId);
+  const nowMs = Date.now();
+  const { error: releaseError } = await supabaseAdmin
+    .from('sprints')
+    .update({
+      settlement_integrity_flags: [],
+      reward_settlement_status: 'pending',
+      reward_settlement_kill_switch_at: null,
+      dispute_window_started_at: new Date(nowMs - 2 * 60 * 60 * 1000).toISOString(),
+      dispute_window_ends_at: new Date(nowMs - 60 * 60 * 1000).toISOString(),
+      settlement_blocked_reason: null,
+    })
+    .eq('id', sprintId);
+  if (releaseError) {
+    throw releaseError;
+  }
+
+  // Best effort to release in-flight lock before hard cleanup.
+  await supabaseAdmin
+    .from('sprints')
+    .update({
+      status: 'completed',
+      completed_at: new Date().toISOString(),
+      settlement_blocked_reason: 'qa cleanup reset',
+    })
+    .eq('id', sprintId);
+}
+
+async function cleanupStaleQaRewardsSprints() {
+  const supabaseAdmin = createAdminClient();
+  const { data: staleSprints, error: staleError } = await supabaseAdmin
+    .from('sprints')
+    .select('id')
+    .in('status', ['active', 'review', 'dispute_window', 'settlement'])
+    .ilike('name', 'QA Rewards Integrity%');
+
+  if (staleError) {
+    throw staleError;
+  }
+
+  for (const sprint of staleSprints ?? []) {
+    await cleanupSprintArtifacts(sprint.id);
+  }
 }
 
 test.describe('Rewards settlement integrity', () => {
@@ -36,6 +73,8 @@ test.describe('Rewards settlement integrity', () => {
     request: APIRequestContext,
     name: string
   ): Promise<string> {
+    await cleanupStaleQaRewardsSprints();
+
     const now = new Date();
     const end = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
 
@@ -55,7 +94,8 @@ test.describe('Rewards settlement integrity', () => {
       headers: { Cookie: cookieHeader(adminCookie) },
       data: {},
     });
-    expect(startRes.status()).toBe(200);
+    const startBody = await startRes.json();
+    expect(startRes.status(), JSON.stringify(startBody)).toBe(200);
 
     const toReviewRes = await request.post(`${BASE_URL}/api/sprints/${sprintId}/complete`, {
       headers: { Cookie: cookieHeader(adminCookie) },
@@ -103,6 +143,8 @@ test.describe('Rewards settlement integrity', () => {
     const supabaseAdmin = createAdminClient();
     const id = runId('rewards_settlement_integrity_qa');
     const pass = 'RewardsSettlementQa!123';
+
+    await cleanupStaleQaRewardsSprints();
 
     const { data: inFlight } = await supabaseAdmin
       .from('sprints')

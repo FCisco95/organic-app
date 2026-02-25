@@ -150,7 +150,10 @@ test.describe('Sprint phase engine', () => {
     createdSubmissionId = submission?.id ?? null;
     expect(createdSubmissionId).toBeTruthy();
 
-    const { data: dispute } = await supabaseAdmin
+    const disputeCreatedAt = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
+    const overdueResponseDeadline = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+
+    const { data: dispute, error: disputeError } = await supabaseAdmin
       .from('disputes')
       .insert({
         submission_id: createdSubmissionId!,
@@ -162,11 +165,13 @@ test.describe('Sprint phase engine', () => {
         status: 'open',
         reason: 'rejected_unfairly',
         evidence_text: 'QA evidence payload',
+        created_at: disputeCreatedAt,
         xp_stake: 50,
-        response_deadline: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
+        response_deadline: overdueResponseDeadline,
       })
       .select('id')
       .single();
+    expect(disputeError).toBeNull();
     createdDisputeId = dispute?.id ?? null;
     expect(createdDisputeId).toBeTruthy();
 
@@ -207,12 +212,27 @@ test.describe('Sprint phase engine', () => {
     );
     expect(stillOpenWindowRes.status()).toBe(409);
 
-    await supabaseAdmin
+    const nowMs = Date.now();
+    const closedWindowStartedIso = new Date(nowMs - 2 * 60 * 60 * 1000).toISOString();
+    const closedWindowIso = new Date(nowMs - 60 * 60 * 1000).toISOString();
+    const { error: closeWindowError } = await supabaseAdmin
       .from('sprints')
       .update({
-        dispute_window_ends_at: new Date(Date.now() - 60 * 1000).toISOString(),
+        dispute_window_started_at: closedWindowStartedIso,
+        dispute_window_ends_at: closedWindowIso,
       })
       .eq('id', createdSprintId);
+    expect(closeWindowError).toBeNull();
+
+    const { data: sprintAfterClose, error: sprintAfterCloseError } = await supabaseAdmin
+      .from('sprints')
+      .select('dispute_window_ends_at')
+      .eq('id', createdSprintId)
+      .single();
+    expect(sprintAfterCloseError).toBeNull();
+    expect(new Date(sprintAfterClose?.dispute_window_ends_at ?? 0).getTime()).toBeLessThanOrEqual(
+      Date.now()
+    );
 
     const blockedSettlementRes = await request.post(
       `${BASE_URL}/api/sprints/${createdSprintId}/complete`,
@@ -223,7 +243,7 @@ test.describe('Sprint phase engine', () => {
     );
     expect(blockedSettlementRes.status()).toBe(409);
 
-    await supabaseAdmin
+    const { error: resolveError } = await supabaseAdmin
       .from('disputes')
       .update({
         status: 'resolved',
@@ -232,6 +252,7 @@ test.describe('Sprint phase engine', () => {
         resolved_at: new Date().toISOString(),
       })
       .eq('id', createdDisputeId);
+    expect(resolveError).toBeNull();
 
     const toSettlementRes = await request.post(
       `${BASE_URL}/api/sprints/${createdSprintId}/complete`,
@@ -240,8 +261,9 @@ test.describe('Sprint phase engine', () => {
         data: {},
       }
     );
-    expect(toSettlementRes.status()).toBe(200);
-    expect((await toSettlementRes.json()).sprint.status).toBe('settlement');
+    const toSettlementBody = await toSettlementRes.json();
+    expect(toSettlementRes.status(), JSON.stringify(toSettlementBody)).toBe(200);
+    expect(toSettlementBody.sprint.status).toBe('settlement');
 
     const toCompletedRes = await request.post(`${BASE_URL}/api/sprints/${createdSprintId}/complete`, {
       headers: { Cookie: cookieHeader(adminCookie) },
