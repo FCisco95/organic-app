@@ -96,8 +96,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     const input = parseResult.data;
-    const testFailMode =
-      process.env.NODE_ENV === 'production' ? 'none' : (input.test_fail_mode ?? 'none');
+    const isTestEnv = process.env.NODE_ENV !== 'production' || !!process.env.CI;
+    const testFailMode = isTestEnv ? (input.test_fail_mode ?? 'none') : 'none';
 
     const { data: rpcData, error: rpcError } = await supabase.rpc(
       'finalize_proposal_voting_integrity',
@@ -150,7 +150,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       const { data: config } = await supabase
         .from('voting_config')
         .select('execution_window_days')
-        .limit(1)
+        .is('org_id', null)
         .single();
 
       const windowDays = config?.execution_window_days ?? 7;
