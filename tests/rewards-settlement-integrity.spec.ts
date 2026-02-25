@@ -135,6 +135,7 @@ test.describe('Rewards settlement integrity', () => {
   test.beforeEach(async () => {
     test.skip(missing.length > 0, `Missing env vars: ${missing.join(', ')}`);
     test.skip(!canRun, 'Skipped: another sprint is already in progress in this environment');
+    test.skip(!orgId, 'Skipped: org fixture was not found');
   });
 
   test.beforeAll(async () => {
@@ -239,11 +240,36 @@ test.describe('Rewards settlement integrity', () => {
 
     const { data: sprintRow } = await supabaseAdmin
       .from('sprints')
-      .select('status, reward_settlement_status')
+      .select(
+        'status, reward_settlement_status, settlement_blocked_reason, reward_settlement_kill_switch_at'
+      )
       .eq('id', sprintId)
       .single();
     expect(sprintRow?.status).toBe('settlement');
     expect(sprintRow?.reward_settlement_status).toBe('held');
+    expect(sprintRow?.settlement_blocked_reason).toContain('exceeds emission cap');
+    expect(sprintRow?.reward_settlement_kill_switch_at).toBeNull();
+
+    const { data: holdEvents, error: holdEventsError } = await supabaseAdmin
+      .from('reward_settlement_events')
+      .select('event_type, idempotency_key, reason, metadata, created_by')
+      .eq('sprint_id', sprintId)
+      .eq('event_type', 'integrity_hold')
+      .order('created_at', { ascending: false })
+      .limit(1);
+    expect(holdEventsError).toBeNull();
+    expect(holdEvents?.length).toBe(1);
+
+    const holdEvent = holdEvents?.[0];
+    expect(holdEvent?.reason).toBe('emission_cap_breach');
+    expect(holdEvent?.idempotency_key).toContain(`reward-settlement-hold:${sprintId}:`);
+    expect(holdEvent?.created_by).toBe(adminUserId);
+
+    const holdMetadata = (holdEvent?.metadata ?? {}) as Record<string, unknown>;
+    expect(holdMetadata.source).toBe('commit_sprint_reward_settlement');
+    expect(Number(holdMetadata.requested_pool ?? 0)).toBeGreaterThan(
+      Number(holdMetadata.emission_cap ?? 0)
+    );
 
     const rewardsRes = await request.get(`${BASE_URL}/api/rewards`, {
       headers: { Cookie: cookieHeader(adminCookie) },
@@ -251,6 +277,8 @@ test.describe('Rewards settlement integrity', () => {
     expect(rewardsRes.status()).toBe(200);
     const rewardsBody = await rewardsRes.json();
     expect(rewardsBody.latest_reward_settlement_status).toBe('held');
+    expect(String(rewardsBody.latest_reward_settlement_reason ?? '')).toContain('exceeds emission cap');
+    expect(rewardsBody.latest_reward_settlement_at).toBeTruthy();
 
     await cleanupSprintArtifacts(sprintId);
   });
@@ -306,11 +334,33 @@ test.describe('Rewards settlement integrity', () => {
 
     const { data: sprintRow } = await supabaseAdmin
       .from('sprints')
-      .select('status, reward_settlement_status')
+      .select(
+        'status, reward_settlement_status, settlement_blocked_reason, reward_settlement_kill_switch_at'
+      )
       .eq('id', sprintId)
       .single();
     expect(sprintRow?.status).toBe('settlement');
     expect(sprintRow?.reward_settlement_status).toBe('killed');
+    expect(sprintRow?.settlement_blocked_reason).toBe('duplicate epoch distribution path detected');
+    expect(sprintRow?.reward_settlement_kill_switch_at).toBeTruthy();
+
+    const { data: killEvents, error: killEventsError } = await supabaseAdmin
+      .from('reward_settlement_events')
+      .select('event_type, idempotency_key, reason, metadata, created_by')
+      .eq('sprint_id', sprintId)
+      .eq('event_type', 'kill_switch')
+      .order('created_at', { ascending: false })
+      .limit(1);
+    expect(killEventsError).toBeNull();
+    expect(killEvents?.length).toBe(1);
+
+    const killEvent = killEvents?.[0];
+    expect(killEvent?.idempotency_key).toBe(`reward-settlement-kill:${sprintId}`);
+    expect(killEvent?.reason).toBe('duplicate_epoch_distribution_path');
+    expect(killEvent?.created_by).toBe(adminUserId);
+    const killMetadata = (killEvent?.metadata ?? {}) as Record<string, unknown>;
+    expect(killMetadata.source).toBe('commit_sprint_reward_settlement');
+    expect(Number(killMetadata.existing_epoch_rows ?? 0)).toBeGreaterThan(0);
 
     const rewardsRes = await request.get(`${BASE_URL}/api/rewards`, {
       headers: { Cookie: cookieHeader(adminCookie) },
@@ -318,6 +368,10 @@ test.describe('Rewards settlement integrity', () => {
     expect(rewardsRes.status()).toBe(200);
     const rewardsBody = await rewardsRes.json();
     expect(rewardsBody.latest_reward_settlement_status).toBe('killed');
+    expect(rewardsBody.latest_reward_settlement_reason).toBe(
+      'duplicate epoch distribution path detected'
+    );
+    expect(rewardsBody.latest_reward_settlement_at).toBeTruthy();
 
     await cleanupSprintArtifacts(sprintId);
   });

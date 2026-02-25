@@ -490,6 +490,92 @@ Action Candidates:
 - Candidate 1:
 - Candidate 2:
 
+## 4.16 Operational Controls (Automated Evidence)
+
+Goal: verify governance/rewards safety controls without relying on manual UI walkthroughs.
+
+Pre-flight:
+- [ ] `.env.local` includes Supabase URL/anon key/service role key.
+- [ ] CI-mode base URL is reachable.
+- [ ] At least one admin and council fixture can be created by tests.
+
+Execution command:
+
+```bash
+set -a; source .env.local; set +a
+CI=true npx playwright test \
+  tests/voting-integrity.spec.ts \
+  tests/rewards-settlement-integrity.spec.ts \
+  --workers=1 --reporter=list
+```
+
+Fallback when CI webServer startup exceeds timeout in local environments:
+
+```bash
+# terminal A
+set -a; source .env.local; set +a
+npm run dev -- --hostname 127.0.0.1 --port 3100
+
+# terminal B
+set -a; source .env.local; set +a
+PLAYWRIGHT_BASE_URL=http://127.0.0.1:3100 npx playwright test \
+  tests/voting-integrity.spec.ts \
+  tests/rewards-settlement-integrity.spec.ts \
+  --workers=1 --reporter=list
+```
+
+Expected assertions from suite output:
+- [ ] Rewards hold path returns `EMISSION_CAP_BREACH` and sprint status `held`.
+- [ ] Rewards kill-switch path returns `SETTLEMENT_KILL_SWITCH` and sprint status `killed`.
+- [ ] `reward_settlement_events` contains `integrity_hold` and `kill_switch` rows with metadata.
+- [ ] Voting finalization failure path returns `FINALIZATION_FROZEN`.
+- [ ] `proposal_stage_events` contains `finalization_kill_switch` with dedupe key + attempt metadata.
+- [ ] Manual recovery simulation (audited resume event + unfreeze) can finalize proposal successfully.
+
+Evidence capture checklist:
+- [ ] Attach Playwright command output (or CI job URL).
+- [ ] Record proposal id used for frozen-finalization validation.
+- [ ] Record sprint id used for hold/kill-switch validation.
+- [ ] Export the latest matching audit rows (queries below) with timestamp.
+
+Audit queries:
+
+```sql
+-- Rewards settlement events for one sprint.
+select
+  sprint_id,
+  event_type,
+  reason,
+  idempotency_key,
+  metadata,
+  created_by,
+  created_at
+from reward_settlement_events
+where sprint_id = '<SPRINT_ID>'
+order by created_at desc;
+```
+
+```sql
+-- Proposal freeze + manual-resume audit trail for one proposal.
+select
+  proposal_id,
+  reason,
+  from_status,
+  to_status,
+  actor_id,
+  metadata,
+  created_at
+from proposal_stage_events
+where proposal_id = '<PROPOSAL_ID>'
+  and reason in ('finalization_kill_switch', 'finalization_manual_resume')
+order by created_at desc;
+```
+
+Pass criteria for this section:
+- [ ] Both targeted integrity specs pass in CI-mode.
+- [ ] Reward and proposal audit rows are present and match expected event semantics.
+- [ ] Captured evidence is linked in the release gate artifact.
+
 ---
 
 ## 5) UX Finding Ticket Template (copy per issue)
