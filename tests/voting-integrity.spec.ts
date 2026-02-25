@@ -120,6 +120,13 @@ test.describe('Voting snapshot and finalization integrity', () => {
       .from('user_profiles')
       .update({ wallet_pubkey: walletB })
       .eq('id', memberBUserId);
+
+    // Disable proposer cooldown so the second proposal creation in the serial
+    // suite doesn't hit the 7-day default cooldown (which returns 429).
+    await supabaseAdmin
+      .from('voting_config')
+      .update({ proposer_cooldown_days: 0 })
+      .limit(1);
   });
 
   test.afterAll(async () => {

@@ -1,18 +1,18 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter } from '@/i18n/navigation';
 import { useSearchParams } from 'next/navigation';
+import { ProgressionShell } from '@/components/gamification/progression-shell';
 
 export default function ProfileProgressionPage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const from = searchParams.get('from');
 
-  useEffect(() => {
-    const target = from ? `/quests?from=${encodeURIComponent(from)}` : '/quests';
-    router.replace(target);
-  }, [from, router]);
+  const sourceContext =
+    from === 'tasks' || from === 'proposals' || from === 'profile' ? from : null;
 
-  return null;
+  return (
+    <div className="mx-auto max-w-4xl px-4 py-6" data-testid="profile-progression-page">
+      <ProgressionShell sourceContext={sourceContext} />
+    </div>
+  );
 }

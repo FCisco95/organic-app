@@ -357,6 +357,13 @@ export default function Home() {
             </p>
           </article>
         </div>
+
+        <div className="mt-3 flex items-center gap-3 text-[10px] text-muted-foreground/60">
+          <span data-testid="trust-updated-at">
+            {new Date().toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
+          </span>
+          <span data-testid="trust-refresh-cadence">60s</span>
+        </div>
       </section>
 
       {/* ── Capabilities + Activity ─────────────── */}
