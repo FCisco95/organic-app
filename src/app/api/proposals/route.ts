@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
       const { data: config } = await supabase
         .from('voting_config')
         .select('proposal_threshold_org, proposer_cooldown_days, max_live_proposals')
-        .limit(1)
+        .is('org_id', null)
         .single();
 
       if (config) {
