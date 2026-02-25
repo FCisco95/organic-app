@@ -44,6 +44,12 @@ Full release gate implemented. Final sign-off pending:
 - [x] Manual QA runbook (`docs/qa-runbook.md`) updated with referrals/quests coverage
 - [x] Sentry unresolved-error review
 
+Latest revalidation snapshot (2026-02-25):
+- Integrity subset in CI-mode: `8 passed`, `6 skipped` (`dispute-sla`, `rewards-settlement-integrity`, `sprint-phase-engine` precondition-gated).
+- Full E2E evidence in CI-mode: `68 passed`, `27 skipped`.
+- Go/No-Go remains **No-Go** pending blocking manual QA matrix and unresolved operational-control checks for rewards hold/kill-switch and audited unfreeze/recovery paths.
+- Runtime drift warning observed in active Supabase schema cache: missing `proposals.execution_deadline` during finalize execution-window update (`PGRST204`, non-fatal).
+
 ---
 
 ## Completed Phases
