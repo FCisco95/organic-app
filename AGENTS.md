@@ -82,6 +82,31 @@ Naming:
 - Do not rename/move broad folder structures without approval.
 - Route handlers should orchestrate; heavy domain logic belongs in `src/features/`.
 
+## GitHub workflow (phase-based)
+
+- Start every new phase on a dedicated branch from an up-to-date `main`.
+- Do not start phase work directly on `main` unless explicitly approved.
+- Use clear branch names:
+  - `phase/<phase-id>-<short-scope>` for planned phase work
+  - `fix/<short-scope>` for bug fixes
+  - `docs/<short-scope>` for documentation-only work
+- Required start sequence:
+  1. `git switch main`
+  2. `git pull --ff-only`
+  3. `git switch -c <branch-name>`
+- Required delivery sequence:
+  1. Keep commits small and scoped to the phase.
+  2. `git push -u origin <branch-name>`
+  3. Open a PR and run required checks.
+  4. Merge only after checks pass and review feedback is addressed.
+- Required post-merge cleanup:
+  1. `git switch main`
+  2. `git pull --ff-only`
+  3. `git branch -d <branch-name>`
+  4. `git push origin --delete <branch-name>`
+- If uncommitted changes block branch switching, commit them on the active branch or stash intentionally before starting the new phase branch.
+- Avoid `git push --force` unless explicitly approved.
+
 ## Validation policy
 
 Minimum validation for meaningful code changes:

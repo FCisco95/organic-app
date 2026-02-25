@@ -48,6 +48,30 @@ Core domains: auth, tasks, proposals, voting, sprints, members, notifications, r
 - Ask before changing public APIs, route contracts, or DB schema strategy.
 - Do not change npm scripts without approval.
 
+## GitHub phase workflow (required)
+
+- Start each new phase by creating and switching to a new branch before editing files.
+- Do not implement phase work directly on `main` unless explicitly approved.
+- Keep one phase per branch to avoid mixed concerns in PRs.
+- Preferred branch naming:
+  - `phase/<phase-id>-<short-scope>`
+  - `fix/<short-scope>`
+  - `docs/<short-scope>`
+- Required start commands:
+  1. `git switch main`
+  2. `git pull --ff-only`
+  3. `git switch -c <branch-name>`
+- Required delivery flow:
+  1. Commit focused changes.
+  2. `git push -u origin <branch-name>`
+  3. Open PR and ensure required checks pass.
+  4. Merge only when CI is green and feedback is resolved.
+- Required cleanup after merge:
+  1. `git switch main`
+  2. `git pull --ff-only`
+  3. Delete merged branches locally and remotely.
+- Avoid `git push --force` unless explicitly approved.
+
 ## UX/UI work rules
 
 Any request involving UI, UX, design, layout, copy, interactions, or visual behavior must follow these rules:
