@@ -1636,3 +1636,32 @@ All tests self-skip when Supabase env vars are absent (graceful CI skip pattern 
   - hardened `tests/profile.spec.ts` (fixture user + Supabase session-cookie auth) and rerun passed
   - proposal lifecycle API smoke passed (create -> vote -> finalize)
   - stabilized `tests/phase2-tasks-ui.spec.ts` by replacing UI form login with Supabase session-cookie auth bootstrap; rerun passed in ~45s
+
+## 2026-02-25 (Session: Release gate revalidation execution)
+
+- Executed strict gate-first revalidation for the core features release gate.
+- Validation baseline:
+  - `npm run lint` passed
+  - `npm run build` passed
+- Integrity subset command (`tests/proposals-lifecycle.spec.ts tests/voting-integrity.spec.ts tests/proposal-task-flow.spec.ts tests/sprint-phase-engine.spec.ts tests/dispute-sla.spec.ts tests/rewards-settlement-integrity.spec.ts tests/admin-config-audit.spec.ts --workers=1`):
+  - initial sandbox run failed due external DNS/network resolution to Supabase (`getaddrinfo EAI_AGAIN ...supabase.co`)
+  - escalated CI-mode run passed with skips (`8 passed`, `6 skipped`)
+  - skipped groups were precondition-gated in current DB state (`dispute-sla`, `rewards-settlement-integrity`, `sprint-phase-engine`)
+- Full E2E evidence run (`npm run test:e2e -- --workers=1`):
+  - sandbox run failed (`31 failed`, `64 did not run`) due Supabase DNS + Chromium sandbox constraints
+  - escalated CI-mode run passed with skips (`68 passed`, `27 skipped`)
+- Operational-control evidence captured:
+  - voting freeze path verified by `tests/voting-integrity.spec.ts`
+  - admin config audit enforcement verified by `tests/admin-config-audit.spec.ts`
+  - rewards hold/kill-switch checks remain pending due skipped precondition-gated tests
+- Observed non-fatal runtime drift warning during finalize flow:
+  - missing `execution_deadline` column in active Supabase schema cache (`PGRST204`) while setting execution window on passed proposals.
+- Updated release-gate artifact with current evidence and blocker status:
+  - `docs/plans/2026-02-20-core-features-revamp-release-gate.md`
+- Executed option-1 follow-up to clear previously skipped integrity suites:
+  - added migration `supabase/migrations/20260225161000_rewards_settlement_format_specifier_hotfix.sql` to replace invalid PostgreSQL `format('%.9f')` usage in `commit_sprint_reward_settlement`
+  - applied the hotfix to the active Supabase project and verified function text now uses `%s` placeholders
+  - stabilized `tests/sprint-phase-engine.spec.ts` for dispute-window bounds and stricter error assertions
+  - stabilized `tests/rewards-settlement-integrity.spec.ts` with lifecycle-safe QA cleanup for stale in-flight rewards sprints
+  - reran targeted integrity trio in escalated CI-mode: `6 passed`, `0 skipped` (`dispute-sla`, `rewards-settlement-integrity`, `sprint-phase-engine`)
+  - reran baseline validation: `npm run lint` passed, `npm run build` passed
