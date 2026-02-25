@@ -136,10 +136,10 @@ export function useTask(taskId: string) {
           ),
           submissions:task_submissions(
             *,
-            user:user_profiles!task_submissions_user_id_fkey(
+            user:user_profiles!task_submissions_user_id_profile_fkey(
               id, name, email, organic_id, avatar_url
             ),
-            reviewer:user_profiles!task_submissions_reviewer_id_fkey(
+            reviewer:user_profiles!task_submissions_reviewer_id_profile_fkey(
               id, name, email, organic_id
             )
           )
@@ -240,7 +240,7 @@ export function usePendingReviewSubmissions() {
         .select(
           `
           ${TASK_SUBMISSION_REVIEW_COLUMNS},
-          user:user_profiles!task_submissions_user_id_fkey(id, name, email, organic_id, avatar_url),
+          user:user_profiles!task_submissions_user_id_profile_fkey(id, name, email, organic_id, avatar_url),
           task:tasks!task_submissions_task_id_fkey(id, title, task_type, base_points)
         `
         )
@@ -465,10 +465,10 @@ export function useTaskSubmissions(taskId: string) {
         .select(
           `
           *,
-          user:user_profiles!task_submissions_user_id_fkey(
+          user:user_profiles!task_submissions_user_id_profile_fkey(
             id, name, email, organic_id, avatar_url
           ),
-          reviewer:user_profiles!task_submissions_reviewer_id_fkey(
+          reviewer:user_profiles!task_submissions_reviewer_id_profile_fkey(
             id, name, email, organic_id
           )
         `

@@ -110,7 +110,7 @@ test.describe('Rewards surface revamp', () => {
     await expect(page.getByTestId('rewards-admin-pending-triage')).toBeVisible();
     await expect(page.getByTestId('rewards-admin-payout-guardrails')).toBeVisible();
     await expect(page.getByTestId('rewards-admin-distribution-integrity')).toBeVisible();
-    await expect(page.getByTestId('rewards-claim-risk-urgent').first()).toBeVisible();
+    await expect(page.locator('[data-testid="rewards-claim-risk-urgent"] >> visible=true').first()).toBeVisible();
 
     await page.getByTestId('rewards-admin-tab-distributions').click();
     await expect(

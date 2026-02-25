@@ -126,7 +126,7 @@ test.describe('Voting snapshot and finalization integrity', () => {
     await supabaseAdmin
       .from('voting_config')
       .update({ proposer_cooldown_days: 0 })
-      .limit(1);
+      .is('org_id', null);
   });
 
   test.afterAll(async () => {

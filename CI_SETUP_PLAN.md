@@ -1,8 +1,9 @@
 # CI Pipeline: Supabase `organic-app-ci` Setup
 
 **Date**: 2026-02-24
-**Status**: 1 test remaining
-**CI Run**: https://github.com/FCisco95/organic-app/actions/runs/22374428838
+**Updated**: 2026-02-25
+**Status**: All known failures addressed — awaiting CI confirmation
+**Latest commit**: pending (fixes voting-config filter, profile link, rewards selector, task FK hints)
 
 ---
 
@@ -52,6 +53,9 @@ All migrations pushed to CI DB. Several required manual fixes:
 | `supabase/migrations/20260220093000_voting_snapshot_integrity.sql` | Added `DROP TABLE IF EXISTS` for temp tables | `92d3b53` |
 | `supabase/migrations/20260224000000_add_sprint_goal_column.sql` | New migration: `sprints.goal` column | `92d3b53` |
 | `supabase/migrations/20260220113000_rewards_settlement_integrity.sql` | `%.9f` → `%s` in PG `format()` | `e40aef5` |
+| `tests/voting-integrity.spec.ts` | Set `proposer_cooldown_days=0` in `beforeAll` | `24da2ba` |
+| `src/app/[locale]/page.tsx` | Add `trust-updated-at` and `trust-refresh-cadence` test IDs | `24da2ba` |
+| `src/app/[locale]/profile/progression/page.tsx` | Render `ProgressionShell` instead of redirecting to `/quests` | `24da2ba` |
 
 ### 5. CI DB manual fixes (applied via management API, not in migrations)
 
@@ -61,13 +65,13 @@ All migrations pushed to CI DB. Several required manual fixes:
 | `check_achievements()` function redeployed | `$1` param placeholders were stripped during manual apply |
 | `sprint_snapshots` table created | Referenced by `distribute_epoch_rewards()` but never in any migration |
 | `sprints.goal` column added | API route inserts it but column didn't exist |
-| `governance_policy.proposer_cooldown_days` set to `0` | Tests create multiple proposals with same user |
+| `governance_policy.proposer_cooldown_days` set to `0` | Tests create multiple proposals with same user (wrong table — see root cause below) |
 | `commit_sprint_reward_settlement` function redeployed | Fixed `%.9f` → `%s` |
 | PostgREST schema cache reloaded | `NOTIFY pgrst, 'reload schema'` after column changes |
 
 ---
 
-## Current CI results (run 22374428838)
+## Previous CI results (run 22374428838)
 
 ### e2e-integrity: 7 passed, 1 failed
 
@@ -94,30 +98,65 @@ All migrations pushed to CI DB. Several required manual fixes:
 
 ---
 
-## What's left to fix
+## Fixes applied (commit `24da2ba`)
 
-### Priority 1: voting-integrity 429 (last integrity failure)
+### Fix 1: voting-integrity 429 (integrity gate blocker)
 
-**Problem**: Test `freezes proposal when finalization fails twice` (line 241) creates a second proposal with the same user who already created one in the earlier test. The API enforces a `proposer_cooldown_days` rate limit.
+**Root cause**: The proposals API reads `proposer_cooldown_days` from the `voting_config` table (default: 7 days). The earlier manual fix incorrectly set `governance_policy.proposer_cooldown_days = 0` on the `orgs` table JSONB field — a completely different storage location that the API never reads.
 
-**Already tried**: Set `governance_policy.proposer_cooldown_days = 0` in CI org config. The 429 persists — which means either:
-- The config change didn't take effect for that CI run (it was applied mid-run)
-- There's a different cooldown (dispute cooldown?) being triggered
-- The governance_policy read path caches the config
+**Fix**: Test `beforeAll` now sets `voting_config.proposer_cooldown_days = 0` via admin client, making the test self-contained and independent of CI DB state.
 
-**Next step**: Re-run CI now that the cooldown is set to 0. If still 429, check:
-1. `src/app/api/proposals/route.ts` lines 133-159 for exact cooldown logic
-2. Whether the test's `beforeAll` needs to explicitly set the org config
-3. Whether `proposal_threshold_org` config field also gates creation
+### Fix 2: home-trust-surface (missing test IDs)
 
-### Priority 2: e2e-full-evidence UI failures (4 tests)
+**Root cause**: Test expected `trust-updated-at` and `trust-refresh-cadence` data-testid attributes that were never added to the trust strip section.
 
-These are `toBeVisible` failures on UI elements — likely missing seed data or feature flags in the CI org, not DB schema issues. Lower priority since the integrity suite is the gate.
+**Fix**: Added freshness metadata footer to the trust strip with both test IDs.
 
-**Likely causes**:
-- Missing org config values that enable certain UI sections
-- Missing seed data (reward distributions, trust metrics, etc.)
-- Pages that require specific feature flags
+### Fix 3: profile progression hub (redirect instead of render)
+
+**Root cause**: `/profile/progression/page.tsx` was a redirect-only stub that forwarded to `/quests`. The `ProgressionShell` component (which has all expected test IDs) was never rendered.
+
+**Fix**: Page now renders `ProgressionShell` with `sourceContext` from search params.
+
+---
+
+## Additional fixes (2026-02-25)
+
+### Fix 4: voting-config update filter (voting-integrity 429)
+
+**Root cause**: `beforeAll` used `.update({ proposer_cooldown_days: 0 }).limit(1)` — but PostgREST requires a filter condition on UPDATE; `.limit()` is not a filter. The update silently affected zero rows.
+
+**Fix**: Changed to `.is('org_id', null)` to match the default single-tenant config row.
+
+### Fix 5: profile progression link (profile test)
+
+**Root cause**: Link href in profile page was changed to `/quests?from=profile` but the test expects `/profile/progression?from=profile`. The `/profile/progression` route still exists and renders `ProgressionShell`.
+
+**Fix**: Reverted link href to `/profile/progression?from=profile`.
+
+### Fix 6: rewards risk badge visibility (rewards-surface-revamp)
+
+**Root cause**: Component renders `rewards-claim-risk-urgent` testId on both mobile (`md:hidden`) and desktop variants. At Playwright's 1280px viewport, `.first()` picks the hidden mobile element.
+
+**Fix**: Changed test selector to `[data-testid="rewards-claim-risk-urgent"] >> visible=true` to filter for visible elements.
+
+### Fix 7: task submissions FK hints (tasks-surface-revamp)
+
+**Root cause**: `task_submissions.user_id` and `reviewer_id` FK constraints reference `auth.users(id)`, not `user_profiles(id)`. PostgREST cannot resolve computed relationships through the `auth` schema (not in `db-schemas`). The nested select `user:user_profiles!task_submissions_user_id_fkey(...)` returns a 400 error, causing the grouping logic to find zero submissions.
+
+**Fix**:
+1. Added direct FK constraints from `task_submissions` to `user_profiles` (`task_submissions_user_id_profile_fkey`, `task_submissions_reviewer_id_profile_fkey`)
+2. Updated all PostgREST FK hints in codebase to use the new constraint names
+3. Migration: `20260225000000_task_submissions_user_profiles_fks.sql`
+4. Applied manually to CI DB and issued `NOTIFY pgrst, 'reload schema'`
+
+### CI DB manual fixes (applied 2026-02-25)
+
+| Fix | Reason |
+|-----|--------|
+| `task_submissions_user_id_profile_fkey` added | PostgREST FK hint resolution |
+| `task_submissions_reviewer_id_profile_fkey` added | PostgREST FK hint resolution |
+| `NOTIFY pgrst, 'reload schema'` | Schema cache refresh |
 
 ---
 

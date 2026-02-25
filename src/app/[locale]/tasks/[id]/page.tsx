@@ -177,10 +177,10 @@ export default function TaskDetailPage() {
           .select(
             `
             *,
-            user:user_profiles!task_submissions_user_id_fkey(
+            user:user_profiles!task_submissions_user_id_profile_fkey(
               id, name, email, organic_id, avatar_url
             ),
-            reviewer:user_profiles!task_submissions_reviewer_id_fkey(
+            reviewer:user_profiles!task_submissions_reviewer_id_profile_fkey(
               id, name, email, organic_id
             )
           `
