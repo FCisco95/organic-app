@@ -2,6 +2,49 @@
 
 Add newest entries at the top.
 
+## 2026-02-25 (Session: operational controls evidence hardening - rewards hold/kill-switch + voting freeze recovery)
+
+### Summary
+
+Implemented non-manual launch-readiness hardening for operational controls by extending integrity specs with audit-event assertions and documented recovery evidence procedures.
+
+### Implementation highlights
+
+- Rewards settlement integrity assertions expanded:
+  - `tests/rewards-settlement-integrity.spec.ts`
+  - Added fixture precondition guard for missing org fixture.
+  - Added assertions for:
+    - `settlement_blocked_reason` semantics,
+    - kill-switch timestamp posture,
+    - `reward_settlement_events` rows (`integrity_hold` and `kill_switch`) including idempotency key, reason, actor, and metadata source.
+  - Added `/api/rewards` assertions for settlement reason/timestamp visibility (`held` and `killed` paths).
+
+- Voting finalization freeze/recovery assertions expanded:
+  - `tests/voting-integrity.spec.ts`
+  - Added finalized-state persistence checks (dedupe key, attempts, frozen flag) for idempotent finalize path.
+  - Added freeze-path audit assertions against `proposal_stage_events` (`finalization_kill_switch`) including dedupe key/attempt metadata.
+  - Added audited manual recovery simulation:
+    - manual unfreeze update,
+    - explicit `finalization_manual_resume` audit event insert,
+    - resumed finalize success assertions.
+
+- Runbook and release-gate documentation updates:
+  - `docs/qa-runbook.md`
+  - Added section `4.16 Operational Controls (Automated Evidence)` with:
+    - reproducible CI-mode command,
+    - expected assertions checklist,
+    - SQL audit queries for rewards and proposal freeze/resume evidence.
+  - `docs/plans/2026-02-20-core-features-revamp-release-gate.md`
+  - Updated operational-controls criteria to automated evidence semantics and added explicit artifact requirements checklist.
+
+### Validation evidence
+
+- Targeted operational-controls command:
+  - `CI=true npx playwright test tests/voting-integrity.spec.ts tests/rewards-settlement-integrity.spec.ts --workers=1 --reporter=list`
+  - Result: FAIL in this environment due transient Supabase DNS resolution (`getaddrinfo EAI_AGAIN ...supabase.co`) while creating/fetching QA fixtures.
+- `npm run lint`: PASS.
+- `npm run build`: PASS.
+
 ## 2026-02-23 (Session: quests + referrals rollout, admin gamification controls, and QA runbook update)
 
 ### Summary
