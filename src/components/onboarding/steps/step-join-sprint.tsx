@@ -71,7 +71,7 @@ export function StepJoinSprint({ completed, onComplete }: StepJoinSprintProps) {
         .from('tasks')
         .select('id, title, points, sprint_id')
         .in('sprint_id', sprintIds)
-        .eq('status', 'open')
+        .eq('status', 'todo')
         .is('assignee_id', null)
         .limit(5);
 

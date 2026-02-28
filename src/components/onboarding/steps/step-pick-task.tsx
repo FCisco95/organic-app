@@ -33,7 +33,7 @@ export function StepPickTask({ completed, onComplete }: StepPickTaskProps) {
       const { data } = await supabase
         .from('tasks')
         .select('id, title, task_type, points')
-        .eq('status', 'open')
+        .eq('status', 'todo')
         .is('assignee_id', null)
         .order('created_at', { ascending: false })
         .limit(5);
