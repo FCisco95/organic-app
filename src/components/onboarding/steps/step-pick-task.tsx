@@ -17,7 +17,7 @@ interface OpenTask {
   id: string;
   title: string;
   task_type: string | null;
-  points: number;
+  points: number | null;
 }
 
 export function StepPickTask({ completed, onComplete }: StepPickTaskProps) {
@@ -120,7 +120,7 @@ export function StepPickTask({ completed, onComplete }: StepPickTaskProps) {
                       {task.task_type}
                     </span>
                   )}
-                  <span className="text-[11px] text-gray-500">{task.points} pts</span>
+                  <span className="text-[11px] text-gray-500">{task.points ?? 0} pts</span>
                 </div>
               </div>
               <button

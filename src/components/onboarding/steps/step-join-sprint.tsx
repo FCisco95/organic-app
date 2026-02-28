@@ -16,7 +16,7 @@ interface StepJoinSprintProps {
 interface SprintTask {
   id: string;
   title: string;
-  points: number;
+  points: number | null;
   sprint_id: string;
   sprint_name: string;
 }
@@ -166,7 +166,7 @@ export function StepJoinSprint({ completed, onComplete }: StepJoinSprintProps) {
                   <span className="text-[11px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400">
                     {task.sprint_name}
                   </span>
-                  <span className="text-[11px] text-gray-500">{task.points} pts</span>
+                  <span className="text-[11px] text-gray-500">{task.points ?? 0} pts</span>
                 </div>
               </div>
               <button
