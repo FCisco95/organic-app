@@ -802,6 +802,35 @@ export type Database = {
           },
         ]
       }
+      onboarding_steps: {
+        Row: {
+          completed_at: string
+          id: string
+          step: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          id?: string
+          step: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          id?: string
+          step?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onboarding_steps_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orgs: {
         Row: {
           created_at: string | null
@@ -2495,6 +2524,7 @@ export type Database = {
           location: string | null
           longest_streak: number
           name: string | null
+          onboarding_completed_at: string | null
           organic_id: number | null
           profile_visible: boolean
           role: Database["public"]["Enums"]["user_role"] | null
@@ -2521,6 +2551,7 @@ export type Database = {
           location?: string | null
           longest_streak?: number
           name?: string | null
+          onboarding_completed_at?: string | null
           organic_id?: number | null
           profile_visible?: boolean
           role?: Database["public"]["Enums"]["user_role"] | null
@@ -2547,6 +2578,7 @@ export type Database = {
           location?: string | null
           longest_streak?: number
           name?: string | null
+          onboarding_completed_at?: string | null
           organic_id?: number | null
           profile_visible?: boolean
           role?: Database["public"]["Enums"]["user_role"] | null

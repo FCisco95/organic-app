@@ -100,7 +100,8 @@
     "rewards": "Recompensas",
     "adminRewards": "Gerir Recompensas",
     "submissions": "Submissões",
-    "refAndQuests": "Ref & Quests"
+    "refAndQuests": "Ref & Quests",
+    "onboarding": "Progresso de Configuração"
   },
   "Wallet": {
     "toastConnected": "Carteira conectada",
@@ -2425,5 +2426,53 @@
     "referralDuration": "Duração da Partilha",
     "referralDurationDescription": "Número de dias que a partilha de pontos está ativa",
     "days": "dias"
+  },
+  "Onboarding": {
+    "wizardTitle": "Bem-vindo ao Organic",
+    "wizardDescription": "Complete estes passos para começar como contribuidor.",
+    "promptTitle": "Termine a sua configuração",
+    "promptProgress": "{completed} de {total} passos concluídos",
+    "promptContinue": "Continuar Configuração",
+    "loading": "A carregar...",
+    "back": "Voltar",
+    "next": "Seguinte",
+    "skip": "Saltar por agora",
+    "close": "Fechar",
+    "finish": "Concluído!",
+    "steps": {
+      "connect_wallet": {
+        "label": "Carteira",
+        "title": "Conecte a sua carteira",
+        "description": "Ligue uma carteira Solana para desbloquear governança e ferramentas de contribuidor.",
+        "completed": "Carteira conectada!",
+        "linkPending": "Carteira detetada — vincule-a no seu perfil para continuar.",
+        "hint": "Use o botão de carteira na barra superior para conectar."
+      },
+      "verify_token": {
+        "label": "Verificar",
+        "title": "Verifique os tokens $ORG",
+        "description": "Confirme o seu saldo de tokens para receber o seu Organic ID único.",
+        "completed": "Token verificado!",
+        "organicId": "O seu Organic ID: #{id}",
+        "walletRequired": "Conecte uma carteira primeiro para verificar tokens.",
+        "hint": "Vá ao seu perfil para reclamar o seu Organic ID."
+      },
+      "pick_task": {
+        "label": "Tarefa",
+        "title": "Escolha a sua primeira tarefa",
+        "description": "Navegue pelas tarefas abertas e junte-se a uma para começar a contribuir.",
+        "completed": "Tarefa escolhida!",
+        "noTasks": "Nenhuma tarefa aberta disponível de momento. Volte mais tarde!",
+        "joinButton": "Juntar"
+      },
+      "join_sprint": {
+        "label": "Sprint",
+        "title": "Junte-se a um sprint",
+        "description": "Escolha uma tarefa num sprint ativo para colaborar com a equipa.",
+        "completed": "Sprint iniciado!",
+        "noSprints": "Nenhum sprint ativo com tarefas abertas de momento.",
+        "joinButton": "Juntar"
+      }
+    }
   }
 }

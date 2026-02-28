@@ -100,7 +100,8 @@
     "rewards": "奖励",
     "adminRewards": "管理奖励",
     "submissions": "提交审核",
-    "refAndQuests": "推荐 & 任务"
+    "refAndQuests": "推荐 & 任务",
+    "onboarding": "设置进度"
   },
   "Wallet": {
     "toastConnected": "钱包已连接",
@@ -2426,5 +2427,53 @@
     "title": "出了点问题",
     "description": "我们已记录此错误。请重试或刷新页面。",
     "tryAgain": "重试"
+  },
+  "Onboarding": {
+    "wizardTitle": "欢迎来到 Organic",
+    "wizardDescription": "完成以下步骤，开始成为贡献者。",
+    "promptTitle": "完成您的设置",
+    "promptProgress": "已完成 {completed}/{total} 步",
+    "promptContinue": "继续设置",
+    "loading": "加载中...",
+    "back": "返回",
+    "next": "下一步",
+    "skip": "暂时跳过",
+    "close": "关闭",
+    "finish": "全部完成！",
+    "steps": {
+      "connect_wallet": {
+        "label": "钱包",
+        "title": "连接您的钱包",
+        "description": "关联 Solana 钱包以解锁治理和贡献者工具。",
+        "completed": "钱包已连接！",
+        "linkPending": "检测到钱包 — 在个人资料中关联以继续。",
+        "hint": "使用顶部栏的钱包按钮进行连接。"
+      },
+      "verify_token": {
+        "label": "验证",
+        "title": "验证 $ORG 代币",
+        "description": "确认您的代币余额以获取唯一的 Organic ID。",
+        "completed": "代币已验证！",
+        "organicId": "您的 Organic ID: #{id}",
+        "walletRequired": "请先连接钱包以验证代币。",
+        "hint": "前往个人资料领取您的 Organic ID。"
+      },
+      "pick_task": {
+        "label": "任务",
+        "title": "选择您的第一个任务",
+        "description": "浏览开放任务并加入一个以开始贡献。",
+        "completed": "任务已加入！",
+        "noTasks": "目前没有可用的开放任务，稍后再来看看！",
+        "joinButton": "加入"
+      },
+      "join_sprint": {
+        "label": "冲刺",
+        "title": "加入冲刺",
+        "description": "选择活跃冲刺中的任务，与团队协作。",
+        "completed": "冲刺已加入！",
+        "noSprints": "目前没有带有开放任务的活跃冲刺。",
+        "joinButton": "加入"
+      }
+    }
   }
 }
