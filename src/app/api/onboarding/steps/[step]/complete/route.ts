@@ -161,14 +161,8 @@ export async function POST(
 
       if (!xpError) {
         xpAwarded = XP_PER_STEP;
-        // Update xp_total on profile
-        await serviceSupabase.rpc('check_achievements', { p_user_id: user.id }).catch(() => {});
-        await serviceSupabase
-          .from('user_profiles')
-          .update({ xp_total: profile.wallet_pubkey ? undefined : undefined })
-          .eq('id', user.id);
 
-        // Increment xp_total directly
+        // Increment xp_total on profile
         const { data: currentProfile } = await serviceSupabase
           .from('user_profiles')
           .select('xp_total')
