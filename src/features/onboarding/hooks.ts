@@ -19,7 +19,7 @@ export function useOnboardingProgress(options?: { enabled?: boolean }) {
         throw new Error('Failed to fetch onboarding progress');
       }
       const json = await res.json();
-      return onboardingStateSchema.parse(json);
+      return onboardingStateSchema.parse(json) as OnboardingState;
     },
     staleTime: 30_000,
     refetchOnWindowFocus: false,
