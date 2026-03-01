@@ -100,7 +100,9 @@
     "rewards": "奖励",
     "adminRewards": "管理奖励",
     "submissions": "提交审核",
-    "refAndQuests": "推荐 & 任务"
+    "refAndQuests": "推荐 & 任务",
+    "onboarding": "设置进度",
+    "ideas": "想法"
   },
   "Wallet": {
     "toastConnected": "钱包已连接",
@@ -460,7 +462,8 @@
     "noComments": "还没有评论，来做第一个吧！",
     "deleteTitle": "删除提案",
     "deleteDescription": "确定要删除此提案吗？此操作无法撤销。",
-    "deleteProposal": "删除提案"
+    "deleteProposal": "删除提案",
+    "sourceIdeaBadge": "来源想法"
   },
   "Sprints": {
     "title": "冲刺",
@@ -2426,5 +2429,122 @@
     "title": "出了点问题",
     "description": "我们已记录此错误。请重试或刷新页面。",
     "tryAgain": "重试"
+  },
+  "Onboarding": {
+    "wizardTitle": "欢迎来到 Organic",
+    "wizardDescription": "完成以下步骤，开始成为贡献者。",
+    "promptTitle": "完成您的设置",
+    "promptProgress": "已完成 {completed}/{total} 步",
+    "promptContinue": "继续设置",
+    "loading": "加载中...",
+    "back": "返回",
+    "next": "下一步",
+    "skip": "暂时跳过",
+    "close": "关闭",
+    "finish": "全部完成！",
+    "steps": {
+      "connect_wallet": {
+        "label": "钱包",
+        "title": "连接您的钱包",
+        "description": "关联 Solana 钱包以解锁治理和贡献者工具。",
+        "completed": "钱包已连接！",
+        "linkPending": "检测到钱包 — 在个人资料中关联以继续。",
+        "hint": "使用顶部栏的钱包按钮进行连接。"
+      },
+      "verify_token": {
+        "label": "验证",
+        "title": "验证 $ORG 代币",
+        "description": "确认您的代币余额以获取唯一的 Organic ID。",
+        "completed": "代币已验证！",
+        "organicId": "您的 Organic ID: #{id}",
+        "walletRequired": "请先连接钱包以验证代币。",
+        "hint": "前往个人资料领取您的 Organic ID。"
+      },
+      "pick_task": {
+        "label": "任务",
+        "title": "选择您的第一个任务",
+        "description": "浏览开放任务并加入一个以开始贡献。",
+        "completed": "任务已加入！",
+        "noTasks": "目前没有可用的开放任务，稍后再来看看！",
+        "joinButton": "加入"
+      },
+      "join_sprint": {
+        "label": "冲刺",
+        "title": "加入冲刺",
+        "description": "选择活跃冲刺中的任务，与团队协作。",
+        "completed": "冲刺已加入！",
+        "noSprints": "目前没有带有开放任务的活跃冲刺。",
+        "joinButton": "加入"
+      }
+    }
+  },
+  "Ideas": {
+    "kicker": "想法孵化器",
+    "title": "社区想法",
+    "subtitle": "先轻量讨论并投票，再把最好的想法推进为正式提案。",
+    "governanceCta": "查看提案",
+    "kpiTotalIdeas": "总想法数",
+    "kpiActiveIdeas": "活跃想法",
+    "kpiPromoted": "已晋级",
+    "kpiConversion": "转化率",
+    "spotlightLabel": "本周焦点",
+    "spotlightEmpty": "本周还没有焦点想法。",
+    "pointsSuffix": "分",
+    "sort_hot": "热门",
+    "sort_new": "最新",
+    "sort_top_week": "本周最高",
+    "sort_top_all": "历史最高",
+    "searchPlaceholder": "搜索想法...",
+    "upvote": "支持",
+    "downvote": "反对",
+    "authorOrganic": "Organic #{id}",
+    "unknownAuthor": "未知成员",
+    "pinned": "置顶",
+    "comments": "{count, plural, one {# 条评论} other {# 条评论}}",
+    "linkedProposal": "已关联提案",
+    "empty": "当前筛选下暂无想法。",
+    "composerTitle": "发布想法",
+    "composerSubtitle": "提出一个可供社区讨论和投票的方向。",
+    "composerTitlePlaceholder": "想法标题",
+    "composerBodyPlaceholder": "描述你的想法以及它的重要性...",
+    "publishing": "发布中...",
+    "publish": "发布想法",
+    "organicRequired": "你需要 Organic ID 才能发布并参与想法互动。",
+    "signinPrompt": "登录后可投票并参与讨论。",
+    "signIn": "登录",
+    "ideaCreated": "想法已发布。",
+    "ideaCreateError": "发布想法失败",
+    "voteError": "更新投票失败",
+    "disabledTitle": "想法孵化器已关闭",
+    "disabledDescription": "请开启功能开关后再访问该页面。"
+  },
+  "IdeaDetail": {
+    "disabledTitle": "想法孵化器已关闭",
+    "disabledDescription": "请开启功能开关后再访问该页面。",
+    "notFoundTitle": "未找到该想法",
+    "notFoundDescription": "该想法可能已被移除或不存在。",
+    "backToIdeas": "返回想法页",
+    "upvote": "支持",
+    "downvote": "反对",
+    "voteError": "更新投票失败",
+    "commentPosted": "评论已发布。",
+    "commentError": "发布评论失败",
+    "promoteSuccess": "想法已晋级为提案草稿。",
+    "promoteError": "晋级想法失败",
+    "authorOrganic": "Organic #{id}",
+    "unknownAuthor": "未知成员",
+    "status": "状态：{status}",
+    "commentsCount": "{count, plural, one {# 条评论} other {# 条评论}}",
+    "voteBreakdown": "{up} 支持 • {down} 反对",
+    "linkedProposalLabel": "该想法已关联到提案",
+    "promoting": "晋级中...",
+    "promoteToProposal": "晋级为提案",
+    "discussionTitle": "讨论区",
+    "commentPlaceholder": "写下你的观点...",
+    "commentPosting": "发布中...",
+    "commentSubmit": "发布评论",
+    "signInPrompt": "登录后参与讨论。",
+    "signIn": "登录",
+    "commentsEmpty": "暂无评论，来开启讨论吧。"
   }
 }

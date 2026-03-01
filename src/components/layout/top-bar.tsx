@@ -17,13 +17,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Menu, User, LogOut, Sparkles } from 'lucide-react';
+import { Menu, User, LogOut, Sparkles, Rocket } from 'lucide-react';
 import { NotificationBell } from '@/components/notifications/notification-bell';
+import { useOnboarding } from '@/components/onboarding/onboarding-trigger';
 
 export function TopBar() {
   const { user, profile, loading, signOut } = useAuth();
   const t = useTranslations('Navigation');
   const { toggle, setMobileOpen } = useSidebar();
+  const { onboardingState, openWizard, isIncomplete } = useOnboarding();
 
   return (
     <header className="sticky top-0 z-40 flex h-14 items-center border-b border-border bg-card/80 backdrop-blur-sm px-4">
@@ -118,6 +120,15 @@ export function TopBar() {
                     {t('refAndQuests')}
                   </Link>
                 </DropdownMenuItem>
+                {isIncomplete && onboardingState && (
+                  <DropdownMenuItem onClick={openWizard} className="flex items-center gap-2">
+                    <Rocket className="h-4 w-4 text-organic-orange" />
+                    <span className="flex-1">{t('onboarding')}</span>
+                    <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-organic-orange/20 text-organic-orange">
+                      {onboardingState.completed_count}/{onboardingState.total_steps}
+                    </span>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={signOut} className="flex items-center gap-2">
                   <LogOut className="h-4 w-4" />

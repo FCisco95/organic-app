@@ -14,7 +14,7 @@ Use this document to run workflow tests, page audits, and capture what works, wh
 | Locales | `en`, `pt-PT`, `zh-CN` |
 | Recommended viewports | 1440x900 desktop, 768x1024 tablet, 375x812 mobile |
 | Required accounts | 1 admin, 1 council, 2 members, 1 guest |
-| Optional fixtures | At least 1 active sprint, 1 proposal in each major status, 1 rejected submission for disputes, rewards-enabled org |
+| Optional fixtures | At least 1 active sprint, 1 proposal in each major status, 1 rejected submission for disputes, rewards-enabled org, 1 onboarding-incomplete user, 1 Twitter/X engagement task |
 | Supabase target | Manual QA should run against **Main DB** (`dcqfuqjqmqrzycyvutkn`). CI automation runs against **CI DB** (`rrsftfoxcujsacipujrr`). |
 
 ---
@@ -158,6 +158,9 @@ Use cases:
 - [ ] `PROF-05` XP/level/next-step context is understandable.
 - [ ] `PROF-06` Fallback messaging is useful when progression data is sparse.
 - [ ] `PROF-07` Mobile layout keeps cards/actions usable.
+- [ ] `PROF-08` Twitter/X account link/unlink controls in profile work and persist state.
+- [ ] `PROF-09` OAuth callback return parameters (`twitter_linked`, `twitter_error`) surface clear feedback on profile.
+- [ ] `PROF-10` Onboarding progress shortcut in top bar dropdown appears only for incomplete users.
 
 Feedback:
 - What works well:
@@ -215,6 +218,8 @@ Use cases:
 - [ ] `TASK-13` Template instantiate flow creates task for eligible members.
 - [ ] `TASK-14` Proposal-linked task gate enforces finalized+passed provenance where applicable.
 - [ ] `TASK-15` Mobile usability is acceptable on list, detail, submission, and review queue.
+- [ ] `TASK-16` Twitter/X task creation enforces target URL + engagement config requirements.
+- [ ] `TASK-17` Twitter/X task submission requires linked account and validates engagement context messaging.
 
 Feedback:
 - What works well:
@@ -265,6 +270,10 @@ Use cases:
 - [ ] `PROP-11` Execution-window messaging for passed proposal is clear.
 - [ ] `PROP-12` Proposal templates are usable (if enabled/configured).
 - [ ] `PROP-13` Mobile readability and action placement are acceptable.
+- [ ] `PROP-14` Proposal threshold gate blocks under-threshold proposers with clear reason.
+- [ ] `PROP-15` Anti-abuse cooldown/one-live-proposal guard is enforced and explained.
+- [ ] `PROP-16` Passed proposal finalize path remains usable under execution-window degraded mode (`PGRST204`) with non-blocking warning behavior.
+- [ ] `PROP-17` Proposal detail shows source-idea badge/link when `source_idea_id` is present.
 
 Feedback:
 - What works well:
@@ -489,6 +498,96 @@ Feedback:
 - Section severity (`S0/S1/S2/S3`):
 - Confidence score (`1-5`):
 
+## 4.17 Onboarding Wizard and Progress APIs
+Routes: top-bar onboarding shortcut, onboarding modal, `/api/onboarding/steps`, `/api/onboarding/steps/:step/complete`.
+
+Pre-flight:
+- [ ] Test user has `user_profiles.onboarding_completed_at IS NULL`.
+- [ ] At least one task and one active sprint exist for step completion checks.
+
+Use cases:
+- [ ] `ONB-01` Incomplete user sees onboarding wizard auto-open on first authenticated app load.
+- [ ] `ONB-02` Wizard step order is `connect_wallet -> verify_token -> pick_task -> join_sprint`.
+- [ ] `ONB-03` `GET /api/onboarding/steps` returns all four step keys with accurate completion state.
+- [ ] `ONB-04` `connect_wallet` completion fails with clear error when wallet is not linked.
+- [ ] `ONB-05` `verify_token` completion fails with clear error when Organic ID is missing.
+- [ ] `ONB-06` `pick_task` completion enforces assigned-task requirement.
+- [ ] `ONB-07` `join_sprint` completion enforces assigned-task-in-sprint requirement.
+- [ ] `ONB-08` Completed steps remain completed after page reload and session refresh.
+- [ ] `ONB-09` Re-posting completion for an already completed step is idempotent and does not duplicate XP award.
+- [ ] `ONB-10` When all steps complete, onboarding shortcut disappears and profile `onboarding_completed_at` behavior is coherent.
+
+Feedback:
+- What works well:
+- What does not work:
+- UI improvements requested:
+- Top 3 highest-impact changes:
+- Section severity (`S0/S1/S2/S3`):
+- Confidence score (`1-5`):
+
+## 4.18 Twitter/X Linking and Engagement Verification Workflow
+Routes: `/profile`, `/tasks/[id]` (Twitter task type), `/api/twitter/link/start`, `/api/twitter/link/callback`, `/api/twitter/account`.
+
+Pre-flight:
+- [ ] Twitter/X app credentials and callback URL are configured in environment.
+- [ ] At least one task of type `twitter_engagement` exists.
+
+Use cases:
+- [ ] `TW-01` Profile Twitter/X linking card renders proper linked vs unlinked state.
+- [ ] `TW-02` Start-link action redirects to Twitter/X auth and returns to app callback safely.
+- [ ] `TW-03` Callback success state (`twitter_linked=1`) is surfaced to user with success feedback.
+- [ ] `TW-04` Callback error state (`twitter_error`) is surfaced with understandable failure reason.
+- [ ] `TW-05` `GET /api/twitter/account` reflects latest linked account metadata after callback.
+- [ ] `TW-06` Unlink action removes account and updates profile state without stale UI.
+- [ ] `TW-07` Twitter task submission blocks when account is unlinked and shows clear call-to-action.
+- [ ] `TW-08` Twitter task submission context validates task config and handles missing config safely.
+- [ ] `TW-09` Twitter task connect/disconnect controls inside submission form stay in sync with profile linkage.
+- [ ] `TW-10` Successful Twitter task submission captures expected metadata/evidence.
+- [ ] `TW-11` Role guardrails for Twitter-task review actions remain correct on admin/reviewer surfaces.
+- [ ] `TW-12` Mobile behavior for link/unlink and Twitter task submission remains usable.
+
+Feedback:
+- What works well:
+- What does not work:
+- UI improvements requested:
+- Top 3 highest-impact changes:
+- Section severity (`S0/S1/S2/S3`):
+- Confidence score (`1-5`):
+
+## 4.19 Ideas Incubator Workflow (Feature-Flagged)
+Routes: `/ideas`, `/ideas/[id]`, `/api/ideas`, `/api/ideas/:id`, `/api/ideas/:id/vote`, `/api/ideas/:id/comments`, `/api/ideas/kpis`.
+
+Pre-flight:
+- [ ] Feature flag enabled (`NEXT_PUBLIC_IDEAS_INCUBATOR_ENABLED=true` or no falsey override).
+- [ ] Ideas schema/tables are available in target environment.
+- [ ] Test users include: member with Organic ID, member without Organic ID, admin/council.
+- [ ] At least one open promotion cycle row exists for winner-selection coverage.
+
+Use cases:
+- [ ] `IDEA-01` `/ideas` loads feed, sort tabs, search, KPI strip, and weekly spotlight without layout breakage.
+- [ ] `IDEA-02` Organic ID member can create an idea; title/body validation boundaries are enforced.
+- [ ] `IDEA-03` Member without Organic ID is blocked from create with clear messaging.
+- [ ] `IDEA-04` Vote toggle behavior is idempotent (`up/down` repeat clears to neutral) and score updates remain coherent.
+- [ ] `IDEA-05` Self-vote is blocked with explicit error message.
+- [ ] `IDEA-06` Comment creation requires Organic ID and rejects empty payloads.
+- [ ] `IDEA-07` Idea detail page renders author, status, body, score breakdown, and comments chronology correctly.
+- [ ] `IDEA-08` Author edit permissions are enforced; non-author/non-admin edits are rejected.
+- [ ] `IDEA-09` Admin/council moderation capabilities behave as expected for editable idea fields.
+- [ ] `IDEA-10` Feature-flag disabled posture returns safe fallback UX (`not found` / disabled panel).
+- [ ] `IDEA-11` API responses fail safely when ideas backend schema is unavailable (clear error/no crash).
+- [ ] `IDEA-12` Mobile usability is acceptable for feed cards, vote rail, composer, and detail discussion.
+- [ ] `IDEA-13` Admin/council can promote an idea to proposal (`POST /api/ideas/:id/promote`) and receives linked proposal id.
+- [ ] `IDEA-14` Promotion cycle winner selection endpoint (`POST /api/ideas/cycles/:id/select-winner`) supports explicit and auto-computed winner paths.
+- [ ] `IDEA-15` Promoted proposal detail shows source-idea badge/link back to ideas detail.
+
+Feedback:
+- What works well:
+- What does not work:
+- UI improvements requested:
+- Top 3 highest-impact changes:
+- Section severity (`S0/S1/S2/S3`):
+- Confidence score (`1-5`):
+
 ---
 
 ## 5) Page-by-Page Audit Matrix (Granular Route Review)
@@ -514,9 +613,14 @@ Legend:
 | `/members/[id]` | 4.4 | | | | | |
 | `/profile` | 4.5 | | | | | |
 | `/profile/progression` | 4.5 | | | | | |
+| `/ideas` | 4.19 | | | | | |
+| `/ideas/[id]` | 4.19 | | | | | |
+| `Onboarding wizard modal (global)` | 4.17 | | | | | |
+| `Twitter/X link flow (profile + callback)` | 4.18 | | | | | |
 | `/quests` | 4.6 | | | | | |
 | `/tasks` | 4.7 | | | | | |
 | `/tasks/[id]` | 4.7 | | | | | |
+| `Twitter/X engagement submission in task detail` | 4.18 | | | | | |
 | `/tasks/templates` | 4.7 | | | | | |
 | `/admin/submissions` | 4.7 / 4.13 | | | | | |
 | `/sprints` | 4.8 | | | | | |

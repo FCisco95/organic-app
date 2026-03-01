@@ -7,6 +7,7 @@ import {
   FileText,
   Gift,
   Home,
+  Lightbulb,
   Scale,
   Settings,
   Sparkles,
@@ -49,6 +50,7 @@ export function getSidebarNavSections(context: NavContext): NavSections {
     { id: 'templates', href: '/tasks/templates', labelKey: 'templates', icon: FileText },
     { id: 'sprints', href: '/sprints', labelKey: 'sprints', icon: Zap },
     { id: 'proposals', href: '/proposals', labelKey: 'proposals', icon: Vote },
+    { id: 'ideas', href: '/ideas', labelKey: 'ideas', icon: Lightbulb },
     { id: 'leaderboard', href: '/leaderboard', labelKey: 'leaderboard', icon: Trophy },
     { id: 'quests', href: '/quests', labelKey: 'refAndQuests', icon: Sparkles },
     { id: 'rewards', href: '/rewards', labelKey: 'rewards', icon: Gift },
@@ -61,6 +63,7 @@ export function getSidebarNavSections(context: NavContext): NavSections {
     if (item.id === 'sprints') return hasOrganicId;
     if (
       item.id === 'proposals' ||
+      item.id === 'ideas' ||
       item.id === 'leaderboard' ||
       item.id === 'quests' ||
       item.id === 'rewards' ||

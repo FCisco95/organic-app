@@ -100,7 +100,9 @@
     "rewards": "Recompensas",
     "adminRewards": "Gerir Recompensas",
     "submissions": "Submissões",
-    "refAndQuests": "Ref & Quests"
+    "refAndQuests": "Ref & Quests",
+    "onboarding": "Progresso de Configuração",
+    "ideas": "Ideias"
   },
   "Wallet": {
     "toastConnected": "Carteira conectada",
@@ -460,7 +462,8 @@
     "noComments": "Ainda não há comentários. Seja o primeiro a compartilhar suas ideias!",
     "deleteTitle": "Excluir proposta",
     "deleteDescription": "Tem certeza de que deseja excluir esta proposta? Esta ação não pode ser desfeita.",
-    "deleteProposal": "Excluir proposta"
+    "deleteProposal": "Excluir proposta",
+    "sourceIdeaBadge": "Ideia de origem"
   },
   "Sprints": {
     "title": "Sprints",
@@ -2425,5 +2428,122 @@
     "referralDuration": "Duração da Partilha",
     "referralDurationDescription": "Número de dias que a partilha de pontos está ativa",
     "days": "dias"
+  },
+  "Onboarding": {
+    "wizardTitle": "Bem-vindo ao Organic",
+    "wizardDescription": "Complete estes passos para começar como contribuidor.",
+    "promptTitle": "Termine a sua configuração",
+    "promptProgress": "{completed} de {total} passos concluídos",
+    "promptContinue": "Continuar Configuração",
+    "loading": "A carregar...",
+    "back": "Voltar",
+    "next": "Seguinte",
+    "skip": "Saltar por agora",
+    "close": "Fechar",
+    "finish": "Concluído!",
+    "steps": {
+      "connect_wallet": {
+        "label": "Carteira",
+        "title": "Conecte a sua carteira",
+        "description": "Ligue uma carteira Solana para desbloquear governança e ferramentas de contribuidor.",
+        "completed": "Carteira conectada!",
+        "linkPending": "Carteira detetada — vincule-a no seu perfil para continuar.",
+        "hint": "Use o botão de carteira na barra superior para conectar."
+      },
+      "verify_token": {
+        "label": "Verificar",
+        "title": "Verifique os tokens $ORG",
+        "description": "Confirme o seu saldo de tokens para receber o seu Organic ID único.",
+        "completed": "Token verificado!",
+        "organicId": "O seu Organic ID: #{id}",
+        "walletRequired": "Conecte uma carteira primeiro para verificar tokens.",
+        "hint": "Vá ao seu perfil para reclamar o seu Organic ID."
+      },
+      "pick_task": {
+        "label": "Tarefa",
+        "title": "Escolha a sua primeira tarefa",
+        "description": "Navegue pelas tarefas abertas e junte-se a uma para começar a contribuir.",
+        "completed": "Tarefa escolhida!",
+        "noTasks": "Nenhuma tarefa aberta disponível de momento. Volte mais tarde!",
+        "joinButton": "Juntar"
+      },
+      "join_sprint": {
+        "label": "Sprint",
+        "title": "Junte-se a um sprint",
+        "description": "Escolha uma tarefa num sprint ativo para colaborar com a equipa.",
+        "completed": "Sprint iniciado!",
+        "noSprints": "Nenhum sprint ativo com tarefas abertas de momento.",
+        "joinButton": "Juntar"
+      }
+    }
+  },
+  "Ideas": {
+    "kicker": "Incubadora de Ideias",
+    "title": "Ideias da Comunidade",
+    "subtitle": "Inicia discussões leves, vota cedo e destaca as melhores ideias antes de virarem propostas formais.",
+    "governanceCta": "Ver propostas",
+    "kpiTotalIdeas": "Ideias totais",
+    "kpiActiveIdeas": "Ideias ativas",
+    "kpiPromoted": "Promovidas",
+    "kpiConversion": "Conversão",
+    "spotlightLabel": "Destaque semanal",
+    "spotlightEmpty": "Ainda não há ideia em destaque esta semana.",
+    "pointsSuffix": "pts",
+    "sort_hot": "Em alta",
+    "sort_new": "Recentes",
+    "sort_top_week": "Top da semana",
+    "sort_top_all": "Top de sempre",
+    "searchPlaceholder": "Pesquisar ideias...",
+    "upvote": "Votar positivamente",
+    "downvote": "Votar negativamente",
+    "authorOrganic": "Organic #{id}",
+    "unknownAuthor": "Membro desconhecido",
+    "pinned": "Fixada",
+    "comments": "{count, plural, one {# comentário} other {# comentários}}",
+    "linkedProposal": "Proposta ligada",
+    "empty": "Ainda não existem ideias para estes filtros.",
+    "composerTitle": "Partilha uma ideia",
+    "composerSubtitle": "Apresenta um conceito para a comunidade discutir e votar.",
+    "composerTitlePlaceholder": "Título da ideia",
+    "composerBodyPlaceholder": "Descreve a tua ideia e porque é importante...",
+    "publishing": "A publicar...",
+    "publish": "Publicar ideia",
+    "organicRequired": "Precisas de um Organic ID para publicar e interagir com ideias.",
+    "signinPrompt": "Inicia sessão para votar e participar na discussão.",
+    "signIn": "Iniciar sessão",
+    "ideaCreated": "Ideia publicada.",
+    "ideaCreateError": "Falha ao publicar ideia",
+    "voteError": "Falha ao atualizar voto",
+    "disabledTitle": "A incubadora de ideias está desativada",
+    "disabledDescription": "Ativa a feature flag para aceder à experiência de ideias."
+  },
+  "IdeaDetail": {
+    "disabledTitle": "A incubadora de ideias está desativada",
+    "disabledDescription": "Ativa a feature flag para aceder a esta página.",
+    "notFoundTitle": "Ideia não encontrada",
+    "notFoundDescription": "Esta ideia pode ter sido removida ou não existir.",
+    "backToIdeas": "Voltar às ideias",
+    "upvote": "Votar positivamente",
+    "downvote": "Votar negativamente",
+    "voteError": "Falha ao atualizar voto",
+    "commentPosted": "Comentário publicado.",
+    "commentError": "Falha ao publicar comentário",
+    "promoteSuccess": "Ideia promovida para rascunho de proposta.",
+    "promoteError": "Falha ao promover ideia",
+    "authorOrganic": "Organic #{id}",
+    "unknownAuthor": "Membro desconhecido",
+    "status": "Estado: {status}",
+    "commentsCount": "{count, plural, one {# comentário} other {# comentários}}",
+    "voteBreakdown": "{up} positivos • {down} negativos",
+    "linkedProposalLabel": "Esta ideia está agora ligada a uma proposta",
+    "promoting": "A promover...",
+    "promoteToProposal": "Promover para proposta",
+    "discussionTitle": "Discussão",
+    "commentPlaceholder": "Adiciona a tua perspetiva...",
+    "commentPosting": "A publicar...",
+    "commentSubmit": "Publicar comentário",
+    "signInPrompt": "Inicia sessão para participar na discussão.",
+    "signIn": "Iniciar sessão",
+    "commentsEmpty": "Ainda não há comentários. Inicia a conversa."
   }
 }

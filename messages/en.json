@@ -100,7 +100,9 @@
     "rewards": "Rewards",
     "adminRewards": "Manage Rewards",
     "submissions": "Submissions",
-    "refAndQuests": "Ref & Quests"
+    "refAndQuests": "Ref & Quests",
+    "onboarding": "Setup Progress",
+    "ideas": "Ideas"
   },
   "Wallet": {
     "toastConnected": "Wallet connected",
@@ -460,7 +462,8 @@
     "noComments": "No comments yet. Be the first to share your thoughts!",
     "deleteTitle": "Delete Proposal",
     "deleteDescription": "Are you sure you want to delete this proposal? This action cannot be undone.",
-    "deleteProposal": "Delete Proposal"
+    "deleteProposal": "Delete Proposal",
+    "sourceIdeaBadge": "Source idea"
   },
   "Sprints": {
     "title": "Sprints",
@@ -2425,5 +2428,122 @@
     "referralDuration": "Share Duration",
     "referralDurationDescription": "Number of days the point sharing is active",
     "days": "days"
+  },
+  "Onboarding": {
+    "wizardTitle": "Welcome to Organic",
+    "wizardDescription": "Complete these steps to get started as a contributor.",
+    "promptTitle": "Finish your setup",
+    "promptProgress": "{completed} of {total} steps completed",
+    "promptContinue": "Continue Setup",
+    "loading": "Loading...",
+    "back": "Back",
+    "next": "Next",
+    "skip": "Skip for now",
+    "close": "Close",
+    "finish": "All done!",
+    "steps": {
+      "connect_wallet": {
+        "label": "Wallet",
+        "title": "Connect your wallet",
+        "description": "Link a Solana wallet to unlock governance and contributor tools.",
+        "completed": "Wallet connected!",
+        "linkPending": "Wallet detected — link it on your profile to continue.",
+        "hint": "Use the wallet button in the top bar to connect."
+      },
+      "verify_token": {
+        "label": "Verify",
+        "title": "Verify $ORG tokens",
+        "description": "Confirm your token balance to receive your unique Organic ID.",
+        "completed": "Token verified!",
+        "organicId": "Your Organic ID: #{id}",
+        "walletRequired": "Connect a wallet first to verify tokens.",
+        "hint": "Go to your profile to claim your Organic ID."
+      },
+      "pick_task": {
+        "label": "Task",
+        "title": "Pick your first task",
+        "description": "Browse open tasks and join one to start contributing.",
+        "completed": "Task joined!",
+        "noTasks": "No open tasks available right now. Check back later!",
+        "joinButton": "Join"
+      },
+      "join_sprint": {
+        "label": "Sprint",
+        "title": "Join a sprint",
+        "description": "Pick a task within an active sprint to collaborate with the team.",
+        "completed": "Sprint joined!",
+        "noSprints": "No active sprints with open tasks right now.",
+        "joinButton": "Join"
+      }
+    }
+  },
+  "Ideas": {
+    "kicker": "Ideas Incubator",
+    "title": "Community Ideas",
+    "subtitle": "Start lightweight discussions, vote early, and surface the best ideas before they become formal proposals.",
+    "governanceCta": "View proposals",
+    "kpiTotalIdeas": "Total ideas",
+    "kpiActiveIdeas": "Active ideas",
+    "kpiPromoted": "Promoted",
+    "kpiConversion": "Conversion",
+    "spotlightLabel": "Weekly spotlight",
+    "spotlightEmpty": "No spotlight idea yet this week.",
+    "pointsSuffix": "pts",
+    "sort_hot": "Hot",
+    "sort_new": "New",
+    "sort_top_week": "Top this week",
+    "sort_top_all": "Top all time",
+    "searchPlaceholder": "Search ideas...",
+    "upvote": "Upvote idea",
+    "downvote": "Downvote idea",
+    "authorOrganic": "Organic #{id}",
+    "unknownAuthor": "Unknown member",
+    "pinned": "Pinned",
+    "comments": "{count, plural, one {# comment} other {# comments}}",
+    "linkedProposal": "Linked proposal",
+    "empty": "No ideas match your filters yet.",
+    "composerTitle": "Share an idea",
+    "composerSubtitle": "Pitch a concept the community can discuss and vote on.",
+    "composerTitlePlaceholder": "Idea title",
+    "composerBodyPlaceholder": "Describe your idea and why it matters...",
+    "publishing": "Publishing...",
+    "publish": "Publish idea",
+    "organicRequired": "You need an Organic ID to post and interact with ideas.",
+    "signinPrompt": "Sign in to vote and join the discussion.",
+    "signIn": "Sign in",
+    "ideaCreated": "Idea published.",
+    "ideaCreateError": "Failed to publish idea",
+    "voteError": "Failed to update vote",
+    "disabledTitle": "Ideas incubator is disabled",
+    "disabledDescription": "Enable the feature flag to access the ideas experience."
+  },
+  "IdeaDetail": {
+    "disabledTitle": "Ideas incubator is disabled",
+    "disabledDescription": "Enable the feature flag to access this page.",
+    "notFoundTitle": "Idea not found",
+    "notFoundDescription": "This idea may have been removed or does not exist.",
+    "backToIdeas": "Back to ideas",
+    "upvote": "Upvote idea",
+    "downvote": "Downvote idea",
+    "voteError": "Failed to update vote",
+    "commentPosted": "Comment posted.",
+    "commentError": "Failed to post comment",
+    "promoteSuccess": "Idea promoted to proposal draft.",
+    "promoteError": "Failed to promote idea",
+    "authorOrganic": "Organic #{id}",
+    "unknownAuthor": "Unknown member",
+    "status": "Status: {status}",
+    "commentsCount": "{count, plural, one {# comment} other {# comments}}",
+    "voteBreakdown": "{up} up • {down} down",
+    "linkedProposalLabel": "This idea is now linked to a proposal",
+    "promoting": "Promoting...",
+    "promoteToProposal": "Promote to proposal",
+    "discussionTitle": "Discussion",
+    "commentPlaceholder": "Add your perspective...",
+    "commentPosting": "Posting...",
+    "commentSubmit": "Post comment",
+    "signInPrompt": "Sign in to join the discussion.",
+    "signIn": "Sign in",
+    "commentsEmpty": "No comments yet. Start the thread."
   }
 }

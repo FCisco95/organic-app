@@ -128,6 +128,8 @@ Update docs when behavior or assumptions change:
 - `CLAUDE.md` for Claude-specific operating guidance
 - `BUILD_PLAN.md` for roadmap/progress changes
 - `SESSION_LOG.md` for chronological session notes
+- `PROJECT_CONTEXT.md` for product-state reality checks
+- `docs/qa-runbook.md` for manual QA coverage updates when workflows change
 
 ## Commit and PR expectations
 
