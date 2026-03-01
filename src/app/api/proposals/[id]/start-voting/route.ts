@@ -4,6 +4,7 @@ import { getAllTokenHolders } from '@/lib/solana';
 import { startVotingSchema } from '@/features/voting/schemas';
 import { parseJsonBody } from '@/lib/parse-json-body';
 import { logger } from '@/lib/logger';
+import type { Json } from '@/types/database';
 
 const START_VOTING_PROPOSAL_COLUMNS =
   'id, title, status, voting_starts_at, server_voting_started_at, voting_ends_at, snapshot_taken_at, total_circulating_supply, quorum_required, approval_threshold, result';
@@ -23,6 +24,56 @@ type StartVotingRpcResult = {
     approval_threshold: number;
   };
 };
+
+const START_VOTING_RETRYABLE_RPC_CODES = new Set(['42P07']);
+const START_VOTING_MAX_RPC_ATTEMPTS = 3;
+
+type RpcErrorLike = { code?: string; message?: string; details?: string | null };
+
+async function startVotingWithRetry(input: {
+  supabase: Awaited<ReturnType<typeof createClient>>;
+  proposalId: string;
+  votingDurationDays?: number;
+  holders: Json;
+}): Promise<{ data: StartVotingRpcResult | null; error: RpcErrorLike | null }> {
+  const { supabase, proposalId, votingDurationDays, holders } = input;
+
+  for (let attempt = 1; attempt <= START_VOTING_MAX_RPC_ATTEMPTS; attempt++) {
+    const { data, error } = await supabase.rpc('start_proposal_voting_integrity', {
+      p_proposal_id: proposalId,
+      p_voting_duration_days: votingDurationDays,
+      p_snapshot_holders: holders,
+    });
+
+    if (!error) {
+      return { data: (data as StartVotingRpcResult | null) ?? null, error: null };
+    }
+
+    const code = error.code ?? '';
+    const canRetry =
+      START_VOTING_RETRYABLE_RPC_CODES.has(code) && attempt < START_VOTING_MAX_RPC_ATTEMPTS;
+
+    if (!canRetry) {
+      return { data: null, error };
+    }
+
+    logger.warn('Retrying start_proposal_voting_integrity after transient RPC error', {
+      code,
+      attempt,
+      proposalId,
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, attempt * 150));
+  }
+
+  return {
+    data: null,
+    error: {
+      code: 'UNKNOWN',
+      message: 'Unknown error while starting proposal voting',
+    },
+  };
+}
 
 function mapStartVotingErrorStatus(code: string): number {
   switch (code) {
@@ -93,10 +144,11 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const input = parseResult.data;
     const holders = input.snapshot_holders ?? (await getAllTokenHolders());
 
-    const { data: rpcData, error: rpcError } = await supabase.rpc('start_proposal_voting_integrity', {
-      p_proposal_id: proposalId,
-      p_voting_duration_days: input.voting_duration_days || undefined,
-      p_snapshot_holders: holders,
+    const { data: rpcData, error: rpcError } = await startVotingWithRetry({
+      supabase,
+      proposalId,
+      votingDurationDays: input.voting_duration_days || undefined,
+      holders: holders as Json,
     });
 
     if (rpcError) {

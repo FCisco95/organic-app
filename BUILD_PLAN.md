@@ -44,6 +44,14 @@ Full release gate implemented. Final sign-off pending:
 - [x] Manual QA runbook (`docs/qa-runbook.md`) updated with referrals/quests coverage
 - [x] Sentry unresolved-error review
 
+Latest revalidation snapshot (2026-03-01):
+- Baseline checks: `npm run lint` PASS, `npm run build` PASS.
+- Targeted operational-controls suite in escalated CI-mode: `4 passed` (`tests/voting-integrity.spec.ts`, `tests/rewards-settlement-integrity.spec.ts`).
+- Operational-control audit evidence captured for:
+  - rewards `integrity_hold` + `kill_switch` (`reward_settlement_events`)
+  - proposal `finalization_kill_switch` + `finalization_manual_resume` (`proposal_stage_events`)
+- Go/No-Go remains **No-Go** pending blocking manual QA matrix completion and staging schema-cache drift on proposal execution-window writes (`PGRST204` for `execution_deadline` path).
+
 ---
 
 ## Completed Phases

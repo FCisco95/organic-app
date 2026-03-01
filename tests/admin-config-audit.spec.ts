@@ -45,8 +45,21 @@ test.describe('Admin settings page structure', () => {
     await deleteQaUser(supabaseAdmin, adminUserId);
   });
 
-  test('settings page exposes tabs and content panel', async ({ page }) => {
+  test('settings page exposes tabs and content panel', async ({ page, request }) => {
     test.skip(!adminUserId, 'Requires admin fixture');
+
+    await expect
+      .poll(async () => {
+        const res = await request.get(`${BASE_URL}/api/settings`, {
+          headers: { Cookie: cookieHeader(adminCookie) },
+          maxRedirects: 0,
+        });
+        if (res.status() !== 200) return `status:${res.status()}`;
+        const contentType = res.headers()['content-type'] ?? '';
+        if (!contentType.includes('application/json')) return `content-type:${contentType || 'unknown'}`;
+        return res.status();
+      }, { timeout: 20_000 })
+      .toBe(200);
 
     await addSessionCookieToPage(page, adminCookie);
     await page.goto(`${BASE_URL}/en/admin/settings`, { waitUntil: 'domcontentloaded' });

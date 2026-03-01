@@ -266,6 +266,46 @@ Required environment variables for integrity E2E:
 
 The full Playwright suite (`npm run test:e2e`) remains non-blocking evidence until reliability is consistently proven in CI.
 
+### Supabase Environment Strategy (Main vs CI)
+
+Use two Supabase projects with clear ownership:
+
+- **Main DB (`dcqfuqjqmqrzycyvutkn`)**: production/staging app data, source of truth.
+- **CI DB (`rrsftfoxcujsacipujrr`)**: GitHub Actions E2E/testing/safe automation surface.
+
+Pipeline behavior:
+
+1. PRs run CI against the **CI DB** (`CI_*` Supabase secrets).
+2. Merges to `main` trigger workflow **`Supabase Migration Sync`**.
+3. That workflow applies and records all local migrations on both **Main DB** and **CI DB**, then reloads PostgREST schema cache.
+4. App runtime environments (Vercel preview/prod) should continue pointing to **Main DB**.
+
+Required GitHub Actions secrets for reliable DB sync:
+
+- `SUPABASE_ACCESS_TOKEN` (Management API token with access to both projects)
+- `SUPABASE_MAIN_PROJECT_REF` (recommended: `dcqfuqjqmqrzycyvutkn`)
+- `SUPABASE_CI_PROJECT_REF` (recommended: `rrsftfoxcujsacipujrr`)
+- `CI_NEXT_PUBLIC_SUPABASE_URL`
+- `CI_NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `CI_SUPABASE_SERVICE_ROLE_KEY`
+
+Local verification command:
+
+```bash
+node scripts/qa/sync-supabase-migrations.mjs --project-ref dcqfuqjqmqrzycyvutkn
+```
+
+Local apply+sync command:
+
+```bash
+node scripts/qa/sync-supabase-migrations.mjs \
+  --project-ref dcqfuqjqmqrzycyvutkn \
+  --apply \
+  --allow-equivalent-errors \
+  --record-applied \
+  --reload-postgrest
+```
+
 ## Deployment Checklist (Vercel)
 
 Set these variables in Vercel for both Preview and Production:

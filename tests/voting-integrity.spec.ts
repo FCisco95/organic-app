@@ -243,6 +243,19 @@ test.describe('Voting snapshot and finalization integrity', () => {
     expect(finalizeRes2.status()).toBe(200);
     const finalized2 = await finalizeRes2.json();
     expect(finalized2?.idempotency?.already_finalized).toBe(true);
+
+    const { data: finalizedRow } = await supabaseAdmin
+      .from('proposals')
+      .select(
+        'status, result, finalization_dedupe_key, finalization_attempts, finalization_frozen_at'
+      )
+      .eq('id', proposalAId)
+      .single();
+    expect(finalizedRow?.status).toBe('finalized');
+    expect(finalizedRow?.result).toBe('passed');
+    expect(finalizedRow?.finalization_dedupe_key).toBe(dedupeKey);
+    expect(Number(finalizedRow?.finalization_attempts ?? 0)).toBeGreaterThanOrEqual(1);
+    expect(finalizedRow?.finalization_frozen_at).toBeNull();
   });
 
   test('freezes proposal when finalization fails twice', async ({ request }) => {
@@ -301,14 +314,108 @@ test.describe('Voting snapshot and finalization integrity', () => {
     expect(finalizeRes.status()).toBe(423);
     const finalizeBody = await finalizeRes.json();
     expect(finalizeBody.code).toBe('FINALIZATION_FROZEN');
+    const frozenDedupeKey = `qa-finalize-fail-${proposalBId}`;
+    expect(finalizeBody.dedupe_key).toBe(frozenDedupeKey);
+    expect(Number(finalizeBody.attempt_count ?? 0)).toBeGreaterThanOrEqual(2);
 
     const { data: proposalRow } = await supabaseAdmin
       .from('proposals')
-      .select('status, finalization_frozen_at')
+      .select(
+        'status, finalization_frozen_at, finalization_attempts, finalization_failure_reason, finalization_dedupe_key'
+      )
       .eq('id', proposalBId)
       .single();
 
     expect(proposalRow?.status).toBe('voting');
     expect(proposalRow?.finalization_frozen_at).toBeTruthy();
+    expect(Number(proposalRow?.finalization_attempts ?? 0)).toBeGreaterThanOrEqual(2);
+    expect(String(proposalRow?.finalization_failure_reason ?? '')).toContain(
+      'Simulated finalization failure'
+    );
+    expect(proposalRow?.finalization_dedupe_key).toBe(frozenDedupeKey);
+
+    const { data: freezeEvents, error: freezeEventsError } = await supabaseAdmin
+      .from('proposal_stage_events')
+      .select('actor_id, from_status, to_status, reason, metadata')
+      .eq('proposal_id', proposalBId)
+      .eq('reason', 'finalization_kill_switch')
+      .order('created_at', { ascending: false })
+      .limit(1);
+    expect(freezeEventsError).toBeNull();
+    expect(freezeEvents?.length).toBe(1);
+
+    const freezeEvent = freezeEvents?.[0];
+    expect(freezeEvent?.actor_id).toBe(councilUserId);
+    expect(freezeEvent?.from_status).toBe('voting');
+    expect(freezeEvent?.to_status).toBe('voting');
+    const freezeMetadata = (freezeEvent?.metadata ?? {}) as Record<string, unknown>;
+    expect(freezeMetadata.source).toBe('finalize_proposal_voting_integrity');
+    expect(freezeMetadata.dedupe_key).toBe(frozenDedupeKey);
+    expect(Number(freezeMetadata.attempt_count ?? 0)).toBeGreaterThanOrEqual(2);
+    expect(String(freezeMetadata.error ?? '')).toContain('Simulated finalization failure');
+
+    const manualResumeReason = `qa_manual_resume_${Date.now()}`;
+    const { error: unfreezeError } = await supabaseAdmin
+      .from('proposals')
+      .update({
+        finalization_frozen_at: null,
+        finalization_failure_reason: null,
+      })
+      .eq('id', proposalBId);
+    expect(unfreezeError).toBeNull();
+
+    const { error: resumeAuditError } = await supabaseAdmin
+      .from('proposal_stage_events')
+      .insert({
+        proposal_id: proposalBId!,
+        from_status: 'voting',
+        to_status: 'voting',
+        actor_id: councilUserId,
+        reason: 'finalization_manual_resume',
+        metadata: {
+          source: 'qa_operational_recovery',
+          dedupe_key: frozenDedupeKey,
+          previous_frozen_at: proposalRow?.finalization_frozen_at,
+          prior_attempt_count: Number(proposalRow?.finalization_attempts ?? 0),
+          resume_reason: manualResumeReason,
+        },
+      });
+    expect(resumeAuditError).toBeNull();
+
+    const resumedFinalizeRes = await request.post(
+      `${BASE_URL}/api/proposals/${proposalBId}/finalize`,
+      {
+        headers: { Cookie: cookieHeader(councilCookie) },
+        data: { dedupe_key: frozenDedupeKey },
+      }
+    );
+    expect(resumedFinalizeRes.status()).toBe(200);
+    const resumedFinalizeBody = await resumedFinalizeRes.json();
+    expect(resumedFinalizeBody?.proposal?.status).toBe('finalized');
+    expect(resumedFinalizeBody?.idempotency?.already_finalized).toBe(false);
+
+    const { data: resumedRow } = await supabaseAdmin
+      .from('proposals')
+      .select('status, finalization_frozen_at, finalization_failure_reason, finalization_dedupe_key')
+      .eq('id', proposalBId)
+      .single();
+    expect(resumedRow?.status).toBe('finalized');
+    expect(resumedRow?.finalization_frozen_at).toBeNull();
+    expect(resumedRow?.finalization_failure_reason).toBeNull();
+    expect(resumedRow?.finalization_dedupe_key).toBe(frozenDedupeKey);
+
+    const { data: resumeEvents, error: resumeEventsError } = await supabaseAdmin
+      .from('proposal_stage_events')
+      .select('actor_id, reason, metadata')
+      .eq('proposal_id', proposalBId)
+      .eq('reason', 'finalization_manual_resume')
+      .order('created_at', { ascending: false })
+      .limit(1);
+    expect(resumeEventsError).toBeNull();
+    expect(resumeEvents?.length).toBe(1);
+    expect(resumeEvents?.[0]?.actor_id).toBe(councilUserId);
+    const resumeMetadata = (resumeEvents?.[0]?.metadata ?? {}) as Record<string, unknown>;
+    expect(resumeMetadata.source).toBe('qa_operational_recovery');
+    expect(resumeMetadata.dedupe_key).toBe(frozenDedupeKey);
   });
 });

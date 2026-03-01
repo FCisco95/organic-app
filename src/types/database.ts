@@ -2880,6 +2880,10 @@ export type Database = {
           extended_count: number
         }[]
       }
+      apply_proposal_execution_window: {
+        Args: { p_proposal_id: string }
+        Returns: Json
+      }
       commit_sprint_reward_settlement: {
         Args: {
           p_actor_id?: string
