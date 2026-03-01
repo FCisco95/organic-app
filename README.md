@@ -18,172 +18,46 @@ A full-stack application for managing DAO proposals, voting, task management, an
 
 ## Project Structure
 
-```
-organic-app/
-├── src/
-│   ├── app/                    # Next.js App Router pages
-│   │   ├── [locale]/          # Localized routes
-│   │   │   ├── auth/          # Auth pages
-│   │   │   ├── login/         # Login page
-│   │   │   ├── signup/        # Signup page
-│   │   │   ├── profile/       # User profile page
-│   │   │   ├── proposals/     # Proposals listing & detail
-│   │   │   ├── tasks/         # Task management UI
-│   │   │   ├── sprints/       # Sprint planning
-│   │   │   ├── leaderboard/   # Leaderboard page
-│   │   │   ├── layout.tsx     # Root layout
-│   │   │   ├── page.tsx       # Home page
-│   │   │   └── globals.css    # Global styles
-│   │   └── api/               # API routes
-│   │       ├── auth/          # Authentication endpoints
-│   │       ├── leaderboard/   # Leaderboard endpoints
-│   │       ├── nonce/         # SIWS nonce generation
-│   │       ├── organic-id/    # Organic ID issuance
-│   │       ├── profile/       # Profile endpoints
-│   │       ├── proposals/     # Proposal CRUD
-│   │       ├── sprints/       # Sprint endpoints
-│   │       ├── tasks/         # Task management
-│   │       └── voting/        # Voting endpoints
-│   │
-│   ├── components/            # Reusable components
-│   │   ├── ui/               # shadcn/ui components
-│   │   ├── auth/             # Auth components
-│   │   ├── notifications/    # Notification components
-│   │   ├── proposals/        # Proposal components
-│   │   ├── sprints/          # Sprint components
-│   │   ├── tasks/            # Task components
-│   │   ├── voting/           # Voting components
-│   │   ├── wallet/           # Wallet components
-│   │   ├── language-selector.tsx
-│   │   ├── locale-switcher.tsx
-│   │   └── navigation.tsx
-│   │
-│   ├── features/             # Feature-based modules
-│   │   ├── auth/             # Auth context & wallet provider
-│   │   ├── tasks/            # Task hooks, types, schemas, utils (fully implemented)
-│   │   └── [scaffolding]/    # organic-id, proposals, voting, sprints, notifications, profile (planned)
-│   │
-│   ├── i18n/                 # i18n helpers
-│   ├── lib/                  # Utility functions
-│   │   ├── supabase/          # Supabase clients
-│   │   ├── solana.ts          # Solana helpers
-│   │   └── utils.ts           # Shared utilities
-│   ├── hooks/                # Custom React hooks
-│   ├── types/                # TypeScript types
-│   └── config/               # Configuration files
-│
-├── supabase/
-│   ├── migrations/           # Database migrations
-│   └── functions/            # Edge functions
-│
-├── public/                   # Static assets
-│   └── assets/               # Public images
-└── [config files]            # Various configuration files
+Core architecture map:
 
-```
+- `src/app/[locale]/` localized Next.js App Router pages/layouts
+- `src/app/api/` API route handlers
+- `src/features/` domain logic, hooks, schemas, and types
+- `src/components/` UI components (`src/components/ui/` for shadcn primitives)
+- `src/lib/`, `src/hooks/`, `src/config/`, `src/types/`, `src/i18n/` shared layers
+- `messages/` locale dictionaries (`en`, `pt-PT`, `zh-CN`)
+- `supabase/migrations/` SQL migrations
 
-## ✅ Completed Features
+## Platform Status (2026-03-01)
 
-### Authentication & User Management
+Implemented and active:
 
-- [x] Supabase email/password authentication
-- [x] Solana wallet integration (Phantom, Solflare, etc.)
-- [x] Wallet linking with signature verification
-- [x] Role-based access control (admin, council, member, viewer)
-- [x] User profiles with editable fields
-- [x] Profile picture upload to Supabase Storage
-- [x] Avatar display with gradient fallback
-- [x] Social media links (Twitter, Discord)
+- Auth/session flows with wallet linking + Organic ID checks
+- Tasks lifecycle (CRUD, dependencies, subtasks, templates, recurring, review queue)
+- Proposals lifecycle (draft -> voting -> passed/rejected, templates, threshold/cooldown guardrails)
+- Voting integrity controls and audited freeze/recovery behavior
+- Sprint phase engine with settlement integrity controls
+- Rewards claims/distributions with hold/kill-switch safety posture
+- Disputes workflow with SLA + evidence surfaces
+- Notifications (in-app feed, realtime, preferences)
+- Members/profile/admin settings surfaces
+- Analytics and treasury dashboards
+- Quests + referrals + burn-to-level experience (`/quests`)
+- Onboarding foundation (4-step wizard + progress APIs; cohorts still pending)
+- Ideas incubator baseline (`/ideas`, `/ideas/[id]`, vote/comment/KPI APIs, promote/winner endpoints, source-idea proposal linkage) behind feature flag
+- Internationalization (`en`, `pt-PT`, `zh-CN`) and Wave 2 UI/UX revamp
 
-### Organic ID System
+Open and in progress:
 
-- [x] Automatic ID assignment to ORG token holders
-- [x] Sequential numbering system
-- [x] Blockchain verification via Solana RPC
-- [x] Balance checking and validation
-- [x] Admin-reserved ID #1
+- Launch gate closure: blocking manual QA matrix completion + staging schema-cache alignment for proposal execution-window writes
+- Cohort onboarding layer (assignment, cohort leaderboard/widgets)
+- Ideas incubator hardening (admin moderation UX controls + integrity/manual QA pass)
+- Treasury spending analytics + multi-sig integration
+- Email digest/announcement delivery layer (Resend + system announcements)
+- Integrations backlog (Discord, GitHub contribution tracking, on-chain activity verification)
 
-### Task Management
-
-- [x] Full CRUD operations for tasks
-- [x] Tasks list with tabs (All, Backlog, Active, In Review, Completed)
-- [x] Kanban board scoped to active sprint
-- [x] Drag-and-drop task status updates (sprint board)
-- [x] Task detail pages with comprehensive information
-- [x] Task comments system with real-time updates
-- [x] User assignment modal (admin/council)
-- [x] Task deletion with confirmation (admin only)
-- [x] Task properties: priority, points, labels, due dates
-- [x] Sprint assignment
-- [x] Permission-based task management
-- [x] Status workflow: backlog → todo → in_progress → review → done
-
-### Proposals & Voting
-
-- [x] Proposal creation form with validation
-- [x] Proposal listing with filters and search
-- [x] Proposal detail view with full information
-- [x] Token-weighted off-chain voting system
-- [x] Vote casting and tallying
-- [x] Proposal status workflow: draft → active → passed/rejected
-- [x] Discussion/comments on proposals
-- [x] Edit functionality for draft proposals (author/admin)
-- [x] Delete functionality with confirmation (author/admin)
-- [x] Admin controls for proposal lifecycle
-
-### Sprint Management
-
-- [x] Sprint creation and management
-- [x] Sprint listing page
-- [x] Sprint detail pages with task views
-- [x] Active sprint tracking
-- [x] Sprint progress visualization
-
-### Infrastructure & UI
-
-- [x] Next.js 14 App Router setup
-- [x] Tailwind CSS with custom Organic branding
-- [x] Responsive mobile-first design
-- [x] Navigation with role-based menu items
-- [x] Enhanced SSR session handling
-- [x] Middleware for authentication
-- [x] API routes with proper error handling
-- [x] Solana RPC fallback system
-- [x] Environment configuration
-- [x] Cookie-based session management
-
-## 🚧 In Progress / Planned Features
-
-### Advanced Task Features
-
-- [ ] Task dependencies
-- [ ] Recurring tasks
-- [ ] Task templates
-- [ ] Sprint burndown charts
-- [ ] Sprint capacity planning
-
-### Proposal Enhancements
-
-- [ ] Proposal templates
-- [ ] Proposal categories/tags
-- [ ] Delegation system
-
-### Treasury & Analytics
-
-- [ ] Treasury balance display
-- [ ] Transaction history
-- [ ] Budget allocation tracking
-- [ ] Member contribution metrics
-- [ ] DAO activity dashboard
-
-### Communication
-
-- [ ] In-app notification system
-- [ ] Email notifications
-- [ ] Discord bot integration
-- [ ] Announcement system
-
-For detailed build plan and roadmap ideas, see [BUILD_PLAN.md](./BUILD_PLAN.md)
+For detailed roadmap and per-phase status, see [BUILD_PLAN.md](./BUILD_PLAN.md).  
+For manual QA coverage, see [docs/qa-runbook.md](./docs/qa-runbook.md).
 
 ## Getting Started
 
@@ -256,6 +130,8 @@ Blocking checks before release:
 - `npm run lint`
 - `npm run build`
 - `npx playwright test tests/proposals-lifecycle.spec.ts tests/voting-integrity.spec.ts tests/proposal-task-flow.spec.ts tests/sprint-phase-engine.spec.ts tests/dispute-sla.spec.ts tests/rewards-settlement-integrity.spec.ts tests/admin-config-audit.spec.ts --workers=1`
+- Manual QA matrix completion across EN/PT-PT/ZH-CN desktop+mobile (see `docs/qa-runbook.md`)
+- Staging schema-cache alignment for proposal execution-window writes (`execution_deadline` path)
 
 Required environment variables for integrity E2E:
 
@@ -421,6 +297,7 @@ gh run list --workflow market-cache-refresh.yml --limit 1
 - Role-based access control (admin, council, member, viewer)
 - Customizable user profiles with avatars
 - Social media integration
+- Onboarding progress state (`connect_wallet`, `verify_token`, `pick_task`, `join_sprint`)
 
 #### 🎫 Organic ID System
 
@@ -438,15 +315,18 @@ gh run list --workflow market-cache-refresh.yml --limit 1
 - User assignment and delegation
 - Sprint organization
 - Priority, points, and label tracking
+- Dependencies, subtasks, templates, and recurring-task support
 
 #### 📝 Proposals & Governance
 
 - Full proposal lifecycle management
 - Token-weighted voting system
 - Discussion threads and comments
-- Status workflow from draft to execution
+- Status workflow from draft to passed/rejected + execution window handoff
 - Edit and delete controls for authors/admins
 - Transparent voting results
+- Threshold/cooldown anti-abuse controls
+- Integrity freeze and audited manual resume controls
 
 #### 🏃 Sprint Planning
 
@@ -454,19 +334,34 @@ gh run list --workflow market-cache-refresh.yml --limit 1
 - Task-sprint associations
 - Progress tracking and visualization
 - Active sprint monitoring
+- Settlement integrity posture and audit traces
+
+#### 🎯 Gamification and Referrals
+
+- Quest progression and referral program (`/quests`)
+- Referral code generation, validation, and completion
+- Burn-to-level flow with configurable gamification controls
+
+#### 💡 Ideas Incubator (App Layer)
+
+- Ideas feed and detail pages with vote rails and threaded discussion
+- Organic ID-gated create/vote/comment behavior with anti-self-vote rules
+- KPI endpoint + weekly spotlight surface for funnel visibility
+- Feature-flagged rollout (`NEXT_PUBLIC_IDEAS_INCUBATOR_ENABLED` / `IDEAS_INCUBATOR_ENABLED`)
 
 ## Database Schema
 
 Implemented in Supabase with Row Level Security:
 
-- `user_profiles` - User accounts, profiles, and role management
-- `proposals` - DAO proposals with lifecycle tracking
-- `proposal_comments` - Discussion threads on proposals
-- `votes` - Vote records and tallying
-- `tasks` - Task management with priorities and status
-- `task_comments` - Collaboration on tasks
-- `sprints` - Sprint/epoch planning and tracking
-- `leaderboard` - Member contribution rankings
+- `user_profiles` - account metadata, role, XP, onboarding completion marker
+- `tasks`, `task_assignees`, `task_submissions`, `task_dependencies`, `subtasks`, `task_templates`
+- `proposals`, `proposal_comments`, `proposal_votes`, `proposal_templates`, `proposal_stage_events` (+ `source_idea_id` linkage)
+- `sprints`, `sprint_task_snapshots`, settlement events, and reward distribution records
+- `disputes` + dispute comments/evidence and escalation metadata
+- `quests`, `referral_codes`, `referrals`, `referral_rewards`, `point_burns`
+- `notifications` + preference/follow models
+- `onboarding_steps`
+- `ideas`, `idea_votes`, `idea_events`, `idea_promotion_cycles`
 
 See `supabase/migrations/` for full schema definitions.
 

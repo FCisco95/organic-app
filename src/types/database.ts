@@ -508,6 +508,286 @@ export type Database = {
           },
         ]
       }
+      idea_events: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          event_type: string
+          id: string
+          idea_id: string
+          metadata: Json
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          event_type: string
+          id?: string
+          idea_id: string
+          metadata?: Json
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          event_type?: string
+          id?: string
+          idea_id?: string
+          metadata?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "idea_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "idea_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "idea_events_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ideas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      idea_promotion_cycles: {
+        Row: {
+          created_at: string
+          cycle_end: string
+          cycle_start: string
+          id: string
+          org_id: string | null
+          promoted_proposal_id: string | null
+          status: string
+          updated_at: string
+          winner_idea_id: string | null
+          winner_selected_at: string | null
+          winner_selected_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          cycle_end: string
+          cycle_start: string
+          id?: string
+          org_id?: string | null
+          promoted_proposal_id?: string | null
+          status?: string
+          updated_at?: string
+          winner_idea_id?: string | null
+          winner_selected_at?: string | null
+          winner_selected_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          cycle_end?: string
+          cycle_start?: string
+          id?: string
+          org_id?: string | null
+          promoted_proposal_id?: string | null
+          status?: string
+          updated_at?: string
+          winner_idea_id?: string | null
+          winner_selected_at?: string | null
+          winner_selected_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "idea_promotion_cycles_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "orgs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "idea_promotion_cycles_promoted_proposal_id_fkey"
+            columns: ["promoted_proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "idea_promotion_cycles_winner_idea_id_fkey"
+            columns: ["winner_idea_id"]
+            isOneToOne: false
+            referencedRelation: "ideas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "idea_promotion_cycles_winner_selected_by_fkey"
+            columns: ["winner_selected_by"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "idea_promotion_cycles_winner_selected_by_fkey"
+            columns: ["winner_selected_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      idea_votes: {
+        Row: {
+          created_at: string
+          id: string
+          idea_id: string
+          updated_at: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          idea_id: string
+          updated_at?: string
+          user_id: string
+          value: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          idea_id?: string
+          updated_at?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "idea_votes_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ideas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "idea_votes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "idea_votes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ideas: {
+        Row: {
+          author_id: string
+          body: string
+          comments_count: number
+          created_at: string
+          downvotes: number
+          id: string
+          is_pinned: boolean
+          last_activity_at: string
+          locked_at: string | null
+          org_id: string | null
+          pinned_at: string | null
+          promoted_at: string | null
+          promoted_to_proposal_id: string | null
+          promotion_cycle_start: string | null
+          removed_at: string | null
+          removed_reason: string | null
+          score: number
+          status: string
+          tags: string[]
+          title: string
+          updated_at: string
+          upvotes: number
+        }
+        Insert: {
+          author_id: string
+          body: string
+          comments_count?: number
+          created_at?: string
+          downvotes?: number
+          id?: string
+          is_pinned?: boolean
+          last_activity_at?: string
+          locked_at?: string | null
+          org_id?: string | null
+          pinned_at?: string | null
+          promoted_at?: string | null
+          promoted_to_proposal_id?: string | null
+          promotion_cycle_start?: string | null
+          removed_at?: string | null
+          removed_reason?: string | null
+          score?: number
+          status?: string
+          tags?: string[]
+          title: string
+          updated_at?: string
+          upvotes?: number
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          comments_count?: number
+          created_at?: string
+          downvotes?: number
+          id?: string
+          is_pinned?: boolean
+          last_activity_at?: string
+          locked_at?: string | null
+          org_id?: string | null
+          pinned_at?: string | null
+          promoted_at?: string | null
+          promoted_to_proposal_id?: string | null
+          promotion_cycle_start?: string | null
+          removed_at?: string | null
+          removed_reason?: string | null
+          score?: number
+          status?: string
+          tags?: string[]
+          title?: string
+          updated_at?: string
+          upvotes?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ideas_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ideas_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ideas_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "orgs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ideas_promoted_to_proposal_id_fkey"
+            columns: ["promoted_to_proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_batch_events: {
         Row: {
           actor_id: string | null
@@ -1176,6 +1456,7 @@ export type Database = {
           server_voting_started_at: string | null
           search_vector: unknown
           snapshot_taken_at: string | null
+          source_idea_id: string | null
           solution: string | null
           status: Database["public"]["Enums"]["proposal_status"] | null
           summary: string | null
@@ -1218,6 +1499,7 @@ export type Database = {
           server_voting_started_at?: string | null
           search_vector?: unknown
           snapshot_taken_at?: string | null
+          source_idea_id?: string | null
           solution?: string | null
           status?: Database["public"]["Enums"]["proposal_status"] | null
           summary?: string | null
@@ -1260,6 +1542,7 @@ export type Database = {
           server_voting_started_at?: string | null
           search_vector?: unknown
           snapshot_taken_at?: string | null
+          source_idea_id?: string | null
           solution?: string | null
           status?: Database["public"]["Enums"]["proposal_status"] | null
           summary?: string | null
@@ -1302,6 +1585,13 @@ export type Database = {
             columns: ["org_id"]
             isOneToOne: false
             referencedRelation: "orgs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proposals_source_idea_id_fkey"
+            columns: ["source_idea_id"]
+            isOneToOne: false
+            referencedRelation: "ideas"
             referencedColumns: ["id"]
           },
         ]

@@ -2,6 +2,59 @@
 
 Add newest entries at the top.
 
+## 2026-03-01 (Session: documentation deep-dive sync + QA coverage expansion)
+
+### Summary
+
+Performed a full documentation truth-sync pass across operating guidance, roadmap/status docs, project context, and QA runbook coverage so docs match current implementation reality (including partial Phase 20 onboarding delivery, launch-gate blockers, and the in-repo Phase 28 app-layer work).
+
+### Implementation highlights
+
+- Cross-agent guidance alignment:
+  - `AGENTS.md`
+  - `CLAUDE.md`
+  - `GEMINI.md`
+  - Added/strengthened references for `PROJECT_CONTEXT.md` and `docs/qa-runbook.md` as living docs that must be maintained with workflow changes.
+
+- Roadmap/status normalization:
+  - `BUILD_PLAN.md`
+  - Added explicit `Phase 20a — Onboarding Foundation` partial-delivery status.
+  - Marked implemented onboarding DB/API/UI checklist items as complete; left cohort-oriented scope pending.
+  - Updated members remaining scope to cohort onboarding expansion.
+  - Preserved and integrated existing `Phase 28` addition; linked to `docs/phase-28-ideas-incubator-plan.md`.
+  - Added `Phase 28a` partial-delivery status and updated Phase 28 API/UI/feature-flag checklist progress.
+
+- Product-context truth sync:
+  - `PROJECT_CONTEXT.md`
+  - Removed stale open-item references that are now implemented (proposal threshold/anti-abuse).
+  - Reframed onboarding as partially delivered (wizard/progress) with cohorts/polish pending.
+
+- README accuracy refresh:
+  - `README.md`
+  - Replaced outdated scaffold/planned-feature statements with current platform status and open priorities.
+  - Updated key-feature and schema summaries to include integrity controls, quests/referrals, and onboarding foundation.
+
+- Manual QA coverage expansion:
+  - `docs/qa-runbook.md`
+  - Added fixture guidance for onboarding-incomplete users and Twitter/X engagement tasks.
+  - Expanded profile/task/proposal sections with Twitter/onboarding/threshold/cooldown/degraded execution-window checks.
+  - Added new workflow packs:
+    - `4.17 Onboarding Wizard and Progress APIs`
+    - `4.18 Twitter/X Linking and Engagement Verification Workflow`
+    - `4.19 Ideas Incubator Workflow (Feature-Flagged)`
+  - Extended page-audit matrix with onboarding, Twitter, and ideas-specific flows.
+
+- Included in-flight Phase 28 app-layer files and build hardening:
+  - Ideas app surfaces and feature module were retained in this branch (`src/app/[locale]/ideas/**`, `src/app/api/ideas/**`, `src/features/ideas/**`, `src/config/feature-flags.ts`, nav updates).
+  - Included Ideas DB/type plumbing already present in workspace (`supabase/migrations/20260301230000_phase28_ideas_incubator.sql`, `src/types/database.ts`, and proposal source-idea UI badge wiring).
+  - Fixed Ideas vote type narrowing regression in `src/app/api/ideas/[id]/vote/route.ts`.
+  - Fixed client/server boundary issue in `src/app/[locale]/ideas/[id]/page.tsx` (removed client import of server-only module).
+
+### Validation evidence
+
+- `npm run lint`: PASS.
+- `npm run build`: PASS.
+
 ## 2026-03-01 (Session: Supabase environment + pipeline sync hardening)
 
 - Clarified operational DB ownership:

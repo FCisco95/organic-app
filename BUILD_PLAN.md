@@ -52,6 +52,29 @@ Latest revalidation snapshot (2026-03-01):
   - proposal `finalization_kill_switch` + `finalization_manual_resume` (`proposal_stage_events`)
 - Go/No-Go remains **No-Go** pending blocking manual QA matrix completion and staging schema-cache drift on proposal execution-window writes (`PGRST204` for `execution_deadline` path).
 
+### Phase 20a — Onboarding Foundation — 🟡 Partial (2026-02-28)
+
+Onboarding baseline is now implemented and live in the authenticated app shell.
+
+- [x] DB migration for `onboarding_steps` + `user_profiles.onboarding_completed_at`
+- [x] Onboarding progress APIs (`GET /api/onboarding/steps`, `POST /api/onboarding/steps/:step/complete`)
+- [x] 4-step onboarding wizard with progress tracking (`connect_wallet`, `verify_token`, `pick_task`, `join_sprint`)
+- [x] Auto-open-on-login behavior for incomplete onboarding users
+- [ ] Cohort assignment and cohort leaderboard APIs/UI
+- [ ] Starter onboarding quest pack seed + dashboard cohort widgets
+
+### Phase 28a — Ideas Incubator App Layer — 🟡 Partial (2026-03-01)
+
+Ideas incubator surface is now scaffolded in app layer behind feature flag control.
+
+- [x] Feature flag helper (`NEXT_PUBLIC_IDEAS_INCUBATOR_ENABLED` / `IDEAS_INCUBATOR_ENABLED`)
+- [x] Ideas pages (`/[locale]/ideas`, `/[locale]/ideas/[id]`) with feed/detail, voting UX, comments, and KPI strip
+- [x] Ideas API foundation (`/api/ideas`, `/api/ideas/:id`, `/api/ideas/:id/vote`, `/api/ideas/:id/comments`, `/api/ideas/kpis`)
+- [x] Navigation entry wired for authenticated members
+- [x] Promotion and weekly winner workflow endpoints (`/api/ideas/:id/promote`, `/api/ideas/cycles/:id/select-winner`)
+- [x] DB migration + generated type contracts for ideas tables and aggregates
+- [ ] Phase-28 integrity tests and first manual QA execution against the ideas matrix
+
 ---
 
 ## Completed Phases
@@ -101,7 +124,7 @@ Latest revalidation snapshot (2026-03-01):
 
 ### Phase 9 — Members Remaining Items
 
-- [ ] Member onboarding flow
+- [ ] Cohort onboarding layer (Phase 20b)
 - [ ] Organic ID minting interface
 
 ### Phase 10 — Analytics Remaining Items
@@ -151,21 +174,21 @@ These phases address the core gaps in crypto community SaaS platforms: contribut
 **Goal:** Drop contributor churn by guiding new members from wallet connect to first contribution in under 10 minutes. Group them into cohorts for early social anchoring.
 
 **DB:**
-- [ ] `onboarding_steps` table (`id`, `user_id`, `step`, `completed_at`) — track wizard progress per member
+- [x] `onboarding_steps` table (`id`, `user_id`, `step`, `completed_at`) — track wizard progress per member
 - [ ] `cohorts` table (`id`, `name`, `intake_week`, `created_at`) — weekly intake groups
 - [ ] `cohort_members` table (`cohort_id`, `user_id`, `joined_at`) — member-to-cohort mapping
 - [ ] Seed starter quest pack in `quests` table (complete profile, submit first task, vote on proposal)
 
 **API:**
-- [ ] `GET /api/onboarding/steps` — fetch current member's onboarding progress
-- [ ] `POST /api/onboarding/steps/:step/complete` — mark a step complete, trigger XP reward
+- [x] `GET /api/onboarding/steps` — fetch current member's onboarding progress
+- [x] `POST /api/onboarding/steps/:step/complete` — mark a step complete, trigger XP reward
 - [ ] `POST /api/cohorts/assign` — auto-assign new member to current week's cohort on first login
 - [ ] `GET /api/cohorts/current` — get calling user's active cohort + member list
 - [ ] `GET /api/cohorts/:id/leaderboard` — XP leaderboard scoped to cohort members
 
 **UI:**
-- [ ] 5-step onboarding wizard modal: connect wallet → verify token → pick skills → pick first task → join sprint
-- [ ] Skip and resume support (progress saved to `onboarding_steps`)
+- [x] 4-step onboarding wizard modal: connect wallet → verify token → pick task → join sprint
+- [x] Skip and resume support (progress saved to `onboarding_steps`)
 - [ ] Starter quest card set on dashboard for members with incomplete onboarding
 - [ ] Cohort widget on dashboard: cohort name, member avatars, XP leaderboard, days left in cohort period
 - [ ] Cohort badge on profile card (visible during first 30 days)
@@ -364,6 +387,67 @@ These phases address the core gaps in crypto community SaaS platforms: contribut
 - [ ] Org switcher in navigation header (for members in multiple orgs)
 - [ ] Unified profile page: cross-org contribution summary, per-org role badges
 - [ ] Admin billing/tier management page (for future monetization)
+
+---
+
+### Phase 28 — Ideas Incubator + Weekly Proposal Funnel
+
+**Goal:** Create a Reddit-style idea layer where every member can post, vote, and discuss lightweight ideas before formal proposals. Turn the top idea each week into a linked proposal candidate so members can see direct impact.
+
+Implementation plan reference: `docs/phase-28-ideas-incubator-plan.md`
+
+**Status note (2026-03-01):** App-layer + DB baseline is in progress (feed/detail/vote/comment/KPI/navigation + promotion/winner endpoints + schema/type updates). Remaining work is moderation UX depth, gamification integration, and integrity/manual QA closure.
+
+**Product Rules (Locked):**
+- [ ] Cadence: weekly cycle, top 1 idea becomes a proposal candidate
+- [ ] Promotion flow: admin confirmation window, then auto-create prefilled proposal draft linked to winning idea
+- [ ] Voting model: 1 member = 1 active vote per idea (`upvote`, `downvote`, `neutral` via toggle)
+- [ ] Access: authenticated members with Organic ID can post/comment/vote; admins can pin, lock, remove
+- [ ] Points v1: create idea `+5`; votes received `+1` (daily cap `10/day`); vote cast `+1` (daily cap `5/day`); promoted winner `+25`
+
+**DB:**
+- [x] `ideas` table (`id`, `org_id`, `author_id`, `title`, `body`, `status` enum `open|candidate|promoted|archived|removed`, `score`, `upvotes`, `downvotes`, `comment_count`, `is_pinned`, `is_locked`, `promotion_week`, `promoted_to_proposal_id`, `created_at`, `updated_at`)
+- [x] `idea_votes` table (`idea_id`, `user_id`, `vote` enum `up|down`, `created_at`, `updated_at`) with unique `(idea_id, user_id)`
+- [x] Extend shared comments subject support to include `subject_type = 'idea'` (reuse existing comments model and moderation patterns)
+- [x] `idea_promotion_cycles` table (`id`, `org_id`, `week_start`, `week_end`, `winner_idea_id`, `selected_at`, `selected_by`, `proposal_id`, `status` enum `open|selected|promoted|closed`)
+- [x] `idea_events` audit table (`id`, `idea_id`, `actor_id`, `event_type`, `metadata`, `created_at`) for moderation and promotion traceability
+- [ ] Add gamification config keys for ideas (`xp/points` multipliers + daily caps) with safe defaults and admin override
+
+**API:**
+- [x] `GET /api/ideas` — paginated feed with sort (`hot`, `new`, `top_week`, `top_all`) + search/limit (status/author/pinned filters pending)
+- [x] `POST /api/ideas` — create idea (Organic ID gate + anti-spam/rate-limit)
+- [x] `GET /api/ideas/:id` — fetch idea detail with aggregates and linked proposal state
+- [ ] `PATCH /api/ideas/:id` — full author edit window + admin moderation fields (`pin`, `lock`, `status`) (currently title/body/tag edit only)
+- [x] `POST /api/ideas/:id/vote` — up/down/toggle vote with idempotent update and aggregate recompute
+- [x] `GET /api/ideas/:id/comments` and `POST /api/ideas/:id/comments` — discussion thread on ideas
+- [x] `POST /api/ideas/cycles/:id/select-winner` — admin selects weekly winner (or confirms computed winner)
+- [x] `POST /api/ideas/:id/promote` — auto-create prefilled proposal draft linked to idea and mark promoted
+- [x] `GET /api/ideas/kpis` — funnel metrics (`ideas_created`, `active_discussions`, `promotion_rate`, `median_time_to_promotion`)
+
+**UI:**
+- [x] New `/[locale]/ideas` page with Reddit-style list (title, author, score, comments, age, tags/status)
+- [x] Left vote rail on cards and detail page (up/down buttons + current score)
+- [x] Idea detail page `/[locale]/ideas/[id]` with threaded discussion and moderation badges
+- [x] Composer for new idea with title/body validation, preview, and posting guidelines
+- [x] KPI strip at top (total ideas, active this week, promoted ratio, discussion volume)
+- [ ] Weekly spotlight module: “This week’s proposal candidate” with countdown and CTA to view/proposal link (basic spotlight copy is present)
+- [ ] Admin controls in context menu: pin, lock comments, remove, select/promote winner
+- [x] Idea detail shows promoted proposal status link when linked
+- [x] Proposal detail shows source idea backlink card
+
+**Gamification Integration:**
+- [ ] Emit points/xp event on idea creation
+- [ ] Emit points/xp event on vote cast with per-user daily cap
+- [ ] Emit points/xp event on vote received with per-author daily cap
+- [ ] Emit bonus points/xp event when idea is promoted to proposal candidate/winner
+- [ ] Prevent farming via self-vote block, duplicate vote protection, and anomaly logging
+
+**Rollout & Acceptance:**
+- [x] Feature flag `ideas_incubator_enabled` (org-scoped) for staged release
+- [x] Backfill-safe migration path and indexes for feed/vote performance
+- [ ] Integrity tests: vote idempotency, score correctness, winner selection determinism, promotion link integrity
+- [ ] Manual QA: create/post/vote/comment/moderate/promote flows on desktop + mobile
+- [ ] Success criteria (first 30 days): increased weekly unique contributors, idea-to-proposal conversion visibility, and higher discussion participation
 
 ---
 
