@@ -67,6 +67,13 @@ test.describe('Admin settings page structure', () => {
     await page.getByTestId('login-form').getByRole('button', { name: /sign in/i }).click();
     await expect(page).toHaveURL(/\/en\/profile/, { timeout: 20_000 });
 
+    await expect
+      .poll(async () => {
+        await page.goto(`${BASE_URL}/en/profile`, { waitUntil: 'domcontentloaded' });
+        return page.getByText(/admin/i, { exact: false }).first().isVisible().catch(() => false);
+      }, { timeout: 60_000 })
+      .toBe(true);
+
     await page.goto(`${BASE_URL}/en/admin/settings`, { waitUntil: 'domcontentloaded' });
     await expect(page).toHaveURL(/\/en\/admin\/settings/);
     await expect(page.getByRole('heading', { name: 'Settings', level: 1 })).toBeVisible({ timeout: 20_000 });
