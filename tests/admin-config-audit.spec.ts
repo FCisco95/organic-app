@@ -1,7 +1,6 @@
 import { expect, test } from '@playwright/test';
 import {
   BASE_URL,
-  addSessionCookieToPage,
   buildSessionCookie,
   cookieHeader,
   createAdminClient,
@@ -18,6 +17,8 @@ test.describe('Admin settings page structure', () => {
   const missing = missingEnvVars();
   let adminUserId = '';
   let adminCookie = { name: '', value: '' };
+  let adminEmail = '';
+  let adminPassword = '';
 
   test.beforeEach(async () => {
     test.skip(missing.length > 0, `Missing env vars: ${missing.join(', ')}`);
@@ -37,6 +38,8 @@ test.describe('Admin settings page structure', () => {
     });
     adminUserId = admin.id;
     adminCookie = await buildSessionCookie(admin.email, pass);
+    adminEmail = admin.email;
+    adminPassword = pass;
   });
 
   test.afterAll(async () => {
@@ -50,23 +53,25 @@ test.describe('Admin settings page structure', () => {
 
     await expect
       .poll(async () => {
-        const res = await request.get(`${BASE_URL}/api/settings`, {
+        const res = await request.patch(`${BASE_URL}/api/settings`, {
           headers: { Cookie: cookieHeader(adminCookie) },
-          maxRedirects: 0,
+          data: { default_sprint_capacity: 111 },
         });
-        if (res.status() !== 200) return `status:${res.status()}`;
-        const contentType = res.headers()['content-type'] ?? '';
-        if (!contentType.includes('application/json')) return `content-type:${contentType || 'unknown'}`;
         return res.status();
       }, { timeout: 20_000 })
-      .toBe(200);
+      .toBe(400);
 
-    await addSessionCookieToPage(page, adminCookie);
+    await page.goto(`${BASE_URL}/en/login`, { waitUntil: 'domcontentloaded' });
+    await page.locator('#email').fill(adminEmail);
+    await page.locator('#password').fill(adminPassword);
+    await page.getByTestId('login-form').getByRole('button', { name: /sign in/i }).click();
+    await expect(page).toHaveURL(/\/en\/profile/, { timeout: 20_000 });
+
     await page.goto(`${BASE_URL}/en/admin/settings`, { waitUntil: 'domcontentloaded' });
-
-    await expect(page.getByTestId('admin-settings-page')).toBeVisible({ timeout: 20_000 });
-    await expect(page.getByTestId('admin-settings-tabs')).toBeVisible();
-    await expect(page.getByTestId('admin-settings-content')).toBeVisible();
+    await expect(page).toHaveURL(/\/en\/admin\/settings/);
+    await expect(page.getByRole('heading', { name: 'Settings', level: 1 })).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByRole('button', { name: 'General' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Token' })).toBeVisible();
   });
 });
 
