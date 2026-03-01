@@ -334,6 +334,14 @@ export default function ProposalDetailPage() {
                   <MessageCircle className="w-3.5 h-3.5" />
                   <span>{t('commentsCount', { count: comments.length })}</span>
                 </div>
+                {proposal.source_idea_id ? (
+                  <Link
+                    href={`/ideas/${proposal.source_idea_id}`}
+                    className="inline-flex items-center gap-1.5 text-sm text-emerald-700 bg-emerald-50 rounded-full px-3 py-1 ring-1 ring-emerald-200 hover:bg-emerald-100"
+                  >
+                    <span>{t('sourceIdeaBadge')}</span>
+                  </Link>
+                ) : null}
               </div>
             </div>
 

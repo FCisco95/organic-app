@@ -21,6 +21,8 @@ export function Navigation() {
     ? 'tasks'
     : pathname.startsWith('/proposals')
       ? 'proposals'
+      : pathname.startsWith('/ideas')
+        ? 'proposals'
       : pathname.startsWith('/profile')
         ? 'profile'
         : null;
@@ -32,6 +34,7 @@ export function Navigation() {
     { href: '/', label: t('home'), show: true },
     { href: '/profile', label: t('profile'), show: !!user },
     { href: '/proposals', label: t('proposals'), show: !!user },
+    { href: '/ideas', label: t('ideas'), show: !!user },
     { href: '/tasks', label: t('tasks'), show: !!profile?.organic_id },
     { href: '/sprints', label: t('sprints'), show: !!profile?.organic_id },
     { href: '/leaderboard', label: t('leaderboard'), show: !!user },

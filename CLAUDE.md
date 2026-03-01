@@ -113,6 +113,7 @@ UI/i18n changes:
 - Validate translated keys exist for affected namespaces
 - Verify localized navigation/routes still resolve
 - Manual check on desktop and mobile for touched screens
+- Keep `docs/qa-runbook.md` aligned when workflows/routes are added or changed
 
 API route changes:
 
@@ -153,6 +154,8 @@ See `AGENTS.md` for the full folder map and standard command reference (`npm run
 - Agent role adapter: `agents/claude.md`
 - Session history: `SESSION_LOG.md`
 - Roadmap/progress: `BUILD_PLAN.md`
+- Product reality snapshot: `PROJECT_CONTEXT.md`
+- Manual QA baseline: `docs/qa-runbook.md`
 
 ## Maintenance rule
 

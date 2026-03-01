@@ -20,6 +20,8 @@ The focus is long-term: build solid foundations first, avoid shortcuts that brea
 ## What Success Looks Like
 
 - Core DAO flows (auth, wallet, tasks, proposals, voting) are stable
+- Extended governance/rewards controls (integrity hold/kill-switch, freeze/recovery paths) are observable and testable
+- Onboarding is iteratively expanded (wizard/progress first, cohorts later) without breaking core flows
 - Features are incremental, understandable, and documented
 - The codebase stays readable and easy to extend
 - No fragile hacks around auth, sessions, or token checks

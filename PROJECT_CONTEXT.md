@@ -84,6 +84,7 @@ Role systems are **not finalized** and expected to evolve.
 - Treasury dashboard (on-chain balances, allocation chart, transaction history)
 - Analytics dashboard (KPI cards, activity trends, member growth, proposal/voting charts)
 - Twitter/X engagement verification (OAuth linking, evidence submission)
+- Ideas incubator baseline (`/ideas`, `/ideas/[id]`, voting/comments/KPI APIs, promote/winner flow, proposal source-idea linkage) behind feature flag
 - Wave 2 UI/UX revamp complete across all surfaces
 - Accessibility pass (WCAG 2.1 AA aria-labels, aria-hidden)
 - Internationalization: en, pt-PT, zh-CN
@@ -92,8 +93,9 @@ Role systems are **not finalized** and expected to evolve.
 
 - Email notification digests (Resend integration not built)
 - Multi-sig treasury (Squads or similar — not started)
-- Proposal threshold / anti-abuse cooldown enforcement
-- Member onboarding flow
+- Onboarding cohorts layer (weekly cohort assignment, cohort leaderboard, cohort widgets)
+- Starter onboarding quest pack and cohort-specific onboarding UX polish
+- Ideas incubator hardening (moderation UX controls, abuse checks, and manual QA closure)
 - Discord bot / GitHub contribution tracking
 - Multi-tenant / white-label support (future)
 
@@ -169,6 +171,6 @@ These are areas where agent input is explicitly welcome.
 
 ### 11. Project Status Summary
 
-Organic is a functioning platform with all core DAO flows built, tested, and UX-revamped. The foundation is solid. Current priority is production hardening, manual QA, and shipping the remaining open items in `BUILD_PLAN.md`.
+Organic is a functioning platform with all core DAO flows built, tested, and UX-revamped. The foundation is solid. Current priority is production hardening, blocking manual QA completion, and shipping the remaining open items in `BUILD_PLAN.md` (including cohort onboarding expansion and launch-gate closure).
 
 The goal remains: build the _best possible version_ of this system — correctly and intentionally.
