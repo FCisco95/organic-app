@@ -2,6 +2,101 @@
 
 Add newest entries at the top.
 
+## 2026-03-01 (Session: Supabase environment + pipeline sync hardening)
+
+- Clarified operational DB ownership:
+  - Main DB (`dcqfuqjqmqrzycyvutkn`) is source-of-truth runtime DB.
+  - CI DB (`rrsftfoxcujsacipujrr`) is GitHub Actions automation/testing DB.
+- Added migration sync utility: `scripts/qa/sync-supabase-migrations.mjs`.
+  - Supports dry-run checks, apply mode, drift-equivalent error tolerance, migration-history recording, and PostgREST schema reload.
+- Added new workflow: `.github/workflows/supabase-migration-sync.yml`.
+  - Triggers on `main` pushes affecting migrations (and manual dispatch).
+  - Applies/records local migrations on both main and CI projects.
+- Hardened `.github/workflows/ci.yml`:
+  - Added `supabase-ci-target-check` guard job.
+  - Switched E2E/audit jobs to prefer `CI_*` Supabase secrets with fallback.
+  - Added config guard to prevent CI/main project-ref collision when both refs are provided.
+- Updated documentation:
+  - `README.md` with explicit Main vs CI DB strategy, required secrets, and sync commands.
+  - `docs/qa-runbook.md` setup matrix with manual QA target clarification.
+
+## 2026-03-01 (Session: execution-window hardening + operational-controls CI gate)
+
+### Summary
+
+Implemented release-readiness follow-up work for execution-window resilience and CI evidence automation by introducing a DB-backed execution-window RPC path and a dedicated operational-controls CI gate with audit artifact export.
+
+### Implementation highlights
+
+- Proposal execution-window hardening:
+  - `supabase/migrations/20260301170000_proposal_execution_window_rpc.sql`
+  - Added `apply_proposal_execution_window(UUID)` RPC:
+    - enforces finalized+passed eligibility,
+    - computes deadline from `voting_config.execution_window_days`,
+    - writes `execution_status='pending_execution'` and `execution_deadline` in Postgres.
+  - Added grants for `authenticated` and `service_role`.
+- Finalize API integration:
+  - `src/app/api/proposals/[id]/finalize/route.ts`
+  - On passed proposals, route now calls `apply_proposal_execution_window` via RPC.
+  - Added compatibility fallback: when RPC is missing from PostgREST cache (`PGRST202` / `42883`), route falls back to legacy direct write path and logs warnings.
+- Supabase type updates:
+  - `src/types/database.ts`
+  - Registered `apply_proposal_execution_window` in typed function map.
+- CI operational-controls gate + evidence artifacts:
+  - `.github/workflows/ci.yml`
+  - Added `e2e-operational-controls` job:
+    - runs `tests/voting-integrity.spec.ts` + `tests/rewards-settlement-integrity.spec.ts`,
+    - captures test output to `test-results/operational-controls-playwright.log`,
+    - exports audit snapshot JSON and uploads artifacts.
+  - `e2e-full-evidence` now depends on both `e2e-integrity` and `e2e-operational-controls`.
+- Audit export utility:
+  - `scripts/qa/export-operational-controls-audit.mjs`
+  - Queries `reward_settlement_events` + `proposal_stage_events` since run start and writes `test-results/operational-controls-audit.json`.
+
+### Validation evidence
+
+- `npm run lint`: PASS.
+- `npm run build`: PASS.
+- `CI=true npx playwright test tests/voting-integrity.spec.ts tests/rewards-settlement-integrity.spec.ts --workers=1 --reporter=list` (escalated CI-mode): PASS (`4 passed`, `~1.5m`).
+- Runtime note: target environment still reports PostgREST schema-cache drift:
+  - `PGRST202` for new `apply_proposal_execution_window` (migration not yet visible in cache),
+  - fallback legacy write path still hits `PGRST204` for `execution_deadline`.
+  - Finalization flow remains successful and non-blocking under this fallback posture.
+
+## 2026-03-01 (Session: launch-gate closure pass - operational-controls rerun + evidence attachment)
+
+### Summary
+
+Executed the phase-19b launch-gate closure pass by fixing transient voting-start RPC failures, hardening finalize behavior for schema-cache drift, rerunning operational-controls suites in escalated CI-mode, and attaching fresh audit evidence to the release-gate artifact.
+
+### Implementation highlights
+
+- Proposal start-voting transient RPC resilience:
+  - `src/app/api/proposals/[id]/start-voting/route.ts`
+  - Added bounded retry wrapper (`max=3`) for retryable RPC error code `42P07` (`tmp_snapshot_holders_agg` collision path).
+  - Added structured warning logs for transient retries with attempt count and proposal id context.
+- Proposal finalize schema-cache drift handling:
+  - `src/app/api/proposals/[id]/finalize/route.ts`
+  - Added explicit non-fatal handling for `PGRST204` on execution-window writes (`execution_deadline` path), preserving finalize success while surfacing drift as warning.
+- Release-gate documentation and status updates:
+  - `docs/plans/2026-02-20-core-features-revamp-release-gate.md`
+  - Added 2026-03-01 evidence log rows, marked operational-controls evidence artifact checklist complete, and attached latest reward/proposal audit row snapshots.
+  - Added explicit schema-cache drift verification subsection and updated residual-risk/decision rationale.
+- Roadmap status refresh:
+  - `BUILD_PLAN.md`
+  - Updated latest revalidation snapshot to 2026-03-01 with current targeted-suite and blocker posture.
+
+### Validation evidence
+
+- `npm run lint`: PASS.
+- `npm run build`: PASS.
+- `CI=true npx playwright test tests/voting-integrity.spec.ts tests/rewards-settlement-integrity.spec.ts --workers=1 --reporter=list` (escalated CI-mode):
+  - pre-fix rerun: partial failure (`2 passed`, `1 failed`, `1 flaky`) due transient `42P07`.
+  - post-fix rerun: PASS (`4 passed`, `1.6m`).
+- Supabase audit evidence extraction (escalated networking):
+  - Command output archived to `/tmp/phase19b_audit_snapshot.json`.
+  - Captured latest `reward_settlement_events` (`integrity_hold`, `kill_switch`) and `proposal_stage_events` (`finalization_kill_switch`, `finalization_manual_resume`) rows tied to the post-fix run.
+
 ## 2026-02-25 (Session: operational controls evidence hardening - rewards hold/kill-switch + voting freeze recovery)
 
 ### Summary

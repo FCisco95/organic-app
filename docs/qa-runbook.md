@@ -1,19 +1,21 @@
-# QA Runbook — Organic App (Manual QA + UX Revamp Input)
+# QA Runbook — Organic App (Full Feature Coverage + Revamp Intake)
 
-Manual QA workflow for full-product testing and UX/UI feedback collection.
-Use this runbook to test, document friction, and generate structured redesign input.
+Manual QA workbook for validating all current features and collecting redesign-ready feedback.
+Use this document to run workflow tests, page audits, and capture what works, what does not, and UI improvements.
 
 ---
 
 ## 1) Setup
 
 | Item | Value |
-|------|-------|
-| Desktop browser | Chrome or Firefox, latest stable |
-| Mobile browser | Chrome (Android 12+) or Safari (iOS 16+) |
-| Accounts needed | 1 admin, 1 council, 1 member, 1 guest (no organic_id) |
-| Locale coverage | English + at least one of pt-PT or zh-CN |
-| Suggested screen sizes | 1440 px desktop, 768 px tablet, 375 px mobile |
+|---|---|
+| Desktop browsers | Chrome + Firefox (latest stable) |
+| Mobile browsers | Chrome (Android 12+) + Safari (iOS 16+) |
+| Locales | `en`, `pt-PT`, `zh-CN` |
+| Recommended viewports | 1440x900 desktop, 768x1024 tablet, 375x812 mobile |
+| Required accounts | 1 admin, 1 council, 2 members, 1 guest |
+| Optional fixtures | At least 1 active sprint, 1 proposal in each major status, 1 rejected submission for disputes, rewards-enabled org |
+| Supabase target | Manual QA should run against **Main DB** (`dcqfuqjqmqrzycyvutkn`). CI automation runs against **CI DB** (`rrsftfoxcujsacipujrr`). |
 
 ---
 
@@ -26,478 +28,388 @@ Use this runbook to test, document friction, and generate structured redesign in
 - Locales tested:
 - Devices tested:
 - Roles tested:
-- Session objective (release validation / UX revamp / both):
+- Session objective: `Release validation / UX revamp / Both`
 
 ---
 
-## 3) Manual Testing Method
+## 3) Scoring + Feedback Capture Rules
 
-- P0 (Smoke): critical path works end-to-end with no blockers.
-- P1 (Core UX): user can understand flow, status, and next action.
-- P2 (Edge + Accessibility + Mobile): error handling, keyboard support, responsive behavior.
+### 3.1 Severity
+- `S0` = blocker (cannot complete workflow)
+- `S1` = major break or severe confusion
+- `S2` = moderate friction, workaround exists
+- `S3` = polish/consistency issue
 
-Severity for findings:
-- S0 = blocker, cannot complete flow.
-- S1 = major UX break or high confusion risk.
-- S2 = noticeable friction, still usable.
-- S3 = polish or consistency issue.
+### 3.2 QA outcome tags
+- `PASS` = expected behavior observed
+- `FAIL` = behavior incorrect/broken
+- `PARTIAL` = usable but degraded
+- `SKIP` = cannot test due fixture/env precondition
+
+### 3.3 Required feedback block for each workflow section
+
+- What works well:
+- What does not work:
+- UI improvements requested:
+- Top 3 highest-impact changes:
+- Section severity (`S0/S1/S2/S3`):
+- Confidence score (`1-5`):
 
 ---
 
-## 4) Feature QA Sections
+## 4) Workflow QA Packs
 
-## 4.1 Auth and Onboarding
-Routes: `/login`, `/signup`, `/auth/error`, protected page redirects.
+## 4.1 Auth, Session, and Entry Flows
+Routes: `/login`, `/signup`, `/join?ref=CODE`, `/auth/error`, `/auth/callback`.
 
-P0 checks:
-- [ ] Guest can access public pages and is redirected from protected pages.
-- [ ] Member can sign in and sign out successfully.
-- [ ] Session persists on refresh and clears on sign-out.
+Use cases:
+- [ ] `AUTH-01` Guest opens `/login`; form renders and is usable.
+- [ ] `AUTH-02` Guest opens `/signup`; form renders and is usable.
+- [ ] `AUTH-03` Invalid credentials show understandable error copy.
+- [ ] `AUTH-04` Member login succeeds and lands on authenticated app surface.
+- [ ] `AUTH-05` Session persists across refresh.
+- [ ] `AUTH-06` Sign-out clears session and protects private routes.
+- [ ] `AUTH-07` Protected route redirect works for guest users.
+- [ ] `AUTH-08` `/join?ref=CODE` redirects to `/signup?ref=CODE`.
+- [ ] `AUTH-09` Signup with `ref` param preserves referral context.
+- [ ] `AUTH-10` `/auth/error` recovery links (login/home) work.
+- [ ] `AUTH-11` `/auth/callback` does not dead-end or blank-screen when callback params are missing/invalid.
+- [ ] `AUTH-12` Mobile auth forms have no clipping or unreachable controls.
 
-P1 checks:
-- [ ] Login/signup errors are understandable.
-- [ ] Wallet linking feedback is clear (start, success, fail).
-- [ ] Organic ID visibility after assignment is clear.
+Feedback:
+- What works well:
+- What does not work:
+- UI improvements requested:
+- Top 3 highest-impact changes:
+- Section severity (`S0/S1/S2/S3`):
+- Confidence score (`1-5`):
 
-P2 checks:
-- [ ] Keyboard navigation works on auth forms and modals.
-- [ ] Mobile login/signup forms are usable without clipping.
+## 4.2 Global Navigation, Layout, and i18n
+Routes: global shell across all authenticated pages.
 
-Your Thoughts:
-1. What part of login/signup felt least clear?
-2. Was the next step after sign-in obvious?
-3. Which error message (if any) was hard to understand?
-4. What one onboarding improvement would reduce confusion the most?
-5. Severity for this section: `S0/S1/S2/S3`
-6. Confidence score (1-5):
+Use cases:
+- [ ] `NAV-01` Sidebar items render correctly by role (`admin`, `council`, `member`).
+- [ ] `NAV-02` Mobile sidebar exposes the same essential navigation.
+- [ ] `NAV-03` Active route state is visible and accurate.
+- [ ] `NAV-04` Locale switch updates labels/content in current page.
+- [ ] `NAV-05` Query-bearing links (for example progression source context) keep expected behavior.
+- [ ] `NAV-06` Top-bar actions are discoverable and keyboard reachable.
+- [ ] `NAV-07` No overlap/collision in nav at 375px and 768px.
+- [ ] `NAV-08` Role-restricted pages are not discoverable through unauthorized nav paths.
 
-Action Candidates:
-- Candidate 1:
-- Candidate 2:
+Feedback:
+- What works well:
+- What does not work:
+- UI improvements requested:
+- Top 3 highest-impact changes:
+- Section severity (`S0/S1/S2/S3`):
+- Confidence score (`1-5`):
 
-## 4.2 Navigation and Layout
-Routes: global layout surfaces across all pages.
+## 4.3 Home, Analytics, Leaderboard, and Treasury Readability
+Routes: `/`, `/analytics`, `/leaderboard`, `/treasury`.
 
-P0 checks:
-- [ ] Sidebar/mobile sidebar show correct items by role.
-- [ ] All primary nav links work.
-- [ ] Locale switcher updates language correctly.
+Use cases:
+- [ ] `INSIGHT-01` Home dashboard loads with trust/summary surfaces.
+- [ ] `INSIGHT-02` `/analytics` charts/metrics load without blocking UI.
+- [ ] `INSIGHT-03` `/leaderboard` ranking appears stable and understandable.
+- [ ] `INSIGHT-04` `/treasury` shows settlement posture and transparency metadata.
+- [ ] `INSIGHT-05` Empty/loading states are informative, not confusing.
+- [ ] `INSIGHT-06` Units and labels are understandable (percent, totals, balances).
+- [ ] `INSIGHT-07` Mobile chart/card readability is acceptable.
+- [ ] `INSIGHT-08` User can identify a clear “what to do next” action.
 
-P1 checks:
-- [ ] Current location in navigation is obvious.
-- [ ] Top bar actions are discoverable and predictable.
-- [ ] Labels are concise and understandable.
+Feedback:
+- What works well:
+- What does not work:
+- UI improvements requested:
+- Top 3 highest-impact changes:
+- Section severity (`S0/S1/S2/S3`):
+- Confidence score (`1-5`):
 
-P2 checks:
-- [ ] Keyboard-only navigation reaches all nav actions.
-- [ ] No overflow/collision in mobile navigation.
-
-Your Thoughts:
-1. Which navigation label or grouping was confusing?
-2. Did you ever feel lost about where to go next?
-3. Which area of the layout feels crowded or too empty?
-4. What nav change would speed up daily usage most?
-5. Severity for this section: `S0/S1/S2/S3`
-6. Confidence score (1-5):
-
-Action Candidates:
-- Candidate 1:
-- Candidate 2:
-
-## 4.3 Home and Analytics
-Routes: `/`, `/analytics`.
-
-P0 checks:
-- [ ] Dashboard loads without errors.
-- [ ] Core metric cards and charts render.
-- [ ] Empty/loading states do not block navigation.
-
-P1 checks:
-- [ ] Metric names and meaning are understandable.
-- [ ] Visual hierarchy makes key stats obvious.
-- [ ] The page communicates what action to take next.
-
-P2 checks:
-- [ ] Data refresh/loading behavior is clear.
-- [ ] Mobile chart readability is acceptable.
-
-Your Thoughts:
-1. Which metric was hardest to interpret and why?
-2. Did the page help you decide what to do next?
-3. What visual element felt noisy or distracting?
-4. What dashboard change would improve decision-making most?
-5. Severity for this section: `S0/S1/S2/S3`
-6. Confidence score (1-5):
-
-Action Candidates:
-- Candidate 1:
-- Candidate 2:
-
-## 4.4 Members Directory and Privacy
+## 4.4 Members Directory and Member Profile Privacy
 Routes: `/members`, `/members/[id]`.
 
-P0 checks:
-- [ ] Directory loads and member cards are visible.
-- [ ] Public/private member behavior matches privacy settings.
-- [ ] Invalid member ID shows a safe fallback.
+Use cases:
+- [ ] `MEM-01` Members directory loads with cards and key trust cues.
+- [ ] `MEM-02` Search/filter/pagination interactions are stable.
+- [ ] `MEM-03` Public profile displays expected data.
+- [ ] `MEM-04` Private profile hides restricted data correctly.
+- [ ] `MEM-05` Owner-facing private profile messaging is clear.
+- [ ] `MEM-06` Section navigation inside member detail works.
+- [ ] `MEM-07` Invalid member id route shows safe fallback.
+- [ ] `MEM-08` Mobile member cards and profile sections remain scannable.
 
-P1 checks:
-- [ ] Member card information is scannable.
-- [ ] Private profile messaging is clear and respectful.
-- [ ] Section navigation inside member profile is clear.
+Feedback:
+- What works well:
+- What does not work:
+- UI improvements requested:
+- Top 3 highest-impact changes:
+- Section severity (`S0/S1/S2/S3`):
+- Confidence score (`1-5`):
 
-P2 checks:
-- [ ] Pagination/search/filter interactions are stable.
-- [ ] Mobile member cards are readable.
-
-Your Thoughts:
-1. Is it obvious what is public vs private profile data?
-2. Which profile section felt hard to parse quickly?
-3. Did any term/label feel ambiguous?
-4. What would improve member discoverability and trust?
-5. Severity for this section: `S0/S1/S2/S3`
-6. Confidence score (1-5):
-
-Action Candidates:
-- Candidate 1:
-- Candidate 2:
-
-## 4.5 My Profile and Progression
+## 4.5 My Profile, Privacy Toggle, and Progression Hub
 Routes: `/profile`, `/profile/progression`.
 
-P0 checks:
-- [ ] Profile page loads personal stats and controls.
-- [ ] Privacy toggle updates state and messaging correctly.
-- [ ] Progression page loads quests, level context, and recent XP.
+Use cases:
+- [ ] `PROF-01` Profile identity/activity/preferences sections render.
+- [ ] `PROF-02` Privacy toggle updates state and message correctly.
+- [ ] `PROF-03` Progression page opens from profile quick action.
+- [ ] `PROF-04` Progression source context (`?from=tasks|proposals|profile`) behaves correctly.
+- [ ] `PROF-05` XP/level/next-step context is understandable.
+- [ ] `PROF-06` Fallback messaging is useful when progression data is sparse.
+- [ ] `PROF-07` Mobile layout keeps cards/actions usable.
 
-P1 checks:
-- [ ] Quest progress and next-level distance are understandable.
-- [ ] CTA to related areas (tasks/proposals/rewards) is clear.
-- [ ] Rewards readiness messaging is understandable.
+Feedback:
+- What works well:
+- What does not work:
+- UI improvements requested:
+- Top 3 highest-impact changes:
+- Section severity (`S0/S1/S2/S3`):
+- Confidence score (`1-5`):
 
-P2 checks:
-- [ ] Progression still communicates value when data is sparse.
-- [ ] Mobile layout keeps progression cards readable.
+## 4.6 Quests, Referrals, and Gamification Controls
+Routes: `/quests`, `/join?ref=CODE`, `/signup?ref=CODE`, `/admin/settings` (Gamification tab), `/profile/progression`.
 
-Your Thoughts:
-1. Could you quickly understand your current level and next target?
-2. Which progression card felt unclear or low-value?
-3. Was it clear what action increases XP the fastest?
-4. What single change would make progression more motivating?
-5. Severity for this section: `S0/S1/S2/S3`
-6. Confidence score (1-5):
+Pre-flight:
+- [ ] Migration `supabase/migrations/20260223100000_quests_referrals_burns.sql` applied.
+- [ ] At least one active quest exists.
+- [ ] Referral test accounts available (inviter + invitee).
 
-Action Candidates:
-- Candidate 1:
-- Candidate 2:
+Use cases:
+- [ ] `GAM-01` Member opens `/quests` and sees referral + quests surfaces.
+- [ ] `GAM-02` Quest tabs (`in_progress`, `done`, `all`) filter correctly.
+- [ ] `GAM-03` Referral code/link generation and copy actions work.
+- [ ] `GAM-04` Referral link redirect flow works via `/join?ref=...`.
+- [ ] `GAM-05` Referral completion updates stats/cards.
+- [ ] `GAM-06` Burn-level flow handles enabled/disabled modes correctly.
+- [ ] `GAM-07` Burn confirm dialog math (from level/to level/points) is correct.
+- [ ] `GAM-08` Quests data remains coherent with progression context.
+- [ ] `GAM-09` Admin gamification settings and quest controls are accessible to admin only.
+- [ ] `GAM-10` Localized copy for quests/referrals is valid in `en`, `pt-PT`, `zh-CN`.
+- [ ] `GAM-11` Mobile quest cards/filters/referral surface remain usable.
 
-## 4.6 Tasks and Review Operations
-Routes: `/tasks`, `/tasks/[id]`, `/admin/submissions`, `/tasks/templates`.
+Feedback:
+- What works well:
+- What does not work:
+- UI improvements requested:
+- Top 3 highest-impact changes:
+- Section severity (`S0/S1/S2/S3`):
+- Confidence score (`1-5`):
 
-P0 checks:
-- [ ] Admin can create task; member can view and submit.
-- [ ] Submission moves to review flow.
-- [ ] Reviewer can approve/reject with required inputs.
-- [ ] Template CRUD works for admin.
+## 4.7 Tasks End-to-End Workflow (Creation -> Claim -> Submit -> Review)
+Routes: `/tasks`, `/tasks/[id]`, `/tasks/templates`, `/admin/submissions`.
 
-P1 checks:
-- [ ] Task detail clearly explains status, points, and expected output.
-- [ ] Estimated XP and review impact summary are understandable.
-- [ ] Post-review “what changed” feedback is useful and specific.
+Use cases:
+- [ ] `TASK-01` Admin creates task from task modal/new flow.
+- [ ] `TASK-02` Member can discover tasks using search/filter/sort.
+- [ ] `TASK-03` Member claim/unclaim behavior is correct (respecting dependencies/rules).
+- [ ] `TASK-04` Task detail explains status, acceptance criteria, points, and assignee context.
+- [ ] `TASK-05` Member submission form works for expected task type.
+- [ ] `TASK-06` Submission moves task toward review state.
+- [ ] `TASK-07` Reviewer/admin approves submission successfully.
+- [ ] `TASK-08` Reviewer/admin rejects submission with required reason.
+- [ ] `TASK-09` Review queue (`/admin/submissions`) shows pending submissions and updates after actions.
+- [ ] `TASK-10` Dependency picker add/remove behaves correctly.
+- [ ] `TASK-11` Subtask creation/list/progress behavior is correct.
+- [ ] `TASK-12` Template manager (admin/council) create/edit/delete works.
+- [ ] `TASK-13` Template instantiate flow creates task for eligible members.
+- [ ] `TASK-14` Proposal-linked task gate enforces finalized+passed provenance where applicable.
+- [ ] `TASK-15` Mobile usability is acceptable on list, detail, submission, and review queue.
 
-P2 checks:
-- [ ] Edge errors (missing fields/invalid actions) show actionable messages.
-- [ ] Mobile submission/review interactions remain usable.
+Feedback:
+- What works well:
+- What does not work:
+- UI improvements requested:
+- Top 3 highest-impact changes:
+- Section severity (`S0/S1/S2/S3`):
+- Confidence score (`1-5`):
 
-Your Thoughts:
-1. Which step in task submission/review felt most confusing?
-2. Did XP/points feedback clearly explain the outcome?
-3. Were rejection and dispute paths easy to understand?
-4. What change would improve completion rate most?
-5. Severity for this section: `S0/S1/S2/S3`
-6. Confidence score (1-5):
-
-Action Candidates:
-- Candidate 1:
-- Candidate 2:
-
-## 4.7 Sprints
+## 4.8 Sprints End-to-End Workflow (Planning -> Completed)
 Routes: `/sprints`, `/sprints/[id]`, `/sprints/past`.
 
-P0 checks:
-- [ ] Admin can create/start/complete sprint.
-- [ ] Sprint detail renders status and task data.
-- [ ] Conflict handling works for invalid sprint transitions.
+Use cases:
+- [ ] `SPR-01` Admin creates a sprint.
+- [ ] `SPR-02` Admin starts sprint from planning.
+- [ ] `SPR-03` Sprint transitions to `review` via completion action.
+- [ ] `SPR-04` Sprint transitions to `dispute_window`.
+- [ ] `SPR-05` Dispute-window timing constraints are communicated.
+- [ ] `SPR-06` Sprint transitions to `settlement` only when valid.
+- [ ] `SPR-07` Settlement blockers and reasons are visible/understandable.
+- [ ] `SPR-08` Sprint transitions to `completed` when integrity conditions are satisfied.
+- [ ] `SPR-09` Sprint detail timeline/rail surfaces current phase clearly.
+- [ ] `SPR-10` Past sprints page is navigable and understandable.
+- [ ] `SPR-11` Mobile sprint list/detail remain usable.
 
-P1 checks:
-- [ ] Sprint health/progress is easy to understand.
-- [ ] Lifecycle actions are clearly explained.
+Feedback:
+- What works well:
+- What does not work:
+- UI improvements requested:
+- Top 3 highest-impact changes:
+- Section severity (`S0/S1/S2/S3`):
+- Confidence score (`1-5`):
 
-P2 checks:
-- [ ] Historical sprint context remains understandable.
-- [ ] Mobile sprint detail is readable.
-
-Your Thoughts:
-1. Was sprint status and timing easy to understand?
-2. Which sprint action felt risky or unclear?
-3. Did you understand the impact of “complete sprint” before clicking?
-4. What would make sprint operations safer and clearer?
-5. Severity for this section: `S0/S1/S2/S3`
-6. Confidence score (1-5):
-
-Action Candidates:
-- Candidate 1:
-- Candidate 2:
-
-## 4.8 Proposals and Voting
+## 4.9 Proposals and Governance Workflow
 Routes: `/proposals`, `/proposals/new`, `/proposals/[id]`.
 
-P0 checks:
-- [ ] Member can draft and submit proposal.
-- [ ] Public can read proposal detail.
-- [ ] Voting state and actions work for eligible users.
+Use cases:
+- [ ] `PROP-01` Member creates proposal draft/public submission.
+- [ ] `PROP-02` Proposal list shows governance signal/context correctly.
+- [ ] `PROP-03` Proposal detail renders structured sections clearly.
+- [ ] `PROP-04` Proposal comments can be posted and read.
+- [ ] `PROP-05` Stage transitions are forward-only and clearly communicated.
+- [ ] `PROP-06` Start voting works for authorized role only.
+- [ ] `PROP-07` Vote eligibility and effective power are understandable.
+- [ ] `PROP-08` Casting vote succeeds/fails with clear feedback.
+- [ ] `PROP-09` Finalize voting behaves idempotently.
+- [ ] `PROP-10` Freeze and resume semantics are understandable to operators.
+- [ ] `PROP-11` Execution-window messaging for passed proposal is clear.
+- [ ] `PROP-12` Proposal templates are usable (if enabled/configured).
+- [ ] `PROP-13` Mobile readability and action placement are acceptable.
 
-P1 checks:
-- [ ] Proposal structure (summary/motivation/solution) is readable.
-- [ ] Voting eligibility and constraints are understandable.
-- [ ] Status transitions communicate what changed.
+Feedback:
+- What works well:
+- What does not work:
+- UI improvements requested:
+- Top 3 highest-impact changes:
+- Section severity (`S0/S1/S2/S3`):
+- Confidence score (`1-5`):
 
-P2 checks:
-- [ ] Deadline behavior is clear before and after close.
-- [ ] Mobile proposal reading experience is acceptable.
-
-Your Thoughts:
-1. Which proposal field or instruction felt unclear?
-2. Was the voting process easy to trust and verify?
-3. Did status labels communicate stage changes clearly?
-4. What would improve governance participation most?
-5. Severity for this section: `S0/S1/S2/S3`
-6. Confidence score (1-5):
-
-Action Candidates:
-- Candidate 1:
-- Candidate 2:
-
-## 4.9 Disputes
+## 4.10 Disputes Workflow (File -> Evidence -> Resolve/Appeal)
 Routes: `/disputes`, `/disputes/[id]`.
 
-P0 checks:
-- [ ] Member can file dispute from rejected submission.
-- [ ] Council/admin can triage and resolve dispute.
-- [ ] Mediate/withdraw/respond actions work by role.
+Use cases:
+- [ ] `DISP-01` Eligible member can file dispute from rejected submission flow.
+- [ ] `DISP-02` Queue page filters/tabs (`queue`, `mine`) work correctly.
+- [ ] `DISP-03` Detail page shows status/tier/SLA/evidence chronology.
+- [ ] `DISP-04` Comment thread add/list works and rejects empty content.
+- [ ] `DISP-05` Evidence upload accepts allowed file types and blocks unsupported ones.
+- [ ] `DISP-06` Late evidence is tagged correctly.
+- [ ] `DISP-07` Uploads are blocked after dispute window closes.
+- [ ] `DISP-08` Mediate/assign/respond actions enforce role constraints.
+- [ ] `DISP-09` Resolve action shows XP impact estimate and summary.
+- [ ] `DISP-10` Withdraw flow works for disputant when allowed.
+- [ ] `DISP-11` Appeal path works for appeal-eligible outcomes.
+- [ ] `DISP-12` Unauthorized users cannot access restricted dispute details.
+- [ ] `DISP-13` Mobile queue/detail controls remain usable.
 
-P1 checks:
-- [ ] Status/tier/timeline explain current dispute posture.
-- [ ] Impact estimate and post-action summary are understandable.
-- [ ] Evidence chronology clearly communicates late evidence.
+Feedback:
+- What works well:
+- What does not work:
+- UI improvements requested:
+- Top 3 highest-impact changes:
+- Section severity (`S0/S1/S2/S3`):
+- Confidence score (`1-5`):
 
-P2 checks:
-- [ ] Unauthorized viewers are blocked from restricted information.
-- [ ] Mobile detail page keeps critical controls readable.
-
-Your Thoughts:
-1. Was the dispute timeline easy to understand at a glance?
-2. Did XP impact messaging feel fair and clear?
-3. Which action (mediate/resolve/withdraw) felt least intuitive?
-4. What would increase trust in dispute outcomes?
-5. Severity for this section: `S0/S1/S2/S3`
-6. Confidence score (1-5):
-
-Action Candidates:
-- Candidate 1:
-- Candidate 2:
-
-## 4.10 Rewards and Claims
+## 4.11 Rewards and Claim Workflow
 Routes: `/rewards`, `/admin/rewards`.
 
-P0 checks:
-- [ ] Member can view claimable balance and submit valid claim.
-- [ ] Admin can review and approve pending claim.
+Use cases:
+- [ ] `RWD-01` Member rewards summary loads with claimability data.
+- [ ] `RWD-02` Claim below threshold is blocked with clear reason.
+- [ ] `RWD-03` Claim with invalid values is blocked with clear reason.
+- [ ] `RWD-04` Valid claim submits successfully.
+- [ ] `RWD-05` Claim status progression is visible and understandable.
+- [ ] `RWD-06` Admin rewards page surfaces pending review/triage clearly.
+- [ ] `RWD-07` Admin payout guardrails and warning copy are clear.
+- [ ] `RWD-08` Held/killed settlement posture is communicated clearly on rewards surfaces.
+- [ ] `RWD-09` Mobile rewards surface remains usable.
 
-P1 checks:
-- [ ] Readiness criteria and thresholds are understandable.
-- [ ] Wallet requirements are explained clearly before submit.
-- [ ] Claim status progression is easy to track.
+Feedback:
+- What works well:
+- What does not work:
+- UI improvements requested:
+- Top 3 highest-impact changes:
+- Section severity (`S0/S1/S2/S3`):
+- Confidence score (`1-5`):
 
-P2 checks:
-- [ ] Error states provide recovery steps.
-- [ ] Mobile claims surface remains usable.
+## 4.12 Notifications Workflow
+Routes: `/notifications`.
 
-Your Thoughts:
-1. Was claim eligibility clear before starting the claim?
-2. Which part of claim flow felt most uncertain?
-3. Did status updates reduce anxiety during waiting?
-4. What would make rewards feel more transparent?
-5. Severity for this section: `S0/S1/S2/S3`
-6. Confidence score (1-5):
+Use cases:
+- [ ] `NOTIF-01` Notifications page loads with expected filters/tabs.
+- [ ] `NOTIF-02` Mark-as-read action updates item state.
+- [ ] `NOTIF-03` Follow/unfollow notification action behaves correctly.
+- [ ] `NOTIF-04` Preferences save and persist after reload.
+- [ ] `NOTIF-05` Empty and error states are informative.
+- [ ] `NOTIF-06` Mobile card readability and action hit targets are acceptable.
 
-Action Candidates:
-- Candidate 1:
-- Candidate 2:
+Feedback:
+- What works well:
+- What does not work:
+- UI improvements requested:
+- Top 3 highest-impact changes:
+- Section severity (`S0/S1/S2/S3`):
+- Confidence score (`1-5`):
 
-## 4.11 Notifications
-Routes: `/notifications`, notification actions/preferences.
+## 4.13 Admin Ops Workflow (Settings, Submission Queue, Rewards Ops)
+Routes: `/admin/settings`, `/admin/submissions`, `/admin/rewards`.
 
-P0 checks:
-- [ ] Notifications list loads.
-- [ ] Mark-as-read and follow actions work.
-- [ ] Preferences can be updated and saved.
+Use cases:
+- [ ] `ADM-01` Non-admin cannot access admin pages.
+- [ ] `ADM-02` Admin settings page tabs load and switch without stale state.
+- [ ] `ADM-03` Settings updates require reason where audit policy enforces it.
+- [ ] `ADM-04` Settings update produces user-understandable success/failure messages.
+- [ ] `ADM-05` Admin submissions queue supports daily review operations.
+- [ ] `ADM-06` Admin rewards surface supports payout triage safely.
+- [ ] `ADM-07` Risky controls include clear warning context.
+- [ ] `ADM-08` Tablet/mobile admin usability is acceptable for critical actions.
 
-P1 checks:
-- [ ] Notification copy is actionable.
-- [ ] Priority and recency are easy to understand.
-
-P2 checks:
-- [ ] Empty and error states are informative.
-- [ ] Mobile notification cards are readable.
-
-Your Thoughts:
-1. Which notifications felt useful vs noisy?
-2. Did notification actions feel safe and reversible?
-3. Was it clear why each notification appeared?
-4. What change would make notifications more valuable?
-5. Severity for this section: `S0/S1/S2/S3`
-6. Confidence score (1-5):
-
-Action Candidates:
-- Candidate 1:
-- Candidate 2:
-
-## 4.12 Leaderboard and Treasury
-Routes: `/leaderboard`, `/treasury`.
-
-P0 checks:
-- [ ] Both pages load and display data.
-- [ ] No critical rendering failures with missing data.
-
-P1 checks:
-- [ ] Ranking and treasury figures are easy to interpret.
-- [ ] Labels, units, and context are clear.
-
-P2 checks:
-- [ ] Refresh behavior and stale-data cues are understandable.
-- [ ] Mobile readability is acceptable.
-
-Your Thoughts:
-1. Which stat or ranking element felt hardest to trust?
-2. Did the page explain where values come from?
-3. What visual change would improve clarity most?
-4. What would make these pages more decision-useful?
-5. Severity for this section: `S0/S1/S2/S3`
-6. Confidence score (1-5):
-
-Action Candidates:
-- Candidate 1:
-- Candidate 2:
-
-## 4.13 Admin Settings and System Controls
-Routes: `/admin/settings` and relevant admin control flows.
-
-P0 checks:
-- [ ] Admin can open settings and save valid config updates.
-- [ ] Non-admin users cannot access admin settings.
-
-P1 checks:
-- [ ] Setting names and side effects are understandable.
-- [ ] Dangerous actions are clearly signposted.
-
-P2 checks:
-- [ ] Validation errors are actionable.
-- [ ] Mobile/tablet presentation remains usable.
-
-Your Thoughts:
-1. Which setting had unclear consequences?
-2. Did any admin control feel risky to click?
-3. Was confirmation/warning language sufficient?
-4. What would make admin operations safer?
-5. Severity for this section: `S0/S1/S2/S3`
-6. Confidence score (1-5):
-
-Action Candidates:
-- Candidate 1:
-- Candidate 2:
+Feedback:
+- What works well:
+- What does not work:
+- UI improvements requested:
+- Top 3 highest-impact changes:
+- Section severity (`S0/S1/S2/S3`):
+- Confidence score (`1-5`):
 
 ## 4.14 Error Resilience and Health
-Routes: invalid routes, degraded network states, `/api/health`.
+Routes: invalid app routes, major API-backed pages, `/api/health`.
 
-P0 checks:
-- [ ] Invalid routes show proper fallback (not blank crash).
-- [ ] API health endpoint returns expected status.
+Use cases:
+- [ ] `ERR-01` Invalid route shows safe fallback (`not-found`) and navigation out.
+- [ ] `ERR-02` Network/API failures show actionable UI errors (not silent failure).
+- [ ] `ERR-03` Long loading states provide feedback and do not freeze interactions.
+- [ ] `ERR-04` `/api/health` reports healthy status in target environment.
+- [ ] `ERR-05` Unauthorized API interactions fail safely (401/403) with clear UX impact.
+- [ ] `ERR-06` Mobile error states remain readable and recoverable.
 
-P1 checks:
-- [ ] User-facing errors explain what to do next.
-- [ ] Recovery actions are obvious.
+Feedback:
+- What works well:
+- What does not work:
+- UI improvements requested:
+- Top 3 highest-impact changes:
+- Section severity (`S0/S1/S2/S3`):
+- Confidence score (`1-5`):
 
-P2 checks:
-- [ ] Connectivity interruption does not hard-crash UI.
-- [ ] Mobile error surfaces remain readable.
+## 4.15 Locale and Accessibility Pass (Cross-Workflow)
+Scope: Run this pass on core routes after completing workflow checks.
 
-Your Thoughts:
-1. Which error state was hardest to recover from?
-2. Did errors explain next steps clearly?
-3. Where did the app feel fragile under degraded conditions?
-4. What one resilience improvement should be prioritized?
-5. Severity for this section: `S0/S1/S2/S3`
-6. Confidence score (1-5):
+Use cases:
+- [ ] `L10N-01` Validate critical flows in `en`.
+- [ ] `L10N-02` Validate critical flows in `pt-PT`.
+- [ ] `L10N-03` Validate critical flows in `zh-CN`.
+- [ ] `A11Y-01` Keyboard-only navigation works for primary workflows.
+- [ ] `A11Y-02` Focus states are visible and logical.
+- [ ] `A11Y-03` Modal/dialog close behavior works via keyboard.
+- [ ] `A11Y-04` Form validation messages are announced/visible near fields.
+- [ ] `A11Y-05` Color contrast and visual hierarchy are acceptable for dense data surfaces.
 
-Action Candidates:
-- Candidate 1:
-- Candidate 2:
-
-## 4.15 Referrals, Quests, and Gamification Controls
-Routes: `/quests`, `/join?ref=CODE`, `/signup?ref=CODE`, `/admin/settings` (Gamification tab), `/profile/progression` (legacy redirect).
-
-Pre-flight checks:
-- [ ] Migration `supabase/migrations/20260223100000_quests_referrals_burns.sql` is applied.
-- [ ] At least one active quest exists in `quests`.
-- [ ] One admin account and at least two member accounts are available for referral testing.
-
-P0 checks:
-- [ ] Authenticated member can open `/quests` and see referral + quests sections.
-- [ ] `/profile/progression` redirects to `/quests` without blank/error page.
-- [ ] Member referral link/code is generated and copy actions work.
-- [ ] `in_progress / done / all` quest tabs load and filter cards.
-- [ ] `Burn Points to Level Up` button behavior matches mode:
-- [ ] `auto` mode: disabled with auto-level hint.
-- [ ] `manual_burn` mode: enabled only when points are sufficient.
-- [ ] Referral join flow works end-to-end:
-- [ ] Open `/join?ref=CODE` and verify redirect to `/signup?ref=CODE`.
-- [ ] Complete signup with referral code present in metadata.
-- [ ] Admin can open Settings > Gamification tab and load quests/config sections.
-
-P1 checks:
-- [ ] Referral stats update after referral completion (pending/completed/xp/points/tier).
-- [ ] Burn confirmation dialog shows correct level transition and points math.
-- [ ] Quest rewards and progress values match API payload (`/api/gamification/quests`).
-- [ ] Navigation label is `Ref & Quests` and links to `/quests` (desktop + mobile + top-bar profile menu).
-- [ ] i18n keys render correctly in `en`, `pt-PT`, and `zh-CN`.
-
-P2 checks:
-- [ ] Empty states are clear when no quests/referrals exist.
-- [ ] Referral and quest cards remain readable on 375 px mobile width.
-- [ ] Copy/link actions gracefully handle clipboard denial.
-- [ ] Unauthorized access to admin quest/config APIs returns 401/403.
-
-Your Thoughts:
-1. Was the relationship between referral rewards, quests, and level progression clear?
-2. Was the burn-to-level mechanic understandable before confirming the action?
-3. Which part of `/quests` felt visually dense or unclear?
-4. What single change would improve conversion from invite to completed referral?
-5. Severity for this section: `S0/S1/S2/S3`
-6. Confidence score (1-5):
-
-Action Candidates:
-- Candidate 1:
-- Candidate 2:
+Feedback:
+- What works well:
+- What does not work:
+- UI improvements requested:
+- Top 3 highest-impact changes:
+- Section severity (`S0/S1/S2/S3`):
+- Confidence score (`1-5`):
 
 ## 4.16 Operational Controls (Automated Evidence)
 
-Goal: verify governance/rewards safety controls without relying on manual UI walkthroughs.
+Goal: verify governance and rewards safety controls with reproducible evidence.
 
 Pre-flight:
 - [ ] `.env.local` includes Supabase URL/anon key/service role key.
-- [ ] CI-mode base URL is reachable.
-- [ ] At least one admin and council fixture can be created by tests.
+- [ ] CI-mode base URL can boot successfully.
+- [ ] Admin and council fixture users can be created.
 
 Execution command:
 
@@ -509,7 +421,7 @@ CI=true npx playwright test \
   --workers=1 --reporter=list
 ```
 
-Fallback when CI webServer startup exceeds timeout in local environments:
+Fallback (when CI webServer startup is not viable locally):
 
 ```bash
 # terminal A
@@ -524,24 +436,23 @@ PLAYWRIGHT_BASE_URL=http://127.0.0.1:3100 npx playwright test \
   --workers=1 --reporter=list
 ```
 
-Expected assertions from suite output:
+Expected assertions:
 - [ ] Rewards hold path returns `EMISSION_CAP_BREACH` and sprint status `held`.
 - [ ] Rewards kill-switch path returns `SETTLEMENT_KILL_SWITCH` and sprint status `killed`.
-- [ ] `reward_settlement_events` contains `integrity_hold` and `kill_switch` rows with metadata.
-- [ ] Voting finalization failure path returns `FINALIZATION_FROZEN`.
-- [ ] `proposal_stage_events` contains `finalization_kill_switch` with dedupe key + attempt metadata.
-- [ ] Manual recovery simulation (audited resume event + unfreeze) can finalize proposal successfully.
+- [ ] `reward_settlement_events` contains `integrity_hold` and `kill_switch` rows.
+- [ ] Voting finalization freeze path returns `FINALIZATION_FROZEN` behavior.
+- [ ] `proposal_stage_events` contains `finalization_kill_switch` with dedupe and attempt metadata.
+- [ ] Manual recovery simulation (`finalization_manual_resume`) finalizes successfully.
 
 Evidence capture checklist:
-- [ ] Attach Playwright command output (or CI job URL).
-- [ ] Record proposal id used for frozen-finalization validation.
+- [ ] Attach command output (or CI job URL).
+- [ ] Record proposal id used for freeze/recovery validation.
 - [ ] Record sprint id used for hold/kill-switch validation.
-- [ ] Export the latest matching audit rows (queries below) with timestamp.
+- [ ] Export latest matching audit rows with timestamp.
 
 Audit queries:
 
 ```sql
--- Rewards settlement events for one sprint.
 select
   sprint_id,
   event_type,
@@ -556,7 +467,6 @@ order by created_at desc;
 ```
 
 ```sql
--- Proposal freeze + manual-resume audit trail for one proposal.
 select
   proposal_id,
   reason,
@@ -571,40 +481,98 @@ where proposal_id = '<PROPOSAL_ID>'
 order by created_at desc;
 ```
 
-Pass criteria for this section:
-- [ ] Both targeted integrity specs pass in CI-mode.
-- [ ] Reward and proposal audit rows are present and match expected event semantics.
-- [ ] Captured evidence is linked in the release gate artifact.
+Feedback:
+- What works well:
+- What does not work:
+- UI improvements requested:
+- Top 3 highest-impact changes:
+- Section severity (`S0/S1/S2/S3`):
+- Confidence score (`1-5`):
 
 ---
 
-## 5) UX Finding Ticket Template (copy per issue)
+## 5) Page-by-Page Audit Matrix (Granular Route Review)
 
-- Feature:
-- Route:
-- Tier found (P0/P1/P2):
-- Severity (S0/S1/S2/S3):
-- Problem statement:
-- User impact:
+Use this matrix after workflow testing to capture page-specific UX observations.
+
+Legend:
+- Smoke = `PASS / FAIL / PARTIAL / SKIP`
+- UX score = `1 (poor) -> 5 (excellent)`
+
+| Route | Workflow Ref | Smoke | UX score | What works | What does not | UI improvements |
+|---|---|---|---|---|---|---|
+| `/` | 4.3 | | | | | |
+| `/analytics` | 4.3 | | | | | |
+| `/leaderboard` | 4.3 | | | | | |
+| `/treasury` | 4.3 | | | | | |
+| `/login` | 4.1 | | | | | |
+| `/signup` | 4.1 | | | | | |
+| `/join?ref=CODE` | 4.1 / 4.6 | | | | | |
+| `/auth/error` | 4.1 | | | | | |
+| `/auth/callback` | 4.1 | | | | | |
+| `/members` | 4.4 | | | | | |
+| `/members/[id]` | 4.4 | | | | | |
+| `/profile` | 4.5 | | | | | |
+| `/profile/progression` | 4.5 | | | | | |
+| `/quests` | 4.6 | | | | | |
+| `/tasks` | 4.7 | | | | | |
+| `/tasks/[id]` | 4.7 | | | | | |
+| `/tasks/templates` | 4.7 | | | | | |
+| `/admin/submissions` | 4.7 / 4.13 | | | | | |
+| `/sprints` | 4.8 | | | | | |
+| `/sprints/[id]` | 4.8 | | | | | |
+| `/sprints/past` | 4.8 | | | | | |
+| `/proposals` | 4.9 | | | | | |
+| `/proposals/new` | 4.9 | | | | | |
+| `/proposals/[id]` | 4.9 | | | | | |
+| `/disputes` | 4.10 | | | | | |
+| `/disputes/[id]` | 4.10 | | | | | |
+| `/rewards` | 4.11 | | | | | |
+| `/notifications` | 4.12 | | | | | |
+| `/admin/settings` | 4.13 | | | | | |
+| `/admin/rewards` | 4.11 / 4.13 | | | | | |
+
+---
+
+## 6) Workflow Findings Ticket Template (copy one per issue)
+
+- Ticket ID:
+- Workflow section:
+- Route(s):
+- Role used:
+- Device + locale:
+- Tier found (`P0/P1/P2`):
+- Severity (`S0/S1/S2/S3`):
+- What works currently:
+- What does not work:
+- UI improvement requested:
 - Repro steps:
-- Suggested fix:
-- Effort estimate (XS/S/M/L):
+- Expected result:
+- Actual result:
+- Suggested fix direction:
+- Effort estimate (`XS/S/M/L`):
 - Owner:
-- Target sprint:
 
 ---
 
-## 6) End-of-Session Synthesis (mandatory)
+## 7) End-of-Session Synthesis (Input for Revamp Planning)
 
+Complete this only after sections 4 and 5 are filled.
+
+- Total workflows run:
+- Total pages audited:
+- Pass/Fail summary:
 - Top 5 friction points:
-- Repeated patterns across sections:
-- Highest-priority redesign opportunities:
+- Highest-value UI opportunities:
+- Repeated UX anti-patterns:
+- Most critical blockers (`S0/S1`):
 - Quick wins (low effort, high impact):
-- Sections that need full redesign:
-- Final UX score (1-10):
+- Sections requiring full redesign:
+- Final UX score (`1-10`):
 - Release recommendation: `Go / Go with fixes / No-go`
 
-Structured package for UX skill:
-- Paste all "Your Thoughts" answers by section.
-- Paste all finding tickets grouped by severity.
-- Paste top 5 friction points and quick wins.
+Revamp input package checklist:
+- [ ] Workflow sections filled with "what works / what does not / UI improvements".
+- [ ] Page-by-page matrix completed.
+- [ ] Findings tickets created for all `S0` and `S1` issues.
+- [ ] Top 5 friction points and redesign priorities finalized.

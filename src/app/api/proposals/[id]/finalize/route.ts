@@ -30,6 +30,16 @@ type FinalizeRpcResult = {
   summary?: FinalizeRpcSummary;
 };
 
+type ApplyExecutionWindowRpcResult = {
+  ok: boolean;
+  code: string;
+  message?: string;
+  proposal_id?: string;
+  execution_status?: string;
+  execution_deadline?: string;
+  window_days?: number;
+};
+
 function mapFinalizeErrorStatus(code: string): number {
   switch (code) {
     case 'UNAUTHORIZED':
@@ -147,26 +157,68 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     // ── Set execution window for passed proposals ────────────────────
     if (result.result === 'passed') {
-      const { data: config } = await supabase
-        .from('voting_config')
-        .select('execution_window_days')
-        .is('org_id', null)
-        .single();
+      const applyLegacyExecutionWindow = async () => {
+        const { data: config } = await supabase
+          .from('voting_config')
+          .select('execution_window_days')
+          .is('org_id', null)
+          .single();
 
-      const windowDays = config?.execution_window_days ?? 7;
-      const deadline = new Date(Date.now() + windowDays * 24 * 60 * 60 * 1000).toISOString();
+        const windowDays = config?.execution_window_days ?? 7;
+        const deadline = new Date(Date.now() + windowDays * 24 * 60 * 60 * 1000).toISOString();
 
-      const { error: execError } = await supabase
-        .from('proposals')
-        .update({
-          execution_status: 'pending_execution',
-          execution_deadline: deadline,
-        })
-        .eq('id', proposalId);
+        const { error: legacyError } = await supabase
+          .from('proposals')
+          .update({
+            execution_status: 'pending_execution',
+            execution_deadline: deadline,
+          })
+          .eq('id', proposalId);
+
+        if (legacyError) {
+          logger.warn('Legacy execution-window write also failed', {
+            proposalId,
+            code: legacyError.code,
+            message: legacyError.message,
+          });
+        }
+      };
+
+      const { data: execData, error: execError } = await supabase.rpc(
+        'apply_proposal_execution_window',
+        {
+          p_proposal_id: proposalId,
+        }
+      );
 
       if (execError) {
-        logger.error('Failed to set execution window on passed proposal', execError);
-        // Non-fatal: finalization already succeeded, log and continue
+        const rpcCode = execError.code ?? '';
+        const shouldFallbackLegacy = rpcCode === 'PGRST202' || rpcCode === '42883';
+
+        logger.error('Failed to apply execution window via RPC on passed proposal', execError);
+
+        if (shouldFallbackLegacy) {
+          logger.warn('Execution-window RPC missing in schema cache, falling back to legacy write', {
+            proposalId,
+            code: rpcCode,
+          });
+          await applyLegacyExecutionWindow();
+        }
+      } else {
+        const execResult = execData as ApplyExecutionWindowRpcResult | null;
+
+        if (!execResult?.ok) {
+          logger.warn('Execution window RPC returned non-ok result', {
+            proposalId,
+            result: execResult,
+          });
+          await applyLegacyExecutionWindow();
+        } else if (execResult.code !== 'APPLIED' && execResult.code !== 'NOOP') {
+          logger.warn('Execution window RPC returned unexpected code', {
+            proposalId,
+            result: execResult,
+          });
+        }
       }
     }
     // ── End execution window ─────────────────────────────────────────
