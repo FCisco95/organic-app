@@ -67,6 +67,24 @@ export async function waitForProfile(supabaseAdmin: SupabaseClient, userId: stri
   throw new Error(`Timed out waiting for user_profiles row: ${userId}`);
 }
 
+/** Polls until the user_profiles.role matches the expected value (up to 10 s). */
+export async function waitForProfileRole(
+  supabaseAdmin: SupabaseClient,
+  userId: string,
+  expectedRole: 'admin' | 'council' | 'member' | 'guest'
+): Promise<void> {
+  for (let i = 0; i < 20; i++) {
+    const { data } = await supabaseAdmin
+      .from('user_profiles')
+      .select('role')
+      .eq('id', userId)
+      .maybeSingle();
+    if (data?.role === expectedRole) return;
+    await new Promise((resolve) => setTimeout(resolve, 500));
+  }
+  throw new Error(`Timed out waiting for user_profiles role=${expectedRole}: ${userId}`);
+}
+
 /** Creates a QA test user via the service-role admin client. */
 export async function createQaUser(
   supabaseAdmin: SupabaseClient,
@@ -102,6 +120,10 @@ export async function createQaUser(
     .eq('id', created.user.id);
 
   if (updateError) throw updateError;
+
+  if (input.role !== undefined) {
+    await waitForProfileRole(supabaseAdmin, created.user.id, input.role);
+  }
 
   return { id: created.user.id, email: input.email, password: input.password };
 }
