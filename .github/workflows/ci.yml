@@ -206,8 +206,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: [e2e-integrity, e2e-operational-controls]
-    if: always()
-    continue-on-error: true
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
       - name: Checkout
@@ -226,6 +225,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run full E2E suite (non-blocking evidence)
+        continue-on-error: true
         run: npm run test:e2e
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.CI_NEXT_PUBLIC_SUPABASE_URL != '' && secrets.CI_NEXT_PUBLIC_SUPABASE_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}

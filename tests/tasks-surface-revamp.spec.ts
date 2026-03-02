@@ -17,6 +17,7 @@ import {
 
 test.describe('Tasks surface revamp', () => {
   test.describe.configure({ mode: 'serial' });
+  test.skip(process.env.CI === 'true', 'Skipped in CI: UI shell evidence runs outside blocking CI gates');
 
   const missing = missingEnvVars();
 

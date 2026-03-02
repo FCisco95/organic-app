@@ -141,6 +141,8 @@ Required environment variables for integrity E2E:
 - `PLAYWRIGHT_BASE_URL`
 
 The full Playwright suite (`npm run test:e2e`) remains non-blocking evidence until reliability is consistently proven in CI.
+In GitHub Actions, this evidence suite runs on pushes to `main` (not PRs) to keep PR feedback fast and focused on blocking gates.
+UI shell/surface revamp specs are skipped when `CI=true` to avoid flaky shared-runner rendering/auth timing failures.
 
 ### Supabase Environment Strategy (Main vs CI)
 
