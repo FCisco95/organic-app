@@ -127,6 +127,7 @@ async function buildSessionCookie(
 
 test.describe('Profile section layout', () => {
   test.describe.configure({ mode: 'serial' });
+  test.skip(process.env.CI === 'true', 'Skipped in CI: UI shell evidence runs outside blocking CI gates');
 
   const missing = missingEnvVars();
   let userId = '';
@@ -194,6 +195,7 @@ test.describe('Profile section layout', () => {
 });
 
 test.describe('Profile stats', () => {
+  test.skip(process.env.CI === 'true', 'Skipped in CI: UI shell evidence runs outside blocking CI gates');
   test('shows submissions, contributions, and points earned', async ({ page }) => {
     test.setTimeout(120_000);
 

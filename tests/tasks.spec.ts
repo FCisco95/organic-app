@@ -138,6 +138,7 @@ test.describe('Task CRUD', () => {
   });
 
   test('tasks surfaces render execution and operator anchors', async ({ page }) => {
+    test.skip(process.env.CI === 'true', 'Skipped in CI: UI shell evidence runs outside blocking CI gates');
     test.skip(!createdTaskId, 'Requires task creation step');
 
     await addSessionCookieToPage(page, adminCookie, BASE_URL);
@@ -385,6 +386,7 @@ test.describe('Admin submission review page structure', () => {
   });
 
   test('admin submissions page renders with testable container', async ({ page }) => {
+    test.skip(process.env.CI === 'true', 'Skipped in CI: UI shell evidence runs outside blocking CI gates');
     test.skip(!adminUserId2, 'Requires admin fixture');
 
     await addSessionCookieToPage(page, adminCookie2);
