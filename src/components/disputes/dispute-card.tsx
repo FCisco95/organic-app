@@ -9,8 +9,8 @@ import {
   getDisputeSlaUrgency,
   isReviewerResponseTracked,
 } from '@/features/disputes/sla';
-import { DisputeStatusBadge } from './DisputeStatusBadge';
-import { DisputeTierBadge } from './DisputeTierBadge';
+import { DisputeStatusBadge } from './dispute-status-badge';
+import { DisputeTierBadge } from './dispute-tier-badge';
 import { cn } from '@/lib/utils';
 
 interface DisputeCardProps {

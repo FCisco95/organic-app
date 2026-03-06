@@ -191,7 +191,7 @@ function buildQuestSummary(items: QuestProgressItem[]): QuestSummary {
 }
 
 /** Load active quest definitions from DB, filtering event quests by date window */
-export async function loadQuestDefinitions(
+async function loadQuestDefinitions(
   supabase: DbClient,
   now: Date = new Date()
 ): Promise<QuestDefinitionRow[]> {

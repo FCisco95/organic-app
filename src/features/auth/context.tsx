@@ -3,19 +3,10 @@
 import { createContext, useContext, useEffect, useState, useMemo, useCallback } from 'react';
 import { User } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/client';
-import { Database } from '@/types/database';
+import type { AuthContextType, UserProfile } from './types';
 
-type UserProfile = Database['public']['Tables']['user_profiles']['Row'];
 const USER_PROFILE_COLUMNS =
   'id, email, name, role, organic_id, wallet_pubkey, avatar_url, bio, location, website, twitter, twitter_verified, discord, profile_visible, xp_total, level, current_streak, longest_streak, last_active_date, total_points, claimable_points, tasks_completed, onboarding_completed_at, created_at, updated_at';
-
-interface AuthContextType {
-  user: User | null;
-  profile: UserProfile | null;
-  loading: boolean;
-  signOut: () => Promise<void>;
-  refreshProfile: () => Promise<void>;
-}
 
 const AuthContext = createContext<AuthContextType>({
   user: null,

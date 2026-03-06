@@ -35,7 +35,7 @@ export async function GET() {
       .select(ORG_COLUMNS)
       .order('created_at', { ascending: true })
       .limit(1)
-      .single();
+      .maybeSingle();
 
     if (orgError || !org) {
       return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
@@ -46,7 +46,7 @@ export async function GET() {
       .from('voting_config')
       .select(VOTING_CONFIG_COLUMNS)
       .eq('org_id', org.id)
-      .single();
+      .maybeSingle();
 
     return NextResponse.json({
       data: {

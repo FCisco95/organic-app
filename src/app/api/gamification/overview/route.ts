@@ -100,7 +100,7 @@ export async function GET() {
         .select('rewards_config')
         .order('created_at', { ascending: true })
         .limit(1)
-        .single(),
+        .maybeSingle(),
       supabase
         .from('reward_claims')
         .select('*', { count: 'exact', head: true })

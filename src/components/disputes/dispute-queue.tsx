@@ -8,7 +8,7 @@ import {
   getDisputeSlaUrgency,
   isEscalationCandidate,
 } from '@/features/disputes/sla';
-import { DisputeCard } from './DisputeCard';
+import { DisputeCard } from './dispute-card';
 import { cn } from '@/lib/utils';
 
 const STATUS_TABS: { key: string; statuses?: DisputeStatus }[] = [

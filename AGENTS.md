@@ -63,7 +63,20 @@ Naming:
 - React components: `PascalCase`
 - Hooks: `useSomething`
 - Feature folders: lowercase or kebab-case
-- Files: lowercase, kebab-case where appropriate
+- All files: kebab-case (e.g., `proposal-card.tsx`, `settlement-blockers.ts`)
+
+Shared utilities:
+
+- Use `fetchJson` from `@/lib/fetch-json` for all client-side API calls (not raw `fetch`)
+- Use `buildQueryString` from `@/lib/query-string` for URL query construction
+- Use shared schemas from `@/lib/schemas/common` for pagination, search, UUID params, and comment bodies
+- Use `.maybeSingle()` instead of `.single()` for Supabase queries where the row might not exist
+
+Feature domain structure:
+
+- Standard shape: `types.ts`, `schemas.ts`, `hooks.ts`, `index.ts` barrel export
+- Large hooks files (>300 lines): decompose into `hooks/` subfolder with `keys.ts`, `useX.ts`, `index.ts`
+- Large components (>400 lines): decompose into subfolder with `index.ts` barrel export
 
 ## Security and sensitive areas
 
@@ -118,7 +131,9 @@ Also run targeted manual checks for touched flows (UI/API/auth/roles/i18n).
 
 If adding tests:
 
-- Co-locate with feature code, e.g. `src/features/tasks/__tests__/task-create.test.ts`
+- Feature tests: `src/features/<domain>/__tests__/<name>.test.ts`
+- Library tests: `src/lib/__tests__/<name>.test.ts`
+- Use Node's built-in test runner (`node:test`) with `assert` — not Jest/Vitest
 
 ## Documentation policy
 
@@ -161,3 +176,5 @@ Get explicit confirmation before:
 - `npm run lint` — lint checks
 - `npm run build` — production build validation
 - `npm run format` — formatting
+- `npm test` — unit tests (Node test runner + tsx)
+- `npm run test:e2e` — Playwright e2e tests

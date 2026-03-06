@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { fetchJson } from '@/lib/fetch-json';
 import type { OnboardingState, OnboardingStep, CompleteStepResponse } from './types';
 import { onboardingStateSchema } from './schemas';
 import { gamificationKeys } from '@/features/gamification/hooks';
@@ -14,11 +15,7 @@ export function useOnboardingProgress(options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: onboardingKeys.progress(),
     queryFn: async (): Promise<OnboardingState> => {
-      const res = await fetch('/api/onboarding/steps');
-      if (!res.ok) {
-        throw new Error('Failed to fetch onboarding progress');
-      }
-      const json = await res.json();
+      const json = await fetchJson<Record<string, unknown>>('/api/onboarding/steps');
       return onboardingStateSchema.parse(json) as OnboardingState;
     },
     staleTime: 30_000,
@@ -40,16 +37,10 @@ export function useCompleteOnboardingStep() {
       task_id?: string;
       sprint_id?: string;
     }): Promise<CompleteStepResponse> => {
-      const res = await fetch(`/api/onboarding/steps/${step}/complete`, {
+      return fetchJson<CompleteStepResponse>(`/api/onboarding/steps/${step}/complete`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ task_id, sprint_id }),
       });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || 'Failed to complete onboarding step');
-      }
-      return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: onboardingKeys.all });

@@ -1,5 +1,5 @@
-export { CategoryBadge } from './CategoryBadge';
-export { StatusBadge } from './StatusBadge';
-export { ProposalCard } from './ProposalCard';
-export { ProposalSections } from './ProposalSections';
-export { ProposalWizard } from './ProposalWizard';
+export { CategoryBadge } from './category-badge';
+export { StatusBadge } from './status-badge';
+export { ProposalCard } from './proposal-card';
+export { ProposalSections } from './proposal-sections';
+export { ProposalWizard } from './proposal-wizard';

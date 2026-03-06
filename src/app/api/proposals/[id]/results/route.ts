@@ -67,7 +67,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         .from('voting_config')
         .select('abstain_counts_toward_quorum')
         .limit(1)
-        .single();
+        .maybeSingle();
 
       abstainCountsTowardQuorum = config?.abstain_counts_toward_quorum ?? true;
       cachedAbstainCountsTowardQuorum = {

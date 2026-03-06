@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { commentBodySchema } from '@/lib/schemas/common';
 
 // ─── Enum schemas ─────────────────────────────────────────────────────────
 
@@ -143,10 +144,7 @@ export type MediateDisputeInput = z.infer<typeof mediateDisputeSchema>;
 // ─── Dispute comment ──────────────────────────────────────────────────────
 
 export const disputeCommentSchema = z.object({
-  content: z
-    .string()
-    .min(1, 'Comment cannot be empty')
-    .max(2000, 'Comment must be at most 2000 characters'),
+  content: commentBodySchema(2000),
   visibility: z.enum(['parties_only', 'arbitrator', 'public']).default('parties_only'),
 });
 export type DisputeCommentInput = z.infer<typeof disputeCommentSchema>;

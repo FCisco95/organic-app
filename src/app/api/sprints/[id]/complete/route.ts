@@ -2,117 +2,17 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { parseJsonBody } from '@/lib/parse-json-body';
 import { completeSprintSchema } from '@/features/sprints/schemas';
+import {
+  resolveSettlementBlockers,
+  parseRewardSettlementResult,
+  type RewardSettlementResult,
+} from '@/features/sprints/settlement-blockers';
 import { logger } from '@/lib/logger';
-import type { Json } from '@/types/database';
 
 const SPRINT_COLUMNS =
   'id, name, status, start_at, end_at, goal, capacity_points, reward_pool, org_id, active_started_at, review_started_at, dispute_window_started_at, dispute_window_ends_at, settlement_started_at, settlement_integrity_flags, settlement_blocked_reason, reward_settlement_status, reward_settlement_committed_at, reward_settlement_idempotency_key, reward_settlement_kill_switch_at, reward_emission_cap, reward_carryover_amount, reward_carryover_sprint_count, completed_at, created_at, updated_at';
 
-const TERMINAL_DISPUTE_STATUSES = ['resolved', 'dismissed', 'withdrawn', 'mediated'];
 const DEFAULT_DISPUTE_WINDOW_HOURS = 48;
-
-type SettlementBlockers = {
-  blocked: boolean;
-  unresolved_disputes: number;
-  integrity_flag_count: number;
-  integrity_flags: Json[];
-  reasons: string[];
-};
-
-type RewardSettlementResult = {
-  ok: boolean;
-  code: string;
-  status: 'pending' | 'committed' | 'held' | 'killed' | string;
-  message?: string | null;
-  idempotency_key?: string | null;
-  distributed_count?: number;
-  distributed_tokens?: number;
-  emission_cap?: number;
-  carryover_out?: number;
-  carryover_streak?: number;
-};
-
-function parseSettlementBlockers(data: unknown): SettlementBlockers {
-  const raw = (data ?? {}) as Record<string, unknown>;
-  const reasons = Array.isArray(raw.reasons)
-    ? raw.reasons.map((value) => String(value))
-    : [];
-  const integrityFlags = Array.isArray(raw.integrity_flags)
-    ? (raw.integrity_flags as Json[])
-    : [];
-
-  return {
-    blocked: Boolean(raw.blocked),
-    unresolved_disputes: Number(raw.unresolved_disputes ?? 0),
-    integrity_flag_count: Number(raw.integrity_flag_count ?? integrityFlags.length),
-    integrity_flags: integrityFlags,
-    reasons,
-  };
-}
-
-function parseRewardSettlementResult(data: unknown): RewardSettlementResult {
-  const raw = (data ?? {}) as Record<string, unknown>;
-  return {
-    ok: Boolean(raw.ok),
-    code: String(raw.code ?? ''),
-    status: String(raw.status ?? 'pending'),
-    message: raw.message ? String(raw.message) : null,
-    idempotency_key: raw.idempotency_key ? String(raw.idempotency_key) : null,
-    distributed_count: Number(raw.distributed_count ?? 0),
-    distributed_tokens: Number(raw.distributed_tokens ?? 0),
-    emission_cap: Number(raw.emission_cap ?? 0),
-    carryover_out: Number(raw.carryover_out ?? 0),
-    carryover_streak: Number(raw.carryover_streak ?? 0),
-  };
-}
-
-async function resolveSettlementBlockers(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  sprintId: string
-): Promise<SettlementBlockers> {
-  const { data, error } = await supabase.rpc('get_sprint_settlement_blockers', {
-    p_sprint_id: sprintId,
-  });
-
-  if (!error && data) {
-    return parseSettlementBlockers(data);
-  }
-
-  // Fallback if RPC is not available yet in a partially migrated environment.
-  const [{ count: unresolvedCount }, { data: sprint }] = await Promise.all([
-    supabase
-      .from('disputes')
-      .select('id', { count: 'exact', head: true })
-      .eq('sprint_id', sprintId)
-      .not('status', 'in', `("${TERMINAL_DISPUTE_STATUSES.join('","')}")`),
-    supabase
-      .from('sprints')
-      .select('settlement_integrity_flags')
-      .eq('id', sprintId)
-      .maybeSingle(),
-  ]);
-
-  const integrityFlags = Array.isArray(sprint?.settlement_integrity_flags)
-    ? (sprint.settlement_integrity_flags as Json[])
-    : [];
-  const unresolvedDisputes = unresolvedCount ?? 0;
-  const reasons: string[] = [];
-
-  if (unresolvedDisputes > 0) {
-    reasons.push(`${unresolvedDisputes} unresolved dispute(s)`);
-  }
-  if (integrityFlags.length > 0) {
-    reasons.push('unresolved integrity flags are present');
-  }
-
-  return {
-    blocked: reasons.length > 0,
-    unresolved_disputes: unresolvedDisputes,
-    integrity_flag_count: integrityFlags.length,
-    integrity_flags: integrityFlags,
-    reasons,
-  };
-}
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {

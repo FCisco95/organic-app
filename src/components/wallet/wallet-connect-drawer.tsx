@@ -4,13 +4,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletReadyState } from '@solana/wallet-adapter-base';
-import { X, Search, ChevronRight } from 'lucide-react';
+import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { WalletListItem } from './wallet-list-item';
 import { WalletGetStarted } from './wallet-get-started';
 import { useAuth } from '@/features/auth/context';
-import { useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
+import { WalletMainView, WalletAllView, LinkWalletCta } from './connect-drawer';
+import type { ViewState } from './connect-drawer';
 
 const RECENT_WALLET_KEY = 'wallet_recent';
 const CONNECTABLE_READY_STATES = new Set([WalletReadyState.Installed, WalletReadyState.Loadable]);
@@ -33,12 +33,9 @@ interface WalletConnectDrawerProps {
   onClose: () => void;
 }
 
-type ViewState = 'main' | 'all' | 'get-started';
-
 export function WalletConnectDrawer({ isOpen, onClose }: WalletConnectDrawerProps) {
   const { wallets, select, connect, connecting, connected, wallet, publicKey } = useWallet();
   const { user, profile, loading: authLoading } = useAuth();
-  const router = useRouter();
   const t = useTranslations('Wallet');
   const [view, setView] = useState<ViewState>('main');
   const [searchQuery, setSearchQuery] = useState('');
@@ -300,6 +297,8 @@ export function WalletConnectDrawer({ isOpen, onClose }: WalletConnectDrawerProp
     !!connectedAddress && !!profile?.wallet_pubkey && profile.wallet_pubkey === connectedAddress;
   const showLinkCta = !!user && !authLoading && connected && connectedAddress && !isLinked;
 
+  const isActionDisabled = isConnecting || connecting;
+
   const content = (
     <div
       data-wallet-drawer-root="true"
@@ -345,135 +344,39 @@ export function WalletConnectDrawer({ isOpen, onClose }: WalletConnectDrawerProp
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-5">
-          {showLinkCta && (
-            <div className="mb-6 rounded-xl border border-organic-orange/30 bg-organic-orange/10 p-4">
-              <p className="text-sm font-medium text-white mb-1">{t('linkWalletTitle')}</p>
-              <p className="text-xs text-gray-300 mb-3">{t('linkWalletDescription')}</p>
-              <button
-                type="button"
-                onClick={() => {
-                  onClose();
-                  router.push('/profile');
-                }}
-                className="text-sm font-semibold text-organic-orange hover:text-orange-400 transition-colors"
-              >
-                {t('linkWalletAction')}
-              </button>
-            </div>
-          )}
+          {showLinkCta && <LinkWalletCta onClose={onClose} />}
           {view === 'get-started' ? (
             <WalletGetStarted onBack={() => setView('main')} />
           ) : view === 'all' ? (
-            /* All Wallets View */
-            <div className="space-y-4">
-              {/* Search Input */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                <input
-                  ref={searchInputRef}
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={t('searchWalletsPlaceholder')}
-                  className="w-full pl-10 pr-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-organic-orange/50 focus:border-organic-orange/50"
-                />
-              </div>
-
-              {/* Back to Popular */}
-              <button
-                type="button"
-                onClick={() => {
-                  setView('main');
-                  setSearchQuery('');
-                  setFocusedIndex(-1);
-                }}
-                className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"
-              >
-                <ChevronRight className="w-4 h-4 rotate-180" />
-                {t('backToPopular')}
-              </button>
-
-              {/* Wallet List */}
-              <div className="space-y-2">
-                {filteredWallets.length > 0 ? (
-                  filteredWallets.map((wallet, index) => (
-                    <WalletListItem
-                      key={wallet.adapter.name}
-                      name={wallet.adapter.name}
-                      icon={wallet.adapter.icon}
-                      isRecent={wallet.adapter.name === recentWalletName}
-                      isDetected={wallet.readyState === WalletReadyState.Installed}
-                      onClick={() => handleSelectWallet(wallet.adapter.name)}
-                      disabled={isConnecting || connecting}
-                      isFocused={focusedIndex === index}
-                    />
-                  ))
-                ) : (
-                  <p className="text-gray-500 text-sm text-center py-8">
-                    {t('noWalletsFound', { query: searchQuery })}
-                  </p>
-                )}
-              </div>
-            </div>
+            <WalletAllView
+              filteredWallets={filteredWallets}
+              recentWalletName={recentWalletName}
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              onBack={() => {
+                setView('main');
+                setSearchQuery('');
+                setFocusedIndex(-1);
+              }}
+              onSelectWallet={handleSelectWallet}
+              isDisabled={isActionDisabled}
+              focusedIndex={focusedIndex}
+              searchInputRef={searchInputRef}
+            />
           ) : (
-            /* Main View (Popular + Recent) */
-            <div className="space-y-6">
-              {/* Recent Wallet Section */}
-              {recentWallet && (
-                <div className="space-y-2">
-                  <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('recentLabel')}
-                  </h3>
-                  <WalletListItem
-                    name={recentWallet.adapter.name}
-                    icon={recentWallet.adapter.icon}
-                    isRecent
-                    isDetected={recentWallet.readyState === WalletReadyState.Installed}
-                    onClick={() => handleSelectWallet(recentWallet.adapter.name)}
-                    disabled={isConnecting || connecting}
-                    isFocused={focusedIndex === 0}
-                  />
-                </div>
-              )}
-
-              {/* Popular Wallets Section */}
-              <div className="space-y-2">
-                <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('popularLabel')}
-                </h3>
-                <div className="space-y-2">
-                  {popularWallets.map((wallet, index) => (
-                    <WalletListItem
-                      key={wallet.adapter.name}
-                      name={wallet.adapter.name}
-                      icon={wallet.adapter.icon}
-                      isDetected={wallet.readyState === WalletReadyState.Installed}
-                      onClick={() => handleSelectWallet(wallet.adapter.name)}
-                      disabled={isConnecting || connecting}
-                      isFocused={focusedIndex === (recentWallet ? index + 1 : index)}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              {/* All Wallets Button */}
-              <button
-                type="button"
-                onClick={() => {
-                  setView('all');
-                  setFocusedIndex(-1);
-                }}
-                className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-gray-800/30 hover:bg-gray-800/50 border border-gray-700/30 transition-colors text-gray-400 hover:text-white"
-              >
-                <span className="text-sm font-medium">{t('allWalletsLabel')}</span>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-gray-500">
-                    {t('availableCount', { count: availableWallets.length })}
-                  </span>
-                  <ChevronRight className="w-4 h-4" />
-                </div>
-              </button>
-            </div>
+            <WalletMainView
+              recentWallet={recentWallet}
+              popularWallets={popularWallets}
+              availableWalletsCount={availableWallets.length}
+              recentWalletName={recentWalletName}
+              onSelectWallet={handleSelectWallet}
+              isDisabled={isActionDisabled}
+              focusedIndex={focusedIndex}
+              onShowAll={() => {
+                setView('all');
+                setFocusedIndex(-1);
+              }}
+            />
           )}
         </div>
 
@@ -491,7 +394,7 @@ export function WalletConnectDrawer({ isOpen, onClose }: WalletConnectDrawerProp
         )}
 
         {/* Connecting overlay */}
-        {(isConnecting || connecting) && (
+        {isActionDisabled && (
           <div className="absolute inset-0 bg-gray-900/80 flex items-center justify-center">
             <div className="text-center">
               <div className="w-10 h-10 border-3 border-organic-orange border-t-transparent rounded-full animate-spin mx-auto" />

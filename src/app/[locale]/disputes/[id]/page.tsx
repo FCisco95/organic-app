@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useAuth } from '@/features/auth/context';
 import { useDispute, useDisputeComments, useAddDisputeComment } from '@/features/disputes/hooks';
 import { PageContainer } from '@/components/layout';
-import { DisputeDetail } from '@/components/disputes/DisputeDetail';
+import { DisputeDetail } from '@/components/disputes/dispute-detail-view';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Loader2, ArrowLeft } from 'lucide-react';

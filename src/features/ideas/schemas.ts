@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { commentBodySchema } from '@/lib/schemas/common';
 import { proposalCategorySchema } from '@/features/proposals/schemas';
 
 export const ideaSortSchema = z.enum(['hot', 'new', 'top_week', 'top_all']);
@@ -30,7 +31,7 @@ export const voteIdeaSchema = z.object({
 });
 
 export const addIdeaCommentSchema = z.object({
-  body: z.string().trim().min(1, 'Comment cannot be empty').max(5000),
+  body: commentBodySchema(),
 });
 
 export const selectIdeaWinnerSchema = z.object({

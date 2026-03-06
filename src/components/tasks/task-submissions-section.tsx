@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { AlertCircle, CheckCircle, Clock, ExternalLink, XCircle } from 'lucide-react';
 import type { TaskSubmissionWithReviewer } from '@/features/tasks';
-import { DisputeButton } from '@/components/disputes/DisputeButton';
+import { DisputeButton } from '@/components/disputes/dispute-button';
 
 type TaskSubmissionsSectionProps = {
   submissions: TaskSubmissionWithReviewer[];

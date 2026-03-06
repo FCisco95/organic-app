@@ -48,15 +48,15 @@ const AdminVotingControls = dynamic(
 );
 const DelegatedPowerBadge = dynamic(
   () =>
-    import('@/components/voting/DelegatedPowerBadge').then((mod) => mod.DelegatedPowerBadge),
+    import('@/components/voting/delegated-power-badge').then((mod) => mod.DelegatedPowerBadge),
   { loading: () => <div className="h-12 rounded-lg bg-gray-100 animate-pulse" /> }
 );
 const DelegationPanel = dynamic(
-  () => import('@/components/voting/DelegationPanel').then((mod) => mod.DelegationPanel),
+  () => import('@/components/voting/delegation-panel').then((mod) => mod.DelegationPanel),
   { loading: () => <div className="h-40 rounded-lg bg-gray-100 animate-pulse" /> }
 );
 const DelegationInfo = dynamic(
-  () => import('@/components/voting/DelegationInfo').then((mod) => mod.DelegationInfo),
+  () => import('@/components/voting/delegation-info').then((mod) => mod.DelegationInfo),
   { loading: () => <div className="h-24 rounded-lg bg-gray-100 animate-pulse" /> }
 );
 

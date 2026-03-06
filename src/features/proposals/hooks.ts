@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
+import { fetchJson } from '@/lib/fetch-json';
 import type { ProposalListItem, ProposalWithRelations, ProposalComment } from './types';
 import type { ProposalFilters, CreateProposalInput, UpdateProposalInput } from './schemas';
 
@@ -161,18 +162,10 @@ export function useCreateProposal() {
 
   return useMutation({
     mutationFn: async (input: CreateProposalInput & { status?: 'draft' | 'public' | 'submitted' }) => {
-      const response = await fetch('/api/proposals', {
+      return fetchJson<{ id: string }>('/api/proposals', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(input),
       });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to create proposal');
-      }
-
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: proposalKeys.lists() });
@@ -194,18 +187,10 @@ export function useUpdateProposal() {
       proposalId: string;
       updates: UpdateProposalInput;
     }) => {
-      const response = await fetch(`/api/proposals/${proposalId}`, {
+      return fetchJson<{ id?: string }>(`/api/proposals/${proposalId}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updates),
       });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to update proposal');
-      }
-
-      return response.json();
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: proposalKeys.lists() });
@@ -224,14 +209,9 @@ export function useDeleteProposal() {
 
   return useMutation({
     mutationFn: async (proposalId: string) => {
-      const response = await fetch(`/api/proposals/${proposalId}`, {
+      await fetchJson(`/api/proposals/${proposalId}`, {
         method: 'DELETE',
       });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to delete proposal');
-      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: proposalKeys.lists() });
@@ -247,18 +227,10 @@ export function useUpdateProposalStatus() {
 
   return useMutation({
     mutationFn: async ({ proposalId, status }: { proposalId: string; status: string }) => {
-      const response = await fetch(`/api/proposals/${proposalId}/status`, {
+      return fetchJson<{ id?: string }>(`/api/proposals/${proposalId}/status`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status }),
       });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to update status');
-      }
-
-      return response.json();
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: proposalKeys.lists() });
@@ -277,18 +249,10 @@ export function useAddComment() {
 
   return useMutation({
     mutationFn: async ({ proposalId, body }: { proposalId: string; body: string }) => {
-      const response = await fetch(`/api/proposals/${proposalId}/comments`, {
+      return fetchJson(`/api/proposals/${proposalId}/comments`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ body }),
       });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to post comment');
-      }
-
-      return response.json();
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({

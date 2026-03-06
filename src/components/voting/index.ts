@@ -1,6 +1,6 @@
 // Voting components - barrel export
 
-export { VotingPanel } from './VotingPanel';
-export { VoteResults } from './VoteResults';
-export { VotingStatusBadge } from './VotingStatusBadge';
-export { AdminVotingControls } from './AdminVotingControls';
+export { VotingPanel } from './voting-panel';
+export { VoteResults } from './vote-results';
+export { VotingStatusBadge } from './voting-status-badge';
+export { AdminVotingControls } from './admin-voting-controls';

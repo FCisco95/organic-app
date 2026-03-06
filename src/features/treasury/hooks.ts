@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+import { fetchJson } from '@/lib/fetch-json';
 import type { TreasuryData } from './types';
 
 export const treasuryKeys = {
@@ -12,9 +13,7 @@ export function useTreasury() {
   return useQuery({
     queryKey: treasuryKeys.data(),
     queryFn: async (): Promise<TreasuryData> => {
-      const res = await fetch('/api/treasury');
-      if (!res.ok) throw new Error('Failed to fetch treasury data');
-      const json = await res.json();
+      const json = await fetchJson<{ data: TreasuryData }>('/api/treasury');
       return json.data;
     },
     staleTime: 60_000,

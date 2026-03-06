@@ -20,6 +20,8 @@ import type {
   DisputeCommentInput,
   DisputeEvidenceUploadMetadataInput,
 } from './schemas';
+import { fetchJson } from '@/lib/fetch-json';
+import { buildQueryString } from '@/lib/query-string';
 
 // ─── Query keys ───────────────────────────────────────────────────────────
 
@@ -38,35 +40,16 @@ export const disputeKeys = {
     [...disputeKeys.all, 'reviewer-accuracy', reviewerId ?? 'global'] as const,
 };
 
-// ─── Helpers ──────────────────────────────────────────────────────────────
-
-async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(url, init);
-  const data = await response.json();
-  if (!response.ok) {
-    throw new Error(data.error || `Request failed with status ${response.status}`);
-  }
-  return data;
-}
-
 // ─── Query hooks ──────────────────────────────────────────────────────────
 
 /** Fetch disputes with optional filters */
 export function useDisputes(filters: DisputeFilters = {}) {
-  const params = new URLSearchParams();
-  if (filters.status) params.set('status', filters.status);
-  if (filters.tier) params.set('tier', filters.tier);
-  if (filters.sprint_id) params.set('sprint_id', filters.sprint_id);
-  if (filters.my_disputes) params.set('my_disputes', 'true');
-
-  const qs = params.toString();
+  const qs = buildQueryString(filters);
 
   return useQuery({
     queryKey: disputeKeys.list(filters),
     queryFn: () =>
-      fetchJson<{ data: DisputeListItem[]; total: number }>(
-        `/api/disputes${qs ? `?${qs}` : ''}`
-      ),
+      fetchJson<{ data: DisputeListItem[]; total: number }>(`/api/disputes${qs}`),
   });
 }
 
@@ -138,14 +121,12 @@ export function useArbitratorStats(enabled = true) {
 
 /** Fetch reviewer accuracy metrics for accountability tracking */
 export function useReviewerAccuracy(enabled = true, reviewerId?: string) {
-  const params = new URLSearchParams();
-  params.set('reviewer_accuracy', 'true');
-  if (reviewerId) params.set('reviewer_id', reviewerId);
+  const qs = buildQueryString({ reviewer_accuracy: 'true', reviewer_id: reviewerId });
 
   return useQuery({
     queryKey: disputeKeys.reviewerAccuracy(reviewerId),
     queryFn: () =>
-      fetchJson<{ data: ReviewerAccuracyStats }>(`/api/disputes?${params.toString()}`),
+      fetchJson<{ data: ReviewerAccuracyStats }>(`/api/disputes${qs}`),
     enabled,
     staleTime: 60 * 1000, // 1 minute
   });

@@ -1,10 +1,20 @@
 {
   "version": 1,
   "skills": {
+    "agent-browser": {
+      "source": "inference-sh-9/skills",
+      "sourceType": "github",
+      "computedHash": "ffc846e8318cfc112e78d1f69d06447eb63a49ca5b463209695fb81b6876e4be"
+    },
     "executing-plans": {
       "source": "obra/superpowers",
       "sourceType": "github",
       "computedHash": "7311ed85870f37e9af1e8354c500e7c4161893d845031eed43dd1d55157da83a"
+    },
+    "finishing-a-development-branch": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "computedHash": "9edba9a38684c060fdc38290f640e1dc0c37de286723ac9be73bacacf7cd6f3d"
     },
     "mobile-android-design": {
       "source": "wshobson/agents",
@@ -16,6 +26,11 @@
       "sourceType": "github",
       "computedHash": "b7652af80989c86dd8945a89c6cb188acf6de8a3ca2205c427adf2ed478e63c3"
     },
+    "requesting-code-review": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "computedHash": "93a837ba79c3c3f0b3e503fd9d8b54c638337d73d200c1af3bca9607264bf0e0"
+    },
     "skill-creator": {
       "source": "anthropics/skills",
       "sourceType": "github",
@@ -25,6 +40,16 @@
       "source": "obra/superpowers",
       "sourceType": "github",
       "computedHash": "1f5831dbfcddda9ac3e706f2ca81a3887fef9598159966d27ef672d86e255242"
+    },
+    "test-driven-development": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "computedHash": "126f1ebf6ccd414f42544f6e83d8cc5adb089e1108eaffb7c400701e37eecd9f"
+    },
+    "using-git-worktrees": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "computedHash": "52bbb4b6e80918e83e92a1514f3b3757712154c2a8a42de24919e48a794c54fc"
     }
   }
 }

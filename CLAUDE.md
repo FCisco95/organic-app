@@ -48,6 +48,19 @@ Core domains: auth, tasks, proposals, voting, sprints, members, notifications, r
 - Ask before changing public APIs, route contracts, or DB schema strategy.
 - Do not change npm scripts without approval.
 
+## Worktree strategy
+
+Use git worktrees for parallel work streams:
+
+| Worktree | Branch Pattern | Purpose |
+|---|---|---|
+| main repo | `main` | Stable base, PR merges |
+| worktree-1 | `phase/*` | Feature development |
+| worktree-2 | `fix/*` | Bug fixes (parallel) |
+| worktree-3 | `docs/*` | Documentation (parallel) |
+
+Use the `using-git-worktrees` skill to create worktrees. Clean up worktrees after merging.
+
 ## GitHub phase workflow (required)
 
 - Start each new phase by creating and switching to a new branch before editing files.

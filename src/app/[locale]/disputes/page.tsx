@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { useAuth } from '@/features/auth/context';
 import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
-import { DisputeQueue } from '@/components/disputes/DisputeQueue';
-import { DisputeStats } from '@/components/disputes/DisputeStats';
+import { DisputeQueue } from '@/components/disputes/dispute-queue';
+import { DisputeStats } from '@/components/disputes/dispute-stats';
 import { cn } from '@/lib/utils';
 import { ShieldAlert, Scale } from 'lucide-react';
 

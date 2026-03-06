@@ -3,6 +3,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { fetchJson } from '@/lib/fetch-json';
+import { buildQueryString } from '@/lib/query-string';
 import {
   VoteResults,
   UserVote,
@@ -22,15 +24,6 @@ import {
 
 const VOTING_CONFIG_COLUMNS =
   'id, org_id, quorum_percentage, approval_threshold, voting_duration_days, proposal_threshold_org, proposer_cooldown_days, max_live_proposals, abstain_counts_toward_quorum, created_at, updated_at';
-
-function toApiError(data: unknown, fallback: string): Error {
-  const payload = (data ?? {}) as { error?: string; code?: string };
-  const err = new Error(payload.error || fallback);
-  if (payload.code) {
-    (err as Error & { code?: string }).code = payload.code;
-  }
-  return err;
-}
 
 // Query keys
 export const votingKeys = {
@@ -107,12 +100,7 @@ export function useVoteResults(proposalId: string) {
   return useQuery({
     queryKey: votingKeys.results(proposalId),
     queryFn: async () => {
-      const response = await fetch(`/api/proposals/${proposalId}/results`);
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to fetch vote results');
-      }
-      return response.json() as Promise<VoteResults>;
+      return fetchJson<VoteResults>(`/api/proposals/${proposalId}/results`);
     },
     enabled: !!proposalId,
     refetchInterval: (query) => (query.state.data?.is_voting_open ? 30_000 : false),
@@ -152,14 +140,9 @@ export function useUserVotingWeight(proposalId: string, userId: string | undefin
     queryKey: [...votingKeys.snapshot(proposalId), userId],
     queryFn: async () => {
       if (!userId) return 0;
-
-      const response = await fetch(`/api/proposals/${proposalId}/vote`);
-      if (!response.ok) {
-        const data = await response.json();
-        throw toApiError(data, 'Failed to fetch voting weight');
-      }
-
-      const data = (await response.json()) as { voting_weight?: number };
+      const data = await fetchJson<{ voting_weight?: number }>(
+        `/api/proposals/${proposalId}/vote`
+      );
       return Number(data.voting_weight ?? 0);
     },
     enabled: !!proposalId && !!userId,
@@ -174,18 +157,10 @@ export function useStartVoting() {
 
   return useMutation({
     mutationFn: async ({ proposalId, input }: { proposalId: string; input?: StartVotingInput }) => {
-      const response = await fetch(`/api/proposals/${proposalId}/start-voting`, {
+      return fetchJson(`/api/proposals/${proposalId}/start-voting`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(input || {}),
       });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw toApiError(data, 'Failed to start voting');
-      }
-
-      return response.json();
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: votingKeys.proposal(variables.proposalId) });
@@ -202,18 +177,10 @@ export function useCastVote() {
 
   return useMutation({
     mutationFn: async ({ proposalId, input }: { proposalId: string; input: CastVoteInput }) => {
-      const response = await fetch(`/api/proposals/${proposalId}/vote`, {
+      return fetchJson(`/api/proposals/${proposalId}/vote`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(input),
       });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to cast vote');
-      }
-
-      return response.json();
     },
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: votingKeys.results(variables.proposalId) });
@@ -243,18 +210,10 @@ export function useFinalizeVoting() {
       proposalId: string;
       input?: FinalizeVotingInput;
     }) => {
-      const response = await fetch(`/api/proposals/${proposalId}/finalize`, {
+      return fetchJson(`/api/proposals/${proposalId}/finalize`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(input || {}),
       });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw toApiError(data, 'Failed to finalize voting');
-      }
-
-      return response.json();
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: votingKeys.proposal(variables.proposalId) });
@@ -332,16 +291,10 @@ export function useDelegations() {
   return useQuery({
     queryKey: votingKeys.delegations(),
     queryFn: async () => {
-      const response = await fetch('/api/voting/delegations');
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to fetch delegations');
-      }
-      const result = await response.json();
-      return result as {
+      return fetchJson<{
         outgoing: OutgoingDelegation[];
         incoming: IncomingDelegation[];
-      };
+      }>('/api/voting/delegations');
     },
   });
 }
@@ -354,18 +307,10 @@ export function useDelegate() {
 
   return useMutation({
     mutationFn: async (input: DelegateVoteInput) => {
-      const response = await fetch('/api/voting/delegations', {
+      return fetchJson('/api/voting/delegations', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(input),
       });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to delegate');
-      }
-
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: votingKeys.delegations() });
@@ -384,18 +329,10 @@ export function useRevokeDelegation() {
 
   return useMutation({
     mutationFn: async (input: RevokeDelegationInput) => {
-      const response = await fetch('/api/voting/delegations', {
+      return fetchJson('/api/voting/delegations', {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(input),
       });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to revoke delegation');
-      }
-
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: votingKeys.delegations() });
@@ -413,14 +350,10 @@ export function useEffectiveVotingPower(proposalId: string, userId: string | und
   return useQuery({
     queryKey: votingKeys.effectivePower(proposalId, userId),
     queryFn: async () => {
-      const response = await fetch(
-        `/api/proposals/${proposalId}/effective-power?user_id=${userId}`
+      const qs = buildQueryString({ user_id: userId });
+      return fetchJson<EffectiveVotingPower>(
+        `/api/proposals/${proposalId}/effective-power${qs}`
       );
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to fetch effective power');
-      }
-      return response.json() as Promise<EffectiveVotingPower>;
     },
     enabled: !!proposalId && !!userId,
   });

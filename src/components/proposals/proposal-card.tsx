@@ -9,8 +9,8 @@ import type {
   ProposalStatus,
   ProposalCategory,
 } from '@/features/proposals/types';
-import { CategoryBadge } from './CategoryBadge';
-import { StatusBadge } from './StatusBadge';
+import { CategoryBadge } from './category-badge';
+import { StatusBadge } from './status-badge';
 
 interface ProposalCardProps {
   proposal: ProposalListItem;

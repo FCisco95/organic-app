@@ -51,7 +51,7 @@ function generateCode(): string {
   return code;
 }
 
-export function calculateReferralTier(
+function calculateReferralTier(
   totalReferrals: number,
   tiers: ReferralTier[]
 ): ReferralTier {
@@ -64,7 +64,7 @@ export function calculateReferralTier(
   return tiers[0] ?? DEFAULT_TIERS[0];
 }
 
-export async function getOrCreateReferralCode(
+async function getOrCreateReferralCode(
   supabase: DbClient,
   userId: string
 ): Promise<ReferralCode> {
@@ -141,7 +141,7 @@ export async function validateReferralCode(
   return { referrer_id: row.user_id, code_id: row.id };
 }
 
-export async function createReferral(
+async function createReferral(
   supabase: DbClient,
   referrerId: string,
   referredId: string,

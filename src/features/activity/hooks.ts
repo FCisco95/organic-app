@@ -3,6 +3,8 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { fetchJson } from '@/lib/fetch-json';
+import { buildQueryString } from '@/lib/query-string';
 import { ActivityEvent, DashboardStats } from './types';
 
 export const activityKeys = {
@@ -15,9 +17,7 @@ export function useStats() {
   return useQuery({
     queryKey: activityKeys.stats(),
     queryFn: async (): Promise<DashboardStats> => {
-      const res = await fetch('/api/stats');
-      if (!res.ok) throw new Error('Failed to fetch stats');
-      const { stats } = await res.json();
+      const { stats } = await fetchJson<{ stats: DashboardStats }>('/api/stats');
       return stats;
     },
     staleTime: 300_000, // 5 minutes — dashboard stats are slow-changing
@@ -33,9 +33,8 @@ export function useActivityFeed(limit = 20) {
   const query = useQuery({
     queryKey: activityKeys.feed(),
     queryFn: async (): Promise<ActivityEvent[]> => {
-      const res = await fetch(`/api/activity?limit=${limit}`);
-      if (!res.ok) throw new Error('Failed to fetch activity');
-      const { events } = await res.json();
+      const qs = buildQueryString({ limit });
+      const { events } = await fetchJson<{ events: ActivityEvent[] }>(`/api/activity${qs}`);
       return events;
     },
     staleTime: 30_000,

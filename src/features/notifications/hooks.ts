@@ -3,6 +3,8 @@
 import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { fetchJson } from '@/lib/fetch-json';
+import { buildQueryString } from '@/lib/query-string';
 import type {
   Notification,
   NotificationPreference,
@@ -39,12 +41,8 @@ export function useNotifications(filters?: { category?: NotificationCategory; un
   const query = useQuery({
     queryKey: notificationKeys.list(filters),
     queryFn: async (): Promise<NotificationsResponse> => {
-      const params = new URLSearchParams();
-      if (filters?.category) params.set('category', filters.category);
-      if (filters?.unread !== undefined) params.set('unread', String(filters.unread));
-      const res = await fetch(`/api/notifications?${params.toString()}`);
-      if (!res.ok) throw new Error('Failed to fetch notifications');
-      return res.json();
+      const qs = buildQueryString({ category: filters?.category, unread: filters?.unread });
+      return fetchJson<NotificationsResponse>(`/api/notifications${qs}`);
     },
     staleTime: 30_000,
   });
@@ -145,14 +143,13 @@ export function useNotificationsInfinite(filters?: {
   return useInfiniteQuery<NotificationsResponse, Error, { pages: NotificationsResponse[]; pageParams: (string | undefined)[] }, readonly unknown[], string | undefined>({
     queryKey: notificationKeys.infinite(filters),
     queryFn: async ({ pageParam }): Promise<NotificationsResponse> => {
-      const params = new URLSearchParams();
-      if (filters?.category) params.set('category', filters.category);
-      if (filters?.unread !== undefined) params.set('unread', String(filters.unread));
-      if (pageParam) params.set('cursor', pageParam);
-      params.set('limit', String(limit));
-      const res = await fetch(`/api/notifications?${params.toString()}`);
-      if (!res.ok) throw new Error('Failed to fetch notifications');
-      return res.json();
+      const qs = buildQueryString({
+        category: filters?.category,
+        unread: filters?.unread,
+        cursor: pageParam,
+        limit,
+      });
+      return fetchJson<NotificationsResponse>(`/api/notifications${qs}`);
     },
     initialPageParam: undefined,
     getNextPageParam: (lastPage, allPages) => {
@@ -169,9 +166,8 @@ export function useUnreadCount() {
   return useQuery({
     queryKey: notificationKeys.unreadCount(),
     queryFn: async (): Promise<number> => {
-      const res = await fetch('/api/notifications?unread=true&limit=1');
-      if (!res.ok) throw new Error('Failed to fetch unread count');
-      const data: NotificationsResponse = await res.json();
+      const qs = buildQueryString({ unread: true, limit: 1 });
+      const data = await fetchJson<NotificationsResponse>(`/api/notifications${qs}`);
       return data.unread_count;
     },
     staleTime: 30_000,
@@ -185,11 +181,9 @@ export function useMarkRead() {
 
   return useMutation({
     mutationFn: async (notificationId: string) => {
-      const res = await fetch(`/api/notifications/${notificationId}/read`, {
+      await fetchJson(`/api/notifications/${notificationId}/read`, {
         method: 'PATCH',
       });
-      if (!res.ok) throw new Error('Failed to mark as read');
-      await res.json();
       return notificationId;
     },
     onSuccess: (notificationId) => {
@@ -224,9 +218,7 @@ export function useMarkAllRead() {
 
   return useMutation({
     mutationFn: async () => {
-      const res = await fetch('/api/notifications', { method: 'PATCH' });
-      if (!res.ok) throw new Error('Failed to mark all as read');
-      return res.json();
+      return fetchJson('/api/notifications', { method: 'PATCH' });
     },
     onSuccess: () => {
       queryClient.setQueryData(notificationKeys.unreadCount(), 0);
@@ -252,9 +244,7 @@ export function useNotificationPreferences() {
   return useQuery({
     queryKey: notificationKeys.preferences(),
     queryFn: async (): Promise<NotificationPreference[]> => {
-      const res = await fetch('/api/notifications/preferences');
-      if (!res.ok) throw new Error('Failed to fetch preferences');
-      const data = await res.json();
+      const data = await fetchJson<{ preferences: NotificationPreference[] }>('/api/notifications/preferences');
       return data.preferences;
     },
     staleTime: 60_000,
@@ -270,13 +260,10 @@ export function useUpdatePreference() {
       in_app?: boolean;
       email?: boolean;
     }) => {
-      const res = await fetch('/api/notifications/preferences', {
+      return fetchJson('/api/notifications/preferences', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(input),
       });
-      if (!res.ok) throw new Error('Failed to update preference');
-      return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: notificationKeys.preferences() });
@@ -288,13 +275,8 @@ export function useIsFollowing(subjectType: FollowSubjectType, subjectId: string
   return useQuery({
     queryKey: notificationKeys.isFollowing(subjectType, subjectId),
     queryFn: async (): Promise<boolean> => {
-      const params = new URLSearchParams({
-        subject_type: subjectType,
-        subject_id: subjectId,
-      });
-      const res = await fetch(`/api/notifications/follow?${params.toString()}`);
-      if (!res.ok) throw new Error('Failed to check follow status');
-      const data = await res.json();
+      const qs = buildQueryString({ subject_type: subjectType, subject_id: subjectId });
+      const data = await fetchJson<{ following: boolean }>(`/api/notifications/follow${qs}`);
       return data.following;
     },
     enabled: !!subjectId,
@@ -307,13 +289,10 @@ export function useFollow() {
 
   return useMutation({
     mutationFn: async (input: { subject_type: FollowSubjectType; subject_id: string }) => {
-      const res = await fetch('/api/notifications/follow', {
+      return fetchJson('/api/notifications/follow', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(input),
       });
-      if (!res.ok) throw new Error('Failed to follow');
-      return res.json();
     },
     onSuccess: (_data, variables) => {
       queryClient.setQueryData(
@@ -329,13 +308,10 @@ export function useUnfollow() {
 
   return useMutation({
     mutationFn: async (input: { subject_type: FollowSubjectType; subject_id: string }) => {
-      const res = await fetch('/api/notifications/follow', {
+      return fetchJson('/api/notifications/follow', {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(input),
       });
-      if (!res.ok) throw new Error('Failed to unfollow');
-      return res.json();
     },
     onSuccess: (_data, variables) => {
       queryClient.setQueryData(

@@ -88,6 +88,7 @@ Role systems are **not finalized** and expected to evolve.
 - Wave 2 UI/UX revamp complete across all surfaces
 - Accessibility pass (WCAG 2.1 AA aria-labels, aria-hidden)
 - Internationalization: en, pt-PT, zh-CN
+- Codebase standardization: all hooks use `fetchJson`/`buildQueryString`, shared Zod schemas, consistent feature domain structure, kebab-case file naming, 89 unit tests
 
 **What is still open or incomplete:**
 

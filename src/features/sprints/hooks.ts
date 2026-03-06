@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
+import { fetchJson } from '@/lib/fetch-json';
 import type { Sprint, SprintSnapshot, SprintWithSnapshot } from './types';
 
 const SPRINT_COLUMNS =
@@ -48,12 +49,7 @@ export function useSprint(id: string) {
   return useQuery({
     queryKey: sprintKeys.detail(id),
     queryFn: async () => {
-      const response = await fetch(`/api/sprints/${id}`);
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to fetch sprint');
-      }
-      return response.json();
+      return fetchJson(`/api/sprints/${id}`);
     },
     enabled: !!id,
     staleTime: 60_000,
@@ -145,19 +141,11 @@ export function useCreateSprint() {
       goal?: string;
       capacity_points?: number | null;
     }) => {
-      const response = await fetch('/api/sprints', {
+      const data = await fetchJson<{ sprint: Sprint }>('/api/sprints', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(input),
       });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to create sprint');
-      }
-
-      const { sprint } = await response.json();
-      return sprint as Sprint;
+      return data.sprint;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: sprintKeys.lists() });
@@ -179,19 +167,11 @@ export function useUpdateSprint() {
       sprintId: string;
       updates: Record<string, unknown>;
     }) => {
-      const response = await fetch(`/api/sprints/${sprintId}`, {
+      const data = await fetchJson<{ sprint: Sprint }>(`/api/sprints/${sprintId}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updates),
       });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to update sprint');
-      }
-
-      const { sprint } = await response.json();
-      return sprint as Sprint;
+      return data.sprint;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: sprintKeys.lists() });
@@ -208,14 +188,9 @@ export function useDeleteSprint() {
 
   return useMutation({
     mutationFn: async (sprintId: string) => {
-      const response = await fetch(`/api/sprints/${sprintId}`, {
+      await fetchJson(`/api/sprints/${sprintId}`, {
         method: 'DELETE',
       });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to delete sprint');
-      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: sprintKeys.lists() });
@@ -224,24 +199,17 @@ export function useDeleteSprint() {
 }
 
 /**
- * Start a sprint (transition from planning → active)
+ * Start a sprint (transition from planning -> active)
  */
 export function useStartSprint() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (sprintId: string) => {
-      const response = await fetch(`/api/sprints/${sprintId}/start`, {
+      const data = await fetchJson<{ sprint: Sprint }>(`/api/sprints/${sprintId}/start`, {
         method: 'POST',
       });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to start sprint');
-      }
-
-      const { sprint } = await response.json();
-      return sprint as Sprint;
+      return data.sprint;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: sprintKeys.lists() });
@@ -251,7 +219,7 @@ export function useStartSprint() {
 }
 
 /**
- * Complete a sprint (transition from active → completed, creates snapshot)
+ * Complete a sprint (transition from active -> completed, creates snapshot)
  */
 export function useCompleteSprint() {
   const queryClient = useQueryClient();
@@ -270,24 +238,21 @@ export function useCompleteSprint() {
       if (incompleteAction) payload.incomplete_action = incompleteAction;
       if (nextSprintId) payload.next_sprint_id = nextSprintId;
 
-      const response = await fetch(`/api/sprints/${sprintId}/complete`, {
+      const data = await fetchJson<{
+        sprint: Sprint;
+        snapshot?: SprintSnapshot | null;
+        phase_transition?: { from: string; to: string } | null;
+        reviewer_sla?: unknown;
+        settlement_blockers?: unknown;
+      }>(`/api/sprints/${sprintId}/complete`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
 
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to complete sprint');
-      }
-
-      const data = await response.json();
       return {
-        sprint: data.sprint as Sprint,
-        snapshot: (data.snapshot ?? null) as SprintSnapshot | null,
-        phase_transition: (data.phase_transition ?? null) as
-          | { from: string; to: string }
-          | null,
+        sprint: data.sprint,
+        snapshot: data.snapshot ?? null,
+        phase_transition: data.phase_transition ?? null,
         reviewer_sla: data.reviewer_sla ?? null,
         settlement_blockers: data.settlement_blockers ?? null,
       };

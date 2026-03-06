@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+import { fetchJson } from '@/lib/fetch-json';
 import type { AnalyticsData } from './types';
 
 export const analyticsKeys = {
@@ -12,9 +13,7 @@ export function useAnalytics() {
   return useQuery({
     queryKey: analyticsKeys.data(),
     queryFn: async (): Promise<AnalyticsData> => {
-      const res = await fetch('/api/analytics');
-      if (!res.ok) throw new Error('Failed to fetch analytics');
-      const json = await res.json();
+      const json = await fetchJson<{ data: AnalyticsData }>('/api/analytics');
       return json.data;
     },
     staleTime: 120_000,

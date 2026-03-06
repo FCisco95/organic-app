@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { fetchJson } from '@/lib/fetch-json';
 import type {
   GamificationOverview,
   QuestProgressResponse,
@@ -29,11 +30,7 @@ export function useGamificationOverview(options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: gamificationKeys.overview(),
     queryFn: async (): Promise<GamificationOverview> => {
-      const res = await fetch('/api/gamification/overview');
-      if (!res.ok) {
-        throw new Error('Failed to fetch gamification overview');
-      }
-      const json = await res.json();
+      const json = await fetchJson<Record<string, unknown>>('/api/gamification/overview');
       return gamificationOverviewSchema.parse(json);
     },
     staleTime: 30_000,
@@ -48,11 +45,7 @@ export function useQuestProgress(options?: { enabled?: boolean; live?: boolean }
   return useQuery({
     queryKey: gamificationKeys.quests(),
     queryFn: async (): Promise<QuestProgressResponse> => {
-      const res = await fetch('/api/gamification/quests');
-      if (!res.ok) {
-        throw new Error('Failed to fetch quest progress');
-      }
-      const json = await res.json();
+      const json = await fetchJson<Record<string, unknown>>('/api/gamification/quests');
       return questProgressResponseSchema.parse(json);
     },
     staleTime: 30_000,
@@ -68,11 +61,7 @@ export function useReferralStats(options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: gamificationKeys.referrals(),
     queryFn: async (): Promise<ReferralStats> => {
-      const res = await fetch('/api/referrals');
-      if (!res.ok) {
-        throw new Error('Failed to fetch referral stats');
-      }
-      const json = await res.json();
+      const json = await fetchJson<Record<string, unknown>>('/api/referrals');
       return referralStatsSchema.parse(json);
     },
     staleTime: 60_000,
@@ -87,11 +76,7 @@ export function useBurnCost(options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: gamificationKeys.burnCost(),
     queryFn: async (): Promise<BurnCostInfo> => {
-      const res = await fetch('/api/gamification/burn-cost');
-      if (!res.ok) {
-        throw new Error('Failed to fetch burn cost');
-      }
-      const json = await res.json();
+      const json = await fetchJson<Record<string, unknown>>('/api/gamification/burn-cost');
       return burnCostSchema.parse(json);
     },
     staleTime: 30_000,
@@ -105,15 +90,9 @@ export function useBurnPoints() {
 
   return useMutation({
     mutationFn: async () => {
-      const res = await fetch('/api/gamification/burn', {
+      return fetchJson('/api/gamification/burn', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
       });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || 'Failed to burn points');
-      }
-      return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: gamificationKeys.all });
@@ -127,11 +106,7 @@ export function useAdminQuests(options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: gamificationKeys.adminQuests(),
     queryFn: async (): Promise<QuestDefinitionRow[]> => {
-      const res = await fetch('/api/admin/quests');
-      if (!res.ok) {
-        throw new Error('Failed to fetch admin quests');
-      }
-      const json = await res.json();
+      const json = await fetchJson<{ data: QuestDefinitionRow[] }>('/api/admin/quests');
       return json.data;
     },
     staleTime: 30_000,
@@ -144,16 +119,10 @@ export function useCreateQuest() {
 
   return useMutation({
     mutationFn: async (data: Record<string, unknown>) => {
-      const res = await fetch('/api/admin/quests', {
+      return fetchJson('/api/admin/quests', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || 'Failed to create quest');
-      }
-      return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: gamificationKeys.adminQuests() });
@@ -167,16 +136,10 @@ export function useUpdateQuest() {
 
   return useMutation({
     mutationFn: async ({ id, ...data }: { id: string } & Record<string, unknown>) => {
-      const res = await fetch(`/api/admin/quests/${id}`, {
+      return fetchJson(`/api/admin/quests/${id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || 'Failed to update quest');
-      }
-      return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: gamificationKeys.adminQuests() });
@@ -190,14 +153,9 @@ export function useDeleteQuest() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const res = await fetch(`/api/admin/quests/${id}`, {
+      return fetchJson(`/api/admin/quests/${id}`, {
         method: 'DELETE',
       });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || 'Failed to delete quest');
-      }
-      return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: gamificationKeys.adminQuests() });
@@ -211,16 +169,10 @@ export function useUpdateGamificationConfig() {
 
   return useMutation({
     mutationFn: async (data: GamificationConfigInput & { reason: string }) => {
-      const res = await fetch('/api/admin/gamification/config', {
+      return fetchJson('/api/admin/gamification/config', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || 'Failed to update gamification config');
-      }
-      return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: gamificationKeys.all });

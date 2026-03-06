@@ -1,6 +1,8 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { fetchJson } from '@/lib/fetch-json';
+import { buildQueryString } from '@/lib/query-string';
 import type {
   UserReputation,
   AchievementWithStatus,
@@ -30,9 +32,7 @@ export function useReputation(userId?: string, options?: { enabled?: boolean }) 
     queryKey: reputationKeys.user(userId),
     queryFn: async (): Promise<UserReputation> => {
       const url = userId ? `/api/reputation/${userId}` : '/api/reputation';
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('Failed to fetch reputation');
-      return res.json();
+      return fetchJson<UserReputation>(url);
     },
     staleTime: 30_000,
     enabled: options?.enabled,
@@ -45,10 +45,8 @@ export function useAchievements(userId?: string, options?: { enabled?: boolean }
   return useQuery({
     queryKey: reputationKeys.achievements(userId),
     queryFn: async (): Promise<AchievementWithStatus[]> => {
-      const params = userId ? `?userId=${userId}` : '';
-      const res = await fetch(`/api/achievements${params}`);
-      if (!res.ok) throw new Error('Failed to fetch achievements');
-      const data = await res.json();
+      const qs = buildQueryString({ userId });
+      const data = await fetchJson<{ achievements: AchievementWithStatus[] }>(`/api/achievements${qs}`);
       return data.achievements;
     },
     staleTime: 60_000,
@@ -60,14 +58,12 @@ export function useAchievements(userId?: string, options?: { enabled?: boolean }
 
 export function useLeaderboard(options?: { enabled?: boolean; fresh?: boolean }) {
   const fresh = options?.fresh === true;
-  const querySuffix = fresh ? '?fresh=1' : '';
 
   return useQuery({
     queryKey: reputationKeys.leaderboard(fresh),
     queryFn: async (): Promise<LeaderboardEntry[]> => {
-      const res = await fetch(`/api/leaderboard${querySuffix}`);
-      if (!res.ok) throw new Error('Failed to fetch leaderboard');
-      const data: LeaderboardResponse = await res.json();
+      const qs = buildQueryString({ fresh: fresh ? 1 : undefined });
+      const data = await fetchJson<LeaderboardResponse>(`/api/leaderboard${qs}`);
       return data.leaderboard ?? [];
     },
     staleTime: fresh ? 0 : 30_000,
@@ -81,11 +77,8 @@ export function useXpHistory(userId?: string, limit: number = 20) {
   return useQuery({
     queryKey: reputationKeys.xpHistory(userId, limit),
     queryFn: async (): Promise<XpEvent[]> => {
-      const params = new URLSearchParams({ limit: String(limit) });
-      if (userId) params.set('userId', userId);
-      const res = await fetch(`/api/reputation?history=true&${params.toString()}`);
-      if (!res.ok) throw new Error('Failed to fetch XP history');
-      const data = await res.json();
+      const qs = buildQueryString({ history: true, limit, userId });
+      const data = await fetchJson<{ recent_xp_events?: XpEvent[] }>(`/api/reputation${qs}`);
       return data.recent_xp_events ?? [];
     },
     staleTime: 30_000,
@@ -99,9 +92,7 @@ export function useCheckLevelUp() {
 
   return useMutation({
     mutationFn: async (): Promise<CheckLevelUpResponse> => {
-      const res = await fetch('/api/reputation/check-levelup', { method: 'POST' });
-      if (!res.ok) throw new Error('Failed to check level up');
-      return res.json();
+      return fetchJson<CheckLevelUpResponse>('/api/reputation/check-levelup', { method: 'POST' });
     },
     onSuccess: () => {
       // Invalidate reputation queries to reflect new achievements / XP

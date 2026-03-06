@@ -15,25 +15,8 @@ import type {
   IdeaListItem,
   IdeasKpisResponse,
 } from './types';
-
-async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(url, {
-    ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(init?.headers ?? {}),
-    },
-    cache: 'no-store',
-  });
-
-  const data = (await response.json().catch(() => ({}))) as { error?: string } & T;
-
-  if (!response.ok) {
-    throw new Error(data.error ?? `Request failed with status ${response.status}`);
-  }
-
-  return data as T;
-}
+import { fetchJson } from '@/lib/fetch-json';
+import { buildQueryString } from '@/lib/query-string';
 
 export const ideaKeys = {
   all: ['ideas'] as const,
@@ -48,13 +31,12 @@ export const ideaKeys = {
 export function useIdeas(options?: { sort?: IdeaSortInput; search?: string; enabled?: boolean }) {
   const sort = options?.sort ?? 'hot';
   const search = options?.search?.trim() ?? '';
-  const params = new URLSearchParams({ sort });
-  if (search) params.set('search', search);
+  const qs = buildQueryString({ sort, search });
 
   return useQuery({
     queryKey: ideaKeys.list(sort, search),
     queryFn: async () => {
-      const data = await fetchJson<IdeaFeedResponse>(`/api/ideas?${params.toString()}`);
+      const data = await fetchJson<IdeaFeedResponse>(`/api/ideas${qs}`);
       return data.items as IdeaListItem[];
     },
     enabled: options?.enabled ?? true,

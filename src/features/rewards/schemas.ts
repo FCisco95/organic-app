@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { paginationSchema } from '@/lib/schemas/common';
 
 export const submitClaimSchema = z.object({
   points_amount: z.number().int().positive('Points must be a positive integer'),
@@ -28,16 +29,16 @@ export const manualDistributionSchema = z.object({
     .min(1, 'At least one distribution is required'),
 });
 
-export const distributionFilterSchema = z.object({
-  type: z.enum(['epoch', 'manual', 'claim']).optional(),
-  sprint_id: z.string().uuid().optional(),
-  user_id: z.string().uuid().optional(),
-  page: z.coerce.number().int().min(1).default(1),
-  limit: z.coerce.number().int().min(1).max(100).default(20),
-});
+export const distributionFilterSchema = z
+  .object({
+    type: z.enum(['epoch', 'manual', 'claim']).optional(),
+    sprint_id: z.string().uuid().optional(),
+    user_id: z.string().uuid().optional(),
+  })
+  .merge(paginationSchema);
 
-export const claimFilterSchema = z.object({
-  status: z.enum(['pending', 'approved', 'rejected', 'paid']).optional(),
-  page: z.coerce.number().int().min(1).default(1),
-  limit: z.coerce.number().int().min(1).max(100).default(20),
-});
+export const claimFilterSchema = z
+  .object({
+    status: z.enum(['pending', 'approved', 'rejected', 'paid']).optional(),
+  })
+  .merge(paginationSchema);
