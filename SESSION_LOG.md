@@ -2,6 +2,48 @@
 
 Add newest entries at the top.
 
+## 2026-03-07 (Session: Auth QA revamp + auth boundary S1 fixes)
+
+### Summary
+
+Completed the manual-tester skill Phase 2 for QA section 4.1 (Auth flows). Generated 3 coded design alternatives in parallel worktrees, collected user feedback, created a combined version (Alt B's split panel + Alt C's card shadow + Alt A's card styling), and merged to main. Then fixed the two S1 auth boundary issues identified during QA testing.
+
+### Implementation highlights
+
+- Auth page visual revamp:
+  - New `AuthSplitPanel` component with branded left panel and mouse-follow radial glow
+  - Split-panel layout for `/login`, `/signup`, `/auth/error` (desktop: branding left, form right)
+  - Card styling: subtle 2px terracotta accent line, warm shadow, `rounded-lg`
+  - Auth-specific CSS animations (`auth-fade-in` stagger classes, `auth-shake` keyframe)
+  - AppShell conditionally hidden on auth routes via `isAuthRoute()` in `layout-client.tsx`
+  - New i18n keys across all 3 locales for auth page copy
+
+- Auth boundary S1 fixes:
+  - Server-side route protection added to `middleware.ts` for protected routes (`/profile`, `/notifications`, `/rewards`, `/quests`, `/disputes`, `/sprints`, `/admin`)
+  - `returnTo` query param: unauthenticated users redirected to `/login?returnTo=/original-path`, login page redirects back after success
+  - Profile page blank-state fix: shows loading spinner with "Redirecting..." instead of `return null`
+
+- Housekeeping:
+  - Created `manual-tester` skill at `.agents/skills/manual-tester/` with SKILL.md + 5 reference files
+  - Cleaned up 4 prototype worktrees and 41 QA screenshot files
+  - Added `.gitignore` entries for QA artifacts (`qa-*.png`, `alt-*.png`, `.playwright*`)
+  - Updated `docs/qa-runbook.md` with section 4.1 feedback block
+
+### Files changed
+
+- `src/middleware.ts` — route protection + `returnTo` redirect
+- `src/app/[locale]/login/page.tsx` — split panel + `returnTo` support
+- `src/app/[locale]/signup/page.tsx` — split panel + card styling
+- `src/app/[locale]/auth/error/page.tsx` — split panel + card styling
+- `src/app/[locale]/profile/page.tsx` — blank-state fix
+- `src/app/[locale]/globals.css` — auth stagger animation classes
+- `src/components/auth/auth-split-panel.tsx` — new shared component
+- `src/components/layout-client.tsx` — auth route shell bypass
+- `tailwind.config.ts` — auth animation keyframes
+- `messages/{en,pt-PT,zh-CN}.json` — auth page i18n keys + Profile.redirecting
+- `docs/qa-runbook.md` — section 4.1 feedback
+- `.gitignore` — QA artifact patterns
+
 ## 2026-03-01 (Session: documentation deep-dive sync + QA coverage expansion)
 
 ### Summary

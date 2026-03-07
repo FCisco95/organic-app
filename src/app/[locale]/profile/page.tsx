@@ -99,10 +99,10 @@ export default function ProfilePage() {
     }
   }, [profile]);
 
-  // Redirect if not authenticated
+  // Redirect if not authenticated (fallback — middleware handles this server-side)
   useEffect(() => {
     if (!loading && !user) {
-      router.push('/login');
+      router.push('/login?returnTo=/profile');
     }
   }, [user, loading, router]);
 
@@ -571,7 +571,14 @@ export default function ProfilePage() {
   }
 
   if (!user || !profile) {
-    return null;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-3 border-organic-orange border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="mt-4 text-sm text-muted-foreground">{t('redirecting')}</p>
+        </div>
+      </div>
+    );
   }
 
   const formatStat = (value: number) => value.toLocaleString();

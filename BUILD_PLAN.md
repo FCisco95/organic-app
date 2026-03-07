@@ -104,6 +104,29 @@ Ideas incubator surface is now scaffolded in app layer behind feature flag contr
 
 ## Open / In Progress
 
+### QA-Driven Fixes — Auth Boundary & UX Revamp (2026-03-07)
+
+Section 4.1 (Auth flows) of `docs/qa-runbook.md` completed with 11/12 test cases evaluated.
+
+Auth page visual revamp:
+- [x] Split-panel layout for login/signup/error pages (desktop branding panel + form panel)
+- [x] Reusable `AuthSplitPanel` component with mouse-follow radial glow
+- [x] Card styling with subtle terracotta accent line and warm shadow
+- [x] Auth-specific CSS animations (fade-in stagger, shake)
+- [x] AppShell bypass for auth routes via `layout-client.tsx`
+- [x] i18n keys for all auth pages across 3 locales
+
+Auth boundary S1 fixes:
+- [x] Server-side route protection in middleware for `/profile`, `/notifications`, `/rewards`, `/quests`, `/disputes`, `/sprints`, `/admin`
+- [x] `returnTo` param support — unauthenticated users redirected to `/login?returnTo=...` and returned after sign-in
+- [x] Profile page shows spinner instead of blank page while redirecting
+
+Remaining S1/S2 items from section 4.1 feedback (not yet started):
+- [ ] Onboarding modal blocking sign-out + skip state not persisted (AUTH-06)
+- [ ] Post-login redirect to Home instead of `/profile` (AUTH-04)
+- [ ] Investigate 78 console errors on home page (AUTH-10)
+- [ ] Console error audit across all pages (AUTH-05, AUTH-06, AUTH-11)
+
 ### Phase 2.1 — Task Management Hardening
 
 - [ ] Complete remaining task i18n hardcoded string cleanup across all task surfaces

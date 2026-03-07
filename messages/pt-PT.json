@@ -1204,6 +1204,7 @@
   },
   "Profile": {
     "loadingProfile": "Carregando seu perfil...",
+    "redirecting": "Redirecionando...",
     "pageTitle": "Meu Perfil",
     "pageSubtitle": "Gerencie sua conta e informações pessoais",
     "editProfile": "Editar Perfil",

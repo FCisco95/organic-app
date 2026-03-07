@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Link, useRouter } from '@/i18n/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
@@ -18,6 +19,8 @@ export default function LoginPage() {
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [loginError, setLoginError] = useState<string | null>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnTo = searchParams.get('returnTo') ?? '/';
   const supabase = createClient();
 
   const validateForm = () => {
@@ -54,7 +57,7 @@ export default function LoginPage() {
       if (error) throw error;
 
       toast.success(t('toastSuccess'));
-      router.push('/');
+      router.push(returnTo);
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : t('toastInvalidCredentials');
       setLoginError(message);
