@@ -37,6 +37,24 @@ All 8 feature-vertical slices delivered and validated. Wave 2 is closed.
 
 Cross-feature consistency pass complete: `--transition-ui`, `--section-radius`, `--section-padding` tokens added to `globals.css`.
 
+### QA Visual Revamp — Section 4.3 ✅ Complete (2026-03-07)
+
+Manual QA testing + 3-prototype comparison + combined build for Home, Analytics, Leaderboard, Treasury.
+
+- [x] QA section 4.1 (Auth flows) — tested, feedback collected, bugs fixed (PR #14)
+- [x] QA section 4.2 (Navigation) — tested, feedback collected, bugs fixed (PR #15)
+- [x] QA section 4.3 (Home, Analytics, Leaderboard, Treasury) — tested, feedback collected, bugs fixed (PR #16)
+- [x] 3 competing prototypes built in isolated worktrees (A: Clean, B: Dark Hero, C: FOMO)
+- [x] Page-by-page user comparison and selection
+- [x] Combined prototype D built and merged (PR #17)
+
+**New components shipped:**
+- `src/components/home/feature-carousel.tsx` — Single-card FOMO carousel with snap scroll
+- `src/components/ui/info-button.tsx` — Floating "i" info popup with horizontal-scroll sections
+
+**Future items from this revamp (see backlog below):**
+- Personal analytics tab, On-Chain analytics tab, AI governance health summary, orange vs terracotta design system decision
+
 ### Governance Integrity Program — ✅ Complete (Tasks 1–10)
 
 Full release gate implemented. Final sign-off pending:
@@ -122,10 +140,30 @@ Auth boundary S1 fixes:
 - [x] Profile page shows spinner instead of blank page while redirecting
 
 Remaining S1/S2 items from section 4.1 feedback (not yet started):
-- [ ] Onboarding modal blocking sign-out + skip state not persisted (AUTH-06)
+- [x] Onboarding modal skip state persisted via localStorage (PR #15)
 - [ ] Post-login redirect to Home instead of `/profile` (AUTH-04)
 - [ ] Investigate 78 console errors on home page (AUTH-10)
 - [ ] Console error audit across all pages (AUTH-05, AUTH-06, AUTH-11)
+
+Section 4.2 (Navigation) fixes — ✅ Complete (PR #15):
+- [x] Settings page restricted to admin-only (was admin+council)
+- [x] Page titles updated (Profile, Sprints, Sprint Detail)
+- [x] Onboarding skip persistence via localStorage
+
+Section 4.3 (Home, Analytics, Leaderboard, Treasury) fixes — ✅ Complete (PR #16, #17):
+- [x] 7 missing i18n keys for dispute/voting activity events (PR #16)
+- [x] Treasury audit trail link conditional render (PR #16)
+- [x] Full visual revamp — dark heroes, carousel, podium, info buttons, animations (PR #17)
+
+### QA Revamp Backlog — Future Features from Section 4.3
+
+- [ ] **Personal analytics tab** — Authenticated user's own submissions, points, logins, followed tasks, notification controls
+- [ ] **On-Chain analytics tab** — DEX Screener chart embed, holder count, holder percentages, top holders
+- [ ] **AI governance health summary** — Daily digest based on last 14h of DAO activity (proposals, votes, tasks, disputes)
+- [ ] **Orange vs terracotta design system decision** — User prefers orange for "Organic" brand word; evaluate updating `organic-terracotta` tokens to orange across the design system
+- [ ] **CSP update for Sentry** — `ingest.de.sentry.io` blocked by Content Security Policy, needs CSP headers update
+- [ ] **Advanced animations** — Framer Motion / GSAP ScrollTrigger for scroll-driven animations (treasury, onboarding), Lottie animations for lock burst and achievements
+- [ ] **Remaining QA sections** — Sections 4.4–4.12 of `docs/qa-runbook.md` still untested
 
 ### Phase 2.1 — Task Management Hardening
 
