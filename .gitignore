@@ -66,5 +66,11 @@ dist/
 
 docs/plans/
 test-results/
+
+# QA artifacts
+qa-*.png
+alt-*.png
+.playwright/
+.playwright-cli/
 # Sentry Config File
 .env.sentry-build-plugin

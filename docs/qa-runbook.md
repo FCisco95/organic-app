@@ -63,26 +63,102 @@ Use this document to run workflow tests, page audits, and capture what works, wh
 Routes: `/login`, `/signup`, `/join?ref=CODE`, `/auth/error`, `/auth/callback`.
 
 Use cases:
-- [ ] `AUTH-01` Guest opens `/login`; form renders and is usable.
-- [ ] `AUTH-02` Guest opens `/signup`; form renders and is usable.
-- [ ] `AUTH-03` Invalid credentials show understandable error copy.
-- [ ] `AUTH-04` Member login succeeds and lands on authenticated app surface.
-- [ ] `AUTH-05` Session persists across refresh.
-- [ ] `AUTH-06` Sign-out clears session and protects private routes.
-- [ ] `AUTH-07` Protected route redirect works for guest users.
-- [ ] `AUTH-08` `/join?ref=CODE` redirects to `/signup?ref=CODE`.
-- [ ] `AUTH-09` Signup with `ref` param preserves referral context.
-- [ ] `AUTH-10` `/auth/error` recovery links (login/home) work.
-- [ ] `AUTH-11` `/auth/callback` does not dead-end or blank-screen when callback params are missing/invalid.
-- [ ] `AUTH-12` Mobile auth forms have no clipping or unreachable controls.
+- [x] `AUTH-01` Guest opens `/login`; form renders and is usable. **PASS, S3**
+- [x] `AUTH-02` Guest opens `/signup`; form renders and is usable. **PARTIAL, S3**
+- [x] `AUTH-03` Invalid credentials show understandable error copy. **PARTIAL, S2**
+- [x] `AUTH-04` Member login succeeds and lands on authenticated app surface. **PARTIAL, S2**
+- [x] `AUTH-05` Session persists across refresh. **PASS, S3**
+- [x] `AUTH-06` Sign-out clears session and protects private routes. **PARTIAL (priority fix), S1**
+- [x] `AUTH-07` Protected route redirect works for guest users. **PARTIAL (priority fix), S1**
+- [x] `AUTH-08` `/join?ref=CODE` redirects to `/signup?ref=CODE`. **PARTIAL, S3**
+- [ ] `AUTH-09` Signup with `ref` param preserves referral context. **SKIP — referral not yet wired to signup flow. Placeholder for when referral integration is built.**
+- [x] `AUTH-10` `/auth/error` recovery links (login/home) work. **PARTIAL, S3**
+- [x] `AUTH-11` `/auth/callback` does not dead-end or blank-screen when callback params are missing/invalid. **PARTIAL, S3**
+- [x] `AUTH-12` Mobile auth forms have no clipping or unreachable controls. **PARTIAL, S2**
 
-Feedback:
-- What works well:
-- What does not work:
-- UI improvements requested:
-- Top 3 highest-impact changes:
-- Section severity (`S0/S1/S2/S3`):
-- Confidence score (`1-5`):
+### QA Accounts (permanent fixtures for QA skill)
+
+| Account | Email | Password | Role | Organic ID |
+|---|---|---|---|---|
+| QA Admin | `qa-admin@organic.test` | `QaAdmin2026!` | admin | 900001 |
+| QA Council | `qa-council@organic.test` | `QaCouncil2026!` | council | 900002 |
+| QA Member | `qa-member@organic.test` | `QaMember2026!` | member | 900003 |
+
+### Feedback
+
+**What works well:**
+- Login form renders correctly with all expected fields and clear CTAs (AUTH-01)
+- Session persistence across refresh works reliably (AUTH-05)
+- Sign-out clears session and redirects to `/login` (AUTH-06 core action)
+- `/join?ref=CODE` redirect preserves referral param to `/signup?ref=CODE` (AUTH-08)
+- `/auth/error` page provides two clear recovery links that both work (AUTH-10)
+- `/auth/callback` never dead-ends — missing params redirect to login, invalid params redirect to error page (AUTH-11)
+- Admin route `/admin/settings` shows proper "Access Denied" message with clear copy — gold standard for role gating (AUTH-07)
+- Mobile hamburger menu works correctly, sidebar collapses as expected (AUTH-12)
+- Touch targets on mobile are adequate for thumb tapping (AUTH-12)
+- Signup form has good inline validation hints for password and username upfront (AUTH-02)
+- "New to Organic? Create an account" link on login is present and functional (AUTH-01)
+- Empty-state copy on profile is helpful: "No bio yet. Click Edit Profile to add one!" (AUTH-05)
+
+**What does not work:**
+- Protected route `/profile` shows blank page after sign-out instead of redirecting to `/login` or showing a message (AUTH-06, AUTH-07) — **priority fix**
+- Inconsistent auth boundary: `/profile` silently fails, `/tasks` and `/proposals` are fully public with no action gating, `/admin/settings` properly denies — no unified protection model (AUTH-07) — **priority fix**
+- Error message "Invalid login credentials" appears in DOM but lacks visual prominence — easy to miss (AUTH-03)
+- Post-login redirect goes to `/profile` instead of Home dashboard (AUTH-04)
+- Onboarding modal blocks Sign Out — overlay intercepts pointer events, trapping users who want to sign out (AUTH-06)
+- Onboarding modal reappears on every page load even after clicking "Skip for now" — skip state not persisted (AUTH-06)
+- Onboarding step 1 tells user to "Use the wallet button in the top bar" but the modal blocks access to that button (AUTH-04)
+- Page title shows "Next.js" instead of proper page name on authenticated pages (AUTH-04, AUTH-05)
+- No visible referral context on signup page when arriving via `/signup?ref=CODE` (AUTH-02, AUTH-08)
+- No referral code validation — invalid codes are silently accepted (AUTH-08)
+- `/auth/callback` with no params briefly flashes `/profile` before redirecting to `/login` — intermediate redirect flicker (AUTH-11)
+- Error param from OAuth provider (`?error=access_denied`) is ignored — same generic message shown (AUTH-11)
+- Scroll is trapped in nested container on mobile — `window.scrollBy()` does nothing, only `main` element scrolls (AUTH-12)
+- Hero image takes ~50% of mobile viewport, pushing form below fold (AUTH-12)
+- Signup "Create account" button requires significant scrolling on mobile (AUTH-12)
+- 78 console errors on home page — **separate investigation task needed** (AUTH-10)
+- 10-25 console errors on most pages including protected routes and callback flows (AUTH-05, AUTH-06, AUTH-11)
+
+**UI improvements requested:**
+- **Login/signup background:** Replace static dark background with interactive blockchain-themed layer — chain links with lighting that follows cursor movement. Premium protocol feel, not animated cartoon. (AUTH-01, AUTH-02)
+- **Split layout for auth pages:** Illustration/branding on left, form on right — form always fully visible without scrolling on desktop. (AUTH-02)
+- **"Already have an account?" link on signup:** Must be visible near form header, not buried below the fold. (AUTH-02)
+- **Live password validation checklist:** Replace static hint text with a dynamic checklist that ticks off requirements as user types (length, number, lowercase). (AUTH-02)
+- **Username validation as bullet list:** Break dense hint sentence into short, scannable bullet points or show inline validation as user types. (AUTH-02)
+- **Referral landing experience:** `/join` should be a dedicated referral landing page with inviter profile/avatar, pitch about Organic, and "Join Now" CTA. Show "Invited by @username" or "Referral code applied" banner on signup form. (AUTH-08)
+- **Error message prominence:** Invalid credentials error should be an inline banner (red/orange, icon) directly above/below form fields, not a fleeting toast. Include recovery path: "The email or password you entered is incorrect. Please try again or [reset your password]." (AUTH-03)
+- **Field state change on error:** Add red border or subtle shake animation on email/password fields after failed login. (AUTH-03)
+- **Show/hide password toggle:** Let users verify what they typed before retrying. (AUTH-03)
+- **Rate-limiting feedback:** After repeated failures, show "Too many attempts. Please wait X seconds or reset your password." (AUTH-03)
+- **Post-login redirect to Home:** Land authenticated users on `/` (Home dashboard) not `/profile`. Let onboarding wizard overlay there. (AUTH-04)
+- **Onboarding wallet connect inside the step:** Put the wallet connect action inside the onboarding modal step, not as a reference to the top bar button. (AUTH-04)
+- **Sidebar grouping:** 17 nav items for admin is dense. Group into sections (e.g., "Admin" section for Submissions/Manage Rewards/Settings) or use collapsible sections. (AUTH-04)
+- **Sign-out confirmation:** Show a brief "You've been signed out successfully" message on the login page after sign-out. (AUTH-06)
+- **Session expiry handling:** Implement session-expiry interceptor that redirects to `/login` with message "Your session has expired. Please sign in again." (AUTH-06)
+- **Protected route redirect with returnTo:** When guest is bounced from protected route, capture destination (e.g., `/login?returnTo=/profile`) so user lands where they wanted after signing in. (AUTH-06, AUTH-07)
+- **Guest action gating on public pages:** Tasks and proposals are intentionally public (FOMO/transparency for the coin), but hide action buttons (claim, submit, create proposal) for guests. Show "Sign in to participate" prompts instead. (AUTH-07)
+- **Proposals page premium revamp:** Better flow, remove duplicate filters (Public/Qualified/Discussion appear twice), better box highlights, professional look matching organic-ux design system. Tier-one project UX/UI. (AUTH-07)
+- **3 parallel design alternatives:** Use frontend-design skill to generate three independent UI designs for key public pages (login, signup, proposals, tasks, home). Pick the best. (AUTH-07)
+- **Auth error page warmth:** Add icon/illustration, warmer copy, contextual help ("Common reasons: expired link, cookies blocked"). Parse and display specific error codes from OAuth providers. (AUTH-10, AUTH-11)
+- **Callback loading spinner:** Show "Completing sign-in..." with spinner during callback processing instead of page flashes. (AUTH-11)
+- **Mobile: hide or shrink hero image:** On mobile viewports, either hide the hero image entirely or cap it at ~120px height so the form is front and center. (AUTH-12)
+- **Mobile: consider two-step signup:** Email + Password on step 1, Username on step 2, to reduce scroll length. (AUTH-12)
+- **Mobile: auth error excessive white space:** Center error card near top, remove large empty areas above/below. (AUTH-12)
+- **Mobile: fix scroll trap:** Ensure page-level scroll works naturally on mobile, not just on a nested overflow element. (AUTH-12)
+- **Overall premium look:** Match all auth pages to organic-ux design system colors. Create a style that is more professional, tier-one project quality. Every page that isn't perfect gets revamped. (ALL)
+- **Locale prefix in shared URLs:** For referral links shared externally (Twitter, Discord), consider auto-detect locale or cleaner URLs without `/en/` prefix. (AUTH-08)
+
+**Standalone tasks identified:**
+- **TASK: Investigate 78 console errors on home page** — Critical performance/stability finding. Likely broken API calls, missing data for unauthenticated users, or hydration issues. Directly impacts the public-facing FOMO experience since guests hit this page first. (AUTH-10)
+- **TASK: Console error audit across all pages** — 10-25 errors per page on most routes. Audit, categorize, and fix critical ones before release. (AUTH-05, AUTH-06, AUTH-11)
+
+**Top 3 highest-impact changes:**
+1. **Fix protected route blank page + implement unified auth boundary** — `/profile` blank page and inconsistent protection model across routes is the single biggest auth UX issue. Implement proper redirect-to-login with `returnTo` param, and unify which routes are public vs. authenticated vs. role-gated. (AUTH-06, AUTH-07, S1)
+2. **Premium auth page revamp with blockchain-themed background** — Login, signup, and error pages need a complete visual uplift: interactive blockchain background, split layout, improved form UX (live validation, error prominence, show/hide password), and organic-ux color system. Generate 3 parallel design alternatives to pick from. (AUTH-01, AUTH-02, AUTH-03, AUTH-12)
+3. **Fix onboarding modal blocking + persistence** — Modal traps users, doesn't persist skip state, and references UI it blocks access to. Redesign so sidebar is always accessible, skip state persists across session, and wallet connect action is embedded in the step. (AUTH-04, AUTH-06)
+
+**Section severity:** S1 (due to AUTH-06 and AUTH-07 priority fixes)
+**Confidence score:** 4/5 (thorough test of all 12 cases except AUTH-09 which was skipped)
 
 ## 4.2 Global Navigation, Layout, and i18n
 Routes: global shell across all authenticated pages.
