@@ -27,6 +27,7 @@ export function Sidebar() {
     isAuthenticated: !!user,
     hasOrganicId: !!profile?.organic_id,
     isAdminOrCouncil,
+    isAdmin: profile?.role === 'admin',
   });
 
   const isActive = (href: string) => {

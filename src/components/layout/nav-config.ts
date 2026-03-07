@@ -23,6 +23,7 @@ export interface NavContext {
   isAuthenticated: boolean;
   hasOrganicId: boolean;
   isAdminOrCouncil: boolean;
+  isAdmin: boolean;
 }
 
 export interface NavItem {
@@ -39,7 +40,7 @@ export interface NavSections {
 }
 
 export function getSidebarNavSections(context: NavContext): NavSections {
-  const { isAuthenticated, hasOrganicId, isAdminOrCouncil } = context;
+  const { isAuthenticated, hasOrganicId, isAdminOrCouncil, isAdmin } = context;
 
   const main: NavItem[] = [
     { id: 'home', href: '/', labelKey: 'home', icon: Home },
@@ -84,7 +85,10 @@ export function getSidebarNavSections(context: NavContext): NavSections {
     },
     { id: 'adminRewards', href: '/admin/rewards', labelKey: 'adminRewards', icon: Gift },
     { id: 'settings', href: '/admin/settings', labelKey: 'settings', icon: Settings },
-  ].filter(() => isAdminOrCouncil);
+  ].filter((item) => {
+    if (item.id === 'settings') return isAdmin;
+    return isAdminOrCouncil;
+  });
 
   const utility: NavItem[] = [
     { id: 'profile', href: '/profile', labelKey: 'profile', icon: User },

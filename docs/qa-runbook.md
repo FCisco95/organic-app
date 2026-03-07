@@ -164,22 +164,59 @@ Use cases:
 Routes: global shell across all authenticated pages.
 
 Use cases:
-- [ ] `NAV-01` Sidebar items render correctly by role (`admin`, `council`, `member`).
-- [ ] `NAV-02` Mobile sidebar exposes the same essential navigation.
-- [ ] `NAV-03` Active route state is visible and accurate.
-- [ ] `NAV-04` Locale switch updates labels/content in current page.
-- [ ] `NAV-05` Query-bearing links (for example progression source context) keep expected behavior.
-- [ ] `NAV-06` Top-bar actions are discoverable and keyboard reachable.
-- [ ] `NAV-07` No overlap/collision in nav at 375px and 768px.
-- [ ] `NAV-08` Role-restricted pages are not discoverable through unauthorized nav paths.
+- [x] `NAV-01` Sidebar items render correctly by role (`admin`, `council`, `member`). **PARTIAL, S2**
+- [x] `NAV-02` Mobile sidebar exposes the same essential navigation. **PARTIAL, S2**
+- [x] `NAV-03` Active route state is visible and accurate. **PASS, S3**
+- [x] `NAV-04` Locale switch updates labels/content in current page. **PARTIAL, S2**
+- [x] `NAV-05` Query-bearing links (for example progression source context) keep expected behavior. **PARTIAL, S3**
+- [x] `NAV-06` Top-bar actions are discoverable and keyboard reachable. **PASS, S3**
+- [x] `NAV-07` No overlap/collision in nav at 375px and 768px. **PASS, S3**
+- [x] `NAV-08` Role-restricted pages are not discoverable through unauthorized nav paths. **PASS, S3**
 
-Feedback:
-- What works well:
-- What does not work:
-- UI improvements requested:
-- Top 3 highest-impact changes:
-- Section severity (`S0/S1/S2/S3`):
-- Confidence score (`1-5`):
+### Feedback
+
+**What works well:**
+- Active route state is clear and accurate — orange highlight on current page in sidebar (NAV-03)
+- Locale switcher works flawlessly: dropdown with flag icons, all content/sidebar/modals translate correctly, URL updates to correct locale prefix (NAV-04)
+- Top bar has all essential actions discoverable: hamburger toggle, ID badge with role label, Connect Wallet, notifications bell, search icon, locale switcher (NAV-06)
+- No overlap or collision in nav at 375px mobile or 768px tablet viewports (NAV-07)
+- Admin pages properly blocked for member role with clear "Access Denied" message (NAV-08)
+- Admin nav items (Submissions, Manage Rewards, Settings) correctly hidden from member sidebar (NAV-08)
+- Mobile sidebar opens via hamburger, shows all main nav items with icons (NAV-02)
+- `/profile/progression?from=tasks` preserves query param in URL correctly (NAV-05)
+
+**What does not work:**
+- Onboarding modal reappears on every page navigation and after locale switch — skip state not persisted across pages or locale changes (NAV-02, NAV-04) — **priority fix (cross-cutting, also flagged in 4.1)**
+- Admin section (Submissions, Manage Rewards, Settings) visible to both admin AND council roles — Settings should likely be admin-only (NAV-01)
+- 17 sidebar items for admin role is very dense — no grouping, no collapsible sections, all items have equal visual weight (NAV-01)
+- Council sees Templates nav item but regular member does not — role boundary is correct but undocumented (NAV-01)
+- Progression page (`/profile/progression?from=tasks`) shows only skeleton placeholders with no actual content — may be stuck loading or data-empty with no fallback message (NAV-05)
+- Page title shows "Next.js" on progression page instead of proper page name (NAV-05)
+- Mobile sidebar requires scrolling past Notifications to reach admin section items — admin items are below the fold (NAV-02)
+- At 768px tablet, sidebar stays expanded and onboarding modal overlaps partially behind it (NAV-07, minor)
+- 72-132 console errors across all 3 role sessions on home page (NAV-01)
+
+**UI improvements requested:**
+- **Collapsible sidebar sections:** Group 17 admin items into collapsible sections (e.g., "Main" for Home/Analytics/Treasury/Members, "Work" for Tasks/Templates/Sprints, "Governance" for Proposals/Ideas/Disputes, "You" for Rewards/Quests/Leaderboard/Notifications, "Admin" for Submissions/Manage Rewards/Settings). Consider making the admin section collapsible by default. (NAV-01)
+- **Settings route restricted to admin only:** Move Settings out of the council-visible section. Council should see Submissions and Manage Rewards but not Settings. (NAV-01)
+- **Onboarding modal skip persistence:** When user clicks "Skip for now", persist skip state in localStorage or cookie so the modal doesn't reappear on every navigation or locale switch. (NAV-02, NAV-04)
+- **Progression page empty state:** When no progression data exists, show a helpful message instead of perpetual skeleton loading (e.g., "Complete tasks and proposals to see your progression here"). (NAV-05)
+- **Page titles:** All pages should have proper titles instead of "Next.js". Use the page heading or route name. (NAV-05)
+- **Mobile admin nav visibility:** On mobile, consider moving admin items into a collapsible "Admin" section that starts collapsed, so members see Profile + Sign Out without scrolling past admin items. (NAV-02)
+
+**Standalone tasks identified:**
+- **TASK: Persist onboarding modal skip state** — Cross-cutting issue affecting every authenticated page. Skip state must survive page navigation, locale switches, and session refreshes. Flagged in both 4.1 and 4.2. (NAV-02, NAV-04)
+- **TASK: Console error audit** — 72-132 errors per role on home page alone. Overlaps with 4.1 standalone task. (NAV-01)
+
+**Top 3 highest-impact changes:**
+1. **Persist onboarding modal skip state** — Modal blocking every page navigation is the single most disruptive nav issue. Affects all roles, all viewports, all locale switches. Fix: persist skip in localStorage, check before showing. (NAV-02, NAV-04, S2)
+2. **Collapsible sidebar sections** — 17 flat items is overwhelming for admin. Group into logical sections with collapse/expand. Reduces cognitive load and scroll distance, especially on mobile. (NAV-01, S2)
+3. **Settings restricted to admin only + progression empty state** — Tighten role boundary for Settings. Fix progression page to show content or a helpful empty state instead of permanent skeleton. (NAV-01, NAV-05, S3)
+
+**Section severity:** S2 (onboarding modal persistence is the worst issue, no S0/S1 blockers)
+**Confidence score:** 5/5 (all 8 cases tested across 3 roles)
+
+**Execution status:** _not started_
 
 ## 4.3 Home, Analytics, Leaderboard, and Treasury Readability
 Routes: `/`, `/analytics`, `/leaderboard`, `/treasury`.
