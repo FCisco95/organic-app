@@ -6,13 +6,17 @@ import { createClient } from '@/lib/supabase/client';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
+import { Eye, EyeOff, AlertCircle, Loader2 } from 'lucide-react';
+import { AuthSplitPanel } from '@/components/auth/auth-split-panel';
 
 export default function LoginPage() {
   const t = useTranslations('Login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [loginError, setLoginError] = useState<string | null>(null);
   const router = useRouter();
   const supabase = createClient();
 
@@ -33,6 +37,7 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoginError(null);
 
     if (!validateForm()) {
       return;
@@ -41,7 +46,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -49,125 +54,165 @@ export default function LoginPage() {
       if (error) throw error;
 
       toast.success(t('toastSuccess'));
-      router.push('/profile');
-    } catch (error: any) {
-      toast.error(error.message || t('toastInvalidCredentials'));
+      router.push('/');
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : t('toastInvalidCredentials');
+      setLoginError(message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0d1117] p-4" data-testid="login-page">
-      <div className="w-full max-w-[340px]">
-        {/* Logo */}
-        <div className="text-center mb-6">
-          <Link href="/" className="inline-block group">
+    <div className="min-h-dvh flex flex-col md:flex-row" data-testid="login-page">
+      {/* Left panel - branding (desktop only) */}
+      <AuthSplitPanel
+        title={t('leftPanelTitle')}
+        subtitle={t('leftPanelSubtitle')}
+        footer={t('leftPanelFooter')}
+        logoAlt={t('logoAlt')}
+      />
+
+      {/* Right panel - form */}
+      <div className="flex-1 flex flex-col items-center justify-center bg-background p-6 md:p-10 lg:p-14 min-h-dvh md:min-h-0">
+        {/* Mobile logo */}
+        <div className="md:hidden mb-8 flex justify-center">
+          <Link href="/">
             <Image
               src="/organic-logo.png"
               alt={t('logoAlt')}
               width={1000}
               height={335}
-              className="w-full max-w-md transition-transform group-hover:scale-105 mx-auto"
+              className="w-full max-w-[180px]"
               priority
             />
           </Link>
         </div>
 
-        {/* Sign in form */}
-        <div className="bg-[#161b22] rounded-md border border-[#30363d] p-6">
-          <h1 className="text-2xl font-light text-white mb-2 text-center">{t('title')}</h1>
+        {/* Card with Alt C shadow/glow + Alt A terracotta accent line */}
+        <div className="w-full max-w-[420px] bg-card/95 backdrop-blur-sm rounded-2xl shadow-[0_0_40px_rgba(217,93,57,0.08)] shadow-xl border border-border overflow-hidden">
+          {/* Terracotta accent line (Alt A signature) */}
+          <div className="h-[3px] bg-gradient-to-r from-organic-terracotta via-organic-terracotta-light to-organic-terracotta rounded-t-2xl" />
 
-          <form onSubmit={handleSubmit} className="space-y-4 mt-4" data-testid="login-form">
-            {/* Email */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-normal text-[#c9d1d9] mb-2">
-                {t('emailLabel')}
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  if (errors.email) setErrors({ ...errors, email: undefined });
-                }}
-                className={`w-full px-3 py-2 bg-[#0d1117] border ${
-                  errors.email ? 'border-[#f85149]' : 'border-[#30363d]'
-                } rounded-md text-white text-sm focus:border-[#1f6feb] focus:ring-1 focus:ring-[#1f6feb] focus:outline-none placeholder-[#6e7681]`}
-                placeholder={t('emailPlaceholder')}
-              />
-              {errors.email && (
-                <p className="mt-2 text-xs text-[#f85149] flex items-start">
-                  <svg
-                    aria-hidden="true"
-                    className="w-4 h-4 mr-1 mt-0.5 flex-shrink-0"
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm9.78-2.22-5.5 5.5a.75.75 0 0 1-1.06 0l-2.5-2.5a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L4.75 9.19l4.97-4.97a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z" />
-                  </svg>
-                  {errors.email}
-                </p>
-              )}
-            </div>
+          <div className="p-8">
+            {/* Navigation link */}
+            <p className="text-sm text-muted-foreground mb-6 text-center md:text-left animate-auth-fade-in auth-stagger-1">
+              {t('newToOrganic')}{' '}
+              <Link
+                href="/signup"
+                className="text-organic-terracotta hover:text-organic-terracotta-hover font-medium transition-colors"
+              >
+                {t('createAccount')}
+              </Link>
+            </p>
 
-            {/* Password */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label htmlFor="password" className="block text-sm font-normal text-[#c9d1d9]">
-                  {t('passwordLabel')}
-                </label>
-                <Link href="/forgot-password" className="text-xs text-[#58a6ff] hover:underline">
-                  {t('forgotPassword')}
-                </Link>
+            <h1 className="text-2xl font-light text-foreground mb-6 text-center md:text-left animate-auth-fade-in auth-stagger-1">
+              {t('title')}
+            </h1>
+
+            {/* Inline error banner */}
+            {loginError && (
+              <div className="mb-6 flex items-start gap-3 rounded-lg bg-red-500/10 border border-red-500/20 p-4">
+                <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-red-500">{loginError}</p>
               </div>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  if (errors.password) setErrors({ ...errors, password: undefined });
-                }}
-                className={`w-full px-3 py-2 bg-[#0d1117] border ${
-                  errors.password ? 'border-[#f85149]' : 'border-[#30363d]'
-                } rounded-md text-white text-sm focus:border-[#1f6feb] focus:ring-1 focus:ring-[#1f6feb] focus:outline-none placeholder-[#6e7681]`}
-                placeholder={t('passwordPlaceholder')}
-              />
-              {errors.password && (
-                <p className="mt-2 text-xs text-[#f85149] flex items-start">
-                  <svg
-                    aria-hidden="true"
-                    className="w-4 h-4 mr-1 mt-0.5 flex-shrink-0"
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-5" data-testid="login-form">
+              {/* Email */}
+              <div className="animate-auth-fade-in auth-stagger-2">
+                <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
+                  {t('emailLabel')}
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (errors.email) setErrors({ ...errors, email: undefined });
+                    if (loginError) setLoginError(null);
+                  }}
+                  className={`w-full px-4 py-2.5 bg-background border ${
+                    errors.email ? 'border-red-500' : 'border-input'
+                  } rounded-lg text-foreground text-sm focus:border-organic-terracotta focus:ring-2 focus:ring-organic-terracotta/20 focus:outline-none placeholder-muted-foreground transition-colors`}
+                  placeholder={t('emailPlaceholder')}
+                />
+                {errors.email && (
+                  <p className="mt-2 text-xs text-red-500 flex items-center gap-1.5">
+                    <AlertCircle className="h-3.5 w-3.5 flex-shrink-0" />
+                    {errors.email}
+                  </p>
+                )}
+              </div>
+
+              {/* Password */}
+              <div className="animate-auth-fade-in auth-stagger-3">
+                <div className="flex items-center justify-between mb-2">
+                  <label htmlFor="password" className="block text-sm font-medium text-foreground">
+                    {t('passwordLabel')}
+                  </label>
+                  <Link
+                    href="/forgot-password"
+                    className="text-xs text-organic-terracotta hover:text-organic-terracotta-hover transition-colors"
                   >
-                    <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm9.78-2.22-5.5 5.5a.75.75 0 0 1-1.06 0l-2.5-2.5a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L4.75 9.19l4.97-4.97a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z" />
-                  </svg>
-                  {errors.password}
-                </p>
-              )}
-            </div>
+                    {t('forgotPassword')}
+                  </Link>
+                </div>
+                <div className="relative">
+                  <input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      if (errors.password) setErrors({ ...errors, password: undefined });
+                      if (loginError) setLoginError(null);
+                    }}
+                    className={`w-full px-4 py-2.5 pr-11 bg-background border ${
+                      errors.password ? 'border-red-500' : 'border-input'
+                    } rounded-lg text-foreground text-sm focus:border-organic-terracotta focus:ring-2 focus:ring-organic-terracotta/20 focus:outline-none placeholder-muted-foreground transition-colors`}
+                    placeholder={t('passwordPlaceholder')}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    aria-label={showPassword ? t('hidePassword') : t('showPassword')}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
+                {errors.password && (
+                  <p className="mt-2 text-xs text-red-500 flex items-center gap-1.5">
+                    <AlertCircle className="h-3.5 w-3.5 flex-shrink-0" />
+                    {errors.password}
+                  </p>
+                )}
+              </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-[#238636] hover:bg-[#2ea043] text-white font-medium py-2 px-4 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-            >
-              {loading ? t('signingIn') : t('signIn')}
-            </button>
-          </form>
-        </div>
-
-        {/* Sign up link */}
-        <div className="mt-4 text-center border border-[#30363d] rounded-md p-4 bg-[#161b22]">
-          <p className="text-sm text-[#c9d1d9]">
-            {t('newToOrganic')}{' '}
-            <Link href="/signup" className="text-[#58a6ff] hover:underline">
-              {t('createAccount')}
-            </Link>
-          </p>
+              <div className="animate-auth-fade-in auth-stagger-4">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-organic-terracotta hover:bg-organic-terracotta-hover text-white font-medium py-2.5 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm flex items-center justify-center gap-2"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      {t('signingIn')}
+                    </>
+                  ) : (
+                    t('signIn')
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>

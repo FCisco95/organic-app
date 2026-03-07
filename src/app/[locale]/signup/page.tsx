@@ -1,12 +1,51 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Link, useRouter } from '@/i18n/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
+import { Eye, EyeOff, AlertCircle, Loader2 } from 'lucide-react';
+import { AuthSplitPanel } from '@/components/auth/auth-split-panel';
+
+function PasswordStrengthBar({ password }: { password: string }) {
+  const t = useTranslations('Signup');
+
+  const strength = useMemo(() => {
+    if (!password) return { score: 0, label: '' };
+    let score = 0;
+    if (password.length >= 8) score++;
+    if (/[a-z]/.test(password)) score++;
+    if (/[A-Z]/.test(password)) score++;
+    if (/[0-9]/.test(password)) score++;
+    if (/[^a-zA-Z0-9]/.test(password)) score++;
+
+    if (score <= 2) return { score: 1, label: t('strengthWeak'), color: 'bg-red-500' };
+    if (score <= 3) return { score: 2, label: t('strengthFair'), color: 'bg-orange-400' };
+    if (score === 4) return { score: 3, label: t('strengthGood'), color: 'bg-yellow-400' };
+    return { score: 4, label: t('strengthStrong'), color: 'bg-green-500' };
+  }, [password, t]);
+
+  if (!password) return null;
+
+  return (
+    <div className="mt-2 space-y-1">
+      <div className="flex gap-1">
+        {[1, 2, 3, 4].map((level) => (
+          <div
+            key={level}
+            className={`h-1 flex-1 rounded-full transition-colors ${
+              level <= strength.score ? strength.color : 'bg-muted'
+            }`}
+          />
+        ))}
+      </div>
+      <p className="text-xs text-muted-foreground">{strength.label}</p>
+    </div>
+  );
+}
 
 export default function SignUpPage() {
   const t = useTranslations('Signup');
@@ -15,10 +54,12 @@ export default function SignUpPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string; username?: string }>(
     {}
   );
+  const [signupError, setSignupError] = useState<string | null>(null);
   const router = useRouter();
   const supabase = createClient();
 
@@ -49,6 +90,7 @@ export default function SignUpPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSignupError(null);
 
     if (!validateForm()) {
       return;
@@ -57,7 +99,7 @@ export default function SignUpPage() {
     setLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -73,168 +115,211 @@ export default function SignUpPage() {
 
       toast.success(t('toastSuccess'));
       router.push('/login');
-    } catch (error: any) {
-      toast.error(error.message || t('toastError'));
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : t('toastError');
+      setSignupError(message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0d1117] p-4" data-testid="signup-page">
-      <div className="w-full max-w-[340px]">
-        {/* Logo */}
-        <div className="text-center mb-6">
-          <Link href="/" className="inline-block group">
+    <div className="min-h-dvh flex flex-col md:flex-row" data-testid="signup-page">
+      {/* Left panel - branding (desktop only) */}
+      <AuthSplitPanel
+        title={t('leftPanelTitle')}
+        subtitle={t('leftPanelSubtitle')}
+        footer={t('leftPanelFooter')}
+        logoAlt={t('logoAlt')}
+      />
+
+      {/* Right panel - form */}
+      <div className="flex-1 flex flex-col items-center justify-center bg-background p-6 md:p-10 lg:p-14 min-h-dvh md:min-h-0">
+        {/* Mobile logo */}
+        <div className="md:hidden mb-8 flex justify-center">
+          <Link href="/">
             <Image
               src="/organic-logo.png"
               alt={t('logoAlt')}
               width={1000}
               height={335}
-              className="w-full max-w-md transition-transform group-hover:scale-105 mx-auto"
+              className="w-full max-w-[180px]"
               priority
             />
           </Link>
         </div>
 
-        {/* Sign up form */}
-        <div className="bg-[#161b22] rounded-md border border-[#30363d] p-6">
-          <h1 className="text-2xl font-light text-white mb-2 text-center">{t('title')}</h1>
+        {/* Card with Alt C shadow/glow + Alt A terracotta accent line */}
+        <div className="w-full max-w-[420px] bg-card/95 backdrop-blur-sm rounded-2xl shadow-[0_0_40px_rgba(217,93,57,0.08)] shadow-xl border border-border overflow-hidden">
+          {/* Terracotta accent line (Alt A signature) */}
+          <div className="h-[3px] bg-gradient-to-r from-organic-terracotta via-organic-terracotta-light to-organic-terracotta rounded-t-2xl" />
 
-          <form onSubmit={handleSubmit} className="space-y-4 mt-4" data-testid="signup-form">
-            {/* Email */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-normal text-[#c9d1d9] mb-2">
-                {t('emailLabel')}
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  if (errors.email) setErrors({ ...errors, email: undefined });
-                }}
-                className={`w-full px-3 py-2 bg-[#0d1117] border ${
-                  errors.email ? 'border-[#f85149]' : 'border-[#30363d]'
-                } rounded-md text-white text-sm focus:border-[#1f6feb] focus:ring-1 focus:ring-[#1f6feb] focus:outline-none placeholder-[#6e7681]`}
-                placeholder={t('emailPlaceholder')}
-              />
-              {errors.email && (
-                <p className="mt-2 text-xs text-[#f85149] flex items-start">
-                  <svg
-                    aria-hidden="true"
-                    className="w-4 h-4 mr-1 mt-0.5 flex-shrink-0"
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
+          <div className="p-8">
+            {/* Navigation link */}
+            <p className="text-sm text-muted-foreground mb-6 text-center md:text-left animate-auth-fade-in auth-stagger-1">
+              {t('alreadyHaveAccount')}{' '}
+              <Link
+                href="/login"
+                className="text-organic-terracotta hover:text-organic-terracotta-hover font-medium transition-colors"
+              >
+                {t('signIn')}
+              </Link>
+            </p>
+
+            <h1 className="text-2xl font-light text-foreground mb-6 text-center md:text-left animate-auth-fade-in auth-stagger-1">
+              {t('title')}
+            </h1>
+
+            {/* Inline error banner */}
+            {signupError && (
+              <div className="mb-6 flex items-start gap-3 rounded-lg bg-red-500/10 border border-red-500/20 p-4">
+                <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-red-500">{signupError}</p>
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-5" data-testid="signup-form">
+              {/* Email */}
+              <div className="animate-auth-fade-in auth-stagger-2">
+                <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
+                  {t('emailLabel')}
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (errors.email) setErrors({ ...errors, email: undefined });
+                    if (signupError) setSignupError(null);
+                  }}
+                  className={`w-full px-4 py-2.5 bg-background border ${
+                    errors.email ? 'border-red-500' : 'border-input'
+                  } rounded-lg text-foreground text-sm focus:border-organic-terracotta focus:ring-2 focus:ring-organic-terracotta/20 focus:outline-none placeholder-muted-foreground transition-colors`}
+                  placeholder={t('emailPlaceholder')}
+                />
+                {errors.email && (
+                  <p className="mt-2 text-xs text-red-500 flex items-center gap-1.5">
+                    <AlertCircle className="h-3.5 w-3.5 flex-shrink-0" />
+                    {errors.email}
+                  </p>
+                )}
+              </div>
+
+              {/* Username */}
+              <div className="animate-auth-fade-in auth-stagger-3">
+                <label
+                  htmlFor="username"
+                  className="block text-sm font-medium text-foreground mb-2"
+                >
+                  {t('usernameLabel')}
+                </label>
+                <input
+                  id="username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => {
+                    setUsername(e.target.value);
+                    if (errors.username) setErrors({ ...errors, username: undefined });
+                    if (signupError) setSignupError(null);
+                  }}
+                  className={`w-full px-4 py-2.5 bg-background border ${
+                    errors.username ? 'border-red-500' : 'border-input'
+                  } rounded-lg text-foreground text-sm focus:border-organic-terracotta focus:ring-2 focus:ring-organic-terracotta/20 focus:outline-none placeholder-muted-foreground transition-colors`}
+                  placeholder={t('usernamePlaceholder')}
+                />
+                {errors.username ? (
+                  <p className="mt-2 text-xs text-red-500 flex items-center gap-1.5">
+                    <AlertCircle className="h-3.5 w-3.5 flex-shrink-0" />
+                    {errors.username}
+                  </p>
+                ) : (
+                  <p className="mt-2 text-xs text-muted-foreground">{t('usernameHelp')}</p>
+                )}
+              </div>
+
+              {/* Password */}
+              <div className="animate-auth-fade-in auth-stagger-4">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-foreground mb-2"
+                >
+                  {t('passwordLabel')}
+                </label>
+                <div className="relative">
+                  <input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      if (errors.password) setErrors({ ...errors, password: undefined });
+                      if (signupError) setSignupError(null);
+                    }}
+                    className={`w-full px-4 py-2.5 pr-11 bg-background border ${
+                      errors.password ? 'border-red-500' : 'border-input'
+                    } rounded-lg text-foreground text-sm focus:border-organic-terracotta focus:ring-2 focus:ring-organic-terracotta/20 focus:outline-none placeholder-muted-foreground transition-colors`}
+                    placeholder={t('passwordPlaceholder')}
+                    minLength={8}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    aria-label={showPassword ? t('hidePassword') : t('showPassword')}
                   >
-                    <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm9.78-2.22-5.5 5.5a.75.75 0 0 1-1.06 0l-2.5-2.5a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L4.75 9.19l4.97-4.97a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z" />
-                  </svg>
-                  {errors.email}
-                </p>
-              )}
-            </div>
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
+                {errors.password ? (
+                  <p className="mt-2 text-xs text-red-500 flex items-center gap-1.5">
+                    <AlertCircle className="h-3.5 w-3.5 flex-shrink-0" />
+                    {errors.password}
+                  </p>
+                ) : (
+                  <>
+                    <PasswordStrengthBar password={password} />
+                    {!password && (
+                      <p className="mt-2 text-xs text-muted-foreground">{t('passwordHelp')}</p>
+                    )}
+                  </>
+                )}
+              </div>
 
-            {/* Password */}
-            <div>
-              <label htmlFor="password" className="block text-sm font-normal text-[#c9d1d9] mb-2">
-                {t('passwordLabel')}
-              </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  if (errors.password) setErrors({ ...errors, password: undefined });
-                }}
-                className={`w-full px-3 py-2 bg-[#0d1117] border ${
-                  errors.password ? 'border-[#f85149]' : 'border-[#30363d]'
-                } rounded-md text-white text-sm focus:border-[#1f6feb] focus:ring-1 focus:ring-[#1f6feb] focus:outline-none placeholder-[#6e7681]`}
-                placeholder={t('passwordPlaceholder')}
-                minLength={8}
-              />
-              {errors.password && (
-                <p className="mt-2 text-xs text-[#f85149] flex items-start">
-                  <svg
-                    aria-hidden="true"
-                    className="w-4 h-4 mr-1 mt-0.5 flex-shrink-0"
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm9.78-2.22-5.5 5.5a.75.75 0 0 1-1.06 0l-2.5-2.5a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L4.75 9.19l4.97-4.97a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z" />
-                  </svg>
-                  {errors.password}
-                </p>
-              )}
-              {!errors.password && (
-                <p className="mt-2 text-xs text-[#7d8590]">{t('passwordHelp')}</p>
-              )}
-            </div>
+              <div className="animate-auth-fade-in auth-stagger-5">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-organic-terracotta hover:bg-organic-terracotta-hover text-white font-medium py-2.5 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm flex items-center justify-center gap-2"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      {t('creatingAccount')}
+                    </>
+                  ) : (
+                    t('createAccount')
+                  )}
+                </button>
+              </div>
+            </form>
 
-            {/* Username */}
-            <div>
-              <label htmlFor="username" className="block text-sm font-normal text-[#c9d1d9] mb-2">
-                {t('usernameLabel')}
-              </label>
-              <input
-                id="username"
-                type="text"
-                value={username}
-                onChange={(e) => {
-                  setUsername(e.target.value);
-                  if (errors.username) setErrors({ ...errors, username: undefined });
-                }}
-                className={`w-full px-3 py-2 bg-[#0d1117] border ${
-                  errors.username ? 'border-[#f85149]' : 'border-[#30363d]'
-                } rounded-md text-white text-sm focus:border-[#1f6feb] focus:ring-1 focus:ring-[#1f6feb] focus:outline-none placeholder-[#6e7681]`}
-                placeholder={t('usernamePlaceholder')}
-              />
-              {errors.username && (
-                <p className="mt-2 text-xs text-[#f85149] flex items-start">
-                  <svg
-                    aria-hidden="true"
-                    className="w-4 h-4 mr-1 mt-0.5 flex-shrink-0"
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm9.78-2.22-5.5 5.5a.75.75 0 0 1-1.06 0l-2.5-2.5a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L4.75 9.19l4.97-4.97a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z" />
-                  </svg>
-                  {errors.username}
-                </p>
-              )}
-              {!errors.username && (
-                <p className="mt-2 text-xs text-[#7d8590]">{t('usernameHelp')}</p>
-              )}
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-[#238636] hover:bg-[#2ea043] text-white font-medium py-2 px-4 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-            >
-              {loading ? t('creatingAccount') : t('createAccount')}
-            </button>
-          </form>
-
-          {/* Terms */}
-          <p className="mt-4 text-xs text-[#7d8590] text-center">
-            {t('termsPrefix')}{' '}
-            <Link href="/terms" className="text-[#58a6ff] hover:underline">
-              {t('termsLink')}
-            </Link>
-            {t('termsSuffix')}
-          </p>
-        </div>
-
-        {/* Sign in link */}
-        <div className="mt-4 text-center border border-[#30363d] rounded-md p-4 bg-[#161b22]">
-          <p className="text-sm text-[#c9d1d9]">
-            {t('alreadyHaveAccount')}{' '}
-            <Link href="/login" className="text-[#58a6ff] hover:underline">
-              {t('signIn')}
-            </Link>
-          </p>
+            {/* Terms */}
+            <p className="mt-6 text-xs text-muted-foreground text-center animate-auth-fade-in auth-stagger-6">
+              {t('termsPrefix')}{' '}
+              <Link
+                href="/terms"
+                className="text-organic-terracotta hover:text-organic-terracotta-hover transition-colors"
+              >
+                {t('termsLink')}
+              </Link>
+              {t('termsSuffix')}
+            </p>
+          </div>
         </div>
       </div>
     </div>

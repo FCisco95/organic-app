@@ -154,7 +154,12 @@
     "validationEmailBlank": "邮箱不能为空",
     "validationPasswordBlank": "密码不能为空",
     "toastSuccess": "登录成功！",
-    "toastInvalidCredentials": "邮箱或密码错误"
+    "toastInvalidCredentials": "邮箱或密码错误",
+    "showPassword": "显示密码",
+    "hidePassword": "隐藏密码",
+    "leftPanelTitle": "欢迎回到 Organic",
+    "leftPanelSubtitle": "治理。建设。收获。",
+    "leftPanelFooter": "去中心化团队的透明治理。"
   },
   "Signup": {
     "title": "注册 Organic",
@@ -181,13 +186,26 @@
     "validationUsernamePattern": "用户名只能包含字母数字或单个连字符",
     "validationUsernameHyphen": "用户名不能以连字符开头或结尾",
     "toastSuccess": "请检查邮箱以确认您的账户！",
-    "toastError": "发生错误"
+    "toastError": "发生错误",
+    "showPassword": "显示密码",
+    "hidePassword": "隐藏密码",
+    "leftPanelTitle": "加入 Organic 社区",
+    "leftPanelSubtitle": "去中心化团队的透明治理。",
+    "leftPanelFooter": "治理。建设。收获。",
+    "strengthWeak": "弱",
+    "strengthFair": "一般",
+    "strengthGood": "良好",
+    "strengthStrong": "强"
   },
   "AuthError": {
     "title": "认证出错",
     "description": "无法完成登录，请重试。",
     "backToLogin": "返回登录",
-    "goHome": "返回首页"
+    "goHome": "返回首页",
+    "logoAlt": "Organic 标志",
+    "leftPanelTitle": "出现了问题",
+    "leftPanelSubtitle": "我们会帮您回到正轨。",
+    "leftPanelFooter": "去中心化团队的透明治理。"
   },
   "LoginBackup": {
     "brandName": "Organic DAO",

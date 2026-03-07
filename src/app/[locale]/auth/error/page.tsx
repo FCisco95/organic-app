@@ -1,27 +1,68 @@
+'use client';
+
 import { Link } from '@/i18n/navigation';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
+import { AlertCircle } from 'lucide-react';
+import { AuthSplitPanel } from '@/components/auth/auth-split-panel';
 
 export default function AuthErrorPage() {
   const t = useTranslations('AuthError');
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0d1117] p-4" data-testid="auth-error-page">
-      <div className="w-full max-w-md rounded-md border border-[#30363d] bg-[#161b22] p-6 text-center">
-        <h1 className="text-2xl font-light text-white">{t('title')}</h1>
-        <p className="mt-3 text-sm text-[#c9d1d9]">{t('description')}</p>
-        <div className="mt-6 flex items-center justify-center gap-3">
-          <Link
-            href="/login"
-            className="rounded-md bg-[#238636] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#2ea043]"
-          >
-            {t('backToLogin')}
+    <div className="min-h-dvh flex flex-col md:flex-row" data-testid="auth-error-page">
+      {/* Left panel - branding (desktop only) */}
+      <AuthSplitPanel
+        title={t('leftPanelTitle')}
+        subtitle={t('leftPanelSubtitle')}
+        footer={t('leftPanelFooter')}
+        logoAlt={t('logoAlt')}
+      />
+
+      {/* Right panel */}
+      <div className="flex-1 flex flex-col items-center justify-center bg-background p-6 md:p-10 lg:p-14 min-h-dvh md:min-h-0">
+        {/* Mobile logo */}
+        <div className="md:hidden mb-8 flex justify-center">
+          <Link href="/">
+            <Image
+              src="/organic-logo.png"
+              alt={t('logoAlt')}
+              width={1000}
+              height={335}
+              className="w-full max-w-[180px]"
+              priority
+            />
           </Link>
-          <Link
-            href="/"
-            className="rounded-md border border-[#30363d] px-4 py-2 text-sm font-medium text-[#c9d1d9] transition-colors hover:bg-[#0d1117]"
-          >
-            {t('goHome')}
-          </Link>
+        </div>
+
+        {/* Card with Alt C shadow/glow + Alt A terracotta accent line */}
+        <div className="w-full max-w-[420px] bg-card/95 backdrop-blur-sm rounded-2xl shadow-[0_0_40px_rgba(217,93,57,0.08)] shadow-xl border border-border overflow-hidden">
+          {/* Terracotta accent line */}
+          <div className="h-[3px] bg-gradient-to-r from-organic-terracotta via-organic-terracotta-light to-organic-terracotta rounded-t-2xl" />
+
+          <div className="p-8 text-center">
+            <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-red-500/10">
+              <AlertCircle className="h-7 w-7 text-red-500" />
+            </div>
+
+            <h1 className="text-2xl font-light text-foreground">{t('title')}</h1>
+            <p className="mt-3 text-sm text-muted-foreground">{t('description')}</p>
+
+            <div className="mt-8 flex items-center justify-center gap-3">
+              <Link
+                href="/login"
+                className="rounded-lg bg-organic-terracotta px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-organic-terracotta-hover"
+              >
+                {t('backToLogin')}
+              </Link>
+              <Link
+                href="/"
+                className="rounded-lg border border-border px-5 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted"
+              >
+                {t('goHome')}
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </div>

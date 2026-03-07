@@ -154,7 +154,12 @@
     "validationEmailBlank": "Email cannot be blank",
     "validationPasswordBlank": "Password cannot be blank",
     "toastSuccess": "Logged in successfully!",
-    "toastInvalidCredentials": "Incorrect email or password"
+    "toastInvalidCredentials": "Incorrect email or password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "leftPanelTitle": "Welcome back to Organic",
+    "leftPanelSubtitle": "Govern. Build. Earn.",
+    "leftPanelFooter": "Transparent governance for decentralized teams."
   },
   "Signup": {
     "title": "Sign up for Organic",
@@ -181,13 +186,26 @@
     "validationUsernamePattern": "Username may only contain alphanumeric characters or single hyphens",
     "validationUsernameHyphen": "Username cannot begin or end with a hyphen",
     "toastSuccess": "Check your email to confirm your account!",
-    "toastError": "An error occurred"
+    "toastError": "An error occurred",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "leftPanelTitle": "Join the Organic community",
+    "leftPanelSubtitle": "Transparent governance for decentralized teams.",
+    "leftPanelFooter": "Govern. Build. Earn.",
+    "strengthWeak": "Weak",
+    "strengthFair": "Fair",
+    "strengthGood": "Good",
+    "strengthStrong": "Strong"
   },
   "AuthError": {
     "title": "Authentication error",
     "description": "We could not complete the sign-in. Please try again.",
     "backToLogin": "Back to login",
-    "goHome": "Go home"
+    "goHome": "Go home",
+    "logoAlt": "Organic Logo",
+    "leftPanelTitle": "Something went wrong",
+    "leftPanelSubtitle": "We'll get you back on track.",
+    "leftPanelFooter": "Transparent governance for decentralized teams."
   },
   "LoginBackup": {
     "brandName": "Organic DAO",

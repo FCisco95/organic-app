@@ -83,9 +83,20 @@ const config: Config = {
           '0%': { opacity: '0', transform: 'translateY(12px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
+        'auth-fade-in': {
+          '0%': { opacity: '0', transform: 'translateY(8px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        'auth-shake': {
+          '0%, 100%': { transform: 'translateX(0)' },
+          '20%, 60%': { transform: 'translateX(-4px)' },
+          '40%, 80%': { transform: 'translateX(4px)' },
+        },
       },
       animation: {
         'fade-up': 'fade-up 0.5s ease-out forwards',
+        'auth-fade-in': 'auth-fade-in 0.4s ease-out both',
+        'auth-shake': 'auth-shake 0.4s ease-in-out',
       },
     },
   },

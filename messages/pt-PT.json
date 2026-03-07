@@ -154,7 +154,12 @@
     "validationEmailBlank": "O email não pode ficar em branco",
     "validationPasswordBlank": "A senha não pode ficar em branco",
     "toastSuccess": "Login realizado com sucesso!",
-    "toastInvalidCredentials": "Email ou senha incorretos"
+    "toastInvalidCredentials": "Email ou senha incorretos",
+    "showPassword": "Mostrar senha",
+    "hidePassword": "Ocultar senha",
+    "leftPanelTitle": "Bem-vindo de volta ao Organic",
+    "leftPanelSubtitle": "Governar. Construir. Ganhar.",
+    "leftPanelFooter": "Governança transparente para equipas descentralizadas."
   },
   "Signup": {
     "title": "Criar conta no Organic",
@@ -181,13 +186,26 @@
     "validationUsernamePattern": "O nome de usuário pode conter apenas caracteres alfanuméricos ou hífens simples",
     "validationUsernameHyphen": "O nome de usuário não pode começar ou terminar com um hífen",
     "toastSuccess": "Verifique seu email para confirmar sua conta!",
-    "toastError": "Ocorreu um erro"
+    "toastError": "Ocorreu um erro",
+    "showPassword": "Mostrar senha",
+    "hidePassword": "Ocultar senha",
+    "leftPanelTitle": "Junte-se à comunidade Organic",
+    "leftPanelSubtitle": "Governança transparente para equipas descentralizadas.",
+    "leftPanelFooter": "Governar. Construir. Ganhar.",
+    "strengthWeak": "Fraca",
+    "strengthFair": "Razoável",
+    "strengthGood": "Boa",
+    "strengthStrong": "Forte"
   },
   "AuthError": {
     "title": "Erro de autenticação",
     "description": "Não foi possível concluir o início de sessão. Tente novamente.",
     "backToLogin": "Voltar ao login",
-    "goHome": "Ir para a página inicial"
+    "goHome": "Ir para a página inicial",
+    "logoAlt": "Logo Organic",
+    "leftPanelTitle": "Algo correu mal",
+    "leftPanelSubtitle": "Vamos colocá-lo de volta no caminho certo.",
+    "leftPanelFooter": "Governança transparente para equipas descentralizadas."
   },
   "LoginBackup": {
     "brandName": "Organic DAO",
