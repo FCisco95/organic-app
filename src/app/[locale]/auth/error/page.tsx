@@ -35,10 +35,10 @@ export default function AuthErrorPage() {
           </Link>
         </div>
 
-        {/* Card with Alt C shadow/glow + Alt A terracotta accent line */}
-        <div className="w-full max-w-[420px] bg-card/95 backdrop-blur-sm rounded-2xl shadow-[0_0_40px_rgba(217,93,57,0.08)] shadow-xl border border-border overflow-hidden">
-          {/* Terracotta accent line */}
-          <div className="h-[3px] bg-gradient-to-r from-organic-terracotta via-organic-terracotta-light to-organic-terracotta rounded-t-2xl" />
+        {/* Card with Alt A styling + Alt C shadow */}
+        <div className="w-full max-w-[400px] bg-card rounded-lg border border-border shadow-xl shadow-[0_0_40px_rgba(217,93,57,0.08)] overflow-hidden">
+          {/* Subtle terracotta accent line */}
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-organic-terracotta to-transparent" />
 
           <div className="p-8 text-center">
             <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-red-500/10">

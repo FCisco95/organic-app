@@ -149,23 +149,12 @@ export default function SignUpPage() {
           </Link>
         </div>
 
-        {/* Card with Alt C shadow/glow + Alt A terracotta accent line */}
-        <div className="w-full max-w-[420px] bg-card/95 backdrop-blur-sm rounded-2xl shadow-[0_0_40px_rgba(217,93,57,0.08)] shadow-xl border border-border overflow-hidden">
-          {/* Terracotta accent line (Alt A signature) */}
-          <div className="h-[3px] bg-gradient-to-r from-organic-terracotta via-organic-terracotta-light to-organic-terracotta rounded-t-2xl" />
+        {/* Card with Alt A styling + Alt C shadow */}
+        <div className="w-full max-w-[400px] bg-card rounded-lg border border-border shadow-xl shadow-[0_0_40px_rgba(217,93,57,0.08)] overflow-hidden">
+          {/* Subtle terracotta accent line */}
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-organic-terracotta to-transparent" />
 
           <div className="p-8">
-            {/* Navigation link */}
-            <p className="text-sm text-muted-foreground mb-6 text-center md:text-left animate-auth-fade-in auth-stagger-1">
-              {t('alreadyHaveAccount')}{' '}
-              <Link
-                href="/login"
-                className="text-organic-terracotta hover:text-organic-terracotta-hover font-medium transition-colors"
-              >
-                {t('signIn')}
-              </Link>
-            </p>
-
             <h1 className="text-2xl font-light text-foreground mb-6 text-center md:text-left animate-auth-fade-in auth-stagger-1">
               {t('title')}
             </h1>
@@ -320,6 +309,19 @@ export default function SignUpPage() {
               {t('termsSuffix')}
             </p>
           </div>
+        </div>
+
+        {/* Navigation link outside card */}
+        <div className="mt-4 w-full max-w-[400px] text-center border border-border rounded-lg p-4 bg-card animate-auth-fade-in auth-stagger-6">
+          <p className="text-sm text-muted-foreground">
+            {t('alreadyHaveAccount')}{' '}
+            <Link
+              href="/login"
+              className="text-organic-terracotta hover:text-organic-terracotta-hover font-medium transition-colors"
+            >
+              {t('signIn')}
+            </Link>
+          </p>
         </div>
       </div>
     </div>
