@@ -33,6 +33,7 @@ export function MobileSidebar() {
     isAuthenticated: !!user,
     hasOrganicId: !!profile?.organic_id,
     isAdminOrCouncil,
+    isAdmin: profile?.role === 'admin',
   });
   const navItems = [...sections.main, ...sections.admin, ...sections.utility];
 

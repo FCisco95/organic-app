@@ -20,6 +20,8 @@ const OnboardingContext = createContext<OnboardingContextType>({
 
 export const useOnboarding = () => useContext(OnboardingContext);
 
+const ONBOARDING_SKIP_KEY = 'organic-onboarding-skipped';
+
 export function OnboardingProvider({ children }: { children: React.ReactNode }) {
   const { user, profile, loading } = useAuth();
   const [wizardOpen, setWizardOpen] = useState(false);
@@ -33,10 +35,13 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
 
   const isIncomplete = !!onboardingState && !onboardingState.all_complete;
 
-  // Auto-open wizard on every login until onboarding is complete
+  // Auto-open wizard once per session unless user has skipped it
   useEffect(() => {
     if (isIncomplete && !hasAutoOpened) {
-      setWizardOpen(true);
+      const skipped = localStorage.getItem(ONBOARDING_SKIP_KEY);
+      if (!skipped) {
+        setWizardOpen(true);
+      }
       setHasAutoOpened(true);
     }
   }, [isIncomplete, hasAutoOpened]);
@@ -47,10 +52,17 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
 
   const handleWizardOpenChange = useCallback((open: boolean) => {
     setWizardOpen(open);
+    if (!open) {
+      localStorage.setItem(ONBOARDING_SKIP_KEY, '1');
+    }
   }, []);
 
   const handleRefresh = useCallback(() => {
-    refetch();
+    refetch().then((result) => {
+      if (result.data?.all_complete) {
+        localStorage.removeItem(ONBOARDING_SKIP_KEY);
+      }
+    });
   }, [refetch]);
 
   return (

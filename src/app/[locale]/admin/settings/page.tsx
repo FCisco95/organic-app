@@ -25,7 +25,7 @@ export default function AdminSettingsPage() {
 
   const isAdmin = profile?.role === 'admin';
   const isCouncil = profile?.role === 'council';
-  const hasAccess = isAdmin || isCouncil;
+  const hasAccess = isAdmin;
 
   if (!hasAccess) {
     return (
