@@ -185,22 +185,63 @@ Feedback:
 Routes: `/`, `/analytics`, `/leaderboard`, `/treasury`.
 
 Use cases:
-- [ ] `INSIGHT-01` Home dashboard loads with trust/summary surfaces.
-- [ ] `INSIGHT-02` `/analytics` charts/metrics load without blocking UI.
-- [ ] `INSIGHT-03` `/leaderboard` ranking appears stable and understandable.
-- [ ] `INSIGHT-04` `/treasury` shows settlement posture and transparency metadata.
-- [ ] `INSIGHT-05` Empty/loading states are informative, not confusing.
-- [ ] `INSIGHT-06` Units and labels are understandable (percent, totals, balances).
-- [ ] `INSIGHT-07` Mobile chart/card readability is acceptable.
-- [ ] `INSIGHT-08` User can identify a clear “what to do next” action.
+- [x] `INSIGHT-01` Home dashboard loads with trust/summary surfaces. **FAIL, S1**
+- [x] `INSIGHT-02` `/analytics` charts/metrics load without blocking UI. **PARTIAL, S2**
+- [x] `INSIGHT-03` `/leaderboard` ranking appears stable and understandable. **PARTIAL, S2**
+- [x] `INSIGHT-04` `/treasury` shows settlement posture and transparency metadata. **PARTIAL, S2**
+- [x] `INSIGHT-05` Empty/loading states are informative, not confusing. **PARTIAL, S2**
+- [x] `INSIGHT-06` Units and labels are understandable (percent, totals, balances). **PASS, S3**
+- [x] `INSIGHT-07` Mobile chart/card readability is acceptable. **PARTIAL, S2**
+- [x] `INSIGHT-08` User can identify a clear “what to do next” action. **PARTIAL, S3**
 
-Feedback:
-- What works well:
-- What does not work:
-- UI improvements requested:
-- Top 3 highest-impact changes:
-- Section severity (`S0/S1/S2/S3`):
-- Confidence score (`1-5`):
+### Feedback
+
+**What works well:**
+- Leaderboard ranking table is clear and scannable with trophy icon, alternating rows, role badges, and comma-formatted XP values (INSIGHT-03)
+- “How Ranking Works” transparency section explains tiebreaker logic clearly (INSIGHT-03)
+- Treasury dark gradient hero with trust badges (Secure Custody, Community Governed, Fully Transparent) is visually distinctive and creates a trust/seriousness tone (INSIGHT-04)
+- Treasury wallet address with copy button and Solscan link works well (INSIGHT-04)
+- Analytics page loads charts progressively without blocking UI (INSIGHT-02)
+- Home hero banner is personalized per user with Organic ID and clear CTAs (INSIGHT-01)
+- 30-day Trust Signals on analytics show useful governance data (INSIGHT-02)
+- Units and labels are well-formatted across all routes — comma formatting, currency symbols, abbreviations (INSIGHT-06)
+
+**What does not work:**
+- Activity feed on home shows raw i18n key `dashboard.activity.dispute_escalated` as literal text — missing translation key (INSIGHT-01) -- **priority fix**
+- “Open audit trail” link on treasury goes to `/admin/settings` which is now admin-only — non-admin users get Access Denied (INSIGHT-04) -- **priority fix**
+- Analytics “Updated Not available” timestamp is confusing — should say “Last updated: —“ or “Not yet refreshed” (INSIGHT-02)
+- $ORG Price and Market Cap show “—“ with no explanation on analytics (INSIGHT-02)
+- Treasury Emission Policy all “—“ values and “Latest Settlement: Unknown” with no context (INSIGHT-04)
+- Sprint countdown “0h” on home with no differentiation between no sprint and 0 hours remaining (INSIGHT-01)
+- Home mobile: below the hero is blank — trust pulse, action cards, activity feed, member status sections not visible (INSIGHT-07)
+- Analytics mobile: key metric cards show as skeleton placeholders — data may not load at mobile viewport (INSIGHT-07)
+- Leaderboard mobile: shows “Loading leaderboard...” indefinitely — table may not render on narrow viewport (INSIGHT-07)
+- 48 console errors on home (Sentry CSP + missing i18n keys), 12 on analytics, 8 on leaderboard, 17 on treasury (INSIGHT-01, cross-cutting)
+
+**UI improvements requested:**
+- **Floating info (“i”) button on every page (except home):** A persistent, semi-transparent floating icon that opens a detailed popup/sheet explaining the current section — what it does, how it works, step-by-step workflows. User can swipe/drag sideways to see more detail (e.g., for Tasks: “Create a task” → “Submit” → “Comment” → etc.). Replaces verbose on-page explanations, especially important for mobile. (INSIGHT-02, INSIGHT-03, INSIGHT-04, INSIGHT-05)
+- **Consistent page structure:** Every page should follow the same structural template — dark hero section (like treasury), consistent card shadows (floating cards from auth revamp), consistent spacing and typography per organic-ux. (All INSIGHT cases)
+- **Home dashboard as FOMO-creating landing page:** Horizontal card carousel with dot indicators and swipe-on-mobile for feature cards (Proposals, Governance, Analytics, Tasks, Sprints). Each card is large, floating with shadow, explains the feature. “Organic” word animates like a tree growing with roots. Key sections get glowing flare border animation. Dashboard should create urgency and showcase what the DAO is doing. (INSIGHT-01, INSIGHT-08)
+- **Treasury reveal animations:** Lock icon hiding wallet → click to unlock and reveal treasury address. Similar interactive reveal animations for other key data. (INSIGHT-04)
+- **Dark hero sections replicated:** Treasury's dark gradient hero should be the pattern for other page headers (analytics, leaderboard, etc.). Creates visual consistency and premium feel. (INSIGHT-02, INSIGHT-03, INSIGHT-04)
+- **Professional custom icons:** Plan specific icons for each feature card — more distinctive than generic Lucide icons. Agent to recommend what icons to create and how. (INSIGHT-01, INSIGHT-08)
+- **Leaderboard avatars:** Add profile images/avatars to leaderboard table rows for scannability. Highlight top 3 with podium treatment. (INSIGHT-03)
+
+**Standalone tasks identified:**
+- **TASK: Fix missing i18n key `dashboard.activity.dispute_escalated`** — Raw translation key showing in activity feed on home dashboard. Quick fix in message files. (INSIGHT-01)
+- **TASK: Fix treasury “Open audit trail” link** — Links to `/admin/settings` which is admin-only after the QA 4.2 fix. Change to a public-facing audit page or conditionally show based on role. (INSIGHT-04)
+- **TASK: Console error audit (CSP + Sentry)** — 48-132 errors across pages, mostly Sentry CSP violations. Need to update Content Security Policy to allow `ingest.de.sentry.io`. Cross-cutting with 4.1 and 4.2. (All cases)
+- **TASK: Design floating info button component** — New cross-cutting component for all pages. Needs design spec, mobile gesture support (swipe/drag), content model for step-by-step workflows. (INSIGHT-02-08)
+
+**Top 3 highest-impact changes:**
+1. **Home dashboard full revamp** — FOMO-creating landing page with floating card carousel, “Organic” tree animation, glowing card borders, professional icons, horizontal swipe. Fix broken i18n feed. This is the front door of the app. (INSIGHT-01, INSIGHT-08, S1)
+2. **Consistent page structure with dark hero + floating info** — Every page gets treasury-style dark hero header, consistent card shadows, and the floating “i” button for contextual help. Eliminates verbose on-page text, especially on mobile. (INSIGHT-02, INSIGHT-03, INSIGHT-04, INSIGHT-05, S2)
+3. **Mobile rendering fixes** — Home blank below fold, analytics skeleton cards, leaderboard table not loading. These are usability blockers on mobile. (INSIGHT-07, S2)
+
+**Section severity:** S1 (broken i18n key on home is visible to all users, mobile rendering issues)
+**Confidence score:** 5/5 (all 8 cases tested across 3 roles + mobile viewport)
+
+**Execution status:** _not started_
 
 ## 4.4 Members Directory and Member Profile Privacy
 Routes: `/members`, `/members/[id]`.

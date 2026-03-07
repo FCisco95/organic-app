@@ -171,14 +171,16 @@ export function TreasuryHero({ walletAddress, trust }: TreasuryHeroProps) {
             <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-gray-300">
               <span>{t('latestSettlementCap', { cap: trust?.latest_settlement.emission_cap ?? 0 })}</span>
               <span>{t('latestSettlementCarryover', { amount: trust?.latest_settlement.carryover_amount ?? 0 })}</span>
-              <a
-                href={trust?.audit_log_link ?? '/admin/settings'}
-                className="inline-flex items-center gap-1 text-orange-300 hover:text-orange-200"
-                data-testid="treasury-audit-link"
-              >
-                {t('auditTrailLink')}
-                <ExternalLink className="h-3 w-3" />
-              </a>
+              {trust?.audit_log_link && (
+                <a
+                  href={trust.audit_log_link}
+                  className="inline-flex items-center gap-1 text-orange-300 hover:text-orange-200"
+                  data-testid="treasury-audit-link"
+                >
+                  {t('auditTrailLink')}
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              )}
             </div>
           </div>
         </div>

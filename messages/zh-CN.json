@@ -1505,6 +1505,13 @@
       "proposal_status_changed": "{actor} 更新了提案：{title}",
       "proposal_deleted": "{actor} 删除了提案：{title}",
       "vote_cast": "{actor} 投票了：{title}",
+      "voting_reminder_24h": "投票将在24小时后结束：{title}",
+      "voting_reminder_1h": "投票将在1小时后结束：{title}",
+      "dispute_created": "{actor} 发起了争议：{title}",
+      "dispute_response_submitted": "{actor} 回复了争议：{title}",
+      "dispute_escalated": "{actor} 升级了争议：{title}",
+      "dispute_resolved": "争议已解决：{title}",
+      "dispute_withdrawn": "{actor} 撤回了争议：{title}",
       "empty": "暂无活动"
     }
   },
