@@ -13,6 +13,20 @@ type Locale = (typeof locales)[number];
 
 const defaultLocale: Locale = 'en';
 
+/**
+ * Routes that require authentication. Unauthenticated users are redirected
+ * to /login with a returnTo param so they land back after signing in.
+ */
+const PROTECTED_ROUTE_PREFIXES = [
+  '/profile',
+  '/notifications',
+  '/rewards',
+  '/quests',
+  '/disputes',
+  '/sprints',
+  '/admin',
+];
+
 type ApiRateLimitPolicy = {
   bucket: string;
   config: RateLimitConfig;
@@ -222,7 +236,23 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  // Strip locale prefix to get the bare route for protection checks
+  const localeMatch = pathname.match(/^\/[a-z]{2}(-[a-zA-Z]{2,})?(\/.*)?$/);
+  const barePathname = localeMatch?.[2] || '/';
+
+  const isProtected = PROTECTED_ROUTE_PREFIXES.some(
+    (prefix) => barePathname === prefix || barePathname.startsWith(`${prefix}/`)
+  );
+
+  if (isProtected && !user) {
+    const locale = pathname.match(/^\/([a-z]{2}(-[a-zA-Z]{2,})?)/)?.[1] || defaultLocale;
+    const loginUrl = request.nextUrl.clone();
+    loginUrl.pathname = `/${locale}/login`;
+    loginUrl.searchParams.set('returnTo', barePathname);
+    return NextResponse.redirect(loginUrl);
+  }
 
   return response;
 }

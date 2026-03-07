@@ -1204,6 +1204,7 @@
   },
   "Profile": {
     "loadingProfile": "Loading your profile...",
+    "redirecting": "Redirecting...",
     "pageTitle": "My Profile",
     "pageSubtitle": "Manage your account and personal information",
     "editProfile": "Edit Profile",
