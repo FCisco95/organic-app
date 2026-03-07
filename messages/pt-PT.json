@@ -1505,6 +1505,13 @@
       "proposal_status_changed": "{actor} atualizou proposta: {title}",
       "proposal_deleted": "{actor} eliminou proposta: {title}",
       "vote_cast": "{actor} votou em: {title}",
+      "voting_reminder_24h": "Votação termina em 24h: {title}",
+      "voting_reminder_1h": "Votação termina em 1h: {title}",
+      "dispute_created": "{actor} abriu uma disputa em: {title}",
+      "dispute_response_submitted": "{actor} respondeu à disputa: {title}",
+      "dispute_escalated": "{actor} escalou a disputa: {title}",
+      "dispute_resolved": "Disputa resolvida: {title}",
+      "dispute_withdrawn": "{actor} retirou a disputa: {title}",
       "empty": "Sem atividade ainda"
     }
   },
