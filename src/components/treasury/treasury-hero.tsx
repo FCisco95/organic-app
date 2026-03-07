@@ -166,12 +166,10 @@ export function TreasuryHero({ walletAddress, trust }: TreasuryHeroProps) {
                       key={i}
                       className="absolute left-6 top-3 h-1.5 w-1.5 rounded-full bg-orange-400"
                       style={{
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        ['--tx' as any]: pos.tx,
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        ['--ty' as any]: pos.ty,
+                        '--tx': pos.tx,
+                        '--ty': pos.ty,
                         animation: `sparkle-fly 0.5s ease-out ${i * 50}ms forwards`,
-                      }}
+                      } as React.CSSProperties}
                     />
                   ))}
                 </div>
