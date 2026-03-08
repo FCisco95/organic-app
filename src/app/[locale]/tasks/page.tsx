@@ -22,6 +22,7 @@ import { TaskListSection } from '@/components/tasks/task-list-section';
 import dynamic from 'next/dynamic';
 const TaskNewModal = dynamic(() => import('@/components/tasks/task-new-modal').then(m => m.TaskNewModal), { ssr: false });
 import { PageContainer } from '@/components/layout';
+import { InfoButton } from '@/components/ui/info-button';
 
 type TaskSortOption = 'newest' | 'oldest' | 'dueSoon' | 'pointsHigh' | 'mostLiked';
 
@@ -582,6 +583,33 @@ export default function TasksPage() {
     setShowInfoBanner(false);
   };
 
+  const infoSections = [
+    {
+      title: t('infoSection1Title'),
+      points: [
+        t('infoSection1Point1'),
+        t('infoSection1Point2'),
+        t('infoSection1Point3'),
+      ],
+    },
+    {
+      title: t('infoSection2Title'),
+      points: [
+        t('infoSection2Point1'),
+        t('infoSection2Point2'),
+        t('infoSection2Point3'),
+      ],
+    },
+    {
+      title: t('infoSection3Title'),
+      points: [
+        t('infoSection3Point1'),
+        t('infoSection3Point2'),
+        t('infoSection3Point3'),
+      ],
+    },
+  ];
+
   return (
     <PageContainer layout="fluid" className="space-y-6">
       <div data-testid="tasks-page" className="space-y-6">
@@ -786,6 +814,7 @@ export default function TasksPage() {
 
       {/* Modals */}
       {showNewTaskModal && (
+
         <TaskNewModal
           onClose={() => setShowNewTaskModal(false)}
           onSuccess={() => {
@@ -797,6 +826,8 @@ export default function TasksPage() {
         />
       )}
       </div>
+
+      <InfoButton sections={infoSections} />
     </PageContainer>
   );
 }
