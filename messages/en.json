@@ -1249,7 +1249,19 @@
       "design": "Design",
       "dev": "Dev",
       "research": "Research"
-    }
+    },
+    "infoSection1Title": "Reading This Task",
+    "infoSection1Point1": "**Status tells you where this task is in its lifecycle** — open (available), in progress (someone's working on it), in review (submitted, waiting for approval), or completed.",
+    "infoSection1Point2": "**Points and XP show what you'll earn** when your submission is approved. Higher-value tasks require more effort but boost your rank faster.",
+    "infoSection1Point3": "**Acceptance criteria define what 'done' looks like.** Read these before you start — reviewers check your work against them.",
+    "infoSection2Title": "Claiming & Submitting",
+    "infoSection2Point1": "**Claim the task to signal you're working on it.** This prevents duplicate effort. You can unclaim if plans change — no penalty.",
+    "infoSection2Point2": "**Submit your work using the form below.** Each task type has its own submission format — code tasks want a link, design tasks want a file, Twitter tasks verify your engagement.",
+    "infoSection2Point3": "**You can resubmit if rejected.** The reviewer will tell you why it was turned down. Fix the issue and try again.",
+    "infoSection3Title": "After Submission",
+    "infoSection3Point1": "**A reviewer or admin evaluates your work** against the acceptance criteria. They'll approve, reject with feedback, or request changes.",
+    "infoSection3Point2": "**Approved submissions earn you the full point and XP value** listed on this task. Quality ratings (1–5 stars) from the reviewer also factor into your reputation.",
+    "infoSection3Point3": "**Completed tasks appear on your profile** as part of your contribution history — building your on-chain reputation over time."
   },
   "Profile": {
     "loadingProfile": "Loading your profile...",

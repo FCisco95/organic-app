@@ -1249,7 +1249,19 @@
       "design": "Design",
       "dev": "Desenvolvimento",
       "research": "Pesquisa"
-    }
+    },
+    "infoSection1Title": "Ler Esta Tarefa",
+    "infoSection1Point1": "**O estado indica onde esta tarefa se encontra no ciclo de vida** — aberta (disponível), em progresso (alguém está a trabalhar nela), em revisão (submetida, a aguardar aprovação) ou concluída.",
+    "infoSection1Point2": "**Os pontos e XP mostram o que vai ganhar** quando a sua submissão for aprovada. Tarefas de valor mais elevado exigem mais esforço, mas aumentam o seu ranking mais rapidamente.",
+    "infoSection1Point3": "**Os critérios de aceitação definem o que significa 'concluído'.** Leia-os antes de começar — os revisores avaliam o seu trabalho com base neles.",
+    "infoSection2Title": "Reclamar e Submeter",
+    "infoSection2Point1": "**Reclame a tarefa para sinalizar que está a trabalhar nela.** Isto evita esforço duplicado. Pode desistir se os planos mudarem — sem penalização.",
+    "infoSection2Point2": "**Submeta o seu trabalho usando o formulário abaixo.** Cada tipo de tarefa tem o seu próprio formato de submissão — tarefas de código pedem um link, tarefas de design pedem um ficheiro, tarefas do Twitter verificam o seu envolvimento.",
+    "infoSection2Point3": "**Pode voltar a submeter se for rejeitado.** O revisor dirá o motivo da rejeição. Corrija o problema e tente novamente.",
+    "infoSection3Title": "Após a Submissão",
+    "infoSection3Point1": "**Um revisor ou administrador avalia o seu trabalho** com base nos critérios de aceitação. Podem aprovar, rejeitar com feedback ou solicitar alterações.",
+    "infoSection3Point2": "**Submissões aprovadas rendem-lhe o valor total de pontos e XP** indicado nesta tarefa. As classificações de qualidade (1–5 estrelas) do revisor também influenciam a sua reputação.",
+    "infoSection3Point3": "**As tarefas concluídas aparecem no seu perfil** como parte do seu histórico de contribuições — construindo a sua reputação on-chain ao longo do tempo."
   },
   "Profile": {
     "loadingProfile": "Carregando seu perfil...",

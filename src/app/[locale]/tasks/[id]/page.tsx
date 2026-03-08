@@ -32,6 +32,7 @@ import { DependencyPicker } from '@/components/tasks/dependency-picker';
 import { useTaskDependencies } from '@/features/tasks';
 import { PageContainer } from '@/components/layout';
 import { FollowButton } from '@/components/notifications/follow-button';
+import { InfoButton } from '@/components/ui/info-button';
 
 // Local type alias for the task shape used in this page
 type Task = TaskWithRelations;
@@ -56,6 +57,21 @@ export default function TaskDetailPage() {
     t('standardLabels.design'),
     t('standardLabels.dev'),
     t('standardLabels.research'),
+  ];
+
+  const infoSections = [
+    {
+      title: t('infoSection1Title'),
+      points: [t('infoSection1Point1'), t('infoSection1Point2'), t('infoSection1Point3')],
+    },
+    {
+      title: t('infoSection2Title'),
+      points: [t('infoSection2Point1'), t('infoSection2Point2'), t('infoSection2Point3')],
+    },
+    {
+      title: t('infoSection3Title'),
+      points: [t('infoSection3Point1'), t('infoSection3Point2'), t('infoSection3Point3')],
+    },
   ];
 
   const [task, setTask] = useState<Task | null>(null);
@@ -874,6 +890,8 @@ export default function TaskDetailPage() {
         onCancel={() => setShowDeleteConfirm(false)}
         onConfirm={handleDeleteTask}
       />
+
+      <InfoButton sections={infoSections} />
     </PageContainer>
   );
 }
