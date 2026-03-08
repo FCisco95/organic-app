@@ -32,6 +32,8 @@ export function SolanaWalletProvider({ children }: { children: React.ReactNode }
         new walletAdapters.TorusWalletAdapter(),
         new tokenpocket.TokenPocketWalletAdapter(),
       ]);
+    }).catch(() => {
+      // Wallet adapters failed to load — Wallet Standard wallets (Phantom etc.) still work
     });
     return () => {
       cancelled = true;

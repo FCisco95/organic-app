@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { ActivityEvent, ActivityEventType } from '@/features/activity';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
@@ -25,6 +26,14 @@ function formatTimeAgo(dateStr: string): string {
   if (diffHour < 24) return `${diffHour}h ago`;
   if (diffDay === 1) return 'yesterday';
   return `${diffDay}d ago`;
+}
+
+/** Suppress hydration mismatch by rendering time-ago only on the client */
+function TimeAgo({ dateStr }: { dateStr: string }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return <span>&nbsp;</span>;
+  return <>{formatTimeAgo(dateStr)}</>;
 }
 
 export function ActivityItem({
@@ -54,7 +63,7 @@ export function ActivityItem({
       <p className="text-[13px] leading-relaxed text-foreground">{description}</p>
       <span className="mt-1 flex items-center gap-1.5 text-[11px] text-muted-foreground">
         <span className={cn('inline-block h-1.5 w-1.5 rounded-full', accent)} />
-        {formatTimeAgo(event.created_at)}
+        <TimeAgo dateStr={event.created_at} />
       </span>
     </div>
   );

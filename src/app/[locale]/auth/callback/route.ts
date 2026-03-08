@@ -24,6 +24,8 @@ export async function GET(request: Request) {
     }
   }
 
-  // Redirect to profile page after email confirmation
-  return NextResponse.redirect(new URL(`${basePath}/profile`, requestUrl.origin));
+  // Redirect to home (or returnTo destination) after email confirmation
+  const returnTo = requestUrl.searchParams.get('returnTo');
+  const destination = returnTo ?? '/';
+  return NextResponse.redirect(new URL(`${basePath}${destination}`, requestUrl.origin));
 }

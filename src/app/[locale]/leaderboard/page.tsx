@@ -137,6 +137,7 @@ export default function LeaderboardPage() {
                     width={72}
                     height={72}
                     className="rounded-full object-cover border-3 border-yellow-400"
+                    priority
                   />
                 ) : (
                   <div className="w-[72px] h-[72px] rounded-full bg-gradient-to-br from-yellow-400 to-amber-500 flex items-center justify-center border-3 border-yellow-400">

@@ -48,22 +48,26 @@ export function useActivityFeed(limit = 20) {
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'activity_log' },
         async (payload) => {
-          const newEvent = payload.new as ActivityEvent;
+          try {
+            const newEvent = payload.new as ActivityEvent;
 
-          // Fetch actor info if available
-          if (newEvent.actor_id) {
-            const { data: actor } = await supabase
-              .from('user_profiles')
-              .select('id, name, organic_id, avatar_url')
-              .eq('id', newEvent.actor_id)
-              .single();
-            newEvent.actor = actor;
+            // Fetch actor info if available
+            if (newEvent.actor_id) {
+              const { data: actor } = await supabase
+                .from('user_profiles')
+                .select('id, name, organic_id, avatar_url')
+                .eq('id', newEvent.actor_id)
+                .maybeSingle();
+              newEvent.actor = actor;
+            }
+
+            queryClient.setQueryData<ActivityEvent[]>(activityKeys.feed(), (old) => {
+              if (!old) return [newEvent];
+              return [newEvent, ...old].slice(0, limit);
+            });
+          } catch {
+            // Actor fetch failed — skip enrichment, event still works without it
           }
-
-          queryClient.setQueryData<ActivityEvent[]>(activityKeys.feed(), (old) => {
-            if (!old) return [newEvent];
-            return [newEvent, ...old].slice(0, limit);
-          });
         }
       )
       .subscribe();

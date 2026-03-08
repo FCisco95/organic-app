@@ -35,7 +35,7 @@ export function useNotifications(filters?: { category?: NotificationCategory; un
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       setUserId(data.user?.id ?? null);
-    });
+    }).catch(() => {});
   }, [supabase]);
 
   const query = useQuery({
@@ -62,33 +62,37 @@ export function useNotifications(filters?: { category?: NotificationCategory; un
           filter: `user_id=eq.${userId}`,
         },
         async (payload) => {
-          const newNotification = payload.new as Notification;
+          try {
+            const newNotification = payload.new as Notification;
 
-          // Safety check: only process own notifications
-          if (newNotification.user_id !== userId) return;
+            // Safety check: only process own notifications
+            if (newNotification.user_id !== userId) return;
 
-          // Fetch actor info
-          if (newNotification.actor_id) {
-            const { data: actor } = await supabase
-              .from('user_profiles')
-              .select('id, name, avatar_url, organic_id')
-              .eq('id', newNotification.actor_id)
-              .single();
-            newNotification.actor = actor;
+            // Fetch actor info
+            if (newNotification.actor_id) {
+              const { data: actor } = await supabase
+                .from('user_profiles')
+                .select('id, name, avatar_url, organic_id')
+                .eq('id', newNotification.actor_id)
+                .maybeSingle();
+              newNotification.actor = actor;
+            }
+
+            // Update notification list
+            queryClient.setQueryData<NotificationsResponse>(notificationKeys.list(filters), (old) => {
+              if (!old) return { notifications: [newNotification], total: 1, unread_count: 1 };
+              return {
+                notifications: [newNotification, ...old.notifications].slice(0, 50),
+                total: old.total + 1,
+                unread_count: old.unread_count + 1,
+              };
+            });
+
+            // Bump unread count
+            queryClient.setQueryData<number>(notificationKeys.unreadCount(), (old) => (old ?? 0) + 1);
+          } catch {
+            // Actor fetch failed — notification still arrives without enrichment
           }
-
-          // Update notification list
-          queryClient.setQueryData<NotificationsResponse>(notificationKeys.list(filters), (old) => {
-            if (!old) return { notifications: [newNotification], total: 1, unread_count: 1 };
-            return {
-              notifications: [newNotification, ...old.notifications].slice(0, 50),
-              total: old.total + 1,
-              unread_count: old.unread_count + 1,
-            };
-          });
-
-          // Bump unread count
-          queryClient.setQueryData<number>(notificationKeys.unreadCount(), (old) => (old ?? 0) + 1);
         }
       )
       .on(

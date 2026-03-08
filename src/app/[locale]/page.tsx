@@ -7,6 +7,7 @@ import { ActivityFeed } from '@/components/dashboard/activity-feed';
 import { FeatureCarousel } from '@/components/home/feature-carousel';
 import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
+import { useState, useEffect } from 'react';
 import {
   Vote,
   ArrowRight,
@@ -37,6 +38,15 @@ function formatCountdown(target: string | null | undefined): string {
   return `${hours}h`;
 }
 
+/** Renders only on the client to avoid hydration mismatch from Date.now() */
+function ClientTime() {
+  const [time, setTime] = useState('');
+  useEffect(() => {
+    setTime(new Date().toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }));
+  }, []);
+  return <>{time || '\u00A0'}</>;
+}
+
 export default function Home() {
   const { user, profile } = useAuth();
   const t = useTranslations('Home');
@@ -44,6 +54,8 @@ export default function Home() {
   const { data: proposals = [] } = useProposals();
   const { data: leaderboard = [] } = useLeaderboard();
   const { data: activity = [] } = useActivityFeed();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   const isAuthenticated = !!user;
   const hasOrganicId = !!profile?.organic_id;
@@ -249,7 +261,7 @@ export default function Home() {
             </div>
             <p className="mt-2 text-2xl font-bold font-mono tabular-nums text-foreground animate-count-up">
               {inFlightSprint
-                ? (sprintCountdown || t('trustSprintEnding'))
+                ? (mounted ? (sprintCountdown || t('trustSprintEnding')) : '\u00A0')
                 : '\u2014'}
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
@@ -327,7 +339,7 @@ export default function Home() {
 
         <div className="mt-3 flex items-center gap-3 text-[10px] text-muted-foreground/60">
           <span data-testid="trust-updated-at">
-            {new Date().toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
+            <ClientTime />
           </span>
           <span data-testid="trust-refresh-cadence">60s</span>
         </div>
