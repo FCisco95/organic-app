@@ -13,6 +13,17 @@ interface InfoButtonProps {
   sections: InfoSection[];
 }
 
+/** Parse **bold** markers in a string into React nodes */
+function renderRichText(text: string): React.ReactNode {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={i} className="text-foreground font-medium">{part.slice(2, -2)}</strong>;
+    }
+    return part;
+  });
+}
+
 export function InfoButton({ sections }: InfoButtonProps) {
   const [open, setOpen] = useState(false);
   const [activeSection, setActiveSection] = useState(0);
@@ -115,7 +126,7 @@ export function InfoButton({ sections }: InfoButtonProps) {
                       className="text-sm text-muted-foreground leading-relaxed flex gap-2"
                     >
                       <span className="text-orange-500 shrink-0 mt-0.5">&#8226;</span>
-                      <span>{point}</span>
+                      <span>{renderRichText(point)}</span>
                     </li>
                   ))}
                 </ul>
