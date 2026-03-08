@@ -377,11 +377,58 @@ Use cases:
 
 Feedback:
 - What works well:
+  - `TASK-02` Search, filter, sort all function correctly on the list page. Tab bar (All/Active Sprint/Completed) shows live counts. Sort options (newest, oldest, due soonest, highest points, most liked) all work. "More filters" reveals category, contributor, sprint, and date-range filters.
+  - `TASK-04` Task detail page shows status, priority, points, assignee, due date, sprint context, description, and acceptance criteria. InfoButton popup now renders 3 rich sections with bold formatting.
+  - `TASK-10` Dependency picker renders with search, shows up to 20 matching tasks, and supports add/remove. Blocked badge displays with blocker count.
+  - `TASK-11` Subtask list renders with progress bar and individual subtask links. Subtask creation form is functional.
+  - `TASK-12` Template manager loads with create/edit/delete functionality. Templates have recurrence badge support.
+  - Execution cockpit hero section shows 4 key metrics: open execution, pending review, needs assignee, community queue.
+  - Sprint context banner shows active sprint name and status, or helpful fallback text.
+  - InfoButton (floating info) works correctly with 3 scrollable sections, dot navigation, and bold text rendering via `**markers**`.
+  - Task list rows display: title, priority badge, status, due date, points, and activity counts (likes, comments, submissions, contributors).
+  - Pagination works (Page 1 of 2 with 14 tasks, 12 per page).
+
 - What does not work:
+  - **S0 — Silent error handling on task detail**: Task fetch, comment fetch, and dependency fetch all use empty `catch {}` blocks. If Supabase returns an error (RLS, network, etc.), user sees "Not found" with no way to distinguish from a genuinely missing task. (TASK-04)
+  - **S0 — Hardcoded locale in date formatting**: `formatDate()` in task detail uses `'en-US'` locale instead of the current app locale. PT-PT and ZH-CN users see English date formats. (TASK-04)
+  - **S1 — No confirmation dialog for leaving task**: Claim button's "Leave Task" action has no confirmation. User can accidentally abandon a claimed task. (TASK-03)
+  - **S1 — Emoji icons in board view**: Task board uses 💬📤👥 emojis for activity counts instead of Lucide icons. Violates design system (no emojis in UI surfaces). (TASK-02, TASK-15)
+  - **S1 — Native `confirm()` dialog in template manager**: Delete confirmation uses browser-native dialog, which isn't i18n-aware. Shows in browser language, not app language. (TASK-12)
+  - **S1 — Missing loading states for submissions section**: No skeleton/spinner while submissions load. Appears empty during network delay. (TASK-05, TASK-06)
+  - **S1 — Empty state for submissions is generic**: "No submissions yet" with no context about what submissions are or CTA to guide the user. (TASK-05)
+  - **S2 — Dependency picker silently caps at 20 items**: Shows `.slice(0, 20)` results with no "showing 20 of N" indicator. User may miss tasks. (TASK-10)
+  - **S2 — No date range validation in filters**: User can set dateTo < dateFrom with no error feedback, producing zero results silently. (TASK-02)
+  - **S2 — Task list column headers are `<p>` tags**: Should be semantic table headers (`<th>`) for accessibility. Screen readers don't announce them as column headers. (TASK-15)
+  - **S2 — Overdue indicator is color-only**: Uses `text-destructive` with no icon or non-color cue. Fails WCAG for color-blind users. (TASK-15)
+  - **S2 — Comments section has no pagination or max height**: Unlimited comments loaded at once, can create very long pages. (TASK-04)
+  - **S2 — Like button has no debounce/loading state**: Users can spam-click; potential race condition for duplicate likes. (TASK-04)
+  - **S2 — Content submission form doesn't enforce required fields**: Shows "Content link or text required" warning but doesn't disable submit. (TASK-05)
+  - **S3 — Task board grid doesn't handle tablet landscape well**: Only `md:grid-cols-2`, cramped for 5 status lanes. (TASK-15)
+  - **S3 — "+X more" blockers text is hardcoded English**: Not i18n-aware. (TASK-10)
+  - **S3 — Mobile column labels missing**: List headers are `hidden md:grid`, no mobile fallback labels. (TASK-15)
+
 - UI improvements requested:
+  - Replace emoji activity icons (💬📤👥) with Lucide icons throughout board view
+  - Add proper error states to task detail page (retry button, error message) instead of silent catch
+  - Add confirmation dialog (shadcn AlertDialog) for leave-task and delete-template actions
+  - Add loading skeletons for submissions section, comments section, and dependency data
+  - Improve empty states: add icons, context text, and CTA ("Be the first to submit work")
+  - Use current locale for date formatting instead of hardcoded 'en-US'
+  - Add semantic table markup (`<table>`, `<th>`) for task list, or at least `role="columnheader"`
+  - Add debounce to like button to prevent race conditions
+  - Add max-height + scroll to comments section
+  - Mobile: show inline labels on task cards since column headers are hidden
+  - Filter UX: validate date range, show "20 of N" in dependency picker
+  - Replace native `confirm()` with shadcn AlertDialog throughout
+  - Board view: add sm: breakpoint for better tablet layout
+
 - Top 3 highest-impact changes:
-- Section severity (`S0/S1/S2/S3`):
-- Confidence score (`1-5`):
+  1. **Fix error handling in task detail** — Silent catch blocks hide real errors from users. Add error state UI with retry, distinguishable from "not found". Affects TASK-03/04/05/06/07/08.
+  2. **Replace emoji icons with Lucide + fix board accessibility** — Emoji in board view breaks design system consistency and accessibility. Using proper icons with aria-labels fixes both. Affects TASK-02/15.
+  3. **Add loading/empty states across submission and comment sections** — Missing loading skeletons make the app feel broken on slow connections. Generic empty states don't guide users. Affects TASK-04/05/06.
+
+- Section severity (`S0/S1/S2/S3`): **S1** (multiple high-priority UX issues; no data loss bugs, but significant usability gaps)
+- Confidence score (`1-5`): **4** (thorough code analysis + live browser QA of list page; task detail could not be loaded live due to WSL2 memory constraints, but code review covers all paths)
 
 ## 4.8 Sprints End-to-End Workflow (Planning -> Completed)
 Routes: `/sprints`, `/sprints/[id]`, `/sprints/past`.
