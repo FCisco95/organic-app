@@ -3,7 +3,15 @@
 import { AlertCircle, CalendarClock, FilterX, Heart, MessageSquare, Tag, Upload, User, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import type { Sprint, TaskListItem, TaskTab } from '@/features/tasks';
+import type { Sprint, TaskListItem, TaskTab, TaskStatus } from '@/features/tasks';
+
+const STATUS_PROGRESS: Record<TaskStatus, { percent: number; color: string }> = {
+  backlog: { percent: 5, color: 'bg-gray-400' },
+  todo: { percent: 25, color: 'bg-violet-500' },
+  in_progress: { percent: 50, color: 'bg-primary' },
+  review: { percent: 75, color: 'bg-amber-500' },
+  done: { percent: 100, color: 'bg-emerald-500' },
+};
 
 type TaskListSectionProps = {
   activeView: TaskTab;
@@ -29,6 +37,7 @@ type TaskListSectionProps = {
   onToggleLike: (taskId: string) => void;
   onPageChange: (page: number) => void;
   onResetFilters: () => void;
+  userId: string | null;
 };
 
 export function TaskListSection({
@@ -106,12 +115,10 @@ export function TaskListSection({
         </div>
       ) : (
         <div>
-          <div className="hidden border-b border-border bg-muted/40 px-6 py-2 md:grid md:grid-cols-[minmax(0,2.5fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,1.2fr)] md:items-center md:gap-4">
+          {/* 4-column header: Task, Due, Points, Activity */}
+          <div className="hidden border-b border-border bg-muted/40 px-6 py-2 md:grid md:grid-cols-[minmax(0,3fr)_minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,1.2fr)] md:items-center md:gap-4">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               {t('columnTask')}
-            </p>
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground md:text-center">
-              {t('columnStatus')}
             </p>
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground md:text-center">
               {t('columnDue')}
@@ -131,23 +138,18 @@ export function TaskListSection({
               const activity = getActivityCounts(task.id);
               const points = task.points ?? task.base_points ?? 0;
               const labels = task.labels ?? [];
-              const statusClassName =
-                task.status === 'done'
-                  ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600'
-                  : task.status === 'review'
-                    ? 'border-amber-500/30 bg-amber-500/10 text-amber-600'
-                    : task.status === 'in_progress'
-                      ? 'border-blue-500/25 bg-blue-500/10 text-blue-600'
-                      : 'border-border bg-muted text-muted-foreground';
+              const status = (task.status ?? 'backlog') as TaskStatus;
+              const progress = STATUS_PROGRESS[status] ?? STATUS_PROGRESS.backlog;
 
               return (
                 <Link
                   key={task.id}
                   href={`/tasks/${task.id}`}
                   data-testid={`task-card-${task.id}`}
-                  className="block px-4 py-4 transition-colors hover:bg-muted/40 sm:px-6"
+                  className="block border-l-4 border-l-transparent px-4 py-4 transition-colors hover:border-l-primary hover:bg-muted/40 sm:px-6"
                 >
-                  <div className="grid gap-3 md:grid-cols-[minmax(0,2.5fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,1.2fr)] md:items-center md:gap-4">
+                  <div className="grid gap-3 md:grid-cols-[minmax(0,3fr)_minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,1.2fr)] md:items-center md:gap-4">
+                    {/* Task info column */}
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
                         <h3 className="truncate text-sm font-semibold text-foreground">{task.title}</h3>
@@ -185,17 +187,25 @@ export function TaskListSection({
                           </span>
                         )}
                       </div>
+
+                      {/* Progress bar with status label */}
+                      <div className="mt-2 flex items-center gap-2">
+                        <div className="h-1.5 w-16 overflow-hidden rounded-full bg-muted">
+                          <div
+                            className={`h-full rounded-full ${progress.color} transition-all`}
+                            style={{ width: `${progress.percent}%` }}
+                          />
+                        </div>
+                        <span
+                          className="text-[11px] font-medium text-muted-foreground"
+                          data-testid={`task-status-lane-${task.id}`}
+                        >
+                          {t(`statusLane.${status}`)}
+                        </span>
+                      </div>
                     </div>
 
-                    <div className="md:text-center">
-                      <span
-                        className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide ${statusClassName}`}
-                        data-testid={`task-status-lane-${task.id}`}
-                      >
-                        {t(`statusLane.${task.status ?? 'backlog'}`)}
-                      </span>
-                    </div>
-
+                    {/* Due date column */}
                     <div className="text-xs text-muted-foreground md:text-center">
                       {task.due_date ? (
                         <span
@@ -211,15 +221,17 @@ export function TaskListSection({
                       )}
                     </div>
 
+                    {/* Points column — emphasized */}
                     <div className="md:text-right">
-                      <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                      <p className="text-[10px] uppercase tracking-wide text-muted-foreground">
                         {t('columnPoints')}
                       </p>
-                      <p className="font-mono text-sm font-semibold tabular-nums text-foreground">
-                        {points}
+                      <p className="font-mono text-base font-semibold tabular-nums text-primary">
+                        {points}<span className="ml-0.5 text-[10px] font-normal text-muted-foreground">pts</span>
                       </p>
                     </div>
 
+                    {/* Activity column */}
                     <div className="flex flex-wrap items-center gap-3 md:justify-end">
                       <button
                         type="button"
