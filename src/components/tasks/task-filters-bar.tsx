@@ -69,7 +69,7 @@ export function TaskFiltersBar({
 
   return (
     <section
-      className="rounded-2xl border border-border bg-card p-4"
+      className="rounded-xl border border-border bg-card p-3"
       data-testid="tasks-filters-bar"
     >
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end">

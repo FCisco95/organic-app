@@ -14,7 +14,7 @@ import {
 } from '@/features/tasks';
 
 import { createClient } from '@/lib/supabase/client';
-import { ChevronDown, ChevronUp, Info, Plus, X } from 'lucide-react';
+import { CheckSquare, Clock, Plus, Send, Star } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { TaskFiltersBar } from '@/components/tasks/task-filters-bar';
@@ -57,8 +57,16 @@ export default function TasksPage() {
   const [commentCounts, setCommentCounts] = useState<Record<string, number>>({});
   const [submissionCounts, setSubmissionCounts] = useState<Record<string, number>>({});
   const [contributorCounts, setContributorCounts] = useState<Record<string, number>>({});
-  const [showInfoBanner, setShowInfoBanner] = useState(false);
-  const [isInfoBannerExpanded, setIsInfoBannerExpanded] = useState(true);
+  // Personal stats for authenticated users
+  const myClaimedCount = user
+    ? tasks.filter((task) => task.assignee_id === user.id && task.status !== 'done').length
+    : 0;
+  const myPendingSubmissions = user
+    ? tasks.filter((task) => task.assignee_id === user.id && task.status === 'review').length
+    : 0;
+  const availablePoints = tasks
+    .filter((task) => !task.assignee_id && ['backlog', 'todo'].includes(task.status ?? 'backlog'))
+    .reduce((sum, task) => sum + (task.points ?? task.base_points ?? 0), 0);
 
   const isOrgMember = !!profile?.organic_id;
   const canManage = profile?.role === 'admin';
@@ -274,11 +282,6 @@ export default function TasksPage() {
   useEffect(() => {
     loadSprints();
   }, [loadSprints]);
-
-  useEffect(() => {
-    const isDismissed = window.localStorage.getItem('tasksInfoBannerDismissed') === 'true';
-    setShowInfoBanner(!isDismissed);
-  }, []);
 
   useEffect(() => {
     loadTasks();
@@ -578,11 +581,6 @@ export default function TasksPage() {
     }
   };
 
-  const handleDismissInfoBanner = () => {
-    window.localStorage.setItem('tasksInfoBannerDismissed', 'true');
-    setShowInfoBanner(false);
-  };
-
   const infoSections = [
     {
       title: t('infoSection1Title'),
@@ -613,107 +611,116 @@ export default function TasksPage() {
   return (
     <PageContainer layout="fluid" className="space-y-6">
       <div data-testid="tasks-page" className="space-y-6">
-        <section
-          data-testid="tasks-execution-cockpit"
-          className="relative overflow-hidden rounded-2xl border border-primary/20 bg-card p-5 sm:p-6"
-        >
-          <div className="absolute -top-16 right-0 h-44 w-44 rounded-full bg-primary/10 blur-3xl" />
-          <div className="relative z-10 space-y-4">
-            <div>
+        {user ? (
+          <section
+            data-testid="tasks-execution-cockpit"
+            className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-5 sm:p-6"
+          >
+            {/* Decorative blur glows */}
+            <div className="absolute -top-16 -left-16 h-56 w-56 rounded-full bg-primary/15 blur-3xl" />
+            <div className="absolute -bottom-20 right-0 h-44 w-44 rounded-full bg-emerald-500/10 blur-3xl" />
+
+            <div className="relative z-10 space-y-4">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                    {t('executionCockpitLabel')}
+                  </p>
+                  <h1 className="mt-1 text-3xl font-bold text-white">{t('title')}</h1>
+                  <p className="mt-1 text-sm text-slate-400">{t('subtitle')}</p>
+                </div>
+
+                {/* Sprint badge */}
+                <div
+                  data-testid="tasks-sprint-context-banner"
+                  className="hidden shrink-0 rounded-xl border border-white/10 bg-white/5 px-4 py-2 backdrop-blur sm:block"
+                >
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+                    {t('sprintContextLabel')}
+                  </p>
+                  <p className="mt-0.5 text-sm font-medium text-white">
+                    {currentSprint
+                      ? t('sprintContextActive', {
+                          name: currentSprint.name,
+                          status: currentSprint.status ?? 'active',
+                        })
+                      : t('sprintContextNone')}
+                  </p>
+                </div>
+              </div>
+
+              {/* Personal stats row */}
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                <div className="flex items-center gap-3 rounded-xl bg-white/5 px-3 py-2.5">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/20">
+                    <CheckSquare className="h-4 w-4 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-[11px] uppercase tracking-wide text-slate-400">
+                      {t('metricOpenExecution')}
+                    </p>
+                    <p className="font-mono text-lg font-semibold tabular-nums text-white">
+                      {myClaimedCount}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 rounded-xl bg-white/5 px-3 py-2.5">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/20">
+                    <Send className="h-4 w-4 text-amber-400" />
+                  </div>
+                  <div>
+                    <p className="text-[11px] uppercase tracking-wide text-slate-400">
+                      {t('metricPendingReview')}
+                    </p>
+                    <p className="font-mono text-lg font-semibold tabular-nums text-white">
+                      {myPendingSubmissions}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 rounded-xl bg-white/5 px-3 py-2.5">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/20">
+                    <Star className="h-4 w-4 text-emerald-400" />
+                  </div>
+                  <div>
+                    <p className="text-[11px] uppercase tracking-wide text-slate-400">
+                      {t('metricCommunityQueue')}
+                    </p>
+                    <p className="font-mono text-lg font-semibold tabular-nums text-white">
+                      {availablePoints}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 rounded-xl bg-white/5 px-3 py-2.5">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-500/20">
+                    <Clock className="h-4 w-4 text-violet-400" />
+                  </div>
+                  <div>
+                    <p className="text-[11px] uppercase tracking-wide text-slate-400">
+                      {t('metricNeedsAssignee')}
+                    </p>
+                    <p className="font-mono text-lg font-semibold tabular-nums text-white">
+                      {tasksNeedingAssignee}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        ) : (
+          <section
+            data-testid="tasks-execution-cockpit"
+            className="relative overflow-hidden rounded-2xl border border-primary/20 bg-card p-5 sm:p-6"
+          >
+            <div className="absolute -top-16 right-0 h-44 w-44 rounded-full bg-primary/10 blur-3xl" />
+            <div className="relative z-10 space-y-3">
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
                 {t('executionCockpitLabel')}
               </p>
-              <h1 className="mt-1 text-3xl font-bold text-foreground">{t('title')}</h1>
-              <p className="mt-1 text-sm text-muted-foreground">{t('subtitle')}</p>
+              <h1 className="text-3xl font-bold text-foreground">{t('title')}</h1>
+              <p className="text-sm text-muted-foreground">{t('subtitle')}</p>
             </div>
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="rounded-xl border border-border bg-muted/40 px-3 py-2.5">
-                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                  {t('metricOpenExecution')}
-                </p>
-                <p className="font-mono text-2xl font-semibold tabular-nums text-foreground">
-                  {openExecutionCount}
-                </p>
-              </div>
-              <div className="rounded-xl border border-border bg-muted/40 px-3 py-2.5">
-                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                  {t('metricPendingReview')}
-                </p>
-                <p className="font-mono text-2xl font-semibold tabular-nums text-foreground">
-                  {laneCounts.review}
-                </p>
-              </div>
-              <div className="rounded-xl border border-border bg-muted/40 px-3 py-2.5">
-                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                  {t('metricNeedsAssignee')}
-                </p>
-                <p className="font-mono text-2xl font-semibold tabular-nums text-foreground">
-                  {tasksNeedingAssignee}
-                </p>
-              </div>
-              <div className="rounded-xl border border-border bg-muted/40 px-3 py-2.5">
-                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                  {t('metricCommunityQueue')}
-                </p>
-                <p className="font-mono text-2xl font-semibold tabular-nums text-foreground">
-                  {communityQueueCount}
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section
-          data-testid="tasks-sprint-context-banner"
-          className="rounded-2xl border border-primary/20 bg-primary/5 p-4"
-        >
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
-            {t('sprintContextLabel')}
-          </p>
-          <p className="mt-1 text-sm text-foreground">
-            {currentSprint
-              ? t('sprintContextActive', {
-                  name: currentSprint.name,
-                  status: currentSprint.status ?? 'active',
-                })
-              : t('sprintContextNone')}
-          </p>
-        </section>
-
-      {showInfoBanner && (
-        <div className="rounded-xl border border-primary/25 bg-primary/5 p-4">
-          <div className="flex items-start justify-between gap-3">
-            <button
-              type="button"
-              onClick={() => setIsInfoBannerExpanded((prev) => !prev)}
-              className="flex flex-1 items-center gap-2 text-left"
-            >
-              <Info className="mt-0.5 h-4 w-4 text-primary" />
-              <span className="font-medium text-foreground">{t('infoBanner.title')}</span>
-              {isInfoBannerExpanded ? (
-                <ChevronUp className="h-4 w-4 text-muted-foreground" />
-              ) : (
-                <ChevronDown className="h-4 w-4 text-muted-foreground" />
-              )}
-            </button>
-            <button
-              type="button"
-              onClick={handleDismissInfoBanner}
-              className="text-muted-foreground transition-colors hover:text-foreground"
-              aria-label={t('infoBanner.dismiss')}
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-          {isInfoBannerExpanded && (
-            <ul className="mt-3 list-disc space-y-1 pl-6 text-sm text-muted-foreground">
-              <li>{t('infoBanner.browse')}</li>
-              <li>{t('infoBanner.submit')}</li>
-              <li>{t('infoBanner.earn')}</li>
-            </ul>
-          )}
-        </div>
-      )}
+          </section>
+        )}
 
         <section className="rounded-2xl border border-border bg-card p-4 sm:p-5">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -810,6 +817,7 @@ export default function TasksPage() {
         onToggleLike={handleToggleLike}
         onPageChange={handlePageChange}
         onResetFilters={handleClearFilters}
+        userId={user?.id ?? null}
       />
 
       {/* Modals */}

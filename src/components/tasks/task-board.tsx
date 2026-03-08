@@ -4,7 +4,7 @@ import { useState } from 'react';
 import type { DragEvent } from 'react';
 import { Link, useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
-import { AlertCircle, Clock, Edit2, MoreVertical, Tag, User } from 'lucide-react';
+import { AlertCircle, Clock, Edit2, MessageSquare, MoreVertical, Tag, Upload, User, Users } from 'lucide-react';
 
 export type TaskStatus = 'backlog' | 'todo' | 'in_progress' | 'review' | 'done';
 export type TaskPriority = 'low' | 'medium' | 'high' | 'critical';
@@ -278,9 +278,18 @@ function TaskCard({
         </div>
 
         <div className="flex items-center gap-3 text-xs text-gray-400 mt-2">
-          <span>💬 {activity.comments}</span>
-          <span>📤 {activity.submissions}</span>
-          <span>👥 {activity.contributors}</span>
+          <span className="inline-flex items-center gap-1">
+            <MessageSquare className="h-3 w-3" />
+            {activity.comments}
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <Upload className="h-3 w-3" />
+            {activity.submissions}
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <Users className="h-3 w-3" />
+            {activity.contributors}
+          </span>
         </div>
       </Link>
 
