@@ -37,9 +37,9 @@ All 8 feature-vertical slices delivered and validated. Wave 2 is closed.
 
 Cross-feature consistency pass complete: `--transition-ui`, `--section-radius`, `--section-padding` tokens added to `globals.css`.
 
-### QA Visual Revamp — Section 4.3 ✅ Complete (2026-03-07)
+### QA Visual Revamp — Section 4.7 ✅ Complete (2026-03-08)
 
-Manual QA testing + 3-prototype comparison + combined build for Home, Analytics, Leaderboard, Treasury.
+Manual QA testing + 3-prototype comparison + combined build for Tasks surface.
 
 - [x] QA section 4.1 (Auth flows) — tested, feedback collected, bugs fixed (PR #14)
 - [x] QA section 4.2 (Navigation) — tested, feedback collected, bugs fixed (PR #15)
@@ -47,10 +47,13 @@ Manual QA testing + 3-prototype comparison + combined build for Home, Analytics,
 - [x] 3 competing prototypes built in isolated worktrees (A: Clean, B: Dark Hero, C: FOMO)
 - [x] Page-by-page user comparison and selection
 - [x] Combined prototype D built and merged (PR #17)
+- [x] QA section 4.7 (Tasks) — tested all 17 TASK cases, 3 prototypes, combined and merged (PR #18)
 
 **New components shipped:**
 - `src/components/home/feature-carousel.tsx` — Single-card FOMO carousel with snap scroll
 - `src/components/ui/info-button.tsx` — Floating "i" info popup with horizontal-scroll sections
+
+**Remaining QA sections:** 4.4 (Proposals), 4.5 (Sprints), 4.6 (Disputes), 4.8 (Admin), 4.9 (Members/Profile), 4.10 (Notifications), 4.11 (Quests/Referrals), 4.12 (Wallet/Token)
 
 **Future items from this revamp (see backlog below):**
 - Personal analytics tab, On-Chain analytics tab, AI governance health summary, orange vs terracotta design system decision

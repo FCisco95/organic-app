@@ -2,6 +2,103 @@
 
 Add newest entries at the top.
 
+## 2026-03-08 (Session: QA 4.7 Tasks visual revamp — prototype workflow)
+
+### Summary
+
+Ran the full QA prototype workflow for the Tasks surface (section 4.7): headed Playwright QA audit of all 17 TASK test cases, built 3 competing visual prototypes in isolated worktrees, opened side-by-side headed browser comparison for user selection, and combined user's picks into prototype D — merged as PR #18.
+
+### QA findings (section 4.7)
+
+- S0: Silent error handling throughout tasks page (console.error only, no user feedback)
+- S1: Emoji icons violating design system (💬📤👥 instead of Lucide)
+- S1: Missing loading/empty states for task list
+- S2: Accessibility gaps (no column headers, no focus indicators)
+- Severity: S1, Confidence: 4
+
+### Prototype workflow
+
+- **Alt A** (Clean List Focus): compact stats strip, accessible headers, polished list
+- **Alt B** (Dark Hero + Pipeline): dark gradient hero, 5-step status pipeline with chevrons, 4px status left-border
+- **Alt C** (Contributor-First): personal stats strip, recommended tasks scroll, progress bars, earnings emphasis
+
+### User selections for combined prototype D
+
+- Dark gradient hero from Alt B (visible to ALL users, not auth-gated)
+- Original 4 KPIs (open execution, pending review, needs assignee, community queue) with Lucide icons in colored boxes (Alt C style)
+- Orange hover left-border on task rows (user invention, inspired by Alt B highlight)
+- Progress bars per task with status-colored fills (from Alt C)
+- 4-column grid — removed redundant status column (replaced by inline progress bar)
+- Emoji → Lucide icon replacement in task board
+- Tighter filter bar layout
+
+### Files changed (PR #18)
+
+- `src/app/[locale]/tasks/page.tsx` — dark hero with 4 KPIs, removed conditional auth rendering
+- `src/components/tasks/task-list-section.tsx` — orange hover border, progress bars, 4-col grid
+- `src/components/tasks/task-board.tsx` — Lucide icons replacing emoji
+- `src/components/tasks/task-filters-bar.tsx` — tighter layout
+- `docs/qa-runbook.md` — section 4.7 QA feedback
+
+### Cleanup
+
+- All 4 prototype worktrees removed
+- All prototype branches deleted (local + remote)
+- Dev servers stopped, browser sessions closed
+
+---
+
+## 2026-03-08 (Session: Console error audit + InfoButton revamp)
+
+### Summary
+
+Fixed post-login redirect (AUTH-04), eliminated ~40-50 console errors (AUTH-10), enhanced the InfoButton component with bold text support, and added/rewrote InfoButton copy across 5 pages using engaging copywriter-style explanations.
+
+### Implementation highlights
+
+- Auth fixes:
+  - OAuth/magic-link callback redirects to Home (`/`) instead of `/profile`, with `returnTo` param support
+  - CSP updated to allow EU Sentry endpoint (`ingest.de.sentry.io`)
+
+- Console error elimination:
+  - Hydration mismatches fixed: `formatTimeAgo` wrapped in client-only `<TimeAgo>`, trust pulse timestamp in `<ClientTime>`, sprint countdown gated behind `mounted` state
+  - Unhandled promise rejections fixed: `.catch()` on wallet adapter imports, auth `getSession()`, notification `getUser()`
+  - Realtime callbacks wrapped in try/catch with `.maybeSingle()` for actor lookups (activity + notifications)
+  - Leaderboard #1 avatar given `priority` for LCP optimization
+  - Playwright verification: 0 errors across 4 pages (Home, Analytics, Leaderboard, Treasury)
+
+- InfoButton enhancement + copy:
+  - Component now supports `**bold**` markers parsed into `<strong>` elements
+  - Tasks list page (`/tasks`): new InfoButton with "What Are Tasks?", "The Task Flow", "Earning & Reputation"
+  - Task Detail page (`/tasks/[id]`): new InfoButton with "Reading This Task", "Claiming & Submitting", "After Submission"
+  - Analytics, Leaderboard, Treasury: all copy rewritten with engaging bold-section explanations
+  - All 3 locales updated (en, pt-PT, zh-CN)
+
+- Planning:
+  - Created `docs/plans/2026-03-08-tasks-qa-revamp.md` for full 3-prototype QA workflow (Workstream B, next session)
+
+### Files changed
+
+- `next.config.js` — CSP connect-src for EU Sentry
+- `src/app/[locale]/auth/callback/route.ts` — redirect to Home + returnTo support
+- `src/app/[locale]/page.tsx` — ClientTime + mounted guard for hydration
+- `src/app/[locale]/tasks/page.tsx` — InfoButton added
+- `src/app/[locale]/tasks/[id]/page.tsx` — InfoButton added
+- `src/app/[locale]/leaderboard/page.tsx` — avatar priority
+- `src/components/dashboard/activity-item.tsx` — TimeAgo client-only component
+- `src/components/ui/info-button.tsx` — bold text parser
+- `src/features/activity/hooks.ts` — try/catch + maybeSingle in realtime
+- `src/features/auth/context.tsx` — catch on getSession
+- `src/features/auth/wallet-provider.tsx` — catch on adapter imports
+- `src/features/notifications/hooks.ts` — catch on getUser + try/catch in realtime
+- `messages/{en,pt-PT,zh-CN}.json` — InfoButton copy for 5 pages
+
+### Next session
+
+- Execute Workstream B: QA section 4.7 (Tasks) full 3-prototype revamp
+- Plan at `docs/plans/2026-03-08-tasks-qa-revamp.md`, Tasks 5-8
+- Process: headed Playwright QA → 3 worktree prototypes → user comparison → combine → merge
+
 ## 2026-03-07 (Session: Auth QA revamp + auth boundary S1 fixes)
 
 ### Summary
