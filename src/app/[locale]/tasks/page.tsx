@@ -611,116 +611,100 @@ export default function TasksPage() {
   return (
     <PageContainer layout="fluid" className="space-y-6">
       <div data-testid="tasks-page" className="space-y-6">
-        {user ? (
-          <section
-            data-testid="tasks-execution-cockpit"
-            className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-5 sm:p-6"
-          >
-            {/* Decorative blur glows */}
-            <div className="absolute -top-16 -left-16 h-56 w-56 rounded-full bg-primary/15 blur-3xl" />
-            <div className="absolute -bottom-20 right-0 h-44 w-44 rounded-full bg-emerald-500/10 blur-3xl" />
+        <section
+          data-testid="tasks-execution-cockpit"
+          className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-5 sm:p-6"
+        >
+          {/* Decorative blur glows */}
+          <div className="absolute -top-16 -left-16 h-56 w-56 rounded-full bg-primary/15 blur-3xl" />
+          <div className="absolute -bottom-20 right-0 h-44 w-44 rounded-full bg-emerald-500/10 blur-3xl" />
 
-            <div className="relative z-10 space-y-4">
-              <div className="flex items-start justify-between gap-4">
+          <div className="relative z-10 space-y-4">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                  {t('executionCockpitLabel')}
+                </p>
+                <h1 className="mt-1 text-3xl font-bold text-white">{t('title')}</h1>
+                <p className="mt-1 text-sm text-slate-400">{t('subtitle')}</p>
+              </div>
+
+              {/* Sprint badge */}
+              <div
+                data-testid="tasks-sprint-context-banner"
+                className="hidden shrink-0 rounded-xl border border-white/10 bg-white/5 px-4 py-2 backdrop-blur sm:block"
+              >
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+                  {t('sprintContextLabel')}
+                </p>
+                <p className="mt-0.5 text-sm font-medium text-white">
+                  {currentSprint
+                    ? t('sprintContextActive', {
+                        name: currentSprint.name,
+                        status: currentSprint.status ?? 'active',
+                      })
+                    : t('sprintContextNone')}
+                </p>
+              </div>
+            </div>
+
+            {/* KPI stats row with icons */}
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              <div className="flex items-center gap-3 rounded-xl bg-white/5 px-3 py-2.5">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/20">
+                  <CheckSquare className="h-4 w-4 text-primary" />
+                </div>
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
-                    {t('executionCockpitLabel')}
+                  <p className="text-[11px] uppercase tracking-wide text-slate-400">
+                    {t('metricOpenExecution')}
                   </p>
-                  <h1 className="mt-1 text-3xl font-bold text-white">{t('title')}</h1>
-                  <p className="mt-1 text-sm text-slate-400">{t('subtitle')}</p>
-                </div>
-
-                {/* Sprint badge */}
-                <div
-                  data-testid="tasks-sprint-context-banner"
-                  className="hidden shrink-0 rounded-xl border border-white/10 bg-white/5 px-4 py-2 backdrop-blur sm:block"
-                >
-                  <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">
-                    {t('sprintContextLabel')}
-                  </p>
-                  <p className="mt-0.5 text-sm font-medium text-white">
-                    {currentSprint
-                      ? t('sprintContextActive', {
-                          name: currentSprint.name,
-                          status: currentSprint.status ?? 'active',
-                        })
-                      : t('sprintContextNone')}
+                  <p className="font-mono text-lg font-semibold tabular-nums text-white">
+                    {openExecutionCount}
                   </p>
                 </div>
               </div>
-
-              {/* Personal stats row */}
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                <div className="flex items-center gap-3 rounded-xl bg-white/5 px-3 py-2.5">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/20">
-                    <CheckSquare className="h-4 w-4 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-[11px] uppercase tracking-wide text-slate-400">
-                      {t('metricOpenExecution')}
-                    </p>
-                    <p className="font-mono text-lg font-semibold tabular-nums text-white">
-                      {myClaimedCount}
-                    </p>
-                  </div>
+              <div className="flex items-center gap-3 rounded-xl bg-white/5 px-3 py-2.5">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/20">
+                  <Send className="h-4 w-4 text-amber-400" />
                 </div>
-                <div className="flex items-center gap-3 rounded-xl bg-white/5 px-3 py-2.5">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/20">
-                    <Send className="h-4 w-4 text-amber-400" />
-                  </div>
-                  <div>
-                    <p className="text-[11px] uppercase tracking-wide text-slate-400">
-                      {t('metricPendingReview')}
-                    </p>
-                    <p className="font-mono text-lg font-semibold tabular-nums text-white">
-                      {myPendingSubmissions}
-                    </p>
-                  </div>
+                <div>
+                  <p className="text-[11px] uppercase tracking-wide text-slate-400">
+                    {t('metricPendingReview')}
+                  </p>
+                  <p className="font-mono text-lg font-semibold tabular-nums text-white">
+                    {laneCounts.review}
+                  </p>
                 </div>
-                <div className="flex items-center gap-3 rounded-xl bg-white/5 px-3 py-2.5">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/20">
-                    <Star className="h-4 w-4 text-emerald-400" />
-                  </div>
-                  <div>
-                    <p className="text-[11px] uppercase tracking-wide text-slate-400">
-                      {t('metricCommunityQueue')}
-                    </p>
-                    <p className="font-mono text-lg font-semibold tabular-nums text-white">
-                      {availablePoints}
-                    </p>
-                  </div>
+              </div>
+              <div className="flex items-center gap-3 rounded-xl bg-white/5 px-3 py-2.5">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-500/20">
+                  <Clock className="h-4 w-4 text-violet-400" />
                 </div>
-                <div className="flex items-center gap-3 rounded-xl bg-white/5 px-3 py-2.5">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-500/20">
-                    <Clock className="h-4 w-4 text-violet-400" />
-                  </div>
-                  <div>
-                    <p className="text-[11px] uppercase tracking-wide text-slate-400">
-                      {t('metricNeedsAssignee')}
-                    </p>
-                    <p className="font-mono text-lg font-semibold tabular-nums text-white">
-                      {tasksNeedingAssignee}
-                    </p>
-                  </div>
+                <div>
+                  <p className="text-[11px] uppercase tracking-wide text-slate-400">
+                    {t('metricNeedsAssignee')}
+                  </p>
+                  <p className="font-mono text-lg font-semibold tabular-nums text-white">
+                    {tasksNeedingAssignee}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 rounded-xl bg-white/5 px-3 py-2.5">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/20">
+                  <Star className="h-4 w-4 text-emerald-400" />
+                </div>
+                <div>
+                  <p className="text-[11px] uppercase tracking-wide text-slate-400">
+                    {t('metricCommunityQueue')}
+                  </p>
+                  <p className="font-mono text-lg font-semibold tabular-nums text-white">
+                    {communityQueueCount}
+                  </p>
                 </div>
               </div>
             </div>
-          </section>
-        ) : (
-          <section
-            data-testid="tasks-execution-cockpit"
-            className="relative overflow-hidden rounded-2xl border border-primary/20 bg-card p-5 sm:p-6"
-          >
-            <div className="absolute -top-16 right-0 h-44 w-44 rounded-full bg-primary/10 blur-3xl" />
-            <div className="relative z-10 space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
-                {t('executionCockpitLabel')}
-              </p>
-              <h1 className="text-3xl font-bold text-foreground">{t('title')}</h1>
-              <p className="text-sm text-muted-foreground">{t('subtitle')}</p>
-            </div>
-          </section>
-        )}
+          </div>
+        </section>
 
         <section className="rounded-2xl border border-border bg-card p-4 sm:p-5">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
