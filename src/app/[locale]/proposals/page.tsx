@@ -9,11 +9,13 @@ import {
   type ProposalFilters,
   PROPOSAL_CATEGORIES,
 } from '@/features/proposals';
-import { Plus, Search, X } from 'lucide-react';
+import { Plus, Search, X, ArrowUpDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
 import { ProposalCard } from '@/components/proposals';
-import { formatDistanceToNow } from 'date-fns';
+import { LiveVoteBanner } from '@/components/proposals/live-vote-banner';
+import { GovernanceSidebar } from '@/components/proposals/governance-sidebar';
+import type { ProposalListItem } from '@/features/proposals/types';
 
 const PAGE_SIZE = 20;
 
@@ -26,18 +28,48 @@ const GOVERNANCE_STAGES = [
   'canceled',
 ] as const;
 
+type SortKey = 'new' | 'hot' | 'most-discussed' | 'most-voted';
+
+const SORT_OPTIONS: { key: SortKey; label: string }[] = [
+  { key: 'new', label: 'New' },
+  { key: 'hot', label: 'Hot' },
+  { key: 'most-discussed', label: 'Most Discussed' },
+  { key: 'most-voted', label: 'Most Voted' },
+];
+
+function sortProposals(proposals: ProposalListItem[], sort: SortKey): ProposalListItem[] {
+  const arr = [...proposals];
+  switch (sort) {
+    case 'new':
+      return arr.sort(
+        (a, b) =>
+          new Date(b.created_at ?? 0).getTime() - new Date(a.created_at ?? 0).getTime()
+      );
+    case 'hot':
+    case 'most-discussed':
+      return arr.sort((a, b) => (b.comments_count ?? 0) - (a.comments_count ?? 0));
+    case 'most-voted':
+      return arr.sort((a, b) => {
+        if (a.status === 'voting' && b.status !== 'voting') return -1;
+        if (b.status === 'voting' && a.status !== 'voting') return 1;
+        return (b.comments_count ?? 0) - (a.comments_count ?? 0);
+      });
+  }
+}
+
 export default function ProposalsPage() {
   const { user, profile } = useAuth();
   const t = useTranslations('Proposals');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [sort, setSort] = useState<SortKey>('new');
   const deferredSearch = useDeferredValue(searchTerm);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
-  }, [statusFilter, categoryFilter, deferredSearch]);
+  }, [statusFilter, categoryFilter, deferredSearch, sort]);
 
   const filters: ProposalFilters = {};
   if (statusFilter !== 'all') {
@@ -50,278 +82,337 @@ export default function ProposalsPage() {
     filters.search = deferredSearch.trim();
   }
 
-  const { data: proposals, isLoading } = useProposals(filters);
-
+  const { data: rawProposals, isLoading } = useProposals(filters);
+  const proposals = rawProposals ? sortProposals(rawProposals, sort) : rawProposals;
   const canCreateProposal = !!profile?.organic_id;
-  const totalComments = (proposals ?? []).reduce((total, proposal) => total + (proposal.comments_count ?? 0), 0);
-  const stageCounts = GOVERNANCE_STAGES.reduce<Record<(typeof GOVERNANCE_STAGES)[number], number>>(
-    (acc, stage) => ({ ...acc, [stage]: 0 }),
-    {
-      public: 0,
-      qualified: 0,
-      discussion: 0,
-      voting: 0,
-      finalized: 0,
-      canceled: 0,
-    }
+
+  const totalComments = (rawProposals ?? []).reduce(
+    (total, p) => total + (p.comments_count ?? 0),
+    0
   );
 
-  for (const proposal of proposals ?? []) {
-    const stage = normalizeProposalStatus(proposal.status);
+  const stageCounts = GOVERNANCE_STAGES.reduce<Record<(typeof GOVERNANCE_STAGES)[number], number>>(
+    (acc, stage) => ({ ...acc, [stage]: 0 }),
+    { public: 0, qualified: 0, discussion: 0, voting: 0, finalized: 0, canceled: 0 }
+  );
+  for (const p of rawProposals ?? []) {
+    const stage = normalizeProposalStatus(p.status);
     if (stage in stageCounts) {
       stageCounts[stage as keyof typeof stageCounts] += 1;
     }
   }
 
-  const latestCreatedAt = (proposals ?? [])
-    .map((proposal) => proposal.created_at)
-    .filter((value): value is string => typeof value === 'string')
-    .sort((a, b) => Date.parse(b) - Date.parse(a))[0];
+  const votingProposals = (rawProposals ?? []).filter((p) => p.status === 'voting');
+  const regularProposals =
+    statusFilter === 'all' && votingProposals.length > 0
+      ? (proposals ?? []).filter((p) => p.status !== 'voting')
+      : (proposals ?? []);
 
   return (
-    <PageContainer>
-      <div
-        data-testid="proposals-governance-strip"
-        className="relative overflow-hidden rounded-3xl border border-amber-200/80 bg-gradient-to-br from-amber-50 via-white to-orange-100 p-6 shadow-sm mb-6"
-      >
-        <div className="absolute -right-20 -top-20 h-48 w-48 rounded-full bg-orange-200/40 blur-3xl" />
-        <div className="relative z-10 space-y-5">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p className="text-xs uppercase tracking-[0.18em] text-amber-700 font-semibold">
-                {t('governanceSignalLabel')}
-              </p>
-              <h1 className="text-3xl font-black text-slate-900 mt-1">{t('title')}</h1>
-              <p className="text-slate-700 mt-1 max-w-2xl">{t('subtitle')}</p>
+    <PageContainer layout="fluid">
+      {/* Page header */}
+      <div data-testid="proposals-governance-strip" className="mb-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-orange-600">
+              {t('governanceSignalLabel')}
+            </p>
+            <h1 className="mt-0.5 text-2xl font-black text-slate-900 sm:text-3xl">
+              {t('title')}
+            </h1>
+            <p className="mt-1 text-sm text-slate-500">{t('subtitle')}</p>
+          </div>
+          <div className="flex items-center gap-2">
+            {canCreateProposal && (
+              <Link
+                href="/proposals/new"
+                data-testid="proposals-cta-primary"
+                className="inline-flex items-center gap-2 rounded-xl bg-orange-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-orange-700"
+              >
+                <Plus className="h-4 w-4" />
+                {t('newProposal')}
+              </Link>
+            )}
+            <button
+              type="button"
+              data-testid="proposals-cta-secondary"
+              onClick={() => setStatusFilter('discussion')}
+              className="inline-flex items-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+            >
+              {t('reviewDiscussionCta')}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Two-column layout */}
+      <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[1fr_300px] lg:items-start xl:grid-cols-[1fr_320px]">
+        {/* Main content column */}
+        <div className="min-w-0">
+          {/* Search + Sort bar */}
+          <div data-testid="proposals-filters" className="mb-4 space-y-3">
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder={t('searchPlaceholder')}
+                  data-testid="proposals-search"
+                  className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-10 text-sm focus:border-transparent focus:ring-2 focus:ring-orange-400"
+                />
+                {searchTerm && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchTerm('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
             </div>
-            <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center">
+
+            {/* Status tabs */}
+            <div data-testid="proposals-stage-chips" className="flex overflow-x-auto gap-1 pb-1">
+              <button
+                type="button"
+                data-testid="proposals-stage-chip-all"
+                onClick={() => setStatusFilter('all')}
+                className={`flex-shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
+                  statusFilter === 'all'
+                    ? 'bg-slate-900 text-white'
+                    : 'bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50'
+                }`}
+              >
+                {t('filterAll')}
+              </button>
+              {GOVERNANCE_STAGES.map((status) => (
+                <button
+                  key={status}
+                  type="button"
+                  data-testid={`proposals-stage-chip-${status}`}
+                  onClick={() => setStatusFilter(status)}
+                  className={`flex-shrink-0 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
+                    statusFilter === status
+                      ? 'bg-slate-900 text-white'
+                      : 'bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50'
+                  }`}
+                >
+                  <span>
+                    {t(
+                      `status${status.charAt(0).toUpperCase() + status.slice(1)}` as
+                        | 'statusDraft'
+                        | 'statusPublic'
+                        | 'statusQualified'
+                        | 'statusDiscussion'
+                        | 'statusVoting'
+                        | 'statusFinalized'
+                        | 'statusCanceled'
+                    )}
+                  </span>
+                  <span className="rounded-full bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] text-slate-500 tabular-nums">
+                    {stageCounts[status]}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            {/* Category pills */}
+            <div data-testid="proposals-category-filters" className="flex gap-1.5 overflow-x-auto pb-1">
+              <button
+                type="button"
+                onClick={() => setCategoryFilter('all')}
+                data-testid="proposals-category-all"
+                className={`flex-shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                  categoryFilter === 'all'
+                    ? 'bg-slate-800 text-white'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                {t('categoryAll')}
+              </button>
+              {PROPOSAL_CATEGORIES.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setCategoryFilter(cat)}
+                  data-testid={`proposals-category-${cat}`}
+                  className={`flex-shrink-0 rounded-full px-3 py-1 text-xs font-medium whitespace-nowrap transition-colors ${
+                    categoryFilter === cat
+                      ? 'bg-slate-800 text-white'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  {t(
+                    `category${cat.charAt(0).toUpperCase() + cat.slice(1)}` as
+                      | 'categoryFeature'
+                      | 'categoryGovernance'
+                      | 'categoryTreasury'
+                      | 'categoryCommunity'
+                      | 'categoryDevelopment'
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Sort + count bar */}
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <p className="text-sm text-slate-500">
+              {t('listSubtitle', { count: proposals?.length ?? 0 })}
+            </p>
+            <div className="flex items-center gap-1">
+              <ArrowUpDown className="h-3.5 w-3.5 text-slate-400" />
+              <div className="flex gap-1">
+                {SORT_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.key}
+                    type="button"
+                    onClick={() => setSort(opt.key)}
+                    className={`rounded-md px-2.5 py-1 text-xs font-semibold transition-colors ${
+                      sort === opt.key
+                        ? 'bg-orange-100 text-orange-700'
+                        : 'text-slate-500 hover:bg-slate-100'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Live vote banner */}
+          {!isLoading &&
+            votingProposals.length > 0 &&
+            statusFilter !== 'finalized' &&
+            statusFilter !== 'canceled' &&
+            statusFilter !== 'discussion' &&
+            statusFilter !== 'qualified' &&
+            statusFilter !== 'public' && (
+              <LiveVoteBanner proposals={votingProposals} />
+            )}
+
+          {/* Proposals list */}
+          {isLoading ? (
+            <div className="space-y-2.5">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div
+                  key={i}
+                  className="flex animate-pulse gap-0 overflow-hidden rounded-xl border border-slate-200"
+                >
+                  <div className="w-1 flex-shrink-0 bg-slate-200" />
+                  <div className="flex-1 p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="h-8 w-8 flex-shrink-0 rounded-full bg-slate-200" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 w-3/4 rounded bg-slate-200" />
+                        <div className="h-3 w-full rounded bg-slate-100" />
+                        <div className="h-3 w-2/3 rounded bg-slate-100" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : regularProposals.length === 0 && votingProposals.length === 0 ? (
+            <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 py-16 text-center">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 text-slate-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                  />
+                </svg>
+              </div>
+              <h3 className="mb-1 text-base font-semibold text-slate-700">
+                {deferredSearch ? 'No results found' : 'Be the first to start a discussion'}
+              </h3>
+              <p className="mb-5 text-sm text-slate-500">
+                {deferredSearch
+                  ? `No proposals match "${deferredSearch}". Try a different search.`
+                  : t('emptyState')}
+              </p>
               {canCreateProposal && (
                 <Link
                   href="/proposals/new"
-                  data-testid="proposals-cta-primary"
-                  className="inline-flex items-center gap-2 rounded-xl bg-organic-orange px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-orange-600"
+                  className="inline-flex items-center gap-2 rounded-xl bg-orange-600 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-orange-700"
                 >
-                  <Plus className="w-4 h-4" />
-                  {t('newProposal')}
+                  <Plus className="h-4 w-4" />
+                  {t('createFirstProposal')}
                 </Link>
               )}
+            </div>
+          ) : (
+            <div className="space-y-2.5" data-testid="proposals-results">
+              {regularProposals.slice(0, visibleCount).map((proposal) => (
+                <ProposalCard key={proposal.id} proposal={proposal} />
+              ))}
+            </div>
+          )}
+
+          {/* Load more */}
+          {proposals && regularProposals.length > visibleCount && (
+            <div className="mt-6 flex justify-center">
               <button
                 type="button"
-                data-testid="proposals-cta-secondary"
-                onClick={() => setStatusFilter('discussion')}
-                className="inline-flex items-center rounded-xl border border-slate-200 bg-white/90 px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+                onClick={() => setVisibleCount((prev) => prev + PAGE_SIZE)}
+                className="rounded-xl border border-slate-200 bg-white px-6 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
               >
-                {t('reviewDiscussionCta')}
+                {t('loadMore', { remaining: regularProposals.length - visibleCount })}
               </button>
             </div>
-          </div>
+          )}
 
-          <div className="grid gap-3 grid-cols-2 xl:grid-cols-4">
-            <div className="rounded-2xl border border-white/70 bg-white/80 px-4 py-3">
-              <p className="text-xs uppercase tracking-wide text-slate-500">{t('metricOpenLifecycle')}</p>
-              <p className="text-2xl font-black text-slate-900 font-mono tabular-nums">
-                {(stageCounts.public ?? 0) + (stageCounts.qualified ?? 0) + (stageCounts.discussion ?? 0) + (stageCounts.voting ?? 0)}
-              </p>
-            </div>
-            <div className="rounded-2xl border border-white/70 bg-white/80 px-4 py-3">
-              <p className="text-xs uppercase tracking-wide text-slate-500">{t('metricVotingNow')}</p>
-              <p className="text-2xl font-black text-slate-900 font-mono tabular-nums">{stageCounts.voting ?? 0}</p>
-            </div>
-            <div className="hidden sm:block rounded-2xl border border-white/70 bg-white/80 px-4 py-3">
-              <p className="text-xs uppercase tracking-wide text-slate-500">{t('metricDiscussionVolume')}</p>
-              <p className="text-2xl font-black text-slate-900 font-mono tabular-nums">{totalComments}</p>
-            </div>
-            <div className="hidden sm:block rounded-2xl border border-white/70 bg-white/80 px-4 py-3">
-              <p className="text-xs uppercase tracking-wide text-slate-500">{t('metricLastUpdate')}</p>
-              <p className="text-sm font-semibold text-slate-800">
-                {latestCreatedAt
-                  ? formatDistanceToNow(new Date(latestCreatedAt), { addSuffix: true })
-                  : t('metricLastUpdateEmpty')}
-              </p>
-            </div>
-          </div>
-
-          <div
-            data-testid="proposals-stage-chips"
-            className="flex flex-wrap gap-2 rounded-2xl border border-amber-100 bg-white/75 p-3"
-          >
-            <button
-              key="all"
-              type="button"
-              data-testid="proposals-stage-chip-all"
-              onClick={() => setStatusFilter('all')}
-              className={`inline-flex items-center gap-2 rounded-full px-3 py-2 sm:py-1.5 text-xs font-semibold transition-colors ${
-                statusFilter === 'all'
-                  ? 'bg-slate-900 text-white'
-                  : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50'
-              }`}
-            >
-              <span>{t('filterAll')}</span>
-            </button>
-            {GOVERNANCE_STAGES.map((status) => (
-              <button
-                key={status}
-                type="button"
-                data-testid={`proposals-stage-chip-${status}`}
-                onClick={() => setStatusFilter(status)}
-                className={`inline-flex items-center gap-2 rounded-full px-3 py-2 sm:py-1.5 text-xs font-semibold transition-colors ${
-                  statusFilter === status
-                    ? 'bg-slate-900 text-white'
-                    : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50'
-                }`}
+          {/* Unauthenticated CTA — mobile only */}
+          {!user && (
+            <div className="mt-8 rounded-xl border border-orange-200 bg-gradient-to-r from-orange-50 to-yellow-50 p-5 lg:hidden">
+              <h3 className="mb-1 font-semibold text-slate-900">{t('ctaTitle')}</h3>
+              <p className="mb-3 text-sm text-slate-700">{t('ctaDescription')}</p>
+              <Link
+                href="/login"
+                className="inline-block rounded-lg bg-orange-600 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-orange-700"
               >
-                <span>
-                  {t(
-                    `status${status.charAt(0).toUpperCase() + status.slice(1)}` as
-                      | `statusDraft`
-                      | `statusPublic`
-                      | `statusQualified`
-                      | `statusDiscussion`
-                      | `statusVoting`
-                      | `statusFinalized`
-                      | `statusCanceled`
-                  )}
-                </span>
-                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] text-slate-600 font-mono tabular-nums">
-                  {stageCounts[status]}
-                </span>
-              </button>
-            ))}
-          </div>
+                {t('signIn')}
+              </Link>
+            </div>
+          )}
         </div>
-      </div>
 
-      <div className="mb-8">
-        <h2 className="text-lg font-semibold text-slate-900">{t('discoveryTitle')}</h2>
-        <p className="text-sm text-slate-600">{t('discoverySubtitle')}</p>
-      </div>
-
-      <div data-testid="proposals-filters" className="mb-6 space-y-3">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder={t('searchPlaceholder')}
-            className="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-xl bg-white text-sm focus:ring-2 focus:ring-organic-orange focus:border-transparent"
-            data-testid="proposals-search"
+        {/* Sidebar column — desktop */}
+        <div className="hidden lg:block lg:sticky lg:top-6">
+          <GovernanceSidebar
+            proposals={rawProposals ?? []}
+            stageCounts={stageCounts}
+            totalComments={totalComments}
+            activeStatus={statusFilter}
+            onStatusFilter={setStatusFilter}
+            user={user}
           />
-          {searchTerm && (
-            <button
-              type="button"
-              onClick={() => setSearchTerm('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          )}
-        </div>
-
-        <div data-testid="proposals-category-filters" className="flex gap-2 overflow-x-auto pb-2">
-          <button
-            onClick={() => setCategoryFilter('all')}
-            data-testid="proposals-category-all"
-            className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
-              categoryFilter === 'all'
-                ? 'bg-gray-900 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
-          >
-            {t('categoryAll')}
-          </button>
-          {PROPOSAL_CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setCategoryFilter(cat)}
-              data-testid={`proposals-category-${cat}`}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
-                categoryFilter === cat
-                  ? 'bg-gray-900 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              {t(`category${cat.charAt(0).toUpperCase() + cat.slice(1)}` as 'categoryFeature' | 'categoryGovernance' | 'categoryTreasury' | 'categoryCommunity' | 'categoryDevelopment')}
-            </button>
-          ))}
         </div>
       </div>
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-        <div>
-          <h3 className="text-xl font-bold text-gray-900">{t('listTitle')}</h3>
-          <p className="text-gray-600 mt-1">{t('listSubtitle', { count: proposals?.length ?? 0 })}</p>
-        </div>
-
-        {canCreateProposal && statusFilter !== 'all' && (
-          <Link
-            href="/proposals/new"
-            className="flex items-center gap-2 bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            {t('newProposal')}
-          </Link>
-        )}
+      {/* Mobile sidebar */}
+      <div className="mt-6 lg:hidden">
+        <GovernanceSidebar
+          proposals={rawProposals ?? []}
+          stageCounts={stageCounts}
+          totalComments={totalComments}
+          activeStatus={statusFilter}
+          onStatusFilter={setStatusFilter}
+          user={user}
+        />
       </div>
-
-      {/* Proposals List */}
-      {isLoading ? (
-        <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-white rounded-lg border border-gray-200 p-6 animate-pulse">
-              <div className="h-6 bg-gray-200 rounded w-3/4 mb-3"></div>
-              <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
-              <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-            </div>
-          ))}
-        </div>
-      ) : !proposals || proposals.length === 0 ? (
-        <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
-          <p className="text-gray-500 mb-4">{t('emptyState')}</p>
-          {canCreateProposal && (
-            <Link
-              href="/proposals/new"
-              className="inline-flex items-center gap-2 bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              {t('createFirstProposal')}
-            </Link>
-          )}
-        </div>
-      ) : (
-        <div className="space-y-4" data-testid="proposals-results">
-          {proposals.slice(0, visibleCount).map((proposal) => (
-            <ProposalCard key={proposal.id} proposal={proposal} />
-          ))}
-        </div>
-      )}
-
-      {proposals && proposals.length > visibleCount && (
-        <div className="flex justify-center mt-6">
-          <button
-            type="button"
-            onClick={() => setVisibleCount((prev) => prev + PAGE_SIZE)}
-            className="px-6 py-2.5 rounded-xl border border-gray-200 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-          >
-            {t('loadMore', { remaining: proposals.length - visibleCount })}
-          </button>
-        </div>
-      )}
-
-      {/* Info Banner for unauthenticated users */}
-      {!user && (
-        <div className="mt-8 bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-lg p-6">
-          <h3 className="font-semibold text-gray-900 mb-2">{t('ctaTitle')}</h3>
-          <p className="text-gray-700 mb-4">{t('ctaDescription')}</p>
-          <Link
-            href="/login"
-            className="inline-block bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-          >
-            {t('signIn')}
-          </Link>
-        </div>
-      )}
     </PageContainer>
   );
 }
