@@ -358,6 +358,7 @@
     "toastSubmitted": "提案提交成功！",
     "toastFailedCreate": "创建提案失败",
     "signInTitle": "登录以创建提案",
+    "signInDescription": "提案塑造DAO的未来。登录以提交社区治理、功能、资金分配等方面的想法。",
     "signInCta": "登录",
     "memberOnlyTitle": "只有成员才能创建提案",
     "memberOnlyDescription": "连接钱包并持有 $ORG 代币以成为成员",

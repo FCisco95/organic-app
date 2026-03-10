@@ -358,6 +358,7 @@
     "toastSubmitted": "Proposta enviada com sucesso!",
     "toastFailedCreate": "Falha ao criar proposta",
     "signInTitle": "Entre para criar propostas",
+    "signInDescription": "As propostas moldam o futuro da DAO. Inicie sessão para submeter ideias de governação comunitária, funcionalidades, alocação de tesouraria e mais.",
     "signInCta": "Entrar",
     "memberOnlyTitle": "Você precisa ser membro para criar propostas",
     "memberOnlyDescription": "Conecte sua carteira e tenha tokens $ORG para se tornar membro",

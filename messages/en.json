@@ -358,6 +358,7 @@
     "toastSubmitted": "Proposal submitted successfully!",
     "toastFailedCreate": "Failed to create proposal",
     "signInTitle": "Sign in to create proposals",
+    "signInDescription": "Proposals shape the future of the DAO. Sign in to submit ideas for community governance, features, treasury allocation, and more.",
     "signInCta": "Sign In",
     "memberOnlyTitle": "You need to be a member to create proposals",
     "memberOnlyDescription": "Link your wallet and hold $ORG tokens to become a member",

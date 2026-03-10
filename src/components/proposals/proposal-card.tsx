@@ -23,18 +23,6 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
   const votingEndsLabel = votingEndsAt
     ? formatDistanceToNow(votingEndsAt, { addSuffix: true })
     : t('votingOpen');
-  const statusLabelMap: Record<ProposalStatus, string> = {
-    draft: t('statusDraft'),
-    public: t('statusPublic'),
-    qualified: t('statusQualified'),
-    discussion: t('statusDiscussion'),
-    finalized: t('statusFinalized'),
-    canceled: t('statusCanceled'),
-    submitted: t('statusSubmitted'),
-    approved: t('statusApproved'),
-    rejected: t('statusRejected'),
-    voting: t('statusVoting'),
-  };
 
   // Show summary if available, fall back to body for legacy proposals
   const previewText = proposal.summary || proposal.body;
@@ -101,27 +89,15 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
               <MessageCircle className="w-4 h-4" />
               <span>{t('commentsCount', { count: proposal.comments_count || 0 })}</span>
             </div>
-            {isVoting && (
-              <div className="flex items-center gap-1 font-semibold text-orange-700">
-                <Calendar className="w-4 h-4" />
-                <span>{t('votingEndsIn', { time: votingEndsLabel })}</span>
-              </div>
-            )}
           </div>
 
-          <div className="mt-4 rounded-xl border border-gray-200/70 bg-gray-50/80 px-3 py-2">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">
-              {t('cardDecisionContext')}
-            </p>
-            <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-gray-600">
-              <span>{t('cardCommentsSignal', { count: proposal.comments_count || 0 })}</span>
-              <span>
-                {t('cardStatusSignal', {
-                  status: statusLabelMap[proposal.status as ProposalStatus],
-                })}
-              </span>
+          {isVoting && (
+            <div className="mt-4 rounded-xl border border-orange-200/70 bg-orange-50/80 px-3 py-2">
+              <p className="text-xs font-semibold text-orange-700">
+                {t('votingEndsIn', { time: votingEndsLabel })}
+              </p>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </Link>
