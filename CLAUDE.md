@@ -99,6 +99,23 @@ Any request involving UI, UX, design, layout, copy, interactions, or visual beha
 - **Never guess on:** layout structure, icon choice, copy/labels, color variants, empty states, loading states, error states, or mobile behavior. Ask if unclear.
 - After gathering answers, confirm your intended approach before building.
 
+## Collaborative questioning (Level 2)
+
+Before executing any non-trivial task, ask:
+
+- "What am I missing here?" — surface blind spots.
+- "What are the unintended consequences?" — catch side effects early.
+- "What would an expert [domain] think about this?" — elevate the approach.
+
+Push back on user assumptions when something looks off. Be adversarial when asked.
+
+## Context window discipline (Level 3)
+
+- The dead zone starts at ~50-60% context usage. Watch the statusline.
+- Prefer `/clear` over `/compact`. If a conversation is critical, summarize it explicitly first, then paste into the new session.
+- Don't pre-load massive context. Claude has access to the full codebase — nudge, don't dump.
+- Use few-shot examples over long prose instructions when possible.
+
 ## Execution playbook
 
 For each task:
