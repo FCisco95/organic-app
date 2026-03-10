@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useDeferredValue } from 'react';
+import { useState, useEffect, useDeferredValue } from 'react';
 import { Link } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
 import {
@@ -14,6 +14,8 @@ import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
 import { ProposalCard } from '@/components/proposals';
 import { formatDistanceToNow } from 'date-fns';
+
+const PAGE_SIZE = 20;
 
 const GOVERNANCE_STAGES = [
   'public',
@@ -31,6 +33,11 @@ export default function ProposalsPage() {
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const deferredSearch = useDeferredValue(searchTerm);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [statusFilter, categoryFilter, deferredSearch]);
 
   const filters: ProposalFilters = {};
   if (statusFilter !== 'all') {
@@ -109,22 +116,22 @@ export default function ProposalsPage() {
             </div>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-3 grid-cols-2 xl:grid-cols-4">
             <div className="rounded-2xl border border-white/70 bg-white/80 px-4 py-3">
               <p className="text-xs uppercase tracking-wide text-slate-500">{t('metricOpenLifecycle')}</p>
-              <p className="text-2xl font-black text-slate-900">
+              <p className="text-2xl font-black text-slate-900 font-mono tabular-nums">
                 {(stageCounts.public ?? 0) + (stageCounts.qualified ?? 0) + (stageCounts.discussion ?? 0) + (stageCounts.voting ?? 0)}
               </p>
             </div>
             <div className="rounded-2xl border border-white/70 bg-white/80 px-4 py-3">
               <p className="text-xs uppercase tracking-wide text-slate-500">{t('metricVotingNow')}</p>
-              <p className="text-2xl font-black text-slate-900">{stageCounts.voting ?? 0}</p>
+              <p className="text-2xl font-black text-slate-900 font-mono tabular-nums">{stageCounts.voting ?? 0}</p>
             </div>
-            <div className="rounded-2xl border border-white/70 bg-white/80 px-4 py-3">
+            <div className="hidden sm:block rounded-2xl border border-white/70 bg-white/80 px-4 py-3">
               <p className="text-xs uppercase tracking-wide text-slate-500">{t('metricDiscussionVolume')}</p>
-              <p className="text-2xl font-black text-slate-900">{totalComments}</p>
+              <p className="text-2xl font-black text-slate-900 font-mono tabular-nums">{totalComments}</p>
             </div>
-            <div className="rounded-2xl border border-white/70 bg-white/80 px-4 py-3">
+            <div className="hidden sm:block rounded-2xl border border-white/70 bg-white/80 px-4 py-3">
               <p className="text-xs uppercase tracking-wide text-slate-500">{t('metricLastUpdate')}</p>
               <p className="text-sm font-semibold text-slate-800">
                 {latestCreatedAt
@@ -175,7 +182,7 @@ export default function ProposalsPage() {
                       | `statusCanceled`
                   )}
                 </span>
-                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] text-slate-600">
+                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] text-slate-600 font-mono tabular-nums">
                   {stageCounts[status]}
                 </span>
               </button>
@@ -284,9 +291,21 @@ export default function ProposalsPage() {
         </div>
       ) : (
         <div className="space-y-4" data-testid="proposals-results">
-          {proposals.map((proposal) => (
+          {proposals.slice(0, visibleCount).map((proposal) => (
             <ProposalCard key={proposal.id} proposal={proposal} />
           ))}
+        </div>
+      )}
+
+      {proposals && proposals.length > visibleCount && (
+        <div className="flex justify-center mt-6">
+          <button
+            type="button"
+            onClick={() => setVisibleCount((prev) => prev + PAGE_SIZE)}
+            className="px-6 py-2.5 rounded-xl border border-gray-200 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            {t('loadMore', { remaining: proposals.length - visibleCount })}
+          </button>
         </div>
       )}
 

@@ -346,6 +346,7 @@
     "categoryCommunity": "Community / Partnership",
     "categoryDevelopment": "Development Ideas",
     "searchPlaceholder": "Search proposals by title or content...",
+    "loadMore": "Show {remaining} more proposals",
     "ctaTitle": "Want to participate?",
     "ctaDescription": "Sign in and link your wallet to create proposals and vote on decisions.",
     "signIn": "Sign In"

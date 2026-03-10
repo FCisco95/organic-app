@@ -346,6 +346,7 @@
     "categoryCommunity": "Comunidade / Parceria",
     "categoryDevelopment": "Ideias de Desenvolvimento",
     "searchPlaceholder": "Pesquisar propostas por título ou conteúdo...",
+    "loadMore": "Mostrar mais {remaining} propostas",
     "ctaTitle": "Quer participar?",
     "ctaDescription": "Entre e conecte sua carteira para criar propostas e votar nas decisões.",
     "signIn": "Entrar"
