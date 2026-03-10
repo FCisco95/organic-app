@@ -1,103 +1,133 @@
 'use client';
 
 import { Link } from '@/i18n/navigation';
-import { User, Calendar, MessageCircle } from 'lucide-react';
+import { MessageCircle, Clock } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useTranslations } from 'next-intl';
-import type {
-  ProposalListItem,
-  ProposalStatus,
-  ProposalCategory,
-} from '@/features/proposals/types';
-import { CategoryBadge } from './category-badge';
+import { cn } from '@/lib/utils';
+import type { ProposalListItem, ProposalStatus, ProposalCategory } from '@/features/proposals/types';
+import { PROPOSAL_CATEGORY_BORDER_COLORS } from '@/features/proposals/types';
 import { StatusBadge } from './status-badge';
 
 interface ProposalCardProps {
   proposal: ProposalListItem;
 }
 
+function getInitials(email: string): string {
+  const name = email.split('@')[0];
+  return name.slice(0, 2).toUpperCase();
+}
+
+const CATEGORY_BG_SUBTLE: Record<ProposalCategory, string> = {
+  feature: 'bg-blue-50/40',
+  governance: 'bg-purple-50/40',
+  treasury: 'bg-green-50/40',
+  community: 'bg-orange-50/40',
+  development: 'bg-cyan-50/40',
+};
+
+const AVATAR_COLORS: Record<ProposalCategory, string> = {
+  feature: 'bg-blue-100 text-blue-700',
+  governance: 'bg-purple-100 text-purple-700',
+  treasury: 'bg-green-100 text-green-700',
+  community: 'bg-orange-100 text-orange-700',
+  development: 'bg-cyan-100 text-cyan-700',
+};
+
 export function ProposalCard({ proposal }: ProposalCardProps) {
   const t = useTranslations('Proposals');
   const isVoting = proposal.status === 'voting';
-  const votingEndsAt = proposal.voting_ends_at ? new Date(proposal.voting_ends_at) : null;
-  const votingEndsLabel = votingEndsAt
-    ? formatDistanceToNow(votingEndsAt, { addSuffix: true })
-    : t('votingOpen');
-
-  // Show summary if available, fall back to body for legacy proposals
-  const previewText = proposal.summary || proposal.body;
+  const category = (proposal.category ?? 'feature') as ProposalCategory;
+  const borderColor = PROPOSAL_CATEGORY_BORDER_COLORS[category];
+  const bgSubtle = isVoting ? 'bg-orange-50/60' : CATEGORY_BG_SUBTLE[category];
+  const avatarColor = AVATAR_COLORS[category];
+  const initials = getInitials(proposal.user_profiles.email);
+  const previewText = proposal.summary || proposal.body || '';
+  const commentsCount = proposal.comments_count ?? 0;
+  const timeAgo = proposal.created_at
+    ? formatDistanceToNow(new Date(proposal.created_at), { addSuffix: true })
+    : '';
 
   return (
     <Link
       href={`/proposals/${proposal.id}`}
       data-testid={`proposal-card-${proposal.id}`}
-      className={`block rounded-2xl border p-6 transition-shadow ${
-        isVoting
-          ? 'relative overflow-hidden border-2 border-orange-400 bg-gradient-to-r from-orange-50 to-yellow-50 hover:shadow-lg'
-          : 'bg-white border-gray-200 hover:shadow-md'
-      }`}
-    >
-      {isVoting && (
-        <div className="absolute -right-10 -top-10 h-24 w-24 rounded-full bg-orange-200/70 blur-2xl"></div>
+      className={cn(
+        'group flex gap-0 rounded-xl border border-slate-200/80 overflow-hidden transition-all duration-200',
+        'hover:shadow-md hover:border-slate-300',
+        isVoting && 'ring-2 ring-orange-400/60 border-orange-300'
       )}
+    >
+      {/* Left category stripe — turns orange on hover */}
+      <div className={cn('w-1 flex-shrink-0 border-l-4 transition-colors', borderColor, 'group-hover:border-l-organic-orange', bgSubtle)} />
 
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1 min-w-0">
-          {/* Title row with badges */}
-          <div className="flex items-center gap-2 mb-2 flex-wrap">
-            <h3 className="text-xl font-semibold text-gray-900 truncate">{proposal.title}</h3>
-            {isVoting && (
-              <span className="inline-flex items-center gap-2 rounded-full bg-orange-600 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75"></span>
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-white"></span>
-                </span>
-                {t('liveVoting')}
-              </span>
+      {/* Card body */}
+      <div className={cn('flex-1 px-4 py-3.5', bgSubtle)}>
+        <div className="flex items-start gap-3">
+          {/* Author avatar */}
+          <div
+            className={cn(
+              'mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold',
+              avatarColor
             )}
-            <StatusBadge status={proposal.status as ProposalStatus} showIcon={false} />
-            {proposal.category && (
-              <CategoryBadge category={proposal.category as ProposalCategory} showIcon={false} />
-            )}
+            aria-hidden="true"
+          >
+            {initials}
           </div>
 
-          {/* Preview text */}
-          <p className="text-gray-600 line-clamp-2 mb-4">{previewText}</p>
+          {/* Content */}
+          <div className="min-w-0 flex-1">
+            {/* Title row */}
+            <div className="flex items-start justify-between gap-2">
+              <h3 className="text-sm font-semibold text-slate-900 line-clamp-1 group-hover:text-orange-700 transition-colors">
+                {proposal.title}
+              </h3>
+              <div className="flex-shrink-0">
+                <StatusBadge status={proposal.status as ProposalStatus} showIcon={false} />
+              </div>
+            </div>
 
-          {/* Meta info */}
-          <div
-            className="flex items-center gap-4 text-sm text-gray-500 flex-wrap"
-            data-testid={`proposal-card-meta-${proposal.id}`}
-          >
-            <div className="flex items-center gap-1">
-              <User className="w-4 h-4" />
-              <span>
+            {/* Preview text */}
+            <p className="mt-1 text-xs text-slate-500 line-clamp-2 leading-relaxed">
+              {previewText}
+            </p>
+
+            {/* Meta row */}
+            <div
+              className="mt-2.5 flex items-center gap-3 text-xs text-slate-400"
+              data-testid={`proposal-card-meta-${proposal.id}`}
+            >
+              {/* Comments */}
+              <div
+                className={cn(
+                  'flex items-center gap-1 font-semibold',
+                  commentsCount > 0 ? 'text-orange-500' : 'text-slate-400'
+                )}
+              >
+                {isVoting && (
+                  <span className="relative mr-0.5 flex h-1.5 w-1.5">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-orange-500" />
+                  </span>
+                )}
+                <MessageCircle className="h-3.5 w-3.5" />
+                <span>{t('commentsCount', { count: commentsCount })}</span>
+              </div>
+
+              {/* Time ago */}
+              <div className="flex items-center gap-1">
+                <Clock className="h-3 w-3" />
+                <span>{timeAgo}</span>
+              </div>
+
+              {/* Author */}
+              <div className="hidden sm:block truncate">
                 {proposal.user_profiles.organic_id
                   ? t('organicId', { id: proposal.user_profiles.organic_id })
                   : proposal.user_profiles.email.split('@')[0]}
-              </span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Calendar className="w-4 h-4" />
-              <span>
-                {formatDistanceToNow(new Date(proposal.created_at!), {
-                  addSuffix: true,
-                })}
-              </span>
-            </div>
-            <div className="flex items-center gap-1">
-              <MessageCircle className="w-4 h-4" />
-              <span>{t('commentsCount', { count: proposal.comments_count || 0 })}</span>
+              </div>
             </div>
           </div>
-
-          {isVoting && (
-            <div className="mt-4 rounded-xl border border-orange-200/70 bg-orange-50/80 px-3 py-2">
-              <p className="text-xs font-semibold text-orange-700">
-                {t('votingEndsIn', { time: votingEndsLabel })}
-              </p>
-            </div>
-          )}
         </div>
       </div>
     </Link>
