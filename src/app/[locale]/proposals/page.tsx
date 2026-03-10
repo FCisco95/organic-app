@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useDeferredValue } from 'react';
 import { Link } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
 import {
@@ -8,24 +8,12 @@ import {
   normalizeProposalStatus,
   type ProposalFilters,
   PROPOSAL_CATEGORIES,
-  PROPOSAL_CATEGORY_LABELS,
 } from '@/features/proposals';
-import type { ProposalCategory } from '@/features/proposals';
-import { Plus } from 'lucide-react';
+import { Plus, Search, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
 import { ProposalCard } from '@/components/proposals';
 import { formatDistanceToNow } from 'date-fns';
-
-const STATUS_FILTERS = [
-  'all',
-  'public',
-  'qualified',
-  'discussion',
-  'voting',
-  'finalized',
-  'canceled',
-] as const;
 
 const GOVERNANCE_STAGES = [
   'public',
@@ -41,6 +29,8 @@ export default function ProposalsPage() {
   const t = useTranslations('Proposals');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const deferredSearch = useDeferredValue(searchTerm);
 
   const filters: ProposalFilters = {};
   if (statusFilter !== 'all') {
@@ -48,6 +38,9 @@ export default function ProposalsPage() {
   }
   if (categoryFilter !== 'all') {
     filters.category = categoryFilter as ProposalFilters['category'];
+  }
+  if (deferredSearch.trim()) {
+    filters.search = deferredSearch.trim();
   }
 
   const { data: proposals, isLoading } = useProposals(filters);
@@ -145,6 +138,19 @@ export default function ProposalsPage() {
             data-testid="proposals-stage-chips"
             className="flex flex-wrap gap-2 rounded-2xl border border-amber-100 bg-white/75 p-3"
           >
+            <button
+              key="all"
+              type="button"
+              data-testid="proposals-stage-chip-all"
+              onClick={() => setStatusFilter('all')}
+              className={`inline-flex items-center gap-2 rounded-full px-3 py-2 sm:py-1.5 text-xs font-semibold transition-colors ${
+                statusFilter === 'all'
+                  ? 'bg-slate-900 text-white'
+                  : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50'
+              }`}
+            >
+              <span>{t('filterAll')}</span>
+            </button>
             {GOVERNANCE_STAGES.map((status) => (
               <button
                 key={status}
@@ -184,32 +190,25 @@ export default function ProposalsPage() {
       </div>
 
       <div data-testid="proposals-filters" className="mb-6 space-y-3">
-        <div data-testid="proposals-status-filters" className="flex gap-2 overflow-x-auto pb-2">
-          {STATUS_FILTERS.map((status) => (
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder={t('searchPlaceholder')}
+            className="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-xl bg-white text-sm focus:ring-2 focus:ring-organic-orange focus:border-transparent"
+            data-testid="proposals-search"
+          />
+          {searchTerm && (
             <button
-              key={status}
-              data-testid={`proposals-status-${status}`}
-              onClick={() => setStatusFilter(status)}
-              className={`px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap transition-colors ${
-                statusFilter === status
-                  ? 'bg-organic-orange text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
-              }`}
+              type="button"
+              onClick={() => setSearchTerm('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
             >
-              {status === 'all'
-                ? t('filterAll')
-                : t(
-                    `status${status.charAt(0).toUpperCase() + status.slice(1)}` as
-                      | `statusDraft`
-                      | `statusPublic`
-                      | `statusQualified`
-                      | `statusDiscussion`
-                      | `statusVoting`
-                      | `statusFinalized`
-                      | `statusCanceled`
-                  )}
+              <X className="w-4 h-4" />
             </button>
-          ))}
+          )}
         </div>
 
         <div data-testid="proposals-category-filters" className="flex gap-2 overflow-x-auto pb-2">
@@ -235,7 +234,7 @@ export default function ProposalsPage() {
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
-              {PROPOSAL_CATEGORY_LABELS[cat as ProposalCategory]}
+              {t(`category${cat.charAt(0).toUpperCase() + cat.slice(1)}` as 'categoryFeature' | 'categoryGovernance' | 'categoryTreasury' | 'categoryCommunity' | 'categoryDevelopment')}
             </button>
           ))}
         </div>
