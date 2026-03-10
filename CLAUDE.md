@@ -99,6 +99,16 @@ Any request involving UI, UX, design, layout, copy, interactions, or visual beha
 - **Never guess on:** layout structure, icon choice, copy/labels, color variants, empty states, loading states, error states, or mobile behavior. Ask if unclear.
 - After gathering answers, confirm your intended approach before building.
 
+## QA and revamp pipeline
+
+Any request to test, QA, or revamp a section follows this two-session pipeline:
+
+1. **`manual-tester`** — live headed-browser QA → feedback → brainstorming → writing-plans → save plan file
+2. `/clear` (context boundary)
+3. **`prototype-executor`** — load plan → 3 worktree prototypes → user comparison → code review → merge
+
+Never skip the `/clear` between sessions. Never run both phases in one context window.
+
 ## Collaborative questioning (Level 2)
 
 Before executing any non-trivial task, ask:
