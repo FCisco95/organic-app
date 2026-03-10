@@ -345,6 +345,8 @@
     "categoryTreasury": "Tesouraria / Orçamento",
     "categoryCommunity": "Comunidade / Parceria",
     "categoryDevelopment": "Ideias de Desenvolvimento",
+    "searchPlaceholder": "Pesquisar propostas por título ou conteúdo...",
+    "loadMore": "Mostrar mais {remaining} propostas",
     "ctaTitle": "Quer participar?",
     "ctaDescription": "Entre e conecte sua carteira para criar propostas e votar nas decisões.",
     "signIn": "Entrar"
@@ -356,6 +358,7 @@
     "toastSubmitted": "Proposta enviada com sucesso!",
     "toastFailedCreate": "Falha ao criar proposta",
     "signInTitle": "Entre para criar propostas",
+    "signInDescription": "As propostas moldam o futuro da DAO. Inicie sessão para submeter ideias de governação comunitária, funcionalidades, alocação de tesouraria e mais.",
     "signInCta": "Entrar",
     "memberOnlyTitle": "Você precisa ser membro para criar propostas",
     "memberOnlyDescription": "Conecte sua carteira e tenha tokens $ORG para se tornar membro",

@@ -6,7 +6,7 @@ import { useAuth } from '@/features/auth/context';
 import { useProposal } from '@/features/proposals';
 import type { CreateProposalInput } from '@/features/proposals';
 import type { ProposalCategory } from '@/features/proposals';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, FileText, Shield } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
 import { ProposalWizard } from '@/components/proposals';
@@ -25,8 +25,12 @@ export default function NewProposalPage() {
 
   if (!user) {
     return (
-      <PageContainer width="narrow" className="text-center py-10">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('signInTitle')}</h1>
+      <PageContainer width="narrow" className="text-center py-16">
+        <div className="mx-auto w-12 h-12 rounded-2xl bg-orange-100 flex items-center justify-center mb-4">
+          <FileText className="w-6 h-6 text-orange-600" />
+        </div>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('signInTitle')}</h1>
+        <p className="text-gray-600 mb-6 max-w-md mx-auto">{t('signInDescription')}</p>
         <Link
           href="/login"
           className="inline-block bg-organic-orange hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
@@ -39,9 +43,12 @@ export default function NewProposalPage() {
 
   if (!canCreate) {
     return (
-      <PageContainer width="narrow" className="text-center py-10">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('memberOnlyTitle')}</h1>
-        <p className="text-gray-600 mb-6">{t('memberOnlyDescription')}</p>
+      <PageContainer width="narrow" className="text-center py-16">
+        <div className="mx-auto w-12 h-12 rounded-2xl bg-amber-100 flex items-center justify-center mb-4">
+          <Shield className="w-6 h-6 text-amber-600" />
+        </div>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('memberOnlyTitle')}</h1>
+        <p className="text-gray-600 mb-6 max-w-md mx-auto">{t('memberOnlyDescription')}</p>
         <Link
           href="/profile"
           className="inline-block bg-organic-orange hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
