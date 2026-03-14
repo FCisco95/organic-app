@@ -129,7 +129,7 @@ function VoteCountdown({ endsAt, timeLeft, t }: { endsAt: Date | null; timeLeft:
 
   if (!timeLeft) {
     return (
-      <p className="text-xs font-semibold text-orange-100">{t('votingClosed')}</p>
+      <p className="text-xs font-semibold text-slate-200">{t('votingClosed')}</p>
     );
   }
 

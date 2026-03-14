@@ -334,6 +334,7 @@
     "awaitingFinalization": "Awaiting finalization",
     "viewResults": "View results",
     "castYourVote": "Cast your vote",
+    "votingClosed": "Voting closed",
     "emptyState": "No proposals found",
     "createFirstProposal": "Create First Proposal",
     "organicId": "Organic #{id}",

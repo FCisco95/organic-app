@@ -334,6 +334,7 @@
     "awaitingFinalization": "A aguardar finalização",
     "viewResults": "Ver resultados",
     "castYourVote": "Vote agora",
+    "votingClosed": "Votação encerrada",
     "emptyState": "Nenhuma proposta encontrada",
     "createFirstProposal": "Criar primeira proposta",
     "organicId": "Organic #{id}",

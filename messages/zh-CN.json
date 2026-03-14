@@ -334,6 +334,7 @@
     "awaitingFinalization": "等待最终确定",
     "viewResults": "查看结果",
     "castYourVote": "投下你的票",
+    "votingClosed": "投票已结束",
     "emptyState": "没有找到提案",
     "createFirstProposal": "创建首个提案",
     "organicId": "Organic #{id}",
