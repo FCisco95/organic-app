@@ -5,3 +5,5 @@ export { ProposalSections } from './proposal-sections';
 export { ProposalWizard } from './proposal-wizard';
 export { LiveVoteBanner } from './live-vote-banner';
 export { GovernanceSidebar } from './governance-sidebar';
+export { WizardPreview } from './wizard-preview';
+export { WizardTabs } from './wizard-tabs';

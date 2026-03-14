@@ -1,80 +1,123 @@
 'use client';
 
 import { Edit2 } from 'lucide-react';
-import { PROPOSAL_CATEGORY_LABELS } from '@/features/proposals/types';
 import type { WizardStep } from '@/features/proposals/types';
 import type { Step4ReviewProps } from './types';
+import { CategoryBadge } from '../category-badge';
+import type { ProposalCategory } from '@/features/proposals/types';
+
+type ReviewItem =
+  | { key: string; label: string; type: 'text'; value: string }
+  | { key: string; label: string; type: 'category' };
+
+interface ReviewGroup {
+  titleKey: string;
+  step: WizardStep;
+  items: ReviewItem[];
+}
 
 export function Step4Review({ formData, goToStep, t }: Step4ReviewProps) {
-  const sections = [
+  const groups: ReviewGroup[] = [
     {
-      key: 'category',
-      label: t('reviewSection_category'),
-      value: PROPOSAL_CATEGORY_LABELS[formData.category],
-      step: 1 as WizardStep,
-    },
-    { key: 'title', label: t('reviewSection_title'), value: formData.title, step: 1 as WizardStep },
-    {
-      key: 'summary',
-      label: t('reviewSection_summary'),
-      value: formData.summary,
-      step: 1 as WizardStep,
-    },
-    {
-      key: 'motivation',
-      label: t('reviewSection_motivation'),
-      value: formData.motivation,
-      step: 2 as WizardStep,
+      titleKey: 'reviewGroupCategoryTitle',
+      step: 1,
+      items: [
+        {
+          key: 'category',
+          label: t('reviewSection_category'),
+          type: 'category' as const,
+        },
+        { key: 'title', label: t('reviewSection_title'), type: 'text' as const, value: formData.title },
+        { key: 'summary', label: t('reviewSection_summary'), type: 'text' as const, value: formData.summary },
+      ],
     },
     {
-      key: 'solution',
-      label: t('reviewSection_solution'),
-      value: formData.solution,
-      step: 2 as WizardStep,
+      titleKey: 'reviewGroupProblemSolution',
+      step: 2,
+      items: [
+        {
+          key: 'motivation',
+          label: t('reviewSection_motivation'),
+          type: 'text' as const,
+          value: formData.motivation,
+        },
+        {
+          key: 'solution',
+          label: t('reviewSection_solution'),
+          type: 'text' as const,
+          value: formData.solution,
+        },
+      ],
     },
     {
-      key: 'budget',
-      label: t('reviewSection_budget'),
-      value: formData.budget || '',
-      step: 3 as WizardStep,
-    },
-    {
-      key: 'timeline',
-      label: t('reviewSection_timeline'),
-      value: formData.timeline || '',
-      step: 3 as WizardStep,
+      titleKey: 'reviewGroupBudgetTimeline',
+      step: 3,
+      items: [
+        {
+          key: 'budget',
+          label: t('reviewSection_budget'),
+          type: 'text' as const,
+          value: formData.budget || '',
+        },
+        {
+          key: 'timeline',
+          label: t('reviewSection_timeline'),
+          type: 'text' as const,
+          value: formData.timeline || '',
+        },
+      ],
     },
   ];
 
   return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('reviewTitle')}</h3>
-      <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
-        {t('reviewCheckpointHint')}
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('reviewTitle')}</h3>
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+          {t('reviewCheckpointHint')}
+        </div>
       </div>
-      {sections.map((section) => (
-        <div
-          key={section.key}
-          className="flex items-start justify-between gap-4 py-3 border-b border-gray-100 last:border-0"
-        >
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-500 mb-1">{section.label}</p>
-            <p className="text-gray-900 whitespace-pre-wrap">
-              {section.value || (
-                <span className="text-gray-400 italic">{t('reviewSection_empty')}</span>
-              )}
-            </p>
+
+      {groups.map((group) => (
+        <div key={group.titleKey} className="rounded-lg border border-gray-100 bg-gray-50/50 p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="text-sm font-semibold text-gray-700">{t(group.titleKey)}</h4>
+            <button
+              type="button"
+              onClick={() => goToStep(group.step)}
+              className="flex items-center gap-1 text-xs text-organic-orange hover:text-orange-600 font-medium"
+            >
+              <Edit2 className="w-3 h-3" />
+              {t('reviewEdit')}
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => goToStep(section.step)}
-            className="flex items-center gap-1 text-sm text-organic-orange hover:text-orange-600 font-medium shrink-0"
-          >
-            <Edit2 className="w-3.5 h-3.5" />
-            {t('reviewEdit')}
-          </button>
+          <div className="space-y-3">
+            {group.items.map((item) => (
+              <div key={item.key}>
+                <p className="text-xs font-medium text-gray-500 mb-0.5">{item.label}</p>
+                {item.type === 'category' ? (
+                  <CategoryBadge category={formData.category as ProposalCategory} />
+                ) : item.value ? (
+                  <p className="text-sm text-gray-900 whitespace-pre-wrap">{item.value}</p>
+                ) : (
+                  <p className="text-sm text-gray-400 italic">{t('reviewSection_empty')}</p>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       ))}
+
+      {/* What happens next — shown only on Review tab */}
+      <div className="rounded-lg border border-orange-200 bg-gradient-to-r from-orange-50 to-amber-50 p-4">
+        <h4 className="font-semibold text-gray-900 mb-2 text-sm">{t('nextTitle')}</h4>
+        <ul className="text-xs text-gray-700 space-y-1.5">
+          <li>{t('nextStep1')}</li>
+          <li>{t('nextStep2')}</li>
+          <li>{t('nextStep3')}</li>
+          <li>{t('nextStep4')}</li>
+        </ul>
+      </div>
     </div>
   );
 }

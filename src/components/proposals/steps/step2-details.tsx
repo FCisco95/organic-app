@@ -9,7 +9,7 @@ export function Step2Details({ formData, errors, updateField, t }: StepProps) {
       {/* Motivation */}
       <div>
         <label htmlFor="motivation" className="block text-sm font-medium text-gray-900 mb-2">
-          {t('labelMotivation')}
+          {t('labelMotivation')} <span className="text-red-500">*</span>
         </label>
         <textarea
           id="motivation"
@@ -37,7 +37,7 @@ export function Step2Details({ formData, errors, updateField, t }: StepProps) {
       {/* Solution */}
       <div>
         <label htmlFor="solution" className="block text-sm font-medium text-gray-900 mb-2">
-          {t('labelSolution')}
+          {t('labelSolution')} <span className="text-red-500">*</span>
         </label>
         <textarea
           id="solution"
