@@ -67,11 +67,12 @@ export function LiveVoteBanner({ proposals }: LiveVoteBannerProps) {
       return new Date(a.voting_ends_at).getTime() - new Date(b.voting_ends_at).getTime();
     });
 
-  const primary = votingProposals[0];
-  if (!primary) return null;
+  const primary = votingProposals[0] ?? null;
+  const endsAt = primary?.voting_ends_at ? new Date(primary.voting_ends_at) : null;
+  const timeLeft = useCountdown(endsAt);
+  const isExpired = endsAt !== null && timeLeft === null;
 
-  const endsAt = primary.voting_ends_at ? new Date(primary.voting_ends_at) : null;
-  const isExpired = endsAt ? endsAt.getTime() <= Date.now() : false;
+  if (!primary) return null;
 
   return (
     <div className={`relative overflow-hidden rounded-xl bg-gradient-to-r ${isExpired ? 'from-slate-600 via-slate-500 to-slate-400' : 'from-orange-600 via-orange-500 to-amber-500'} p-5 shadow-lg mb-4`}>
@@ -105,7 +106,7 @@ export function LiveVoteBanner({ proposals }: LiveVoteBannerProps) {
         </div>
 
         <div className="flex flex-shrink-0 flex-col items-start gap-3 sm:items-end">
-          <VoteCountdown endsAt={endsAt} t={t} />
+          <VoteCountdown endsAt={endsAt} timeLeft={timeLeft} t={t} />
           <Link
             href={`/proposals/${primary.id}`}
             className={`inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-bold shadow-sm transition-colors ${isExpired ? 'bg-white/90 text-slate-700 hover:bg-white' : 'bg-white text-orange-600 hover:bg-orange-50'}`}
@@ -119,9 +120,7 @@ export function LiveVoteBanner({ proposals }: LiveVoteBannerProps) {
   );
 }
 
-function VoteCountdown({ endsAt, t }: { endsAt: Date | null; t: ReturnType<typeof useTranslations<'Proposals'>> }) {
-  const timeLeft = useCountdown(endsAt);
-
+function VoteCountdown({ endsAt, timeLeft, t }: { endsAt: Date | null; timeLeft: TimeLeft | null; t: ReturnType<typeof useTranslations<'Proposals'>> }) {
   if (!endsAt) {
     return (
       <p className="text-xs font-semibold text-orange-100">{t('votingOpen')}</p>
@@ -130,7 +129,7 @@ function VoteCountdown({ endsAt, t }: { endsAt: Date | null; t: ReturnType<typeo
 
   if (!timeLeft) {
     return (
-      <p className="text-xs font-semibold text-orange-100">Voting closed</p>
+      <p className="text-xs font-semibold text-orange-100">{t('votingClosed')}</p>
     );
   }
 
