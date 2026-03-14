@@ -388,7 +388,13 @@
     "nextStep1": "1. 社区讨论：成员可以评论并反馈",
     "nextStep2": "2. 审核：理事会成员审核提案",
     "nextStep3": "3. 投票：通过审核的提案进入投票",
-    "nextStep4": "4. 实施：通过的提案可转为任务"
+    "nextStep4": "4. 实施：通过的提案可转为任务",
+    "eligibilityChecking": "正在检查资格...",
+    "eligibilityThresholdFail": "创建提案需要至少 {required} 个 $ORG 代币。请在个人资料页面连接钱包。",
+    "eligibilityNoWallet": "需要连接钱包并持有至少 {required} 个 $ORG 代币。",
+    "eligibilityMaxLive": "您有 {active} 个活跃提案（最多 {max} 个）。请等待其中一个完成或取消。",
+    "eligibilityCooldown": "请再等待 {days} 天后再提交新提案。",
+    "eligibilityBlocked": "无法创建提案"
   },
   "ProposalWizard": {
     "stepCategoryTitle": "分类和标题",
@@ -541,7 +547,22 @@
     "deleteTitle": "删除提案",
     "deleteDescription": "确定要删除此提案吗？此操作无法撤销。",
     "deleteProposal": "删除提案",
-    "sourceIdeaBadge": "来源想法"
+    "sourceIdeaBadge": "来源想法",
+    "executionDeadline": "执行截止日期",
+    "executionDeadlineCountdown": "剩余 {days} 天",
+    "executionDeadlineExpired": "执行窗口已过期",
+    "executionStatusPending": "待执行",
+    "executionStatusExecuted": "已执行",
+    "executionStatusExpired": "已过期",
+    "stageDraft": "草稿",
+    "stagePublic": "公开",
+    "stageDiscussion": "讨论",
+    "stageVoting": "投票",
+    "stageFinalized": "已定案",
+    "stageCanceled": "已取消",
+    "mobileVote": "投票",
+    "mobileFollow": "关注",
+    "mobileEdit": "编辑"
   },
   "Sprints": {
     "title": "冲刺",
@@ -1530,7 +1551,10 @@
       "finalizeEarlyWarning": "警告：投票期限尚未结束。确定要提前结束吗？",
       "confirmFinalize": "结束",
       "finalizationFrozen": "最终结算在失败 {attempts} 次后已被冻结。",
-      "finalizationFrozenHelp": "请先排查失败原因，再通过受控的管理员恢复流程后重试结算。"
+      "finalizationFrozenHelp": "请先排查失败原因，再通过受控的管理员恢复流程后重试结算。",
+      "unfreezeButton": "恢复结算",
+      "unfreezeDescription": "重置冻结锁定并重试结算。上次失败原因：{reason}",
+      "unfreezing": "恢复中..."
     },
     "common": {
       "cancel": "取消"
@@ -1565,7 +1589,11 @@
         "community": "社区",
         "development": "开发"
       }
-    }
+    },
+    "votingClosed": "投票期已结束",
+    "votingClosedDescription": "投票窗口已关闭，等待理事会最终确认。",
+    "votingTimeline": "投票时间：{start} 至 {end}",
+    "awaitingFinalization": "等待最终确认"
   },
   "dashboard": {
     "stats": {

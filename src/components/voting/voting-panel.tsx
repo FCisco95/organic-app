@@ -85,6 +85,23 @@ export function VotingPanel({ proposal }: VotingPanelProps) {
         )}
       </div>
 
+      {/* Voting Closed Indicator */}
+      {status === 'voting_closed' && (
+        <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-center">
+          <Clock className="w-5 h-5 text-amber-600 mx-auto mb-2" />
+          <p className="text-sm font-medium text-amber-800">{t('votingClosed')}</p>
+          <p className="text-xs text-amber-600 mt-1">{t('votingClosedDescription')}</p>
+          {proposal.voting_starts_at && proposal.voting_ends_at && (
+            <p className="text-xs text-amber-500 mt-2">
+              {t('votingTimeline', {
+                start: new Date(proposal.voting_starts_at).toLocaleDateString(),
+                end: new Date(proposal.voting_ends_at).toLocaleDateString(),
+              })}
+            </p>
+          )}
+        </div>
+      )}
+
       {/* Vote Buttons */}
       {isVotingOpen && (
         <div className="mb-6">
@@ -153,10 +170,10 @@ export function VotingPanel({ proposal }: VotingPanelProps) {
                   {formatVotingWeight(results.tally.yes_votes)})
                 </span>
               </div>
-              <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+              <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-green-500 transition-all duration-500"
-                  style={{ width: `${results.yes_percentage}%` }}
+                  className="h-full bg-green-500 rounded-full transition-all duration-500"
+                  style={{ width: `${Math.max(results.yes_percentage, results.yes_percentage > 0 ? 2 : 0)}%` }}
                 />
               </div>
             </div>
@@ -169,10 +186,10 @@ export function VotingPanel({ proposal }: VotingPanelProps) {
                   {results.no_percentage.toFixed(1)}% ({formatVotingWeight(results.tally.no_votes)})
                 </span>
               </div>
-              <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+              <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-red-500 transition-all duration-500"
-                  style={{ width: `${results.no_percentage}%` }}
+                  className="h-full bg-red-500 rounded-full transition-all duration-500"
+                  style={{ width: `${Math.max(results.no_percentage, results.no_percentage > 0 ? 2 : 0)}%` }}
                 />
               </div>
             </div>
@@ -186,10 +203,10 @@ export function VotingPanel({ proposal }: VotingPanelProps) {
                   {formatVotingWeight(results.tally.abstain_votes)})
                 </span>
               </div>
-              <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+              <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-gray-400 transition-all duration-500"
-                  style={{ width: `${results.abstain_percentage}%` }}
+                  className="h-full bg-gray-400 rounded-full transition-all duration-500"
+                  style={{ width: `${Math.max(results.abstain_percentage, results.abstain_percentage > 0 ? 2 : 0)}%` }}
                 />
               </div>
             </div>

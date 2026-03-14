@@ -460,29 +460,66 @@ Routes: `/proposals`, `/proposals/new`, `/proposals/[id]`.
 Use cases:
 - [ ] `PROP-01` Member creates proposal draft/public submission.
 - [ ] `PROP-02` Proposal list shows governance signal/context correctly.
-- [ ] `PROP-03` Proposal detail renders structured sections clearly.
-- [ ] `PROP-04` Proposal comments can be posted and read.
-- [ ] `PROP-05` Stage transitions are forward-only and clearly communicated.
-- [ ] `PROP-06` Start voting works for authorized role only.
-- [ ] `PROP-07` Vote eligibility and effective power are understandable.
-- [ ] `PROP-08` Casting vote succeeds/fails with clear feedback.
-- [ ] `PROP-09` Finalize voting behaves idempotently.
-- [ ] `PROP-10` Freeze and resume semantics are understandable to operators.
-- [ ] `PROP-11` Execution-window messaging for passed proposal is clear.
-- [ ] `PROP-12` Proposal templates are usable (if enabled/configured).
-- [ ] `PROP-13` Mobile readability and action placement are acceptable.
-- [ ] `PROP-14` Proposal threshold gate blocks under-threshold proposers with clear reason.
-- [ ] `PROP-15` Anti-abuse cooldown/one-live-proposal guard is enforced and explained.
-- [ ] `PROP-16` Passed proposal finalize path remains usable under execution-window degraded mode (`PGRST204`) with non-blocking warning behavior.
-- [ ] `PROP-17` Proposal detail shows source-idea badge/link when `source_idea_id` is present.
+- [x] `PROP-03` Proposal detail renders structured sections clearly. **PARTIAL, S2**
+- [x] `PROP-04` Proposal comments can be posted and read. **PARTIAL, S2**
+- [x] `PROP-05` Stage transitions are forward-only and clearly communicated. **PARTIAL, S2**
+- [x] `PROP-06` Start voting works for authorized role only. **PARTIAL, S2**
+- [x] `PROP-07` Vote eligibility and effective power are understandable. **PARTIAL, S2**
+- [x] `PROP-08` Casting vote succeeds/fails with clear feedback. **PARTIAL, S2**
+- [x] `PROP-09` Finalize voting behaves idempotently. **PARTIAL, S2**
+- [x] `PROP-10` Freeze and resume semantics are understandable to operators. **PARTIAL, S2**
+- [x] `PROP-11` Execution-window messaging for passed proposal is clear. **PARTIAL, S2**
+- [x] `PROP-12` Proposal templates are usable (if enabled/configured). **SKIP** — not implemented
+- [x] `PROP-13` Mobile readability and action placement are acceptable. **PARTIAL, S2**
+- [x] `PROP-14` Proposal threshold gate blocks under-threshold proposers with clear reason. **PARTIAL, S2**
+- [x] `PROP-15` Anti-abuse cooldown/one-live-proposal guard is enforced and explained. **PARTIAL, S2**
+- [x] `PROP-16` Passed proposal finalize path remains usable under execution-window degraded mode (`PGRST204`) with non-blocking warning behavior. **PARTIAL, S2**
+- [x] `PROP-17` Proposal detail shows source-idea badge/link when `source_idea_id` is present. **PASS, S3**
 
-Feedback:
-- What works well:
-- What does not work:
-- UI improvements requested:
-- Top 3 highest-impact changes:
-- Section severity (`S0/S1/S2/S3`):
-- Confidence score (`1-5`):
+### Feedback
+
+**What works well:**
+- Structured sections (Summary, Motivation, Solution, Budget, Timeline) render with icons and cards (PROP-03)
+- Comments post and display correctly with author, timestamp, and version badge (PROP-04)
+- Stage transitions are forward-only — no backward navigation possible (PROP-05)
+- Role-based controls work — members see no governance action buttons (PROP-06)
+- Finalized proposals show clear "Proposal Passed"/"Quorum Not Met" results with full breakdown (PROP-09)
+- "Create Task from Proposal" execution path with version provenance tracking (PROP-11)
+- Source-idea badge renders and links correctly when present (PROP-17)
+- Council Actions cards are visually distinct (yellow/orange bordered)
+
+**What does not work:**
+- Two-column layout (content + governance sidebar) doesn't render as side-by-side on all viewport sizes (PROP-03)
+- "Voting" status badge shown on proposals with expired voting windows — misleading (PROP-07)
+- No vote casting buttons visible — all voting-period proposals have expired (PROP-08)
+- No recovery path from frozen finalization state — dead end for operators (PROP-10)
+- Anti-abuse guards (threshold, cooldown, max-live) are server-side only — users fill entire 4-step wizard before rejection (PROP-14, PROP-15)
+- Content may clip on mobile for certain proposals (PROP-13)
+- Execution deadline not surfaced in UI for passed proposals (PROP-16)
+
+**UI improvements requested:**
+- **Voting status clarity:** Add "Voting closed" / "Awaiting finalization" indicator when voting period has expired but result not finalized. Show voting timeline (started/ended dates). (PROP-07, PROP-08)
+- **Stage progress stepper:** Visual lifecycle indicator showing current stage in the proposal journey (draft → public → discussion → voting → finalized). (PROP-05)
+- **Pre-flight eligibility check:** Add client-side pre-check on `/proposals/new` for token threshold, cooldown, and max-live limits before showing the wizard. (PROP-14, PROP-15)
+- **Freeze recovery UI:** Add "Resume Finalization" button or link to admin recovery flow from the frozen state. (PROP-10)
+- **Confirmation dialog for finalize:** Governance action should have a confirmation step showing expected outcome. (PROP-09)
+- **Mobile sticky action bar:** Primary actions (Follow, vote, submit) should be sticky on mobile. (PROP-13)
+- **Empty voting bars:** Show subtle track/background on 0% voting progress bars. (PROP-03)
+- **Two-column layout fix:** Ensure governance sidebar renders to the right on desktop. (PROP-03)
+
+**Standalone tasks identified:**
+- **TASK: Add execution_deadline surface** — Show deadline countdown on passed proposals. (PROP-11, PROP-16)
+- **TASK: Create proposal eligibility API** — Pre-flight endpoint returning threshold/cooldown/max-live status. (PROP-14, PROP-15)
+
+**Top 3 highest-impact changes:**
+1. **Add voting status clarity** — "Voting closed" indicator + timeline when voting period expires. Users currently see "Voting" badge but can't vote. (PROP-07, PROP-08, S2)
+2. **Add pre-flight eligibility check** — Stop users from filling a 4-step wizard only to be rejected at submission. (PROP-14, PROP-15, S2)
+3. **Fix proposal detail layout + add stage stepper** — Two-column layout, empty state handling, stage progress visualization. (PROP-03, PROP-05, S2)
+
+**Section severity:** S2 (moderate friction, workarounds exist — all features functional but UX needs improvement)
+**Confidence score:** 4/5 (PROP-08 untestable live due to expired voting; PROP-12 skipped; PROP-16 partial code review)
+
+**Execution status:** _plan written — `docs/plans/2026-03-14-proposal-detail-revamp.md` (2026-03-14)_
 
 ## 4.10 Disputes Workflow (File -> Evidence -> Resolve/Appeal)
 Routes: `/disputes`, `/disputes/[id]`.
