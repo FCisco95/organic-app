@@ -5,6 +5,7 @@ import type { DragEvent } from 'react';
 import { Link, useRouter } from '@/i18n/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { AlertCircle, Clock, Edit2, MessageSquare, MoreVertical, Tag, Upload, User, Users } from 'lucide-react';
+import { getLabelDisplay } from '@/features/tasks';
 
 export type TaskStatus = 'backlog' | 'todo' | 'in_progress' | 'review' | 'done';
 export type TaskPriority = 'low' | 'medium' | 'high' | 'critical';
@@ -237,7 +238,7 @@ function TaskCard({
                 className="inline-flex items-center gap-1 px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs"
               >
                 <Tag className="w-3 h-3" />
-                {label}
+                {getLabelDisplay(label, t)}
               </span>
             ))}
           </div>

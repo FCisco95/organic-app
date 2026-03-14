@@ -3,7 +3,7 @@
 import { AlertCircle, CalendarClock, FilterX, Heart, MessageSquare, Tag, Upload, User, Users } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import type { Sprint, TaskListItem, TaskTab, TaskStatus } from '@/features/tasks';
+import { getLabelDisplay, type Sprint, type TaskListItem, type TaskTab, type TaskStatus } from '@/features/tasks';
 
 const STATUS_PROGRESS: Record<TaskStatus, { percent: number; color: string }> = {
   backlog: { percent: 5, color: 'bg-gray-400' },
@@ -184,7 +184,7 @@ export function TaskListSection({
                         {labels.length > 0 && (
                           <span className="inline-flex items-center gap-1 truncate">
                             <Tag className="h-3.5 w-3.5" />
-                            {labels.slice(0, 2).join(', ')}
+                            {labels.slice(0, 2).map((l) => getLabelDisplay(l, t)).join(', ')}
                           </span>
                         )}
                       </div>

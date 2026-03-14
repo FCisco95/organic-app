@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Heart, Tag, User, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import { TaskSubmissionWithReviewer, TaskWithRelations } from '@/features/tasks';
+import { getLabelDisplay, TaskSubmissionWithReviewer, TaskWithRelations } from '@/features/tasks';
 import { estimateXpFromPoints } from '@/features/tasks/utils';
 
 type Contributor = NonNullable<TaskSubmissionWithReviewer['user']>;
@@ -142,7 +142,7 @@ export function TaskDetailSummary({
         <div>
           <dt className="text-muted-foreground text-xs">{t('category')}</dt>
           <dd className="font-medium text-gray-900">
-            {task.labels && task.labels.length > 0 ? task.labels[0] : t('noCategory')}
+            {task.labels && task.labels.length > 0 ? getLabelDisplay(task.labels[0], t) : t('noCategory')}
           </dd>
         </div>
         <div>
@@ -179,7 +179,7 @@ export function TaskDetailSummary({
               className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs"
             >
               <Tag className="w-3 h-3" />
-              {label}
+              {getLabelDisplay(label, t)}
             </span>
           ))}
         </div>

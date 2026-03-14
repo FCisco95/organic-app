@@ -54,13 +54,6 @@ export default function TaskDetailPage() {
   const taskId = typeof params.id === 'string' ? params.id : (params.id?.[0] ?? '');
   const { data: dependencyData } = useTaskDependencies(taskId);
   const canLike = !!profile?.role && ['member', 'council', 'admin'].includes(profile.role);
-  const standardLabels = [
-    t('standardLabels.growth'),
-    t('standardLabels.design'),
-    t('standardLabels.dev'),
-    t('standardLabels.research'),
-  ];
-
   const infoSections = [
     {
       title: t('infoSection1Title'),
@@ -722,7 +715,6 @@ export default function TaskDetailPage() {
               <TaskEditForm
                 editForm={editForm}
                 labelInput={labelInput}
-                standardLabels={standardLabels}
                 members={members}
                 sprints={sprints}
                 isSaving={isSaving}

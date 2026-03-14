@@ -5,12 +5,21 @@ import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
 import { Megaphone, Palette, Code, Brain } from 'lucide-react';
 import {
+  STANDARD_LABEL_KEYS,
+  getLabelDisplay,
   useCreateTask,
   type Assignee,
   type Sprint,
   type TaskPriority,
   type TaskType,
 } from '@/features/tasks';
+
+const LABEL_ICONS: Record<string, typeof Megaphone> = {
+  Growth: Megaphone,
+  Design: Palette,
+  Dev: Code,
+  Research: Brain,
+};
 
 type TaskNewModalProps = {
   onClose: () => void;
@@ -42,13 +51,6 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
   const [assignees, setAssignees] = useState<Assignee[]>([]);
   const [loadingAssignees, setLoadingAssignees] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-
-  const standardLabels = [
-    { key: 'Growth', label: t('standardLabels.growth'), icon: Megaphone },
-    { key: 'Design', label: t('standardLabels.design'), icon: Palette },
-    { key: 'Dev', label: t('standardLabels.dev'), icon: Code },
-    { key: 'Research', label: t('standardLabels.research'), icon: Brain },
-  ];
 
   useEffect(() => {
     async function fetchAssignees() {
@@ -364,21 +366,24 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
               {t('labelLabels')}
             </label>
             <div className="flex flex-wrap gap-2 mb-2">
-              {standardLabels.map((item) => (
-                <button
-                  key={item.key}
-                  type="button"
-                  onClick={() => handleToggleLabel(item.key)}
-                  className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium border transition-colors ${
-                    labels.includes(item.key)
-                      ? 'border-organic-orange bg-orange-50 text-organic-orange'
-                      : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                  }`}
-                >
-                  <item.icon className="w-3.5 h-3.5" />
-                  {item.label}
-                </button>
-              ))}
+              {STANDARD_LABEL_KEYS.map((key) => {
+                const Icon = LABEL_ICONS[key];
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => handleToggleLabel(key)}
+                    className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium border transition-colors ${
+                      labels.includes(key)
+                        ? 'border-organic-orange bg-orange-50 text-organic-orange'
+                        : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    {Icon && <Icon className="w-3.5 h-3.5" />}
+                    {getLabelDisplay(key, t)}
+                  </button>
+                );
+              })}
             </div>
             <div className="flex flex-col sm:flex-row gap-2 mb-2">
               <input
