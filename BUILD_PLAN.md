@@ -53,7 +53,20 @@ Manual QA testing + 3-prototype comparison + combined build for Tasks surface.
 - `src/components/home/feature-carousel.tsx` — Single-card FOMO carousel with snap scroll
 - `src/components/ui/info-button.tsx` — Floating "i" info popup with horizontal-scroll sections
 
-**Remaining QA sections:** 4.4 (Proposals), 4.5 (Sprints), 4.6 (Disputes), 4.8 (Admin), 4.9 (Members/Profile), 4.10 (Notifications), 4.11 (Quests/Referrals), 4.12 (Wallet/Token)
+### QA Visual Revamp — Section 4.9 Proposals — 🟡 In Progress (2026-03-14)
+
+Proposals surface revamp across 3 rounds (List, Wizard, Detail).
+
+- [x] Round 1: Proposals List Page — 3 prototypes, Prototype B (Community Forum) merged
+- [x] Round 2: Proposal Wizard — 3 prototypes, Prototype C (Forum Post Composer) merged (PR #20)
+- [x] Round 3 QA: Proposal Detail — manual QA of PROP-03 to PROP-17, all PARTIAL S2
+- [ ] Round 3 Build: Proposal Detail revamp — plan at `docs/plans/2026-03-14-proposal-detail-revamp.md`
+
+**Plan covers 8 tasks in 2 tracks:**
+- Track 1 (Functional): Voting closed indicator, pre-flight eligibility API, freeze recovery, execution deadline
+- Track 2 (Visual/UX): Two-column layout fix, stage stepper, mobile sticky bar, voting bars + comment avatars
+
+**Remaining QA sections:** 4.4 (Voting standalone), 4.5 (Sprints), 4.6 (Disputes), 4.8 (Admin), 4.10 (Members/Profile), 4.11 (Notifications), 4.12 (Quests/Referrals), 4.13 (Wallet/Token)
 
 **Future items from this revamp (see backlog below):**
 - Personal analytics tab, On-Chain analytics tab, AI governance health summary, orange vs terracotta design system decision

@@ -2,6 +2,53 @@
 
 Add newest entries at the top.
 
+## 2026-03-14 (Session: QA 4.9 Proposal Detail — manual QA + revamp plan)
+
+### Summary
+
+Ran the full manual-tester skill for section 4.9 Proposals (PROP-03 to PROP-17), testing the proposal detail page across 3 headed browser sessions with admin/council/member QA fixture accounts. All 15 cases tested — 13 PARTIAL S2, 1 SKIP (templates), 1 PASS S3 (source-idea badge). Wrote implementation plan for the revamp.
+
+### QA findings (section 4.9, detail page)
+
+- S2: "Voting" badge shown on proposals with expired voting windows — no closed indicator
+- S2: Anti-abuse guards (threshold, cooldown, max-live) server-side only — users fill 4-step wizard before server rejection
+- S2: No recovery path from frozen finalization state — dead end for operators
+- S2: Two-column layout doesn't render side-by-side until xl (1280px) breakpoint
+- S2: No execution deadline visible for passed proposals
+- S2: No stage progress visualization across the proposal lifecycle
+- S2: Mobile actions not sticky, hard to reach on long proposals
+- Severity: S2, Confidence: 4/5
+
+### Plan written
+
+`docs/plans/2026-03-14-proposal-detail-revamp.md` — 8 tasks across 2 tracks:
+
+**Track 1 — Functional fixes:**
+1. Voting closed indicator (VotingPanel + detail page condition)
+2. Pre-flight eligibility API + wizard gate
+3. Freeze recovery button (admin-voting-controls)
+4. Execution deadline surface (detail page + sidebar)
+
+**Track 2 — Visual/UX revamp:**
+5. Two-column layout breakpoint fix (xl → lg)
+6. Stage progress stepper component
+7. Mobile sticky action bar
+8. Voting bar tracks + comment avatar initials
+
+### Files changed
+
+- `docs/qa-runbook.md` — Section 4.9 PROP-03 to PROP-17 marked with results + full feedback block
+- `docs/plans/2026-03-14-proposal-detail-revamp.md` — **NEW**: 8-task implementation plan
+- `docs/plans/4.9-proposals-revamp-progress.md` — Updated Round 3 status to QA complete + plan written
+- `BUILD_PLAN.md` — Added section 4.9 progress entry
+- `SESSION_LOG.md` — This entry
+
+### Next step
+
+`/clear` → execute the plan via `executing-plans` or `prototype-executor` skill.
+
+---
+
 ## 2026-03-08 (Session: QA 4.7 Tasks visual revamp — prototype workflow)
 
 ### Summary
