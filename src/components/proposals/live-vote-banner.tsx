@@ -71,21 +71,24 @@ export function LiveVoteBanner({ proposals }: LiveVoteBannerProps) {
   if (!primary) return null;
 
   const endsAt = primary.voting_ends_at ? new Date(primary.voting_ends_at) : null;
+  const isExpired = endsAt ? endsAt.getTime() <= Date.now() : false;
 
   return (
-    <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-orange-600 via-orange-500 to-amber-500 p-5 shadow-lg mb-4">
+    <div className={`relative overflow-hidden rounded-xl bg-gradient-to-r ${isExpired ? 'from-slate-600 via-slate-500 to-slate-400' : 'from-orange-600 via-orange-500 to-amber-500'} p-5 shadow-lg mb-4`}>
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(255,255,255,0.12)_0%,_transparent_60%)]" />
 
       <div className="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0 flex-1">
           <div className="mb-1.5 flex items-center gap-2">
             <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
+              {!isExpired && (
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
+              )}
               <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
             </span>
-            <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-orange-100">
+            <span className={`flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest ${isExpired ? 'text-slate-200' : 'text-orange-100'}`}>
               <Zap className="h-3 w-3" />
-              {t('liveVoting')}
+              {isExpired ? t('awaitingFinalization') : t('liveVoting')}
               {votingProposals.length > 1 && (
                 <span className="ml-1 rounded-full bg-white/20 px-1.5 py-0.5 text-[10px] font-semibold text-white">
                   +{votingProposals.length - 1}
@@ -97,7 +100,7 @@ export function LiveVoteBanner({ proposals }: LiveVoteBannerProps) {
             {primary.title}
           </h3>
           {primary.summary && (
-            <p className="mt-1 line-clamp-1 text-xs text-orange-100">{primary.summary}</p>
+            <p className={`mt-1 line-clamp-1 text-xs ${isExpired ? 'text-slate-300' : 'text-orange-100'}`}>{primary.summary}</p>
           )}
         </div>
 
@@ -105,9 +108,9 @@ export function LiveVoteBanner({ proposals }: LiveVoteBannerProps) {
           <VoteCountdown endsAt={endsAt} t={t} />
           <Link
             href={`/proposals/${primary.id}`}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-white px-4 py-2 text-sm font-bold text-orange-600 shadow-sm transition-colors hover:bg-orange-50"
+            className={`inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-bold shadow-sm transition-colors ${isExpired ? 'bg-white/90 text-slate-700 hover:bg-white' : 'bg-white text-orange-600 hover:bg-orange-50'}`}
           >
-            Cast your vote
+            {isExpired ? t('viewResults') : t('castYourVote')}
             <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
