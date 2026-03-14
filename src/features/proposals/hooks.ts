@@ -6,6 +6,28 @@ import { fetchJson } from '@/lib/fetch-json';
 import type { ProposalListItem, ProposalWithRelations, ProposalComment } from './types';
 import type { ProposalFilters, CreateProposalInput, UpdateProposalInput } from './schemas';
 
+// ── Eligibility types + hook ──────────────────────────────────────────
+
+export type EligibilityCheck = {
+  eligible: boolean;
+  privileged?: boolean;
+  reason?: string;
+  checks: {
+    threshold?: { ok: boolean; reason?: string; required?: number; current?: number };
+    maxLive?: { ok: boolean; activeCount?: number; maxAllowed?: number };
+    cooldown?: { ok: boolean; remainingDays?: number; cooldownDays?: number };
+  };
+};
+
+export function useProposalEligibility(enabled = true) {
+  return useQuery<EligibilityCheck>({
+    queryKey: ['proposals', 'eligibility'],
+    queryFn: () => fetchJson<EligibilityCheck>('/api/proposals/eligibility'),
+    enabled,
+    staleTime: 30_000,
+  });
+}
+
 // Query keys
 export const proposalKeys = {
   all: ['proposals'] as const,

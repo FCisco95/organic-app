@@ -7,3 +7,4 @@ export { LiveVoteBanner } from './live-vote-banner';
 export { GovernanceSidebar } from './governance-sidebar';
 export { WizardPreview } from './wizard-preview';
 export { WizardTabs } from './wizard-tabs';
+export { StageStepper } from './stage-stepper';

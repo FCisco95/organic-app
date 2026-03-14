@@ -388,7 +388,13 @@
     "nextStep1": "1. Discussão da comunidade: membros podem comentar e dar feedback",
     "nextStep2": "2. Revisão: membros do conselho revisam a proposta",
     "nextStep3": "3. Votação: se aprovada para votação, os detentores de tokens podem votar",
-    "nextStep4": "4. Implementação: propostas aprovadas podem virar tarefas"
+    "nextStep4": "4. Implementação: propostas aprovadas podem virar tarefas",
+    "eligibilityChecking": "A verificar elegibilidade...",
+    "eligibilityThresholdFail": "Precisa de pelo menos {required} tokens $ORG para criar propostas. Conecte a sua carteira na página de perfil.",
+    "eligibilityNoWallet": "Precisa de uma carteira conectada com pelo menos {required} tokens $ORG.",
+    "eligibilityMaxLive": "Tem {active} propostas ativas (máximo {max}). Aguarde a finalização ou cancelamento de uma.",
+    "eligibilityCooldown": "Aguarde mais {days} dia(s) antes de submeter outra proposta.",
+    "eligibilityBlocked": "Não é possível criar proposta"
   },
   "ProposalWizard": {
     "stepCategoryTitle": "Categoria e Título",
@@ -541,7 +547,22 @@
     "deleteTitle": "Excluir proposta",
     "deleteDescription": "Tem certeza de que deseja excluir esta proposta? Esta ação não pode ser desfeita.",
     "deleteProposal": "Excluir proposta",
-    "sourceIdeaBadge": "Ideia de origem"
+    "sourceIdeaBadge": "Ideia de origem",
+    "executionDeadline": "Prazo de execução",
+    "executionDeadlineCountdown": "{days} dias restantes",
+    "executionDeadlineExpired": "Prazo de execução expirado",
+    "executionStatusPending": "Pendente de execução",
+    "executionStatusExecuted": "Executada",
+    "executionStatusExpired": "Expirada",
+    "stageDraft": "Rascunho",
+    "stagePublic": "Pública",
+    "stageDiscussion": "Discussão",
+    "stageVoting": "Votação",
+    "stageFinalized": "Finalizada",
+    "stageCanceled": "Cancelada",
+    "mobileVote": "Votar",
+    "mobileFollow": "Seguir",
+    "mobileEdit": "Editar"
   },
   "Sprints": {
     "title": "Sprints",
@@ -1530,7 +1551,10 @@
       "finalizeEarlyWarning": "Aviso: O período de votação não terminou. Tem certeza de que deseja finalizar antecipadamente?",
       "confirmFinalize": "Finalizar",
       "finalizationFrozen": "A finalização está bloqueada após {attempts} tentativas falhadas.",
-      "finalizationFrozenHelp": "Investigue a falha e use um fluxo de recuperação controlado por admin antes de tentar finalizar novamente."
+      "finalizationFrozenHelp": "Investigue a falha e use um fluxo de recuperação controlado por admin antes de tentar finalizar novamente.",
+      "unfreezeButton": "Retomar Finalização",
+      "unfreezeDescription": "Reiniciar o bloqueio e tentar finalizar novamente. A razão da falha anterior foi: {reason}",
+      "unfreezing": "A retomar..."
     },
     "common": {
       "cancel": "Cancelar"
@@ -1565,7 +1589,11 @@
         "community": "Comunidade",
         "development": "Desenvolvimento"
       }
-    }
+    },
+    "votingClosed": "O período de votação terminou",
+    "votingClosedDescription": "A janela de votação foi encerrada. A aguardar finalização do conselho.",
+    "votingTimeline": "Votação decorreu de {start} a {end}",
+    "awaitingFinalization": "A aguardar finalização"
   },
   "dashboard": {
     "stats": {

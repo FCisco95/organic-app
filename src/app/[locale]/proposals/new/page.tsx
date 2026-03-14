@@ -3,10 +3,10 @@
 import { useSearchParams } from 'next/navigation';
 import { Link, useRouter } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
-import { useProposal } from '@/features/proposals';
+import { useProposal, useProposalEligibility } from '@/features/proposals';
 import type { CreateProposalInput } from '@/features/proposals';
 import type { ProposalCategory } from '@/features/proposals';
-import { ArrowLeft, FileText, Shield } from 'lucide-react';
+import { ArrowLeft, FileText, Shield, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
 import { ProposalWizard } from '@/components/proposals';
@@ -22,6 +22,11 @@ export default function NewProposalPage() {
   const { data: editingProposal, isLoading: loadingEdit } = useProposal(editId || '');
 
   const canCreate = !!profile?.organic_id;
+
+  // Pre-flight eligibility check (skip when editing an existing draft)
+  const { data: eligibility, isLoading: checkingEligibility } = useProposalEligibility(
+    canCreate && !editId
+  );
 
   if (!user) {
     return (
@@ -54,6 +59,49 @@ export default function NewProposalPage() {
           className="inline-block bg-organic-orange hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
         >
           {t('goToProfile')}
+        </Link>
+      </PageContainer>
+    );
+  }
+
+  if (canCreate && !editId && checkingEligibility) {
+    return (
+      <PageContainer width="narrow" className="text-center py-16">
+        <Loader2 className="w-8 h-8 animate-spin text-gray-400 mx-auto mb-4" />
+        <p className="text-gray-600">{t('eligibilityChecking')}</p>
+      </PageContainer>
+    );
+  }
+
+  if (canCreate && !editId && eligibility && !eligibility.eligible) {
+    const checks = eligibility.checks;
+    let message = '';
+    if (checks.threshold && !checks.threshold.ok) {
+      message =
+        checks.threshold.reason === 'no_wallet'
+          ? t('eligibilityNoWallet', { required: checks.threshold.required ?? 0 })
+          : t('eligibilityThresholdFail', { required: checks.threshold.required ?? 0 });
+    } else if (checks.maxLive && !checks.maxLive.ok) {
+      message = t('eligibilityMaxLive', {
+        active: checks.maxLive.activeCount ?? 0,
+        max: checks.maxLive.maxAllowed ?? 3,
+      });
+    } else if (checks.cooldown && !checks.cooldown.ok) {
+      message = t('eligibilityCooldown', { days: checks.cooldown.remainingDays ?? 0 });
+    }
+
+    return (
+      <PageContainer width="narrow" className="text-center py-16">
+        <div className="mx-auto w-12 h-12 rounded-2xl bg-red-100 flex items-center justify-center mb-4">
+          <Shield className="w-6 h-6 text-red-600" />
+        </div>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('eligibilityBlocked')}</h1>
+        <p className="text-gray-600 mb-6 max-w-md mx-auto">{message}</p>
+        <Link
+          href="/proposals"
+          className="inline-block bg-organic-orange hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+        >
+          {t('backToProposals')}
         </Link>
       </PageContainer>
     );

@@ -17,6 +17,7 @@ import type { ProposalStatus, ProposalCategory } from '@/features/proposals';
 import {
   ArrowLeft,
   Calendar,
+  Clock,
   User,
   MessageCircle,
   CheckCircle,
@@ -31,7 +32,7 @@ import { useTranslations } from 'next-intl';
 import type { ProposalWithVoting } from '@/features/voting';
 import { FollowButton } from '@/components/notifications/follow-button';
 import { PageContainer } from '@/components/layout';
-import { StatusBadge, CategoryBadge, ProposalSections } from '@/components/proposals';
+import { StatusBadge, CategoryBadge, ProposalSections, StageStepper } from '@/components/proposals';
 import {
   Dialog,
   DialogContent,
@@ -281,7 +282,7 @@ export default function ProposalDetailPage() {
       </Link>
 
       <div
-        className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]"
+        className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]"
         data-testid="proposal-showcase"
       >
         <div className="min-w-0 space-y-6">
@@ -290,9 +291,13 @@ export default function ProposalDetailPage() {
             {/* Header */}
             <div className="px-4 sm:px-8 pt-6 sm:pt-8 pb-4 sm:pb-6">
               {/* Badges Row */}
-              <div className="flex items-center gap-2 mb-4">
+              <div className="flex items-center gap-2 mb-3">
                 <CategoryBadge category={category} size="md" />
                 <StatusBadge status={proposal.status as ProposalStatus} />
+              </div>
+              {/* Stage Progress Stepper */}
+              <div className="mb-4">
+                <StageStepper currentStatus={proposal.status as ProposalStatus} />
               </div>
 
               {/* Title + Actions */}
@@ -418,6 +423,29 @@ export default function ProposalDetailPage() {
                     <Shield className="w-5 h-5 text-amber-600" />
                     <p className="text-sm font-semibold text-amber-800">{t('implementation')}</p>
                   </div>
+                  {/* Execution Deadline */}
+                  {proposal.execution_deadline && (
+                    <div className="mb-4 flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-amber-600" />
+                      <span className="text-sm text-amber-800">
+                        {t('executionDeadline')}:{' '}
+                        {new Date(proposal.execution_deadline) > new Date() ? (
+                          <span className="font-medium">
+                            {t('executionDeadlineCountdown', {
+                              days: Math.ceil(
+                                (new Date(proposal.execution_deadline).getTime() - Date.now()) /
+                                  (1000 * 60 * 60 * 24)
+                              ),
+                            })}
+                          </span>
+                        ) : (
+                          <span className="font-medium text-red-700">
+                            {t('executionDeadlineExpired')}
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                  )}
                   <p className="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800 mb-3">
                     {t('taskProvenanceBadge', { version: currentVersionNumber })}
                   </p>
@@ -479,9 +507,9 @@ export default function ProposalDetailPage() {
             </div>
           </div>
 
-          {/* Voting Panel - Show during voting */}
-          {proposal.status === 'voting' && (
-            <div className="mb-6 space-y-4">
+          {/* Voting Panel - Show during voting and voting-closed */}
+          {(proposal.status === 'voting' || proposal.status === 'submitted') && (
+            <div className="mb-6 space-y-4" id="voting-panel">
               {user && <DelegatedPowerBadge proposalId={proposalId} userId={user.id} />}
               <VotingPanel proposal={proposal as unknown as ProposalWithVoting} />
               {user && <DelegationInfo />}
@@ -552,7 +580,9 @@ export default function ProposalDetailPage() {
                   return (
                     <div key={comment.id} className="bg-gray-50 rounded-xl p-4">
                       <div className="flex items-center gap-2 mb-2 flex-wrap">
-                        <div className="w-2 h-2 rounded-full bg-organic-orange/60" />
+                        <div className="w-7 h-7 rounded-full bg-organic-orange/15 flex items-center justify-center text-xs font-semibold text-organic-orange shrink-0">
+                          {(comment.user_profiles.email ?? '?')[0].toUpperCase()}
+                        </div>
                         <span className="font-medium text-gray-900 text-sm">
                           {comment.user_profiles.organic_id
                             ? t('organicId', { id: comment.user_profiles.organic_id })
@@ -580,7 +610,7 @@ export default function ProposalDetailPage() {
         </div>
 
         <aside
-          className="space-y-4 xl:sticky xl:top-24 self-start"
+          className="space-y-4 lg:sticky lg:top-24 self-start"
           data-testid="proposal-decision-rail"
         >
           <div
@@ -609,6 +639,30 @@ export default function ProposalDetailPage() {
                   {t('commentsCount', { count: comments.length })}
                 </span>
               </div>
+              {proposal.execution_status && (
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-xs uppercase tracking-wide text-slate-500">
+                    {t('executionDeadline')}
+                  </span>
+                  <span
+                    className={`text-sm font-semibold ${
+                      proposal.execution_status === 'expired'
+                        ? 'text-red-600'
+                        : 'text-slate-800'
+                    }`}
+                  >
+                    {t(
+                      `executionStatus${
+                        proposal.execution_status === 'pending_execution'
+                          ? 'Pending'
+                          : proposal.execution_status === 'executed'
+                            ? 'Executed'
+                            : 'Expired'
+                      }`
+                    )}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -648,6 +702,33 @@ export default function ProposalDetailPage() {
             )}
         </aside>
       </div>
+
+      {/* Mobile Sticky Action Bar */}
+      <div className="fixed bottom-0 inset-x-0 lg:hidden z-40 border-t border-gray-200 bg-white/95 backdrop-blur-sm px-4 py-3 flex items-center justify-between gap-3 safe-area-bottom">
+        <div className="flex items-center gap-2">
+          {user && <FollowButton subjectType="proposal" subjectId={proposalId} size="sm" />}
+          {(isAuthor || isAdmin) &&
+            ['draft', 'public', 'discussion'].includes(lifecycleStatus) && (
+              <Link
+                href={`/proposals/new?edit=${proposal.id}`}
+                className="flex items-center gap-1 px-3 py-2 text-sm bg-white text-gray-700 rounded-lg ring-1 ring-gray-200"
+              >
+                <Edit2 className="w-4 h-4" />
+                {t('mobileEdit')}
+              </Link>
+            )}
+        </div>
+        {proposal.status === 'voting' && (
+          <a
+            href="#voting-panel"
+            className="px-4 py-2 bg-organic-orange text-white rounded-lg text-sm font-medium"
+          >
+            {t('mobileVote')}
+          </a>
+        )}
+      </div>
+      {/* Spacer for sticky bar on mobile */}
+      <div className="h-16 lg:hidden" />
 
       {/* Delete Confirmation Modal */}
       <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>

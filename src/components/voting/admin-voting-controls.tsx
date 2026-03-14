@@ -101,12 +101,35 @@ export function AdminVotingControls({
         <div className="space-y-4">
           <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-sm">
             <AlertTriangle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
-            <p className="text-red-700">
-              {t('admin.finalizationFrozen', {
-                attempts: proposal.finalization_attempts ?? 0,
-              })}
-            </p>
+            <div>
+              <p className="text-red-700">
+                {t('admin.finalizationFrozen', {
+                  attempts: proposal.finalization_attempts ?? 0,
+                })}
+              </p>
+              {proposal.finalization_failure_reason && (
+                <p className="text-red-600 text-xs mt-1">
+                  {t('admin.unfreezeDescription', {
+                    reason: proposal.finalization_failure_reason,
+                  })}
+                </p>
+              )}
+            </div>
           </div>
+          <button
+            onClick={() => handleFinalizeVoting(true)}
+            disabled={finalizeVotingMutation.isPending}
+            className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+          >
+            {finalizeVotingMutation.isPending ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Play className="w-4 h-4" />
+            )}
+            {finalizeVotingMutation.isPending
+              ? t('admin.unfreezing')
+              : t('admin.unfreezeButton')}
+          </button>
           <p className="text-xs text-gray-500">{t('admin.finalizationFrozenHelp')}</p>
         </div>
       );
