@@ -60,6 +60,7 @@ Use this document to run workflow tests, page audits, and capture what works, wh
 ## 4) Workflow QA Packs
 
 ## 4.1 Auth, Session, and Entry Flows
+<!-- qa-status: TESTED | severity: S1 | plan: none -->
 Routes: `/login`, `/signup`, `/join?ref=CODE`, `/auth/error`, `/auth/callback`.
 
 Use cases:
@@ -85,82 +86,14 @@ Use cases:
 | QA Member | `qa-member@organic.test` | `QaMember2026!` | member | 900003 |
 
 ### Feedback
-
-**What works well:**
-- Login form renders correctly with all expected fields and clear CTAs (AUTH-01)
-- Session persistence across refresh works reliably (AUTH-05)
-- Sign-out clears session and redirects to `/login` (AUTH-06 core action)
-- `/join?ref=CODE` redirect preserves referral param to `/signup?ref=CODE` (AUTH-08)
-- `/auth/error` page provides two clear recovery links that both work (AUTH-10)
-- `/auth/callback` never dead-ends — missing params redirect to login, invalid params redirect to error page (AUTH-11)
-- Admin route `/admin/settings` shows proper "Access Denied" message with clear copy — gold standard for role gating (AUTH-07)
-- Mobile hamburger menu works correctly, sidebar collapses as expected (AUTH-12)
-- Touch targets on mobile are adequate for thumb tapping (AUTH-12)
-- Signup form has good inline validation hints for password and username upfront (AUTH-02)
-- "New to Organic? Create an account" link on login is present and functional (AUTH-01)
-- Empty-state copy on profile is helpful: "No bio yet. Click Edit Profile to add one!" (AUTH-05)
-
-**What does not work:**
-- Protected route `/profile` shows blank page after sign-out instead of redirecting to `/login` or showing a message (AUTH-06, AUTH-07) — **priority fix**
-- Inconsistent auth boundary: `/profile` silently fails, `/tasks` and `/proposals` are fully public with no action gating, `/admin/settings` properly denies — no unified protection model (AUTH-07) — **priority fix**
-- Error message "Invalid login credentials" appears in DOM but lacks visual prominence — easy to miss (AUTH-03)
-- Post-login redirect goes to `/profile` instead of Home dashboard (AUTH-04)
-- Onboarding modal blocks Sign Out — overlay intercepts pointer events, trapping users who want to sign out (AUTH-06)
-- Onboarding modal reappears on every page load even after clicking "Skip for now" — skip state not persisted (AUTH-06)
-- Onboarding step 1 tells user to "Use the wallet button in the top bar" but the modal blocks access to that button (AUTH-04)
-- Page title shows "Next.js" instead of proper page name on authenticated pages (AUTH-04, AUTH-05)
-- No visible referral context on signup page when arriving via `/signup?ref=CODE` (AUTH-02, AUTH-08)
-- No referral code validation — invalid codes are silently accepted (AUTH-08)
-- `/auth/callback` with no params briefly flashes `/profile` before redirecting to `/login` — intermediate redirect flicker (AUTH-11)
-- Error param from OAuth provider (`?error=access_denied`) is ignored — same generic message shown (AUTH-11)
-- Scroll is trapped in nested container on mobile — `window.scrollBy()` does nothing, only `main` element scrolls (AUTH-12)
-- Hero image takes ~50% of mobile viewport, pushing form below fold (AUTH-12)
-- Signup "Create account" button requires significant scrolling on mobile (AUTH-12)
-- 78 console errors on home page — **separate investigation task needed** (AUTH-10)
-- 10-25 console errors on most pages including protected routes and callback flows (AUTH-05, AUTH-06, AUTH-11)
-
-**UI improvements requested:**
-- **Login/signup background:** Replace static dark background with interactive blockchain-themed layer — chain links with lighting that follows cursor movement. Premium protocol feel, not animated cartoon. (AUTH-01, AUTH-02)
-- **Split layout for auth pages:** Illustration/branding on left, form on right — form always fully visible without scrolling on desktop. (AUTH-02)
-- **"Already have an account?" link on signup:** Must be visible near form header, not buried below the fold. (AUTH-02)
-- **Live password validation checklist:** Replace static hint text with a dynamic checklist that ticks off requirements as user types (length, number, lowercase). (AUTH-02)
-- **Username validation as bullet list:** Break dense hint sentence into short, scannable bullet points or show inline validation as user types. (AUTH-02)
-- **Referral landing experience:** `/join` should be a dedicated referral landing page with inviter profile/avatar, pitch about Organic, and "Join Now" CTA. Show "Invited by @username" or "Referral code applied" banner on signup form. (AUTH-08)
-- **Error message prominence:** Invalid credentials error should be an inline banner (red/orange, icon) directly above/below form fields, not a fleeting toast. Include recovery path: "The email or password you entered is incorrect. Please try again or [reset your password]." (AUTH-03)
-- **Field state change on error:** Add red border or subtle shake animation on email/password fields after failed login. (AUTH-03)
-- **Show/hide password toggle:** Let users verify what they typed before retrying. (AUTH-03)
-- **Rate-limiting feedback:** After repeated failures, show "Too many attempts. Please wait X seconds or reset your password." (AUTH-03)
-- **Post-login redirect to Home:** Land authenticated users on `/` (Home dashboard) not `/profile`. Let onboarding wizard overlay there. (AUTH-04)
-- **Onboarding wallet connect inside the step:** Put the wallet connect action inside the onboarding modal step, not as a reference to the top bar button. (AUTH-04)
-- **Sidebar grouping:** 17 nav items for admin is dense. Group into sections (e.g., "Admin" section for Submissions/Manage Rewards/Settings) or use collapsible sections. (AUTH-04)
-- **Sign-out confirmation:** Show a brief "You've been signed out successfully" message on the login page after sign-out. (AUTH-06)
-- **Session expiry handling:** Implement session-expiry interceptor that redirects to `/login` with message "Your session has expired. Please sign in again." (AUTH-06)
-- **Protected route redirect with returnTo:** When guest is bounced from protected route, capture destination (e.g., `/login?returnTo=/profile`) so user lands where they wanted after signing in. (AUTH-06, AUTH-07)
-- **Guest action gating on public pages:** Tasks and proposals are intentionally public (FOMO/transparency for the coin), but hide action buttons (claim, submit, create proposal) for guests. Show "Sign in to participate" prompts instead. (AUTH-07)
-- **Proposals page premium revamp:** Better flow, remove duplicate filters (Public/Qualified/Discussion appear twice), better box highlights, professional look matching organic-ux design system. Tier-one project UX/UI. (AUTH-07)
-- **3 parallel design alternatives:** Use frontend-design skill to generate three independent UI designs for key public pages (login, signup, proposals, tasks, home). Pick the best. (AUTH-07)
-- **Auth error page warmth:** Add icon/illustration, warmer copy, contextual help ("Common reasons: expired link, cookies blocked"). Parse and display specific error codes from OAuth providers. (AUTH-10, AUTH-11)
-- **Callback loading spinner:** Show "Completing sign-in..." with spinner during callback processing instead of page flashes. (AUTH-11)
-- **Mobile: hide or shrink hero image:** On mobile viewports, either hide the hero image entirely or cap it at ~120px height so the form is front and center. (AUTH-12)
-- **Mobile: consider two-step signup:** Email + Password on step 1, Username on step 2, to reduce scroll length. (AUTH-12)
-- **Mobile: auth error excessive white space:** Center error card near top, remove large empty areas above/below. (AUTH-12)
-- **Mobile: fix scroll trap:** Ensure page-level scroll works naturally on mobile, not just on a nested overflow element. (AUTH-12)
-- **Overall premium look:** Match all auth pages to organic-ux design system colors. Create a style that is more professional, tier-one project quality. Every page that isn't perfect gets revamped. (ALL)
-- **Locale prefix in shared URLs:** For referral links shared externally (Twitter, Discord), consider auto-detect locale or cleaner URLs without `/en/` prefix. (AUTH-08)
-
-**Standalone tasks identified:**
-- **TASK: Investigate 78 console errors on home page** — Critical performance/stability finding. Likely broken API calls, missing data for unauthenticated users, or hydration issues. Directly impacts the public-facing FOMO experience since guests hit this page first. (AUTH-10)
-- **TASK: Console error audit across all pages** — 10-25 errors per page on most routes. Audit, categorize, and fix critical ones before release. (AUTH-05, AUTH-06, AUTH-11)
-
-**Top 3 highest-impact changes:**
-1. **Fix protected route blank page + implement unified auth boundary** — `/profile` blank page and inconsistent protection model across routes is the single biggest auth UX issue. Implement proper redirect-to-login with `returnTo` param, and unify which routes are public vs. authenticated vs. role-gated. (AUTH-06, AUTH-07, S1)
-2. **Premium auth page revamp with blockchain-themed background** — Login, signup, and error pages need a complete visual uplift: interactive blockchain background, split layout, improved form UX (live validation, error prominence, show/hide password), and organic-ux color system. Generate 3 parallel design alternatives to pick from. (AUTH-01, AUTH-02, AUTH-03, AUTH-12)
-3. **Fix onboarding modal blocking + persistence** — Modal traps users, doesn't persist skip state, and references UI it blocks access to. Redesign so sidebar is always accessible, skip state persists across session, and wallet connect action is embedded in the step. (AUTH-04, AUTH-06)
-
-**Section severity:** S1 (due to AUTH-06 and AUTH-07 priority fixes)
-**Confidence score:** 4/5 (thorough test of all 12 cases except AUTH-09 which was skipped)
+<!-- Full feedback archived in git history + plan file. Summary below. -->
+**Tested:** 2026-03-07 | **Cases:** 11/12 (AUTH-09 skipped) | **Severity:** S1
+**Priority fixes:** Protected route blank page (AUTH-06/07), onboarding modal blocking (AUTH-04/06)
+**Top revamp:** Premium auth pages with blockchain theme, split layout, live validation
+**Plan:** pending — write during Phase B
 
 ## 4.2 Global Navigation, Layout, and i18n
+<!-- qa-status: TESTED | severity: S2 | plan: none -->
 Routes: global shell across all authenticated pages.
 
 Use cases:
@@ -174,51 +107,14 @@ Use cases:
 - [x] `NAV-08` Role-restricted pages are not discoverable through unauthorized nav paths. **PASS, S3**
 
 ### Feedback
-
-**What works well:**
-- Active route state is clear and accurate — orange highlight on current page in sidebar (NAV-03)
-- Locale switcher works flawlessly: dropdown with flag icons, all content/sidebar/modals translate correctly, URL updates to correct locale prefix (NAV-04)
-- Top bar has all essential actions discoverable: hamburger toggle, ID badge with role label, Connect Wallet, notifications bell, search icon, locale switcher (NAV-06)
-- No overlap or collision in nav at 375px mobile or 768px tablet viewports (NAV-07)
-- Admin pages properly blocked for member role with clear "Access Denied" message (NAV-08)
-- Admin nav items (Submissions, Manage Rewards, Settings) correctly hidden from member sidebar (NAV-08)
-- Mobile sidebar opens via hamburger, shows all main nav items with icons (NAV-02)
-- `/profile/progression?from=tasks` preserves query param in URL correctly (NAV-05)
-
-**What does not work:**
-- Onboarding modal reappears on every page navigation and after locale switch — skip state not persisted across pages or locale changes (NAV-02, NAV-04) — **priority fix (cross-cutting, also flagged in 4.1)**
-- Admin section (Submissions, Manage Rewards, Settings) visible to both admin AND council roles — Settings should likely be admin-only (NAV-01)
-- 17 sidebar items for admin role is very dense — no grouping, no collapsible sections, all items have equal visual weight (NAV-01)
-- Council sees Templates nav item but regular member does not — role boundary is correct but undocumented (NAV-01)
-- Progression page (`/profile/progression?from=tasks`) shows only skeleton placeholders with no actual content — may be stuck loading or data-empty with no fallback message (NAV-05)
-- Page title shows "Next.js" on progression page instead of proper page name (NAV-05)
-- Mobile sidebar requires scrolling past Notifications to reach admin section items — admin items are below the fold (NAV-02)
-- At 768px tablet, sidebar stays expanded and onboarding modal overlaps partially behind it (NAV-07, minor)
-- 72-132 console errors across all 3 role sessions on home page (NAV-01)
-
-**UI improvements requested:**
-- **Collapsible sidebar sections:** Group 17 admin items into collapsible sections (e.g., "Main" for Home/Analytics/Treasury/Members, "Work" for Tasks/Templates/Sprints, "Governance" for Proposals/Ideas/Disputes, "You" for Rewards/Quests/Leaderboard/Notifications, "Admin" for Submissions/Manage Rewards/Settings). Consider making the admin section collapsible by default. (NAV-01)
-- **Settings route restricted to admin only:** Move Settings out of the council-visible section. Council should see Submissions and Manage Rewards but not Settings. (NAV-01)
-- **Onboarding modal skip persistence:** When user clicks "Skip for now", persist skip state in localStorage or cookie so the modal doesn't reappear on every navigation or locale switch. (NAV-02, NAV-04)
-- **Progression page empty state:** When no progression data exists, show a helpful message instead of perpetual skeleton loading (e.g., "Complete tasks and proposals to see your progression here"). (NAV-05)
-- **Page titles:** All pages should have proper titles instead of "Next.js". Use the page heading or route name. (NAV-05)
-- **Mobile admin nav visibility:** On mobile, consider moving admin items into a collapsible "Admin" section that starts collapsed, so members see Profile + Sign Out without scrolling past admin items. (NAV-02)
-
-**Standalone tasks identified:**
-- **TASK: Persist onboarding modal skip state** — Cross-cutting issue affecting every authenticated page. Skip state must survive page navigation, locale switches, and session refreshes. Flagged in both 4.1 and 4.2. (NAV-02, NAV-04)
-- **TASK: Console error audit** — 72-132 errors per role on home page alone. Overlaps with 4.1 standalone task. (NAV-01)
-
-**Top 3 highest-impact changes:**
-1. **Persist onboarding modal skip state** — Modal blocking every page navigation is the single most disruptive nav issue. Affects all roles, all viewports, all locale switches. Fix: persist skip in localStorage, check before showing. (NAV-02, NAV-04, S2)
-2. **Collapsible sidebar sections** — 17 flat items is overwhelming for admin. Group into logical sections with collapse/expand. Reduces cognitive load and scroll distance, especially on mobile. (NAV-01, S2)
-3. **Settings restricted to admin only + progression empty state** — Tighten role boundary for Settings. Fix progression page to show content or a helpful empty state instead of permanent skeleton. (NAV-01, NAV-05, S3)
-
-**Section severity:** S2 (onboarding modal persistence is the worst issue, no S0/S1 blockers)
-**Confidence score:** 5/5 (all 8 cases tested across 3 roles)
-
-**Execution status:** _not started_
+<!-- Full feedback archived in git history + plan file. Summary below. -->
+**Tested:** 2026-03-07 | **Cases:** 8/8 | **Severity:** S2
+**Priority fixes:** Onboarding modal skip not persisted (NAV-02/04), progression page blank (NAV-05)
+**Top revamp:** Collapsible sidebar sections, settings restricted to admin only
+**Plan:** pending — write during Phase B
 
 ## 4.3 Home, Analytics, Leaderboard, and Treasury Readability
+<!-- qa-status: TESTED | severity: S1 | plan: none -->
 Routes: `/`, `/analytics`, `/leaderboard`, `/treasury`.
 
 Use cases:
@@ -232,55 +128,14 @@ Use cases:
 - [x] `INSIGHT-08` User can identify a clear “what to do next” action. **PARTIAL, S3**
 
 ### Feedback
-
-**What works well:**
-- Leaderboard ranking table is clear and scannable with trophy icon, alternating rows, role badges, and comma-formatted XP values (INSIGHT-03)
-- “How Ranking Works” transparency section explains tiebreaker logic clearly (INSIGHT-03)
-- Treasury dark gradient hero with trust badges (Secure Custody, Community Governed, Fully Transparent) is visually distinctive and creates a trust/seriousness tone (INSIGHT-04)
-- Treasury wallet address with copy button and Solscan link works well (INSIGHT-04)
-- Analytics page loads charts progressively without blocking UI (INSIGHT-02)
-- Home hero banner is personalized per user with Organic ID and clear CTAs (INSIGHT-01)
-- 30-day Trust Signals on analytics show useful governance data (INSIGHT-02)
-- Units and labels are well-formatted across all routes — comma formatting, currency symbols, abbreviations (INSIGHT-06)
-
-**What does not work:**
-- Activity feed on home shows raw i18n key `dashboard.activity.dispute_escalated` as literal text — missing translation key (INSIGHT-01) -- **priority fix**
-- “Open audit trail” link on treasury goes to `/admin/settings` which is now admin-only — non-admin users get Access Denied (INSIGHT-04) -- **priority fix**
-- Analytics “Updated Not available” timestamp is confusing — should say “Last updated: —“ or “Not yet refreshed” (INSIGHT-02)
-- $ORG Price and Market Cap show “—“ with no explanation on analytics (INSIGHT-02)
-- Treasury Emission Policy all “—“ values and “Latest Settlement: Unknown” with no context (INSIGHT-04)
-- Sprint countdown “0h” on home with no differentiation between no sprint and 0 hours remaining (INSIGHT-01)
-- Home mobile: below the hero is blank — trust pulse, action cards, activity feed, member status sections not visible (INSIGHT-07)
-- Analytics mobile: key metric cards show as skeleton placeholders — data may not load at mobile viewport (INSIGHT-07)
-- Leaderboard mobile: shows “Loading leaderboard...” indefinitely — table may not render on narrow viewport (INSIGHT-07)
-- 48 console errors on home (Sentry CSP + missing i18n keys), 12 on analytics, 8 on leaderboard, 17 on treasury (INSIGHT-01, cross-cutting)
-
-**UI improvements requested:**
-- **Floating info (“i”) button on every page (except home):** A persistent, semi-transparent floating icon that opens a detailed popup/sheet explaining the current section — what it does, how it works, step-by-step workflows. User can swipe/drag sideways to see more detail (e.g., for Tasks: “Create a task” → “Submit” → “Comment” → etc.). Replaces verbose on-page explanations, especially important for mobile. (INSIGHT-02, INSIGHT-03, INSIGHT-04, INSIGHT-05)
-- **Consistent page structure:** Every page should follow the same structural template — dark hero section (like treasury), consistent card shadows (floating cards from auth revamp), consistent spacing and typography per organic-ux. (All INSIGHT cases)
-- **Home dashboard as FOMO-creating landing page:** Horizontal card carousel with dot indicators and swipe-on-mobile for feature cards (Proposals, Governance, Analytics, Tasks, Sprints). Each card is large, floating with shadow, explains the feature. “Organic” word animates like a tree growing with roots. Key sections get glowing flare border animation. Dashboard should create urgency and showcase what the DAO is doing. (INSIGHT-01, INSIGHT-08)
-- **Treasury reveal animations:** Lock icon hiding wallet → click to unlock and reveal treasury address. Similar interactive reveal animations for other key data. (INSIGHT-04)
-- **Dark hero sections replicated:** Treasury's dark gradient hero should be the pattern for other page headers (analytics, leaderboard, etc.). Creates visual consistency and premium feel. (INSIGHT-02, INSIGHT-03, INSIGHT-04)
-- **Professional custom icons:** Plan specific icons for each feature card — more distinctive than generic Lucide icons. Agent to recommend what icons to create and how. (INSIGHT-01, INSIGHT-08)
-- **Leaderboard avatars:** Add profile images/avatars to leaderboard table rows for scannability. Highlight top 3 with podium treatment. (INSIGHT-03)
-
-**Standalone tasks identified:**
-- **TASK: Fix missing i18n key `dashboard.activity.dispute_escalated`** — Raw translation key showing in activity feed on home dashboard. Quick fix in message files. (INSIGHT-01)
-- **TASK: Fix treasury “Open audit trail” link** — Links to `/admin/settings` which is admin-only after the QA 4.2 fix. Change to a public-facing audit page or conditionally show based on role. (INSIGHT-04)
-- **TASK: Console error audit (CSP + Sentry)** — 48-132 errors across pages, mostly Sentry CSP violations. Need to update Content Security Policy to allow `ingest.de.sentry.io`. Cross-cutting with 4.1 and 4.2. (All cases)
-- **TASK: Design floating info button component** — New cross-cutting component for all pages. Needs design spec, mobile gesture support (swipe/drag), content model for step-by-step workflows. (INSIGHT-02-08)
-
-**Top 3 highest-impact changes:**
-1. **Home dashboard full revamp** — FOMO-creating landing page with floating card carousel, “Organic” tree animation, glowing card borders, professional icons, horizontal swipe. Fix broken i18n feed. This is the front door of the app. (INSIGHT-01, INSIGHT-08, S1)
-2. **Consistent page structure with dark hero + floating info** — Every page gets treasury-style dark hero header, consistent card shadows, and the floating “i” button for contextual help. Eliminates verbose on-page text, especially on mobile. (INSIGHT-02, INSIGHT-03, INSIGHT-04, INSIGHT-05, S2)
-3. **Mobile rendering fixes** — Home blank below fold, analytics skeleton cards, leaderboard table not loading. These are usability blockers on mobile. (INSIGHT-07, S2)
-
-**Section severity:** S1 (broken i18n key on home is visible to all users, mobile rendering issues)
-**Confidence score:** 5/5 (all 8 cases tested across 3 roles + mobile viewport)
-
-**Execution status:** _not started_
+<!-- Full feedback archived in git history + plan file. Summary below. -->
+**Tested:** 2026-03-07 | **Cases:** 8/8 | **Severity:** S1
+**Priority fixes:** Missing i18n key on home feed (INSIGHT-01), treasury audit link admin-only (INSIGHT-04)
+**Top revamp:** Home FOMO carousel, floating info buttons, dark hero sections, mobile rendering fixes
+**Plan:** pending — write during Phase B
 
 ## 4.4 Members Directory and Member Profile Privacy
+<!-- qa-status: PENDING -->
 Routes: `/members`, `/members/[id]`.
 
 Use cases:
@@ -302,6 +157,7 @@ Feedback:
 - Confidence score (`1-5`):
 
 ## 4.5 My Profile, Privacy Toggle, and Progression Hub
+<!-- qa-status: PENDING -->
 Routes: `/profile`, `/profile/progression`.
 
 Use cases:
@@ -325,6 +181,7 @@ Feedback:
 - Confidence score (`1-5`):
 
 ## 4.6 Quests, Referrals, and Gamification Controls
+<!-- qa-status: PENDING -->
 Routes: `/quests`, `/join?ref=CODE`, `/signup?ref=CODE`, `/admin/settings` (Gamification tab), `/profile/progression`.
 
 Pre-flight:
@@ -354,6 +211,7 @@ Feedback:
 - Confidence score (`1-5`):
 
 ## 4.7 Tasks End-to-End Workflow (Creation -> Claim -> Submit -> Review)
+<!-- qa-status: PLANNED | severity: S1 | plan: docs/plans/2026-03-08-tasks-qa-revamp.md -->
 Routes: `/tasks`, `/tasks/[id]`, `/tasks/templates`, `/admin/submissions`.
 
 Use cases:
@@ -375,62 +233,15 @@ Use cases:
 - [ ] `TASK-16` Twitter/X task creation enforces target URL + engagement config requirements.
 - [ ] `TASK-17` Twitter/X task submission requires linked account and validates engagement context messaging.
 
-Feedback:
-- What works well:
-  - `TASK-02` Search, filter, sort all function correctly on the list page. Tab bar (All/Active Sprint/Completed) shows live counts. Sort options (newest, oldest, due soonest, highest points, most liked) all work. "More filters" reveals category, contributor, sprint, and date-range filters.
-  - `TASK-04` Task detail page shows status, priority, points, assignee, due date, sprint context, description, and acceptance criteria. InfoButton popup now renders 3 rich sections with bold formatting.
-  - `TASK-10` Dependency picker renders with search, shows up to 20 matching tasks, and supports add/remove. Blocked badge displays with blocker count.
-  - `TASK-11` Subtask list renders with progress bar and individual subtask links. Subtask creation form is functional.
-  - `TASK-12` Template manager loads with create/edit/delete functionality. Templates have recurrence badge support.
-  - Execution cockpit hero section shows 4 key metrics: open execution, pending review, needs assignee, community queue.
-  - Sprint context banner shows active sprint name and status, or helpful fallback text.
-  - InfoButton (floating info) works correctly with 3 scrollable sections, dot navigation, and bold text rendering via `**markers**`.
-  - Task list rows display: title, priority badge, status, due date, points, and activity counts (likes, comments, submissions, contributors).
-  - Pagination works (Page 1 of 2 with 14 tasks, 12 per page).
-
-- What does not work:
-  - **S0 — Silent error handling on task detail**: Task fetch, comment fetch, and dependency fetch all use empty `catch {}` blocks. If Supabase returns an error (RLS, network, etc.), user sees "Not found" with no way to distinguish from a genuinely missing task. (TASK-04)
-  - **S0 — Hardcoded locale in date formatting**: `formatDate()` in task detail uses `'en-US'` locale instead of the current app locale. PT-PT and ZH-CN users see English date formats. (TASK-04)
-  - **S1 — No confirmation dialog for leaving task**: Claim button's "Leave Task" action has no confirmation. User can accidentally abandon a claimed task. (TASK-03)
-  - **S1 — Emoji icons in board view**: Task board uses 💬📤👥 emojis for activity counts instead of Lucide icons. Violates design system (no emojis in UI surfaces). (TASK-02, TASK-15)
-  - **S1 — Native `confirm()` dialog in template manager**: Delete confirmation uses browser-native dialog, which isn't i18n-aware. Shows in browser language, not app language. (TASK-12)
-  - **S1 — Missing loading states for submissions section**: No skeleton/spinner while submissions load. Appears empty during network delay. (TASK-05, TASK-06)
-  - **S1 — Empty state for submissions is generic**: "No submissions yet" with no context about what submissions are or CTA to guide the user. (TASK-05)
-  - **S2 — Dependency picker silently caps at 20 items**: Shows `.slice(0, 20)` results with no "showing 20 of N" indicator. User may miss tasks. (TASK-10)
-  - **S2 — No date range validation in filters**: User can set dateTo < dateFrom with no error feedback, producing zero results silently. (TASK-02)
-  - **S2 — Task list column headers are `<p>` tags**: Should be semantic table headers (`<th>`) for accessibility. Screen readers don't announce them as column headers. (TASK-15)
-  - **S2 — Overdue indicator is color-only**: Uses `text-destructive` with no icon or non-color cue. Fails WCAG for color-blind users. (TASK-15)
-  - **S2 — Comments section has no pagination or max height**: Unlimited comments loaded at once, can create very long pages. (TASK-04)
-  - **S2 — Like button has no debounce/loading state**: Users can spam-click; potential race condition for duplicate likes. (TASK-04)
-  - **S2 — Content submission form doesn't enforce required fields**: Shows "Content link or text required" warning but doesn't disable submit. (TASK-05)
-  - **S3 — Task board grid doesn't handle tablet landscape well**: Only `md:grid-cols-2`, cramped for 5 status lanes. (TASK-15)
-  - **S3 — "+X more" blockers text is hardcoded English**: Not i18n-aware. (TASK-10)
-  - **S3 — Mobile column labels missing**: List headers are `hidden md:grid`, no mobile fallback labels. (TASK-15)
-
-- UI improvements requested:
-  - Replace emoji activity icons (💬📤👥) with Lucide icons throughout board view
-  - Add proper error states to task detail page (retry button, error message) instead of silent catch
-  - Add confirmation dialog (shadcn AlertDialog) for leave-task and delete-template actions
-  - Add loading skeletons for submissions section, comments section, and dependency data
-  - Improve empty states: add icons, context text, and CTA ("Be the first to submit work")
-  - Use current locale for date formatting instead of hardcoded 'en-US'
-  - Add semantic table markup (`<table>`, `<th>`) for task list, or at least `role="columnheader"`
-  - Add debounce to like button to prevent race conditions
-  - Add max-height + scroll to comments section
-  - Mobile: show inline labels on task cards since column headers are hidden
-  - Filter UX: validate date range, show "20 of N" in dependency picker
-  - Replace native `confirm()` with shadcn AlertDialog throughout
-  - Board view: add sm: breakpoint for better tablet layout
-
-- Top 3 highest-impact changes:
-  1. **Fix error handling in task detail** — Silent catch blocks hide real errors from users. Add error state UI with retry, distinguishable from "not found". Affects TASK-03/04/05/06/07/08.
-  2. **Replace emoji icons with Lucide + fix board accessibility** — Emoji in board view breaks design system consistency and accessibility. Using proper icons with aria-labels fixes both. Affects TASK-02/15.
-  3. **Add loading/empty states across submission and comment sections** — Missing loading skeletons make the app feel broken on slow connections. Generic empty states don't guide users. Affects TASK-04/05/06.
-
-- Section severity (`S0/S1/S2/S3`): **S1** (multiple high-priority UX issues; no data loss bugs, but significant usability gaps)
-- Confidence score (`1-5`): **4** (thorough code analysis + live browser QA of list page; task detail could not be loaded live due to WSL2 memory constraints, but code review covers all paths)
+### Feedback
+<!-- Full feedback archived in git history + plan file. Summary below. -->
+**Tested:** 2026-03-08 | **Cases:** 17/17 (code review + partial live) | **Severity:** S1
+**Priority fixes:** Silent error handling S0 (TASK-04), hardcoded locale S0 (TASK-04), emoji icons S1 (TASK-02)
+**Top revamp:** Error states, loading skeletons, semantic table markup, confirmation dialogs
+**Plan:** `docs/plans/2026-03-08-tasks-qa-revamp.md`
 
 ## 4.8 Sprints End-to-End Workflow (Planning -> Completed)
+<!-- qa-status: PENDING -->
 Routes: `/sprints`, `/sprints/[id]`, `/sprints/past`.
 
 Use cases:
@@ -455,6 +266,7 @@ Feedback:
 - Confidence score (`1-5`):
 
 ## 4.9 Proposals and Governance Workflow
+<!-- qa-status: DONE | plan: docs/plans/2026-03-10-proposals-qa-revamp.md | pr: #20,#21 -->
 Routes: `/proposals`, `/proposals/new`, `/proposals/[id]`.
 
 Use cases:
@@ -494,39 +306,38 @@ Use cases:
 - Finalized proposals show Quorum "Not Met" (red) or "Passed" result with full breakdown (PROP-09)
 
 **What does not work (remaining issues):**
-- **Live Vote Banner contradiction**: Shows "LIVE VOTING" and "Voting closed" simultaneously on the same banner — confusing messaging (PROP-02, PROP-08)
+- ~~**Live Vote Banner contradiction**: Shows "LIVE VOTING" and "Voting closed" simultaneously on the same banner~~ — **FIXED** (commits 14204a1..ea21cbb): muted slate gradient, "Awaiting finalization" header, "View results" CTA
 - **Garbage test data in proposals**: Multiple proposals with `http://localhost:3003/pt-PT` titles/content from worktree prototype QA sessions — need data cleanup (PROP-02)
-- **"Canceled" pill text truncated** on desktop at narrower viewports (PROP-02)
-- **Category text truncation**: "Community / Partnership" and "Governance / Po..." cut off in filter pills on both desktop and mobile (PROP-02)
-- **No empty state illustration**: When 0 proposals visible (unauth view), just shows "0 proposals visible" text with no illustration or CTA to create (PROP-02)
-- **Stage stepper truncation on mobile**: Only Draft/Public/Discussion visible initially; Voting/Finalized need horizontal scroll (PROP-13)
-- **Confirmation dialog for finalize still missing**: Clicking "Finalize Voting" has a warning but no confirmation step (PROP-09)
+- ~~**"Canceled" pill text truncated** on desktop at narrower viewports~~ — **FIXED** (commit 5d4501a): `whitespace-nowrap` + `flex-shrink-0` on pills + scroll fade affordance
+- ~~**Category text truncation**: "Community / Partnership" and "Governance / Po..." cut off~~ — **FIXED**: `overflow-x-auto` + `scrollbar-hide` + right-edge fade gradient on mobile
+- ~~**No empty state illustration**: When 0 proposals visible~~ — **FIXED**: empty state has icon, i18n heading/description, and "Create First Proposal" CTA
+- ~~**Stage stepper truncation on mobile**~~ — **FIXED**: `scrollbar-hide` + right-edge fade gradient on small screens
+- ~~**Confirmation dialog for finalize still missing**~~ — **Already existed**: `admin-voting-controls.tsx` has confirmation modal (lines 168-196)
 - **Console error**: "Invalid or unexpected token" on page load (minor, likely unrelated)
 
 **UI improvements still needed:**
-- **Fix Live Vote Banner logic**: Don't show "LIVE VOTING" + "Cast your vote" when voting is closed — should show "Voting closed — awaiting finalization" instead (PROP-02, PROP-08)
-- **Add empty state**: Illustration + "Create your first proposal" CTA when no proposals match filters (PROP-02)
-- **Responsive filter pills**: Truncate or wrap category/status filter text gracefully on narrow viewports (PROP-02, PROP-13)
-- **Confirmation dialog for finalize**: Add a modal confirming expected outcome before governance actions (PROP-09)
+- ~~**Fix Live Vote Banner logic**~~ — **DONE**
+- ~~**Add empty state**~~ — **DONE** (with i18n)
+- ~~**Responsive filter pills**~~ — **DONE** (scroll fade affordance)
+- ~~**Confirmation dialog for finalize**~~ — **Already existed**
 - **Clean up test data**: Remove `localhost:3003` garbage proposals from the database (data hygiene)
 
-**Standalone tasks identified:**
-- **TASK: Fix Live Vote Banner — voting closed contradiction** (PROP-02, PROP-08)
-- **TASK: Add empty state for proposals list** (PROP-02)
+**Standalone tasks remaining:**
 - **TASK: Clean up QA test data from prototype sessions** (data hygiene)
-- **TASK: Add finalize confirmation dialog** (PROP-09)
 
-**Top 3 highest-impact changes:**
-1. **Fix Live Vote Banner logic** — Currently shows contradictory "LIVE VOTING" + "Voting closed" + "Cast your vote" on expired proposals. Misleading for all users. (PROP-02, PROP-08, S2)
-2. **Add empty state for proposals list** — Unauth view shows "0 proposals visible" with loading skeletons but no illustration or CTA. Missed onboarding opportunity. (PROP-02, S2)
-3. **Responsive filter pills and category truncation** — "Canceled" and "Community / Partnership" truncate on desktop and mobile. (PROP-02, PROP-13, S3)
+**All i18n hardcoded strings fixed (fix/4.9-proposals-polish):**
+- Sort options ("New", "Hot", "Most Discussed", "Most Voted") → `t('sortNew')` etc.
+- Sidebar headings ("Governance Pulse", "Browse by stage", "Hot Topics") → `t('sidebarGovernancePulse')` etc.
+- Empty state headings and search description → `t('emptySearchTitle')`, `t('emptyTitle')`, `t('emptySearchDescription')`
+- 11 new i18n keys added per locale (en, pt-PT, zh-CN)
 
-**Section severity:** S2 (functional — all core flows work; cosmetic/messaging issues remain)
-**Confidence score:** 4.5/5 (PROP-01 through PROP-11 tested live; PROP-12 skipped; PROP-16 partial)
+**Section severity:** S3 (polish — only garbage test data cleanup and minor console error remain)
+**Confidence score:** 4.8/5 (PROP-01 through PROP-11 tested live; PROP-12 skipped; PROP-16 partial)
 
-**Execution status:** _post-revamp re-test complete (2026-03-14) — 3 rounds of UI revamp merged (PRs #20, #21); remaining issues documented above_
+**Execution status:** _polish pass complete (2026-03-14) — i18n gaps, scroll affordances, and empty state fixed in fix/4.9-proposals-polish branch_
 
 ## 4.10 Disputes Workflow (File -> Evidence -> Resolve/Appeal)
+<!-- qa-status: PENDING -->
 Routes: `/disputes`, `/disputes/[id]`.
 
 Use cases:
@@ -553,6 +364,7 @@ Feedback:
 - Confidence score (`1-5`):
 
 ## 4.11 Rewards and Claim Workflow
+<!-- qa-status: PENDING -->
 Routes: `/rewards`, `/admin/rewards`.
 
 Use cases:
@@ -575,6 +387,7 @@ Feedback:
 - Confidence score (`1-5`):
 
 ## 4.12 Notifications Workflow
+<!-- qa-status: PENDING -->
 Routes: `/notifications`.
 
 Use cases:
@@ -594,6 +407,7 @@ Feedback:
 - Confidence score (`1-5`):
 
 ## 4.13 Admin Ops Workflow (Settings, Submission Queue, Rewards Ops)
+<!-- qa-status: PENDING -->
 Routes: `/admin/settings`, `/admin/submissions`, `/admin/rewards`.
 
 Use cases:
@@ -615,6 +429,7 @@ Feedback:
 - Confidence score (`1-5`):
 
 ## 4.14 Error Resilience and Health
+<!-- qa-status: PENDING -->
 Routes: invalid app routes, major API-backed pages, `/api/health`.
 
 Use cases:
@@ -634,6 +449,7 @@ Feedback:
 - Confidence score (`1-5`):
 
 ## 4.15 Locale and Accessibility Pass (Cross-Workflow)
+<!-- qa-status: PENDING -->
 Scope: Run this pass on core routes after completing workflow checks.
 
 Use cases:
@@ -655,6 +471,7 @@ Feedback:
 - Confidence score (`1-5`):
 
 ## 4.16 Operational Controls (Automated Evidence)
+<!-- qa-status: PENDING -->
 
 Goal: verify governance and rewards safety controls with reproducible evidence.
 
@@ -742,6 +559,7 @@ Feedback:
 - Confidence score (`1-5`):
 
 ## 4.17 Onboarding Wizard and Progress APIs
+<!-- qa-status: PENDING -->
 Routes: top-bar onboarding shortcut, onboarding modal, `/api/onboarding/steps`, `/api/onboarding/steps/:step/complete`.
 
 Pre-flight:
@@ -769,6 +587,7 @@ Feedback:
 - Confidence score (`1-5`):
 
 ## 4.18 Twitter/X Linking and Engagement Verification Workflow
+<!-- qa-status: PENDING -->
 Routes: `/profile`, `/tasks/[id]` (Twitter task type), `/api/twitter/link/start`, `/api/twitter/link/callback`, `/api/twitter/account`.
 
 Pre-flight:
@@ -798,6 +617,7 @@ Feedback:
 - Confidence score (`1-5`):
 
 ## 4.19 Ideas Incubator Workflow (Feature-Flagged)
+<!-- qa-status: PENDING -->
 Routes: `/ideas`, `/ideas/[id]`, `/api/ideas`, `/api/ideas/:id`, `/api/ideas/:id/vote`, `/api/ideas/:id/comments`, `/api/ideas/kpis`.
 
 Pre-flight:

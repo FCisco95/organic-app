@@ -30,11 +30,11 @@ const GOVERNANCE_STAGES = [
 
 type SortKey = 'new' | 'hot' | 'most-discussed' | 'most-voted';
 
-const SORT_OPTIONS: { key: SortKey; label: string }[] = [
-  { key: 'new', label: 'New' },
-  { key: 'hot', label: 'Hot' },
-  { key: 'most-discussed', label: 'Most Discussed' },
-  { key: 'most-voted', label: 'Most Voted' },
+const SORT_OPTIONS: { key: SortKey; labelKey: 'sortNew' | 'sortHot' | 'sortMostDiscussed' | 'sortMostVoted' }[] = [
+  { key: 'new', labelKey: 'sortNew' },
+  { key: 'hot', labelKey: 'sortHot' },
+  { key: 'most-discussed', labelKey: 'sortMostDiscussed' },
+  { key: 'most-voted', labelKey: 'sortMostVoted' },
 ];
 
 function sortProposals(proposals: ProposalListItem[], sort: SortKey): ProposalListItem[] {
@@ -175,7 +175,8 @@ export default function ProposalsPage() {
             </div>
 
             {/* Status tabs */}
-            <div data-testid="proposals-stage-chips" className="flex overflow-x-auto gap-1 pb-1">
+            <div className="relative">
+            <div data-testid="proposals-stage-chips" className="flex overflow-x-auto gap-1 pb-1 scrollbar-hide">
               <button
                 type="button"
                 data-testid="proposals-stage-chip-all"
@@ -219,8 +220,12 @@ export default function ProposalsPage() {
               ))}
             </div>
 
+            <div className="pointer-events-none absolute right-0 top-0 bottom-1 w-8 bg-gradient-to-l from-white to-transparent lg:hidden" />
+            </div>
+
             {/* Category pills */}
-            <div data-testid="proposals-category-filters" className="flex gap-1.5 overflow-x-auto pb-1">
+            <div className="relative">
+            <div data-testid="proposals-category-filters" className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
               <button
                 type="button"
                 onClick={() => setCategoryFilter('all')}
@@ -256,6 +261,8 @@ export default function ProposalsPage() {
                 </button>
               ))}
             </div>
+            <div className="pointer-events-none absolute right-0 top-0 bottom-1 w-8 bg-gradient-to-l from-white to-transparent lg:hidden" />
+            </div>
           </div>
 
           {/* Sort + count bar */}
@@ -277,7 +284,7 @@ export default function ProposalsPage() {
                         : 'text-slate-500 hover:bg-slate-100'
                     }`}
                   >
-                    {opt.label}
+                    {t(opt.labelKey)}
                   </button>
                 ))}
               </div>
@@ -336,11 +343,11 @@ export default function ProposalsPage() {
                 </svg>
               </div>
               <h3 className="mb-1 text-base font-semibold text-slate-700">
-                {deferredSearch ? 'No results found' : 'Be the first to start a discussion'}
+                {deferredSearch ? t('emptySearchTitle') : t('emptyTitle')}
               </h3>
               <p className="mb-5 text-sm text-slate-500">
                 {deferredSearch
-                  ? `No proposals match "${deferredSearch}". Try a different search.`
+                  ? t('emptySearchDescription', { search: deferredSearch })
                   : t('emptyState')}
               </p>
               {canCreateProposal && (

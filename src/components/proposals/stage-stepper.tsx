@@ -47,7 +47,8 @@ export function StageStepper({ currentStatus }: StageStepperProps) {
   }
 
   return (
-    <div className="flex items-center gap-1 overflow-x-auto pb-1" role="list">
+    <div className="relative">
+    <div className="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-hide" role="list">
       {LIFECYCLE_STAGES.map((stage, index) => {
         const isPast = index < currentIndex;
         const isCurrent = index === currentIndex;
@@ -76,6 +77,8 @@ export function StageStepper({ currentStatus }: StageStepperProps) {
           </div>
         );
       })}
+    </div>
+    <div className="pointer-events-none absolute right-0 top-0 bottom-1 w-8 bg-gradient-to-l from-white to-transparent sm:hidden" />
     </div>
   );
 }

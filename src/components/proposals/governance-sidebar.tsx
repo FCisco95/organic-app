@@ -69,7 +69,7 @@ export function GovernanceSidebar({
       <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
         <div className="mb-3 flex items-center gap-2">
           <TrendingUp className="h-4 w-4 text-orange-500" />
-          <h2 className="text-sm font-bold text-slate-800">Governance Pulse</h2>
+          <h2 className="text-sm font-bold text-slate-800">{t('sidebarGovernancePulse')}</h2>
         </div>
         <div className="grid grid-cols-2 gap-2">
           <KpiTile value={openCount} label={t('metricOpenLifecycle')} accent="text-slate-900" />
@@ -88,7 +88,7 @@ export function GovernanceSidebar({
       <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
         <div className="mb-3 flex items-center gap-2">
           <Vote className="h-4 w-4 text-slate-500" />
-          <h2 className="text-sm font-bold text-slate-800">Browse by stage</h2>
+          <h2 className="text-sm font-bold text-slate-800">{t('sidebarBrowseByStage')}</h2>
         </div>
         <div className="space-y-1">
           {QUICK_FILTERS.map(({ key, labelKey }) => (
@@ -117,7 +117,7 @@ export function GovernanceSidebar({
         <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="mb-3 flex items-center gap-2">
             <Flame className="h-4 w-4 text-orange-500" />
-            <h2 className="text-sm font-bold text-slate-800">Hot Topics</h2>
+            <h2 className="text-sm font-bold text-slate-800">{t('sidebarHotTopics')}</h2>
           </div>
           <div className="space-y-3">
             {hotTopics.map((proposal) => {

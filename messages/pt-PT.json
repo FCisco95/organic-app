@@ -353,7 +353,17 @@
     "loadMore": "Mostrar mais {remaining} propostas",
     "ctaTitle": "Quer participar?",
     "ctaDescription": "Entre e conecte sua carteira para criar propostas e votar nas decisões.",
-    "signIn": "Entrar"
+    "signIn": "Entrar",
+    "sortNew": "Novos",
+    "sortHot": "Em alta",
+    "sortMostDiscussed": "Mais Discutidos",
+    "sortMostVoted": "Mais Votados",
+    "sidebarGovernancePulse": "Pulso da Governança",
+    "sidebarBrowseByStage": "Explorar por fase",
+    "sidebarHotTopics": "Tópicos em Destaque",
+    "emptySearchTitle": "Nenhum resultado encontrado",
+    "emptySearchDescription": "Nenhuma proposta corresponde a \"{search}\". Tente uma pesquisa diferente.",
+    "emptyTitle": "Seja o primeiro a iniciar uma discussão"
   },
   "ProposalCreate": {
     "toastMustBeMember": "Você precisa ser membro para criar propostas",

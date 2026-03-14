@@ -353,7 +353,17 @@
     "loadMore": "Show {remaining} more proposals",
     "ctaTitle": "Want to participate?",
     "ctaDescription": "Sign in and link your wallet to create proposals and vote on decisions.",
-    "signIn": "Sign In"
+    "signIn": "Sign In",
+    "sortNew": "New",
+    "sortHot": "Hot",
+    "sortMostDiscussed": "Most Discussed",
+    "sortMostVoted": "Most Voted",
+    "sidebarGovernancePulse": "Governance Pulse",
+    "sidebarBrowseByStage": "Browse by stage",
+    "sidebarHotTopics": "Hot Topics",
+    "emptySearchTitle": "No results found",
+    "emptySearchDescription": "No proposals match \"{search}\". Try a different search.",
+    "emptyTitle": "Be the first to start a discussion"
   },
   "ProposalCreate": {
     "toastMustBeMember": "You must be a member to create proposals",
