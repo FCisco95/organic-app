@@ -194,7 +194,7 @@ export default function ProposalsPage() {
                   type="button"
                   data-testid={`proposals-stage-chip-${status}`}
                   onClick={() => setStatusFilter(status)}
-                  className={`flex-shrink-0 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
+                  className={`flex-shrink-0 inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
                     statusFilter === status
                       ? 'bg-slate-900 text-white'
                       : 'bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50'
@@ -261,7 +261,7 @@ export default function ProposalsPage() {
           {/* Sort + count bar */}
           <div className="mb-3 flex items-center justify-between gap-3">
             <p className="text-sm text-slate-500">
-              {t('listSubtitle', { count: proposals?.length ?? 0 })}
+              {isLoading ? '\u00A0' : t('listSubtitle', { count: proposals?.length ?? 0 })}
             </p>
             <div className="flex items-center gap-1">
               <ArrowUpDown className="h-3.5 w-3.5 text-slate-400" />
