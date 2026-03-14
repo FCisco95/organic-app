@@ -494,37 +494,35 @@ Use cases:
 - Finalized proposals show Quorum "Not Met" (red) or "Passed" result with full breakdown (PROP-09)
 
 **What does not work (remaining issues):**
-- **Live Vote Banner contradiction**: Shows "LIVE VOTING" and "Voting closed" simultaneously on the same banner — confusing messaging (PROP-02, PROP-08)
+- ~~**Live Vote Banner contradiction**: Shows "LIVE VOTING" and "Voting closed" simultaneously on the same banner~~ — **FIXED** (commits 14204a1..ea21cbb): muted slate gradient, "Awaiting finalization" header, "View results" CTA
 - **Garbage test data in proposals**: Multiple proposals with `http://localhost:3003/pt-PT` titles/content from worktree prototype QA sessions — need data cleanup (PROP-02)
-- **"Canceled" pill text truncated** on desktop at narrower viewports (PROP-02)
-- **Category text truncation**: "Community / Partnership" and "Governance / Po..." cut off in filter pills on both desktop and mobile (PROP-02)
-- **No empty state illustration**: When 0 proposals visible (unauth view), just shows "0 proposals visible" text with no illustration or CTA to create (PROP-02)
-- **Stage stepper truncation on mobile**: Only Draft/Public/Discussion visible initially; Voting/Finalized need horizontal scroll (PROP-13)
-- **Confirmation dialog for finalize still missing**: Clicking "Finalize Voting" has a warning but no confirmation step (PROP-09)
+- ~~**"Canceled" pill text truncated** on desktop at narrower viewports~~ — **FIXED** (commit 5d4501a): `whitespace-nowrap` + `flex-shrink-0` on pills + scroll fade affordance
+- ~~**Category text truncation**: "Community / Partnership" and "Governance / Po..." cut off~~ — **FIXED**: `overflow-x-auto` + `scrollbar-hide` + right-edge fade gradient on mobile
+- ~~**No empty state illustration**: When 0 proposals visible~~ — **FIXED**: empty state has icon, i18n heading/description, and "Create First Proposal" CTA
+- ~~**Stage stepper truncation on mobile**~~ — **FIXED**: `scrollbar-hide` + right-edge fade gradient on small screens
+- ~~**Confirmation dialog for finalize still missing**~~ — **Already existed**: `admin-voting-controls.tsx` has confirmation modal (lines 168-196)
 - **Console error**: "Invalid or unexpected token" on page load (minor, likely unrelated)
 
 **UI improvements still needed:**
-- **Fix Live Vote Banner logic**: Don't show "LIVE VOTING" + "Cast your vote" when voting is closed — should show "Voting closed — awaiting finalization" instead (PROP-02, PROP-08)
-- **Add empty state**: Illustration + "Create your first proposal" CTA when no proposals match filters (PROP-02)
-- **Responsive filter pills**: Truncate or wrap category/status filter text gracefully on narrow viewports (PROP-02, PROP-13)
-- **Confirmation dialog for finalize**: Add a modal confirming expected outcome before governance actions (PROP-09)
+- ~~**Fix Live Vote Banner logic**~~ — **DONE**
+- ~~**Add empty state**~~ — **DONE** (with i18n)
+- ~~**Responsive filter pills**~~ — **DONE** (scroll fade affordance)
+- ~~**Confirmation dialog for finalize**~~ — **Already existed**
 - **Clean up test data**: Remove `localhost:3003` garbage proposals from the database (data hygiene)
 
-**Standalone tasks identified:**
-- **TASK: Fix Live Vote Banner — voting closed contradiction** (PROP-02, PROP-08)
-- **TASK: Add empty state for proposals list** (PROP-02)
+**Standalone tasks remaining:**
 - **TASK: Clean up QA test data from prototype sessions** (data hygiene)
-- **TASK: Add finalize confirmation dialog** (PROP-09)
 
-**Top 3 highest-impact changes:**
-1. **Fix Live Vote Banner logic** — Currently shows contradictory "LIVE VOTING" + "Voting closed" + "Cast your vote" on expired proposals. Misleading for all users. (PROP-02, PROP-08, S2)
-2. **Add empty state for proposals list** — Unauth view shows "0 proposals visible" with loading skeletons but no illustration or CTA. Missed onboarding opportunity. (PROP-02, S2)
-3. **Responsive filter pills and category truncation** — "Canceled" and "Community / Partnership" truncate on desktop and mobile. (PROP-02, PROP-13, S3)
+**All i18n hardcoded strings fixed (fix/4.9-proposals-polish):**
+- Sort options ("New", "Hot", "Most Discussed", "Most Voted") → `t('sortNew')` etc.
+- Sidebar headings ("Governance Pulse", "Browse by stage", "Hot Topics") → `t('sidebarGovernancePulse')` etc.
+- Empty state headings and search description → `t('emptySearchTitle')`, `t('emptyTitle')`, `t('emptySearchDescription')`
+- 11 new i18n keys added per locale (en, pt-PT, zh-CN)
 
-**Section severity:** S2 (functional — all core flows work; cosmetic/messaging issues remain)
-**Confidence score:** 4.5/5 (PROP-01 through PROP-11 tested live; PROP-12 skipped; PROP-16 partial)
+**Section severity:** S3 (polish — only garbage test data cleanup and minor console error remain)
+**Confidence score:** 4.8/5 (PROP-01 through PROP-11 tested live; PROP-12 skipped; PROP-16 partial)
 
-**Execution status:** _post-revamp re-test complete (2026-03-14) — 3 rounds of UI revamp merged (PRs #20, #21); remaining issues documented above_
+**Execution status:** _polish pass complete (2026-03-14) — i18n gaps, scroll affordances, and empty state fixed in fix/4.9-proposals-polish branch_
 
 ## 4.10 Disputes Workflow (File -> Evidence -> Resolve/Appeal)
 Routes: `/disputes`, `/disputes/[id]`.
