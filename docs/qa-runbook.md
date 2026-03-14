@@ -458,68 +458,73 @@ Feedback:
 Routes: `/proposals`, `/proposals/new`, `/proposals/[id]`.
 
 Use cases:
-- [ ] `PROP-01` Member creates proposal draft/public submission.
-- [ ] `PROP-02` Proposal list shows governance signal/context correctly.
-- [x] `PROP-03` Proposal detail renders structured sections clearly. **PARTIAL, S2**
-- [x] `PROP-04` Proposal comments can be posted and read. **PARTIAL, S2**
-- [x] `PROP-05` Stage transitions are forward-only and clearly communicated. **PARTIAL, S2**
-- [x] `PROP-06` Start voting works for authorized role only. **PARTIAL, S2**
-- [x] `PROP-07` Vote eligibility and effective power are understandable. **PARTIAL, S2**
-- [x] `PROP-08` Casting vote succeeds/fails with clear feedback. **PARTIAL, S2**
-- [x] `PROP-09` Finalize voting behaves idempotently. **PARTIAL, S2**
-- [x] `PROP-10` Freeze and resume semantics are understandable to operators. **PARTIAL, S2**
-- [x] `PROP-11` Execution-window messaging for passed proposal is clear. **PARTIAL, S2**
+- [x] `PROP-01` Member creates proposal draft/public submission. **PASS, S3**
+- [x] `PROP-02` Proposal list shows governance signal/context correctly. **PASS with issues, S2**
+- [x] `PROP-03` Proposal detail renders structured sections clearly. **PASS, S3**
+- [x] `PROP-04` Proposal comments can be posted and read. **PASS, S3**
+- [x] `PROP-05` Stage transitions are forward-only and clearly communicated. **PASS, S3**
+- [x] `PROP-06` Start voting works for authorized role only. **PASS, S3**
+- [x] `PROP-07` Vote eligibility and effective power are understandable. **PASS, S3**
+- [x] `PROP-08` Casting vote succeeds/fails with clear feedback. **PARTIAL, S2** — vote buttons appear when active voting; "Voting closed" shown for expired
+- [x] `PROP-09` Finalize voting behaves idempotently. **PASS, S3**
+- [x] `PROP-10` Freeze and resume semantics are understandable to operators. **PASS, S3** — "Resume Finalization" button added
+- [x] `PROP-11` Execution-window messaging for passed proposal is clear. **PASS, S3**
 - [x] `PROP-12` Proposal templates are usable (if enabled/configured). **SKIP** — not implemented
-- [x] `PROP-13` Mobile readability and action placement are acceptable. **PARTIAL, S2**
-- [x] `PROP-14` Proposal threshold gate blocks under-threshold proposers with clear reason. **PARTIAL, S2**
-- [x] `PROP-15` Anti-abuse cooldown/one-live-proposal guard is enforced and explained. **PARTIAL, S2**
+- [x] `PROP-13` Mobile readability and action placement are acceptable. **PASS with issues, S2**
+- [x] `PROP-14` Proposal threshold gate blocks under-threshold proposers with clear reason. **PASS, S3**
+- [x] `PROP-15` Anti-abuse cooldown/one-live-proposal guard is enforced and explained. **PASS, S3** — pre-flight eligibility check blocks before wizard
 - [x] `PROP-16` Passed proposal finalize path remains usable under execution-window degraded mode (`PGRST204`) with non-blocking warning behavior. **PARTIAL, S2**
 - [x] `PROP-17` Proposal detail shows source-idea badge/link when `source_idea_id` is present. **PASS, S3**
 
-### Feedback
+### Feedback (Re-test 2026-03-14 — post-revamp)
 
-**What works well:**
-- Structured sections (Summary, Motivation, Solution, Budget, Timeline) render with icons and cards (PROP-03)
-- Comments post and display correctly with author, timestamp, and version badge (PROP-04)
-- Stage transitions are forward-only — no backward navigation possible (PROP-05)
-- Role-based controls work — members see no governance action buttons (PROP-06)
-- Finalized proposals show clear "Proposal Passed"/"Quorum Not Met" results with full breakdown (PROP-09)
-- "Create Task from Proposal" execution path with version provenance tracking (PROP-11)
-- Source-idea badge renders and links correctly when present (PROP-17)
-- Council Actions cards are visually distinct (yellow/orange bordered)
+**What works well (improvements from revamp):**
+- Two-column forum layout with Governance Pulse sidebar showing live KPIs (71 open, 17 voting, 26 discussion) (PROP-02)
+- Proposal wizard: two-column form + live preview, tab navigation, character counters, category cards with icons (PROP-01)
+- Stage stepper renders clearly: Draft → Public → Discussion → Voting → Finalized with checkmarks on completed stages (PROP-05)
+- Pre-flight eligibility check: non-members see "You need to be a member" before wizard loads (PROP-14, PROP-15)
+- Comments post with author Organic ID, timestamp, version badge, and counter updates live (PROP-04)
+- Council Actions card with Start Voting / Finalize Voting / force-finalize warning (PROP-06, PROP-09)
+- Voting panel: "You did not hold $ORG tokens" clarity, countdown timer, Yes/No/Abstain bars, quorum status (PROP-07)
+- Decision Rail sidebar: Governance status, Version context panel, Immutable proposal reference (PROP-03)
+- "Voting closed" indicator shown on expired voting proposals (PROP-07, PROP-08)
+- Mobile sticky action bar at bottom of detail page: Following + Vote buttons (PROP-13)
+- Live Vote Banner on proposals list with countdown and "Cast your vote" CTA (PROP-02)
+- Browse by stage sidebar, Hot Topics, and category quick filters (PROP-02)
+- Finalized proposals show Quorum "Not Met" (red) or "Passed" result with full breakdown (PROP-09)
 
-**What does not work:**
-- Two-column layout (content + governance sidebar) doesn't render as side-by-side on all viewport sizes (PROP-03)
-- "Voting" status badge shown on proposals with expired voting windows — misleading (PROP-07)
-- No vote casting buttons visible — all voting-period proposals have expired (PROP-08)
-- No recovery path from frozen finalization state — dead end for operators (PROP-10)
-- Anti-abuse guards (threshold, cooldown, max-live) are server-side only — users fill entire 4-step wizard before rejection (PROP-14, PROP-15)
-- Content may clip on mobile for certain proposals (PROP-13)
-- Execution deadline not surfaced in UI for passed proposals (PROP-16)
+**What does not work (remaining issues):**
+- **Live Vote Banner contradiction**: Shows "LIVE VOTING" and "Voting closed" simultaneously on the same banner — confusing messaging (PROP-02, PROP-08)
+- **Garbage test data in proposals**: Multiple proposals with `http://localhost:3003/pt-PT` titles/content from worktree prototype QA sessions — need data cleanup (PROP-02)
+- **"Canceled" pill text truncated** on desktop at narrower viewports (PROP-02)
+- **Category text truncation**: "Community / Partnership" and "Governance / Po..." cut off in filter pills on both desktop and mobile (PROP-02)
+- **No empty state illustration**: When 0 proposals visible (unauth view), just shows "0 proposals visible" text with no illustration or CTA to create (PROP-02)
+- **Stage stepper truncation on mobile**: Only Draft/Public/Discussion visible initially; Voting/Finalized need horizontal scroll (PROP-13)
+- **Confirmation dialog for finalize still missing**: Clicking "Finalize Voting" has a warning but no confirmation step (PROP-09)
+- **Console error**: "Invalid or unexpected token" on page load (minor, likely unrelated)
 
-**UI improvements requested:**
-- **Voting status clarity:** Add "Voting closed" / "Awaiting finalization" indicator when voting period has expired but result not finalized. Show voting timeline (started/ended dates). (PROP-07, PROP-08)
-- **Stage progress stepper:** Visual lifecycle indicator showing current stage in the proposal journey (draft → public → discussion → voting → finalized). (PROP-05)
-- **Pre-flight eligibility check:** Add client-side pre-check on `/proposals/new` for token threshold, cooldown, and max-live limits before showing the wizard. (PROP-14, PROP-15)
-- **Freeze recovery UI:** Add "Resume Finalization" button or link to admin recovery flow from the frozen state. (PROP-10)
-- **Confirmation dialog for finalize:** Governance action should have a confirmation step showing expected outcome. (PROP-09)
-- **Mobile sticky action bar:** Primary actions (Follow, vote, submit) should be sticky on mobile. (PROP-13)
-- **Empty voting bars:** Show subtle track/background on 0% voting progress bars. (PROP-03)
-- **Two-column layout fix:** Ensure governance sidebar renders to the right on desktop. (PROP-03)
+**UI improvements still needed:**
+- **Fix Live Vote Banner logic**: Don't show "LIVE VOTING" + "Cast your vote" when voting is closed — should show "Voting closed — awaiting finalization" instead (PROP-02, PROP-08)
+- **Add empty state**: Illustration + "Create your first proposal" CTA when no proposals match filters (PROP-02)
+- **Responsive filter pills**: Truncate or wrap category/status filter text gracefully on narrow viewports (PROP-02, PROP-13)
+- **Confirmation dialog for finalize**: Add a modal confirming expected outcome before governance actions (PROP-09)
+- **Clean up test data**: Remove `localhost:3003` garbage proposals from the database (data hygiene)
 
 **Standalone tasks identified:**
-- **TASK: Add execution_deadline surface** — Show deadline countdown on passed proposals. (PROP-11, PROP-16)
-- **TASK: Create proposal eligibility API** — Pre-flight endpoint returning threshold/cooldown/max-live status. (PROP-14, PROP-15)
+- **TASK: Fix Live Vote Banner — voting closed contradiction** (PROP-02, PROP-08)
+- **TASK: Add empty state for proposals list** (PROP-02)
+- **TASK: Clean up QA test data from prototype sessions** (data hygiene)
+- **TASK: Add finalize confirmation dialog** (PROP-09)
 
 **Top 3 highest-impact changes:**
-1. **Add voting status clarity** — "Voting closed" indicator + timeline when voting period expires. Users currently see "Voting" badge but can't vote. (PROP-07, PROP-08, S2)
-2. **Add pre-flight eligibility check** — Stop users from filling a 4-step wizard only to be rejected at submission. (PROP-14, PROP-15, S2)
-3. **Fix proposal detail layout + add stage stepper** — Two-column layout, empty state handling, stage progress visualization. (PROP-03, PROP-05, S2)
+1. **Fix Live Vote Banner logic** — Currently shows contradictory "LIVE VOTING" + "Voting closed" + "Cast your vote" on expired proposals. Misleading for all users. (PROP-02, PROP-08, S2)
+2. **Add empty state for proposals list** — Unauth view shows "0 proposals visible" with loading skeletons but no illustration or CTA. Missed onboarding opportunity. (PROP-02, S2)
+3. **Responsive filter pills and category truncation** — "Canceled" and "Community / Partnership" truncate on desktop and mobile. (PROP-02, PROP-13, S3)
 
-**Section severity:** S2 (moderate friction, workarounds exist — all features functional but UX needs improvement)
-**Confidence score:** 4/5 (PROP-08 untestable live due to expired voting; PROP-12 skipped; PROP-16 partial code review)
+**Section severity:** S2 (functional — all core flows work; cosmetic/messaging issues remain)
+**Confidence score:** 4.5/5 (PROP-01 through PROP-11 tested live; PROP-12 skipped; PROP-16 partial)
 
-**Execution status:** _plan written — `docs/plans/2026-03-14-proposal-detail-revamp.md` (2026-03-14)_
+**Execution status:** _post-revamp re-test complete (2026-03-14) — 3 rounds of UI revamp merged (PRs #20, #21); remaining issues documented above_
 
 ## 4.10 Disputes Workflow (File -> Evidence -> Resolve/Appeal)
 Routes: `/disputes`, `/disputes/[id]`.
