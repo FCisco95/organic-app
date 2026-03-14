@@ -12,7 +12,6 @@ import { cn } from '@/lib/utils';
 import type { ProposalCategory } from '@/features/proposals/types';
 import {
   PROPOSAL_CATEGORIES,
-  PROPOSAL_CATEGORY_LABELS,
   PROPOSAL_CATEGORY_COLORS,
 } from '@/features/proposals/types';
 import type { StepProps } from './types';
@@ -56,7 +55,7 @@ export function Step1Category({ formData, errors, updateField, t }: StepProps) {
                   <Icon className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">{PROPOSAL_CATEGORY_LABELS[cat]}</p>
+                  <p className="font-medium text-gray-900">{t(`categoryLabel_${cat}`)}</p>
                   <p className="text-xs text-gray-500 mt-0.5">{t(`categoryDescription_${cat}`)}</p>
                 </div>
               </button>
@@ -68,7 +67,7 @@ export function Step1Category({ formData, errors, updateField, t }: StepProps) {
       {/* Title */}
       <div>
         <label htmlFor="title" className="block text-sm font-medium text-gray-900 mb-2">
-          {t('labelTitle')}
+          {t('labelTitle')} <span className="text-red-500">*</span>
         </label>
         <input
           type="text"
@@ -93,7 +92,7 @@ export function Step1Category({ formData, errors, updateField, t }: StepProps) {
       {/* Summary */}
       <div>
         <label htmlFor="summary" className="block text-sm font-medium text-gray-900 mb-2">
-          {t('labelSummary')}
+          {t('labelSummary')} <span className="text-red-500">*</span>
         </label>
         <textarea
           id="summary"
