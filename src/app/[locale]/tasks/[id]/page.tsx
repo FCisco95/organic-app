@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { Link, useRouter } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
+import toast from 'react-hot-toast';
 import {
   canSubmitTask,
   TaskSubmissionWithReviewer,
@@ -15,7 +16,7 @@ import {
 
 import { createClient } from '@/lib/supabase/client';
 import { ArrowLeft, Edit2, Send, AlertCircle, UserPlus, Trash2 } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { ClaimButton, TeamClaimStatus } from '@/components/tasks/claim-button';
 import { TaskSubmissionForm } from '@/components/tasks/task-submission-form';
 import { TaskContributorsModal } from '@/components/tasks/task-contributors-modal';
@@ -49,16 +50,10 @@ export default function TaskDetailPage() {
   const router = useRouter();
   const { user, profile } = useAuth();
   const t = useTranslations('TaskDetail');
+  const locale = useLocale();
   const taskId = typeof params.id === 'string' ? params.id : (params.id?.[0] ?? '');
   const { data: dependencyData } = useTaskDependencies(taskId);
   const canLike = !!profile?.role && ['member', 'council', 'admin'].includes(profile.role);
-  const standardLabels = [
-    t('standardLabels.growth'),
-    t('standardLabels.design'),
-    t('standardLabels.dev'),
-    t('standardLabels.research'),
-  ];
-
   const infoSections = [
     {
       title: t('infoSection1Title'),
@@ -82,6 +77,7 @@ export default function TaskDetailPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [isAssigning, setIsAssigning] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -172,26 +168,31 @@ export default function TaskDetailPage() {
         .eq('id', taskId)
         .single();
 
-      if (!error && taskData) {
-        const typedTask = taskData as unknown as Task;
+      if (error || !taskData) {
+        setFetchError(true);
+        toast.error(t('errorLoadTask'), { id: 'task-fetch-error' });
+        return;
+      }
 
-        // Fetch assignees (all tasks use task_assignees now)
-        const { data: assigneesData } = await supabase
-          .from('task_assignees')
-          .select(
-            `
+      const typedTask = taskData as unknown as Task;
+
+      // Fetch assignees (all tasks use task_assignees now)
+      const { data: assigneesData } = await supabase
+        .from('task_assignees')
+        .select(
+          `
             *,
             user:user_profiles(id, name, email, organic_id, avatar_url)
           `
-          )
-          .eq('task_id', taskId);
-        const assignees = (assigneesData ?? []) as unknown as TaskAssigneeWithUser[];
+        )
+        .eq('task_id', taskId);
+      const assignees = (assigneesData ?? []) as unknown as TaskAssigneeWithUser[];
 
-        // Fetch submissions
-        const { data: submissionsData } = await supabase
-          .from('task_submissions')
-          .select(
-            `
+      // Fetch submissions
+      const { data: submissionsData } = await supabase
+        .from('task_submissions')
+        .select(
+          `
             *,
             user:user_profiles!task_submissions_user_id_profile_fkey(
               id, name, email, organic_id, avatar_url
@@ -200,34 +201,34 @@ export default function TaskDetailPage() {
               id, name, email, organic_id
             )
           `
-          )
-          .eq('task_id', taskId)
-          .order('submitted_at', { ascending: false });
+        )
+        .eq('task_id', taskId)
+        .order('submitted_at', { ascending: false });
 
-        const fullTask = {
-          ...typedTask,
-          assignees,
-          submissions: (submissionsData ?? []) as unknown as TaskSubmissionWithReviewer[],
-        };
+      const fullTask = {
+        ...typedTask,
+        assignees,
+        submissions: (submissionsData ?? []) as unknown as TaskSubmissionWithReviewer[],
+      };
 
-        setTask(fullTask);
-        setEditForm({
-          title: fullTask.title,
-          description: fullTask.description || '',
-          status: fullTask.status,
-          priority: fullTask.priority,
-          points: fullTask.points ?? 0,
-          assignee_id: fullTask.assignee_id || '',
-          sprint_id: fullTask.sprint_id || '',
-          labels: fullTask.labels ?? [],
-        });
-      }
+      setTask(fullTask);
+      setEditForm({
+        title: fullTask.title,
+        description: fullTask.description || '',
+        status: fullTask.status,
+        priority: fullTask.priority,
+        points: fullTask.points ?? 0,
+        assignee_id: fullTask.assignee_id || '',
+        sprint_id: fullTask.sprint_id || '',
+        labels: fullTask.labels ?? [],
+      });
     } catch {
-      // Task fetch failed
+      setFetchError(true);
+      toast.error(t('errorLoadTask'), { id: 'task-fetch-error' });
     } finally {
       setLoading(false);
     }
-  }, [taskId]);
+  }, [taskId]); // eslint-disable-line react-hooks/exhaustive-deps -- t is only used in catch for error strings
 
   const fetchTaskLikes = useCallback(async () => {
     try {
@@ -254,9 +255,9 @@ export default function TaskDetailPage() {
         setLikedByUser(false);
       }
     } catch {
-      // Failed to load likes
+      toast.error(t('errorLoadLikes'), { id: 'task-fetch-error' });
     }
-  }, [taskId, user?.id]);
+  }, [taskId, user?.id]); // eslint-disable-line react-hooks/exhaustive-deps -- t is only used in catch
 
   const fetchComments = useCallback(async () => {
     try {
@@ -269,7 +270,7 @@ export default function TaskDetailPage() {
         .order('created_at', { ascending: false });
 
       if (error || !commentsData) {
-        return;
+        throw error ?? new Error('No comments data');
       }
 
       const userIds = Array.from(new Set(commentsData.map((comment) => comment.user_id)));
@@ -303,9 +304,9 @@ export default function TaskDetailPage() {
 
       setComments(hydratedComments);
     } catch {
-      // Failed to fetch comments
+      toast.error(t('errorLoadComments'), { id: 'task-fetch-error' });
     }
-  }, [taskId]);
+  }, [taskId]); // eslint-disable-line react-hooks/exhaustive-deps -- t is only used in catch
 
   const fetchMembers = useCallback(async () => {
     try {
@@ -321,9 +322,9 @@ export default function TaskDetailPage() {
         setMembers(members as Member[]);
       }
     } catch {
-      // Failed to fetch members
+      toast.error(t('errorLoadMembers'), { id: 'task-fetch-error' });
     }
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps -- t is only used in catch
 
   const fetchSprints = useCallback(async () => {
     try {
@@ -338,9 +339,9 @@ export default function TaskDetailPage() {
         setSprints(sprints as unknown as Sprint[]);
       }
     } catch {
-      // Failed to fetch sprints
+      toast.error(t('errorLoadSprints'), { id: 'task-fetch-error' });
     }
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps -- t is only used in catch
 
   useEffect(() => {
     if (taskId) {
@@ -438,7 +439,7 @@ export default function TaskDetailPage() {
         setLikeCount((prev) => prev + 1);
       }
     } catch {
-      // Failed to toggle like
+      toast.error(t('errorToggleLike'));
     }
   };
 
@@ -617,7 +618,7 @@ export default function TaskDetailPage() {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString(locale, {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
@@ -641,8 +642,13 @@ export default function TaskDetailPage() {
     return (
       <PageContainer layout="fluid">
         <div className="text-center py-12">
-          <AlertCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">{t('notFoundTitle')}</h3>
+          <AlertCircle className={`w-16 h-16 mx-auto mb-4 ${fetchError ? 'text-red-400' : 'text-gray-300'}`} />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            {fetchError ? t('errorLoadTaskTitle') : t('notFoundTitle')}
+          </h3>
+          {fetchError && (
+            <p className="text-sm text-gray-500 mb-4">{t('errorLoadTaskDescription')}</p>
+          )}
           <Link href="/tasks" className="text-organic-orange hover:text-orange-600">
             <ArrowLeft className="w-4 h-4 inline mr-2" />
             {t('backToTasks')}
@@ -709,7 +715,6 @@ export default function TaskDetailPage() {
               <TaskEditForm
                 editForm={editForm}
                 labelInput={labelInput}
-                standardLabels={standardLabels}
                 members={members}
                 sprints={sprints}
                 isSaving={isSaving}

@@ -11,6 +11,8 @@ import {
   TaskPriority,
   TaskStatus,
   buildTaskStatusLaneCounts,
+  STANDARD_LABEL_KEYS,
+  getLabelDisplay,
 } from '@/features/tasks';
 
 import { createClient } from '@/lib/supabase/client';
@@ -32,12 +34,7 @@ const END_OF_DAY_SUFFIX = 'T23:59:59.999';
 export default function TasksPage() {
   const { user, profile } = useAuth();
   const t = useTranslations('Tasks');
-  const standardLabels = [
-    t('standardLabels.growth'),
-    t('standardLabels.design'),
-    t('standardLabels.dev'),
-    t('standardLabels.research'),
-  ];
+  const standardLabelKeys = [...STANDARD_LABEL_KEYS] as string[];
   const [tasks, setTasks] = useState<TaskListItem[]>([]);
   const [sprints, setSprints] = useState<Sprint[]>([]);
   const [activeView, setActiveView] = useState<TaskTab>('all');
@@ -329,12 +326,12 @@ export default function TasksPage() {
   const tabOptions: TaskTab[] = ['all', 'backlog', 'activeSprint', 'completed'];
   const visibleTabs = isOrgMember ? tabOptions : tabOptions.filter((tab) => tab !== 'backlog');
   const categoryOptions = [
-    ...standardLabels,
+    ...standardLabelKeys,
     ...Array.from(
       new Set(
         tasks
           .flatMap((task) => task.labels ?? [])
-          .filter((label) => !standardLabels.includes(label))
+          .filter((label) => !standardLabelKeys.includes(label))
       )
     ).sort((a, b) => a.localeCompare(b)),
   ];

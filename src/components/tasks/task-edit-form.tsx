@@ -2,7 +2,7 @@
 
 import { Save, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import type { Task, Member } from '@/features/tasks';
+import { getLabelDisplay, STANDARD_LABEL_KEYS, type Task, type Member } from '@/features/tasks';
 
 type EditFormState = {
   title: string;
@@ -24,7 +24,6 @@ type SprintOption = {
 type TaskEditFormProps = {
   editForm: EditFormState;
   labelInput: string;
-  standardLabels: string[];
   members: Member[];
   sprints: SprintOption[];
   isSaving: boolean;
@@ -41,7 +40,6 @@ type TaskEditFormProps = {
 export function TaskEditForm({
   editForm,
   labelInput,
-  standardLabels,
   members,
   sprints,
   isSaving,
@@ -180,7 +178,7 @@ export function TaskEditForm({
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">{t('labelLabels')}</label>
         <div className="flex flex-wrap gap-2 mb-2">
-          {standardLabels.map((label) => (
+          {STANDARD_LABEL_KEYS.map((label) => (
             <button
               key={label}
               type="button"
@@ -191,7 +189,7 @@ export function TaskEditForm({
                   : 'border-gray-200 text-gray-600 hover:bg-gray-50'
               }`}
             >
-              {label}
+              {getLabelDisplay(label, t)}
             </button>
           ))}
         </div>
@@ -224,7 +222,7 @@ export function TaskEditForm({
                 key={label}
                 className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-700 rounded-md text-sm"
               >
-                {label}
+                {getLabelDisplay(label, t)}
                 <button
                   type="button"
                   onClick={() => onRemoveLabel(label)}

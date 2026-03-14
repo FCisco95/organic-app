@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Search, SlidersHorizontal } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import type { Sprint, TaskSubmissionSummary } from '@/features/tasks';
+import { getLabelDisplay, type Sprint, type TaskSubmissionSummary } from '@/features/tasks';
 
 type ContributorOption = NonNullable<TaskSubmissionSummary['user']>;
 type TaskSortOption = 'newest' | 'oldest' | 'dueSoon' | 'pointsHigh' | 'mostLiked';
@@ -146,7 +146,7 @@ export function TaskFiltersBar({
               <option value="all">{t('allCategories')}</option>
               {categoryOptions.map((category) => (
                 <option key={category} value={category}>
-                  {category}
+                  {getLabelDisplay(category, t)}
                 </option>
               ))}
             </select>
