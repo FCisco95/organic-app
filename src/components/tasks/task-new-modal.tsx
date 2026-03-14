@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
+import { Megaphone, Palette, Code, Brain } from 'lucide-react';
 import {
   useCreateTask,
   type Assignee,
@@ -42,7 +43,12 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
   const [loadingAssignees, setLoadingAssignees] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
-  const standardLabels = ['📣 Growth', '🎨 Design', '💻 Dev', '🧠 Research'];
+  const standardLabels = [
+    { key: 'Growth', label: t('standardLabels.growth'), icon: Megaphone },
+    { key: 'Design', label: t('standardLabels.design'), icon: Palette },
+    { key: 'Dev', label: t('standardLabels.dev'), icon: Code },
+    { key: 'Research', label: t('standardLabels.research'), icon: Brain },
+  ];
 
   useEffect(() => {
     async function fetchAssignees() {
@@ -358,18 +364,19 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
               {t('labelLabels')}
             </label>
             <div className="flex flex-wrap gap-2 mb-2">
-              {standardLabels.map((label) => (
+              {standardLabels.map((item) => (
                 <button
-                  key={label}
+                  key={item.key}
                   type="button"
-                  onClick={() => handleToggleLabel(label)}
-                  className={`px-2 py-1 rounded-md text-xs font-medium border transition-colors ${
-                    labels.includes(label)
+                  onClick={() => handleToggleLabel(item.key)}
+                  className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium border transition-colors ${
+                    labels.includes(item.key)
                       ? 'border-organic-orange bg-orange-50 text-organic-orange'
                       : 'border-gray-200 text-gray-600 hover:bg-gray-50'
                   }`}
                 >
-                  {label}
+                  <item.icon className="w-3.5 h-3.5" />
+                  {item.label}
                 </button>
               ))}
             </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { AlertCircle, CalendarClock, FilterX, Heart, MessageSquare, Tag, Upload, User, Users } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import type { Sprint, TaskListItem, TaskTab, TaskStatus } from '@/features/tasks';
 
@@ -62,6 +62,7 @@ export function TaskListSection({
   onResetFilters,
 }: TaskListSectionProps) {
   const t = useTranslations('Tasks');
+  const locale = useLocale();
   const hasNoTasks = !loading && totalTasks === 0;
 
   return (
@@ -214,7 +215,7 @@ export function TaskListSection({
                           }`}
                         >
                           <CalendarClock className="h-3.5 w-3.5" />
-                          {new Date(task.due_date).toLocaleDateString()}
+                          {new Date(task.due_date).toLocaleDateString(locale)}
                         </span>
                       ) : (
                         <span className="font-mono text-muted-foreground/80">--</span>

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import type { DragEvent } from 'react';
 import { Link, useRouter } from '@/i18n/navigation';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { AlertCircle, Clock, Edit2, MessageSquare, MoreVertical, Tag, Upload, User, Users } from 'lucide-react';
 
 export type TaskStatus = 'backlog' | 'todo' | 'in_progress' | 'review' | 'done';
@@ -178,6 +178,7 @@ function TaskCard({
 }) {
   const router = useRouter();
   const t = useTranslations('Tasks');
+  const locale = useLocale();
   const [showActions, setShowActions] = useState(false);
 
   const getPriorityColor = (priority: TaskPriority | null) => {
@@ -247,7 +248,7 @@ function TaskCard({
             className={`flex items-center gap-1 mb-2 text-xs ${isOverdue ? 'text-red-600 font-medium' : 'text-gray-500'}`}
           >
             <Clock className="w-3 h-3" />
-            {t('dueLabel', { date: new Date(task.due_date).toLocaleDateString() })}
+            {t('dueLabel', { date: new Date(task.due_date).toLocaleDateString(locale) })}
             {isOverdue && ` (${t('overdue')})`}
           </div>
         )}
