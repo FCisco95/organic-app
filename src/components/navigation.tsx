@@ -37,7 +37,7 @@ export function Navigation() {
     { href: '/ideas', label: t('ideas'), show: !!user },
     { href: '/tasks', label: t('tasks'), show: !!profile?.organic_id },
     { href: '/sprints', label: t('sprints'), show: !!profile?.organic_id },
-    { href: '/leaderboard', label: t('leaderboard'), show: !!user },
+    { href: '/community', label: t('community'), show: !!user },
     { href: progressionHref, label: t('progression'), show: !!user },
   ];
 

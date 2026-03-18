@@ -8,12 +8,15 @@ import type { MemberListItem } from '@/features/members';
 import { ROLE_LABELS, ROLE_COLORS } from '@/features/members';
 import type { UserRole } from '@/types/database';
 import { LevelBadge } from '@/components/reputation/level-badge';
+import { formatXp } from '@/features/reputation';
 
 interface MemberCardProps {
   member: MemberListItem;
+  rank?: number;
+  xpTotal?: number;
 }
 
-export function MemberCard({ member }: MemberCardProps) {
+export function MemberCard({ member, rank, xpTotal }: MemberCardProps) {
   const locale = useLocale();
   const t = useTranslations('Members');
 
@@ -48,10 +51,15 @@ export function MemberCard({ member }: MemberCardProps) {
 
   return (
     <Link
-      href={`/${locale}/members/${member.id}`}
+      href={`/${locale}/community/${member.id}`}
       data-testid={`member-card-${member.id}`}
-      className="block bg-white rounded-xl border border-gray-200 p-5 hover:border-organic-orange/40 hover:shadow-sm transition-all"
+      className="relative block bg-white rounded-xl border border-gray-200 p-5 hover:border-organic-orange/40 hover:shadow-sm transition-all"
     >
+      {rank != null && (
+        <span className="absolute top-2 right-2 bg-organic-orange/10 text-organic-orange text-xs font-bold px-2 py-0.5 rounded-full">
+          #{rank}
+        </span>
+      )}
       <div className="flex items-center gap-3">
         {member.avatar_url ? (
           <Image
@@ -97,6 +105,11 @@ export function MemberCard({ member }: MemberCardProps) {
         <span>
           {member.tasks_completed} {t('tasks')}
         </span>
+        {xpTotal != null && (
+          <span className="ml-auto font-mono tabular-nums text-xs text-organic-orange font-medium">
+            {formatXp(xpTotal)} XP
+          </span>
+        )}
       </div>
     </Link>
   );

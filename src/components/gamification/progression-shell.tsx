@@ -174,7 +174,7 @@ export function ProgressionShell({ sourceContext = null }: { sourceContext?: Sou
             <p className="mt-1 text-sm text-gray-600">{t('subtitle')}</p>
           </div>
           <Link
-            href="/leaderboard"
+            href="/community"
             className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
           >
             <Trophy className="h-4 w-4 text-amber-500" />

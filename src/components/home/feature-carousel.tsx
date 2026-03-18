@@ -82,7 +82,7 @@ const CARDS: CarouselCard[] = [
     ctaKey: 'carouselLeaderboardCta',
     fomoKey: 'carouselLeaderboardFomo',
     icon: Trophy,
-    href: '/leaderboard',
+    href: '/community',
   },
 ];
 

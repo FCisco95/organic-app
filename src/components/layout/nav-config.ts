@@ -13,7 +13,6 @@ import {
   Sparkles,
   Trophy,
   User,
-  Users,
   Vote,
   Wallet,
   Zap,
@@ -46,26 +45,24 @@ export function getSidebarNavSections(context: NavContext): NavSections {
     { id: 'home', href: '/', labelKey: 'home', icon: Home },
     { id: 'analytics', href: '/analytics', labelKey: 'analytics', icon: BarChart3 },
     { id: 'treasury', href: '/treasury', labelKey: 'treasury', icon: Wallet },
-    { id: 'members', href: '/members', labelKey: 'members', icon: Users },
+    { id: 'community', href: '/community', labelKey: 'community', icon: Trophy },
     { id: 'tasks', href: '/tasks', labelKey: 'tasks', icon: CheckSquare },
     { id: 'templates', href: '/tasks/templates', labelKey: 'templates', icon: FileText },
     { id: 'sprints', href: '/sprints', labelKey: 'sprints', icon: Zap },
     { id: 'proposals', href: '/proposals', labelKey: 'proposals', icon: Vote },
     { id: 'ideas', href: '/ideas', labelKey: 'ideas', icon: Lightbulb },
-    { id: 'leaderboard', href: '/leaderboard', labelKey: 'leaderboard', icon: Trophy },
     { id: 'quests', href: '/quests', labelKey: 'refAndQuests', icon: Sparkles },
     { id: 'rewards', href: '/rewards', labelKey: 'rewards', icon: Gift },
     { id: 'disputes', href: '/disputes', labelKey: 'disputes', icon: Scale },
     { id: 'notifications', href: '/notifications', labelKey: 'notifications', icon: Bell },
   ].filter((item) => {
-    if (item.id === 'members') return isAuthenticated;
+    if (item.id === 'community') return isAuthenticated;
     if (item.id === 'tasks') return hasOrganicId;
     if (item.id === 'templates') return isAdminOrCouncil;
     if (item.id === 'sprints') return hasOrganicId;
     if (
       item.id === 'proposals' ||
       item.id === 'ideas' ||
-      item.id === 'leaderboard' ||
       item.id === 'quests' ||
       item.id === 'rewards' ||
       item.id === 'disputes' ||

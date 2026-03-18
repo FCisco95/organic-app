@@ -107,10 +107,8 @@
     "proposals": "提案",
     "tasks": "任务",
     "sprints": "冲刺",
-    "leaderboard": "排行榜",
     "analytics": "数据分析",
     "treasury": "财务",
-    "members": "成员",
     "notifications": "通知",
     "disputes": "争议",
     "templates": "模板",
@@ -128,7 +126,8 @@
     "submissions": "提交审核",
     "refAndQuests": "推荐 & 任务",
     "onboarding": "设置进度",
-    "ideas": "想法"
+    "ideas": "想法",
+    "community": "社区"
   },
   "Wallet": {
     "toastConnected": "钱包已连接",
@@ -2747,5 +2746,14 @@
     "signInPrompt": "登录后参与讨论。",
     "signIn": "登录",
     "commentsEmpty": "暂无评论，来开启讨论吧。"
+  },
+  "Community": {
+    "title": "社区",
+    "subtitle": "认识构建 Organic DAO 的成员 — 浏览排行榜和成员目录。",
+    "tabRankings": "排行榜",
+    "tabDirectory": "成员目录",
+    "searchRankings": "按名称或 ID 搜索排名...",
+    "backToCommunity": "返回社区",
+    "totalMembers": "{count} 位成员"
   }
 }

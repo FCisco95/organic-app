@@ -107,10 +107,8 @@
     "proposals": "Propostas",
     "tasks": "Tarefas",
     "sprints": "Sprints",
-    "leaderboard": "Ranking",
     "analytics": "Analíticas",
     "treasury": "Tesouraria",
-    "members": "Membros",
     "notifications": "Notificações",
     "disputes": "Disputas",
     "templates": "Modelos",
@@ -128,7 +126,8 @@
     "submissions": "Submissões",
     "refAndQuests": "Ref & Quests",
     "onboarding": "Progresso de Configuração",
-    "ideas": "Ideias"
+    "ideas": "Ideias",
+    "community": "Comunidade"
   },
   "Wallet": {
     "toastConnected": "Carteira conectada",
@@ -2746,5 +2745,14 @@
     "signInPrompt": "Inicia sessão para participar na discussão.",
     "signIn": "Iniciar sessão",
     "commentsEmpty": "Ainda não há comentários. Inicia a conversa."
+  },
+  "Community": {
+    "title": "Comunidade",
+    "subtitle": "Conhece as pessoas que constroem a Organic DAO — explora rankings e o diretório de membros.",
+    "tabRankings": "Rankings",
+    "tabDirectory": "Diretório",
+    "searchRankings": "Pesquisar rankings por nome ou ID...",
+    "backToCommunity": "Voltar à Comunidade",
+    "totalMembers": "{count} membros"
   }
 }
