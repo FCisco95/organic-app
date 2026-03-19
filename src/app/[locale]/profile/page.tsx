@@ -21,7 +21,6 @@ import {
   Twitter,
   MessageCircle,
   Calendar,
-  Info,
   Unlink2,
   Shield,
   Eye,
@@ -42,6 +41,13 @@ import { useUpdatePrivacy } from '@/features/members';
 
 // Client-side balance cache TTL (15 seconds)
 const BALANCE_CACHE_TTL_MS = 15 * 1000;
+
+const ROLE_BADGE_CLASSES: Record<string, string> = {
+  admin: 'bg-purple-100 text-purple-700',
+  council: 'bg-blue-100 text-blue-700',
+  member: 'bg-green-100 text-green-700',
+};
+const DEFAULT_ROLE_BADGE_CLASS = 'bg-gray-100 text-gray-700';
 
 type LinkedTwitterAccount = {
   id: string;
@@ -69,7 +75,6 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [walletMismatch, setWalletMismatch] = useState(false);
   const [statsLoading, setStatsLoading] = useState(false);
   const [stats, setStats] = useState({
     totalSubmissions: 0,
@@ -91,6 +96,11 @@ export default function ProfilePage() {
     website: '',
     discord: '',
   });
+
+  const walletMismatch =
+    connected && publicKey && profile?.wallet_pubkey
+      ? publicKey.toBase58() !== profile.wallet_pubkey
+      : false;
 
   // Initialize form with profile data
   useEffect(() => {
@@ -268,25 +278,21 @@ export default function ProfilePage() {
     }
   }, []);
 
-  // Check token balance for linked wallet and detect mismatch
+  // Check token balance for linked wallet
   useEffect(() => {
     balanceRequestRef.current.controller?.abort();
     if (!connected || !publicKey || !profile?.wallet_pubkey) {
-      setWalletMismatch(false);
       return () => {
         balanceRequestRef.current.controller?.abort();
       };
     }
 
-    const connectedAddress = publicKey.toBase58();
-    const isMismatch = connectedAddress !== profile.wallet_pubkey;
-    setWalletMismatch(isMismatch);
-    if (isMismatch) {
+    if (walletMismatch) {
       setTokenBalance(null);
       return;
     }
 
-    const cacheKey = `${connectedAddress}|${
+    const cacheKey = `${profile.wallet_pubkey}|${
       process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'mainnet-beta'
     }`;
     fetchTokenBalance(profile.wallet_pubkey, cacheKey);
@@ -294,7 +300,7 @@ export default function ProfilePage() {
     return () => {
       balanceRequestRef.current.controller?.abort();
     };
-  }, [connected, publicKey, profile?.wallet_pubkey, fetchTokenBalance]);
+  }, [connected, publicKey, profile?.wallet_pubkey, walletMismatch, fetchTokenBalance]);
 
   const checkTokenBalance = async () => {
     if (!connected || !publicKey || !profile?.wallet_pubkey) return;
@@ -357,13 +363,8 @@ export default function ProfilePage() {
       }
 
       toast.success(t('toastWalletLinked'));
-      await refreshProfile();
-      await checkTokenBalance();
+      await Promise.all([refreshProfile(), checkTokenBalance()]);
       router.refresh();
-
-      setTimeout(async () => {
-        await refreshProfile();
-      }, 500);
     } catch (error: any) {
       console.error('Error linking wallet:', error);
       toast.error(error.message || t('toastFailedLinkWallet'));
@@ -544,8 +545,7 @@ export default function ProfilePage() {
       }
 
       toast.success(t('toastTwitterUnlinked'));
-      await refreshProfile();
-      await loadTwitterAccount();
+      await Promise.all([refreshProfile(), loadTwitterAccount()]);
     } catch {
       toast.error(t('toastFailedUnlinkTwitter'));
     } finally {
@@ -590,6 +590,7 @@ export default function ProfilePage() {
   }
 
   const formatStat = (value: number) => value.toLocaleString();
+  const connectedWalletAddress = publicKey?.toBase58() ?? null;
   const linkedTwitterHandle = twitterAccount ? `@${twitterAccount.twitter_username}` : profile.twitter;
 
   return (
@@ -742,15 +743,7 @@ export default function ProfilePage() {
                     {t('roleLabel')}
                   </p>
                   <span
-                    className={`inline-flex px-2 py-0.5 rounded-md text-xs font-medium capitalize ${
-                      profile.role === 'admin'
-                        ? 'bg-purple-100 text-purple-700'
-                        : profile.role === 'council'
-                          ? 'bg-blue-100 text-blue-700'
-                          : profile.role === 'member'
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-gray-100 text-gray-700'
-                    }`}
+                    className={`inline-flex px-2 py-0.5 rounded-md text-xs font-medium capitalize ${ROLE_BADGE_CLASSES[profile.role ?? ''] ?? DEFAULT_ROLE_BADGE_CLASS}`}
                   >
                     {profile.role || t('guest')}
                   </span>
@@ -863,15 +856,7 @@ export default function ProfilePage() {
                   {t('roleLabel')}
                 </label>
                 <span
-                  className={`inline-flex px-2.5 py-1 rounded-md text-xs font-medium capitalize ${
-                    profile.role === 'admin'
-                      ? 'bg-purple-100 text-purple-700'
-                      : profile.role === 'council'
-                        ? 'bg-blue-100 text-blue-700'
-                        : profile.role === 'member'
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-gray-100 text-gray-700'
-                  }`}
+                  className={`inline-flex px-2.5 py-1 rounded-md text-xs font-medium capitalize ${ROLE_BADGE_CLASSES[profile.role ?? ''] ?? DEFAULT_ROLE_BADGE_CLASS}`}
                 >
                   {profile.role || t('guest')}
                 </span>
@@ -1106,11 +1091,11 @@ export default function ProfilePage() {
             </div>
 
             <div className="mb-4 text-sm text-muted-foreground">
-              {connected && publicKey ? (
+              {connected && connectedWalletAddress ? (
                 <span>
                   {tWallet('connectedWalletLabel')}{' '}
                   <span className="font-mono text-foreground tabular-nums">
-                    {publicKey.toBase58().slice(0, 4)}...{publicKey.toBase58().slice(-4)}
+                    {connectedWalletAddress.slice(0, 4)}...{connectedWalletAddress.slice(-4)}
                   </span>
                 </span>
               ) : (
@@ -1124,7 +1109,7 @@ export default function ProfilePage() {
                 <p className="text-sm font-medium text-amber-800 mb-1">{t('walletMismatchWarning')}</p>
                 <p className="text-xs text-amber-700">
                   {t('walletMismatchDescription', {
-                    connected: `${publicKey.toBase58().slice(0, 4)}...${publicKey.toBase58().slice(-4)}`,
+                    connected: `${connectedWalletAddress!.slice(0, 4)}...${connectedWalletAddress!.slice(-4)}`,
                     linked: `${profile.wallet_pubkey.slice(0, 4)}...${profile.wallet_pubkey.slice(-4)}`,
                   })}
                 </p>

@@ -50,7 +50,7 @@ const SOURCE_CONTEXT_HREF: Record<SourceContext, '/tasks' | '/proposals' | '/pro
 
 const QUEST_CADENCE_ORDER = ['daily', 'weekly', 'long_term'] as const;
 
-const CADENCE_COLORS: Record<string, { border: string; bg: string; ring: string }> = {
+const CADENCE_COLORS: Record<(typeof QUEST_CADENCE_ORDER)[number], { border: string; bg: string; ring: string }> = {
   daily: { border: 'border-l-organic-orange', bg: 'bg-orange-50', ring: 'text-organic-orange' },
   weekly: { border: 'border-l-blue-500', bg: 'bg-blue-50', ring: 'text-blue-500' },
   long_term: { border: 'border-l-purple-500', bg: 'bg-purple-50', ring: 'text-purple-500' },
@@ -133,52 +133,26 @@ export function ProgressionShell({ sourceContext = null }: { sourceContext?: Sou
   }
 
   const pointsRemaining = Math.max(0, data.rewards.min_threshold - data.rewards.claimable_points);
-  const fallbackObjectives = {
-    daily: data.quest_summary.items
-      .filter((item) => item.cadence === 'daily')
-      .map(
-        (item): QuestProgressItem => ({
-          ...item,
-          description: '',
-          progress_percent: item.target > 0 ? Math.min(100, Math.round((item.progress / item.target) * 100)) : 0,
-          remaining: Math.max(0, item.target - item.progress),
-          reset_at: null,
-          xp_reward: 0,
-          points_reward: 0,
-          icon: '',
-        })
-      ),
-    weekly: data.quest_summary.items
-      .filter((item) => item.cadence === 'weekly')
-      .map(
-        (item): QuestProgressItem => ({
-          ...item,
-          description: '',
-          progress_percent: item.target > 0 ? Math.min(100, Math.round((item.progress / item.target) * 100)) : 0,
-          remaining: Math.max(0, item.target - item.progress),
-          reset_at: null,
-          xp_reward: 0,
-          points_reward: 0,
-          icon: '',
-        })
-      ),
-    long_term: data.quest_summary.items
-      .filter((item) => item.cadence === 'long_term')
-      .map(
-        (item): QuestProgressItem => ({
-          ...item,
-          description: '',
-          progress_percent: item.target > 0 ? Math.min(100, Math.round((item.progress / item.target) * 100)) : 0,
-          remaining: Math.max(0, item.target - item.progress),
-          reset_at: null,
-          xp_reward: 0,
-          points_reward: 0,
-          icon: '',
-        })
-      ),
-  };
 
-  const objectives = questProgress?.objectives ?? fallbackObjectives;
+  const objectives = questProgress?.objectives ?? Object.fromEntries(
+    QUEST_CADENCE_ORDER.map((cadence) => [
+      cadence,
+      data.quest_summary.items
+        .filter((item) => item.cadence === cadence)
+        .map(
+          (item): QuestProgressItem => ({
+            ...item,
+            description: '',
+            progress_percent: item.target > 0 ? Math.min(100, Math.round((item.progress / item.target) * 100)) : 0,
+            remaining: Math.max(0, item.target - item.progress),
+            reset_at: null,
+            xp_reward: 0,
+            points_reward: 0,
+            icon: '',
+          })
+        ),
+    ])
+  ) as Record<(typeof QUEST_CADENCE_ORDER)[number], QuestProgressItem[]>;
   const questSummary = questProgress?.summary ?? data.quest_summary;
 
   const resolveResetLabel = (resetAt: string | null): string | null => {
