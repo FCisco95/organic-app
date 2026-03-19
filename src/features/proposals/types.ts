@@ -44,6 +44,7 @@ export interface ProposalComment {
   user_profiles: {
     organic_id: number | null;
     email: string;
+    display_name?: string | null;
   };
 }
 

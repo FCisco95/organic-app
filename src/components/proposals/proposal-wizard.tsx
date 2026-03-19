@@ -265,7 +265,7 @@ export function ProposalWizard({ initialData, proposalId, onSuccess }: ProposalW
         <button
           type="button"
           onClick={() => setPreviewOpen(true)}
-          className="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full bg-organic-orange px-4 py-3 text-sm font-semibold text-white shadow-lg hover:bg-orange-600 transition-colors"
+          className="fixed bottom-20 right-6 z-40 flex items-center gap-2 rounded-full bg-organic-orange px-4 py-3 text-sm font-semibold text-white shadow-lg hover:bg-orange-600 transition-colors"
         >
           <Eye className="h-4 w-4" />
           {t('previewButton')}
