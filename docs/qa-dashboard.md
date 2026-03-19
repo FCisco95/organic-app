@@ -16,7 +16,7 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 | 4.6 | Quests, Referrals, Gamification | 11 | PENDING | — | — | — | — |
 | 4.7 | Tasks E2E | 17 | PLANNED | S1 | [plan](plans/2026-03-08-tasks-qa-revamp.md) | — | — |
 | 4.8 | Sprints E2E | 11 | PENDING | — | — | — | — |
-| 4.9 | Proposals, Governance | 17 | REVAMPED | S2 | [plan](plans/2026-03-19-proposals-qa-revamp.md) | `fix/4.9-proposals-functional-fixes` | `fix/4.9-proposals-functional-fixes` |
+| 4.9 | Proposals, Governance | 17 | DONE | S2 | [plan](plans/2026-03-19-proposals-qa-revamp.md) | merged to main | merged to main |
 | 4.10 | Disputes | 13 | PENDING | — | — | — | — |
 | 4.11 | Rewards | 9 | PENDING | — | — | — | — |
 | 4.12 | Notifications | 6 | PENDING | — | — | — | — |
@@ -45,7 +45,6 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 
 | Action | Section | What to do |
 |--------|---------|------------|
-| **Next to merge** | 4.9 Proposals | Revamped → merge `fix/4.9-proposals-functional-fixes` to complete |
 | **Next to plan** | 4.1 Auth | Write plan from runbook feedback — highest S1 priority |
 | **Next to fix** | 4.7 Tasks | Plan exists → execute Phase B (functional fixes only) |
 | **Next to revamp** | 4.5 Profile | Fixed + revamped → merge PR to complete |
@@ -59,10 +58,10 @@ Issues spanning multiple sections — track resolution centrally.
 
 | Issue | Sections | Severity | Status |
 |-------|----------|----------|--------|
-| Onboarding modal: skip not persisted, reappears on every navigation | 4.1, 4.2, 4.17 | S1 | Open |
+| Onboarding modal: skip not persisted, reappears on every navigation | 4.1, 4.2, 4.17 | S1 | Verified: localStorage persistence already works. Playwright in-memory sessions were the cause. |
 | Console errors: 48-132 per page (Sentry CSP + missing i18n keys) | 4.1, 4.2, 4.3 | S2 | Open |
 | Page titles show "Next.js" instead of page name | 4.1, 4.2 | S3 | Open |
-| Garbage test data from prototype QA sessions (localhost:3003 titles) | 4.9 | S3 | Open |
+| Garbage test data from prototype QA sessions (localhost:3003 titles) | 4.9 | S3 | Script ready: `scripts/cleanup-qa-garbage.sql` — run manually against main DB |
 | Quest i18n keys broken: titles/descriptions show raw UUID keys on progression | 4.5, 4.6 | S1 | Fixed (4.5) |
 | Twitter/X link start API returns 400 Bad Request | 4.5, 4.18 | S1 | Fixed (4.5) |
 | Twitter/X OAuth callback params (twitter_linked, twitter_error) silently ignored | 4.5, 4.18 | S1 | Fixed (4.5) |

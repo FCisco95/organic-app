@@ -2,6 +2,84 @@
 
 Add newest entries at the top.
 
+## 2026-03-19 (Session: Full Proposals QA Pipeline — test + fix + revamp)
+
+### Summary
+
+Ran the complete 3-step QA pipeline for section 4.9 Proposals in a single session (1M context). Re-tested all 17 PROP cases with 3 headed browsers, implemented 5 functional fixes, designed 3 competing visual prototypes in parallel worktrees, user selected Proto C (Inline Accordion), merged to main.
+
+### Step 1: QA Tester — Full re-test
+
+Re-tested PROP-01 through PROP-17 with 3 viewport sessions:
+- Session A: Mobile 375x812, QA Member
+- Session B: Desktop 1440x900, QA Admin
+- Session C: Desktop 1440x900, QA Council
+
+Results: 15 PARTIAL S2, 2 PASS S3, 1 SKIP (templates). Overall severity S2.
+
+Key findings:
+- Sticky Vote button visible on mobile when voting closed
+- Garbage localhost:3003 test data polluting proposals list
+- Decision Rail hidden/buried on mobile
+- No execution deadline displayed for finalized proposals
+- Freeze banner missing max attempt count
+- Comment authors show only initials + Organic ID (no display name)
+- No stage transition history visible
+- Admin CTAs shown to members on mobile
+- Wizard tab labels truncate on mobile
+
+### Step 2: QA Fixer — Track 1 functional fixes
+
+Branch: `fix/4.9-proposals-functional-fixes`
+
+1. **Vote button visibility** — FAB only shows when `voting_ends_at > now`
+2. **Garbage data cleanup** — SQL script at `scripts/cleanup-qa-garbage.sql`
+3. **Execution deadline** — surfaced in Decision Rail for all finalized proposals
+4. **Freeze attempt limit** — shows "2 of 3" in freeze banner (3 locales updated)
+5. **Onboarding persistence** — already implemented via localStorage (QA artifact from Playwright in-memory sessions)
+
+### Step 3: QA Revamper — Track 2 visual/UX (Proto C won)
+
+3 prototypes built in parallel worktrees:
+- **Proto A (Contextual Drawer)**: Bottom-sheet governance drawer, icon-only wizard tabs
+- **Proto B (Tabbed Detail)**: 3-tab mobile structure, pill wizard tabs
+- **Proto C (Inline Accordion)**: Accordion cards in flow, floating Vote FAB, numbered stepper wizard ← **SELECTED**
+
+Proto C changes:
+- Inline accordion cards on mobile for governance status, version/provenance, delegation
+- Floating Vote FAB replaces sticky bar (terracotta accent, only when voting active + window open)
+- Numbered stepper wizard with connected circles and Lucide icons
+- Icon + short label category filters on mobile
+- Comment display names: "Name · Organic #ID" format
+- Stage transition history as horizontal chips below stepper
+- Role-aware CTAs — admin-only buttons hidden from members
+
+Fix applied post-selection: Preview FAB moved from `bottom-6` to `bottom-20` to avoid overlapping the sticky Next button.
+
+### Files changed
+
+- `src/app/[locale]/proposals/[id]/page.tsx` — detail page: inline accordions, vote FAB, stage history, display names, execution deadline in rail
+- `src/app/[locale]/proposals/page.tsx` — list page: role-aware CTAs, icon category filters
+- `src/components/proposals/wizard-tabs.tsx` — numbered stepper with icons
+- `src/components/proposals/proposal-wizard.tsx` — Preview FAB position fix
+- `src/components/voting/admin-voting-controls.tsx` — freeze attempt limit messaging
+- `src/features/proposals/hooks.ts` — display_name in comments query
+- `src/features/proposals/types.ts` — display_name type
+- `messages/en.json`, `messages/pt-PT.json`, `messages/zh-CN.json` — new i18n keys
+- `scripts/cleanup-qa-garbage.sql` — garbage data cleanup script
+- `docs/qa-runbook.md` — section 4.9 updated with re-test results
+- `docs/qa-dashboard.md` — section 4.9 → REVAMPED
+- `docs/plans/2026-03-19-proposals-qa-revamp.md` — 12-task plan (all tasks complete)
+
+### Next step
+
+Section 4.9 is DONE (merged to main). Next priorities from dashboard:
+1. 4.1 Auth — write plan from runbook feedback (S1)
+2. 4.7 Tasks — plan exists, execute Phase B
+3. 4.4 Members — next PENDING section to QA
+
+---
+
 ## 2026-03-14 (Session: QA 4.9 Proposal Detail — manual QA + revamp plan)
 
 ### Summary

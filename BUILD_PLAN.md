@@ -53,20 +53,17 @@ Manual QA testing + 3-prototype comparison + combined build for Tasks surface.
 - `src/components/home/feature-carousel.tsx` — Single-card FOMO carousel with snap scroll
 - `src/components/ui/info-button.tsx` — Floating "i" info popup with horizontal-scroll sections
 
-### QA Visual Revamp — Section 4.9 Proposals — 🟡 In Progress (2026-03-14)
+### QA Visual Revamp — Section 4.9 Proposals — ✅ Complete (2026-03-19)
 
-Proposals surface revamp across 3 rounds (List, Wizard, Detail).
+Full re-QA + fix + revamp pipeline completed in one session.
 
 - [x] Round 1: Proposals List Page — 3 prototypes, Prototype B (Community Forum) merged
 - [x] Round 2: Proposal Wizard — 3 prototypes, Prototype C (Forum Post Composer) merged (PR #20)
-- [x] Round 3 QA: Proposal Detail — manual QA of PROP-03 to PROP-17, all PARTIAL S2
-- [ ] Round 3 Build: Proposal Detail revamp — plan at `docs/plans/2026-03-14-proposal-detail-revamp.md`
+- [x] Round 3: Re-QA all 17 PROP cases — 15 PARTIAL S2, 2 PASS S3, 1 SKIP
+- [x] Round 4: Track 1 functional fixes — Vote button visibility, execution deadline, freeze limits, garbage data script
+- [x] Round 5: Track 2 visual revamp — Proto C (inline accordions, vote FAB, numbered stepper, icon categories, display names, stage history, role-aware CTAs)
 
-**Plan covers 8 tasks in 2 tracks:**
-- Track 1 (Functional): Voting closed indicator, pre-flight eligibility API, freeze recovery, execution deadline
-- Track 2 (Visual/UX): Two-column layout fix, stage stepper, mobile sticky bar, voting bars + comment avatars
-
-**Remaining QA sections:** 4.4 (Voting standalone), 4.5 (Sprints), 4.6 (Disputes), 4.8 (Admin), 4.10 (Members/Profile), 4.11 (Notifications), 4.12 (Quests/Referrals), 4.13 (Wallet/Token)
+**Remaining QA sections:** 4.4 (Members), 4.6 (Quests), 4.8 (Sprints), 4.10 (Disputes), 4.11 (Rewards), 4.12 (Notifications), 4.13 (Admin), 4.14 (Error Resilience), 4.15 (Locale/A11y), 4.16 (Operational Controls), 4.17 (Onboarding), 4.18 (Twitter/X), 4.19 (Ideas)
 
 **Future items from this revamp (see backlog below):**
 - Personal analytics tab, On-Chain analytics tab, AI governance health summary, orange vs terracotta design system decision

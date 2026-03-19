@@ -323,7 +323,7 @@ Feedback:
 - Confidence score (`1-5`):
 
 ## 4.9 Proposals and Governance Workflow
-<!-- qa-status: PLANNED | severity: S2 | plan: docs/plans/2026-03-19-proposals-qa-revamp.md -->
+<!-- qa-status: DONE | severity: S2 | plan: docs/plans/2026-03-19-proposals-qa-revamp.md | merged: main -->
 Routes: `/proposals`, `/proposals/new`, `/proposals/[id]`.
 
 Use cases:

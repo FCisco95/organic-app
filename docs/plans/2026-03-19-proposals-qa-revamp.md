@@ -4,10 +4,12 @@
 **Section severity:** S2
 **Confidence:** 4/5
 **Sessions:** Mobile (375x812, QA Member), Desktop (1440x900, QA Admin), Desktop (1440x900, QA Council)
+**Status:** ✅ All tasks complete — merged to main (2026-03-19)
+**Approach:** Proto C (Inline Accordion) selected from 3 competing prototypes
 
 ---
 
-## Track 1 — Functional Fixes
+## Track 1 — Functional Fixes ✅
 
 ### Task 1: Hide sticky Vote button when voting is closed
 
@@ -65,7 +67,7 @@ Recommended: localStorage for quick fix, then follow up with DB column.
 
 ---
 
-## Track 2 — Visual/UX Revamp
+## Track 2 — Visual/UX Revamp ✅ (Proto C — Inline Accordion)
 
 ### Task 6: Mobile Decision Rail — collapsible panel
 
@@ -153,11 +155,19 @@ Or use icons with text at `sm:` breakpoint.
 - Prototype-executor should focus prototyping on Tasks 6, 7, 8 (layout changes)
 - Tasks 9, 10, 11, 12 are simpler and can be done as focused fixes
 
-## Verification
+## Execution Log
 
-After implementation:
-- Re-run PROP-01 through PROP-17 in 3-viewport headed browser setup
-- Verify all 5 functional fixes
-- Confirm responsive behavior at 375px, 768px, 1440px
-- Check console for new errors
-- Verify i18n keys exist for any new strings
+| Task | Status | Commit/Note |
+|------|--------|-------------|
+| 1. Vote button visibility | ✅ | `6e51cbe` — FAB only when `voting_ends_at > now` |
+| 2. Garbage data cleanup | ✅ | `scripts/cleanup-qa-garbage.sql` — run manually |
+| 3. Execution deadline | ✅ | `6e51cbe` — added to Decision Rail for finalized proposals |
+| 4. Freeze attempt limit | ✅ | `6e51cbe` — "2 of 3" in 3 locales |
+| 5. Onboarding persistence | ✅ | Already implemented (localStorage). QA artifact. |
+| 6. Mobile Decision Rail | ✅ | `95a673a` — inline accordion cards (Proto C) |
+| 7. Sticky bar rationalization | ✅ | `95a673a` — floating Vote FAB replaces sticky bar |
+| 8. Wizard tab labels | ✅ | `95a673a` — numbered stepper with icons |
+| 9. Role-aware CTAs | ✅ | `95a673a` — admin/council gate on "Review discussion stage" |
+| 10. Comment display names | ✅ | `95a673a` — "Name · Organic #ID" format |
+| 11. Stage transition history | ✅ | `95a673a` — horizontal chips below stepper |
+| 12. Category filter responsive | ✅ | `95a673a` — icon + short label on mobile |
