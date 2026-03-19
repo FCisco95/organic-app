@@ -4,7 +4,7 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { Link, useRouter } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { useSearchParams } from 'next/navigation';
+
 
 import { createClient } from '@/lib/supabase/client';
 import Image from 'next/image';
@@ -49,7 +49,6 @@ export default function ProfilePage() {
   const { user, profile, loading, refreshProfile } = useAuth();
   const { publicKey, signMessage, connected } = useWallet();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const balanceCacheRef = useRef<Map<string, { balance: number; ts: number }>>(new Map());
   const balanceRequestRef = useRef<{ controller: AbortController | null; id: number }>({
@@ -204,8 +203,9 @@ export default function ProfilePage() {
   }, [loadTwitterAccount]);
 
   useEffect(() => {
-    const linked = searchParams.get('twitter_linked');
-    const reason = searchParams.get('reason');
+    const params = new URLSearchParams(window.location.search);
+    const linked = params.get('twitter_linked');
+    const reason = params.get('reason');
     if (!linked) return;
 
     if (linked === '1') {
@@ -223,7 +223,8 @@ export default function ProfilePage() {
 
     void refreshProfile();
     void loadTwitterAccount();
-  }, [loadTwitterAccount, refreshProfile, searchParams, t]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const fetchTokenBalance = useCallback(async (walletAddress: string, cacheKey: string) => {
     // Check client-side cache with TTL
