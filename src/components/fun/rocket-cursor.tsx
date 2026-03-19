@@ -10,8 +10,8 @@ export function RocketCursor() {
     if (!el) return;
 
     const onMove = (e: MouseEvent) => {
-      el.style.left = `${e.clientX + 15}px`;
-      el.style.top = `${e.clientY - 10}px`;
+      el.style.left = `${e.clientX - 16}px`;
+      el.style.top = `${e.clientY - 16}px`;
     };
 
     document.addEventListener('mousemove', onMove);
@@ -21,10 +21,9 @@ export function RocketCursor() {
   return (
     <div
       ref={ref}
-      className="fixed text-xl z-[998] pointer-events-none drop-shadow-[0_0_8px_var(--orange)]"
-      style={{ transition: 'left 0.12s ease-out, top 0.12s ease-out' }}
+      className="fixed text-2xl z-[998] pointer-events-none"
     >
-      🚀
+      🎯
     </div>
   );
 }

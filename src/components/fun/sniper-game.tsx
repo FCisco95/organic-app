@@ -77,7 +77,7 @@ export function SniperGame() {
       >
         <span>🎯</span>
         <span>
-          Snipers: <strong>{score}</strong>
+          Robots: <strong>{score}</strong>
         </span>
       </div>
 
@@ -100,7 +100,7 @@ export function SniperGame() {
             pointerEvents: ghost.popped ? 'none' : 'auto',
           }}
         >
-          💀
+          🤖
         </div>
       ))}
     </>
