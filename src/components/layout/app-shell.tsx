@@ -5,6 +5,7 @@ import { Sidebar } from './sidebar';
 import { MobileSidebar } from './mobile-sidebar';
 import { TopBar } from './top-bar';
 import { Particles } from '@/components/fun/particles';
+import { FunOverlay } from '@/components/fun/fun-overlay';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
@@ -17,6 +18,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <TopBar />
           <main className="flex-1 min-h-0 overflow-auto">{children}</main>
         </div>
+        <FunOverlay />
       </div>
     </SidebarProvider>
   );
