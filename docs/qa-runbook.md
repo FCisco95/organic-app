@@ -323,75 +323,34 @@ Feedback:
 - Confidence score (`1-5`):
 
 ## 4.9 Proposals and Governance Workflow
-<!-- qa-status: DONE | plan: docs/plans/2026-03-10-proposals-qa-revamp.md | pr: #20,#21 -->
+<!-- qa-status: PLANNED | severity: S2 | plan: docs/plans/2026-03-19-proposals-qa-revamp.md -->
 Routes: `/proposals`, `/proposals/new`, `/proposals/[id]`.
 
 Use cases:
-- [x] `PROP-01` Member creates proposal draft/public submission. **PASS, S3**
-- [x] `PROP-02` Proposal list shows governance signal/context correctly. **PASS with issues, S2**
-- [x] `PROP-03` Proposal detail renders structured sections clearly. **PASS, S3**
-- [x] `PROP-04` Proposal comments can be posted and read. **PASS, S3**
-- [x] `PROP-05` Stage transitions are forward-only and clearly communicated. **PASS, S3**
-- [x] `PROP-06` Start voting works for authorized role only. **PASS, S3**
-- [x] `PROP-07` Vote eligibility and effective power are understandable. **PASS, S3**
-- [x] `PROP-08` Casting vote succeeds/fails with clear feedback. **PARTIAL, S2** — vote buttons appear when active voting; "Voting closed" shown for expired
-- [x] `PROP-09` Finalize voting behaves idempotently. **PASS, S3**
-- [x] `PROP-10` Freeze and resume semantics are understandable to operators. **PASS, S3** — "Resume Finalization" button added
-- [x] `PROP-11` Execution-window messaging for passed proposal is clear. **PASS, S3**
+- [x] `PROP-01` Member creates proposal draft/public submission. **PARTIAL, S2** — wizard works but tab labels truncate on mobile
+- [x] `PROP-02` Proposal list shows governance signal/context correctly. **PARTIAL, S2** — garbage test data, admin CTA shown to members, count off-by-one
+- [x] `PROP-03` Proposal detail renders structured sections clearly. **PARTIAL, S2** — Decision Rail hidden/buried on mobile
+- [x] `PROP-04` Proposal comments can be posted and read. **PARTIAL, S2** — no display name, only avatar initial + Organic ID
+- [x] `PROP-05` Stage transitions are forward-only and clearly communicated. **PARTIAL, S2** — no transition history visible
+- [x] `PROP-06` Start voting works for authorized role only. **PARTIAL, S2** — works but finalize lacks attempt limit info
+- [x] `PROP-07` Vote eligibility and effective power are understandable. **PARTIAL, S2** — no token holder messaging for disconnected wallet
+- [x] `PROP-08` Casting vote succeeds/fails with clear feedback. **PARTIAL, S2** — sticky Vote button visible when voting closed
+- [x] `PROP-09` Finalize voting behaves idempotently. **PARTIAL, S2** — no execution deadline shown
+- [x] `PROP-10` Freeze and resume semantics are understandable to operators. **PARTIAL, S2** — good UX but missing max attempt count
+- [x] `PROP-11` Execution-window messaging for passed proposal is clear. **PARTIAL, S2** — no execution deadline surfaced
 - [x] `PROP-12` Proposal templates are usable (if enabled/configured). **SKIP** — not implemented
-- [x] `PROP-13` Mobile readability and action placement are acceptable. **PASS with issues, S2**
+- [x] `PROP-13` Mobile readability and action placement are acceptable. **PARTIAL, S2** — Vote shown when closed, Decision Rail buried, Follow duplicated
 - [x] `PROP-14` Proposal threshold gate blocks under-threshold proposers with clear reason. **PASS, S3**
-- [x] `PROP-15` Anti-abuse cooldown/one-live-proposal guard is enforced and explained. **PASS, S3** — pre-flight eligibility check blocks before wizard
-- [x] `PROP-16` Passed proposal finalize path remains usable under execution-window degraded mode (`PGRST204`) with non-blocking warning behavior. **PARTIAL, S2**
-- [x] `PROP-17` Proposal detail shows source-idea badge/link when `source_idea_id` is present. **PASS, S3**
+- [x] `PROP-15` Anti-abuse cooldown/one-live-proposal guard is enforced and explained. **PASS, S3**
+- [x] `PROP-16` Passed proposal finalize path remains usable under execution-window degraded mode (`PGRST204`) with non-blocking warning behavior. **PARTIAL, S2** — code exists but untestable locally
+- [x] `PROP-17` Proposal detail shows source-idea badge/link when `source_idea_id` is present. **PARTIAL, S2** — code exists but no test data to verify visually
 
-### Feedback (Re-test 2026-03-14 — post-revamp)
-
-**What works well (improvements from revamp):**
-- Two-column forum layout with Governance Pulse sidebar showing live KPIs (71 open, 17 voting, 26 discussion) (PROP-02)
-- Proposal wizard: two-column form + live preview, tab navigation, character counters, category cards with icons (PROP-01)
-- Stage stepper renders clearly: Draft → Public → Discussion → Voting → Finalized with checkmarks on completed stages (PROP-05)
-- Pre-flight eligibility check: non-members see "You need to be a member" before wizard loads (PROP-14, PROP-15)
-- Comments post with author Organic ID, timestamp, version badge, and counter updates live (PROP-04)
-- Council Actions card with Start Voting / Finalize Voting / force-finalize warning (PROP-06, PROP-09)
-- Voting panel: "You did not hold $ORG tokens" clarity, countdown timer, Yes/No/Abstain bars, quorum status (PROP-07)
-- Decision Rail sidebar: Governance status, Version context panel, Immutable proposal reference (PROP-03)
-- "Voting closed" indicator shown on expired voting proposals (PROP-07, PROP-08)
-- Mobile sticky action bar at bottom of detail page: Following + Vote buttons (PROP-13)
-- Live Vote Banner on proposals list with countdown and "Cast your vote" CTA (PROP-02)
-- Browse by stage sidebar, Hot Topics, and category quick filters (PROP-02)
-- Finalized proposals show Quorum "Not Met" (red) or "Passed" result with full breakdown (PROP-09)
-
-**What does not work (remaining issues):**
-- ~~**Live Vote Banner contradiction**: Shows "LIVE VOTING" and "Voting closed" simultaneously on the same banner~~ — **FIXED** (commits 14204a1..ea21cbb): muted slate gradient, "Awaiting finalization" header, "View results" CTA
-- **Garbage test data in proposals**: Multiple proposals with `http://localhost:3003/pt-PT` titles/content from worktree prototype QA sessions — need data cleanup (PROP-02)
-- ~~**"Canceled" pill text truncated** on desktop at narrower viewports~~ — **FIXED** (commit 5d4501a): `whitespace-nowrap` + `flex-shrink-0` on pills + scroll fade affordance
-- ~~**Category text truncation**: "Community / Partnership" and "Governance / Po..." cut off~~ — **FIXED**: `overflow-x-auto` + `scrollbar-hide` + right-edge fade gradient on mobile
-- ~~**No empty state illustration**: When 0 proposals visible~~ — **FIXED**: empty state has icon, i18n heading/description, and "Create First Proposal" CTA
-- ~~**Stage stepper truncation on mobile**~~ — **FIXED**: `scrollbar-hide` + right-edge fade gradient on small screens
-- ~~**Confirmation dialog for finalize still missing**~~ — **Already existed**: `admin-voting-controls.tsx` has confirmation modal (lines 168-196)
-- **Console error**: "Invalid or unexpected token" on page load (minor, likely unrelated)
-
-**UI improvements still needed:**
-- ~~**Fix Live Vote Banner logic**~~ — **DONE**
-- ~~**Add empty state**~~ — **DONE** (with i18n)
-- ~~**Responsive filter pills**~~ — **DONE** (scroll fade affordance)
-- ~~**Confirmation dialog for finalize**~~ — **Already existed**
-- **Clean up test data**: Remove `localhost:3003` garbage proposals from the database (data hygiene)
-
-**Standalone tasks remaining:**
-- **TASK: Clean up QA test data from prototype sessions** (data hygiene)
-
-**All i18n hardcoded strings fixed (fix/4.9-proposals-polish):**
-- Sort options ("New", "Hot", "Most Discussed", "Most Voted") → `t('sortNew')` etc.
-- Sidebar headings ("Governance Pulse", "Browse by stage", "Hot Topics") → `t('sidebarGovernancePulse')` etc.
-- Empty state headings and search description → `t('emptySearchTitle')`, `t('emptyTitle')`, `t('emptySearchDescription')`
-- 11 new i18n keys added per locale (en, pt-PT, zh-CN)
-
-**Section severity:** S3 (polish — only garbage test data cleanup and minor console error remain)
-**Confidence score:** 4.8/5 (PROP-01 through PROP-11 tested live; PROP-12 skipped; PROP-16 partial)
-
-**Execution status:** _polish pass complete (2026-03-14) — i18n gaps, scroll affordances, and empty state fixed in fix/4.9-proposals-polish branch_
+### Feedback
+<!-- Full feedback archived in git history + plan file. Summary below. -->
+**Tested:** 2026-03-19 | **Cases:** 15/17 (1 skipped) | **Severity:** S2
+**Priority fixes:** Sticky Vote button shown when voting closed (mobile), garbage localhost:3003 test data, no execution deadline display, onboarding modal not persisting dismissal (cross-cutting S1)
+**Top revamp:** Decision Rail collapsible on mobile, sticky bar rationalization, wizard tab labels, role-aware CTAs, comment display names, stage transition history
+**Plan:** `docs/plans/2026-03-19-proposals-qa-revamp.md`
 
 ## 4.10 Disputes Workflow (File -> Evidence -> Resolve/Appeal)
 <!-- qa-status: PENDING -->

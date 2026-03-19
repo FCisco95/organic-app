@@ -16,7 +16,7 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 | 4.6 | Quests, Referrals, Gamification | 11 | PENDING | — | — | — | — |
 | 4.7 | Tasks E2E | 17 | PLANNED | S1 | [plan](plans/2026-03-08-tasks-qa-revamp.md) | — | — |
 | 4.8 | Sprints E2E | 11 | PENDING | — | — | — | — |
-| 4.9 | Proposals, Governance | 17 | DONE | S3 | [plan](plans/2026-03-10-proposals-qa-revamp.md) | PR #20 | PR #21 |
+| 4.9 | Proposals, Governance | 17 | PLANNED | S2 | [plan](plans/2026-03-19-proposals-qa-revamp.md) | — | — |
 | 4.10 | Disputes | 13 | PENDING | — | — | — | — |
 | 4.11 | Rewards | 9 | PENDING | — | — | — | — |
 | 4.12 | Notifications | 6 | PENDING | — | — | — | — |
@@ -45,6 +45,7 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 
 | Action | Section | What to do |
 |--------|---------|------------|
+| **Next to fix** | 4.9 Proposals | Plan exists → execute Phase B (functional fixes, 5 tasks) |
 | **Next to plan** | 4.1 Auth | Write plan from runbook feedback — highest S1 priority |
 | **Next to fix** | 4.7 Tasks | Plan exists → execute Phase B (functional fixes only) |
 | **Next to revamp** | 4.5 Profile | Fixed + revamped → merge PR to complete |
@@ -145,3 +146,4 @@ Revamp section 4.{X}. Read docs/qa-dashboard.md for plan link, then use prototyp
 | 2026-03-14 | 4.9 | Re-tested + polished | `fix/4.9-proposals-polish` | i18n, scroll fade, empty states |
 | 2026-03-19 | 4.5 | QA tested + planned | — | Plan: `2026-03-19-profile-progression-fixes.md`. S1: quest i18n, Twitter connect/callback. |
 | 2026-03-19 | 4.5 | Fixed + revamped | `fix/4.5-profile-progression-fixes` | 4 functional fixes + Bento Grid revamp (hero card, timeline quests, progress rings, design tokens) |
+| 2026-03-19 | 4.9 | Re-QA tested + planned | — | Full re-test: 15/17 cases PARTIAL S2, 1 SKIP, plan: `2026-03-19-proposals-qa-revamp.md` (12 tasks, 2 tracks) |
