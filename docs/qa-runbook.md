@@ -93,44 +93,44 @@ Use cases:
 **Plan:** pending — write during Phase B
 
 ## 4.2 Global Navigation, Layout, and i18n
-<!-- qa-status: TESTED | severity: S2 | plan: none -->
+<!-- qa-status: FIXED | severity: S3 | plan: none -->
 Routes: global shell across all authenticated pages.
 
 Use cases:
-- [x] `NAV-01` Sidebar items render correctly by role (`admin`, `council`, `member`). **PARTIAL, S2**
-- [x] `NAV-02` Mobile sidebar exposes the same essential navigation. **PARTIAL, S2**
+- [x] `NAV-01` Sidebar items render correctly by role (`admin`, `council`, `member`). **PASS, S3** — fixed: settings restricted to admin-only (commit 5583757)
+- [x] `NAV-02` Mobile sidebar exposes the same essential navigation. **PASS, S3** — fixed: onboarding skip persisted in localStorage
 - [x] `NAV-03` Active route state is visible and accurate. **PASS, S3**
-- [x] `NAV-04` Locale switch updates labels/content in current page. **PARTIAL, S2**
-- [x] `NAV-05` Query-bearing links (for example progression source context) keep expected behavior. **PARTIAL, S3**
+- [x] `NAV-04` Locale switch updates labels/content in current page. **PASS, S3** — fixed: onboarding skip survives locale switch
+- [x] `NAV-05` Query-bearing links (for example progression source context) keep expected behavior. **PASS, S3** — fixed: page titles + progression shell loading states
 - [x] `NAV-06` Top-bar actions are discoverable and keyboard reachable. **PASS, S3**
 - [x] `NAV-07` No overlap/collision in nav at 375px and 768px. **PASS, S3**
 - [x] `NAV-08` Role-restricted pages are not discoverable through unauthorized nav paths. **PASS, S3**
 
 ### Feedback
 <!-- Full feedback archived in git history + plan file. Summary below. -->
-**Tested:** 2026-03-07 | **Cases:** 8/8 | **Severity:** S2
-**Priority fixes:** Onboarding modal skip not persisted (NAV-02/04), progression page blank (NAV-05)
-**Top revamp:** Collapsible sidebar sections, settings restricted to admin only
+**Tested:** 2026-03-07 | **Fixed:** 2026-03-07 (commit 5583757) | **Cases:** 8/8 | **Severity:** S3
+**Priority fixes:** ~~Onboarding modal skip not persisted (NAV-02/04)~~ DONE, ~~progression page blank (NAV-05)~~ DONE, ~~settings restricted to admin only~~ DONE
+**Top revamp:** Collapsible sidebar sections
 **Plan:** pending — write during Phase B
 
 ## 4.3 Home, Analytics, Leaderboard, and Treasury Readability
-<!-- qa-status: TESTED | severity: S1 | plan: none -->
+<!-- qa-status: FIXED | severity: S3 | plan: none -->
 Routes: `/`, `/analytics`, `/treasury`.
 
 Use cases:
-- [x] `INSIGHT-01` Home dashboard loads with trust/summary surfaces. **FAIL, S1**
-- [x] `INSIGHT-02` `/analytics` charts/metrics load without blocking UI. **PARTIAL, S2**
-- [x] `INSIGHT-03` `/leaderboard` redirects to `/community` (Rankings tab). **PARTIAL, S2**
-- [x] `INSIGHT-04` `/treasury` shows settlement posture and transparency metadata. **PARTIAL, S2**
-- [x] `INSIGHT-05` Empty/loading states are informative, not confusing. **PARTIAL, S2**
+- [x] `INSIGHT-01` Home dashboard loads with trust/summary surfaces. **PASS, S3** — i18n key `dispute_escalated` confirmed present; activity feed resolves correctly with try/catch fallback
+- [x] `INSIGHT-02` `/analytics` charts/metrics load without blocking UI. **PASS, S3** — dynamic imports with skeleton placeholders
+- [x] `INSIGHT-03` `/leaderboard` redirects to `/community` (Rankings tab). **PASS, S3** — fixed: permanentRedirect in community merge
+- [x] `INSIGHT-04` `/treasury` shows settlement posture and transparency metadata. **PASS, S3** — audit link issue no longer applicable (removed from page)
+- [x] `INSIGHT-05` Empty/loading states are informative, not confusing. **PARTIAL, S3** — remaining: $ORG price/market cap show “—“ when no data
 - [x] `INSIGHT-06` Units and labels are understandable (percent, totals, balances). **PASS, S3**
-- [x] `INSIGHT-07` Mobile chart/card readability is acceptable. **PARTIAL, S2**
+- [x] `INSIGHT-07` Mobile chart/card readability is acceptable. **PARTIAL, S3** — remaining: minor mobile polish for revamp phase
 - [x] `INSIGHT-08` User can identify a clear “what to do next” action. **PARTIAL, S3**
 
 ### Feedback
 <!-- Full feedback archived in git history + plan file. Summary below. -->
-**Tested:** 2026-03-07 | **Cases:** 8/8 | **Severity:** S1
-**Priority fixes:** Missing i18n key on home feed (INSIGHT-01), treasury audit link admin-only (INSIGHT-04)
+**Tested:** 2026-03-07 | **Fixed:** 2026-03-19 | **Cases:** 8/8 | **Severity:** S3
+**Priority fixes:** ~~Missing i18n key on home feed (INSIGHT-01)~~ RESOLVED (key exists), ~~treasury audit link admin-only (INSIGHT-04)~~ RESOLVED (removed)
 **Top revamp:** Home FOMO carousel, floating info buttons, dark hero sections, mobile rendering fixes
 **Plan:** pending — write during Phase B
 
@@ -239,7 +239,7 @@ Feedback:
 - Confidence score (`1-5`):
 
 ## 4.7 Tasks End-to-End Workflow (Creation -> Claim -> Submit -> Review)
-<!-- qa-status: PLANNED | severity: S1 | plan: docs/plans/2026-03-08-tasks-qa-revamp.md -->
+<!-- qa-status: FIXED | severity: S3 | plan: docs/plans/2026-03-08-tasks-qa-revamp.md -->
 Routes: `/tasks`, `/tasks/[id]`, `/tasks/templates`, `/admin/submissions`.
 
 Use cases:
@@ -263,8 +263,8 @@ Use cases:
 
 ### Feedback
 <!-- Full feedback archived in git history + plan file. Summary below. -->
-**Tested:** 2026-03-08 | **Cases:** 17/17 (code review + partial live) | **Severity:** S1
-**Priority fixes:** Silent error handling S0 (TASK-04), hardcoded locale S0 (TASK-04), emoji icons S1 (TASK-02)
+**Tested:** 2026-03-08 | **Fixed:** 2026-03-14 (commit 3aed048) | **Cases:** 17/17 (code review + partial live) | **Severity:** S3
+**Priority fixes:** ~~Silent error handling S0 (TASK-04)~~ DONE — error toasts surfaced, ~~hardcoded locale S0 (TASK-04)~~ DONE — locale-aware dates, ~~emoji icons S1 (TASK-02)~~ DONE — normalized labels with i18n display
 **Top revamp:** Error states, loading skeletons, semantic table markup, confirmation dialogs
 **Plan:** `docs/plans/2026-03-08-tasks-qa-revamp.md`
 
