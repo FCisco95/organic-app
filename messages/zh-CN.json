@@ -1488,6 +1488,7 @@
       "proposals": "提案",
       "profile": "个人资料"
     },
+    "achievementsHeading": "成就（已解锁 {unlocked}/{total}）",
     "questCopy": {
       "daily_task_push": {
         "title": "每日建设者",

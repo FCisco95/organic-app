@@ -1488,6 +1488,7 @@
       "proposals": "Proposals",
       "profile": "Profile"
     },
+    "achievementsHeading": "Achievements ({unlocked}/{total} unlocked)",
     "questCopy": {
       "daily_task_push": {
         "title": "Daily Builder",

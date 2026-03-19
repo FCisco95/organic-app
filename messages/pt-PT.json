@@ -1488,6 +1488,7 @@
       "proposals": "Propostas",
       "profile": "Perfil"
     },
+    "achievementsHeading": "Conquistas ({unlocked}/{total} desbloqueadas)",
     "questCopy": {
       "daily_task_push": {
         "title": "Construtor diário",
