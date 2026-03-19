@@ -67,6 +67,20 @@
     --sidebar-accent-foreground: 28 100% 60%;
     --sidebar-muted: 217 33% 15%;
     --sidebar-muted-foreground: 215 15% 50%;
+
+    /* Extended palette (non-HSL, used by fun components) */
+    --orange: #ff6b2c;
+    --orange-glow: #ff6b2c55;
+    --orange-dim: #ff6b2c15;
+    --yellow: #ffb800;
+    --green: #00e676;
+    --red: #ff4444;
+    --purple: #a855f7;
+    --cyan: #22d3ee;
+    --text-dim: #8888aa;
+    --text-dimmer: #555570;
+    --surface: #0e0e1a;
+    --surface2: #161625;
   }
 
   .dark {
@@ -226,6 +240,157 @@
   display: none;
 }
 
+/* Sniper hunting game */
+@keyframes ghost-float {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  25% { transform: translateY(-15px) rotate(2deg); }
+  50% { transform: translateY(-20px) rotate(-2deg) scaleX(-1); }
+  75% { transform: translateY(-10px) rotate(3deg) scaleX(-1); }
+}
+
+@keyframes ghost-pop {
+  0% { transform: scale(1); opacity: 1; filter: brightness(1); }
+  30% { transform: scale(1.3); filter: brightness(3) saturate(0); }
+  100% { transform: scale(0.2) rotate(180deg); opacity: 0; filter: brightness(3) saturate(0); }
+}
+
+@keyframes score-pop-up {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-40px) scale(1.3); }
+}
+
+@keyframes slide-in-left {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.animate-slide-in {
+  animation: slide-in-left 0.4s ease both;
+}
+
+/* Card hover effects — top-edge glow + shimmer sweep */
+@keyframes shimmer-slide {
+  0% { left: -100%; }
+  100% { left: 200%; }
+}
+
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes charBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+
+.card-hover {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  border-radius: 18px;
+}
+
+.card-hover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--orange), transparent);
+  opacity: 0;
+  transition: opacity 0.4s;
+  z-index: 1;
+}
+
+.card-hover:hover {
+  border-color: rgba(255, 107, 44, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+.card-hover:hover::before {
+  opacity: 1;
+}
+
+/* Shimmer child element */
+.card-shimmer {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 107, 44, 0.03), transparent);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.card-hover:hover .card-shimmer {
+  animation: shimmer-slide 0.8s ease;
+}
+
+/* Live badge pulsing */
+.live-badge-pulse {
+  animation: live-pulse 2s infinite;
+}
+
+/* Section label with extending line */
+.section-label-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-dimmer);
+  font-weight: 700;
+}
+
+.section-label-line::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: hsl(var(--border));
+}
+
+/* Game-style primary button */
+.btn-game-primary {
+  background: linear-gradient(135deg, var(--orange), #ff8844);
+  color: #000;
+  font-weight: 700;
+  border-radius: 11px;
+  transition: all 0.3s;
+}
+
+.btn-game-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px var(--orange-glow);
+}
+
+/* Game-style secondary button */
+.btn-game-secondary {
+  background: var(--surface2);
+  border: 1px solid hsl(var(--border));
+  color: hsl(var(--foreground));
+  font-weight: 600;
+  border-radius: 11px;
+  transition: all 0.3s;
+}
+
+.btn-game-secondary:hover {
+  border-color: var(--orange);
+  transform: translateY(-2px);
+}
+
+/* Mobile: disable hover lift on touch devices */
+@media (max-width: 640px) {
+  .card-hover:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .animate-organic-grow,
@@ -233,6 +398,7 @@
   .animate-count-up,
   .animate-lock-shake,
   .animate-lock-burst,
+  .animate-slide-in,
   .animate-fade-up,
   .animate-fade-up-in {
     animation: none !important;
