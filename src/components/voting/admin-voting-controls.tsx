@@ -105,6 +105,7 @@ export function AdminVotingControls({
               <p className="text-red-700">
                 {t('admin.finalizationFrozen', {
                   attempts: proposal.finalization_attempts ?? 0,
+                  maxAttempts: 3,
                 })}
               </p>
               {proposal.finalization_failure_reason && (

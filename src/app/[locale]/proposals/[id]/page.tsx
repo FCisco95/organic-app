@@ -642,7 +642,7 @@ export default function ProposalDetailPage() {
               {proposal.execution_status && (
                 <div className="flex items-center justify-between gap-3">
                   <span className="text-xs uppercase tracking-wide text-slate-500">
-                    {t('executionDeadline')}
+                    {t('railExecutionStatus')}
                   </span>
                   <span
                     className={`text-sm font-semibold ${
@@ -660,6 +660,29 @@ export default function ProposalDetailPage() {
                             : 'Expired'
                       }`
                     )}
+                  </span>
+                </div>
+              )}
+              {lifecycleStatus === 'finalized' && proposal.execution_deadline && (
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-xs uppercase tracking-wide text-slate-500">
+                    {t('executionDeadline')}
+                  </span>
+                  <span
+                    className={`text-sm font-semibold ${
+                      new Date(proposal.execution_deadline) < new Date()
+                        ? 'text-red-600'
+                        : 'text-slate-800'
+                    }`}
+                  >
+                    {new Date(proposal.execution_deadline) > new Date()
+                      ? t('executionDeadlineCountdown', {
+                          days: Math.ceil(
+                            (new Date(proposal.execution_deadline).getTime() - Date.now()) /
+                              (1000 * 60 * 60 * 24)
+                          ),
+                        })
+                      : t('executionDeadlineExpired')}
                   </span>
                 </div>
               )}
@@ -718,7 +741,9 @@ export default function ProposalDetailPage() {
               </Link>
             )}
         </div>
-        {proposal.status === 'voting' && (
+        {proposal.status === 'voting' &&
+          proposal.voting_ends_at &&
+          new Date(proposal.voting_ends_at) > new Date() && (
           <a
             href="#voting-panel"
             className="px-4 py-2 bg-organic-orange text-white rounded-lg text-sm font-medium"
