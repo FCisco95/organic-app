@@ -150,19 +150,16 @@ export function ProgressionShell({ sourceContext = null }: { sourceContext?: Sou
   };
 
   const resolveQuestTitle = (quest: QuestProgressItem): string => {
-    try {
-      return t(`questCopy.${quest.id}.title`);
-    } catch {
-      return quest.title;
-    }
+    const key = `questCopy.${quest.id}.title` as any;
+    const result = t(key);
+    // t() returns the key path on miss — detect and fall back to DB title
+    return result.startsWith('questCopy.') ? quest.title : result;
   };
 
   const resolveQuestDescription = (quest: QuestProgressItem): string => {
-    try {
-      return t(`questCopy.${quest.id}.description`);
-    } catch {
-      return quest.description || '';
-    }
+    const key = `questCopy.${quest.id}.description` as any;
+    const result = t(key);
+    return result.startsWith('questCopy.') ? (quest.description || '') : result;
   };
 
   return (
