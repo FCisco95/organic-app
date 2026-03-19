@@ -62,7 +62,6 @@
     "trustSprintTitle": "Contagem regressiva da sprint",
     "trustSprintPhase": "Fase atual: {phase}",
     "trustSprintNone": "Nenhuma sprint em fase de execução no momento.",
-    "trustSprintNoneShort": "Nenhum sprint ativo",
     "trustProposalTitle": "Propostas por fase",
     "trustProposalPublic": "Públicas: {count}",
     "trustProposalQualified": "Qualificadas: {count}",
@@ -181,7 +180,7 @@
     "validationEmailBlank": "O email não pode ficar em branco",
     "validationPasswordBlank": "A senha não pode ficar em branco",
     "toastSuccess": "Login realizado com sucesso!",
-    "toastInvalidCredentials": "O email ou a senha que introduziu está incorreto. Tente novamente ou redefina a sua senha.",
+    "toastInvalidCredentials": "Email ou senha incorretos",
     "showPassword": "Mostrar senha",
     "hidePassword": "Ocultar senha",
     "leftPanelTitle": "Bem-vindo de volta ao Organic",
@@ -1174,7 +1173,14 @@
     "infoSection3Title": "Ganhos e Reputação",
     "infoSection3Point1": "**Cada tarefa concluída rende-lhe XP e pontos.** O XP constrói o seu nível e posição no ranking. Os pontos convertem-se em recompensas em tokens $ORG no final de cada sprint.",
     "infoSection3Point2": "**A qualidade importa.** Os revisores classificam submissões de 1 a 5 estrelas. Pontuações de qualidade mais altas impulsionam a sua reputação e desbloqueiam futuras oportunidades.",
-    "infoSection3Point3": "**Dependências e subtarefas mantêm o trabalho organizado.** Tarefas grandes podem ser divididas em subtarefas, e as tarefas podem depender umas das outras — para que o trabalho certo aconteça na ordem certa."
+    "infoSection3Point3": "**Dependências e subtarefas mantêm o trabalho organizado.** Tarefas grandes podem ser divididas em subtarefas, e as tarefas podem depender umas das outras — para que o trabalho certo aconteça na ordem certa.",
+    "statsCompleted": "Tarefas concluídas",
+    "statsPoints": "Pontos totais",
+    "statsXp": "XP total",
+    "statsLevel": "Nível",
+    "earnCtaTitle": "Comece a ganhar com o DAO",
+    "earnCtaDescription": "Reclame tarefas, submeta trabalho e ganhe tokens $ORG. Cada contribuição conta.",
+    "earnCtaButton": "Criar conta"
   },
   "ReviewQueue": {
     "title": "Fila de revisão de submissões",
@@ -1328,7 +1334,11 @@
     "infoSection3Title": "Após a Submissão",
     "infoSection3Point1": "**Um revisor ou administrador avalia o seu trabalho** com base nos critérios de aceitação. Podem aprovar, rejeitar com feedback ou solicitar alterações.",
     "infoSection3Point2": "**Submissões aprovadas rendem-lhe o valor total de pontos e XP** indicado nesta tarefa. As classificações de qualidade (1–5 estrelas) do revisor também influenciam a sua reputação.",
-    "infoSection3Point3": "**As tarefas concluídas aparecem no seu perfil** como parte do seu histórico de contribuições — construindo a sua reputação on-chain ao longo do tempo."
+    "infoSection3Point3": "**As tarefas concluídas aparecem no seu perfil** como parte do seu histórico de contribuições — construindo a sua reputação on-chain ao longo do tempo.",
+    "earningsTitle": "O que vai ganhar",
+    "earningsPoints": "Pontos",
+    "earningsXp": "XP",
+    "earningsDisclaimer": "Estimativas de XP baseadas no valor da tarefa. O XP real pode variar conforme a avaliação de qualidade."
   },
   "Profile": {
     "loadingProfile": "Carregando seu perfil...",
@@ -1647,8 +1657,7 @@
       "dispute_escalated": "{actor} escalou a disputa: {title}",
       "dispute_resolved": "Disputa resolvida: {title}",
       "dispute_withdrawn": "{actor} retirou a disputa: {title}",
-      "empty": "Sem atividade ainda",
-      "viewAll": "Ver toda a atividade"
+      "empty": "Sem atividade ainda"
     }
   },
   "Analytics": {
@@ -2748,25 +2757,5 @@
     "signInPrompt": "Inicia sessão para participar na discussão.",
     "signIn": "Iniciar sessão",
     "commentsEmpty": "Ainda não há comentários. Inicia a conversa."
-  },
-  "Community": {
-    "title": "Comunidade",
-    "subtitle": "Conhece as pessoas que constroem a Organic DAO — explora rankings e o diretório de membros.",
-    "tabRankings": "Rankings",
-    "tabDirectory": "Diretório",
-    "searchRankings": "Pesquisar rankings por nome ou ID...",
-    "backToCommunity": "Voltar à Comunidade",
-    "totalMembers": "{count} membros",
-    "activeThisSprint": "{count} ativos neste sprint",
-    "streakers": "{count} em sequência",
-    "buildYourStreak": "Construa a sua sequência!",
-    "activityComingSoon": "Feed de atividade em breve",
-    "profileTabOverview": "Visão Geral",
-    "profileTabReputation": "Reputação",
-    "profileTabAchievements": "Conquistas",
-    "profileTabActivity": "Atividade",
-    "quickGlance": "Rank #{rank} · Nível {level} · {tasks} tarefas concluídas",
-    "achievementsEarned": "{earned} de {total} conquistas obtidas",
-    "xpBreakdownComingSoon": "Detalhamento de XP em breve"
   }
 }

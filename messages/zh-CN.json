@@ -62,7 +62,6 @@
     "trustSprintTitle": "冲刺倒计时",
     "trustSprintPhase": "当前阶段：{phase}",
     "trustSprintNone": "当前没有处于执行阶段的冲刺。",
-    "trustSprintNoneShort": "没有活跃的冲刺",
     "trustProposalTitle": "各阶段提案",
     "trustProposalPublic": "公开：{count}",
     "trustProposalQualified": "已达标：{count}",
@@ -181,7 +180,7 @@
     "validationEmailBlank": "邮箱不能为空",
     "validationPasswordBlank": "密码不能为空",
     "toastSuccess": "登录成功！",
-    "toastInvalidCredentials": "您输入的邮箱或密码不正确。请重试或重置密码。",
+    "toastInvalidCredentials": "邮箱或密码错误",
     "showPassword": "显示密码",
     "hidePassword": "隐藏密码",
     "leftPanelTitle": "欢迎回到 Organic",
@@ -1174,7 +1173,14 @@
     "infoSection3Title": "收益与声誉",
     "infoSection3Point1": "**每完成一个任务都会获得经验值和积分。**经验值提升您的等级和排行榜排名。积分在每个冲刺结束时转换为 $ORG 代币奖励。",
     "infoSection3Point2": "**质量很重要。**审核者对提交评分 1-5 星。更高的质量分数提升您的声誉并解锁未来的机会。",
-    "infoSection3Point3": "**依赖关系和子任务使工作井然有序。**大型任务可以拆分为子任务，任务之间可以相互依赖——确保正确的工作按正确的顺序进行。"
+    "infoSection3Point3": "**依赖关系和子任务使工作井然有序。**大型任务可以拆分为子任务，任务之间可以相互依赖——确保正确的工作按正确的顺序进行。",
+    "statsCompleted": "已完成任务",
+    "statsPoints": "总积分",
+    "statsXp": "总经验值",
+    "statsLevel": "等级",
+    "earnCtaTitle": "开始在DAO中赚取",
+    "earnCtaDescription": "认领任务，提交工作，赚取$ORG代币。每一份贡献都很重要。",
+    "earnCtaButton": "创建账户"
   },
   "ReviewQueue": {
     "title": "提交审核队列",
@@ -1328,7 +1334,11 @@
     "infoSection3Title": "提交之后",
     "infoSection3Point1": "**审核者或管理员会根据验收标准评估你的工作。** 他们会批准、附反馈拒绝或要求修改。",
     "infoSection3Point2": "**获批的提交将为你赢得此任务列出的全部积分和经验值。** 审核者的质量评分（1–5 星）也会影响你的声誉。",
-    "infoSection3Point3": "**已完成的任务会显示在你的个人资料上**，作为你贡献历史的一部分 — 随着时间推移建立你的链上声誉。"
+    "infoSection3Point3": "**已完成的任务会显示在你的个人资料上**，作为你贡献历史的一部分 — 随着时间推移建立你的链上声誉。",
+    "earningsTitle": "你将获得",
+    "earningsPoints": "积分",
+    "earningsXp": "经验值",
+    "earningsDisclaimer": "经验值估算基于任务价值。实际经验值可能因审核质量评分而异。"
   },
   "Profile": {
     "loadingProfile": "正在加载您的个人资料...",
@@ -1647,8 +1657,7 @@
       "dispute_escalated": "{actor} 升级了争议：{title}",
       "dispute_resolved": "争议已解决：{title}",
       "dispute_withdrawn": "{actor} 撤回了争议：{title}",
-      "empty": "暂无活动",
-      "viewAll": "查看所有活动"
+      "empty": "暂无活动"
     }
   },
   "Analytics": {
@@ -2749,25 +2758,5 @@
     "signInPrompt": "登录后参与讨论。",
     "signIn": "登录",
     "commentsEmpty": "暂无评论，来开启讨论吧。"
-  },
-  "Community": {
-    "title": "社区",
-    "subtitle": "认识构建 Organic DAO 的成员 — 浏览排行榜和成员目录。",
-    "tabRankings": "排行榜",
-    "tabDirectory": "成员目录",
-    "searchRankings": "按名称或 ID 搜索排名...",
-    "backToCommunity": "返回社区",
-    "totalMembers": "{count} 位成员",
-    "activeThisSprint": "{count} 本冲刺活跃",
-    "streakers": "{count} 连续活跃",
-    "buildYourStreak": "建立你的连续记录！",
-    "activityComingSoon": "活动动态即将推出",
-    "profileTabOverview": "概览",
-    "profileTabReputation": "声誉",
-    "profileTabAchievements": "成就",
-    "profileTabActivity": "活动",
-    "quickGlance": "排名 #{rank} · 等级 {level} · {tasks} 个任务已完成",
-    "achievementsEarned": "已获得 {earned}/{total} 个成就",
-    "xpBreakdownComingSoon": "XP明细即将推出"
   }
 }

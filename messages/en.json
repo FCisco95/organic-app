@@ -62,7 +62,6 @@
     "trustSprintTitle": "Sprint countdown",
     "trustSprintPhase": "Current phase: {phase}",
     "trustSprintNone": "No sprint currently in an execution phase.",
-    "trustSprintNoneShort": "No active sprint",
     "trustProposalTitle": "Proposals by stage",
     "trustProposalPublic": "Public: {count}",
     "trustProposalQualified": "Qualified: {count}",
@@ -181,7 +180,7 @@
     "validationEmailBlank": "Email cannot be blank",
     "validationPasswordBlank": "Password cannot be blank",
     "toastSuccess": "Logged in successfully!",
-    "toastInvalidCredentials": "The email or password you entered is incorrect. Please try again or reset your password.",
+    "toastInvalidCredentials": "Incorrect email or password",
     "showPassword": "Show password",
     "hidePassword": "Hide password",
     "leftPanelTitle": "Welcome back to Organic",
@@ -1174,7 +1173,14 @@
     "infoSection3Title": "Earning & Reputation",
     "infoSection3Point1": "**Every completed task earns you XP and points.** XP builds your level and leaderboard rank. Points convert to $ORG token rewards at the end of each sprint.",
     "infoSection3Point2": "**Quality matters.** Reviewers rate submissions 1–5 stars. Higher quality scores boost your reputation and unlock future opportunities.",
-    "infoSection3Point3": "**Dependencies and subtasks keep work organized.** Large tasks can be broken into subtasks, and tasks can depend on each other — so the right work happens in the right order."
+    "infoSection3Point3": "**Dependencies and subtasks keep work organized.** Large tasks can be broken into subtasks, and tasks can depend on each other — so the right work happens in the right order.",
+    "statsCompleted": "Tasks completed",
+    "statsPoints": "Total points",
+    "statsXp": "Total XP",
+    "statsLevel": "Level",
+    "earnCtaTitle": "Start earning with the DAO",
+    "earnCtaDescription": "Claim tasks, submit work, and earn $ORG tokens. Every contribution counts.",
+    "earnCtaButton": "Create account"
   },
   "ReviewQueue": {
     "title": "Submission review queue",
@@ -1328,7 +1334,11 @@
     "infoSection3Title": "After Submission",
     "infoSection3Point1": "**A reviewer or admin evaluates your work** against the acceptance criteria. They'll approve, reject with feedback, or request changes.",
     "infoSection3Point2": "**Approved submissions earn you the full point and XP value** listed on this task. Quality ratings (1–5 stars) from the reviewer also factor into your reputation.",
-    "infoSection3Point3": "**Completed tasks appear on your profile** as part of your contribution history — building your on-chain reputation over time."
+    "infoSection3Point3": "**Completed tasks appear on your profile** as part of your contribution history — building your on-chain reputation over time.",
+    "earningsTitle": "What you'll earn",
+    "earningsPoints": "Points",
+    "earningsXp": "XP",
+    "earningsDisclaimer": "XP estimates based on task value. Actual XP may vary based on review quality rating."
   },
   "Profile": {
     "loadingProfile": "Loading your profile...",
@@ -1647,8 +1657,7 @@
       "dispute_escalated": "{actor} escalated dispute: {title}",
       "dispute_resolved": "Dispute resolved: {title}",
       "dispute_withdrawn": "{actor} withdrew dispute: {title}",
-      "empty": "No activity yet",
-      "viewAll": "View all activity"
+      "empty": "No activity yet"
     }
   },
   "Analytics": {
@@ -2748,25 +2757,5 @@
     "signInPrompt": "Sign in to join the discussion.",
     "signIn": "Sign in",
     "commentsEmpty": "No comments yet. Start the thread."
-  },
-  "Community": {
-    "title": "Community",
-    "subtitle": "Meet the people building the Organic DAO — explore rankings and the member directory.",
-    "tabRankings": "Rankings",
-    "tabDirectory": "Directory",
-    "searchRankings": "Search rankings by name or ID...",
-    "backToCommunity": "Back to Community",
-    "totalMembers": "{count} members",
-    "activeThisSprint": "{count} active this sprint",
-    "streakers": "{count} streakers",
-    "buildYourStreak": "Build your streak!",
-    "activityComingSoon": "Activity feed coming soon",
-    "profileTabOverview": "Overview",
-    "profileTabReputation": "Reputation",
-    "profileTabAchievements": "Achievements",
-    "profileTabActivity": "Activity",
-    "quickGlance": "Rank #{rank} · Level {level} · {tasks} tasks completed",
-    "achievementsEarned": "{earned} of {total} achievements earned",
-    "xpBreakdownComingSoon": "XP breakdown coming soon"
   }
 }
