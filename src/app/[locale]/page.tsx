@@ -252,7 +252,7 @@ export default function Home() {
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {/* Sprint countdown */}
           <article
-            className="rounded-lg border border-border bg-muted/30 p-4"
+            className="rounded-lg border border-border bg-amber-500/5 p-4 hover:border-amber-500/30 transition-colors"
             data-testid="trust-card-sprint"
           >
             <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
@@ -275,7 +275,7 @@ export default function Home() {
 
           {/* Proposals by stage */}
           <article
-            className="rounded-lg border border-border bg-muted/30 p-4"
+            className="rounded-lg border border-border bg-blue-500/5 p-4 hover:border-blue-500/30 transition-colors"
             data-testid="trust-card-proposals"
           >
             <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
@@ -291,8 +291,9 @@ export default function Home() {
           </article>
 
           {/* Leaderboard snapshot */}
+          <Link href="/community" className="block">
           <article
-            className="rounded-lg border border-border bg-muted/30 p-4"
+            className="rounded-lg border border-border bg-orange-500/5 p-4 hover:border-orange-500/30 transition-colors"
             data-testid="trust-card-leaderboard"
           >
             <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
@@ -317,9 +318,11 @@ export default function Home() {
             </div>
           </article>
 
+          </Link>
+
           {/* Recent activity count */}
           <article
-            className="rounded-lg border border-border bg-muted/30 p-4"
+            className="rounded-lg border border-border bg-emerald-500/5 p-4 hover:border-emerald-500/30 transition-colors"
             data-testid="trust-card-activity"
           >
             <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">

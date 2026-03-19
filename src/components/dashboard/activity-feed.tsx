@@ -40,6 +40,7 @@ export function ActivityFeed() {
           <ActivityItem
             key={event.id}
             event={event}
+            index={i}
             isLast={!hasMore && i === visibleEvents.length - 1}
           />
         ))}
