@@ -4,7 +4,7 @@
 
 /*
  * Typography: DM Sans (body) + Fraunces (display) + JetBrains Mono (data)
- * Theme: dark sidebar + refined light content area
+ * Theme: dark-only game aesthetic
  * Orange accent: #FF7A00 — used sparingly
  */
 
@@ -368,6 +368,14 @@ body::before {
 .btn-game-secondary:hover {
   border-color: var(--orange);
   transform: translateY(-2px);
+}
+
+/* Mobile: disable hover lift on touch devices */
+@media (max-width: 640px) {
+  .card-hover:hover {
+    transform: none;
+    box-shadow: none;
+  }
 }
 
 /* Respect reduced motion */
