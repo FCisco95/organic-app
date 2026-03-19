@@ -95,8 +95,8 @@ export function ActivityItem({
 
   return (
     <div
-      className={cn('flex items-start gap-3 py-3 opacity-0 animate-fade-up-in', !isLast && 'border-b border-border/50')}
-      style={{ animationDelay: `${index * 80}ms` }}
+      className={cn('flex items-start gap-3 py-3 animate-slide-in', !isLast && 'border-b border-border/50')}
+      style={{ animationDelay: `${index * 50}ms` }}
     >
       <div className={cn('mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full', iconBg)}>
         <Icon className={cn('h-3.5 w-3.5', iconText)} />
