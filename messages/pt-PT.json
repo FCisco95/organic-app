@@ -180,7 +180,7 @@
     "validationEmailBlank": "O email não pode ficar em branco",
     "validationPasswordBlank": "A senha não pode ficar em branco",
     "toastSuccess": "Login realizado com sucesso!",
-    "toastInvalidCredentials": "Email ou senha incorretos",
+    "toastInvalidCredentials": "O email ou a senha que introduziu está incorreto. Tente novamente ou redefina a sua senha.",
     "showPassword": "Mostrar senha",
     "hidePassword": "Ocultar senha",
     "leftPanelTitle": "Bem-vindo de volta ao Organic",

@@ -180,7 +180,7 @@
     "validationEmailBlank": "Email cannot be blank",
     "validationPasswordBlank": "Password cannot be blank",
     "toastSuccess": "Logged in successfully!",
-    "toastInvalidCredentials": "Incorrect email or password",
+    "toastInvalidCredentials": "The email or password you entered is incorrect. Please try again or reset your password.",
     "showPassword": "Show password",
     "hidePassword": "Hide password",
     "leftPanelTitle": "Welcome back to Organic",

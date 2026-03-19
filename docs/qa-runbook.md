@@ -60,22 +60,22 @@ Use this document to run workflow tests, page audits, and capture what works, wh
 ## 4) Workflow QA Packs
 
 ## 4.1 Auth, Session, and Entry Flows
-<!-- qa-status: TESTED | severity: S1 | plan: none -->
+<!-- qa-status: FIXED | severity: S3 | plan: none -->
 Routes: `/login`, `/signup`, `/join?ref=CODE`, `/auth/error`, `/auth/callback`.
 
 Use cases:
 - [x] `AUTH-01` Guest opens `/login`; form renders and is usable. **PASS, S3**
-- [x] `AUTH-02` Guest opens `/signup`; form renders and is usable. **PARTIAL, S3**
-- [x] `AUTH-03` Invalid credentials show understandable error copy. **PARTIAL, S2**
-- [x] `AUTH-04` Member login succeeds and lands on authenticated app surface. **PARTIAL, S2**
+- [x] `AUTH-02` Guest opens `/signup`; form renders and is usable. **PASS, S3**
+- [x] `AUTH-03` Invalid credentials show understandable error copy. **PASS, S3** — fixed: friendly i18n message with recovery guidance replaces raw Supabase error
+- [x] `AUTH-04` Member login succeeds and lands on authenticated app surface. **PASS, S3** — fixed: redirect to Home, onboarding skip persisted
 - [x] `AUTH-05` Session persists across refresh. **PASS, S3**
-- [x] `AUTH-06` Sign-out clears session and protects private routes. **PARTIAL (priority fix), S1**
-- [x] `AUTH-07` Protected route redirect works for guest users. **PARTIAL (priority fix), S1**
+- [x] `AUTH-06` Sign-out clears session and protects private routes. **PASS, S3** — fixed: server-side middleware redirect
+- [x] `AUTH-07` Protected route redirect works for guest users. **PASS, S3** — fixed: returnTo param support
 - [x] `AUTH-08` `/join?ref=CODE` redirects to `/signup?ref=CODE`. **PARTIAL, S3**
 - [ ] `AUTH-09` Signup with `ref` param preserves referral context. **SKIP — referral not yet wired to signup flow. Placeholder for when referral integration is built.**
-- [x] `AUTH-10` `/auth/error` recovery links (login/home) work. **PARTIAL, S3**
+- [x] `AUTH-10` `/auth/error` recovery links (login/home) work. **PASS, S3** — fixed in prior commit
 - [x] `AUTH-11` `/auth/callback` does not dead-end or blank-screen when callback params are missing/invalid. **PARTIAL, S3**
-- [x] `AUTH-12` Mobile auth forms have no clipping or unreachable controls. **PARTIAL, S2**
+- [x] `AUTH-12` Mobile auth forms have no clipping or unreachable controls. **PASS, S3** — fixed: top-aligned on mobile, centered on desktop
 
 ### QA Accounts (permanent fixtures for QA skill)
 
@@ -87,8 +87,8 @@ Use cases:
 
 ### Feedback
 <!-- Full feedback archived in git history + plan file. Summary below. -->
-**Tested:** 2026-03-07 | **Cases:** 11/12 (AUTH-09 skipped) | **Severity:** S1
-**Priority fixes:** Protected route blank page (AUTH-06/07), onboarding modal blocking (AUTH-04/06)
+**Tested:** 2026-03-07 | **Fixed:** 2026-03-19 | **Cases:** 11/12 (AUTH-09 skipped) | **Severity:** S3
+**Priority fixes:** ~~Protected route blank page (AUTH-06/07)~~ DONE, ~~onboarding modal blocking (AUTH-04/06)~~ DONE, ~~error copy (AUTH-03)~~ DONE, ~~mobile clipping (AUTH-12)~~ DONE
 **Top revamp:** Premium auth pages with blockchain theme, split layout, live validation
 **Plan:** pending — write during Phase B
 

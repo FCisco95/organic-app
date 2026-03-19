@@ -59,8 +59,10 @@ export default function LoginPage() {
       toast.success(t('toastSuccess'));
       router.push(returnTo);
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : t('toastInvalidCredentials');
-      setLoginError(message);
+      const raw = error instanceof Error ? error.message : '';
+      const isCredentialError =
+        raw.includes('Invalid login credentials') || raw.includes('invalid_credentials');
+      setLoginError(isCredentialError ? t('toastInvalidCredentials') : raw || t('toastInvalidCredentials'));
     } finally {
       setLoading(false);
     }
@@ -77,7 +79,7 @@ export default function LoginPage() {
       />
 
       {/* Right panel - form */}
-      <div className="flex-1 flex flex-col items-center justify-center bg-background p-6 md:p-10 lg:p-14 min-h-dvh md:min-h-0">
+      <div className="flex-1 flex flex-col items-center justify-start pt-8 md:justify-center md:pt-0 bg-background p-6 md:p-10 lg:p-14 min-h-dvh md:min-h-0">
         {/* Mobile logo */}
         <div className="md:hidden mb-8 flex justify-center">
           <Link href="/">
