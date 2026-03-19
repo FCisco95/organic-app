@@ -1646,7 +1646,8 @@
       "dispute_escalated": "{actor} escalated dispute: {title}",
       "dispute_resolved": "Dispute resolved: {title}",
       "dispute_withdrawn": "{actor} withdrew dispute: {title}",
-      "empty": "No activity yet"
+      "empty": "No activity yet",
+      "viewAll": "View all activity"
     }
   },
   "Analytics": {

@@ -1646,7 +1646,8 @@
       "dispute_escalated": "{actor} 升级了争议：{title}",
       "dispute_resolved": "争议已解决：{title}",
       "dispute_withdrawn": "{actor} 撤回了争议：{title}",
-      "empty": "暂无活动"
+      "empty": "暂无活动",
+      "viewAll": "查看所有活动"
     }
   },
   "Analytics": {

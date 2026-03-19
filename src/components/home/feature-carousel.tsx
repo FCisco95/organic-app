@@ -106,12 +106,28 @@ export function FeatureCarousel() {
     return () => el.removeEventListener('scroll', updateActiveIndex);
   }, [updateActiveIndex]);
 
-  const scrollTo = (index: number) => {
+  const scrollTo = useCallback((index: number) => {
     const el = scrollRef.current;
     if (!el || !el.firstElementChild) return;
     const cardWidth = (el.firstElementChild as HTMLElement).offsetWidth;
     el.scrollTo({ left: cardWidth * index, behavior: 'smooth' });
-  };
+  }, []);
+
+  // Auto-advance every 6 seconds, pause on hover
+  const [isPaused, setIsPaused] = useState(false);
+
+  useEffect(() => {
+    if (isPaused) return;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) return;
+
+    const timer = setInterval(() => {
+      const next = (activeIndex + 1) % CARDS.length;
+      scrollTo(next);
+    }, 6000);
+
+    return () => clearInterval(timer);
+  }, [activeIndex, isPaused, scrollTo]);
 
   const scroll = (direction: 'left' | 'right') => {
     const next = direction === 'left'
@@ -121,7 +137,11 @@ export function FeatureCarousel() {
   };
 
   return (
-    <div className="relative">
+    <div
+      className="relative"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
       {/* Scroll arrows -- desktop only */}
       <button
         onClick={() => scroll('left')}
