@@ -107,84 +107,25 @@ export default function Home() {
         </span>
       </header>
 
-      {/* -- Dark Gradient Hero (B's style with orange "Organic" + C's structure) -- */}
-      {isAuthenticated && hasOrganicId ? (
-        /* Compact hero for returning members */
-        <section className="rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 sm:p-8 mb-8 opacity-0 animate-fade-up stagger-2 text-white">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <p className="text-xs uppercase tracking-[0.18em] text-gray-400">
-                {t('welcomeBack')}{' '}
-                <span className="text-orange-500 font-medium">
-                  Organic #{profile.organic_id}
-                </span>
-              </p>
-              <h1 className="mt-2 text-2xl sm:text-3xl font-bold leading-tight text-white tracking-tight">
-                {t('heroTitle')}{' '}
-                <span className="text-orange-500 animate-organic-grow inline-block">Organic</span>
-              </h1>
-            </div>
-            <div className="flex flex-wrap items-center gap-3">
-              <Link
-                href="/proposals"
-                className="group inline-flex items-center gap-2 bg-white hover:bg-gray-100 text-gray-900 px-5 py-2.5 rounded-lg text-sm font-medium transition-colors"
-              >
-                {t('viewProposals')}
-                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-              </Link>
-              <Link
-                href="/tasks"
-                className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
-              >
-                {t('viewTasks')} &rarr;
-              </Link>
-            </div>
-          </div>
-        </section>
-      ) : isAuthenticated && !hasOrganicId ? (
-        /* Mid-size hero for users without organic ID */
-        <section className="rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 sm:p-8 mb-8 shadow-sm opacity-0 animate-fade-up stagger-2 text-white">
+      {/* -- Hero -- */}
+      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 sm:p-8 lg:p-10 mb-8 shadow-sm opacity-0 animate-fade-up stagger-2 text-white">
+        <div className="absolute -right-16 -top-20 h-48 w-48 rounded-full bg-orange-500/10 blur-3xl" />
+        <div className="absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-white/5 blur-3xl" />
+
+        <div className="relative grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
           <div>
             <p className="text-xs uppercase tracking-[0.18em] text-gray-400">
               {t('heroLead')}
             </p>
-            <h1 className="mt-3 text-3xl sm:text-4xl font-bold leading-[1.1] text-white tracking-tight">
+            <h1 className="mt-3 text-3xl sm:text-4xl lg:text-[42px] font-bold leading-[1.1] text-white tracking-tight">
               {t('heroTitle')}{' '}
               <span className="text-orange-500 animate-organic-grow inline-block">Organic</span>
             </h1>
             <p className="mt-4 text-base text-gray-300 leading-relaxed max-w-xl">
               {t('heroSubtitle')}
             </p>
-            <div className="mt-6 flex flex-wrap items-center gap-3">
-              <Link
-                href="/profile"
-                className="group inline-flex items-center gap-2 bg-white hover:bg-gray-100 text-gray-900 px-5 py-2.5 rounded-lg text-sm font-medium transition-colors"
-              >
-                {t('goToProfile')}
-                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-              </Link>
-              <span className="text-sm text-gray-400">{t('holdTokensCallout')}</span>
-            </div>
-          </div>
-        </section>
-      ) : (
-        /* Full hero for guests */
-        <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 sm:p-8 lg:p-10 mb-8 shadow-sm opacity-0 animate-fade-up stagger-2 text-white">
-          <div className="absolute -right-16 -top-20 h-48 w-48 rounded-full bg-orange-500/10 blur-3xl" />
-          <div className="absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-white/5 blur-3xl" />
 
-          <div className="relative grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-            <div>
-              <p className="text-xs uppercase tracking-[0.18em] text-gray-400">
-                {t('heroLead')}
-              </p>
-              <h1 className="mt-3 text-3xl sm:text-4xl lg:text-[42px] font-bold leading-[1.1] text-white tracking-tight">
-                {t('heroTitle')}{' '}
-                <span className="text-orange-500 animate-organic-grow inline-block">Organic</span>
-              </h1>
-              <p className="mt-4 text-base text-gray-300 leading-relaxed max-w-xl">
-                {t('heroSubtitle')}
-              </p>
+            {!isAuthenticated && (
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 <Link
                   href="/login"
@@ -200,46 +141,46 @@ export default function Home() {
                   {t('viewProposals')} &rarr;
                 </Link>
               </div>
+            )}
 
-              <div className="mt-6 flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.2em] text-gray-400">
-                <span className="rounded-full border border-white/10 px-3 py-1 bg-white/5">
-                  {t('heroPillTreasury')}
-                </span>
-                <span className="rounded-full border border-white/10 px-3 py-1 bg-white/5">
-                  {t('heroPillContributors')}
-                </span>
-                <span className="rounded-full border border-white/10 px-3 py-1 bg-white/5">
-                  {t('heroPillOnchain')}
-                </span>
-              </div>
-            </div>
-
-            <div className="relative rounded-xl border border-white/10 bg-white/5 p-5 backdrop-blur">
-              <div className="flex items-center justify-between text-xs uppercase tracking-[0.2em] text-gray-400">
-                <span>{t('contractAddress')}</span>
-                <span className="flex items-center gap-1 text-[10px] font-semibold text-gray-300">
-                  <Vote className="h-3 w-3" />
-                  {t('heroVerified')}
-                </span>
-              </div>
-              <code className="mt-3 block break-all rounded-lg bg-black/40 text-gray-200 text-xs px-3 py-2 font-mono">
-                {process.env.NEXT_PUBLIC_ORG_TOKEN_MINT || t('loading')}
-              </code>
-              <p className="mt-3 text-sm text-gray-400 leading-relaxed">
-                {t('heroContractNote')}
-              </p>
-              <div className="mt-4 rounded-lg border border-white/10 bg-white/5 px-4 py-3">
-                <p className="text-xs uppercase tracking-[0.2em] text-gray-400">
-                  {t('heroAccessTitle')}
-                </p>
-                <p className="mt-1 text-sm text-gray-300">
-                  {t('heroAccessBody')}
-                </p>
-              </div>
+            <div className="mt-6 flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.2em] text-gray-400">
+              <span className="rounded-full border border-white/10 px-3 py-1 bg-white/5">
+                {t('heroPillTreasury')}
+              </span>
+              <span className="rounded-full border border-white/10 px-3 py-1 bg-white/5">
+                {t('heroPillContributors')}
+              </span>
+              <span className="rounded-full border border-white/10 px-3 py-1 bg-white/5">
+                {t('heroPillOnchain')}
+              </span>
             </div>
           </div>
-        </section>
-      )}
+
+          <div className="relative rounded-xl border border-white/10 bg-white/5 p-5 backdrop-blur">
+            <div className="flex items-center justify-between text-xs uppercase tracking-[0.2em] text-gray-400">
+              <span>{t('contractAddress')}</span>
+              <span className="flex items-center gap-1 text-[10px] font-semibold text-gray-300">
+                <Vote className="h-3 w-3" />
+                {t('heroVerified')}
+              </span>
+            </div>
+            <code className="mt-3 block break-all rounded-lg bg-black/40 text-gray-200 text-xs px-3 py-2 font-mono">
+              {process.env.NEXT_PUBLIC_ORG_TOKEN_MINT || t('loading')}
+            </code>
+            <p className="mt-3 text-sm text-gray-400 leading-relaxed">
+              {t('heroContractNote')}
+            </p>
+            <div className="mt-4 rounded-lg border border-white/10 bg-white/5 px-4 py-3">
+              <p className="text-xs uppercase tracking-[0.2em] text-gray-400">
+                {t('heroAccessTitle')}
+              </p>
+              <p className="mt-1 text-sm text-gray-300">
+                {t('heroAccessBody')}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* -- Trust Pulse -- */}
       <section
