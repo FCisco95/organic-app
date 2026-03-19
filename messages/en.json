@@ -2101,7 +2101,10 @@
       "streak_7": "Consistent Grower",
       "streak_30": "Unwavering",
       "xp_1000": "Rising Star",
-      "xp_10000": "Legend in the Making"
+      "xp_10000": "Legend in the Making",
+      "first_arbiter": "First Arbiter",
+      "justice_keeper": "Justice Keeper",
+      "vindicated": "Vindicated"
     },
     "achievementDescriptions": {
       "first_task": "Complete your first task",
@@ -2118,7 +2121,11 @@
       "streak_7": "Maintain a 7-day activity streak",
       "streak_30": "Maintain a 30-day activity streak",
       "xp_1000": "Reach 1,000 XP",
-      "xp_10000": "Reach 10,000 XP"
+      "xp_10000": "Reach 10,000 XP",
+      "peacemaker": "Resolve 10 disputes through mediation",
+      "first_arbiter": "Participate in your first dispute resolution",
+      "justice_keeper": "Resolve 25 disputes fairly",
+      "vindicated": "Win a dispute appeal"
     },
     "xpSources": {
       "task_completed": "Task completed",

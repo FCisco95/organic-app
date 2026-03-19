@@ -2101,7 +2101,10 @@
       "streak_7": "Cultivador Consistente",
       "streak_30": "Inabalável",
       "xp_1000": "Estrela em Ascensão",
-      "xp_10000": "Lenda em Formação"
+      "xp_10000": "Lenda em Formação",
+      "first_arbiter": "Primeiro Árbitro",
+      "justice_keeper": "Guardião da Justiça",
+      "vindicated": "Vindicado"
     },
     "achievementDescriptions": {
       "first_task": "Complete a sua primeira tarefa",
@@ -2118,7 +2121,11 @@
       "streak_7": "Mantenha uma sequência de 7 dias",
       "streak_30": "Mantenha uma sequência de 30 dias",
       "xp_1000": "Alcance 1.000 XP",
-      "xp_10000": "Alcance 10.000 XP"
+      "xp_10000": "Alcance 10.000 XP",
+      "peacemaker": "Resolva 10 disputas através de mediação",
+      "first_arbiter": "Participe na sua primeira resolução de disputa",
+      "justice_keeper": "Resolva 25 disputas de forma justa",
+      "vindicated": "Ganhe um recurso de disputa"
     },
     "xpSources": {
       "task_completed": "Tarefa concluída",

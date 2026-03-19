@@ -2101,7 +2101,10 @@
       "streak_7": "持续成长者",
       "streak_30": "坚定不移",
       "xp_1000": "冉冉新星",
-      "xp_10000": "传奇之路"
+      "xp_10000": "传奇之路",
+      "first_arbiter": "首席仲裁者",
+      "justice_keeper": "正义守护者",
+      "vindicated": "沉冤昭雪"
     },
     "achievementDescriptions": {
       "first_task": "完成你的第一个任务",
@@ -2118,7 +2121,11 @@
       "streak_7": "保持7天连续活跃",
       "streak_30": "保持30天连续活跃",
       "xp_1000": "达到1,000经验值",
-      "xp_10000": "达到10,000经验值"
+      "xp_10000": "达到10,000经验值",
+      "peacemaker": "通过调解解决10起争议",
+      "first_arbiter": "参与你的第一次争议解决",
+      "justice_keeper": "公正地解决25起争议",
+      "vindicated": "赢得一次争议上诉"
     },
     "xpSources": {
       "task_completed": "任务完成",
