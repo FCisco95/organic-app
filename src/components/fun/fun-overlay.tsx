@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { RocketCursor } from './rocket-cursor';
 import { SniperGame } from './sniper-game';
 
 export function FunOverlay() {
@@ -26,12 +25,7 @@ export function FunOverlay() {
         {enabled ? '🎮' : '🕹️'}
       </button>
 
-      {enabled && (
-        <>
-          <RocketCursor />
-          <SniperGame />
-        </>
-      )}
+      {enabled && <SniperGame />}
     </>
   );
 }
