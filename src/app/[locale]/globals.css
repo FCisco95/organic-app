@@ -227,6 +227,121 @@ body::before {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
+/* Card hover effects — top-edge glow + shimmer sweep */
+@keyframes shimmer-slide {
+  0% { left: -100%; }
+  100% { left: 200%; }
+}
+
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes charBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+
+.card-hover {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  border-radius: 18px;
+}
+
+.card-hover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--orange), transparent);
+  opacity: 0;
+  transition: opacity 0.4s;
+  z-index: 1;
+}
+
+.card-hover:hover {
+  border-color: rgba(255, 107, 44, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+.card-hover:hover::before {
+  opacity: 1;
+}
+
+/* Shimmer child element */
+.card-shimmer {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 107, 44, 0.03), transparent);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.card-hover:hover .card-shimmer {
+  animation: shimmer-slide 0.8s ease;
+}
+
+/* Live badge pulsing */
+.live-badge-pulse {
+  animation: live-pulse 2s infinite;
+}
+
+/* Section label with extending line */
+.section-label-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-dimmer);
+  font-weight: 700;
+}
+
+.section-label-line::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: hsl(var(--border));
+}
+
+/* Game-style primary button */
+.btn-game-primary {
+  background: linear-gradient(135deg, var(--orange), #ff8844);
+  color: #000;
+  font-weight: 700;
+  border-radius: 11px;
+  transition: all 0.3s;
+}
+
+.btn-game-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px var(--orange-glow);
+}
+
+/* Game-style secondary button */
+.btn-game-secondary {
+  background: var(--surface2);
+  border: 1px solid hsl(var(--border));
+  color: hsl(var(--foreground));
+  font-weight: 600;
+  border-radius: 11px;
+  transition: all 0.3s;
+}
+
+.btn-game-secondary:hover {
+  border-color: var(--orange);
+  transform: translateY(-2px);
+}
+
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .animate-organic-grow,
