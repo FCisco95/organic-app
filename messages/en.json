@@ -1172,7 +1172,14 @@
     "infoSection3Title": "Earning & Reputation",
     "infoSection3Point1": "**Every completed task earns you XP and points.** XP builds your level and leaderboard rank. Points convert to $ORG token rewards at the end of each sprint.",
     "infoSection3Point2": "**Quality matters.** Reviewers rate submissions 1–5 stars. Higher quality scores boost your reputation and unlock future opportunities.",
-    "infoSection3Point3": "**Dependencies and subtasks keep work organized.** Large tasks can be broken into subtasks, and tasks can depend on each other — so the right work happens in the right order."
+    "infoSection3Point3": "**Dependencies and subtasks keep work organized.** Large tasks can be broken into subtasks, and tasks can depend on each other — so the right work happens in the right order.",
+    "statsCompleted": "Tasks completed",
+    "statsPoints": "Total points",
+    "statsXp": "Total XP",
+    "statsLevel": "Level",
+    "earnCtaTitle": "Start earning with the DAO",
+    "earnCtaDescription": "Claim tasks, submit work, and earn $ORG tokens. Every contribution counts.",
+    "earnCtaButton": "Create account"
   },
   "ReviewQueue": {
     "title": "Submission review queue",
@@ -1326,7 +1333,11 @@
     "infoSection3Title": "After Submission",
     "infoSection3Point1": "**A reviewer or admin evaluates your work** against the acceptance criteria. They'll approve, reject with feedback, or request changes.",
     "infoSection3Point2": "**Approved submissions earn you the full point and XP value** listed on this task. Quality ratings (1–5 stars) from the reviewer also factor into your reputation.",
-    "infoSection3Point3": "**Completed tasks appear on your profile** as part of your contribution history — building your on-chain reputation over time."
+    "infoSection3Point3": "**Completed tasks appear on your profile** as part of your contribution history — building your on-chain reputation over time.",
+    "earningsTitle": "What you'll earn",
+    "earningsPoints": "Points",
+    "earningsXp": "XP",
+    "earningsDisclaimer": "XP estimates based on task value. Actual XP may vary based on review quality rating."
   },
   "Profile": {
     "loadingProfile": "Loading your profile...",

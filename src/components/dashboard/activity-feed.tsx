@@ -2,6 +2,7 @@
 
 import { useActivityFeed } from '@/features/activity';
 import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { ActivityItem } from './activity-item';
 
 export function ActivityFeed() {
@@ -29,15 +30,31 @@ export function ActivityFeed() {
     );
   }
 
+  const visibleEvents = events.slice(0, 5);
+  const hasMore = events.length > 5;
+
   return (
-    <div className="max-h-[32rem] overflow-y-auto -mr-2 pr-2">
-      {events.map((event, i) => (
-        <ActivityItem
-          key={event.id}
-          event={event}
-          isLast={i === events.length - 1}
-        />
-      ))}
+    <div>
+      <div className="divide-y divide-border/50">
+        {visibleEvents.map((event, i) => (
+          <ActivityItem
+            key={event.id}
+            event={event}
+            index={i}
+            isLast={!hasMore && i === visibleEvents.length - 1}
+          />
+        ))}
+      </div>
+      {hasMore && (
+        <div className="pt-3 border-t border-border/50">
+          <Link
+            href="/analytics"
+            className="flex items-center justify-center gap-1.5 text-sm font-medium text-organic-orange hover:text-organic-orange/80 transition-colors py-1"
+          >
+            {t('viewAll')}
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

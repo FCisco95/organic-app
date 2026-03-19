@@ -161,8 +161,10 @@ export function RankingsTab() {
               {podiumEntries[0].organic_id && (
                 <p className="text-[10px] text-muted-foreground">{t('organicId', { id: podiumEntries[0].organic_id })}</p>
               )}
-              <div className="mt-2 w-full h-24 bg-gradient-to-t from-yellow-200 to-yellow-100 dark:from-yellow-600/30 dark:to-yellow-500/20 rounded-t-lg flex items-center justify-center animate-glow-pulse">
-                <span className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">1</span>
+              <div className="mt-2 w-full rounded-t-lg shadow-[0_0_30px_rgba(234,179,8,0.3)]">
+                <div className="h-24 bg-gradient-to-t from-yellow-200 to-yellow-100 dark:from-yellow-600/30 dark:to-yellow-500/20 rounded-t-lg flex items-center justify-center animate-glow-pulse">
+                  <span className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">1</span>
+                </div>
               </div>
             </Link>
 
@@ -264,7 +266,7 @@ export function RankingsTab() {
                   {/* Mobile card */}
                   <div
                     className={cn(
-                      'sm:hidden px-4 py-3 transition-all duration-200 hover:bg-muted/50',
+                      'sm:hidden px-4 py-3 transition-all duration-200 hover:bg-muted/50 border-l-2 border-l-transparent hover:border-l-organic-orange',
                       getRankStyle(entry.rank),
                       isCurrentUser && 'ring-2 ring-orange-500 ring-inset'
                     )}
@@ -330,7 +332,7 @@ export function RankingsTab() {
                   {/* Desktop row */}
                   <div
                     className={cn(
-                      'hidden sm:grid grid-cols-12 gap-4 px-6 py-4 items-center transition-all duration-200 hover:scale-[1.005] hover:bg-muted/50',
+                      'hidden sm:grid grid-cols-12 gap-4 px-6 py-4 items-center transition-all duration-200 hover:scale-[1.005] hover:bg-muted/50 border-l-2 border-l-transparent hover:border-l-organic-orange',
                       getRankStyle(entry.rank),
                       isCurrentUser && 'ring-2 ring-orange-500 ring-inset'
                     )}

@@ -60,22 +60,22 @@ Use this document to run workflow tests, page audits, and capture what works, wh
 ## 4) Workflow QA Packs
 
 ## 4.1 Auth, Session, and Entry Flows
-<!-- qa-status: TESTED | severity: S1 | plan: none -->
+<!-- qa-status: FIXED | severity: S3 | plan: none -->
 Routes: `/login`, `/signup`, `/join?ref=CODE`, `/auth/error`, `/auth/callback`.
 
 Use cases:
 - [x] `AUTH-01` Guest opens `/login`; form renders and is usable. **PASS, S3**
-- [x] `AUTH-02` Guest opens `/signup`; form renders and is usable. **PARTIAL, S3**
-- [x] `AUTH-03` Invalid credentials show understandable error copy. **PARTIAL, S2**
-- [x] `AUTH-04` Member login succeeds and lands on authenticated app surface. **PARTIAL, S2**
+- [x] `AUTH-02` Guest opens `/signup`; form renders and is usable. **PASS, S3**
+- [x] `AUTH-03` Invalid credentials show understandable error copy. **PASS, S3** — fixed: friendly i18n message with recovery guidance replaces raw Supabase error
+- [x] `AUTH-04` Member login succeeds and lands on authenticated app surface. **PASS, S3** — fixed: redirect to Home, onboarding skip persisted
 - [x] `AUTH-05` Session persists across refresh. **PASS, S3**
-- [x] `AUTH-06` Sign-out clears session and protects private routes. **PARTIAL (priority fix), S1**
-- [x] `AUTH-07` Protected route redirect works for guest users. **PARTIAL (priority fix), S1**
+- [x] `AUTH-06` Sign-out clears session and protects private routes. **PASS, S3** — fixed: server-side middleware redirect
+- [x] `AUTH-07` Protected route redirect works for guest users. **PASS, S3** — fixed: returnTo param support
 - [x] `AUTH-08` `/join?ref=CODE` redirects to `/signup?ref=CODE`. **PARTIAL, S3**
 - [ ] `AUTH-09` Signup with `ref` param preserves referral context. **SKIP — referral not yet wired to signup flow. Placeholder for when referral integration is built.**
-- [x] `AUTH-10` `/auth/error` recovery links (login/home) work. **PARTIAL, S3**
+- [x] `AUTH-10` `/auth/error` recovery links (login/home) work. **PASS, S3** — fixed in prior commit
 - [x] `AUTH-11` `/auth/callback` does not dead-end or blank-screen when callback params are missing/invalid. **PARTIAL, S3**
-- [x] `AUTH-12` Mobile auth forms have no clipping or unreachable controls. **PARTIAL, S2**
+- [x] `AUTH-12` Mobile auth forms have no clipping or unreachable controls. **PASS, S3** — fixed: top-aligned on mobile, centered on desktop
 
 ### QA Accounts (permanent fixtures for QA skill)
 
@@ -87,50 +87,50 @@ Use cases:
 
 ### Feedback
 <!-- Full feedback archived in git history + plan file. Summary below. -->
-**Tested:** 2026-03-07 | **Cases:** 11/12 (AUTH-09 skipped) | **Severity:** S1
-**Priority fixes:** Protected route blank page (AUTH-06/07), onboarding modal blocking (AUTH-04/06)
+**Tested:** 2026-03-07 | **Fixed:** 2026-03-19 | **Cases:** 11/12 (AUTH-09 skipped) | **Severity:** S3
+**Priority fixes:** ~~Protected route blank page (AUTH-06/07)~~ DONE, ~~onboarding modal blocking (AUTH-04/06)~~ DONE, ~~error copy (AUTH-03)~~ DONE, ~~mobile clipping (AUTH-12)~~ DONE
 **Top revamp:** Premium auth pages with blockchain theme, split layout, live validation
 **Plan:** pending — write during Phase B
 
 ## 4.2 Global Navigation, Layout, and i18n
-<!-- qa-status: TESTED | severity: S2 | plan: none -->
+<!-- qa-status: FIXED | severity: S3 | plan: none -->
 Routes: global shell across all authenticated pages.
 
 Use cases:
-- [x] `NAV-01` Sidebar items render correctly by role (`admin`, `council`, `member`). **PARTIAL, S2**
-- [x] `NAV-02` Mobile sidebar exposes the same essential navigation. **PARTIAL, S2**
+- [x] `NAV-01` Sidebar items render correctly by role (`admin`, `council`, `member`). **PASS, S3** — fixed: settings restricted to admin-only (commit 5583757)
+- [x] `NAV-02` Mobile sidebar exposes the same essential navigation. **PASS, S3** — fixed: onboarding skip persisted in localStorage
 - [x] `NAV-03` Active route state is visible and accurate. **PASS, S3**
-- [x] `NAV-04` Locale switch updates labels/content in current page. **PARTIAL, S2**
-- [x] `NAV-05` Query-bearing links (for example progression source context) keep expected behavior. **PARTIAL, S3**
+- [x] `NAV-04` Locale switch updates labels/content in current page. **PASS, S3** — fixed: onboarding skip survives locale switch
+- [x] `NAV-05` Query-bearing links (for example progression source context) keep expected behavior. **PASS, S3** — fixed: page titles + progression shell loading states
 - [x] `NAV-06` Top-bar actions are discoverable and keyboard reachable. **PASS, S3**
 - [x] `NAV-07` No overlap/collision in nav at 375px and 768px. **PASS, S3**
 - [x] `NAV-08` Role-restricted pages are not discoverable through unauthorized nav paths. **PASS, S3**
 
 ### Feedback
 <!-- Full feedback archived in git history + plan file. Summary below. -->
-**Tested:** 2026-03-07 | **Cases:** 8/8 | **Severity:** S2
-**Priority fixes:** Onboarding modal skip not persisted (NAV-02/04), progression page blank (NAV-05)
-**Top revamp:** Collapsible sidebar sections, settings restricted to admin only
+**Tested:** 2026-03-07 | **Fixed:** 2026-03-07 (commit 5583757) | **Cases:** 8/8 | **Severity:** S3
+**Priority fixes:** ~~Onboarding modal skip not persisted (NAV-02/04)~~ DONE, ~~progression page blank (NAV-05)~~ DONE, ~~settings restricted to admin only~~ DONE
+**Top revamp:** Collapsible sidebar sections
 **Plan:** pending — write during Phase B
 
 ## 4.3 Home, Analytics, Leaderboard, and Treasury Readability
-<!-- qa-status: TESTED | severity: S1 | plan: none -->
+<!-- qa-status: FIXED | severity: S3 | plan: none -->
 Routes: `/`, `/analytics`, `/treasury`.
 
 Use cases:
-- [x] `INSIGHT-01` Home dashboard loads with trust/summary surfaces. **FAIL, S1**
-- [x] `INSIGHT-02` `/analytics` charts/metrics load without blocking UI. **PARTIAL, S2**
-- [x] `INSIGHT-03` `/leaderboard` redirects to `/community` (Rankings tab). **PARTIAL, S2**
-- [x] `INSIGHT-04` `/treasury` shows settlement posture and transparency metadata. **PARTIAL, S2**
-- [x] `INSIGHT-05` Empty/loading states are informative, not confusing. **PARTIAL, S2**
+- [x] `INSIGHT-01` Home dashboard loads with trust/summary surfaces. **PASS, S3** — i18n key `dispute_escalated` confirmed present; activity feed resolves correctly with try/catch fallback
+- [x] `INSIGHT-02` `/analytics` charts/metrics load without blocking UI. **PASS, S3** — dynamic imports with skeleton placeholders
+- [x] `INSIGHT-03` `/leaderboard` redirects to `/community` (Rankings tab). **PASS, S3** — fixed: permanentRedirect in community merge
+- [x] `INSIGHT-04` `/treasury` shows settlement posture and transparency metadata. **PASS, S3** — audit link issue no longer applicable (removed from page)
+- [x] `INSIGHT-05` Empty/loading states are informative, not confusing. **PARTIAL, S3** — remaining: $ORG price/market cap show “—“ when no data
 - [x] `INSIGHT-06` Units and labels are understandable (percent, totals, balances). **PASS, S3**
-- [x] `INSIGHT-07` Mobile chart/card readability is acceptable. **PARTIAL, S2**
+- [x] `INSIGHT-07` Mobile chart/card readability is acceptable. **PARTIAL, S3** — remaining: minor mobile polish for revamp phase
 - [x] `INSIGHT-08` User can identify a clear “what to do next” action. **PARTIAL, S3**
 
 ### Feedback
 <!-- Full feedback archived in git history + plan file. Summary below. -->
-**Tested:** 2026-03-07 | **Cases:** 8/8 | **Severity:** S1
-**Priority fixes:** Missing i18n key on home feed (INSIGHT-01), treasury audit link admin-only (INSIGHT-04)
+**Tested:** 2026-03-07 | **Fixed:** 2026-03-19 | **Cases:** 8/8 | **Severity:** S3
+**Priority fixes:** ~~Missing i18n key on home feed (INSIGHT-01)~~ RESOLVED (key exists), ~~treasury audit link admin-only (INSIGHT-04)~~ RESOLVED (removed)
 **Top revamp:** Home FOMO carousel, floating info buttons, dark hero sections, mobile rendering fixes
 **Plan:** pending — write during Phase B
 
@@ -143,7 +143,7 @@ Use cases:
 - [x] `COMM-01` Community loads with dark hero + Rankings tab default. **PASS, S3**
 - [x] `COMM-02` Rankings: podium, your-position, ranked table, search bar works. **PASS, S3** — your-position card requires auth (by design)
 - [x] `COMM-03` Directory: filterable member grid with rank/XP enriched cards. **PASS, S3**
-- [x] `COMM-04` Tab switching preserves per-tab state (search, filters, pagination). **FAIL, S2** — components unmount on tab switch, losing search/filter state
+- [x] `COMM-04` Tab switching preserves per-tab state (search, filters, pagination). **PASS, S3** — fixed: CSS visibility toggle keeps both tabs mounted
 - [x] `COMM-05` Rankings row click → `/community/[id]` profile page. **PASS, S3**
 - [x] `COMM-06` Directory card click → `/community/[id]` profile page. **PASS, S3**
 - [x] `COMM-07` Profile privacy gating works (private vs public profiles). **PARTIAL, S3** — code correct but no private profile fixture to verify live
@@ -167,22 +167,22 @@ Use cases:
 - All 3 locales fully translated — Portuguese ("Comunidade", "Diretório"), Chinese ("社区", "排行榜", "成员目录")
 
 **What does not work:**
-- **COMM-04: Tab state loss (S2)**: Switching between Rankings and Directory tabs unmounts the inactive component, losing search text, role filters, and pagination state. Root cause: conditional rendering (`activeTab === 'rankings' ? <RankingsTab /> : <DirectoryTab />`) destroys components on tab switch.
-- **Console errors on profile page**: 32 `IntlError: MISSING_MESSAGE` for achievement keys like `Reputation.achievementNames.peacemaker` — pre-existing, not community-specific
+- ~~**COMM-04: Tab state loss (S2)**~~ — **FIXED 2026-03-19**: replaced conditional rendering with CSS `hidden` toggle so both tabs stay mounted and preserve search/filter/pagination state.
+- ~~**Console errors on profile page**: 32 `IntlError: MISSING_MESSAGE` for achievement keys~~ — **FIXED 2026-03-19**: added 4 missing dispute achievement i18n keys (`first_arbiter`, `justice_keeper`, `peacemaker`, `vindicated`) to all 3 locales.
 - **QA login blocked**: QA fixture accounts (`qa-admin@organic.test`) return "Invalid login credentials" — cannot test auth-dependent features (your-position card, own-profile privacy link)
 
 **UI improvements requested:**
-- Fix tab state preservation by lifting search/filter state to parent or using CSS visibility toggle
-- Add missing achievement i18n keys (pre-existing backlog)
+- ~~Fix tab state preservation by lifting search/filter state to parent or using CSS visibility toggle~~ — DONE
+- ~~Add missing achievement i18n keys (pre-existing backlog)~~ — DONE
 - Create QA fixture accounts for future testing sessions
 
 **Top 3 highest-impact changes:**
-1. **Fix tab state loss** — lift search/filter/pagination state to `CommunityPage` parent component
+1. ~~**Fix tab state loss**~~ — DONE (CSS visibility toggle)
 2. **Add QA fixture accounts** — needed for testing auth-dependent features
-3. **Add missing achievement i18n keys** — eliminates 32 console errors on profile pages
+3. ~~**Add missing achievement i18n keys**~~ — DONE (4 dispute keys × 3 locales)
 
-**Section severity:** S2 (tab state loss is moderate friction)
-**Confidence score:** 4/5 (11 PASS, 1 FAIL, 1 PARTIAL — auth features untested due to missing fixtures)
+**Section severity:** S3 (remaining issues are polish/fixture-only)
+**Confidence score:** 4/5 (12 PASS, 0 FAIL, 1 PARTIAL — auth features untested due to missing fixtures)
 
 ## 4.5 My Profile, Privacy Toggle, and Progression Hub
 <!-- qa-status: PENDING -->
@@ -239,7 +239,7 @@ Feedback:
 - Confidence score (`1-5`):
 
 ## 4.7 Tasks End-to-End Workflow (Creation -> Claim -> Submit -> Review)
-<!-- qa-status: PLANNED | severity: S1 | plan: docs/plans/2026-03-08-tasks-qa-revamp.md -->
+<!-- qa-status: FIXED | severity: S3 | plan: docs/plans/2026-03-08-tasks-qa-revamp.md -->
 Routes: `/tasks`, `/tasks/[id]`, `/tasks/templates`, `/admin/submissions`.
 
 Use cases:
@@ -263,8 +263,8 @@ Use cases:
 
 ### Feedback
 <!-- Full feedback archived in git history + plan file. Summary below. -->
-**Tested:** 2026-03-08 | **Cases:** 17/17 (code review + partial live) | **Severity:** S1
-**Priority fixes:** Silent error handling S0 (TASK-04), hardcoded locale S0 (TASK-04), emoji icons S1 (TASK-02)
+**Tested:** 2026-03-08 | **Fixed:** 2026-03-14 (commit 3aed048) | **Cases:** 17/17 (code review + partial live) | **Severity:** S3
+**Priority fixes:** ~~Silent error handling S0 (TASK-04)~~ DONE — error toasts surfaced, ~~hardcoded locale S0 (TASK-04)~~ DONE — locale-aware dates, ~~emoji icons S1 (TASK-02)~~ DONE — normalized labels with i18n display
 **Top revamp:** Error states, loading skeletons, semantic table markup, confirmation dialogs
 **Plan:** `docs/plans/2026-03-08-tasks-qa-revamp.md`
 

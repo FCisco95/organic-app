@@ -16,7 +16,7 @@ import {
 } from '@/features/tasks';
 
 import { createClient } from '@/lib/supabase/client';
-import { CheckSquare, Clock, Plus, Send, Star } from 'lucide-react';
+import { ArrowRight, CheckSquare, Clock, Plus, Send, Star } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { TaskFiltersBar } from '@/components/tasks/task-filters-bar';
@@ -702,6 +702,39 @@ export default function TasksPage() {
             </div>
           </div>
         </section>
+
+        {/* Personal stats strip for authenticated users */}
+        {user && (
+          <div className="rounded-xl border border-border bg-gradient-to-r from-orange-500/5 to-amber-500/5 p-4 grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="text-center">
+              <p className="text-2xl font-bold font-mono tabular-nums text-foreground">{profile?.tasks_completed ?? 0}</p>
+              <p className="text-xs text-muted-foreground">{t('statsCompleted')}</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-bold font-mono tabular-nums text-foreground">{profile?.total_points ?? 0}</p>
+              <p className="text-xs text-muted-foreground">{t('statsPoints')}</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-bold font-mono tabular-nums text-organic-orange">{profile?.xp_total ?? 0}</p>
+              <p className="text-xs text-muted-foreground">{t('statsXp')}</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-bold font-mono tabular-nums text-foreground">{profile?.level ?? 1}</p>
+              <p className="text-xs text-muted-foreground">{t('statsLevel')}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Start earning CTA for unauthenticated users */}
+        {!user && (
+          <div className="rounded-xl border-2 border-dashed border-organic-orange/30 bg-organic-orange/5 p-6 text-center">
+            <h3 className="text-lg font-semibold text-foreground">{t('earnCtaTitle')}</h3>
+            <p className="text-sm text-muted-foreground mt-1">{t('earnCtaDescription')}</p>
+            <Link href="/signup" className="mt-4 inline-flex items-center gap-2 rounded-lg bg-organic-orange text-white px-5 py-2.5 text-sm font-medium hover:bg-orange-600 transition-colors">
+              {t('earnCtaButton')} <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        )}
 
         <section className="rounded-2xl border border-border bg-card p-4 sm:p-5">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">

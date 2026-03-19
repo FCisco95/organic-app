@@ -134,7 +134,7 @@ export default function SignUpPage() {
       />
 
       {/* Right panel - form */}
-      <div className="flex-1 flex flex-col items-center justify-center bg-background p-6 md:p-10 lg:p-14 min-h-dvh md:min-h-0">
+      <div className="flex-1 flex flex-col items-center justify-start pt-8 md:justify-center md:pt-0 bg-background p-6 md:p-10 lg:p-14 min-h-dvh md:min-h-0">
         {/* Mobile logo */}
         <div className="md:hidden mb-8 flex justify-center">
           <Link href="/">

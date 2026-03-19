@@ -22,6 +22,7 @@ import { useSprints } from '@/features/sprints';
 import { useProposals } from '@/features/proposals';
 import { normalizeProposalStatus } from '@/features/proposals/types';
 import { useLeaderboard, formatXp } from '@/features/reputation';
+import { cn } from '@/lib/utils';
 import { useActivityFeed } from '@/features/activity';
 
 function formatCountdown(target: string | null | undefined): string {
@@ -252,17 +253,20 @@ export default function Home() {
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {/* Sprint countdown */}
           <article
-            className="rounded-lg border border-border bg-muted/30 p-4"
+            className="rounded-lg border border-border bg-amber-500/5 p-4 hover:border-amber-500/30 transition-colors"
             data-testid="trust-card-sprint"
           >
             <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
               <Flag className="h-3.5 w-3.5 text-amber-500" />
               <span>{t('trustSprintTitle')}</span>
             </div>
-            <p className="mt-2 text-2xl font-bold font-mono tabular-nums text-foreground animate-count-up">
+            <p className={cn(
+              'mt-2 font-bold font-mono tabular-nums animate-count-up',
+              inFlightSprint ? 'text-2xl text-foreground' : 'text-sm text-muted-foreground'
+            )}>
               {inFlightSprint
                 ? (mounted ? (sprintCountdown || t('trustSprintEnding')) : '\u00A0')
-                : '\u2014'}
+                : t('trustSprintNoneShort')}
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
               {inFlightSprint
@@ -275,7 +279,7 @@ export default function Home() {
 
           {/* Proposals by stage */}
           <article
-            className="rounded-lg border border-border bg-muted/30 p-4"
+            className="rounded-lg border border-border bg-blue-500/5 p-4 hover:border-blue-500/30 transition-colors"
             data-testid="trust-card-proposals"
           >
             <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
@@ -291,8 +295,9 @@ export default function Home() {
           </article>
 
           {/* Leaderboard snapshot */}
+          <Link href="/community" className="block">
           <article
-            className="rounded-lg border border-border bg-muted/30 p-4"
+            className="rounded-lg border border-border bg-orange-500/5 p-4 hover:border-orange-500/30 transition-colors"
             data-testid="trust-card-leaderboard"
           >
             <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
@@ -317,9 +322,11 @@ export default function Home() {
             </div>
           </article>
 
+          </Link>
+
           {/* Recent activity count */}
           <article
-            className="rounded-lg border border-border bg-muted/30 p-4"
+            className="rounded-lg border border-border bg-emerald-500/5 p-4 hover:border-emerald-500/30 transition-colors"
             data-testid="trust-card-activity"
           >
             <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">

@@ -819,6 +819,22 @@ export default function TaskDetailPage() {
             )}
           </div>
 
+          {/* Earnings calculator card */}
+          <div className="rounded-xl border border-border bg-card p-5">
+            <h3 className="text-sm font-semibold text-foreground mb-3">{t('earningsTitle')}</h3>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-lg bg-muted/50 p-3 text-center">
+                <p className="text-xl font-bold font-mono tabular-nums text-foreground">{task.points ?? 0}</p>
+                <p className="text-xs text-muted-foreground">{t('earningsPoints')}</p>
+              </div>
+              <div className="rounded-lg bg-emerald-500/10 p-3 text-center">
+                <p className="text-xl font-bold font-mono tabular-nums text-emerald-600">{'Est. ' + ((task.points ?? 0) * 10)}</p>
+                <p className="text-xs text-muted-foreground">{t('earningsXp')}</p>
+              </div>
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-2">{t('earningsDisclaimer')}</p>
+          </div>
+
           {/* Task Actions - Claim and Submit */}
           {user && profile?.organic_id && (
             <div className="bg-white rounded-xl border border-gray-200 p-6" data-testid="task-submission-cta-block">

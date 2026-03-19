@@ -1172,7 +1172,14 @@
     "infoSection3Title": "收益与声誉",
     "infoSection3Point1": "**每完成一个任务都会获得经验值和积分。**经验值提升您的等级和排行榜排名。积分在每个冲刺结束时转换为 $ORG 代币奖励。",
     "infoSection3Point2": "**质量很重要。**审核者对提交评分 1-5 星。更高的质量分数提升您的声誉并解锁未来的机会。",
-    "infoSection3Point3": "**依赖关系和子任务使工作井然有序。**大型任务可以拆分为子任务，任务之间可以相互依赖——确保正确的工作按正确的顺序进行。"
+    "infoSection3Point3": "**依赖关系和子任务使工作井然有序。**大型任务可以拆分为子任务，任务之间可以相互依赖——确保正确的工作按正确的顺序进行。",
+    "statsCompleted": "已完成任务",
+    "statsPoints": "总积分",
+    "statsXp": "总经验值",
+    "statsLevel": "等级",
+    "earnCtaTitle": "开始在DAO中赚取",
+    "earnCtaDescription": "认领任务，提交工作，赚取$ORG代币。每一份贡献都很重要。",
+    "earnCtaButton": "创建账户"
   },
   "ReviewQueue": {
     "title": "提交审核队列",
@@ -1326,7 +1333,11 @@
     "infoSection3Title": "提交之后",
     "infoSection3Point1": "**审核者或管理员会根据验收标准评估你的工作。** 他们会批准、附反馈拒绝或要求修改。",
     "infoSection3Point2": "**获批的提交将为你赢得此任务列出的全部积分和经验值。** 审核者的质量评分（1–5 星）也会影响你的声誉。",
-    "infoSection3Point3": "**已完成的任务会显示在你的个人资料上**，作为你贡献历史的一部分 — 随着时间推移建立你的链上声誉。"
+    "infoSection3Point3": "**已完成的任务会显示在你的个人资料上**，作为你贡献历史的一部分 — 随着时间推移建立你的链上声誉。",
+    "earningsTitle": "你将获得",
+    "earningsPoints": "积分",
+    "earningsXp": "经验值",
+    "earningsDisclaimer": "经验值估算基于任务价值。实际经验值可能因审核质量评分而异。"
   },
   "Profile": {
     "loadingProfile": "正在加载您的个人资料...",

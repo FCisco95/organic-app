@@ -1172,7 +1172,14 @@
     "infoSection3Title": "Ganhos e Reputação",
     "infoSection3Point1": "**Cada tarefa concluída rende-lhe XP e pontos.** O XP constrói o seu nível e posição no ranking. Os pontos convertem-se em recompensas em tokens $ORG no final de cada sprint.",
     "infoSection3Point2": "**A qualidade importa.** Os revisores classificam submissões de 1 a 5 estrelas. Pontuações de qualidade mais altas impulsionam a sua reputação e desbloqueiam futuras oportunidades.",
-    "infoSection3Point3": "**Dependências e subtarefas mantêm o trabalho organizado.** Tarefas grandes podem ser divididas em subtarefas, e as tarefas podem depender umas das outras — para que o trabalho certo aconteça na ordem certa."
+    "infoSection3Point3": "**Dependências e subtarefas mantêm o trabalho organizado.** Tarefas grandes podem ser divididas em subtarefas, e as tarefas podem depender umas das outras — para que o trabalho certo aconteça na ordem certa.",
+    "statsCompleted": "Tarefas concluídas",
+    "statsPoints": "Pontos totais",
+    "statsXp": "XP total",
+    "statsLevel": "Nível",
+    "earnCtaTitle": "Comece a ganhar com o DAO",
+    "earnCtaDescription": "Reclame tarefas, submeta trabalho e ganhe tokens $ORG. Cada contribuição conta.",
+    "earnCtaButton": "Criar conta"
   },
   "ReviewQueue": {
     "title": "Fila de revisão de submissões",
@@ -1326,7 +1333,11 @@
     "infoSection3Title": "Após a Submissão",
     "infoSection3Point1": "**Um revisor ou administrador avalia o seu trabalho** com base nos critérios de aceitação. Podem aprovar, rejeitar com feedback ou solicitar alterações.",
     "infoSection3Point2": "**Submissões aprovadas rendem-lhe o valor total de pontos e XP** indicado nesta tarefa. As classificações de qualidade (1–5 estrelas) do revisor também influenciam a sua reputação.",
-    "infoSection3Point3": "**As tarefas concluídas aparecem no seu perfil** como parte do seu histórico de contribuições — construindo a sua reputação on-chain ao longo do tempo."
+    "infoSection3Point3": "**As tarefas concluídas aparecem no seu perfil** como parte do seu histórico de contribuições — construindo a sua reputação on-chain ao longo do tempo.",
+    "earningsTitle": "O que vai ganhar",
+    "earningsPoints": "Pontos",
+    "earningsXp": "XP",
+    "earningsDisclaimer": "Estimativas de XP baseadas no valor da tarefa. O XP real pode variar conforme a avaliação de qualidade."
   },
   "Profile": {
     "loadingProfile": "Carregando seu perfil...",

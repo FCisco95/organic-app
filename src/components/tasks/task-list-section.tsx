@@ -230,6 +230,11 @@ export function TaskListSection({
                       <p className="font-mono text-base font-semibold tabular-nums text-primary">
                         {points}<span className="ml-0.5 text-[10px] font-normal text-muted-foreground">pts</span>
                       </p>
+                      {points > 0 && (
+                        <span className="inline-block mt-0.5 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-600">
+                          +{points * 10} XP
+                        </span>
+                      )}
                     </div>
 
                     {/* Activity column */}
