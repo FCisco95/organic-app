@@ -86,7 +86,7 @@ export default function Home() {
   return (
     <PageContainer layout="fluid" className="relative">
       {/* Subtle ambient glow */}
-      <div className="pointer-events-none absolute inset-x-0 -top-12 h-64 bg-[radial-gradient(circle_at_top,_hsl(28_100%_50%/0.06),_transparent)]" />
+      <div className="pointer-events-none absolute inset-x-0 -top-12 h-96 bg-[radial-gradient(ellipse_600px_400px_at_15%_50%,var(--orange-dim),transparent),radial-gradient(ellipse_400px_300px_at_85%_30%,rgba(168,85,247,0.06),transparent)]" />
 
       {/* -- Masthead -- */}
       <header className="flex items-center gap-3 mb-6 opacity-0 animate-fade-up stagger-1">
@@ -119,7 +119,7 @@ export default function Home() {
                   Organic #{profile.organic_id}
                 </span>
               </p>
-              <h1 className="mt-2 text-2xl sm:text-3xl font-bold leading-tight text-white tracking-tight">
+              <h1 className="mt-2 text-2xl sm:text-3xl font-display font-bold leading-tight text-white tracking-tight">
                 {t('heroTitle')}{' '}
                 <span className="text-orange-500 animate-organic-grow inline-block">Organic</span>
               </h1>
@@ -127,7 +127,7 @@ export default function Home() {
             <div className="flex flex-wrap items-center gap-3">
               <Link
                 href="/proposals"
-                className="group inline-flex items-center gap-2 bg-white hover:bg-gray-100 text-gray-900 px-5 py-2.5 rounded-lg text-sm font-medium transition-colors"
+                className="group inline-flex items-center gap-2 bg-gradient-to-r from-[var(--orange)] to-[#ff8844] hover:shadow-[0_8px_24px_var(--orange-glow)] text-black px-5 py-2.5 rounded-xl text-sm font-bold transition-all hover:-translate-y-0.5"
               >
                 {t('viewProposals')}
                 <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -148,7 +148,7 @@ export default function Home() {
             <p className="text-xs uppercase tracking-[0.18em] text-gray-400">
               {t('heroLead')}
             </p>
-            <h1 className="mt-3 text-3xl sm:text-4xl font-bold leading-[1.1] text-white tracking-tight">
+            <h1 className="mt-3 text-3xl sm:text-4xl font-display font-bold leading-[1.1] text-white tracking-tight">
               {t('heroTitle')}{' '}
               <span className="text-orange-500 animate-organic-grow inline-block">Organic</span>
             </h1>
@@ -158,7 +158,7 @@ export default function Home() {
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <Link
                 href="/profile"
-                className="group inline-flex items-center gap-2 bg-white hover:bg-gray-100 text-gray-900 px-5 py-2.5 rounded-lg text-sm font-medium transition-colors"
+                className="group inline-flex items-center gap-2 bg-gradient-to-r from-[var(--orange)] to-[#ff8844] hover:shadow-[0_8px_24px_var(--orange-glow)] text-black px-5 py-2.5 rounded-xl text-sm font-bold transition-all hover:-translate-y-0.5"
               >
                 {t('goToProfile')}
                 <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -170,15 +170,24 @@ export default function Home() {
       ) : (
         /* Full hero for guests */
         <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 sm:p-8 lg:p-10 mb-8 shadow-sm opacity-0 animate-fade-up stagger-2 text-white">
-          <div className="absolute -right-16 -top-20 h-48 w-48 rounded-full bg-orange-500/10 blur-3xl" />
-          <div className="absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-white/5 blur-3xl" />
+          <div className="absolute -right-16 -top-20 h-48 w-48 rounded-full bg-purple-500/10 blur-3xl" />
+          <div className="absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-[var(--orange-dim)] blur-3xl" />
+
+          {/* Floating character emojis */}
+          <div className="hidden xl:block absolute right-6 bottom-6 z-10">
+            <div className="flex gap-4">
+              <span className="text-5xl drop-shadow-lg" style={{ animation: 'charBob 5s ease-in-out infinite' }}>🤖</span>
+              <span className="text-5xl drop-shadow-lg" style={{ animation: 'charBob 5s ease-in-out infinite -1.5s' }}>🐉</span>
+              <span className="text-5xl drop-shadow-lg" style={{ animation: 'charBob 5s ease-in-out infinite -3s' }}>🦊</span>
+            </div>
+          </div>
 
           <div className="relative grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
             <div>
               <p className="text-xs uppercase tracking-[0.18em] text-gray-400">
                 {t('heroLead')}
               </p>
-              <h1 className="mt-3 text-3xl sm:text-4xl lg:text-[42px] font-bold leading-[1.1] text-white tracking-tight">
+              <h1 className="mt-3 text-3xl sm:text-4xl lg:text-[42px] font-display font-bold leading-[1.1] text-white tracking-tight">
                 {t('heroTitle')}{' '}
                 <span className="text-orange-500 animate-organic-grow inline-block">Organic</span>
               </h1>
@@ -188,16 +197,16 @@ export default function Home() {
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 <Link
                   href="/login"
-                  className="group inline-flex items-center gap-2 bg-white hover:bg-gray-100 text-gray-900 px-5 py-2.5 rounded-lg text-sm font-medium transition-colors"
+                  className="group inline-flex items-center gap-2 bg-gradient-to-r from-[var(--orange)] to-[#ff8844] hover:shadow-[0_8px_24px_var(--orange-glow)] text-black px-5 py-2.5 rounded-xl text-sm font-bold transition-all hover:-translate-y-0.5"
                 >
                   {t('getStarted')}
                   <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                 </Link>
                 <Link
                   href="/proposals"
-                  className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--text-dim)] hover:text-white border border-[hsl(var(--border))] bg-[var(--surface2)] px-5 py-2.5 rounded-xl transition-all hover:border-[var(--orange)] hover:-translate-y-0.5"
                 >
-                  {t('viewProposals')} &rarr;
+                  {t('viewProposals')} →
                 </Link>
               </div>
 
