@@ -53,11 +53,11 @@ export function Sidebar() {
             alt={t('logoAlt')}
             width={360}
             height={360}
-            className={cn('shrink-0 object-contain drop-shadow-[0_0_12px_rgba(255,107,44,0.3)]', collapsed ? 'h-10 w-10' : 'h-16 w-16')}
+            className={cn('shrink-0 object-contain', collapsed ? 'h-10 w-10' : 'h-16 w-16')}
             priority
           />
           {!collapsed && (
-            <span className="text-lg font-bold tracking-tight bg-gradient-to-r from-[var(--orange)] to-[var(--yellow)] bg-clip-text text-transparent">
+            <span className="text-lg font-bold tracking-tight text-sidebar-foreground">
               Organic
             </span>
           )}

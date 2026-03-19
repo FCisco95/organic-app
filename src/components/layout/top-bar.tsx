@@ -28,7 +28,7 @@ export function TopBar() {
   const { onboardingState, openWizard, isIncomplete } = useOnboarding();
 
   return (
-    <header className="sticky top-0 z-40 flex h-14 items-center border-b border-border bg-[hsl(var(--background))]/90 backdrop-blur-xl px-4">
+    <header className="sticky top-0 z-40 flex h-14 items-center border-b border-border bg-card/80 backdrop-blur-sm px-4">
       {/* Left: sidebar toggles */}
       <div className="flex items-center gap-2">
         {/* Desktop toggle */}
@@ -72,11 +72,11 @@ export function TopBar() {
                   className={cn(
                     'px-1.5 py-0.5 rounded-full text-[10px] font-semibold capitalize',
                     profile.role === 'admin'
-                      ? 'bg-purple-500/20 text-purple-400'
+                      ? 'bg-purple-100 text-purple-700'
                       : profile.role === 'council'
-                        ? 'bg-blue-500/20 text-blue-400'
+                        ? 'bg-blue-100 text-blue-700'
                         : profile.role === 'member'
-                          ? 'bg-green-500/20 text-green-400'
+                          ? 'bg-green-100 text-green-700'
                           : 'bg-muted text-muted-foreground'
                   )}
                 >

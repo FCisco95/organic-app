@@ -146,7 +146,7 @@ export function FeatureCarousel() {
       <button
         onClick={() => scroll('left')}
         className={cn(
-          'hidden lg:flex absolute -left-5 top-1/2 -translate-y-1/2 z-10 h-10 w-10 items-center justify-center rounded-full bg-[var(--surface)] border border-[hsl(var(--border))] text-foreground shadow-md hover:scale-105 transition-transform',
+          'hidden lg:flex absolute -left-5 top-1/2 -translate-y-1/2 z-10 h-10 w-10 items-center justify-center rounded-full bg-card border border-border shadow-md hover:scale-105 transition-transform',
           activeIndex === 0 && 'opacity-30 pointer-events-none'
         )}
         aria-label="Previous card"
@@ -156,7 +156,7 @@ export function FeatureCarousel() {
       <button
         onClick={() => scroll('right')}
         className={cn(
-          'hidden lg:flex absolute -right-5 top-1/2 -translate-y-1/2 z-10 h-10 w-10 items-center justify-center rounded-full bg-[var(--surface)] border border-[hsl(var(--border))] text-foreground shadow-md hover:scale-105 transition-transform',
+          'hidden lg:flex absolute -right-5 top-1/2 -translate-y-1/2 z-10 h-10 w-10 items-center justify-center rounded-full bg-card border border-border shadow-md hover:scale-105 transition-transform',
           activeIndex === CARDS.length - 1 && 'opacity-30 pointer-events-none'
         )}
         aria-label="Next card"
@@ -180,26 +180,25 @@ export function FeatureCarousel() {
               <Link href={card.href} className="block group">
                 <div
                   className={cn(
-                    'card-hover border border-[hsl(var(--border))] bg-[var(--surface)] p-6 sm:p-8 h-full flex flex-col',
+                    'rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-xl h-full flex flex-col hover:scale-[1.01] transition-transform duration-200',
                     card.glow && 'animate-glow-pulse'
                   )}
                 >
-                  <div className="card-shimmer" />
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[var(--orange-dim)] text-[var(--orange)]">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-orange-500/10 text-orange-500">
                       <Icon className="h-6 w-6" />
                     </div>
-                    <h3 className="text-lg sm:text-xl font-semibold text-foreground group-hover:text-[var(--orange)] transition-colors">
+                    <h3 className="text-lg sm:text-xl font-semibold text-foreground group-hover:text-orange-500 transition-colors">
                       {t(card.titleKey)}
                     </h3>
                   </div>
                   <p className="text-sm sm:text-base text-muted-foreground leading-relaxed flex-1">
                     {t(card.descKey)}
                   </p>
-                  <p className="mt-4 text-xs font-semibold text-[var(--orange)] uppercase tracking-wider">
+                  <p className="mt-4 text-xs font-semibold text-orange-500 uppercase tracking-wider">
                     {t(card.fomoKey)}
                   </p>
-                  <div className="mt-4 flex items-center gap-2 text-sm font-medium text-foreground group-hover:text-[var(--orange)] transition-colors">
+                  <div className="mt-4 flex items-center gap-2 text-sm font-medium text-foreground group-hover:text-orange-500 transition-colors">
                     {t(card.ctaKey)}
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                   </div>
@@ -217,7 +216,7 @@ export function FeatureCarousel() {
             key={i}
             className={cn(
               'h-2 rounded-full transition-all duration-200',
-              activeIndex === i ? 'w-5 bg-[var(--orange)]' : 'w-2 bg-[hsl(var(--border))]'
+              activeIndex === i ? 'w-5 bg-orange-500' : 'w-2 bg-border'
             )}
             onClick={() => scrollTo(i)}
             aria-label={`Go to card ${i + 1}`}
