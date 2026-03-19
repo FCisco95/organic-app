@@ -185,28 +185,57 @@ Use cases:
 **Confidence score:** 4/5 (12 PASS, 0 FAIL, 1 PARTIAL — auth features untested due to missing fixtures)
 
 ## 4.5 My Profile, Privacy Toggle, and Progression Hub
-<!-- qa-status: PENDING -->
+<!-- qa-status: PLANNED | severity: S1 | plan: docs/plans/2026-03-19-profile-progression-fixes.md -->
 Routes: `/profile`, `/profile/progression`.
 
 Use cases:
-- [ ] `PROF-01` Profile identity/activity/preferences sections render.
-- [ ] `PROF-02` Privacy toggle updates state and message correctly.
-- [ ] `PROF-03` Progression page opens from profile quick action.
-- [ ] `PROF-04` Progression source context (`?from=tasks|proposals|profile`) behaves correctly.
-- [ ] `PROF-05` XP/level/next-step context is understandable.
-- [ ] `PROF-06` Fallback messaging is useful when progression data is sparse.
-- [ ] `PROF-07` Mobile layout keeps cards/actions usable.
-- [ ] `PROF-08` Twitter/X account link/unlink controls in profile work and persist state.
-- [ ] `PROF-09` OAuth callback return parameters (`twitter_linked`, `twitter_error`) surface clear feedback on profile.
-- [ ] `PROF-10` Onboarding progress shortcut in top bar dropdown appears only for incomplete users.
+- [x] `PROF-01` Profile identity/activity/preferences sections render. **PARTIAL, S2** — all sections render (identity, reputation, activity, account details, social, twitter, privacy, wallet, notifications, verified banner) but desktop content scroll is broken via Playwright JS — content below fold requires mouse wheel scroll only
+- [x] `PROF-02` Privacy toggle updates state and message correctly. **PASS, S3** — toggles both directions with correct text, description, and toast notification
+- [x] `PROF-03` Progression page opens from profile quick action. **PASS, S3** — "View Progression" link navigates to `/profile/progression?from=profile`
+- [x] `PROF-04` Progression source context (`?from=tasks|proposals|profile`) behaves correctly. **PASS, S3** — all 3 contexts show correct banner text and back link
+- [x] `PROF-05` XP/level/next-step context is understandable. **PARTIAL, S1** — level, XP, streak, claimable points, next level target, quests, achievements, rewards readiness all render; **but all 9 quest titles/descriptions show raw i18n keys** (`Gamification.questCopy.<uuid>.title`) — 52 console errors per page load
+- [x] `PROF-06` Fallback messaging is useful when progression data is sparse. **PASS, S3** — "No active streak", "No XP earned yet", "Keep contributing to reach Level N", specific reward point threshold
+- [x] `PROF-07` Mobile layout keeps cards/actions usable. **PASS, S3** — clean single-column layout, proper spacing, touch targets adequate, notification toggles well-spaced
+- [x] `PROF-08` Twitter/X account link/unlink controls in profile work and persist state. **FAIL, S1** — unlinked state renders correctly but "Connect Twitter/X account" button returns 400 Bad Request from `/api/twitter/link/start` with toast "Invalid JSON in request body"
+- [x] `PROF-09` OAuth callback return parameters (`twitter_linked`, `twitter_error`) surface clear feedback on profile. **FAIL, S1** — both `?twitter_linked=1` and `?twitter_error=auth_failed` params are silently ignored, no success/error toast shown
+- [x] `PROF-10` Onboarding progress shortcut in top bar dropdown appears only for incomplete users. **PASS, S3** — avatar dropdown shows "Setup Progress 1/4", clicking opens onboarding wizard
 
-Feedback:
-- What works well:
-- What does not work:
-- UI improvements requested:
-- Top 3 highest-impact changes:
-- Section severity (`S0/S1/S2/S3`):
-- Confidence score (`1-5`):
+### Feedback
+
+**What works well:**
+- Profile page renders all sections cleanly: identity card with avatar/name/email/bio, reputation with level badge and XP progress bar, activity stats (4 cards), account details with Organic ID and role, social/contact, privacy toggle, wallet, notification preferences table, verified member banner (PROF-01)
+- Privacy toggle works both directions with appropriate toast notifications and dynamic button/text updates (PROF-02)
+- Progression page has clear layout: 4 stat cards (level, XP, streak, points), next level target with progress bar, quests by category (daily/weekly/long-term), achievements catalog, rewards readiness, recent XP activity (PROF-05, PROF-06)
+- Source context banners correctly adapt to `?from=` parameter with matching back links (PROF-04)
+- Onboarding progress shortcut shows step count (1/4) and opens wizard (PROF-10)
+- Mobile layout is clean single-column with no clipping or overflow (PROF-07)
+- Page title "Profile — Organic App" is correct
+- 0 console errors on profile page (only 1 Lit dev mode warning)
+
+**What does not work:**
+- **Quest i18n keys broken (S1):** All 9 quest titles and descriptions render as raw keys `Gamification.questCopy.<uuid>.title/.description` — the i18n resolver in `progression-shell.tsx:212` (`resolveQuestTitle`) generates keys from quest UUIDs that don't exist in locale files. Produces **52 console errors** per page load. (PROF-05) -- **priority fix**
+- **Twitter/X connect broken (S1):** Clicking "Connect Twitter/X account" returns 400 from `/api/twitter/link/start` — "Invalid JSON in request body". Cannot test link/unlink flow. (PROF-08) -- **priority fix**
+- **Twitter/X OAuth callback params ignored (S1):** `?twitter_linked=1` and `?twitter_error=auth_failed` produce no visual feedback — no toast, no banner, no state change. (PROF-09) -- **priority fix**
+- **Some achievement i18n keys still missing:** `Reputation.achievementNames.first_arbiter`, `.justice_keeper`, `.vindicated`, `Reputation.achievementDescriptions.peacemaker` render as raw keys (PROF-05)
+
+**UI improvements requested:**
+- **Fix quest i18n resolution:** Either store quest copy in locale files keyed by UUID, or fall back to a DB-sourced title/description field instead of attempting i18n lookup on dynamic UUIDs. (PROF-05)
+- **Add Twitter/X OAuth callback feedback:** Read `twitter_linked` and `twitter_error` query params on profile mount and show appropriate success/error toast. (PROF-09)
+- **Fix Twitter/X link start API:** Debug 400 error on `/api/twitter/link/start` — likely missing or malformed request body. (PROF-08)
+- **Add missing dispute achievement i18n keys:** `first_arbiter`, `justice_keeper`, `vindicated` names + `peacemaker` description across all 3 locales. (PROF-05)
+
+**Standalone tasks identified:**
+- **TASK: Fix quest i18n resolution strategy** — progression-shell.tsx resolveQuestTitle/resolveQuestDescription need fallback to DB fields when i18n key doesn't exist. (PROF-05)
+- **TASK: Fix Twitter/X link start API** — `/api/twitter/link/start` returns 400 Bad Request. (PROF-08)
+- **TASK: Add Twitter/X OAuth callback param handling** — profile page should read and surface twitter_linked/twitter_error params. (PROF-09)
+
+**Top 3 highest-impact changes:**
+1. **Fix quest i18n key resolution** — 9 quests unreadable, 52 console errors per load. (PROF-05, S1)
+2. **Fix Twitter/X connect flow** — link start API broken, callback params ignored. (PROF-08, PROF-09, S1)
+3. **Add missing achievement i18n keys** — 4 dispute achievements show raw keys. (PROF-05, S2)
+
+**Section severity:** S1 (quest i18n broken, Twitter connect broken, callback params ignored)
+**Confidence score:** 4/5 (10/10 tested, 0 skipped; Twitter link/unlink flow untestable due to API error)
 
 ## 4.6 Quests, Referrals, and Gamification Controls
 <!-- qa-status: PENDING -->
