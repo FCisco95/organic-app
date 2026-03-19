@@ -22,6 +22,7 @@ import { useSprints } from '@/features/sprints';
 import { useProposals } from '@/features/proposals';
 import { normalizeProposalStatus } from '@/features/proposals/types';
 import { useLeaderboard, formatXp } from '@/features/reputation';
+import { cn } from '@/lib/utils';
 import { useActivityFeed } from '@/features/activity';
 
 function formatCountdown(target: string | null | undefined): string {
@@ -259,10 +260,13 @@ export default function Home() {
               <Flag className="h-3.5 w-3.5 text-amber-500" />
               <span>{t('trustSprintTitle')}</span>
             </div>
-            <p className="mt-2 text-2xl font-bold font-mono tabular-nums text-foreground animate-count-up">
+            <p className={cn(
+              'mt-2 font-bold font-mono tabular-nums animate-count-up',
+              inFlightSprint ? 'text-2xl text-foreground' : 'text-sm text-muted-foreground'
+            )}>
               {inFlightSprint
                 ? (mounted ? (sprintCountdown || t('trustSprintEnding')) : '\u00A0')
-                : '\u2014'}
+                : t('trustSprintNoneShort')}
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
               {inFlightSprint

@@ -62,6 +62,7 @@
     "trustSprintTitle": "Sprint countdown",
     "trustSprintPhase": "Current phase: {phase}",
     "trustSprintNone": "No sprint currently in an execution phase.",
+    "trustSprintNoneShort": "No active sprint",
     "trustProposalTitle": "Proposals by stage",
     "trustProposalPublic": "Public: {count}",
     "trustProposalQualified": "Qualified: {count}",

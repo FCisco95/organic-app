@@ -62,6 +62,7 @@
     "trustSprintTitle": "冲刺倒计时",
     "trustSprintPhase": "当前阶段：{phase}",
     "trustSprintNone": "当前没有处于执行阶段的冲刺。",
+    "trustSprintNoneShort": "没有活跃的冲刺",
     "trustProposalTitle": "各阶段提案",
     "trustProposalPublic": "公开：{count}",
     "trustProposalQualified": "已达标：{count}",

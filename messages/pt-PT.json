@@ -62,6 +62,7 @@
     "trustSprintTitle": "Contagem regressiva da sprint",
     "trustSprintPhase": "Fase atual: {phase}",
     "trustSprintNone": "Nenhuma sprint em fase de execução no momento.",
+    "trustSprintNoneShort": "Nenhum sprint ativo",
     "trustProposalTitle": "Propostas por fase",
     "trustProposalPublic": "Públicas: {count}",
     "trustProposalQualified": "Qualificadas: {count}",
