@@ -11,17 +11,13 @@ import { useState, useEffect } from 'react';
 import {
   Vote,
   ArrowRight,
-  Flag,
-  ListChecks,
-  Trophy,
-  ActivitySquare,
 } from 'lucide-react';
 import { ReputationSummary } from '@/components/reputation/reputation-summary';
 import Image from 'next/image';
 import { useSprints } from '@/features/sprints';
 import { useProposals } from '@/features/proposals';
 import { normalizeProposalStatus } from '@/features/proposals/types';
-import { useLeaderboard, formatXp } from '@/features/reputation';
+import { useLeaderboard } from '@/features/reputation';
 import { cn } from '@/lib/utils';
 import { useActivityFeed } from '@/features/activity';
 
@@ -39,14 +35,6 @@ function formatCountdown(target: string | null | undefined): string {
   return `${hours}h`;
 }
 
-/** Renders only on the client to avoid hydration mismatch from Date.now() */
-function ClientTime() {
-  const [time, setTime] = useState('');
-  useEffect(() => {
-    setTime(new Date().toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }));
-  }, []);
-  return <>{time || '\u00A0'}</>;
-}
 
 export default function Home() {
   const { user, profile } = useAuth();
@@ -251,33 +239,25 @@ export default function Home() {
       )}
 
       {/* -- Trust Pulse -- */}
-      <section
-        className="rounded-xl border border-border bg-card p-5 sm:p-6 mb-8 opacity-0 animate-fade-up stagger-3"
-        data-testid="home-trust-strip"
-      >
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
-          {t('trustTitle')}
-        </h2>
-
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <section className="mb-8 opacity-0 animate-fade-up stagger-3" data-testid="home-trust-strip">
+        <div className="section-label-line mb-4">{t('trustTitle')}</div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
           {/* Sprint countdown */}
-          <article
-            className="rounded-lg border border-border bg-amber-500/5 p-4 hover:border-amber-500/30 transition-colors"
-            data-testid="trust-card-sprint"
-          >
-            <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
-              <Flag className="h-3.5 w-3.5 text-amber-500" />
-              <span>{t('trustSprintTitle')}</span>
+          <article className="card-hover border border-[hsl(var(--border))] bg-[var(--surface)] p-5" data-testid="trust-card-sprint">
+            <div className="card-shimmer" />
+            <div className="text-base mb-1.5">⏳</div>
+            <div className="text-[10px] uppercase tracking-[1.5px] text-[var(--text-dimmer)] font-semibold mb-1.5">
+              {t('trustSprintTitle')}
             </div>
             <p className={cn(
-              'mt-2 font-bold font-mono tabular-nums animate-count-up',
-              inFlightSprint ? 'text-2xl text-foreground' : 'text-sm text-muted-foreground'
+              'font-bold font-mono tabular-nums animate-count-up text-[var(--orange)]',
+              inFlightSprint ? 'text-2xl' : 'text-sm text-[var(--text-dim)]'
             )}>
               {inFlightSprint
                 ? (mounted ? (sprintCountdown || t('trustSprintEnding')) : '\u00A0')
                 : t('trustSprintNoneShort')}
             </p>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <p className="mt-1 text-[11px] text-[var(--text-dim)]">
               {inFlightSprint
                 ? (sprintCountdown
                     ? t('trustSprintPhase', { phase: sprintPhaseLabel ?? '\u2014' })
@@ -287,104 +267,75 @@ export default function Home() {
           </article>
 
           {/* Proposals by stage */}
-          <article
-            className="rounded-lg border border-border bg-blue-500/5 p-4 hover:border-blue-500/30 transition-colors"
-            data-testid="trust-card-proposals"
-          >
-            <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
-              <ListChecks className="h-3.5 w-3.5 text-blue-500" />
-              <span>{t('trustProposalTitle')}</span>
+          <article className="card-hover border border-[hsl(var(--border))] bg-[var(--surface)] p-5" data-testid="trust-card-proposals">
+            <div className="card-shimmer" />
+            <div className="text-base mb-1.5">📋</div>
+            <div className="text-[10px] uppercase tracking-[1.5px] text-[var(--text-dimmer)] font-semibold mb-1.5">
+              {t('trustProposalTitle')}
             </div>
-            <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-sm">
-              <span className="text-muted-foreground">{t('trustProposalPublic', { count: proposalStageCounts.public })}</span>
-              <span className="text-muted-foreground">{t('trustProposalQualified', { count: proposalStageCounts.qualified })}</span>
-              <span className="text-muted-foreground">{t('trustProposalDiscussion', { count: proposalStageCounts.discussion })}</span>
-              <span className="text-muted-foreground">{t('trustProposalVoting', { count: proposalStageCounts.voting })}</span>
-            </div>
+            <p className="text-2xl font-bold font-mono tabular-nums text-[var(--green)]">
+              {proposalStageCounts.public + proposalStageCounts.qualified + proposalStageCounts.discussion + proposalStageCounts.voting}
+            </p>
+            <p className="mt-1 text-[11px] text-[var(--text-dim)]">
+              {t('trustProposalPublic', { count: proposalStageCounts.public })} · {t('trustProposalVoting', { count: proposalStageCounts.voting })}
+            </p>
           </article>
 
           {/* Leaderboard snapshot */}
           <Link href="/community" className="block">
-          <article
-            className="rounded-lg border border-border bg-orange-500/5 p-4 hover:border-orange-500/30 transition-colors"
-            data-testid="trust-card-leaderboard"
-          >
-            <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
-              <Trophy className="h-3.5 w-3.5 text-orange-500" />
-              <span>{t('trustLeaderboardTitle')}</span>
-            </div>
-            <div className="mt-2 space-y-1 text-sm">
+            <article className="card-hover border border-[hsl(var(--border))] bg-[var(--surface)] p-5" data-testid="trust-card-leaderboard">
+              <div className="card-shimmer" />
+              <div className="text-base mb-1.5">🏆</div>
+              <div className="text-[10px] uppercase tracking-[1.5px] text-[var(--text-dimmer)] font-semibold mb-1.5">
+                {t('trustLeaderboardTitle')}
+              </div>
               {leaderboardTop.length === 0 ? (
-                <p className="text-muted-foreground">{t('trustLeaderboardEmpty')}</p>
+                <p className="text-sm text-[var(--text-dim)]">{t('trustLeaderboardEmpty')}</p>
               ) : (
-                leaderboardTop.map((entry, index) => (
-                  <p key={entry.id} className="flex items-center justify-between gap-2">
-                    <span className="truncate text-foreground">
-                      #{index + 1} {entry.name ?? entry.email}
-                    </span>
-                    <span className="font-mono tabular-nums text-muted-foreground text-xs">
-                      {formatXp(entry.xp_total)}
-                    </span>
-                  </p>
-                ))
+                <p className="text-2xl font-bold font-mono tabular-nums text-[var(--purple)]">
+                  #1 {leaderboardTop[0]?.name ?? leaderboardTop[0]?.email}
+                </p>
               )}
-            </div>
-          </article>
-
+              <p className="mt-1 text-[11px] text-[var(--text-dim)]">
+                {leaderboardTop.slice(1).map((e, i) => `#${i + 2} ${e.name ?? e.email}`).join(' · ')}
+              </p>
+            </article>
           </Link>
 
           {/* Recent activity count */}
-          <article
-            className="rounded-lg border border-border bg-emerald-500/5 p-4 hover:border-emerald-500/30 transition-colors"
-            data-testid="trust-card-activity"
-          >
-            <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
-              <ActivitySquare className="h-3.5 w-3.5 text-emerald-500" />
-              <span>{t('trustActivityTitle')}</span>
+          <article className="card-hover border border-[hsl(var(--border))] bg-[var(--surface)] p-5" data-testid="trust-card-activity">
+            <div className="card-shimmer" />
+            <div className="text-base mb-1.5">🔥</div>
+            <div className="text-[10px] uppercase tracking-[1.5px] text-[var(--text-dimmer)] font-semibold mb-1.5">
+              {t('trustActivityTitle')}
             </div>
-            <p className="mt-2 text-2xl font-bold font-mono tabular-nums text-foreground animate-count-up">
+            <p className="text-2xl font-bold font-mono tabular-nums text-[var(--cyan)]">
               {activity.length}
             </p>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <p className="mt-1 text-[11px] text-[var(--text-dim)]">
               {activity.length > 0
                 ? t('trustActivityRecent', { count: activity.length })
                 : t('trustActivityEmpty')}
             </p>
           </article>
         </div>
-
-        <div className="mt-3 flex items-center gap-3 text-[10px] text-muted-foreground/60">
-          <span data-testid="trust-updated-at">
-            <ClientTime />
-          </span>
-          <span data-testid="trust-refresh-cadence">60s</span>
-        </div>
       </section>
 
       {/* -- Feature Carousel (FOMO cards) -- 1 card at a time */}
       <section className="mb-8 opacity-0 animate-fade-up stagger-4">
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-          {t('capabilitiesTitle')}
-        </h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          {t('capabilitiesSubtitle')}
-        </p>
+        <div className="section-label-line mb-4">{t('capabilitiesTitle')}</div>
         <FeatureCarousel />
       </section>
 
       {/* -- Activity Feed -- */}
       <section className="mb-8 opacity-0 animate-fade-up stagger-5">
-        <div className="rounded-xl border border-border bg-card p-5 flex flex-col">
+        <div className="card-hover border border-[hsl(var(--border))] bg-[var(--surface)] p-6 flex flex-col">
+          <div className="card-shimmer" />
           <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                {t('whatsHappening')}
-              </h2>
-              <p className="text-sm text-muted-foreground mt-1">
-                {t('activitySubtitle')}
-              </p>
-            </div>
-            <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-400">
+            <h2 className="flex items-center gap-2 text-base font-bold text-foreground">
+              ⚡ {t('whatsHappening')}
+            </h2>
+            <span className="live-badge-pulse bg-[var(--red)] text-white text-[9px] font-bold uppercase tracking-[1px] px-2 py-1 rounded">
               {t('activityLive')}
             </span>
           </div>
@@ -395,7 +346,10 @@ export default function Home() {
       </section>
 
       {/* -- Member Status -- */}
-      <section className="rounded-xl border border-border bg-card p-6 sm:p-8 mb-8 opacity-0 animate-fade-up stagger-6">
+      <section className="card-hover border border-[hsl(var(--border))] bg-[var(--surface)] p-6 sm:p-8 mb-8 opacity-0 animate-fade-up stagger-6 relative overflow-hidden">
+        <div className="card-shimmer" />
+        {/* Radial glow accent */}
+        <div className="absolute -top-1/4 -right-1/5 w-[400px] h-[400px] bg-[radial-gradient(circle,var(--orange-dim),transparent_70%)] pointer-events-none" />
         <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
           <div className="flex-1">
             <h2 className="text-lg font-semibold text-foreground">
@@ -409,7 +363,7 @@ export default function Home() {
               <div className="mt-4 flex flex-wrap items-center gap-3">
                 <Link
                   href="/tasks"
-                  className="group inline-flex items-center gap-2 bg-foreground hover:bg-foreground/90 text-background px-4 py-2 rounded-lg text-sm font-medium transition-colors hover:scale-[1.01]"
+                  className="group inline-flex items-center gap-2 btn-game-primary px-4 py-2 text-sm"
                 >
                   {t('viewTasks')}
                   <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -426,7 +380,7 @@ export default function Home() {
               <div className="mt-4">
                 <Link
                   href="/profile"
-                  className="group inline-flex items-center gap-2 bg-foreground hover:bg-foreground/90 text-background px-4 py-2 rounded-lg text-sm font-medium transition-colors hover:scale-[1.01]"
+                  className="group inline-flex items-center gap-2 btn-game-primary px-4 py-2 text-sm"
                 >
                   {t('statusClaimCta')}
                   <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -437,7 +391,7 @@ export default function Home() {
               <div className="mt-4">
                 <Link
                   href="/login"
-                  className="group inline-flex items-center gap-2 bg-foreground hover:bg-foreground/90 text-background px-4 py-2 rounded-lg text-sm font-medium transition-colors hover:scale-[1.01]"
+                  className="group inline-flex items-center gap-2 btn-game-primary px-4 py-2 text-sm"
                 >
                   {t('statusCta')}
                   <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -451,7 +405,7 @@ export default function Home() {
 
         {(!isAuthenticated || !hasOrganicId) && (
           <div className="mt-6 grid gap-3 sm:grid-cols-3">
-            <div className="rounded-lg border border-border bg-muted/30 p-4">
+            <div className="rounded-lg border border-[hsl(var(--border))] bg-[var(--surface2)] p-4">
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {t('statusCardOneLabel')}
               </p>
@@ -459,7 +413,7 @@ export default function Home() {
                 {t('statusCardOneBody')}
               </p>
             </div>
-            <div className="rounded-lg border border-border bg-muted/30 p-4">
+            <div className="rounded-lg border border-[hsl(var(--border))] bg-[var(--surface2)] p-4">
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {t('statusCardTwoLabel')}
               </p>
@@ -467,7 +421,7 @@ export default function Home() {
                 {t('statusCardTwoBody')}
               </p>
             </div>
-            <div className="rounded-lg border border-border bg-muted/30 p-4">
+            <div className="rounded-lg border border-[hsl(var(--border))] bg-[var(--surface2)] p-4">
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {t('statusCardThreeLabel')}
               </p>
@@ -480,35 +434,28 @@ export default function Home() {
 
         {isAuthenticated && hasOrganicId && (
           <div className="mt-4 flex flex-wrap gap-2 text-xs text-muted-foreground">
-            <span className="rounded-full border border-border px-3 py-1 bg-muted/50">
-              {t('statusMember')}
+            <span className="rounded-full border border-[hsl(var(--border))] px-3 py-1 bg-[var(--surface2)] text-[var(--text-dim)]">
+              ✅ {t('statusMember')}
             </span>
-            <span className="rounded-full border border-border px-3 py-1 bg-muted/50">
-              {t('statusOrganicId')} #{profile.organic_id}
+            <span className="rounded-full border border-[hsl(var(--border))] px-3 py-1 bg-[var(--surface2)] text-[var(--text-dim)]">
+              🏛️ {t('statusOrganicId')} #{profile.organic_id}
             </span>
-            <span className="rounded-full border border-border px-3 py-1 bg-muted/50">
-              {t('statusGovernance')}
+            <span className="rounded-full border border-[hsl(var(--border))] px-3 py-1 bg-[var(--surface2)] text-[var(--text-dim)]">
+              🔓 {t('statusGovernance')}
             </span>
           </div>
         )}
       </section>
 
       {/* -- Supporting Stats -- */}
-      <section className="border border-border rounded-lg bg-muted/30 px-5 py-4 mb-6 opacity-0 animate-fade-up stagger-7">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            {t('supportingStats')}
-          </h2>
-          <span className="text-[11px] text-muted-foreground/70">
-            {t('supportingStatsHint')}
-          </span>
-        </div>
+      <section className="mb-8 opacity-0 animate-fade-up stagger-7">
+        <div className="section-label-line mb-4">{t('supportingStats')}</div>
         <StatsBar />
       </section>
 
       {/* -- Footer -- */}
-      <footer className="border-t border-border pt-5 pb-2 opacity-0 animate-fade-up stagger-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs text-muted-foreground/70">
+      <footer className="border-t border-[hsl(var(--border))] pt-5 pb-2 opacity-0 animate-fade-up stagger-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs text-[var(--text-dimmer)]">
           <span>{t('poweredByOrgDescription')}</span>
           <code className="font-mono text-[11px] text-muted-foreground/70">
             {process.env.NEXT_PUBLIC_ORG_TOKEN_MINT || t('loading')}
