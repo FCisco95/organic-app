@@ -1,7 +1,6 @@
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
-  darkMode: ['class'],
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -66,6 +65,18 @@ const config: Config = {
           'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
           muted: 'hsl(var(--sidebar-muted))',
           'muted-foreground': 'hsl(var(--sidebar-muted-foreground))',
+        },
+        game: {
+          orange: 'var(--orange)',
+          'orange-glow': 'var(--orange-glow)',
+          'orange-dim': 'var(--orange-dim)',
+          yellow: 'var(--yellow)',
+          green: 'var(--green)',
+          red: 'var(--red)',
+          purple: 'var(--purple)',
+          cyan: 'var(--cyan)',
+          surface: 'var(--surface)',
+          surface2: 'var(--surface2)',
         },
       },
       fontFamily: {

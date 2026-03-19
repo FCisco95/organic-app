@@ -38,65 +38,55 @@
     --font-display: 'Fraunces';
     --font-mono: 'JetBrains Mono';
 
-    --background: 220 14% 96%;
-    --foreground: 224 10% 15%;
-    --card: 0 0% 100%;
-    --card-foreground: 224 10% 15%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 224 10% 15%;
-    --primary: 28 100% 50%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 220 13% 91%;
-    --secondary-foreground: 224 10% 15%;
-    --muted: 220 13% 91%;
-    --muted-foreground: 220 9% 46%;
-    --accent: 28 100% 50%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84% 60%;
+    /* Dark-only palette — reference: organic-dashboard.html */
+    --background: 240 33% 4%;        /* #060610 */
+    --foreground: 240 25% 93%;       /* #e8e8f0 */
+    --card: 240 30% 8%;              /* #0e0e1a */
+    --card-foreground: 240 25% 93%;  /* #e8e8f0 */
+    --popover: 240 30% 8%;
+    --popover-foreground: 240 25% 93%;
+    --primary: 18 100% 59%;          /* #ff6b2c */
+    --primary-foreground: 0 0% 0%;   /* black text on orange */
+    --secondary: 240 21% 12%;       /* #161625 */
+    --secondary-foreground: 240 25% 93%;
+    --muted: 240 21% 12%;           /* #161625 */
+    --muted-foreground: 240 15% 60%; /* #8888aa */
+    --accent: 18 100% 59%;          /* #ff6b2c */
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 100% 64%;      /* #ff4444 */
     --destructive-foreground: 0 0% 100%;
-    --border: 220 13% 87%;
-    --input: 220 13% 87%;
-    --ring: 28 100% 50%;
+    --border: 240 25% 18%;          /* #22223a */
+    --input: 240 25% 18%;
+    --ring: 18 100% 59%;
     --radius: 0.5rem;
 
-    /* Sidebar */
-    --sidebar: 222 47% 11%;
-    --sidebar-foreground: 210 40% 93%;
-    --sidebar-border: 217 33% 17%;
-    --sidebar-accent: 215 28% 17%;
-    --sidebar-accent-foreground: 28 100% 60%;
-    --sidebar-muted: 217 33% 15%;
-    --sidebar-muted-foreground: 215 15% 50%;
-  }
+    /* Sidebar — slightly different shade */
+    --sidebar: 240 33% 4%;          /* same as bg */
+    --sidebar-foreground: 240 25% 93%;
+    --sidebar-border: 240 25% 18%;
+    --sidebar-accent: 18 100% 10%;  /* orange-tinted bg for active */
+    --sidebar-accent-foreground: 18 100% 65%;
+    --sidebar-muted: 240 21% 12%;
+    --sidebar-muted-foreground: 240 15% 42%; /* #555570 */
 
-  .dark {
-    --background: 224 10% 8%;
-    --foreground: 0 0% 95%;
-    --card: 224 10% 10%;
-    --card-foreground: 0 0% 95%;
-    --popover: 224 10% 10%;
-    --popover-foreground: 0 0% 95%;
-    --primary: 28 100% 50%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 220 6% 16%;
-    --secondary-foreground: 0 0% 95%;
-    --muted: 220 6% 16%;
-    --muted-foreground: 220 5% 55%;
-    --accent: 28 100% 50%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 62% 30%;
-    --destructive-foreground: 0 0% 95%;
-    --border: 220 6% 18%;
-    --input: 220 6% 18%;
-    --ring: 28 100% 50%;
+    /* Extended palette (non-HSL, used directly) */
+    --orange: #ff6b2c;
+    --orange-glow: #ff6b2c55;
+    --orange-dim: #ff6b2c15;
+    --yellow: #ffb800;
+    --green: #00e676;
+    --red: #ff4444;
+    --purple: #a855f7;
+    --cyan: #22d3ee;
+    --text-dim: #8888aa;
+    --text-dimmer: #555570;
+    --surface: #0e0e1a;
+    --surface2: #161625;
 
-    --sidebar: 224 10% 5%;
-    --sidebar-foreground: 0 0% 95%;
-    --sidebar-border: 220 6% 14%;
-    --sidebar-accent: 28 100% 12%;
-    --sidebar-accent-foreground: 28 100% 60%;
-    --sidebar-muted: 220 6% 14%;
-    --sidebar-muted-foreground: 220 5% 55%;
+    /* Existing tokens */
+    --transition-ui: 150ms ease;
+    --section-radius: 0.75rem;
+    --section-padding: 1.5rem;
   }
 }
 
@@ -129,20 +119,6 @@
 .stagger-6 { animation-delay: 400ms; }
 .stagger-7 { animation-delay: 480ms; }
 .stagger-8 { animation-delay: 560ms; }
-
-/*
- * Wave 2 cross-feature consistency tokens
- * These align spacing, type scale, and motion across all revamped surfaces.
- *
- * Section card pattern: bg-white rounded-xl border border-gray-200 p-6
- * Motion: transition-colors 150ms ease, transition-all 150ms ease
- * Type scale: text-2xl/bold (page title), text-lg/semibold (section), text-sm (body)
- */
-:root {
-  --transition-ui: 150ms ease;
-  --section-radius: 0.75rem; /* rounded-xl */
-  --section-padding: 1.5rem; /* p-6 */
-}
 
 /* Auth page staggered field entrance */
 .auth-stagger-1 { animation-delay: 0ms; }
