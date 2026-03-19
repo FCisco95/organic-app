@@ -25,8 +25,10 @@ import {
   Edit2,
   Trash2,
   Shield,
+  ChevronDown,
+  Vote,
 } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, format } from 'date-fns';
 import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
 import type { ProposalWithVoting } from '@/features/voting';
@@ -42,6 +44,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { createClient } from '@/lib/supabase/client';
+import { cn } from '@/lib/utils';
 
 const VotingPanel = dynamic(
   () => import('@/components/voting').then((mod) => mod.VotingPanel),
@@ -78,6 +81,51 @@ type ProposalExecutionTask = {
   } | null;
 };
 
+type StageEvent = {
+  id: string;
+  new_status: string;
+  created_at: string;
+};
+
+/* ── Accordion Card Component ─────────────────────────────────────── */
+function AccordionCard({
+  title,
+  collapsedSummary,
+  defaultOpen = false,
+  children,
+}: {
+  title: string;
+  collapsedSummary: string;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+
+  return (
+    <div className="rounded-xl border border-gray-200 bg-gray-50/50 overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between px-4 py-3 text-left group"
+      >
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-gray-900">{title}</p>
+          {!open && (
+            <p className="text-xs text-gray-500 truncate mt-0.5">{collapsedSummary}</p>
+          )}
+        </div>
+        <ChevronDown
+          className={cn(
+            'w-4 h-4 text-gray-400 transition-transform shrink-0 ml-3',
+            open && 'rotate-180'
+          )}
+        />
+      </button>
+      {open && <div className="px-4 pb-4 pt-1">{children}</div>}
+    </div>
+  );
+}
+
 export default function ProposalDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -87,6 +135,7 @@ export default function ProposalDetailPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [executionTasks, setExecutionTasks] = useState<ProposalExecutionTask[]>([]);
   const [isLoadingExecutionTasks, setIsLoadingExecutionTasks] = useState(false);
+  const [stageEvents, setStageEvents] = useState<StageEvent[]>([]);
 
   const proposalId = params.id as string;
 
@@ -126,6 +175,8 @@ export default function ProposalDetailPage() {
     rejected: t('statusRejected'),
   };
 
+  const isVotingActive = proposal?.status === 'voting';
+
   const fetchExecutionTasks = useCallback(async () => {
     if (!proposalId) return;
 
@@ -157,9 +208,29 @@ export default function ProposalDetailPage() {
     }
   }, [proposalId]);
 
+  // Fetch stage transition history
+  const fetchStageEvents = useCallback(async () => {
+    if (!proposalId) return;
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from('proposal_stage_events')
+        .select('id, new_status, created_at')
+        .eq('proposal_id', proposalId)
+        .order('created_at', { ascending: true })
+        .limit(20);
+
+      if (error) throw error;
+      setStageEvents((data ?? []) as StageEvent[]);
+    } catch {
+      setStageEvents([]);
+    }
+  }, [proposalId]);
+
   useEffect(() => {
     void fetchExecutionTasks();
-  }, [fetchExecutionTasks]);
+    void fetchStageEvents();
+  }, [fetchExecutionTasks, fetchStageEvents]);
 
   async function handleSubmitComment(e: React.FormEvent) {
     e.preventDefault();
@@ -270,6 +341,12 @@ export default function ProposalDetailPage() {
     );
   }
 
+  const showDelegation =
+    user &&
+    (proposal.status === 'voting' ||
+      proposal.status === 'submitted' ||
+      lifecycleStatus === 'discussion');
+
   return (
     <PageContainer width="default">
       {/* Back Link */}
@@ -299,6 +376,20 @@ export default function ProposalDetailPage() {
               <div className="mb-4">
                 <StageStepper currentStatus={proposal.status as ProposalStatus} />
               </div>
+
+              {/* Stage Transition History Chips */}
+              {stageEvents.length > 0 && (
+                <div className="flex gap-1.5 overflow-x-auto pb-1 mb-4 scrollbar-hide">
+                  {stageEvents.map((evt) => (
+                    <span
+                      key={evt.id}
+                      className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-1 text-[10px] font-medium text-gray-600 whitespace-nowrap font-mono"
+                    >
+                      {evt.new_status} &middot; {format(new Date(evt.created_at), 'MMM d')}
+                    </span>
+                  ))}
+                </div>
+              )}
 
               {/* Title + Actions */}
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -523,6 +614,98 @@ export default function ProposalDetailPage() {
             </div>
           )}
 
+          {/* ── MOBILE INLINE ACCORDIONS (replaces sidebar on mobile) ── */}
+          <div className="lg:hidden space-y-3">
+            {/* Accordion 1: Governance Status */}
+            <AccordionCard
+              title={t('accordionGovernanceStatus')}
+              collapsedSummary={t('accordionGovernanceStatusCollapsed', {
+                status: statusLabelMap[proposal.status as ProposalStatus],
+                count: comments.length,
+              })}
+            >
+              <div className="space-y-3 rounded-xl border border-white/70 bg-white/80 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-xs uppercase tracking-wide text-slate-500">{t('railStatus')}</span>
+                  <StatusBadge status={proposal.status as ProposalStatus} showIcon={false} />
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-xs uppercase tracking-wide text-slate-500">{t('railCurrentState')}</span>
+                  <span className="text-sm font-semibold text-slate-800">
+                    {statusLabelMap[proposal.status as ProposalStatus]}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-xs uppercase tracking-wide text-slate-500">{t('railComments')}</span>
+                  <span className="text-sm font-semibold text-slate-800">
+                    {t('commentsCount', { count: comments.length })}
+                  </span>
+                </div>
+                {proposal.execution_status && (
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-xs uppercase tracking-wide text-slate-500">
+                      {t('executionDeadline')}
+                    </span>
+                    <span
+                      className={`text-sm font-semibold ${
+                        proposal.execution_status === 'expired'
+                          ? 'text-red-600'
+                          : 'text-slate-800'
+                      }`}
+                    >
+                      {t(
+                        `executionStatus${
+                          proposal.execution_status === 'pending_execution'
+                            ? 'Pending'
+                            : proposal.execution_status === 'executed'
+                              ? 'Executed'
+                              : 'Expired'
+                        }`
+                      )}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </AccordionCard>
+
+            {/* Accordion 2: Version & Provenance */}
+            <AccordionCard
+              title={t('accordionVersionProvenance')}
+              collapsedSummary={t('accordionVersionCollapsed', { version: currentVersionNumber })}
+            >
+              <div className="space-y-3">
+                <div className="rounded-xl border border-slate-200 bg-white p-4">
+                  <h3 className="text-sm font-semibold text-slate-900">{t('versionContextTitle')}</h3>
+                  <p className="mt-1 text-sm text-slate-600">
+                    {t('versionContextDescription', { version: currentVersionNumber })}
+                  </p>
+                  {hasOutdatedComments && (
+                    <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                      {t('updatedSinceComment', { version: currentVersionNumber })}
+                    </p>
+                  )}
+                </div>
+                <div className="rounded-xl border border-slate-200 bg-slate-950 p-4 text-slate-100">
+                  <p className="text-xs uppercase tracking-[0.16em] text-slate-300">{t('governanceSource')}</p>
+                  <h3 className="mt-1 text-base font-semibold text-white">{t('immutableProposalReference')}</h3>
+                  <p className="mt-2 text-sm text-slate-300">
+                    {t('taskProvenanceHelp', { version: currentVersionNumber })}
+                  </p>
+                </div>
+              </div>
+            </AccordionCard>
+
+            {/* Accordion 3: Vote Delegation */}
+            {showDelegation && (
+              <AccordionCard
+                title={t('accordionVoteDelegation')}
+                collapsedSummary={t('accordionDelegationCollapsed')}
+              >
+                <DelegationPanel />
+              </AccordionCard>
+            )}
+          </div>
+
           {/* Comments Section */}
           <div
             className="bg-white rounded-2xl shadow-sm ring-1 ring-gray-200/60 p-4 sm:p-8"
@@ -576,17 +759,25 @@ export default function ProposalDetailPage() {
                 comments.map((comment) => {
                   const commentVersion = comment.proposal_versions?.version_number ?? 1;
                   const outdated = commentVersion < currentVersionNumber;
+                  const displayName = comment.user_profiles.display_name;
+                  const organicId = comment.user_profiles.organic_id;
+
+                  // Task 10: show "Display Name · Organic #ID" format
+                  const authorLabel =
+                    displayName && organicId
+                      ? t('commentAuthorFormat', { displayName, id: organicId })
+                      : organicId
+                        ? t('organicId', { id: organicId })
+                        : comment.user_profiles.email.split('@')[0];
 
                   return (
                     <div key={comment.id} className="bg-gray-50 rounded-xl p-4">
                       <div className="flex items-center gap-2 mb-2 flex-wrap">
                         <div className="w-7 h-7 rounded-full bg-organic-orange/15 flex items-center justify-center text-xs font-semibold text-organic-orange shrink-0">
-                          {(comment.user_profiles.email ?? '?')[0].toUpperCase()}
+                          {(displayName ?? comment.user_profiles.email ?? '?')[0].toUpperCase()}
                         </div>
                         <span className="font-medium text-gray-900 text-sm">
-                          {comment.user_profiles.organic_id
-                            ? t('organicId', { id: comment.user_profiles.organic_id })
-                            : comment.user_profiles.email.split('@')[0]}
+                          {authorLabel}
                         </span>
                         <span className="text-xs text-gray-500">
                           {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
@@ -609,8 +800,9 @@ export default function ProposalDetailPage() {
           </div>
         </div>
 
+        {/* ── DESKTOP SIDEBAR (hidden on mobile, replaced by inline accordions) ── */}
         <aside
-          className="space-y-4 lg:sticky lg:top-24 self-start"
+          className="hidden lg:block space-y-4 lg:sticky lg:top-24 self-start"
           data-testid="proposal-decision-rail"
         >
           <div
@@ -692,43 +884,24 @@ export default function ProposalDetailPage() {
             </p>
           </div>
 
-          {user &&
-            (proposal.status === 'voting' ||
-              proposal.status === 'submitted' ||
-              lifecycleStatus === 'discussion') && (
-              <div className="rounded-2xl border border-gray-200 bg-white p-4">
-                <DelegationPanel />
-              </div>
-            )}
+          {showDelegation && (
+            <div className="rounded-2xl border border-gray-200 bg-white p-4">
+              <DelegationPanel />
+            </div>
+          )}
         </aside>
       </div>
 
-      {/* Mobile Sticky Action Bar */}
-      <div className="fixed bottom-0 inset-x-0 lg:hidden z-40 border-t border-gray-200 bg-white/95 backdrop-blur-sm px-4 py-3 flex items-center justify-between gap-3 safe-area-bottom">
-        <div className="flex items-center gap-2">
-          {user && <FollowButton subjectType="proposal" subjectId={proposalId} size="sm" />}
-          {(isAuthor || isAdmin) &&
-            ['draft', 'public', 'discussion'].includes(lifecycleStatus) && (
-              <Link
-                href={`/proposals/new?edit=${proposal.id}`}
-                className="flex items-center gap-1 px-3 py-2 text-sm bg-white text-gray-700 rounded-lg ring-1 ring-gray-200"
-              >
-                <Edit2 className="w-4 h-4" />
-                {t('mobileEdit')}
-              </Link>
-            )}
-        </div>
-        {proposal.status === 'voting' && (
-          <a
-            href="#voting-panel"
-            className="px-4 py-2 bg-organic-orange text-white rounded-lg text-sm font-medium"
-          >
-            {t('mobileVote')}
-          </a>
-        )}
-      </div>
-      {/* Spacer for sticky bar on mobile */}
-      <div className="h-16 lg:hidden" />
+      {/* ── FLOATING VOTE FAB (mobile only, replaces sticky bar) ── */}
+      {isVotingActive && (
+        <a
+          href="#voting-panel"
+          className="fixed bottom-6 right-6 z-40 lg:hidden flex items-center justify-center w-14 h-14 rounded-full bg-organic-terracotta text-white shadow-lg hover:bg-organic-terracotta-hover transition-colors"
+          aria-label={t('voteFabLabel')}
+        >
+          <Vote className="w-6 h-6" />
+        </a>
+      )}
 
       {/* Delete Confirmation Modal */}
       <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>

@@ -1,6 +1,7 @@
 'use client';
 
-import { Check } from 'lucide-react';
+import { Check, Tag, FileText, Wallet, Send } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import type { WizardStep } from '@/features/proposals/types';
 
@@ -12,36 +13,81 @@ interface WizardTabsProps {
 
 const STEPS: WizardStep[] = [1, 2, 3, 4];
 
+const STEP_ICONS = [Tag, FileText, Wallet, Send];
+
 export function WizardTabs({ currentStep, onTabClick, labels }: WizardTabsProps) {
+  const t = useTranslations('ProposalWizard');
+
+  const shortLabels = [
+    t('stepperLabelCategory'),
+    t('stepperLabelProblem'),
+    t('stepperLabelBudget'),
+    t('stepperLabelReview'),
+  ];
+
+  // Suppress unused variable — labels kept for API compat
+  void labels;
+
   return (
-    <div className="border-b border-gray-200 mb-6">
-      <nav className="flex gap-6" aria-label="Wizard steps">
+    <div className="mb-8">
+      <div className="flex items-center justify-between">
         {STEPS.map((stepNum, i) => {
           const isActive = currentStep === stepNum;
           const isCompleted = currentStep > stepNum;
+          const Icon = STEP_ICONS[i];
 
           return (
-            <button
-              key={stepNum}
-              type="button"
-              onClick={() => onTabClick(stepNum)}
-              className={cn(
-                'pb-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap',
-                isActive
-                  ? 'border-organic-orange text-orange-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            <div key={stepNum} className="flex items-center flex-1 last:flex-none">
+              {/* Step circle + label */}
+              <button
+                type="button"
+                onClick={() => onTabClick(stepNum)}
+                className="flex flex-col items-center gap-1.5 group"
+              >
+                <div
+                  className={cn(
+                    'w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all',
+                    isCompleted
+                      ? 'bg-organic-terracotta text-white'
+                      : isActive
+                        ? 'bg-organic-terracotta text-white ring-4 ring-organic-terracotta-lightest'
+                        : 'bg-gray-100 text-gray-400 group-hover:bg-gray-200'
+                  )}
+                >
+                  {isCompleted ? (
+                    <Check className="w-5 h-5" />
+                  ) : (
+                    <Icon className="w-4.5 h-4.5" />
+                  )}
+                </div>
+                {/* Short label: hidden on mobile, visible on sm+ */}
+                <span
+                  className={cn(
+                    'hidden sm:block text-xs font-medium transition-colors',
+                    isActive
+                      ? 'text-organic-terracotta'
+                      : isCompleted
+                        ? 'text-organic-terracotta/70'
+                        : 'text-gray-400'
+                  )}
+                >
+                  {shortLabels[i]}
+                </span>
+              </button>
+
+              {/* Connector line between steps */}
+              {i < STEPS.length - 1 && (
+                <div
+                  className={cn(
+                    'flex-1 h-0.5 mx-2 sm:mx-3 transition-colors',
+                    isCompleted ? 'bg-organic-terracotta' : 'bg-gray-200'
+                  )}
+                />
               )}
-            >
-              <span className="flex items-center gap-1.5">
-                {isCompleted && (
-                  <Check className="h-3.5 w-3.5 text-green-500" />
-                )}
-                {labels[i]}
-              </span>
-            </button>
+            </div>
           );
         })}
-      </nav>
+      </div>
     </div>
   );
 }

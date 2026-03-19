@@ -161,7 +161,8 @@ export function useProposalComments(proposalId: string) {
           ),
           user_profiles!comments_user_id_fkey(
             organic_id,
-            email
+            email,
+            display_name
           )
         `
         )

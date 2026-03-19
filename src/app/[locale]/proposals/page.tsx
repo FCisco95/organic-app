@@ -9,13 +9,14 @@ import {
   type ProposalFilters,
   PROPOSAL_CATEGORIES,
 } from '@/features/proposals';
-import { Plus, Search, X, ArrowUpDown } from 'lucide-react';
+import { Plus, Search, X, ArrowUpDown, Tag, Scale, Wallet, Users, Code } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
 import { ProposalCard } from '@/components/proposals';
 import { LiveVoteBanner } from '@/components/proposals/live-vote-banner';
 import { GovernanceSidebar } from '@/components/proposals/governance-sidebar';
 import type { ProposalListItem } from '@/features/proposals/types';
+import type { ProposalCategory } from '@/features/proposals';
 
 const PAGE_SIZE = 20;
 
@@ -36,6 +37,24 @@ const SORT_OPTIONS: { key: SortKey; labelKey: 'sortNew' | 'sortHot' | 'sortMostD
   { key: 'most-discussed', labelKey: 'sortMostDiscussed' },
   { key: 'most-voted', labelKey: 'sortMostVoted' },
 ];
+
+/** Category icon map for responsive filter pills */
+const CATEGORY_ICONS: Record<ProposalCategory, React.ComponentType<{ className?: string }>> = {
+  feature: Tag,
+  governance: Scale,
+  treasury: Wallet,
+  community: Users,
+  development: Code,
+};
+
+/** Short label i18n key map */
+const CATEGORY_SHORT_KEYS: Record<ProposalCategory, string> = {
+  feature: 'categoryShortFeature',
+  governance: 'categoryShortGovernance',
+  treasury: 'categoryShortTreasury',
+  community: 'categoryShortCommunity',
+  development: 'categoryShortDevelopment',
+};
 
 function sortProposals(proposals: ProposalListItem[], sort: SortKey): ProposalListItem[] {
   const arr = [...proposals];
@@ -66,6 +85,8 @@ export default function ProposalsPage() {
   const [sort, setSort] = useState<SortKey>('new');
   const deferredSearch = useDeferredValue(searchTerm);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+
+  const isAdmin = profile?.role && ['admin', 'council'].includes(profile.role);
 
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
@@ -133,14 +154,17 @@ export default function ProposalsPage() {
                 {t('newProposal')}
               </Link>
             )}
-            <button
-              type="button"
-              data-testid="proposals-cta-secondary"
-              onClick={() => setStatusFilter('discussion')}
-              className="inline-flex items-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
-            >
-              {t('reviewDiscussionCta')}
-            </button>
+            {/* Task 9: Role-aware CTA — only show for admin/council */}
+            {isAdmin && (
+              <button
+                type="button"
+                data-testid="proposals-cta-secondary"
+                onClick={() => setStatusFilter('discussion')}
+                className="inline-flex items-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+              >
+                {t('reviewDiscussionCta')}
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -223,7 +247,7 @@ export default function ProposalsPage() {
             <div className="pointer-events-none absolute right-0 top-0 bottom-1 w-8 bg-gradient-to-l from-white to-transparent lg:hidden" />
             </div>
 
-            {/* Category pills */}
+            {/* Category pills — Task 12: responsive with icons */}
             <div className="relative">
             <div data-testid="proposals-category-filters" className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
               <button
@@ -238,28 +262,35 @@ export default function ProposalsPage() {
               >
                 {t('categoryAll')}
               </button>
-              {PROPOSAL_CATEGORIES.map((cat) => (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => setCategoryFilter(cat)}
-                  data-testid={`proposals-category-${cat}`}
-                  className={`flex-shrink-0 rounded-full px-3 py-1 text-xs font-medium whitespace-nowrap transition-colors ${
-                    categoryFilter === cat
-                      ? 'bg-slate-800 text-white'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
-                >
-                  {t(
-                    `category${cat.charAt(0).toUpperCase() + cat.slice(1)}` as
-                      | 'categoryFeature'
-                      | 'categoryGovernance'
-                      | 'categoryTreasury'
-                      | 'categoryCommunity'
-                      | 'categoryDevelopment'
-                  )}
-                </button>
-              ))}
+              {PROPOSAL_CATEGORIES.map((cat) => {
+                const Icon = CATEGORY_ICONS[cat];
+                const shortKey = CATEGORY_SHORT_KEYS[cat];
+                const fullLabelKey = `category${cat.charAt(0).toUpperCase() + cat.slice(1)}` as
+                  | 'categoryFeature'
+                  | 'categoryGovernance'
+                  | 'categoryTreasury'
+                  | 'categoryCommunity'
+                  | 'categoryDevelopment';
+
+                return (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setCategoryFilter(cat)}
+                    data-testid={`proposals-category-${cat}`}
+                    className={`flex-shrink-0 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium whitespace-nowrap transition-colors ${
+                      categoryFilter === cat
+                        ? 'bg-slate-800 text-white'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    }`}
+                  >
+                    <Icon className="h-3.5 w-3.5 shrink-0" />
+                    {/* Short label on mobile, full label on sm+ */}
+                    <span className="sm:hidden">{t(shortKey)}</span>
+                    <span className="hidden sm:inline">{t(fullLabelKey)}</span>
+                  </button>
+                );
+              })}
             </div>
             <div className="pointer-events-none absolute right-0 top-0 bottom-1 w-8 bg-gradient-to-l from-white to-transparent lg:hidden" />
             </div>

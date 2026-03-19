@@ -362,7 +362,12 @@
     "sidebarHotTopics": "Tópicos em Destaque",
     "emptySearchTitle": "Nenhum resultado encontrado",
     "emptySearchDescription": "Nenhuma proposta corresponde a \"{search}\". Tente uma pesquisa diferente.",
-    "emptyTitle": "Seja o primeiro a iniciar uma discussão"
+    "emptyTitle": "Seja o primeiro a iniciar uma discuss\u00e3o",
+    "categoryShortFeature": "Func.",
+    "categoryShortGovernance": "Gov.",
+    "categoryShortTreasury": "Tesouraria",
+    "categoryShortCommunity": "Comunidade",
+    "categoryShortDevelopment": "Dev"
   },
   "ProposalCreate": {
     "toastMustBeMember": "Você precisa ser membro para criar propostas",
@@ -479,7 +484,11 @@
     "nextStep1": "1. A sua proposta fica em estado de Rascunho para aperfeiçoamento",
     "nextStep2": "2. Publique-a para qualificação do conselho e feedback da comunidade",
     "nextStep3": "3. Uma vez qualificada, avança para Discussão e depois Votação",
-    "nextStep4": "4. Votos ponderados por tokens determinam o resultado"
+    "nextStep4": "4. Votos ponderados por tokens determinam o resultado",
+    "stepperLabelCategory": "Categoria",
+    "stepperLabelProblem": "Problema",
+    "stepperLabelBudget": "Or\u00e7amento",
+    "stepperLabelReview": "Revis\u00e3o"
   },
   "ProposalDetail": {
     "toastLoadFailed": "Falha ao carregar proposta",
@@ -575,7 +584,16 @@
     "stageCanceled": "Cancelada",
     "mobileVote": "Votar",
     "mobileFollow": "Seguir",
-    "mobileEdit": "Editar"
+    "mobileEdit": "Editar",
+    "accordionGovernanceStatus": "Estado da Governan\u00e7a",
+    "accordionGovernanceStatusCollapsed": "{status} \u00b7 {count, plural, one {# coment\u00e1rio} other {# coment\u00e1rios}}",
+    "accordionVersionProvenance": "Vers\u00e3o e Proveni\u00eancia",
+    "accordionVersionCollapsed": "v{version}",
+    "accordionVoteDelegation": "Delega\u00e7\u00e3o de Voto",
+    "accordionDelegationCollapsed": "Painel de delega\u00e7\u00e3o",
+    "voteFabLabel": "Votar",
+    "commentAuthorFormat": "{displayName} \u00b7 Organic #{id}",
+    "stageTransitionChip": "{stage} \u00b7 {date}"
   },
   "Sprints": {
     "title": "Sprints",

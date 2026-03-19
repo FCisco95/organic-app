@@ -362,7 +362,12 @@
     "sidebarHotTopics": "Hot Topics",
     "emptySearchTitle": "No results found",
     "emptySearchDescription": "No proposals match \"{search}\". Try a different search.",
-    "emptyTitle": "Be the first to start a discussion"
+    "emptyTitle": "Be the first to start a discussion",
+    "categoryShortFeature": "Feature",
+    "categoryShortGovernance": "Gov",
+    "categoryShortTreasury": "Treasury",
+    "categoryShortCommunity": "Community",
+    "categoryShortDevelopment": "Dev"
   },
   "ProposalCreate": {
     "toastMustBeMember": "You must be a member to create proposals",
@@ -479,7 +484,11 @@
     "nextStep1": "1. Your proposal enters Draft status for you to refine",
     "nextStep2": "2. Publish it for council qualification and community feedback",
     "nextStep3": "3. Once qualified, it moves to Discussion and then Voting",
-    "nextStep4": "4. Token-weighted votes determine the outcome"
+    "nextStep4": "4. Token-weighted votes determine the outcome",
+    "stepperLabelCategory": "Category",
+    "stepperLabelProblem": "Problem",
+    "stepperLabelBudget": "Budget",
+    "stepperLabelReview": "Review"
   },
   "ProposalDetail": {
     "toastLoadFailed": "Failed to load proposal",
@@ -575,7 +584,16 @@
     "stageCanceled": "Canceled",
     "mobileVote": "Vote",
     "mobileFollow": "Follow",
-    "mobileEdit": "Edit"
+    "mobileEdit": "Edit",
+    "accordionGovernanceStatus": "Governance Status",
+    "accordionGovernanceStatusCollapsed": "{status} · {count, plural, one {# comment} other {# comments}}",
+    "accordionVersionProvenance": "Version & Provenance",
+    "accordionVersionCollapsed": "v{version}",
+    "accordionVoteDelegation": "Vote Delegation",
+    "accordionDelegationCollapsed": "Delegation panel",
+    "voteFabLabel": "Vote",
+    "commentAuthorFormat": "{displayName} · Organic #{id}",
+    "stageTransitionChip": "{stage} · {date}"
   },
   "Sprints": {
     "title": "Sprints",
