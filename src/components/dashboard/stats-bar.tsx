@@ -8,6 +8,7 @@ function CountUp({ target }: { target: number | string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const [value, setValue] = useState(0);
   const hasAnimated = useRef(false);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     const el = ref.current;
@@ -19,11 +20,11 @@ function CountUp({ target }: { target: number | string }) {
           hasAnimated.current = true;
           let current = 0;
           const increment = target / 40;
-          const timer = setInterval(() => {
+          timerRef.current = setInterval(() => {
             current += increment;
             if (current >= target) {
               current = target;
-              clearInterval(timer);
+              if (timerRef.current) clearInterval(timerRef.current);
             }
             setValue(Math.floor(current));
           }, 30);
@@ -33,7 +34,10 @@ function CountUp({ target }: { target: number | string }) {
     );
 
     observer.observe(el);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
   }, [target]);
 
   if (typeof target !== 'number') {

@@ -72,7 +72,7 @@ export function SniperGame() {
     <>
       {/* Score counter */}
       <div
-        className="fixed top-4 right-4 z-[1000] bg-[var(--surface)] border border-[var(--orange)] rounded-xl px-4 py-2 font-mono text-sm text-[var(--orange)] flex items-center gap-2"
+        className="fixed top-16 right-4 z-[1000] bg-[var(--surface)] border border-[var(--orange)] rounded-xl px-4 py-2 font-mono text-sm text-[var(--orange)] flex items-center gap-2"
         style={{ boxShadow: '0 0 20px var(--orange-glow)', animation: 'charBob 3s ease-in-out infinite' }}
       >
         <span>🎯</span>
