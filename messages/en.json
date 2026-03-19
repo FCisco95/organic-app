@@ -107,10 +107,8 @@
     "proposals": "Proposals",
     "tasks": "Tasks",
     "sprints": "Sprints",
-    "leaderboard": "Leaderboard",
     "analytics": "Analytics",
     "treasury": "Treasury",
-    "members": "Members",
     "notifications": "Notifications",
     "disputes": "Disputes",
     "templates": "Templates",
@@ -128,7 +126,8 @@
     "submissions": "Submissions",
     "refAndQuests": "Ref & Quests",
     "onboarding": "Setup Progress",
-    "ideas": "Ideas"
+    "ideas": "Ideas",
+    "community": "Community"
   },
   "Wallet": {
     "toastConnected": "Wallet connected",
@@ -2091,7 +2090,11 @@
       "streak_7": "Consistent Grower",
       "streak_30": "Unwavering",
       "xp_1000": "Rising Star",
-      "xp_10000": "Legend in the Making"
+      "xp_10000": "Legend in the Making",
+      "first_arbiter": "First Arbiter",
+      "justice_keeper": "Justice Keeper",
+      "peacemaker": "Peacemaker",
+      "vindicated": "Vindicated"
     },
     "achievementDescriptions": {
       "first_task": "Complete your first task",
@@ -2108,7 +2111,11 @@
       "streak_7": "Maintain a 7-day activity streak",
       "streak_30": "Maintain a 30-day activity streak",
       "xp_1000": "Reach 1,000 XP",
-      "xp_10000": "Reach 10,000 XP"
+      "xp_10000": "Reach 10,000 XP",
+      "first_arbiter": "Resolve your first dispute as arbitrator",
+      "justice_keeper": "Resolve 10 disputes as arbitrator",
+      "peacemaker": "Mediate 5 disputes successfully",
+      "vindicated": "Win your first dispute as disputant"
     },
     "xpSources": {
       "task_completed": "Task completed",
@@ -2746,5 +2753,14 @@
     "signInPrompt": "Sign in to join the discussion.",
     "signIn": "Sign in",
     "commentsEmpty": "No comments yet. Start the thread."
+  },
+  "Community": {
+    "title": "Community",
+    "subtitle": "Meet the people building the Organic DAO — explore rankings and the member directory.",
+    "tabRankings": "Rankings",
+    "tabDirectory": "Directory",
+    "searchRankings": "Search rankings by name or ID...",
+    "backToCommunity": "Back to Community",
+    "totalMembers": "{count} members"
   }
 }

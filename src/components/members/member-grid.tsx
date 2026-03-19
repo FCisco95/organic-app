@@ -12,6 +12,7 @@ interface MemberGridProps {
   page: number;
   limit: number;
   onPageChange: (page: number) => void;
+  rankMap?: Map<string, { rank: number; xpTotal: number }>;
 }
 
 export function MemberGrid({
@@ -21,6 +22,7 @@ export function MemberGrid({
   page,
   limit,
   onPageChange,
+  rankMap,
 }: MemberGridProps) {
   const t = useTranslations('Members');
   const totalPages = Math.ceil(total / limit);
@@ -60,9 +62,17 @@ export function MemberGrid({
   return (
     <div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" data-testid="members-grid">
-        {members.map((member) => (
-          <MemberCard key={member.id} member={member} />
-        ))}
+        {members.map((member) => {
+          const rankData = rankMap?.get(member.id);
+          return (
+            <MemberCard
+              key={member.id}
+              member={member}
+              rank={rankData?.rank}
+              xpTotal={rankData?.xpTotal}
+            />
+          );
+        })}
       </div>
 
       {/* Pagination */}

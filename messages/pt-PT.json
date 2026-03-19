@@ -107,10 +107,8 @@
     "proposals": "Propostas",
     "tasks": "Tarefas",
     "sprints": "Sprints",
-    "leaderboard": "Ranking",
     "analytics": "Analíticas",
     "treasury": "Tesouraria",
-    "members": "Membros",
     "notifications": "Notificações",
     "disputes": "Disputas",
     "templates": "Modelos",
@@ -128,7 +126,8 @@
     "submissions": "Submissões",
     "refAndQuests": "Ref & Quests",
     "onboarding": "Progresso de Configuração",
-    "ideas": "Ideias"
+    "ideas": "Ideias",
+    "community": "Comunidade"
   },
   "Wallet": {
     "toastConnected": "Carteira conectada",
@@ -2091,7 +2090,11 @@
       "streak_7": "Cultivador Consistente",
       "streak_30": "Inabalável",
       "xp_1000": "Estrela em Ascensão",
-      "xp_10000": "Lenda em Formação"
+      "xp_10000": "Lenda em Formação",
+      "first_arbiter": "Primeiro Árbitro",
+      "justice_keeper": "Guardião da Justiça",
+      "peacemaker": "Pacificador",
+      "vindicated": "Vindicado"
     },
     "achievementDescriptions": {
       "first_task": "Complete a sua primeira tarefa",
@@ -2108,7 +2111,11 @@
       "streak_7": "Mantenha uma sequência de 7 dias",
       "streak_30": "Mantenha uma sequência de 30 dias",
       "xp_1000": "Alcance 1.000 XP",
-      "xp_10000": "Alcance 10.000 XP"
+      "xp_10000": "Alcance 10.000 XP",
+      "first_arbiter": "Resolva a sua primeira disputa como árbitro",
+      "justice_keeper": "Resolva 10 disputas como árbitro",
+      "peacemaker": "Medie 5 disputas com sucesso",
+      "vindicated": "Ganhe a sua primeira disputa como disputante"
     },
     "xpSources": {
       "task_completed": "Tarefa concluída",
@@ -2746,5 +2753,14 @@
     "signInPrompt": "Inicia sessão para participar na discussão.",
     "signIn": "Iniciar sessão",
     "commentsEmpty": "Ainda não há comentários. Inicia a conversa."
+  },
+  "Community": {
+    "title": "Comunidade",
+    "subtitle": "Conhece as pessoas que constroem a Organic DAO — explora rankings e o diretório de membros.",
+    "tabRankings": "Rankings",
+    "tabDirectory": "Diretório",
+    "searchRankings": "Pesquisar rankings por nome ou ID...",
+    "backToCommunity": "Voltar à Comunidade",
+    "totalMembers": "{count} membros"
   }
 }
