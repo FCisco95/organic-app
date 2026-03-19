@@ -107,8 +107,10 @@
     "proposals": "提案",
     "tasks": "任务",
     "sprints": "冲刺",
+    "leaderboard": "排行榜",
     "analytics": "数据分析",
     "treasury": "财务",
+    "members": "成员",
     "notifications": "通知",
     "disputes": "争议",
     "templates": "模板",
@@ -126,8 +128,7 @@
     "submissions": "提交审核",
     "refAndQuests": "推荐 & 任务",
     "onboarding": "设置进度",
-    "ideas": "想法",
-    "community": "社区"
+    "ideas": "想法"
   },
   "Wallet": {
     "toastConnected": "钱包已连接",
@@ -2090,11 +2091,7 @@
       "streak_7": "持续成长者",
       "streak_30": "坚定不移",
       "xp_1000": "冉冉新星",
-      "xp_10000": "传奇之路",
-      "first_arbiter": "首位仲裁者",
-      "justice_keeper": "正义守护者",
-      "peacemaker": "和平缔造者",
-      "vindicated": "沉冤昭雪"
+      "xp_10000": "传奇之路"
     },
     "achievementDescriptions": {
       "first_task": "完成你的第一个任务",
@@ -2111,11 +2108,7 @@
       "streak_7": "保持7天连续活跃",
       "streak_30": "保持30天连续活跃",
       "xp_1000": "达到1,000经验值",
-      "xp_10000": "达到10,000经验值",
-      "first_arbiter": "作为仲裁者解决你的第一个争议",
-      "justice_keeper": "作为仲裁者解决10个争议",
-      "peacemaker": "成功调解5个争议",
-      "vindicated": "作为争议方赢得你的第一个争议"
+      "xp_10000": "达到10,000经验值"
     },
     "xpSources": {
       "task_completed": "任务完成",
@@ -2762,6 +2755,17 @@
     "tabDirectory": "成员目录",
     "searchRankings": "按名称或 ID 搜索排名...",
     "backToCommunity": "返回社区",
-    "totalMembers": "{count} 位成员"
+    "totalMembers": "{count} 位成员",
+    "activeThisSprint": "{count} 本冲刺活跃",
+    "streakers": "{count} 连续活跃",
+    "buildYourStreak": "建立你的连续记录！",
+    "activityComingSoon": "活动动态即将推出",
+    "profileTabOverview": "概览",
+    "profileTabReputation": "声誉",
+    "profileTabAchievements": "成就",
+    "profileTabActivity": "活动",
+    "quickGlance": "排名 #{rank} · 等级 {level} · {tasks} 个任务已完成",
+    "achievementsEarned": "已获得 {earned}/{total} 个成就",
+    "xpBreakdownComingSoon": "XP明细即将推出"
   }
 }
