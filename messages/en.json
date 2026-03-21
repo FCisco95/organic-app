@@ -619,6 +619,7 @@
     "phaseQueued": "Queued",
     "settlementPanelTitle": "Settlement posture",
     "settlementBlockedMetric": "Blocked settlements",
+    "metricOpenExecution": "Open execution",
     "settlementReady": "No settlement blockers detected for this sprint.",
     "settlementPanelBlocked": "Blocked: {reason}",
     "boardCommandHint": "Select the target sprint before moving backlog tasks into execution.",

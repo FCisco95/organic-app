@@ -619,6 +619,7 @@
     "phaseQueued": "Na fila",
     "settlementPanelTitle": "Postura de liquidação",
     "settlementBlockedMetric": "Liquidações bloqueadas",
+    "metricOpenExecution": "Execução aberta",
     "settlementReady": "Nenhum bloqueio de liquidação detectado para esta sprint.",
     "settlementPanelBlocked": "Bloqueado: {reason}",
     "boardCommandHint": "Selecione a sprint de destino antes de mover tarefas do backlog para execução.",
