@@ -11,7 +11,7 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 | 4.1 | Auth, Session, Entry | 12 | TESTED | S1 | — | — | — |
 | 4.2 | Navigation, Layout, i18n | 8 | TESTED | S2 | — | — | — |
 | 4.3 | Home, Analytics, Leaderboard, Treasury | 8 | TESTED | S1 | — | — | — |
-| 4.4 | Community (Rankings + Directory + Profile) | 12 | FIXED | S1 | [plan](plans/2026-03-21-community-qa-revamp.md) | `main` (81da1e1) | — |
+| 4.4 | Community (Rankings + Directory + Profile) | 12 | REVAMPED | S1 | [plan](plans/2026-03-21-community-qa-revamp.md) | `main` (81da1e1) | `main` (fb00427) |
 | 4.5 | Profile, Progression, Community Profile | 11 | REVAMPED | S3 | [plan](plans/2026-03-21-profile-progression-fixes-v2.md) | `fix/4.5-profile-fixes-v2` | `fix/4.5-profile-fixes-v2` |
 | 4.6 | Quests, Referrals, Gamification | 11 | PENDING | — | — | — | — |
 | 4.7 | Tasks E2E | 17 | PLANNED | S1 | [plan](plans/2026-03-08-tasks-qa-revamp.md) | — | — |
@@ -45,7 +45,7 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 
 | Action | Section | What to do |
 |--------|---------|------------|
-| **Next to revamp** | 4.4 Community | Bugs fixed → prototype-executor (5 UX improvements) |
+| **Next to revamp** | 4.7 Tasks | After fixing → prototype-executor |
 | **Next to fix** | 4.7 Tasks | Plan exists → qa-fixer (functional fixes) |
 | **Next to plan** | 4.1 Auth | Write plan from runbook feedback — S1 priority |
 | **Next to QA** | 4.6 Quests | First PENDING section in Wave 3 |
@@ -153,3 +153,4 @@ Revamp section 4.{X}. Read docs/qa-dashboard.md for plan link, then use prototyp
 | 2026-03-21 | 4.5 | Revamped (Proto A) | `fix/4.5-profile-fixes-v2` | Executive Dashboard: dense tabbed profile, quest table, compact community header. 3 prototypes compared, Proto A selected. |
 | 2026-03-21 | 4.4 | QA re-tested + planned | — | 12/12 cases with QA accounts (3 sessions, 3 roles). S1: 2 missing Community i18n keys + 4 achievement description keys. Plan: `2026-03-21-community-qa-revamp.md` (4 fixes + 5 UX improvements). |
 | 2026-03-21 | 4.4 | Fixed | `main` (81da1e1) | 4 fixes: 2 Community i18n keys, 4 achievement desc keys (+ 8 pt-PT/zh-CN profile tab keys), QA script onboarding fix. 0 console errors verified. |
+| 2026-03-21 | 4.4 | Revamped (combined A+B+C) | `main` (fb00427) | Best of 3 prototypes: contribution heatmap + activity feed (B/GitHub), keyboard nav + filter counts (A/Linear), command search + 4-stat cards (C/Vercel). 25+ i18n keys. |
