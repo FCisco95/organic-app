@@ -60,7 +60,7 @@ Use this document to run workflow tests, page audits, and capture what works, wh
 ## 4) Workflow QA Packs
 
 ## 4.1 Auth, Session, and Entry Flows
-<!-- qa-status: FIXED | severity: S3 | plan: none -->
+<!-- qa-status: DONE | severity: S3 | plan: none -->
 Routes: `/login`, `/signup`, `/join?ref=CODE`, `/auth/error`, `/auth/callback`.
 
 Use cases:
@@ -71,10 +71,10 @@ Use cases:
 - [x] `AUTH-05` Session persists across refresh. **PASS, S3**
 - [x] `AUTH-06` Sign-out clears session and protects private routes. **PASS, S3** — fixed: server-side middleware redirect
 - [x] `AUTH-07` Protected route redirect works for guest users. **PASS, S3** — fixed: returnTo param support
-- [x] `AUTH-08` `/join?ref=CODE` redirects to `/signup?ref=CODE`. **PARTIAL, S3**
-- [ ] `AUTH-09` Signup with `ref` param preserves referral context. **SKIP — referral not yet wired to signup flow. Placeholder for when referral integration is built.**
-- [x] `AUTH-10` `/auth/error` recovery links (login/home) work. **PASS, S3** — fixed in prior commit
-- [x] `AUTH-11` `/auth/callback` does not dead-end or blank-screen when callback params are missing/invalid. **PARTIAL, S3**
+- [x] `AUTH-08` `/join?ref=CODE` redirects to `/signup?ref=CODE`. **PASS, S3** — re-tested: ref param correctly preserved in redirect
+- [x] `AUTH-09` Signup with `ref` param preserves referral context. **PARTIAL, S3** — ref is sent in Supabase signup metadata but no visible UI indicator that referral is applied
+- [x] `AUTH-10` `/auth/error` recovery links (login/home) work. **PASS, S3** — re-tested: both CTAs navigate correctly
+- [x] `AUTH-11` `/auth/callback` does not dead-end or blank-screen when callback params are missing/invalid. **PASS, S3** — re-tested: gracefully redirects to home
 - [x] `AUTH-12` Mobile auth forms have no clipping or unreachable controls. **PASS, S3** — fixed: top-aligned on mobile, centered on desktop
 
 ### QA Accounts (permanent fixtures for QA skill)
@@ -87,10 +87,10 @@ Use cases:
 
 ### Feedback
 <!-- Full feedback archived in git history + plan file. Summary below. -->
-**Tested:** 2026-03-07 | **Fixed:** 2026-03-19 | **Cases:** 11/12 (AUTH-09 skipped) | **Severity:** S3
-**Priority fixes:** ~~Protected route blank page (AUTH-06/07)~~ DONE, ~~onboarding modal blocking (AUTH-04/06)~~ DONE, ~~error copy (AUTH-03)~~ DONE, ~~mobile clipping (AUTH-12)~~ DONE
-**Top revamp:** Premium auth pages with blockchain theme, split layout, live validation
-**Plan:** pending — write during Phase B
+**Tested:** 2026-03-07 | **Re-tested:** 2026-03-21 | **Fixed:** 2026-03-19 | **Cases:** 12/12 (0 skipped) | **Severity:** S3
+**Priority fixes:** All prior S1 fixes confirmed working. No functional bugs remaining.
+**Top revamp:** Wallet-based auth option, split panel product showcase, real-time username validation
+**Plan:** none — recorded only, no plan needed
 
 ## 4.2 Global Navigation, Layout, and i18n
 <!-- qa-status: FIXED | severity: S3 | plan: none -->
@@ -114,25 +114,25 @@ Use cases:
 **Plan:** pending — write during Phase B
 
 ## 4.3 Home, Analytics, Leaderboard, and Treasury Readability
-<!-- qa-status: FIXED | severity: S3 | plan: none -->
+<!-- qa-status: FIXED | severity: S1 | plan: docs/plans/2026-03-21-home-analytics-treasury.md -->
 Routes: `/`, `/analytics`, `/treasury`.
 
 Use cases:
-- [x] `INSIGHT-01` Home dashboard loads with trust/summary surfaces. **PASS, S3** — i18n key `dispute_escalated` confirmed present; activity feed resolves correctly with try/catch fallback
-- [x] `INSIGHT-02` `/analytics` charts/metrics load without blocking UI. **PASS, S3** — dynamic imports with skeleton placeholders
-- [x] `INSIGHT-03` `/leaderboard` redirects to `/community` (Rankings tab). **PASS, S3** — fixed: permanentRedirect in community merge
-- [x] `INSIGHT-04` `/treasury` shows settlement posture and transparency metadata. **PASS, S3** — audit link issue no longer applicable (removed from page)
-- [x] `INSIGHT-05` Empty/loading states are informative, not confusing. **PARTIAL, S3** — remaining: $ORG price/market cap show “—“ when no data
-- [x] `INSIGHT-06` Units and labels are understandable (percent, totals, balances). **PASS, S3**
-- [x] `INSIGHT-07` Mobile chart/card readability is acceptable. **PARTIAL, S3** — remaining: minor mobile polish for revamp phase
-- [x] `INSIGHT-08` User can identify a clear “what to do next” action. **PARTIAL, S3**
+- [x] `INSIGHT-01` Home dashboard loads with trust/summary surfaces. **PARTIAL, S1** — re-tested: 2 missing i18n keys render raw (`Home.trustSprintNoneShort` in Trust Pulse, `dashboard.activity.viewAll` as link text)
+- [x] `INSIGHT-02` `/analytics` charts/metrics load without blocking UI. **PASS, S3** — re-tested: 0 console errors, charts render with real data
+- [x] `INSIGHT-03` `/leaderboard` redirects to `/community` (Rankings tab). **PASS, S3** — re-tested: redirect works
+- [x] `INSIGHT-04` `/treasury` shows settlement posture and transparency metadata. **PASS, S3** — re-tested: 0 console errors, all sections render correctly
+- [x] `INSIGHT-05` Empty/loading states are informative, not confusing. **PARTIAL, S3** — $ORG price/market cap show “—“ without explanation
+- [x] `INSIGHT-06` Units and labels are understandable (percent, totals, balances). **PASS, S3** — re-tested: clear labels throughout
+- [x] `INSIGHT-07` Mobile chart/card readability is acceptable. **PARTIAL, S3** — charts readable once focused; analytics page scroll requires tab click first
+- [x] `INSIGHT-08` User can identify a clear “what to do next” action. **PASS, S3** — re-tested: multiple CTAs (Get Started, View Proposals, carousel cards, View Tasks)
 
 ### Feedback
 <!-- Full feedback archived in git history + plan file. Summary below. -->
-**Tested:** 2026-03-07 | **Fixed:** 2026-03-19 | **Cases:** 8/8 | **Severity:** S3
-**Priority fixes:** ~~Missing i18n key on home feed (INSIGHT-01)~~ RESOLVED (key exists), ~~treasury audit link admin-only (INSIGHT-04)~~ RESOLVED (removed)
-**Top revamp:** Home FOMO carousel, floating info buttons, dark hero sections, mobile rendering fixes
-**Plan:** pending — write during Phase B
+**Tested:** 2026-03-07 | **Re-tested:** 2026-03-21 | **Cases:** 8/8 | **Severity:** S1
+**Priority fixes:** 2 missing i18n keys on home: `Home.trustSprintNoneShort` (Trust Pulse card), `dashboard.activity.viewAll` (activity feed link)
+**Top revamp:** Data-dense dashboard cards, time range selectors, mobile scroll fix, $ORG price empty state copy
+**Plan:** `docs/plans/2026-03-21-home-analytics-treasury.md`
 
 ## 4.4 Community (Rankings + Directory + Profile)
 <!-- qa-status: REVAMPED | severity: S3 | plan: docs/plans/2026-03-21-community-qa-revamp.md -->
