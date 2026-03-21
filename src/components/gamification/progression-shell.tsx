@@ -180,14 +180,15 @@ export function ProgressionShell({ sourceContext = null }: { sourceContext?: Sou
   const resolveQuestTitle = (quest: QuestProgressItem): string => {
     const key = `questCopy.${quest.id}.title` as any;
     const result = t(key);
-    // t() returns the key path on miss — detect and fall back to DB title
-    return result.startsWith('questCopy.') ? quest.title : result;
+    // t() returns full namespace path on miss (e.g. "Gamification.questCopy.<uuid>.title")
+    // Detect miss by checking if the result contains the quest UUID
+    return result.includes(quest.id) ? quest.title : result;
   };
 
   const resolveQuestDescription = (quest: QuestProgressItem): string => {
     const key = `questCopy.${quest.id}.description` as any;
     const result = t(key);
-    return result.startsWith('questCopy.') ? (quest.description || '') : result;
+    return result.includes(quest.id) ? (quest.description || '') : result;
   };
 
   const achievementsUnlocked = data.achievements.filter((a) => a.unlocked).length;
