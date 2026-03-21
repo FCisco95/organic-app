@@ -12,7 +12,7 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 | 4.2 | Navigation, Layout, i18n | 8 | TESTED | S2 | — | — | — |
 | 4.3 | Home, Analytics, Leaderboard, Treasury | 8 | TESTED | S1 | — | — | — |
 | 4.4 | Members Directory | 8 | PENDING | — | — | — | — |
-| 4.5 | Profile, Progression | 10 | REVAMPED | S1 | [plan](plans/2026-03-19-profile-progression-fixes.md) | `fix/4.5-profile-progression-fixes` | `fix/4.5-profile-progression-fixes` |
+| 4.5 | Profile, Progression, Community Profile | 11 | FIXED | S3 | [plan](plans/2026-03-21-profile-progression-fixes-v2.md) | `fix/4.5-profile-fixes-v2` | — |
 | 4.6 | Quests, Referrals, Gamification | 11 | PENDING | — | — | — | — |
 | 4.7 | Tasks E2E | 17 | PLANNED | S1 | [plan](plans/2026-03-08-tasks-qa-revamp.md) | — | — |
 | 4.8 | Sprints E2E | 11 | PENDING | — | — | — | — |
@@ -45,9 +45,9 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 
 | Action | Section | What to do |
 |--------|---------|------------|
+| **Next to revamp** | 4.5 Profile | Functional fixes done → 3-prototype visual revamp (Session 4) |
 | **Next to plan** | 4.1 Auth | Write plan from runbook feedback — highest S1 priority |
 | **Next to fix** | 4.7 Tasks | Plan exists → execute Phase B (functional fixes only) |
-| **Next to revamp** | 4.5 Profile | Fixed + revamped → merge PR to complete |
 | **Next to QA** | 4.4 Members | First PENDING section in recommended order |
 
 ---
@@ -62,9 +62,10 @@ Issues spanning multiple sections — track resolution centrally.
 | Console errors: 48-132 per page (Sentry CSP + missing i18n keys) | 4.1, 4.2, 4.3 | S2 | Open |
 | Page titles show "Next.js" instead of page name | 4.1, 4.2 | S3 | Open |
 | Garbage test data from prototype QA sessions (localhost:3003 titles) | 4.9 | S3 | Script ready: `scripts/cleanup-qa-garbage.sql` — run manually against main DB |
-| Quest i18n keys broken: titles/descriptions show raw UUID keys on progression | 4.5, 4.6 | S1 | Fixed (4.5) |
-| Twitter/X link start API returns 400 Bad Request | 4.5, 4.18 | S1 | Fixed (4.5) |
-| Twitter/X OAuth callback params (twitter_linked, twitter_error) silently ignored | 4.5, 4.18 | S1 | Fixed (4.5) |
+| Quest i18n keys broken: titles/descriptions show raw UUID keys on progression | 4.5, 4.6 | S1 | **FIXED** — prefix check corrected to detect full namespace path (`fix/4.5-profile-fixes-v2`) |
+| Twitter/X link start API returns 400 Bad Request | 4.5, 4.18 | S1 | **FIXED** — empty body replaced with `JSON.stringify({})` (`fix/4.5-profile-fixes-v2`) |
+| Twitter/X OAuth callback params (twitter_linked, twitter_error) silently ignored | 4.5, 4.18 | S1 | **FIXED** — toasts fire correctly for both success and error params (prior fix on main) |
+| Community profile i18n keys missing | 4.4, 4.5 | S1 | **FIXED** — 8 keys added to all 3 locales (`fix/4.5-profile-fixes-v2`) |
 
 ---
 
@@ -147,3 +148,5 @@ Revamp section 4.{X}. Read docs/qa-dashboard.md for plan link, then use prototyp
 | 2026-03-19 | 4.5 | Fixed + revamped | `fix/4.5-profile-progression-fixes` | 4 functional fixes + Bento Grid revamp (hero card, timeline quests, progress rings, design tokens) |
 | 2026-03-19 | 4.9 | Re-QA tested + planned | — | Full re-test: 15/17 cases PARTIAL S2, 1 SKIP, plan: `2026-03-19-proposals-qa-revamp.md` (12 tasks, 2 tracks) |
 | 2026-03-19 | 4.9 | Fixed + revamped | `fix/4.9-proposals-functional-fixes` | Track 1: 5 functional fixes. Track 2: Proto C (inline accordions, vote FAB, numbered stepper, icon categories, display names, stage history) |
+| 2026-03-20 | 4.5 | Re-QA tested (fresh) | — | 11 cases (10 PROF + 1 COMM-PROF). S1: quest i18n still broken (38 errors), Twitter connect still 400, Community profile 58 i18n errors. PROF-09 callback params now PASS. QA accounts created via `scripts/create-qa-accounts.ts`. |
+| 2026-03-21 | 4.5 | Fixed (v2) | `fix/4.5-profile-fixes-v2` | 4 fixes: quest i18n prefix check, Twitter connect body, 8 Community i18n keys, peacemaker achievement name. Plan: `2026-03-21-profile-progression-fixes-v2.md`. |
