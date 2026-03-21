@@ -93,7 +93,7 @@ Use cases:
 **Plan:** none — recorded only, no plan needed
 
 ## 4.2 Global Navigation, Layout, and i18n
-<!-- qa-status: PLANNED | severity: S3 | plan: docs/plans/2026-03-21-navigation-qa-revamp.md -->
+<!-- qa-status: DONE | severity: S3 | plan: docs/plans/2026-03-21-navigation-qa-revamp.md -->
 Routes: global shell across all authenticated pages.
 
 Use cases:
@@ -114,7 +114,7 @@ Use cases:
 **Plan:** `docs/plans/2026-03-21-navigation-qa-revamp.md`
 
 ## 4.3 Home, Analytics, Leaderboard, and Treasury Readability
-<!-- qa-status: REVAMPED | severity: S1 | plan: docs/plans/2026-03-21-home-analytics-treasury.md -->
+<!-- qa-status: DONE | severity: S3 | plan: docs/plans/2026-03-21-home-analytics-treasury.md -->
 Routes: `/`, `/analytics`, `/treasury`.
 
 Use cases:
@@ -135,7 +135,7 @@ Use cases:
 **Plan:** `docs/plans/2026-03-21-home-analytics-treasury.md`
 
 ## 4.4 Community (Rankings + Directory + Profile)
-<!-- qa-status: REVAMPED | severity: S3 | plan: docs/plans/2026-03-21-community-qa-revamp.md -->
+<!-- qa-status: DONE | severity: S3 | plan: docs/plans/2026-03-21-community-qa-revamp.md -->
 Routes: `/community`, `/community/[id]`.
 Redirects: `/members` → `/community`, `/members/[id]` → `/community/[id]`, `/leaderboard` → `/community`.
 
@@ -161,18 +161,18 @@ Use cases:
 **Plan:** `docs/plans/2026-03-21-community-qa-revamp.md`
 
 ## 4.5 My Profile, Privacy Toggle, and Progression Hub
-<!-- qa-status: REVAMPED | severity: S3 | plan: docs/plans/2026-03-21-profile-progression-fixes-v2.md -->
+<!-- qa-status: DONE | severity: S3 | plan: docs/plans/2026-03-21-profile-progression-fixes-v2.md -->
 Routes: `/profile`, `/profile/progression`, `/community/[id]`.
 
 Use cases:
 - [x] `PROF-01` Profile identity/activity/preferences sections render. **PASS, S3** — all 10 sections render cleanly on mobile + desktop, 0 console errors on profile page
 - [x] `PROF-02` Privacy toggle updates state and message correctly. **PASS, S3** — toggles both directions with correct text, description, and toast notification
-- [x] `PROF-03` Progression page opens from profile quick action. **PARTIAL, S2** — opens correctly but page has 38 console errors from quest i18n
-- [x] `PROF-04` Progression source context (`?from=tasks|proposals|profile`) behaves correctly. **PARTIAL, S2** — correct banner text and back link, but same i18n errors on the page
-- [x] `PROF-05` XP/level/next-step context is understandable. **PARTIAL, S2** — stat cards, progress bar, achievements, rewards readiness all work; **but all 9 quest titles/descriptions show raw UUID-based i18n keys** (`Gamification.questCopy.<uuid>.title`) — 38 console errors. DB quests use UUIDs as IDs, locale files use slugs (`daily_task_push`). Fallback to `quest.title` fires but DB title field appears null. Also 1 achievement name raw key: `Reputation.achievementNames.peacemaker`
+- [x] `PROF-03` Progression page opens from profile quick action. **PASS** — opens correctly, 0 console errors. *(Fixed: 67811d2 — quest i18n resolved)*
+- [x] `PROF-04` Progression source context (`?from=tasks|proposals|profile`) behaves correctly. **PASS** — correct banner text and back link, 0 i18n errors. *(Fixed: 67811d2)*
+- [x] `PROF-05` XP/level/next-step context is understandable. **PASS** — stat cards, progress bar, achievements, rewards readiness all work; quest titles resolve correctly via API title fallback. Achievement name `peacemaker` also fixed. *(Fixed: 5a76747, 67811d2)*
 - [x] `PROF-06` Fallback messaging is useful when progression data is sparse. **PARTIAL, S3** — good empty states: "No active streak", "No XP earned yet", "Keep contributing to reach Level 2", "You need 100 more points to submit a claim"
 - [x] `PROF-07` Mobile layout keeps cards/actions usable. **PARTIAL, S3** — clean single-column layout, proper spacing, touch targets adequate
-- [x] `PROF-08` Twitter/X account link/unlink controls in profile work and persist state. **FAIL, S1** — "Connect Twitter/X account" returns 400 Bad Request from `/api/twitter/link/start` — toast shows "Invalid request payload". Profile page sends POST with no body, `parseJsonBody` rejects empty request
+- [x] `PROF-08` Twitter/X account link/unlink controls in profile work and persist state. **PASS** — connect button opens Twitter OAuth. *(Fixed: 5a76747 — empty body replaced with `JSON.stringify({})`)*
 - [x] `PROF-09` OAuth callback return parameters (`twitter_linked`, `twitter_error`) surface clear feedback on profile. **PASS, S3** — FIXED: `?twitter_linked=1` shows "Twitter/X account linked successfully!", `?twitter_linked=0&reason=auth_failed` shows "Failed to link Twitter/X account (auth_failed)". URL params cleaned after display
 - [x] `PROF-10` Onboarding progress shortcut in top bar dropdown appears only for incomplete users. **PASS, S3** — avatar dropdown shows "Setup Progress 1/4", clicking opens onboarding wizard
 - [x] `COMM-PROF` Community profile page renders member data correctly. **FAIL, S1** — 58 console errors, tab labels show raw keys (`Community.profileTabOverview`, `.profileTabReputation`, `.profileTabAchievements`, `.profileTabActivity`), section header `Community.quickGlance` also raw key. Missing i18n keys in Community namespace for the profile detail page
@@ -205,31 +205,31 @@ Use cases:
 **Confidence score:** 5/5 (11/11 tested with live QA accounts, 3 viewports, 3 roles)
 
 ## 4.6 Quests, Referrals, and Gamification Controls
-<!-- qa-status: PLANNED | severity: S1 | plan: docs/plans/2026-03-21-quests-qa-revamp.md -->
+<!-- qa-status: DONE | severity: S1 | plan: docs/plans/2026-03-21-quests-qa-revamp.md -->
 Routes: `/quests`, `/join?ref=CODE`, `/signup?ref=CODE`, `/admin/settings` (Gamification tab), `/profile/progression`.
 
 Use cases:
-- [x] `GAM-01` Member opens `/quests` and sees referral + quests surfaces. **PASS, S2** — both surfaces render, 0 errors. Light-mode colors clash with dark shell.
-- [x] `GAM-02` Quest tabs (`in_progress`, `done`, `all`) filter correctly. **PASS, S3** — tabs work, empty state plain.
-- [x] `GAM-03` Referral code/link generation and copy actions work. **PASS, S3** — copy link/code functional.
-- [x] `GAM-04` Referral link redirect flow works via `/join?ref=...`. **PASS, S3** — redirects to `/signup?ref=CODE`.
-- [x] `GAM-05` Referral completion updates stats/cards. **PARTIAL, S3** — stats render (0s), can't test full flow.
-- [x] `GAM-06` Burn-level flow handles enabled/disabled modes correctly. **PASS, S3** — correctly disabled with explanation.
-- [ ] `GAM-07` Burn confirm dialog math (from level/to level/points) is correct. **SKIP** — burn disabled in config.
-- [x] `GAM-08` Quests data remains coherent with progression context. **PARTIAL, S1** — 18 i18n errors on progression page (quest UUID keys missing).
-- [x] `GAM-09` Admin gamification settings and quest controls are accessible to admin only. **PASS, S3** — admin-only, quest CRUD visible.
-- [x] `GAM-10` Localized copy for quests/referrals is valid in `en`, `pt-PT`, `zh-CN`. **PASS, S3** — labels translate, quest titles DB-driven.
-- [x] `GAM-11` Mobile quest cards/filters/referral surface remain usable. **PASS, S2** — layout works but light-mode colors disconnected.
+- [x] `GAM-01` Member opens `/quests` and sees referral + quests surfaces. **PASS** — both surfaces render, 0 errors. Dark theme tokens applied throughout. *(Revamped: d736cbd)*
+- [x] `GAM-02` Quest tabs (`in_progress`, `done`, `all`) filter correctly. **PASS** — tabs work, empty state uses design tokens.
+- [x] `GAM-03` Referral code/link generation and copy actions work. **PASS** — copy link/code functional.
+- [x] `GAM-04` Referral link redirect flow works via `/join?ref=...`. **PASS** — redirects to `/signup?ref=CODE`.
+- [x] `GAM-05` Referral completion updates stats/cards. **PARTIAL, S3** — stats render (0s), can't test full flow. *(Revamped: tier stepper with Bronze→Silver→Gold)*
+- [x] `GAM-06` Burn-level flow handles enabled/disabled modes correctly. **PASS** — burn button conditionally shown; auto-level info card when disabled. *(Revamped: d736cbd)*
+- [ ] `GAM-07` Burn confirm dialog math (from level/to level/points) is correct. **SKIP** — burn disabled in config. *(Dialog dark-themed: d736cbd)*
+- [x] `GAM-08` Quests data remains coherent with progression context. **PASS** — 0 i18n errors on progression page. *(Fixed: 67811d2 — resolveQuestTitle prefers API title)*
+- [x] `GAM-09` Admin gamification settings and quest controls are accessible to admin only. **PASS** — admin-only, quest CRUD visible.
+- [x] `GAM-10` Localized copy for quests/referrals is valid in `en`, `pt-PT`, `zh-CN`. **PASS** — labels translate, quest titles DB-driven.
+- [x] `GAM-11` Mobile quest cards/filters/referral surface remain usable. **PASS** — dark theme tokens, progress rings, tier stepper all responsive. *(Revamped: d736cbd)*
 
 ### Feedback
 <!-- Full feedback archived in git history + plan file. Summary below. -->
 **Tested:** 2026-03-21 | **Cases:** 9/11 PASS, 1 PARTIAL, 1 SKIP | **Severity:** S1
-**Priority fixes:** Quest UUID i18n errors on progression page (18 MISSING_MESSAGE errors in progression-shell.tsx)
-**Top revamp:** Dark theme consistency (hardcoded light-mode colors), quest card redesign (Duolingo progress rings), referral tier visualization (Dropbox), streak tracker, XP activity feed
+**Fixed (67811d2):** Quest UUID i18n errors — `resolveQuestTitle()` now prefers API title over i18n lookup, 0 console errors.
+**Revamped (d736cbd):** Duolingo-inspired Proto A — SVG progress rings with category colors (blue/purple/amber/emerald), tier stepper (Bronze→Silver→Gold) with glow, level ring sidebar, conditional burn button, dark theme tokens throughout. All hardcoded `bg-white`/`text-gray-900` replaced.
 **Plan:** `docs/plans/2026-03-21-quests-qa-revamp.md`
 
 ## 4.7 Tasks End-to-End Workflow (Creation -> Claim -> Submit -> Review)
-<!-- qa-status: FIXED | severity: S3 | plan: docs/plans/2026-03-08-tasks-qa-revamp.md -->
+<!-- qa-status: DONE | severity: S3 | plan: docs/plans/2026-03-08-tasks-qa-revamp.md -->
 Routes: `/tasks`, `/tasks/[id]`, `/tasks/templates`, `/admin/submissions`.
 
 Use cases:

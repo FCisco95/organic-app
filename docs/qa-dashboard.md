@@ -61,7 +61,7 @@ Issues spanning multiple sections — track resolution centrally.
 | Console errors: 48-132 per page (Sentry CSP + missing i18n keys) | 4.1, 4.2, 4.3 | S2 | Open |
 | Page titles show "Next.js" instead of page name | 4.1, 4.2 | S3 | Open |
 | Garbage test data from prototype QA sessions (localhost:3003 titles) | 4.9 | S3 | Script ready: `scripts/cleanup-qa-garbage.sql` — run manually against main DB |
-| Quest i18n keys broken: titles/descriptions show raw UUID keys on progression | 4.5, 4.6 | S1 | **FIXED** — prefix check corrected, merged to `main` (5a76747) |
+| Quest i18n keys broken: titles/descriptions show raw UUID keys on progression | 4.5, 4.6 | S1 | **FIXED** — prefix check corrected (5a76747), resolveQuestTitle API-first fallback (67811d2). 0 console errors. |
 | Twitter/X link start API returns 400 Bad Request | 4.5, 4.18 | S1 | **FIXED** — empty body replaced with `JSON.stringify({})`, merged to `main` (5a76747) |
 | Twitter/X OAuth callback params (twitter_linked, twitter_error) silently ignored | 4.5, 4.18 | S1 | **FIXED** — toasts fire correctly, merged to `main` |
 | Community profile i18n keys missing | 4.4, 4.5 | S1 | **FIXED** — 8 keys added to all 3 locales, merged to `main` (5a76747) |
