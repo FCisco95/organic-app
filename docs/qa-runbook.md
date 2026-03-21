@@ -135,14 +135,14 @@ Use cases:
 **Plan:** pending — write during Phase B
 
 ## 4.4 Community (Rankings + Directory + Profile)
-<!-- qa-status: PLANNED | severity: S1 | plan: docs/plans/2026-03-21-community-qa-revamp.md -->
+<!-- qa-status: REVAMPED | severity: S3 | plan: docs/plans/2026-03-21-community-qa-revamp.md -->
 Routes: `/community`, `/community/[id]`.
 Redirects: `/members` → `/community`, `/members/[id]` → `/community/[id]`, `/leaderboard` → `/community`.
 
 Use cases:
-- [x] `COMM-01` Community loads with dark hero + Rankings tab default. **PARTIAL, S1** — 2 raw i18n keys in stat pills, 28 console errors
-- [x] `COMM-02` Rankings: podium, your-position, ranked table, search bar works. **PASS, S3** — your-position card hidden (QA accounts lack leaderboard data)
-- [x] `COMM-03` Directory: filterable member grid with rank/XP enriched cards. **PASS, S3**
+- [x] `COMM-01` Community loads with dark hero + Rankings tab default. **PASS, S3** — FIXED: i18n keys added, 0 console errors
+- [x] `COMM-02` Rankings: podium, your-position, ranked table, search bar works. **PASS, S3** — REVAMPED: keyboard nav, sortable headers, command palette search, skeleton loading
+- [x] `COMM-03` Directory: filterable member grid with rank/XP enriched cards. **PASS, S3** — REVAMPED: filter chips with counts, sort dropdown, clear button
 - [x] `COMM-04` Tab switching preserves per-tab state (search, filters, pagination). **PASS, S3** — CSS visibility toggle working
 - [x] `COMM-05` Rankings row click → `/community/[id]` profile page. **PASS, S3**
 - [x] `COMM-06` Directory card click → `/community/[id]` profile page. **PASS, S3**
@@ -151,13 +151,13 @@ Use cases:
 - [x] `COMM-09` `/members/[id]` redirects to `/community/[id]`. **PASS, S3**
 - [x] `COMM-10` `/leaderboard` redirects to `/community`. **PASS, S3**
 - [x] `COMM-11` Rankings search filters by name, email, and Organic ID. **PASS, S3**
-- [x] `COMM-12` All 3 locales (en, pt-PT, zh-CN) render Community correctly. **PASS, S3** — same 2 raw i18n keys in all locales
+- [x] `COMM-12` All 3 locales (en, pt-PT, zh-CN) render Community correctly. **PASS, S3** — FIXED: all i18n keys present, 0 console errors
 
 ### Feedback
 <!-- Full feedback archived in git history + plan file. Summary below. -->
-**Tested:** 2026-03-21 (re-test with QA accounts) | **Cases:** 12/12 (1 partial) | **Severity:** S1
-**Priority fixes:** 2 missing Community i18n keys (activeThisSprint, buildYourStreak) + 4 missing achievement description keys
-**Top revamp:** Linear-style table keyboard nav, Vercel skeleton loading, Airtable filter chips with counts, GitHub contribution heatmap on profile
+**Tested:** 2026-03-21 | **Fixed:** 2026-03-21 (81da1e1) | **Revamped:** 2026-03-21 (fb00427) | **Cases:** 12/12 | **Severity:** S3
+**Priority fixes:** ~~2 missing Community i18n keys~~ DONE, ~~4 achievement description keys~~ DONE, ~~8 pt-PT/zh-CN profile tab keys~~ DONE, ~~QA script onboarding fix~~ DONE
+**Top revamp:** Combined 3 prototypes — contribution heatmap + activity feed (GitHub), keyboard nav + filter counts (Linear), command search + 4-stat cards (Vercel). 25+ i18n keys.
 **Plan:** `docs/plans/2026-03-21-community-qa-revamp.md`
 
 ## 4.5 My Profile, Privacy Toggle, and Progression Hub
