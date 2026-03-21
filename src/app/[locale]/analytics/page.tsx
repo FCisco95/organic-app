@@ -183,47 +183,49 @@ export default function AnalyticsPage() {
           })}
         </div>
 
-        {/* Tab content */}
-        {activeTab === 'overview' && (
-          <div className="space-y-6 opacity-0 animate-fade-up" style={{ animationDelay: '320ms' }}>
-            <ActivityTrendChart data={data?.activity_trends} loading={isLoading} />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <MemberGrowthChart data={data?.member_growth} loading={isLoading} />
-              <TaskCompletionChart data={data?.task_completions} loading={isLoading} />
+        {/* Tab content — all panels exist in DOM for proper scroll calculation */}
+        <div className="min-h-0 overflow-y-auto">
+          <div className={cn(activeTab === 'overview' ? 'block' : 'hidden')}>
+            <div className="space-y-6 opacity-0 animate-fade-up" style={{ animationDelay: '320ms' }}>
+              <ActivityTrendChart data={data?.activity_trends} loading={isLoading} />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <MemberGrowthChart data={data?.member_growth} loading={isLoading} />
+                <TaskCompletionChart data={data?.task_completions} loading={isLoading} />
+              </div>
             </div>
           </div>
-        )}
 
-        {activeTab === 'personal' && (
-          <div className="opacity-0 animate-fade-up" style={{ animationDelay: '320ms' }}>
-            {isAuthenticated ? (
-              <div className="rounded-2xl border border-border bg-card p-8 text-center">
-                <User className="h-12 w-12 text-orange-500/30 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-foreground mb-2">{t('personalTitle')}</h3>
-                <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
-                  {t('personalPlaceholder')}
-                </p>
-              </div>
-            ) : (
-              <div className="rounded-2xl border border-border bg-card p-8 text-center">
-                <Lock className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-foreground mb-2">{t('personalLockedTitle')}</h3>
-                <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                  {t('personalLockedDesc')}
-                </p>
-              </div>
-            )}
-          </div>
-        )}
-
-        {activeTab === 'governance' && (
-          <div className="space-y-6 opacity-0 animate-fade-up" style={{ animationDelay: '320ms' }}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <ProposalCategoryChart data={data?.proposals_by_category} loading={isLoading} />
-              <VotingParticipationList data={data?.voting_participation} loading={isLoading} />
+          <div className={cn(activeTab === 'personal' ? 'block' : 'hidden')}>
+            <div className="opacity-0 animate-fade-up" style={{ animationDelay: '320ms' }}>
+              {isAuthenticated ? (
+                <div className="rounded-2xl border border-border bg-card p-8 text-center">
+                  <User className="h-12 w-12 text-orange-500/30 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-foreground mb-2">{t('personalTitle')}</h3>
+                  <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+                    {t('personalPlaceholder')}
+                  </p>
+                </div>
+              ) : (
+                <div className="rounded-2xl border border-border bg-card p-8 text-center">
+                  <Lock className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-foreground mb-2">{t('personalLockedTitle')}</h3>
+                  <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                    {t('personalLockedDesc')}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
-        )}
+
+          <div className={cn(activeTab === 'governance' ? 'block' : 'hidden')}>
+            <div className="space-y-6 opacity-0 animate-fade-up" style={{ animationDelay: '320ms' }}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <ProposalCategoryChart data={data?.proposals_by_category} loading={isLoading} />
+                <VotingParticipationList data={data?.voting_participation} loading={isLoading} />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <InfoButton sections={infoSections} />

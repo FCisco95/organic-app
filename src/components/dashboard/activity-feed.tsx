@@ -5,7 +5,12 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { ActivityItem } from './activity-item';
 
-export function ActivityFeed() {
+interface ActivityFeedProps {
+  /** Maximum number of items to display (default 5) */
+  maxItems?: number;
+}
+
+export function ActivityFeed({ maxItems = 5 }: ActivityFeedProps) {
   const { data: events, isLoading } = useActivityFeed();
   const t = useTranslations('dashboard.activity');
 
@@ -30,8 +35,8 @@ export function ActivityFeed() {
     );
   }
 
-  const visibleEvents = events.slice(0, 5);
-  const hasMore = events.length > 5;
+  const visibleEvents = events.slice(0, maxItems);
+  const hasMore = events.length > maxItems;
 
   return (
     <div>

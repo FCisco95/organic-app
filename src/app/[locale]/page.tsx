@@ -3,8 +3,7 @@
 import { Link } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
 import { StatsBar } from '@/components/dashboard/stats-bar';
-import { ActivityFeed } from '@/components/dashboard/activity-feed';
-import { FeatureCarousel } from '@/components/home/feature-carousel';
+import { ContributionLayout } from '@/components/home/contribution-layout';
 import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
 import { useState, useEffect } from 'react';
@@ -293,37 +292,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/* -- Feature Carousel (FOMO cards) -- 1 card at a time */}
+      {/* -- Contribution Layout (nav cards + activity feed) -- */}
       <section className="mb-8 opacity-0 animate-fade-up stagger-4">
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-          {t('capabilitiesTitle')}
-        </h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          {t('capabilitiesSubtitle')}
-        </p>
-        <FeatureCarousel />
-      </section>
-
-      {/* -- Activity Feed -- */}
-      <section className="mb-8 opacity-0 animate-fade-up stagger-5">
-        <div className="rounded-xl border border-border bg-card p-5 flex flex-col">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                {t('whatsHappening')}
-              </h2>
-              <p className="text-sm text-muted-foreground mt-1">
-                {t('activitySubtitle')}
-              </p>
-            </div>
-            <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-400">
-              {t('activityLive')}
-            </span>
-          </div>
-          <div className="flex-1 min-h-0">
-            <ActivityFeed />
-          </div>
-        </div>
+        <ContributionLayout
+          proposalCount={proposalStageCounts.public + proposalStageCounts.qualified + proposalStageCounts.discussion + proposalStageCounts.voting}
+          sprintActive={!!inFlightSprint}
+          activityCount={activity.length}
+        />
       </section>
 
       {/* -- Member Status -- */}
@@ -350,7 +325,7 @@ export default function Home() {
                   href="/profile"
                   className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  {t('goToProfile')} &rarr;
+                  {t('goToProfile')}
                 </Link>
               </div>
             )}

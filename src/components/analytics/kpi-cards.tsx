@@ -38,22 +38,24 @@ export function KPICards({ kpis, trust, loading }: KPICardsProps) {
   const priceHasData = kpis?.org_price != null;
   const marketCapHasData = kpis?.market_cap != null;
 
-  const items = [
+  const items: { label: string; value: string | number | null; mono?: boolean; helper?: string; hasTrend: boolean; comingSoon?: boolean }[] = [
     { label: t('kpi.totalUsers'), value: kpis?.total_users ?? '\u2014', hasTrend: true },
     { label: t('kpi.orgHolders', { symbol: TOKEN_CONFIG.symbol }), value: kpis?.org_holders ?? '\u2014', hasTrend: true },
     {
       label: t('kpi.orgPrice', { symbol: TOKEN_CONFIG.symbol }),
-      value: priceHasData ? `$${kpis!.org_price!.toFixed(6)}` : '\u2014',
+      value: priceHasData ? `$${kpis!.org_price!.toFixed(6)}` : null,
       mono: true,
       helper: !priceHasData ? t('kpiPriceHelper') : undefined,
       hasTrend: priceHasData,
+      comingSoon: !priceHasData,
     },
     {
       label: t('kpi.marketCap'),
-      value: marketCapHasData ? `$${formatCompact(kpis!.market_cap!)}` : '\u2014',
+      value: marketCapHasData ? `$${formatCompact(kpis!.market_cap!)}` : null,
       mono: true,
       helper: !marketCapHasData ? t('kpiMarketCapHelper') : undefined,
       hasTrend: marketCapHasData,
+      comingSoon: !marketCapHasData,
     },
     { label: t('kpi.tasksCompleted'), value: kpis?.tasks_completed ?? '\u2014', hasTrend: true },
     { label: t('kpi.activeProposals'), value: kpis?.active_proposals ?? '\u2014', hasTrend: true },
@@ -71,21 +73,27 @@ export function KPICards({ kpis, trust, loading }: KPICardsProps) {
               </>
             ) : (
               <>
-                <p
-                  className={cn(
-                    'text-2xl font-bold text-foreground leading-none',
-                    item.mono && 'font-mono tabular-nums text-xl'
-                  )}
-                >
-                  {item.value}
-                </p>
-                {item.hasTrend && item.value !== '\u2014' ? (
+                {item.comingSoon ? (
+                  <span className="text-[10px] font-medium bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-full px-2 py-0.5 inline-block w-fit">
+                    {t('kpiComingSoon')}
+                  </span>
+                ) : (
+                  <p
+                    className={cn(
+                      'text-2xl font-bold text-foreground leading-none',
+                      item.mono && 'font-mono tabular-nums text-xl'
+                    )}
+                  >
+                    {item.value}
+                  </p>
+                )}
+                {item.hasTrend && !item.comingSoon ? (
                   <MiniSparkline />
                 ) : item.helper ? (
                   <p className="mt-1.5 text-[10px] text-muted-foreground/70 leading-tight">{item.helper}</p>
-                ) : (
+                ) : !item.comingSoon ? (
                   <p className="mt-1.5 text-[10px] text-muted-foreground/60 leading-tight">{t('kpiNoTrend')}</p>
-                )}
+                ) : null}
                 <p className="mt-1 text-xs text-muted-foreground leading-tight">{item.label}</p>
               </>
             )}
