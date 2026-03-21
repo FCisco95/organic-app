@@ -15,7 +15,7 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 | 4.5 | Profile, Progression, Community Profile | 11 | DONE | S3 | [plan](plans/2026-03-21-profile-progression-fixes-v2.md) | `main` (5a76747) | `main` (5a76747) |
 | 4.6 | Quests, Referrals, Gamification | 11 | DONE | S1 | [plan](plans/2026-03-21-quests-qa-revamp.md) | `main` (67811d2) | `main` (d736cbd) |
 | 4.7 | Tasks E2E | 17 | DONE | S3 | [plan](plans/2026-03-08-tasks-qa-revamp.md) | `main` (3aed048) | `main` (e3d4439) |
-| 4.8 | Sprints E2E | 11 | PENDING | — | — | — | — |
+| 4.8 | Sprints E2E | 11 | PLANNED | S1 | [plan](plans/2026-03-21-sprints-qa-revamp.md) | — | — |
 | 4.9 | Proposals, Governance | 17 | DONE | S2 | [plan](plans/2026-03-19-proposals-qa-revamp.md) | merged to main | merged to main |
 | 4.10 | Disputes | 13 | PENDING | — | — | — | — |
 | 4.11 | Rewards | 9 | PENDING | — | — | — | — |
@@ -45,9 +45,9 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 
 | Action | Section | What to do |
 |--------|---------|------------|
-| **Next to QA** | 4.8 Sprints | First remaining PENDING section — 11 cases |
-| **Next to QA** | 4.10 Disputes | Second PENDING section — 13 cases |
-| **Next to QA** | 4.11 Rewards | Third PENDING section — 9 cases |
+| **Next to fix** | 4.8 Sprints | PLANNED — 1 i18n fix (S1), then revamp |
+| **Next to QA** | 4.10 Disputes | First remaining PENDING section — 13 cases |
+| **Next to QA** | 4.11 Rewards | Second PENDING section — 9 cases |
 
 ---
 
@@ -163,3 +163,4 @@ Revamp section 4.{X}. Read docs/qa-dashboard.md for plan link, then use prototyp
 | 2026-03-21 | 4.6 | QA tested + planned | — | 9/11 PASS, 1 PARTIAL (S1), 1 SKIP. S1: 18 quest UUID i18n errors on progression. Plan: `2026-03-21-quests-qa-revamp.md` (1 fix + 5 revamps + 3 new features: streak tracker, XP feed, quest celebrations). |
 | 2026-03-21 | 4.6 | Fixed | `main` (67811d2) | 1 fix: resolveQuestTitle() now prefers API title over i18n lookup. 0 console errors on /profile/progression and /quests. |
 | 2026-03-21 | 4.6 | Revamped (Proto A) | `main` (d736cbd) | Duolingo-inspired: SVG progress rings, category color-coded quest cards (blue/purple/amber/emerald), tier stepper (Bronze→Silver→Gold) with glow, level ring sidebar, burn button conditional display, dark theme tokens throughout. 3 prototypes compared, Proto A selected. |
+| 2026-03-21 | 4.8 | QA tested + planned | — | 9/11 cases (2 skipped, no review/dispute sprint). S1: missing `Sprints.metricOpenExecution` i18n key (30+ errors). Plan: `2026-03-21-sprints-qa-revamp.md` (1 fix + 5 UX improvements). |
