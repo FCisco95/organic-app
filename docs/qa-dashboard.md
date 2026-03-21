@@ -13,7 +13,7 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 | 4.3 | Home, Analytics, Leaderboard, Treasury | 8 | DONE | S3 | [plan](plans/2026-03-21-home-analytics-treasury.md) | `main` (8e137a8) | `main` (b59c207) |
 | 4.4 | Community (Rankings + Directory + Profile) | 12 | DONE | S3 | [plan](plans/2026-03-21-community-qa-revamp.md) | `main` (81da1e1) | `main` (fb00427) |
 | 4.5 | Profile, Progression, Community Profile | 11 | DONE | S3 | [plan](plans/2026-03-21-profile-progression-fixes-v2.md) | `main` (5a76747) | `main` (5a76747) |
-| 4.6 | Quests, Referrals, Gamification | 11 | FIXED | S1 | [plan](plans/2026-03-21-quests-qa-revamp.md) | `main` (67811d2) | — |
+| 4.6 | Quests, Referrals, Gamification | 11 | DONE | S1 | [plan](plans/2026-03-21-quests-qa-revamp.md) | `main` (67811d2) | `main` (d736cbd) |
 | 4.7 | Tasks E2E | 17 | DONE | S3 | [plan](plans/2026-03-08-tasks-qa-revamp.md) | `main` (3aed048) | `main` (e3d4439) |
 | 4.8 | Sprints E2E | 11 | PENDING | — | — | — | — |
 | 4.9 | Proposals, Governance | 17 | DONE | S2 | [plan](plans/2026-03-19-proposals-qa-revamp.md) | merged to main | merged to main |
@@ -45,9 +45,9 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 
 | Action | Section | What to do |
 |--------|---------|------------|
-| **Next to QA** | 4.6 Quests | First PENDING section — 11 cases |
-| **Next to revamp** | 4.6 Quests | Dark theme + quest cards + referral tiers + new features |
 | **Next to QA** | 4.8 Sprints | First remaining PENDING section — 11 cases |
+| **Next to QA** | 4.10 Disputes | Second PENDING section — 13 cases |
+| **Next to QA** | 4.11 Rewards | Third PENDING section — 9 cases |
 
 ---
 
@@ -70,10 +70,9 @@ Issues spanning multiple sections — track resolution centrally.
 
 ## Recommended Section Order
 
-**DONE (8/19):** 4.1 Auth, 4.2 Navigation, 4.3 Home/Analytics, 4.4 Community, 4.5 Profile, 4.7 Tasks, 4.9 Proposals — all merged to `main`
+**DONE (9/19):** 4.1 Auth, 4.2 Navigation, 4.3 Home/Analytics, 4.4 Community, 4.5 Profile, 4.6 Quests, 4.7 Tasks, 4.9 Proposals — all merged to `main`
 
 **Wave B — Core feature sections (PENDING):**
-2. 4.6 Quests/Gamification (11 cases)
 3. 4.8 Sprints E2E (11 cases)
 4. 4.10 Disputes (13 cases)
 5. 4.11 Rewards (9 cases)
@@ -163,3 +162,4 @@ Revamp section 4.{X}. Read docs/qa-dashboard.md for plan link, then use prototyp
 | 2026-03-21 | 4.2 | Revamped (A+B combined) | `main` (4b919b6) | Best of Linear + Stripe: collapsible sidebar sections with chevrons, Cmd+K command palette, keyboard shortcut hints (A/Linear) + breadcrumb trail in top-bar (B/Stripe). 3 prototypes compared, A+B combined. 14 new i18n keys. |
 | 2026-03-21 | 4.6 | QA tested + planned | — | 9/11 PASS, 1 PARTIAL (S1), 1 SKIP. S1: 18 quest UUID i18n errors on progression. Plan: `2026-03-21-quests-qa-revamp.md` (1 fix + 5 revamps + 3 new features: streak tracker, XP feed, quest celebrations). |
 | 2026-03-21 | 4.6 | Fixed | `main` (67811d2) | 1 fix: resolveQuestTitle() now prefers API title over i18n lookup. 0 console errors on /profile/progression and /quests. |
+| 2026-03-21 | 4.6 | Revamped (Proto A) | `main` (d736cbd) | Duolingo-inspired: SVG progress rings, category color-coded quest cards (blue/purple/amber/emerald), tier stepper (Bronze→Silver→Gold) with glow, level ring sidebar, burn button conditional display, dark theme tokens throughout. 3 prototypes compared, Proto A selected. |
