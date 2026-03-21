@@ -185,7 +185,7 @@ Use cases:
 **Confidence score:** 4/5 (12 PASS, 0 FAIL, 1 PARTIAL — auth features untested due to missing fixtures)
 
 ## 4.5 My Profile, Privacy Toggle, and Progression Hub
-<!-- qa-status: FIXED | severity: S3 | plan: docs/plans/2026-03-21-profile-progression-fixes-v2.md -->
+<!-- qa-status: REVAMPED | severity: S3 | plan: docs/plans/2026-03-21-profile-progression-fixes-v2.md -->
 Routes: `/profile`, `/profile/progression`, `/community/[id]`.
 
 Use cases:
