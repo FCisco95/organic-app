@@ -2537,6 +2537,8 @@
       "backToDisputes": "Voltar às disputas",
       "loadFailed": "Falha ao carregar disputa",
       "noCommentsYet": "Ainda sem comentários.",
+      "restricted": "Acesso restrito",
+      "limitedAccess": "Está a ver informações limitadas. Os detalhes completos estão disponíveis para as partes da disputa.",
       "responseSubmittedAt": "Resposta enviada: {date}",
       "responseOverdue": "Resposta em atraso desde {date}",
       "responseDue": "Resposta até {date}",

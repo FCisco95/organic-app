@@ -62,23 +62,20 @@ export function DisputeIntegrityRail({
         </p>
       </div>
 
-      <div
-        data-testid="dispute-response-status-panel"
-        className="rounded-xl border border-gray-200 bg-white p-4"
-      >
-        <div className="mb-2 flex items-center gap-2">
-          <AlertTriangle className="h-4 w-4 text-amber-600" />
-          <h3 className="text-sm font-semibold text-gray-900">{td('integrity.responseStatusTitle')}</h3>
-        </div>
-        <p className="text-sm text-gray-700">{responsePostureLabel}</p>
-        {escalationPosture ? (
-          <p className="mt-2 rounded-lg bg-red-50 px-2 py-1 text-xs font-medium text-red-700">
+      {escalationPosture && (
+        <div
+          data-testid="dispute-response-status-panel"
+          className="rounded-xl border border-red-200 bg-red-50 p-4"
+        >
+          <div className="mb-2 flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4 text-red-600" />
+            <h3 className="text-sm font-semibold text-red-900">{td('integrity.responseStatusTitle')}</h3>
+          </div>
+          <p className="text-sm font-medium text-red-700">
             {td('integrity.escalationRecommended')}
           </p>
-        ) : (
-          <p className="mt-2 text-xs text-gray-500">{td('integrity.responseStatusHint')}</p>
-        )}
-      </div>
+        </div>
+      )}
 
       <div
         data-testid="dispute-mediation-path-panel"

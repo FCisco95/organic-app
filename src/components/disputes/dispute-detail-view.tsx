@@ -228,7 +228,7 @@ export function DisputeDetail({
             />
           </div>
 
-          <DisputeParticipants dispute={dispute} />
+          <DisputeParticipants dispute={dispute} isParty={isDisputant || isReviewer || isArbitrator || isAdmin || isCouncil} />
 
           <DisputeEvidenceSection
             dispute={dispute}

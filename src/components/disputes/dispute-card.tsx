@@ -43,9 +43,7 @@ export function DisputeCard({ dispute }: DisputeCardProps) {
       ? t(`reason.${dispute.reason}`)
       : dispute.reason;
   const tracksReviewerResponse = isReviewerResponseTracked(dispute.status);
-  const slaUrgency = tracksReviewerResponse
-    ? getDisputeSlaUrgency(dispute.response_deadline)
-    : 'no_deadline';
+  const slaUrgency = getDisputeSlaUrgency(dispute.response_deadline);
   const isEscalationCandidate = slaUrgency === 'overdue' && dispute.tier !== 'admin';
 
   const urgencyChipClass: Record<typeof slaUrgency, string> = {

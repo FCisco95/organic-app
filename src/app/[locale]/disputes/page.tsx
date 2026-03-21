@@ -90,7 +90,7 @@ export default function DisputesPage() {
         </div>
       )}
 
-      <DisputeQueue myDisputes={tab === 'mine'} />
+      <DisputeQueue myDisputes={tab === 'mine'} showTriageControls={isCouncilOrAdmin && tab === 'queue'} />
       </div>
     </PageContainer>
   );

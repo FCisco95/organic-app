@@ -7,7 +7,7 @@ import { PageContainer } from '@/components/layout';
 import { DisputeDetail } from '@/components/disputes/dispute-detail-view';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Loader2, ArrowLeft } from 'lucide-react';
+import { Loader2, ArrowLeft, Info } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { formatDistanceToNow } from 'date-fns';
 import { useState } from 'react';
@@ -105,6 +105,14 @@ export default function DisputeDetailPage() {
         <ArrowLeft className="w-4 h-4" />
         {t('pageTitle')}
       </Link>
+
+      {/* Limited access banner for non-parties */}
+      {!isParty && (
+        <div className="mb-4 flex items-start gap-2 rounded-xl border border-blue-200 bg-blue-50 p-3">
+          <Info className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" />
+          <p className="text-sm text-blue-800">{td('limitedAccess')}</p>
+        </div>
+      )}
 
       {/* Dispute detail */}
       <DisputeDetail

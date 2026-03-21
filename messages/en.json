@@ -2546,6 +2546,8 @@
       "backToDisputes": "Back to disputes",
       "loadFailed": "Failed to load dispute",
       "noCommentsYet": "No comments yet.",
+      "restricted": "Access restricted",
+      "limitedAccess": "You are viewing limited information. Full details are available to dispute parties.",
       "responseSubmittedAt": "Response submitted: {date}",
       "responseOverdue": "Response overdue since {date}",
       "responseDue": "Response due by {date}",

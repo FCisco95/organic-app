@@ -2537,6 +2537,8 @@
       "backToDisputes": "返回争议列表",
       "loadFailed": "加载争议失败",
       "noCommentsYet": "暂无评论。",
+      "restricted": "访问受限",
+      "limitedAccess": "您正在查看有限信息。完整详情仅对争议相关方可见。",
       "responseSubmittedAt": "回复已提交：{date}",
       "responseOverdue": "回复已逾期（自 {date} 起）",
       "responseDue": "回复截止：{date}",
