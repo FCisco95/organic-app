@@ -9,7 +9,7 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 | # | Section | Cases | Status | Severity | Plan | Fix Branch/PR | Revamp Branch/PR |
 |---|---------|-------|--------|----------|------|---------------|------------------|
 | 4.1 | Auth, Session, Entry | 12 | DONE | S3 | — | — | — |
-| 4.2 | Navigation, Layout, i18n | 8 | TESTED | S2 | — | — | — |
+| 4.2 | Navigation, Layout, i18n | 8 | PLANNED | S3 | [plan](plans/2026-03-21-navigation-qa-revamp.md) | — | — |
 | 4.3 | Home, Analytics, Leaderboard, Treasury | 8 | DONE | S3 | [plan](plans/2026-03-21-home-analytics-treasury.md) | `main` (8e137a8) | `main` (b59c207) |
 | 4.4 | Community (Rankings + Directory + Profile) | 12 | DONE | S3 | [plan](plans/2026-03-21-community-qa-revamp.md) | `main` (81da1e1) | `main` (fb00427) |
 | 4.5 | Profile, Progression, Community Profile | 11 | DONE | S3 | [plan](plans/2026-03-21-profile-progression-fixes-v2.md) | `main` (5a76747) | `main` (5a76747) |
@@ -45,7 +45,7 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 
 | Action | Section | What to do |
 |--------|---------|------------|
-| **Next to plan** | 4.2 Navigation | Write plan from runbook feedback — S2, only TESTED section remaining |
+| **Next to fix** | 4.2 Navigation | 2 minor fixes (a11y + copy) — plan ready |
 | **Next to QA** | 4.6 Quests | First PENDING section — 11 cases |
 | **Next to QA** | 4.8 Sprints | Second PENDING section — 11 cases |
 
@@ -161,3 +161,4 @@ Revamp section 4.{X}. Read docs/qa-dashboard.md for plan link, then use prototyp
 | 2026-03-21 | 4.3 | Re-QA tested + planned | — | 8/8 cases (3 sessions). S1: 2 missing i18n keys on home. Plan: `2026-03-21-home-analytics-treasury.md`. |
 | 2026-03-21 | 4.3 | Fixed | `main` (8e137a8) | 2 i18n fixes: `Home.trustSprintNoneShort` + `dashboard.activity.viewAll` in all 3 locales. 0 console errors verified. |
 | 2026-03-21 | 4.3 | Revamped (Proto B) | `main` (b59c207) | GitHub Activity Hub: 2-column contribution layout (nav cards + activity feed), "Coming soon" KPI badges, mobile analytics scroll fix, double arrow fix. 3 prototypes compared, Proto B selected. |
+| 2026-03-21 | 4.2 | Re-QA tested + planned | — | 8/8 PASS (3 sessions, 3 roles). S3 — no functional bugs. Severity downgraded S2→S3. Plan: `2026-03-21-navigation-qa-revamp.md` (2 fixes + 4 UX revamps: sidebar grouping, Cmd+K palette, breadcrumbs, visual polish). |

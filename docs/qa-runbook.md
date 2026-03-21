@@ -93,25 +93,25 @@ Use cases:
 **Plan:** none — recorded only, no plan needed
 
 ## 4.2 Global Navigation, Layout, and i18n
-<!-- qa-status: FIXED | severity: S3 | plan: none -->
+<!-- qa-status: PLANNED | severity: S3 | plan: docs/plans/2026-03-21-navigation-qa-revamp.md -->
 Routes: global shell across all authenticated pages.
 
 Use cases:
-- [x] `NAV-01` Sidebar items render correctly by role (`admin`, `council`, `member`). **PASS, S3** — fixed: settings restricted to admin-only (commit 5583757)
-- [x] `NAV-02` Mobile sidebar exposes the same essential navigation. **PASS, S3** — fixed: onboarding skip persisted in localStorage
-- [x] `NAV-03` Active route state is visible and accurate. **PASS, S3**
-- [x] `NAV-04` Locale switch updates labels/content in current page. **PASS, S3** — fixed: onboarding skip survives locale switch
-- [x] `NAV-05` Query-bearing links (for example progression source context) keep expected behavior. **PASS, S3** — fixed: page titles + progression shell loading states
-- [x] `NAV-06` Top-bar actions are discoverable and keyboard reachable. **PASS, S3**
-- [x] `NAV-07` No overlap/collision in nav at 375px and 768px. **PASS, S3**
-- [x] `NAV-08` Role-restricted pages are not discoverable through unauthorized nav paths. **PASS, S3**
+- [x] `NAV-01` Sidebar items render correctly by role (`admin`, `council`, `member`). **PASS, S3** — all 3 roles verified (2026-03-21 re-test)
+- [x] `NAV-02` Mobile sidebar exposes the same essential navigation. **PASS, S3** — 2 a11y errors (DialogTitle missing)
+- [x] `NAV-03` Active route state is visible and accurate. **PASS, S3** — orange indicator + accent bg consistent
+- [x] `NAV-04` Locale switch updates labels/content in current page. **PASS, S3** — EN/PT/ZH all verified
+- [x] `NAV-05` Query-bearing links (for example progression source context) keep expected behavior. **PASS, S3** — source context preserved
+- [x] `NAV-06` Top-bar actions are discoverable and keyboard reachable. **PASS, S3** — all actions have a11y labels
+- [x] `NAV-07` No overlap/collision in nav at 375px and 768px. **PASS, S3** — clean at both breakpoints
+- [x] `NAV-08` Role-restricted pages are not discoverable through unauthorized nav paths. **PASS, S3** — proper denial messages
 
 ### Feedback
 <!-- Full feedback archived in git history + plan file. Summary below. -->
-**Tested:** 2026-03-07 | **Fixed:** 2026-03-07 (commit 5583757) | **Cases:** 8/8 | **Severity:** S3
-**Priority fixes:** ~~Onboarding modal skip not persisted (NAV-02/04)~~ DONE, ~~progression page blank (NAV-05)~~ DONE, ~~settings restricted to admin only~~ DONE
-**Top revamp:** Collapsible sidebar sections
-**Plan:** pending — write during Phase B
+**Re-tested:** 2026-03-21 | **Cases:** 8/8 PASS | **Severity:** S3
+**Priority fixes:** Mobile sidebar DialogTitle a11y (NAV-02), settings denial copy (NAV-08)
+**Top revamp:** Sidebar section grouping (Linear), Cmd+K command palette (Linear/Vercel), breadcrumbs
+**Plan:** `docs/plans/2026-03-21-navigation-qa-revamp.md`
 
 ## 4.3 Home, Analytics, Leaderboard, and Treasury Readability
 <!-- qa-status: REVAMPED | severity: S1 | plan: docs/plans/2026-03-21-home-analytics-treasury.md -->
