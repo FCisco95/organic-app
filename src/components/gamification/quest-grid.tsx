@@ -18,13 +18,13 @@ export function QuestGrid() {
       <div className="flex-1 min-w-0">
         <div className="animate-pulse space-y-4">
           <div className="flex gap-2">
-            <div className="h-9 w-24 bg-gray-200 rounded-lg" />
-            <div className="h-9 w-16 bg-gray-200 rounded-lg" />
-            <div className="h-9 w-12 bg-gray-200 rounded-lg" />
+            <div className="h-9 w-24 bg-muted rounded-lg" />
+            <div className="h-9 w-16 bg-muted rounded-lg" />
+            <div className="h-9 w-12 bg-muted rounded-lg" />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="h-36 bg-gray-200 rounded-xl" />
+              <div key={i} className="h-36 bg-muted rounded-xl" />
             ))}
           </div>
         </div>
@@ -76,7 +76,7 @@ export function QuestGrid() {
             className={`rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${
               activeTab === tab.key
                 ? 'bg-organic-orange text-white border-organic-orange'
-                : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                : 'bg-card text-muted-foreground border-border hover:bg-muted'
             }`}
           >
             {tab.label}
@@ -87,8 +87,8 @@ export function QuestGrid() {
 
       {/* Quest cards grid */}
       {filteredQuests.length === 0 ? (
-        <div className="rounded-xl border border-gray-200 bg-white p-8 text-center">
-          <p className="text-sm text-gray-400">{t('noQuests')}</p>
+        <div className="rounded-xl border border-border bg-card p-8 text-center">
+          <p className="text-sm text-muted-foreground">{t('noQuests')}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

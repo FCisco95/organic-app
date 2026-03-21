@@ -19,8 +19,8 @@ export function QuestsPage() {
           <p className="text-xs font-semibold uppercase tracking-wider text-organic-orange mb-1">
             {t('sectionLabel')}
           </p>
-          <h2 className="text-2xl font-bold text-gray-900">{t('title')}</h2>
-          <p className="text-sm text-gray-500 mt-1">{t('subtitle')}</p>
+          <h2 className="text-2xl font-bold text-foreground">{t('title')}</h2>
+          <p className="text-sm text-muted-foreground mt-1">{t('subtitle')}</p>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-6">

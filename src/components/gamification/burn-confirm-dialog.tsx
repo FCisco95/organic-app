@@ -40,26 +40,26 @@ export function BurnConfirmDialog({ open, onOpenChange }: BurnConfirmDialogProps
       />
 
       {/* Dialog */}
-      <div className="relative bg-white rounded-xl border border-gray-200 shadow-xl w-full max-w-md mx-4 p-6">
+      <div className="relative bg-card rounded-xl border border-border shadow-xl w-full max-w-md mx-4 p-6">
         <button
           onClick={() => onOpenChange(false)}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+          className="absolute top-4 right-4 text-muted-foreground hover:text-foreground"
         >
           <X className="h-5 w-5" />
         </button>
 
         <div className="text-center mb-5">
-          <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center mx-auto mb-3">
+          <div className="w-12 h-12 rounded-full bg-orange-500/10 flex items-center justify-center mx-auto mb-3">
             <Flame className="h-6 w-6 text-organic-orange" />
           </div>
-          <h3 className="text-lg font-bold text-gray-900">{t('burnDialogTitle')}</h3>
-          <p className="text-sm text-gray-500 mt-1">{t('burnDialogDescription')}</p>
+          <h3 className="text-lg font-bold text-foreground">{t('burnDialogTitle')}</h3>
+          <p className="text-sm text-muted-foreground mt-1">{t('burnDialogDescription')}</p>
         </div>
 
         {/* Level transition */}
         <div className="flex items-center justify-center gap-3 mb-5">
           <div className="text-center">
-            <p className="text-xs text-gray-400 uppercase">{t('fromLevel')}</p>
+            <p className="text-xs text-muted-foreground uppercase">{t('fromLevel')}</p>
             <div
               className="mt-1 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-semibold"
               style={{
@@ -71,9 +71,9 @@ export function BurnConfirmDialog({ open, onOpenChange }: BurnConfirmDialogProps
               {burnCost.current_level}
             </div>
           </div>
-          <span className="text-gray-300 text-lg">→</span>
+          <span className="text-muted-foreground text-lg">&rarr;</span>
           <div className="text-center">
-            <p className="text-xs text-gray-400 uppercase">{t('toLevel')}</p>
+            <p className="text-xs text-muted-foreground uppercase">{t('toLevel')}</p>
             <div
               className="mt-1 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-semibold"
               style={{
@@ -88,22 +88,22 @@ export function BurnConfirmDialog({ open, onOpenChange }: BurnConfirmDialogProps
         </div>
 
         {/* Cost breakdown */}
-        <div className="rounded-lg bg-gray-50 border border-gray-200 p-4 mb-5 space-y-2">
+        <div className="rounded-lg bg-muted border border-border p-4 mb-5 space-y-2">
           <div className="flex justify-between text-sm">
-            <span className="text-gray-500">{t('burnCost')}</span>
-            <span className="font-semibold text-gray-900 font-mono tabular-nums">
+            <span className="text-muted-foreground">{t('burnCost')}</span>
+            <span className="font-semibold text-foreground font-mono tabular-nums">
               {burnCost.points_cost.toLocaleString()} pts
             </span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-gray-500">{t('availablePoints')}</span>
-            <span className="font-semibold text-gray-900 font-mono tabular-nums">
+            <span className="text-muted-foreground">{t('availablePoints')}</span>
+            <span className="font-semibold text-foreground font-mono tabular-nums">
               {burnCost.available_points.toLocaleString()} pts
             </span>
           </div>
-          <div className="border-t border-gray-200 pt-2 flex justify-between text-sm">
-            <span className="text-gray-500">{t('afterBurn')}</span>
-            <span className="font-semibold text-gray-900 font-mono tabular-nums">
+          <div className="border-t border-border pt-2 flex justify-between text-sm">
+            <span className="text-muted-foreground">{t('afterBurn')}</span>
+            <span className="font-semibold text-foreground font-mono tabular-nums">
               {(burnCost.available_points - burnCost.points_cost).toLocaleString()} pts
             </span>
           </div>
@@ -113,7 +113,7 @@ export function BurnConfirmDialog({ open, onOpenChange }: BurnConfirmDialogProps
         <div className="flex gap-3">
           <button
             onClick={() => onOpenChange(false)}
-            className="flex-1 py-2.5 px-4 rounded-lg border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+            className="flex-1 py-2.5 px-4 rounded-lg border border-border text-sm font-medium text-muted-foreground hover:bg-muted transition-colors"
           >
             {t('cancel')}
           </button>

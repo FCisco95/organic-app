@@ -5,7 +5,13 @@ import { useTranslations } from 'next-intl';
 import { Copy, Check, Users, TrendingUp, Coins } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useReferralStats } from '@/features/gamification/hooks';
-import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
+
+const TIERS = [
+  { name: 'Bronze', color: '#CD7F32', min: 0 },
+  { name: 'Silver', color: '#C0C0C0', min: 5 },
+  { name: 'Gold', color: '#FFD700', min: 15 },
+] as const;
 
 export function ReferralSection() {
   const t = useTranslations('Referrals');
@@ -31,14 +37,14 @@ export function ReferralSection() {
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-orange-50 via-white to-amber-50 p-6">
+      <div className="rounded-xl border border-border bg-card p-6">
         <div className="animate-pulse space-y-4">
-          <div className="h-5 bg-gray-200 rounded w-1/4" />
-          <div className="h-10 bg-gray-200 rounded" />
+          <div className="h-5 bg-muted rounded w-1/4" />
+          <div className="h-10 bg-muted rounded" />
           <div className="grid grid-cols-3 gap-4">
-            <div className="h-20 bg-gray-200 rounded-lg" />
-            <div className="h-20 bg-gray-200 rounded-lg" />
-            <div className="h-20 bg-gray-200 rounded-lg" />
+            <div className="h-20 bg-muted rounded-lg" />
+            <div className="h-20 bg-muted rounded-lg" />
+            <div className="h-20 bg-muted rounded-lg" />
           </div>
         </div>
       </div>
@@ -47,30 +53,88 @@ export function ReferralSection() {
 
   if (!stats) return null;
 
+  const currentTierIndex = TIERS.findIndex((tier) => tier.name === stats.current_tier.name);
+  const nextTier = TIERS[currentTierIndex + 1];
+
   return (
-    <div className="rounded-xl border border-orange-200/60 bg-gradient-to-br from-orange-50 via-white to-amber-50 p-6 shadow-sm">
+    <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wider text-organic-orange mb-1">
             {t('sectionLabel')}
           </p>
-          <h2 className="text-xl font-bold text-gray-900">{t('title')}</h2>
+          <h2 className="text-xl font-bold text-foreground">{t('title')}</h2>
         </div>
-        <Badge
-          className="text-xs font-semibold"
-          style={{
-            backgroundColor: stats.current_tier.name === 'Gold' ? '#FEF3C7' : stats.current_tier.name === 'Silver' ? '#F3F4F6' : '#FED7AA',
-            color: stats.current_tier.name === 'Gold' ? '#92400E' : stats.current_tier.name === 'Silver' ? '#374151' : '#9A3412',
-          }}
-        >
-          {stats.current_tier.name}
-        </Badge>
       </div>
+
+      {/* Tier stepper */}
+      <div className="flex items-center justify-center gap-0 mb-5">
+        {TIERS.map((tier, i) => {
+          const isActive = i === currentTierIndex;
+          const isPast = i < currentTierIndex;
+          const isFuture = i > currentTierIndex;
+
+          return (
+            <div key={tier.name} className="flex items-center">
+              {/* Connector line (before circle, except first) */}
+              {i > 0 && (
+                <div
+                  className={cn(
+                    'h-0.5 w-8 sm:w-12',
+                    isPast || isActive ? 'bg-current' : 'bg-muted'
+                  )}
+                  style={isPast || isActive ? { backgroundColor: TIERS[Math.min(i, currentTierIndex)].color } : undefined}
+                />
+              )}
+
+              {/* Tier circle */}
+              <div className="flex flex-col items-center gap-1.5">
+                <div
+                  className={cn(
+                    'w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold transition-all',
+                    isFuture && 'border-2 border-muted text-muted-foreground'
+                  )}
+                  style={{
+                    ...(isActive ? {
+                      backgroundColor: `${tier.color}30`,
+                      color: tier.color,
+                      border: `2px solid ${tier.color}`,
+                      boxShadow: `0 0 12px ${tier.color}50`,
+                    } : isPast ? {
+                      backgroundColor: tier.color,
+                      color: '#1a1a1a',
+                    } : {}),
+                  }}
+                >
+                  {isPast ? (
+                    <Check className="h-4 w-4" />
+                  ) : (
+                    tier.name.charAt(0)
+                  )}
+                </div>
+                <span className={cn(
+                  'text-[10px] font-medium',
+                  isActive ? 'text-foreground' : 'text-muted-foreground'
+                )}>
+                  {tier.name}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Next reward messaging */}
+      {nextTier && (
+        <p className="text-center text-xs text-muted-foreground mb-5">
+          Next reward at {nextTier.min} referrals
+        </p>
+      )}
 
       {/* Referral Link & Code */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
         <div>
-          <label className="block text-xs font-medium text-gray-500 uppercase mb-1.5">
+          <label className="block text-xs font-medium text-muted-foreground uppercase mb-1.5">
             {t('linkLabel')}
           </label>
           <div className="flex items-center gap-2">
@@ -78,19 +142,19 @@ export function ReferralSection() {
               type="text"
               readOnly
               value={stats.referral_link}
-              className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 font-mono truncate"
+              className="flex-1 px-3 py-2 bg-muted border border-border rounded-lg text-sm text-foreground font-mono truncate"
             />
             <button
               onClick={() => handleCopy(stats.referral_link, 'link')}
-              className="shrink-0 p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+              className="shrink-0 p-2 rounded-lg border border-border hover:bg-muted transition-colors"
               title={t('copyLink')}
             >
-              {copiedLink ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4 text-gray-400" />}
+              {copiedLink ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4 text-muted-foreground" />}
             </button>
           </div>
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-500 uppercase mb-1.5">
+          <label className="block text-xs font-medium text-muted-foreground uppercase mb-1.5">
             {t('codeLabel')}
           </label>
           <div className="flex items-center gap-2">
@@ -98,14 +162,14 @@ export function ReferralSection() {
               type="text"
               readOnly
               value={stats.code}
-              className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-900 font-mono tracking-wider text-center"
+              className="flex-1 px-3 py-2 bg-muted border border-border rounded-lg text-sm text-foreground font-mono tracking-wider text-center"
             />
             <button
               onClick={() => handleCopy(stats.code, 'code')}
-              className="shrink-0 p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+              className="shrink-0 p-2 rounded-lg border border-border hover:bg-muted transition-colors"
               title={t('copyCode')}
             >
-              {copiedCode ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4 text-gray-400" />}
+              {copiedCode ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4 text-muted-foreground" />}
             </button>
           </div>
         </div>
@@ -113,37 +177,37 @@ export function ReferralSection() {
 
       {/* Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div className="rounded-lg border border-gray-200 bg-white p-4">
+        <div className="rounded-lg border border-border bg-muted p-4">
           <div className="flex items-center gap-2 mb-2">
-            <Users className="h-4 w-4 text-gray-400" />
-            <span className="text-xs font-medium text-gray-500 uppercase">{t('usageStat')}</span>
+            <Users className="h-4 w-4 text-muted-foreground" />
+            <span className="text-xs font-medium text-muted-foreground uppercase">{t('usageStat')}</span>
           </div>
-          <p className="text-2xl font-mono font-bold text-gray-900 tabular-nums">
+          <p className="text-2xl font-mono font-bold text-foreground tabular-nums">
             {stats.total_referrals}
           </p>
-          <p className="text-xs text-gray-400 mt-0.5">
+          <p className="text-xs text-muted-foreground mt-0.5">
             {t('completedOf', { completed: stats.completed_referrals, total: stats.total_referrals })}
           </p>
         </div>
-        <div className="rounded-lg border border-gray-200 bg-white p-4">
+        <div className="rounded-lg border border-border bg-muted p-4">
           <div className="flex items-center gap-2 mb-2">
-            <TrendingUp className="h-4 w-4 text-gray-400" />
-            <span className="text-xs font-medium text-gray-500 uppercase">{t('xpEarnedStat')}</span>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <span className="text-xs font-medium text-muted-foreground uppercase">{t('xpEarnedStat')}</span>
           </div>
           <p className="text-2xl font-mono font-bold text-organic-orange tabular-nums">
             {stats.total_xp_earned.toLocaleString()}
           </p>
-          <p className="text-xs text-gray-400 mt-0.5">{t('xpLabel')}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">{t('xpLabel')}</p>
         </div>
-        <div className="rounded-lg border border-gray-200 bg-white p-4">
+        <div className="rounded-lg border border-border bg-muted p-4">
           <div className="flex items-center gap-2 mb-2">
-            <Coins className="h-4 w-4 text-gray-400" />
-            <span className="text-xs font-medium text-gray-500 uppercase">{t('pointsEarnedStat')}</span>
+            <Coins className="h-4 w-4 text-muted-foreground" />
+            <span className="text-xs font-medium text-muted-foreground uppercase">{t('pointsEarnedStat')}</span>
           </div>
-          <p className="text-2xl font-mono font-bold text-gray-900 tabular-nums">
+          <p className="text-2xl font-mono font-bold text-foreground tabular-nums">
             {stats.total_points_earned.toLocaleString()}
           </p>
-          <p className="text-xs text-gray-400 mt-0.5">{t('pointsLabel')}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">{t('pointsLabel')}</p>
         </div>
       </div>
     </div>
