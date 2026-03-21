@@ -143,7 +143,8 @@
     "refAndQuests": "推荐 & 任务",
     "onboarding": "设置进度",
     "ideas": "想法",
-    "community": "社区"
+    "community": "社区",
+    "navigationMenu": "导航菜单"
   },
   "Wallet": {
     "toastConnected": "钱包已连接",
@@ -1881,7 +1882,7 @@
     "title": "设置",
     "description": "配置组织、代币、国库和治理设置",
     "accessDenied": "访问被拒绝",
-    "accessDeniedDescription": "您需要管理员或理事会权限才能访问设置。",
+    "accessDeniedDescription": "您需要管理员权限才能访问设置。",
     "readOnlyNotice": "理事会成员仅有只读权限",
     "orgNotFound": "未找到组织",
     "save": "保存",

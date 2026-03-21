@@ -143,7 +143,8 @@
     "refAndQuests": "Ref & Quests",
     "onboarding": "Progresso de Configuração",
     "ideas": "Ideias",
-    "community": "Comunidade"
+    "community": "Comunidade",
+    "navigationMenu": "Menu de navegação"
   },
   "Wallet": {
     "toastConnected": "Carteira conectada",
@@ -1881,7 +1882,7 @@
     "title": "Definições",
     "description": "Configurar a organização, token, tesouraria e governança",
     "accessDenied": "Acesso Negado",
-    "accessDeniedDescription": "Necessita de permissões de admin ou conselho para aceder às definições.",
+    "accessDeniedDescription": "Necessita de permissões de admin para aceder às definições.",
     "readOnlyNotice": "Membros do conselho têm acesso apenas de leitura",
     "orgNotFound": "Organização não encontrada",
     "save": "Guardar",

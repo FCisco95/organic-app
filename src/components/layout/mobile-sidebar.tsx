@@ -9,7 +9,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { useSidebar } from './sidebar-context';
-import { Sheet, SheetContent } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
@@ -65,6 +65,8 @@ export function MobileSidebar() {
           }
         }}
       >
+        <SheetTitle className="sr-only">{t('navigationMenu')}</SheetTitle>
+        <SheetDescription className="sr-only">{t('navigationMenu')}</SheetDescription>
         {/* Logo */}
         <div className="flex items-center h-20 gap-3 px-4">
           <Link href="/" onClick={() => setMobileOpen(false)} className="flex items-center gap-3">
