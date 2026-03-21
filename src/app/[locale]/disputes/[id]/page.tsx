@@ -5,21 +5,11 @@ import { useAuth } from '@/features/auth/context';
 import { useDispute, useDisputeComments, useAddDisputeComment } from '@/features/disputes/hooks';
 import { PageContainer } from '@/components/layout';
 import { DisputeDetail } from '@/components/disputes/dispute-detail-view';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
 import { Loader2, ArrowLeft, Info } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
-import { formatDistanceToNow } from 'date-fns';
 import { useState } from 'react';
 import type { DisputeWithRelations } from '@/features/disputes/types';
 import { useParams } from 'next/navigation';
-
-function formatRelativeTime(value: string | null | undefined): string {
-  if (!value) return 'recently';
-  const date = new Date(value);
-  if (!Number.isFinite(date.getTime())) return 'recently';
-  return formatDistanceToNow(date, { addSuffix: true });
-}
 
 export default function DisputeDetailPage() {
   const params = useParams<{ id: string }>();
@@ -54,7 +44,7 @@ export default function DisputeDetailPage() {
     return (
       <PageContainer layout="structured">
         <div data-testid="dispute-detail-page" className="flex items-center justify-center py-20">
-          <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+          <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
         </div>
       </PageContainer>
     );
@@ -63,9 +53,9 @@ export default function DisputeDetailPage() {
   if (isError) {
     return (
       <PageContainer layout="structured">
-        <div data-testid="dispute-detail-page" className="text-center py-20">
-          <p className="text-red-600 text-sm">{(error as Error)?.message || td('loadFailed')}</p>
-          <Link href="/disputes" className="text-orange-600 hover:underline mt-2 inline-block">
+        <div data-testid="dispute-detail-page" className="py-20 text-center">
+          <p className="text-sm text-red-600">{(error as Error)?.message || td('loadFailed')}</p>
+          <Link href="/disputes" className="mt-2 inline-block text-orange-600 hover:underline">
             {td('backToDisputes')}
           </Link>
         </div>
@@ -76,9 +66,9 @@ export default function DisputeDetailPage() {
   if (!dispute) {
     return (
       <PageContainer layout="structured">
-        <div data-testid="dispute-detail-page" className="text-center py-20">
+        <div data-testid="dispute-detail-page" className="py-20 text-center">
           <p className="text-gray-500">{td('notFound')}</p>
-          <Link href="/disputes" className="text-orange-600 hover:underline mt-2 inline-block">
+          <Link href="/disputes" className="mt-2 inline-block text-orange-600 hover:underline">
             {td('backToDisputes')}
           </Link>
         </div>
@@ -86,7 +76,6 @@ export default function DisputeDetailPage() {
     );
   }
 
-  // Check if current user is a party (for showing comments)
   const isParty =
     user?.id === dispute.disputant_id ||
     user?.id === dispute.reviewer_id ||
@@ -96,105 +85,37 @@ export default function DisputeDetailPage() {
   return (
     <PageContainer layout="structured">
       <div data-testid="dispute-detail-page">
-      {/* Back link */}
-      <Link
-        data-testid="dispute-detail-back-link"
-        href="/disputes"
-        className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 mb-6"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        {t('pageTitle')}
-      </Link>
+        {/* Back link */}
+        <Link
+          data-testid="dispute-detail-back-link"
+          href="/disputes"
+          className="mb-4 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          {t('pageTitle')}
+        </Link>
 
-      {/* Limited access banner for non-parties */}
-      {!isParty && (
-        <div className="mb-4 flex items-start gap-2 rounded-xl border border-blue-200 bg-blue-50 p-3">
-          <Info className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" />
-          <p className="text-sm text-blue-800">{td('limitedAccess')}</p>
-        </div>
-      )}
-
-      {/* Dispute detail */}
-      <DisputeDetail
-        dispute={dispute}
-        currentUserId={user?.id ?? ''}
-        currentUserRole={profile?.role ?? 'guest'}
-        onRefresh={() => refetch()}
-      />
-
-      {/* Comments section */}
-      {isParty && (
-        <div data-testid="dispute-comments-panel" className="mt-8 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <h3 className="text-sm font-semibold text-gray-900 mb-4">
-            {td('comments')}
-          </h3>
-
-          {/* Comment list */}
-          {comments.length === 0 ? (
-            <p className="text-sm text-gray-400 mb-4">{td('noCommentsYet')}</p>
-          ) : (
-            <div className="space-y-3 mb-4">
-              {comments.map((comment) => (
-                <div
-                  key={comment.id}
-                  data-testid={`dispute-comment-${comment.id}`}
-                  className="flex gap-3 p-3 rounded-lg bg-gray-50"
-                >
-                  <Avatar className="h-7 w-7 shrink-0">
-                    {comment.user?.avatar_url && (
-                      <AvatarImage src={comment.user.avatar_url} />
-                    )}
-                    <AvatarFallback className="text-[10px] bg-gray-200">
-                      {(comment.user?.name || comment.user?.email || '?')[0].toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-xs font-medium text-gray-900">
-                        {comment.user?.name ||
-                          (comment.user?.organic_id
-                            ? `ORG-${comment.user.organic_id}`
-                            : comment.user?.email?.split('@')[0])}
-                      </span>
-                      <span className="text-[10px] text-gray-400">
-                        {formatRelativeTime(comment.created_at)}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-700">{comment.content}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Add comment */}
-          <div className="flex gap-2" data-testid="dispute-comment-input-row">
-            <input
-              value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
-              placeholder={td('addComment')}
-              className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  handleAddComment();
-                }
-              }}
-            />
-            <Button
-              onClick={handleAddComment}
-              disabled={!commentText.trim() || addComment.isPending}
-              className="bg-orange-600 hover:bg-orange-700 text-white"
-            >
-              {addComment.isPending ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                td('addComment')
-              )}
-            </Button>
+        {/* Limited access banner for non-parties */}
+        {!isParty && (
+          <div className="mb-4 flex items-start gap-2 rounded-xl border border-blue-200 bg-blue-50 p-3">
+            <Info className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" />
+            <p className="text-sm text-blue-800">{td('limitedAccess')}</p>
           </div>
-        </div>
-      )}
+        )}
+
+        {/* Dispute detail — tabbed layout with comments integrated */}
+        <DisputeDetail
+          dispute={dispute}
+          currentUserId={user?.id ?? ''}
+          currentUserRole={profile?.role ?? 'guest'}
+          onRefresh={() => refetch()}
+          comments={comments}
+          commentText={commentText}
+          onCommentTextChange={setCommentText}
+          onAddComment={handleAddComment}
+          isAddingComment={addComment.isPending}
+          isParty={isParty}
+        />
       </div>
     </PageContainer>
   );

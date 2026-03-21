@@ -10,6 +10,7 @@ import {
 } from '@/features/disputes/sla';
 import { DisputeCard } from './dispute-card';
 import { cn } from '@/lib/utils';
+import { AlertTriangle, TrendingUp, CheckCircle } from 'lucide-react';
 
 const STATUS_TABS: { key: string; statuses?: DisputeStatus }[] = [
   { key: 'all' },
@@ -19,18 +20,6 @@ const STATUS_TABS: { key: string; statuses?: DisputeStatus }[] = [
   { key: 'resolved', statuses: 'resolved' },
   { key: 'dismissed', statuses: 'dismissed' },
 ];
-
-const SLA_TABS = [
-  { key: 'all' },
-  { key: 'overdue' },
-  { key: 'at_risk' },
-  { key: 'on_track' },
-] as const;
-const SLA_TAB_LABEL_KEYS = {
-  overdue: 'overdue',
-  at_risk: 'atRisk',
-  on_track: 'onTrack',
-} as const;
 
 const TIER_TABS: { key: string; tier?: DisputeTier }[] = [
   { key: 'all' },
@@ -47,9 +36,7 @@ interface DisputeQueueProps {
 export function DisputeQueue({ myDisputes = false, showTriageControls = false }: DisputeQueueProps) {
   const t = useTranslations('Disputes');
   const [activeTab, setActiveTab] = useState('all');
-  const [activeSlaTab, setActiveSlaTab] = useState<(typeof SLA_TABS)[number]['key']>('all');
   const [activeTierTab, setActiveTierTab] = useState('all');
-  const [escalationOnly, setEscalationOnly] = useState(false);
 
   const selectedStatus = STATUS_TABS.find((tab) => tab.key === activeTab)?.statuses;
   const selectedTier = TIER_TABS.find((tab) => tab.key === activeTierTab)?.tier;
@@ -67,172 +54,62 @@ export function DisputeQueue({ myDisputes = false, showTriageControls = false }:
   const atRiskCount = rawDisputes.filter(
     (dispute) => getDisputeSlaUrgency(dispute.response_deadline) === 'at_risk'
   ).length;
-  const onTrackCount = rawDisputes.filter(
-    (dispute) => getDisputeSlaUrgency(dispute.response_deadline) === 'on_track'
-  ).length;
   const escalationCount = rawDisputes.filter((dispute) =>
     isEscalationCandidate(dispute.status, dispute.response_deadline)
   ).length;
 
-  const disputes = rawDisputes.filter((dispute) => {
-    if (
-      activeSlaTab !== 'all' &&
-      getDisputeSlaUrgency(dispute.response_deadline) !== activeSlaTab
-    ) {
-      return false;
-    }
-
-    if (escalationOnly && !isEscalationCandidate(dispute.status, dispute.response_deadline)) {
-      return false;
-    }
-
-    return true;
-  });
+  // Count disputes per status tab
+  const statusCounts: Record<string, number> = { all: rawDisputes.length };
+  for (const d of rawDisputes) {
+    statusCounts[d.status] = (statusCounts[d.status] || 0) + 1;
+  }
 
   return (
-    <div data-testid="disputes-queue-surface" className="space-y-4">
+    <div data-testid="disputes-queue-surface" className="space-y-3">
+      {/* Triage panel — collapsible for council/admin */}
       {showTriageControls && (
-        <>
-          <div
-            data-testid="disputes-triage-deck"
-            className="rounded-2xl border border-orange-100 bg-gradient-to-br from-orange-50 via-white to-amber-50 p-4"
-          >
-            <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <h3 className="text-sm font-semibold text-gray-900">{t('triage.title')}</h3>
-                <p className="mt-1 text-xs text-gray-500">{t('triage.subtitle')}</p>
-              </div>
-              <span className="rounded-full bg-white px-2.5 py-1 text-[11px] font-medium text-gray-600 shadow-sm">
-                {t('triage.totalActive', { count: rawDisputes.length })}
-              </span>
-            </div>
+        <div
+          data-testid="disputes-triage-deck"
+          className="flex flex-wrap items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5"
+        >
+          <span className="mr-1 text-xs font-medium uppercase tracking-wider text-gray-400">
+            {t('tabs.triageLabel')}
+          </span>
 
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-4">
-              <TriageCounter
-                testId="disputes-sla-counter-overdue"
-                label={t('triage.overdue')}
-                value={overdueCount}
-                tone="danger"
-              />
-              <TriageCounter
-                testId="disputes-sla-counter-at-risk"
-                label={t('triage.atRisk')}
-                value={atRiskCount}
-                tone="warn"
-              />
-              <TriageCounter
-                testId="disputes-sla-counter-on-track"
-                label={t('triage.onTrack')}
-                value={onTrackCount}
-                tone="ok"
-              />
-              <TriageCounter
-                testId="disputes-sla-counter-escalation"
-                label={t('triage.escalationReady')}
-                value={escalationCount}
-                tone="neutral"
-              />
-            </div>
-          </div>
+          {overdueCount > 0 && (
+            <span
+              data-testid="disputes-sla-counter-overdue"
+              className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2.5 py-1 text-xs font-semibold text-red-700"
+            >
+              <AlertTriangle className="h-3 w-3" />
+              {t('triage.overdue')} ({overdueCount})
+            </span>
+          )}
+          {atRiskCount > 0 && (
+            <span
+              data-testid="disputes-sla-counter-at-risk"
+              className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700"
+            >
+              <TrendingUp className="h-3 w-3" />
+              {t('triage.atRisk')} ({atRiskCount})
+            </span>
+          )}
+          {escalationCount > 0 && (
+            <span
+              data-testid="disputes-sla-counter-escalation"
+              className="inline-flex items-center gap-1 rounded-full bg-orange-100 px-2.5 py-1 text-xs font-semibold text-orange-700"
+            >
+              {t('triage.escalationReady')} ({escalationCount})
+            </span>
+          )}
 
-          <div
-            data-testid="disputes-escalation-controls"
-            className="rounded-xl border border-gray-200 bg-white p-3"
-          >
-            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-              <p className="text-xs font-medium uppercase tracking-[0.12em] text-gray-500">
-                {t('triage.escalationControls')}
-              </p>
-              <button
-                type="button"
-                data-testid="disputes-escalation-toggle"
-                onClick={() => setEscalationOnly((prev) => !prev)}
-                className={cn(
-                  'rounded-full px-3 py-1 text-xs font-semibold transition-colors',
-                  escalationOnly
-                    ? 'bg-red-100 text-red-700'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                )}
-              >
-                {escalationOnly ? t('triage.showAll') : t('triage.focusEscalation')}
-              </button>
-            </div>
+          <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600">
+            <CheckCircle className="h-3 w-3" />
+            {t('triage.totalActive', { count: rawDisputes.length })}
+          </span>
 
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                data-testid="disputes-escalation-tier-council"
-                onClick={() => setActiveTierTab('council')}
-                className="rounded-full border border-purple-200 bg-purple-50 px-2.5 py-1 text-xs font-medium text-purple-700"
-              >
-                {t('triage.routeCouncil')}
-              </button>
-              <button
-                type="button"
-                data-testid="disputes-escalation-tier-admin"
-                onClick={() => setActiveTierTab('admin')}
-                className="rounded-full border border-red-200 bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700"
-              >
-                {t('triage.routeAdmin')}
-              </button>
-            </div>
-          </div>
-        </>
-      )}
-
-      {/* Status tabs */}
-      <div
-        data-testid="disputes-status-filter-tabs"
-        className="flex gap-1 overflow-x-auto border-b border-gray-200 pb-1"
-      >
-        {STATUS_TABS.map((tab) => (
-          <button
-            key={tab.key}
-            type="button"
-            data-testid={`disputes-status-filter-${tab.key}`}
-            onClick={() => setActiveTab(tab.key)}
-            className={cn(
-              'whitespace-nowrap border-b-2 px-4 py-2 text-sm font-medium transition-colors',
-              activeTab === tab.key
-                ? 'border-orange-500 text-orange-600'
-                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-            )}
-          >
-            {tab.key === 'all' ? t('title') : t(`status.${tab.key}`)}
-          </button>
-        ))}
-      </div>
-
-      {showTriageControls && (
-        <>
-          <div
-            data-testid="disputes-sla-filter-tabs"
-            className="flex flex-wrap items-center gap-2"
-          >
-            {SLA_TABS.map((tab) => (
-              <button
-                key={tab.key}
-                type="button"
-                data-testid={`disputes-sla-filter-${tab.key}`}
-                onClick={() => setActiveSlaTab(tab.key)}
-                className={cn(
-                  'rounded-full px-3 py-1 text-xs font-medium transition-colors',
-                  activeSlaTab === tab.key
-                    ? 'bg-orange-100 text-orange-700'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                )}
-              >
-                {tab.key === 'all'
-                  ? t('triage.allSla')
-                  : t(`triage.${SLA_TAB_LABEL_KEYS[tab.key as keyof typeof SLA_TAB_LABEL_KEYS]}`)}
-              </button>
-            ))}
-          </div>
-
-          <div
-            data-testid="disputes-tier-filter-tabs"
-            className="flex flex-wrap items-center gap-2"
-          >
+          {/* Tier chips */}
+          <div className="ml-auto flex items-center gap-1.5">
             {TIER_TABS.map((tab) => (
               <button
                 key={tab.key}
@@ -240,7 +117,7 @@ export function DisputeQueue({ myDisputes = false, showTriageControls = false }:
                 data-testid={`disputes-tier-filter-${tab.key}`}
                 onClick={() => setActiveTierTab(tab.key)}
                 className={cn(
-                  'rounded-full px-3 py-1 text-xs font-medium transition-colors',
+                  'rounded-full px-2.5 py-1 text-xs font-medium transition-colors',
                   activeTierTab === tab.key
                     ? 'bg-gray-900 text-white'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -250,16 +127,54 @@ export function DisputeQueue({ myDisputes = false, showTriageControls = false }:
               </button>
             ))}
           </div>
-        </>
+        </div>
       )}
 
-      {/* Dispute list */}
+      {/* Status tabs — GitHub-style underline tabs with counts */}
+      <div
+        data-testid="disputes-status-filter-tabs"
+        className="flex gap-0.5 overflow-x-auto border-b border-gray-200"
+      >
+        {STATUS_TABS.map((tab) => {
+          const count = statusCounts[tab.key] || 0;
+          return (
+            <button
+              key={tab.key}
+              type="button"
+              data-testid={`disputes-status-filter-${tab.key}`}
+              onClick={() => setActiveTab(tab.key)}
+              className={cn(
+                'flex items-center gap-1.5 whitespace-nowrap border-b-2 px-3 py-2 text-sm font-medium transition-colors',
+                activeTab === tab.key
+                  ? 'border-orange-500 text-gray-900'
+                  : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+              )}
+            >
+              {tab.key === 'all' ? t('title') : t(`status.${tab.key}`)}
+              {count > 0 && (
+                <span
+                  className={cn(
+                    'rounded-full px-1.5 py-0.5 text-[10px] font-semibold leading-none',
+                    activeTab === tab.key
+                      ? 'bg-orange-100 text-orange-700'
+                      : 'bg-gray-100 text-gray-500'
+                  )}
+                >
+                  {count}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Dispute list — GitHub issue list style */}
       {isLoading ? (
-        <div className="space-y-3">
+        <div className="space-y-0 divide-y divide-gray-100 rounded-lg border border-gray-200 bg-white">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="h-28 rounded-lg bg-gray-100 animate-pulse"
+              className="h-[72px] animate-pulse bg-gray-50"
             />
           ))}
         </div>
@@ -267,48 +182,22 @@ export function DisputeQueue({ myDisputes = false, showTriageControls = false }:
         <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {(error as Error)?.message || t('queueEmptyHint')}
         </div>
-      ) : disputes.length === 0 ? (
+      ) : rawDisputes.length === 0 ? (
         <div className="py-12 text-center">
-          <p className="text-gray-500 text-sm">
+          <p className="text-sm text-gray-500">
             {myDisputes ? t('myDisputesEmpty') : t('queueEmpty')}
           </p>
-          <p className="text-gray-400 text-xs mt-1">
+          <p className="mt-1 text-xs text-gray-400">
             {myDisputes ? t('myDisputesEmptyHint') : t('queueEmptyHint')}
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {disputes.map((dispute) => (
+        <div className="divide-y divide-gray-100 rounded-lg border border-gray-200 bg-white">
+          {rawDisputes.map((dispute) => (
             <DisputeCard key={dispute.id} dispute={dispute} />
           ))}
         </div>
       )}
-    </div>
-  );
-}
-
-function TriageCounter({
-  label,
-  value,
-  tone,
-  testId,
-}: {
-  label: string;
-  value: number;
-  tone: 'danger' | 'warn' | 'ok' | 'neutral';
-  testId: string;
-}) {
-  const toneClass = {
-    danger: 'border-red-200 bg-red-50 text-red-700',
-    warn: 'border-amber-200 bg-amber-50 text-amber-700',
-    ok: 'border-emerald-200 bg-emerald-50 text-emerald-700',
-    neutral: 'border-gray-200 bg-gray-50 text-gray-700',
-  }[tone];
-
-  return (
-    <div data-testid={testId} className={cn('rounded-xl border px-3 py-2', toneClass)}>
-      <p className="text-[11px] font-medium">{label}</p>
-      <p className="mt-1 text-xl font-semibold leading-none">{value}</p>
     </div>
   );
 }

@@ -34,9 +34,9 @@ function UserRow({
       <span className="w-20 text-xs text-gray-500">{label}</span>
       {user ? (
         <div className="flex items-center gap-2">
-          <Avatar className="h-6 w-6">
+          <Avatar className="h-5 w-5">
             {user.avatar_url && <AvatarImage src={user.avatar_url} />}
-            <AvatarFallback className="bg-gray-200 text-[10px]">
+            <AvatarFallback className="bg-gray-200 text-[9px]">
               {(user.name || user.email || '?')[0].toUpperCase()}
             </AvatarFallback>
           </Avatar>
@@ -56,14 +56,12 @@ function UserRow({
 export function DisputeParticipants({ dispute, isParty = true }: DisputeParticipantsProps) {
   const td = useTranslations('Disputes.detail');
 
-  // When the viewer is not a dispute party, the API strips participant data.
-  // Show "restricted" for disputant/reviewer (always assigned), and for arbitrator only if we know one exists.
   const disputantHasId = isParty ? Boolean(dispute.disputant_id) : true;
   const reviewerHasId = isParty ? Boolean(dispute.reviewer_id) : true;
   const arbitratorHasId = isParty ? Boolean(dispute.arbitrator_id) : Boolean(dispute.arbitrator);
 
   return (
-    <div className="space-y-4 rounded-xl border border-gray-200 bg-white p-4">
+    <div className="space-y-3 rounded-lg border border-gray-200 bg-white p-4">
       <UserRow label={td('disputant')} user={dispute.disputant} hasId={disputantHasId} unassignedLabel={td('unassigned')} restrictedLabel={td('restricted')} />
       <UserRow label={td('reviewer')} user={dispute.reviewer} hasId={reviewerHasId} unassignedLabel={td('unassigned')} restrictedLabel={td('restricted')} />
       <UserRow label={td('arbitrator')} user={dispute.arbitrator} hasId={arbitratorHasId} unassignedLabel={td('unassigned')} restrictedLabel={td('restricted')} />

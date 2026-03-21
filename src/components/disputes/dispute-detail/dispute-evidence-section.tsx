@@ -14,6 +14,31 @@ interface DisputeEvidenceSectionProps {
   onRefresh: () => void;
 }
 
+/**
+ * Strip UUID prefix from evidence filenames.
+ * E.g. "1772036242459-264883e1-75fb-41db-80a6-e23a7d653758-surface-late-evidence.png"
+ *   -> "surface-late-evidence.png"
+ */
+function cleanFileName(raw: string): string {
+  // Match: timestamp-uuid-rest pattern
+  const cleaned = raw.replace(
+    /^\d{10,}-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}-/i,
+    ''
+  );
+  return cleaned || raw;
+}
+
+/** Truncate filename to ~30 chars, keeping extension */
+function truncateFileName(name: string, max: number = 30): string {
+  if (name.length <= max) return name;
+  const extIdx = name.lastIndexOf('.');
+  const ext = extIdx > 0 ? name.slice(extIdx) : '';
+  const base = extIdx > 0 ? name.slice(0, extIdx) : name;
+  const availableChars = max - ext.length - 3; // 3 for "..."
+  if (availableChars <= 0) return name.slice(0, max);
+  return base.slice(0, availableChars) + '...' + ext;
+}
+
 export function DisputeEvidenceSection({
   dispute,
   canUploadEvidence,
@@ -54,95 +79,117 @@ export function DisputeEvidenceSection({
   return (
     <div
       data-testid="dispute-evidence-chronology"
-      className="rounded-xl border border-gray-200 bg-white p-4"
+      className="space-y-4"
     >
-      <h3 className="mb-2 text-sm font-semibold text-gray-900">{td('evidence')}</h3>
-      <p className="whitespace-pre-wrap text-sm text-gray-700">{dispute.evidence_text ?? '\u2014'}</p>
+      {/* Evidence text */}
+      <div className="rounded-lg border border-gray-200 bg-white p-4">
+        <h3 className="mb-2 text-sm font-semibold text-gray-900">{td('evidence')}</h3>
+        <p className="whitespace-pre-wrap text-sm text-gray-700">{dispute.evidence_text ?? '\u2014'}</p>
 
-      {evidenceLinks.length > 0 && (
-        <ul className="mt-3 space-y-1">
-          {evidenceLinks.map((link, i) => (
-            <li key={i}>
-              <a
-                href={link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 text-sm text-blue-600 hover:underline"
-              >
-                {link}
-                <ExternalLink className="h-3 w-3" />
-              </a>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      {evidenceFileUrls.length > 0 && (
-        <div className="mt-3">
-          <p className="mb-1 text-xs font-medium text-gray-500">{td('evidenceFiles')}</p>
-          <ul className="space-y-1">
-            {evidenceFileUrls.map((file) => (
-              <li key={file.path}>
+        {evidenceLinks.length > 0 && (
+          <ul className="mt-3 space-y-1">
+            {evidenceLinks.map((link, i) => (
+              <li key={i}>
                 <a
-                  href={file.url}
+                  href={link}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-1 text-sm text-blue-600 hover:underline"
                 >
-                  <Paperclip className="h-3 w-3" />
-                  {file.file_name}
+                  {link}
                   <ExternalLink className="h-3 w-3" />
                 </a>
               </li>
             ))}
           </ul>
-        </div>
-      )}
+        )}
+      </div>
 
-      {evidenceEvents.length > 0 && (
-        <div className="mt-3">
-          <p className="mb-1 text-xs font-medium text-gray-500">{td('evidenceTimeline')}</p>
-          <ul className="space-y-2">
-            {evidenceEvents.map((event) => (
-              <li
-                key={event.id}
-                data-testid={`dispute-evidence-event-${event.id}`}
-                className="rounded-md border border-gray-200 bg-gray-50 px-2 py-1 text-xs text-gray-700"
-              >
-                <div className="flex items-center gap-2">
-                  <Paperclip className="h-3 w-3 shrink-0 text-gray-400" />
-                  {event.url ? (
-                    <a
-                      href={event.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="truncate text-blue-600 hover:underline"
-                    >
-                      {event.file_name}
-                    </a>
-                  ) : (
-                    <span className="truncate">{event.file_name}</span>
-                  )}
-                  {event.is_late && (
-                    <span
-                      data-testid="dispute-late-evidence-tag"
-                      className="rounded-full bg-orange-100 px-1.5 py-0.5 text-[10px] font-semibold text-orange-700"
-                    >
-                      {td('lateEvidenceTag')}
-                    </span>
-                  )}
-                </div>
-                <p className="mt-1 text-[10px] text-gray-500">
-                  {td('uploadedAt', { date: formatDateTime(event.created_at) ?? '\u2014' })}
-                </p>
-              </li>
-            ))}
+      {/* Uploaded files — cleaned filenames */}
+      {evidenceFileUrls.length > 0 && (
+        <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <p className="mb-2 text-xs font-medium uppercase tracking-wider text-gray-500">
+            {td('evidenceFiles')}
+          </p>
+          <ul className="space-y-1.5">
+            {evidenceFileUrls.map((file) => {
+              const cleanName = cleanFileName(file.file_name);
+              const displayName = truncateFileName(cleanName);
+              return (
+                <li key={file.path}>
+                  <a
+                    href={file.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={cleanName}
+                    className="flex items-center gap-1.5 text-sm text-blue-600 hover:underline"
+                  >
+                    <Paperclip className="h-3 w-3 shrink-0" />
+                    {displayName}
+                    <ExternalLink className="h-3 w-3 shrink-0" />
+                  </a>
+                </li>
+              );
+            })}
           </ul>
         </div>
       )}
 
+      {/* Evidence timeline */}
+      {evidenceEvents.length > 0 && (
+        <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <p className="mb-2 text-xs font-medium uppercase tracking-wider text-gray-500">
+            {td('evidenceTimeline')}
+          </p>
+          <ul className="space-y-2">
+            {evidenceEvents.map((event) => {
+              const cleanName = cleanFileName(event.file_name);
+              const displayName = truncateFileName(cleanName);
+              return (
+                <li
+                  key={event.id}
+                  data-testid={`dispute-evidence-event-${event.id}`}
+                  className="flex items-start gap-2 rounded-md border border-gray-100 bg-gray-50/50 px-3 py-2 text-xs"
+                >
+                  <Paperclip className="mt-0.5 h-3 w-3 shrink-0 text-gray-400" />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      {event.url ? (
+                        <a
+                          href={event.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title={cleanName}
+                          className="truncate text-blue-600 hover:underline"
+                        >
+                          {displayName}
+                        </a>
+                      ) : (
+                        <span className="truncate" title={cleanName}>{displayName}</span>
+                      )}
+                      {event.is_late && (
+                        <span
+                          data-testid="dispute-late-evidence-tag"
+                          className="shrink-0 rounded-full bg-orange-100 px-1.5 py-0.5 text-[10px] font-semibold text-orange-700"
+                        >
+                          {td('lateEvidenceTag')}
+                        </span>
+                      )}
+                    </div>
+                    <p className="mt-0.5 text-[10px] text-gray-500">
+                      {td('uploadedAt', { date: formatDateTime(event.created_at) ?? '\u2014' })}
+                    </p>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
+
+      {/* Upload button */}
       {canUploadEvidence && (
-        <div className="mt-3">
+        <div>
           <input
             ref={evidenceFileInputRef}
             type="file"

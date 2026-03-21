@@ -33,40 +33,48 @@ export function DisputeHeader({ dispute, responseSlaUrgency }: DisputeHeaderProp
       ? t(`reason.${dispute.reason}`)
       : dispute.reason;
 
+  const slaChipClass = cn(
+    'rounded-full border px-2 py-0.5 text-[11px] font-semibold',
+    responseSlaUrgency === 'overdue'
+      ? 'border-red-200 bg-red-100 text-red-700'
+      : responseSlaUrgency === 'at_risk'
+        ? 'border-amber-200 bg-amber-100 text-amber-700'
+        : responseSlaUrgency === 'on_track'
+          ? 'border-emerald-200 bg-emerald-100 text-emerald-700'
+          : 'border-gray-200 bg-gray-100 text-gray-600'
+  );
+  const slaLabel =
+    responseSlaUrgency === 'overdue'
+      ? t('triage.overdue')
+      : responseSlaUrgency === 'at_risk'
+        ? t('triage.atRisk')
+        : responseSlaUrgency === 'on_track'
+          ? t('triage.onTrack')
+          : t('triage.noDeadline');
+
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-      <div className="mb-2 flex flex-wrap items-center gap-2">
+    <div className="rounded-lg border border-gray-200 bg-white p-4">
+      {/* Title */}
+      <h1 className="text-xl font-bold text-gray-900">
+        {dispute.task?.title || td('task')}
+      </h1>
+
+      {/* Meta line */}
+      <p className="mt-1 text-sm text-gray-500">
+        {reasonLabel} &middot; {formatRelativeTime(dispute.created_at)}
+      </p>
+
+      {/* Label pills */}
+      <div className="mt-3 flex flex-wrap items-center gap-2">
         <DisputeStatusBadge status={dispute.status} />
         <DisputeTierBadge tier={dispute.tier} />
         {resolutionLabel && (
-          <span className="text-sm font-medium text-gray-700">{resolutionLabel}</span>
+          <span className="rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[11px] font-medium text-blue-700">
+            {resolutionLabel}
+          </span>
         )}
-        <span
-          className={cn(
-            'rounded-full border px-2 py-0.5 text-[11px] font-semibold',
-            responseSlaUrgency === 'overdue'
-              ? 'border-red-200 bg-red-100 text-red-700'
-              : responseSlaUrgency === 'at_risk'
-                ? 'border-amber-200 bg-amber-100 text-amber-700'
-                : responseSlaUrgency === 'on_track'
-                  ? 'border-emerald-200 bg-emerald-100 text-emerald-700'
-                  : 'border-gray-200 bg-gray-100 text-gray-600'
-          )}
-        >
-          {responseSlaUrgency === 'overdue'
-            ? t('triage.overdue')
-            : responseSlaUrgency === 'at_risk'
-              ? t('triage.atRisk')
-              : responseSlaUrgency === 'on_track'
-                ? t('triage.onTrack')
-                : t('triage.noDeadline')}
-        </span>
+        <span className={slaChipClass}>{slaLabel}</span>
       </div>
-
-      <h1 className="mb-1 text-xl font-bold text-gray-900">{dispute.task?.title || td('task')}</h1>
-      <p className="text-sm text-gray-500">
-        {reasonLabel} &middot; {formatRelativeTime(dispute.created_at)}
-      </p>
     </div>
   );
 }

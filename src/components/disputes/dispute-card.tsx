@@ -1,7 +1,6 @@
 'use client';
 
 import { Link } from '@/i18n/navigation';
-import { Calendar, User } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useTranslations } from 'next-intl';
 import type { DisputeListItem } from '@/features/disputes/types';
@@ -9,8 +8,6 @@ import {
   getDisputeSlaUrgency,
   isReviewerResponseTracked,
 } from '@/features/disputes/sla';
-import { DisputeStatusBadge } from './dispute-status-badge';
-import { DisputeTierBadge } from './dispute-tier-badge';
 import { cn } from '@/lib/utils';
 
 interface DisputeCardProps {
@@ -23,6 +20,20 @@ function formatRelativeTime(value: string | null | undefined): string {
   if (!Number.isFinite(date.getTime())) return 'recently';
   return formatDistanceToNow(date, { addSuffix: true });
 }
+
+/** Status icon colors matching GitHub's circle indicators */
+const STATUS_ICON_COLORS: Record<string, string> = {
+  open: 'bg-emerald-500',
+  awaiting_response: 'bg-amber-500',
+  mediation: 'bg-amber-400',
+  under_review: 'bg-orange-500',
+  resolved: 'bg-blue-500',
+  dismissed: 'bg-gray-400',
+  appealed: 'bg-red-500',
+  appeal_review: 'bg-red-400',
+  withdrawn: 'bg-gray-300',
+  mediated: 'bg-emerald-400',
+};
 
 export function DisputeCard({ dispute }: DisputeCardProps) {
   const t = useTranslations('Disputes');
@@ -44,15 +55,14 @@ export function DisputeCard({ dispute }: DisputeCardProps) {
       : dispute.reason;
   const tracksReviewerResponse = isReviewerResponseTracked(dispute.status);
   const slaUrgency = getDisputeSlaUrgency(dispute.response_deadline);
-  const isEscalationCandidate = slaUrgency === 'overdue' && dispute.tier !== 'admin';
 
-  const urgencyChipClass: Record<typeof slaUrgency, string> = {
+  const slaChipClass: Record<typeof slaUrgency, string> = {
     overdue: 'bg-red-100 text-red-700 border-red-200',
     at_risk: 'bg-amber-100 text-amber-700 border-amber-200',
     on_track: 'bg-emerald-100 text-emerald-700 border-emerald-200',
     no_deadline: 'bg-gray-100 text-gray-500 border-gray-200',
   };
-  const urgencyLabel =
+  const slaLabel =
     slaUrgency === 'overdue'
       ? t('triage.overdue')
       : slaUrgency === 'at_risk'
@@ -61,67 +71,69 @@ export function DisputeCard({ dispute }: DisputeCardProps) {
           ? t('triage.onTrack')
           : t('triage.noDeadline');
 
+  const tierChipClass: Record<string, string> = {
+    mediation: 'bg-blue-50 text-blue-700 border-blue-200',
+    council: 'bg-purple-50 text-purple-700 border-purple-200',
+    admin: 'bg-red-50 text-red-700 border-red-200',
+  };
+
   return (
     <Link
       href={`/disputes/${dispute.id}`}
       data-testid={`dispute-card-${dispute.id}`}
-      className="group block rounded-xl border border-gray-200 bg-white p-5 transition-all hover:-translate-y-0.5 hover:border-orange-200 hover:shadow-md"
+      className="group flex items-start gap-3 border-b border-gray-100 bg-white px-4 py-3 transition-colors hover:bg-gray-50 last:border-b-0"
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex-1 min-w-0">
-          <div className="mb-2 flex flex-wrap items-center gap-2">
-            <h3 className="text-base font-semibold text-gray-900 truncate">
-              {taskTitle}
-            </h3>
-            <DisputeStatusBadge status={dispute.status} showIcon={false} />
-            <DisputeTierBadge tier={dispute.tier} />
-            <span
-              data-testid={`dispute-card-sla-${dispute.id}`}
-              className={cn(
-                'rounded-full border px-2 py-0.5 text-[11px] font-semibold',
-                urgencyChipClass[slaUrgency]
-              )}
-            >
-              {urgencyLabel}
-            </span>
-          </div>
-
-          <p className="mb-3 text-sm text-gray-600">
-            {reasonLabel}
-          </p>
-
-          <div className="flex flex-wrap items-center gap-3 text-sm text-gray-500">
-            <div className="flex items-center gap-1">
-              <User className="w-3.5 h-3.5" />
-              <span>{displayName}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Calendar className="w-3.5 h-3.5" />
-              <span>
-                {formatRelativeTime(dispute.created_at)}
-              </span>
-            </div>
-            <span className="text-xs text-gray-400">
-              {dispute.xp_stake} XP {t('xpStake').toLowerCase()}
-            </span>
-            {tracksReviewerResponse && dispute.response_deadline && (
-              <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-600">
-                {t('triage.responseDeadlineInline', {
-                  date: formatRelativeTime(dispute.response_deadline),
-                })}
-              </span>
-            )}
-          </div>
-
-          {isEscalationCandidate && (
-            <p className="mt-2 text-xs font-medium text-red-700">
-              {t('triage.escalationCandidate')}
-            </p>
+      {/* Status dot */}
+      <div className="mt-1.5 flex shrink-0">
+        <span
+          className={cn(
+            'h-3 w-3 rounded-full',
+            STATUS_ICON_COLORS[dispute.status] || 'bg-gray-400'
           )}
-          <p className="mt-2 text-[11px] text-gray-400 opacity-0 transition-opacity group-hover:opacity-100">
-            {t('triage.openDetail')}
-          </p>
+        />
+      </div>
+
+      {/* Content */}
+      <div className="min-w-0 flex-1">
+        {/* Title row */}
+        <h3 className="text-sm font-semibold text-gray-900 group-hover:text-orange-700">
+          {taskTitle}
+        </h3>
+
+        {/* Label pills row */}
+        <div className="mt-1 flex flex-wrap items-center gap-1.5">
+          <span
+            className={cn(
+              'inline-flex rounded-full border px-2 py-0.5 text-[11px] font-medium leading-none',
+              tierChipClass[dispute.tier] || 'bg-gray-100 text-gray-600 border-gray-200'
+            )}
+          >
+            {t(`tier.${dispute.tier}`)}
+          </span>
+          <span
+            data-testid={`dispute-card-sla-${dispute.id}`}
+            className={cn(
+              'inline-flex rounded-full border px-2 py-0.5 text-[11px] font-medium leading-none',
+              slaChipClass[slaUrgency]
+            )}
+          >
+            {slaLabel}
+          </span>
+          <span className="inline-flex rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-[11px] font-medium leading-none text-gray-600">
+            {reasonLabel}
+          </span>
         </div>
+
+        {/* Meta line */}
+        <p className="mt-1.5 text-xs text-gray-500">
+          {t('tabs.openedAgo', {
+            time: formatRelativeTime(dispute.created_at),
+            name: displayName,
+          })}{' '}
+          <span className="text-gray-400">
+            &middot; {dispute.xp_stake} XP {t('xpStake').toLowerCase()}
+          </span>
+        </p>
       </div>
     </Link>
   );
