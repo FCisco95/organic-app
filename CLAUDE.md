@@ -101,13 +101,14 @@ Any request involving UI, UX, design, layout, copy, interactions, or visual beha
 
 ## QA and revamp pipeline
 
-Any request to test, QA, or revamp a section follows this two-session pipeline:
+Any request to test, QA, or revamp a section follows this three-phase pipeline:
 
-1. **`manual-tester`** — live headed-browser QA → feedback → brainstorming → writing-plans → save plan file
-2. `/clear` (context boundary)
-3. **`prototype-executor`** — load plan → 3 worktree prototypes → user comparison → code review → merge
+1. **`manual-tester`** — live headed-browser QA with expert UX analysis benchmarked against best-in-class apps → save plan file
+2. **`qa-fixer`** — surgical S0/S1 bug fixes with browser verification → clean working base (same session OK)
+3. `/clear` (context boundary)
+4. **`prototype-executor`** — load plan → 3 benchmark-driven worktree prototypes → user comparison → iterate → merge
 
-Never skip the `/clear` between sessions. Never run both phases in one context window.
+Never skip the `/clear` before prototype-executor. The qa-fixer can run in the same session as manual-tester.
 
 ## Collaborative questioning (Level 2)
 

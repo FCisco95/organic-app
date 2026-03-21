@@ -10,11 +10,11 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 |---|---------|-------|--------|----------|------|---------------|------------------|
 | 4.1 | Auth, Session, Entry | 12 | DONE | S3 | — | — | — |
 | 4.2 | Navigation, Layout, i18n | 8 | TESTED | S2 | — | — | — |
-| 4.3 | Home, Analytics, Leaderboard, Treasury | 8 | REVAMPED | S1 | [plan](plans/2026-03-21-home-analytics-treasury.md) | `main` (8e137a8) | `main` (b59c207) |
-| 4.4 | Community (Rankings + Directory + Profile) | 12 | REVAMPED | S1 | [plan](plans/2026-03-21-community-qa-revamp.md) | `main` (81da1e1) | `main` (fb00427) |
-| 4.5 | Profile, Progression, Community Profile | 11 | REVAMPED | S3 | [plan](plans/2026-03-21-profile-progression-fixes-v2.md) | `fix/4.5-profile-fixes-v2` | `fix/4.5-profile-fixes-v2` |
+| 4.3 | Home, Analytics, Leaderboard, Treasury | 8 | DONE | S3 | [plan](plans/2026-03-21-home-analytics-treasury.md) | `main` (8e137a8) | `main` (b59c207) |
+| 4.4 | Community (Rankings + Directory + Profile) | 12 | DONE | S3 | [plan](plans/2026-03-21-community-qa-revamp.md) | `main` (81da1e1) | `main` (fb00427) |
+| 4.5 | Profile, Progression, Community Profile | 11 | DONE | S3 | [plan](plans/2026-03-21-profile-progression-fixes-v2.md) | `main` (5a76747) | `main` (5a76747) |
 | 4.6 | Quests, Referrals, Gamification | 11 | PENDING | — | — | — | — |
-| 4.7 | Tasks E2E | 17 | REVAMPED | S3 | [plan](plans/2026-03-08-tasks-qa-revamp.md) | `main` (3aed048) | `main` (e3d4439) |
+| 4.7 | Tasks E2E | 17 | DONE | S3 | [plan](plans/2026-03-08-tasks-qa-revamp.md) | `main` (3aed048) | `main` (e3d4439) |
 | 4.8 | Sprints E2E | 11 | PENDING | — | — | — | — |
 | 4.9 | Proposals, Governance | 17 | DONE | S2 | [plan](plans/2026-03-19-proposals-qa-revamp.md) | merged to main | merged to main |
 | 4.10 | Disputes | 13 | PENDING | — | — | — | — |
@@ -45,8 +45,9 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 
 | Action | Section | What to do |
 |--------|---------|------------|
-| **Next to plan** | 4.2 Navigation | Write plan from runbook feedback — S2 priority |
-| **Next to QA** | 4.6 Quests | First PENDING section in Wave 3 |
+| **Next to plan** | 4.2 Navigation | Write plan from runbook feedback — S2, only TESTED section remaining |
+| **Next to QA** | 4.6 Quests | First PENDING section — 11 cases |
+| **Next to QA** | 4.8 Sprints | Second PENDING section — 11 cases |
 
 ---
 
@@ -60,35 +61,37 @@ Issues spanning multiple sections — track resolution centrally.
 | Console errors: 48-132 per page (Sentry CSP + missing i18n keys) | 4.1, 4.2, 4.3 | S2 | Open |
 | Page titles show "Next.js" instead of page name | 4.1, 4.2 | S3 | Open |
 | Garbage test data from prototype QA sessions (localhost:3003 titles) | 4.9 | S3 | Script ready: `scripts/cleanup-qa-garbage.sql` — run manually against main DB |
-| Quest i18n keys broken: titles/descriptions show raw UUID keys on progression | 4.5, 4.6 | S1 | **FIXED** — prefix check corrected to detect full namespace path (`fix/4.5-profile-fixes-v2`) |
-| Twitter/X link start API returns 400 Bad Request | 4.5, 4.18 | S1 | **FIXED** — empty body replaced with `JSON.stringify({})` (`fix/4.5-profile-fixes-v2`) |
-| Twitter/X OAuth callback params (twitter_linked, twitter_error) silently ignored | 4.5, 4.18 | S1 | **FIXED** — toasts fire correctly for both success and error params (prior fix on main) |
-| Community profile i18n keys missing | 4.4, 4.5 | S1 | **FIXED** — 8 keys added to all 3 locales (`fix/4.5-profile-fixes-v2`) |
+| Quest i18n keys broken: titles/descriptions show raw UUID keys on progression | 4.5, 4.6 | S1 | **FIXED** — prefix check corrected, merged to `main` (5a76747) |
+| Twitter/X link start API returns 400 Bad Request | 4.5, 4.18 | S1 | **FIXED** — empty body replaced with `JSON.stringify({})`, merged to `main` (5a76747) |
+| Twitter/X OAuth callback params (twitter_linked, twitter_error) silently ignored | 4.5, 4.18 | S1 | **FIXED** — toasts fire correctly, merged to `main` |
+| Community profile i18n keys missing | 4.4, 4.5 | S1 | **FIXED** — 8 keys added to all 3 locales, merged to `main` (5a76747) |
 
 ---
 
 ## Recommended Section Order
 
-**Wave 1 — Already tested, need plans + fixes:**
-1. 4.7 Tasks (S1, plan exists → Phase B directly)
-2. 4.1 Auth (S1 → write plan → Phase B → Phase C)
-3. 4.3 Home/Analytics (S1 → write plan → Phase B → Phase C)
-4. 4.2 Navigation (S2 → write plan → Phase B → Phase C)
+**DONE (7/19):** 4.1 Auth, 4.3 Home/Analytics, 4.4 Community, 4.5 Profile, 4.7 Tasks, 4.9 Proposals — all merged to `main`
 
-**Wave 2 — Core user-facing:**
-5. 4.4 Members Directory
-6. 4.5 Profile/Progression
-7. 4.17 Onboarding Wizard (depends on 4.1 auth fixes)
-8. 4.8 Sprints E2E
+**Wave A — Tested, needs plan + fix:**
+1. 4.2 Navigation (S2 → write plan → Phase B → Phase C)
 
-**Wave 3 — Feature sections:**
-9. 4.10 Disputes → 4.11 Rewards → 4.12 Notifications
-10. 4.6 Quests/Gamification → 4.19 Ideas Incubator
+**Wave B — Core feature sections (PENDING):**
+2. 4.6 Quests/Gamification (11 cases)
+3. 4.8 Sprints E2E (11 cases)
+4. 4.10 Disputes (13 cases)
+5. 4.11 Rewards (9 cases)
+6. 4.12 Notifications (6 cases)
 
-**Wave 4 — Admin and cross-cutting:**
-11. 4.13 Admin → 4.18 Twitter/X → 4.14 Error Resilience
-12. 4.15 Locale/A11y (run last, after all fixes)
-13. 4.16 Operational Controls (automated, separate workflow)
+**Wave C — Admin, onboarding, and integrations:**
+7. 4.13 Admin Ops (8 cases)
+8. 4.17 Onboarding Wizard (10 cases)
+9. 4.18 Twitter/X (12 cases)
+10. 4.19 Ideas Incubator (15 cases)
+
+**Wave D — Cross-cutting (run last):**
+11. 4.14 Error Resilience (6 cases)
+12. 4.15 Locale/A11y (8 cases)
+13. 4.16 Operational Controls (automated)
 
 ---
 
