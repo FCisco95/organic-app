@@ -20,6 +20,7 @@ import {
 import { Menu, User, LogOut, Sparkles, Rocket } from 'lucide-react';
 import { NotificationBell } from '@/components/notifications/notification-bell';
 import { useOnboarding } from '@/components/onboarding/onboarding-trigger';
+import { CommandPaletteTrigger } from './command-palette';
 
 export function TopBar() {
   const { user, profile, loading, signOut } = useAuth();
@@ -51,6 +52,11 @@ export function TopBar() {
           <Menu className="h-4 w-4" />
           <span className="sr-only">Open menu</span>
         </Button>
+      </div>
+
+      {/* Cmd+K trigger */}
+      <div className="ml-2">
+        <CommandPaletteTrigger />
       </div>
 
       <div className="flex-1" />

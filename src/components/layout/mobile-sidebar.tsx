@@ -35,7 +35,6 @@ export function MobileSidebar() {
     isAdminOrCouncil,
     isAdmin: profile?.role === 'admin',
   });
-  const navItems = [...sections.main, ...sections.admin, ...sections.utility];
 
   const isActive = (href: string) => {
     const normalizedHref = href.split('?')[0];
@@ -87,28 +86,65 @@ export function MobileSidebar() {
         <Separator className="bg-sidebar-border" />
 
         <ScrollArea className="flex-1 min-h-0 py-2">
-          <nav className="flex flex-col gap-1 px-2">
-            {navItems.map((item) => (
-              <Link
-                key={item.id}
-                href={item.href}
-                onClick={() => setMobileOpen(false)}
-                className={cn(
-                  'flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors',
-                  isActive(item.href)
-                    ? 'bg-sidebar-accent text-sidebar-accent-foreground'
-                    : 'text-sidebar-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
-                )}
-              >
-                <item.icon className="h-4 w-4 shrink-0" />
-                <span>{t(item.labelKey)}</span>
-                {item.id === 'disputes' && isAdminOrCouncil && pendingCount > 0 ? (
-                  <Badge className="ml-auto min-w-5 h-5 px-1.5 bg-orange-600 text-white text-[10px] leading-none flex items-center justify-center">
-                    {pendingCount > 99 ? '99+' : pendingCount}
-                  </Badge>
-                ) : null}
-              </Link>
+          <nav className="flex flex-col px-2">
+            {/* Grouped main sections — always expanded on mobile */}
+            {sections.groups.map((group) => (
+              <div key={group.id}>
+                <div className="px-3 pt-4 pb-1.5">
+                  <span className="text-[10px] font-medium tracking-widest uppercase text-sidebar-muted-foreground select-none">
+                    {t(group.labelKey)}
+                  </span>
+                </div>
+                <div className="flex flex-col gap-1">
+                  {group.items.map((item) => (
+                    <Link
+                      key={item.id}
+                      href={item.href}
+                      onClick={() => setMobileOpen(false)}
+                      className={cn(
+                        'flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors',
+                        isActive(item.href)
+                          ? 'bg-sidebar-accent text-sidebar-accent-foreground'
+                          : 'text-sidebar-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                      )}
+                    >
+                      <item.icon className="h-4 w-4 shrink-0" />
+                      <span>{t(item.labelKey)}</span>
+                      {item.id === 'disputes' && isAdminOrCouncil && pendingCount > 0 ? (
+                        <Badge className="ml-auto min-w-5 h-5 px-1.5 bg-orange-600 text-white text-[10px] leading-none flex items-center justify-center">
+                          {pendingCount > 99 ? '99+' : pendingCount}
+                        </Badge>
+                      ) : null}
+                    </Link>
+                  ))}
+                </div>
+              </div>
             ))}
+
+            {/* Admin + utility items */}
+            {(sections.admin.length > 0 || sections.utility.length > 0) && (
+              <div>
+                <div className="my-2 mx-1 h-px bg-sidebar-border" />
+                <div className="flex flex-col gap-1">
+                  {[...sections.admin, ...sections.utility].map((item) => (
+                    <Link
+                      key={item.id}
+                      href={item.href}
+                      onClick={() => setMobileOpen(false)}
+                      className={cn(
+                        'flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors',
+                        isActive(item.href)
+                          ? 'bg-sidebar-accent text-sidebar-accent-foreground'
+                          : 'text-sidebar-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                      )}
+                    >
+                      <item.icon className="h-4 w-4 shrink-0" />
+                      <span>{t(item.labelKey)}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
           </nav>
         </ScrollArea>
 

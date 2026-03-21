@@ -10,14 +10,14 @@ import { useSidebar } from './sidebar-context';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { LogOut } from 'lucide-react';
-import { getSidebarNavSections } from './nav-config';
+import { ChevronDown, LogOut } from 'lucide-react';
+import { getSidebarNavSections, type NavItem } from './nav-config';
 
 export function Sidebar() {
   const { user, profile, signOut } = useAuth();
   const pathname = usePathname();
   const t = useTranslations('Navigation');
-  const { collapsed } = useSidebar();
+  const { collapsed, isSectionCollapsed, toggleSection } = useSidebar();
 
   const isAdminOrCouncil = profile?.role === 'admin' || profile?.role === 'council';
   const { data: pendingData } = usePendingDisputeCount(!!user && isAdminOrCouncil);
@@ -66,21 +66,58 @@ export function Sidebar() {
 
       <div className="mx-3 h-px bg-sidebar-border" />
 
-      {/* Main nav */}
-      <ScrollArea className="flex-1 min-h-0 pt-4 pb-2">
+      {/* Main nav — grouped sections */}
+      <ScrollArea className="flex-1 min-h-0 pt-2 pb-2">
         <TooltipProvider delayDuration={0}>
-          <nav className={cn('flex flex-col gap-0.5', collapsed ? 'px-2' : 'px-3')}>
-            {sections.main.map((item) => (
-              <NavLink
-                key={item.id}
-                href={item.href}
-                label={t(item.labelKey)}
-                icon={item.icon}
-                active={isActive(item.href)}
-                collapsed={collapsed}
-                badgeCount={item.id === 'disputes' && isAdminOrCouncil ? pendingCount : undefined}
-              />
-            ))}
+          <nav className={cn('flex flex-col', collapsed ? 'px-2' : 'px-3')}>
+            {sections.groups.map((group, groupIndex) => {
+              const sectionHidden = isSectionCollapsed(group.id);
+              return (
+                <div key={group.id}>
+                  {/* Section header or divider */}
+                  {collapsed ? (
+                    // In collapsed mode, show a thin divider between groups
+                    groupIndex > 0 && <div className="my-2 mx-1 h-px bg-sidebar-border" />
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => toggleSection(group.id)}
+                      className="flex w-full items-center justify-between px-3 pt-4 pb-1.5 group/section"
+                    >
+                      <span className="text-[10px] font-medium tracking-widest uppercase text-sidebar-muted-foreground select-none">
+                        {t(group.labelKey)}
+                      </span>
+                      <ChevronDown
+                        className={cn(
+                          'h-3 w-3 text-sidebar-muted-foreground opacity-0 group-hover/section:opacity-100 transition-all duration-150',
+                          sectionHidden && '-rotate-90'
+                        )}
+                      />
+                    </button>
+                  )}
+
+                  {/* Section items */}
+                  {(!sectionHidden || collapsed) && (
+                    <div className="flex flex-col gap-0.5">
+                      {group.items.map((item) => (
+                        <NavLink
+                          key={item.id}
+                          href={item.href}
+                          label={t(item.labelKey)}
+                          icon={item.icon}
+                          active={isActive(item.href)}
+                          collapsed={collapsed}
+                          shortcutHint={item.shortcutHint}
+                          badgeCount={
+                            item.id === 'disputes' && isAdminOrCouncil ? pendingCount : undefined
+                          }
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </nav>
         </TooltipProvider>
       </ScrollArea>
@@ -117,13 +154,15 @@ function NavLink({
   active,
   collapsed,
   badgeCount,
+  shortcutHint,
 }: {
   href: string;
   label: string;
-  icon: React.ElementType;
+  icon: NavItem['icon'];
   active: boolean;
   collapsed: boolean;
   badgeCount?: number;
+  shortcutHint?: string;
 }) {
   const link = (
     <Link
@@ -143,11 +182,15 @@ function NavLink({
       <Icon className={cn('h-[18px] w-[18px] shrink-0', active && 'text-organic-orange')} />
       {!collapsed && (
         <>
-          <span>{label}</span>
+          <span className="flex-1">{label}</span>
           {badgeCount && badgeCount > 0 ? (
             <Badge className="ml-auto min-w-5 h-5 px-1.5 bg-orange-600 text-white text-[10px] leading-none flex items-center justify-center">
               {badgeCount > 99 ? '99+' : badgeCount}
             </Badge>
+          ) : shortcutHint ? (
+            <span className="ml-auto text-[10px] font-mono text-sidebar-muted-foreground/50">
+              {shortcutHint}
+            </span>
           ) : null}
         </>
       )}

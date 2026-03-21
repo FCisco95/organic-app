@@ -30,48 +30,160 @@ export interface NavItem {
   href: string;
   labelKey: string;
   icon: LucideIcon;
+  shortcutHint?: string;
+}
+
+export interface NavGroup {
+  id: string;
+  labelKey: string;
+  items: NavItem[];
 }
 
 export interface NavSections {
   main: NavItem[];
+  groups: NavGroup[];
   admin: NavItem[];
   utility: NavItem[];
 }
 
-export function getSidebarNavSections(context: NavContext): NavSections {
-  const { isAuthenticated, hasOrganicId, isAdminOrCouncil, isAdmin } = context;
+/**
+ * All main nav items with their group assignment.
+ * Group IDs: overview, work, governance, social
+ */
+const mainItemDefs: (NavItem & { groupId: string; showWhen?: (ctx: NavContext) => boolean })[] = [
+  // Overview
+  { groupId: 'overview', id: 'home', href: '/', labelKey: 'home', icon: Home, shortcutHint: 'G H' },
+  {
+    groupId: 'overview',
+    id: 'analytics',
+    href: '/analytics',
+    labelKey: 'analytics',
+    icon: BarChart3,
+    shortcutHint: 'G A',
+  },
+  {
+    groupId: 'overview',
+    id: 'treasury',
+    href: '/treasury',
+    labelKey: 'treasury',
+    icon: Wallet,
+  },
+  // Work
+  {
+    groupId: 'work',
+    id: 'tasks',
+    href: '/tasks',
+    labelKey: 'tasks',
+    icon: CheckSquare,
+    shortcutHint: 'G T',
+    showWhen: (ctx) => ctx.hasOrganicId,
+  },
+  {
+    groupId: 'work',
+    id: 'templates',
+    href: '/tasks/templates',
+    labelKey: 'templates',
+    icon: FileText,
+    showWhen: (ctx) => ctx.isAdminOrCouncil,
+  },
+  {
+    groupId: 'work',
+    id: 'sprints',
+    href: '/sprints',
+    labelKey: 'sprints',
+    icon: Zap,
+    showWhen: (ctx) => ctx.hasOrganicId,
+  },
+  // Governance
+  {
+    groupId: 'governance',
+    id: 'proposals',
+    href: '/proposals',
+    labelKey: 'proposals',
+    icon: Vote,
+    shortcutHint: 'G P',
+    showWhen: (ctx) => ctx.isAuthenticated,
+  },
+  {
+    groupId: 'governance',
+    id: 'ideas',
+    href: '/ideas',
+    labelKey: 'ideas',
+    icon: Lightbulb,
+    showWhen: (ctx) => ctx.isAuthenticated,
+  },
+  {
+    groupId: 'governance',
+    id: 'disputes',
+    href: '/disputes',
+    labelKey: 'disputes',
+    icon: Scale,
+    showWhen: (ctx) => ctx.isAuthenticated,
+  },
+  // Social
+  {
+    groupId: 'social',
+    id: 'community',
+    href: '/community',
+    labelKey: 'community',
+    icon: Trophy,
+    showWhen: (ctx) => ctx.isAuthenticated,
+  },
+  {
+    groupId: 'social',
+    id: 'quests',
+    href: '/quests',
+    labelKey: 'refAndQuests',
+    icon: Sparkles,
+    showWhen: (ctx) => ctx.isAuthenticated,
+  },
+  {
+    groupId: 'social',
+    id: 'rewards',
+    href: '/rewards',
+    labelKey: 'rewards',
+    icon: Gift,
+    showWhen: (ctx) => ctx.isAuthenticated,
+  },
+  {
+    groupId: 'social',
+    id: 'notifications',
+    href: '/notifications',
+    labelKey: 'notifications',
+    icon: Bell,
+    showWhen: (ctx) => ctx.isAuthenticated,
+  },
+];
 
-  const main: NavItem[] = [
-    { id: 'home', href: '/', labelKey: 'home', icon: Home },
-    { id: 'analytics', href: '/analytics', labelKey: 'analytics', icon: BarChart3 },
-    { id: 'treasury', href: '/treasury', labelKey: 'treasury', icon: Wallet },
-    { id: 'community', href: '/community', labelKey: 'community', icon: Trophy },
-    { id: 'tasks', href: '/tasks', labelKey: 'tasks', icon: CheckSquare },
-    { id: 'templates', href: '/tasks/templates', labelKey: 'templates', icon: FileText },
-    { id: 'sprints', href: '/sprints', labelKey: 'sprints', icon: Zap },
-    { id: 'proposals', href: '/proposals', labelKey: 'proposals', icon: Vote },
-    { id: 'ideas', href: '/ideas', labelKey: 'ideas', icon: Lightbulb },
-    { id: 'quests', href: '/quests', labelKey: 'refAndQuests', icon: Sparkles },
-    { id: 'rewards', href: '/rewards', labelKey: 'rewards', icon: Gift },
-    { id: 'disputes', href: '/disputes', labelKey: 'disputes', icon: Scale },
-    { id: 'notifications', href: '/notifications', labelKey: 'notifications', icon: Bell },
-  ].filter((item) => {
-    if (item.id === 'community') return isAuthenticated;
-    if (item.id === 'tasks') return hasOrganicId;
-    if (item.id === 'templates') return isAdminOrCouncil;
-    if (item.id === 'sprints') return hasOrganicId;
-    if (
-      item.id === 'proposals' ||
-      item.id === 'ideas' ||
-      item.id === 'quests' ||
-      item.id === 'rewards' ||
-      item.id === 'disputes' ||
-      item.id === 'notifications'
-    ) {
-      return isAuthenticated;
-    }
+const groupDefs: { id: string; labelKey: string }[] = [
+  { id: 'overview', labelKey: 'sectionOverview' },
+  { id: 'work', labelKey: 'sectionWork' },
+  { id: 'governance', labelKey: 'sectionGovernance' },
+  { id: 'social', labelKey: 'sectionSocial' },
+];
+
+export function getSidebarNavSections(context: NavContext): NavSections {
+  const { isAdmin, isAdminOrCouncil } = context;
+
+  // Filter visible items
+  const visibleItems = mainItemDefs.filter((item) => {
+    if (item.showWhen) return item.showWhen(context);
     return true;
   });
+
+  // Build flat main list (backwards compat)
+  const main: NavItem[] = visibleItems.map(({ groupId: _g, showWhen: _s, ...item }) => item);
+
+  // Build grouped structure
+  const groups: NavGroup[] = groupDefs
+    .map((group) => ({
+      id: group.id,
+      labelKey: group.labelKey,
+      items: visibleItems
+        .filter((item) => item.groupId === group.id)
+        .map(({ groupId: _g, showWhen: _s, ...item }) => item),
+    }))
+    .filter((group) => group.items.length > 0);
 
   const admin: NavItem[] = [
     {
@@ -89,7 +201,7 @@ export function getSidebarNavSections(context: NavContext): NavSections {
 
   const utility: NavItem[] = [
     { id: 'profile', href: '/profile', labelKey: 'profile', icon: User },
-  ].filter(() => isAuthenticated);
+  ].filter(() => context.isAuthenticated);
 
-  return { main, admin, utility };
+  return { main, groups, admin, utility };
 }
