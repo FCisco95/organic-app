@@ -158,11 +158,17 @@ export function ProgressionShell({ sourceContext = null }: { sourceContext?: Sou
   };
 
   const resolveQuestTitle = (quest: QuestProgressItem): string => {
+    // Prefer API-provided title (DB-driven quests use dynamic titles)
+    if (quest.title) return quest.title;
+    // Fallback: try i18n key for statically-defined quests
     const key = `questCopy.${quest.id}.title` as any;
     const result = t(key);
-    // t() returns full namespace path on miss (e.g. "Gamification.questCopy.<uuid>.title")
-    // Detect miss by checking if the result contains the quest UUID
-    return result.includes(quest.id) ? quest.title : result;
+    // t() returns full namespace path on miss — detect by checking for UUID
+    if (result.includes(quest.id)) {
+      // Final fallback: humanize the unit name
+      return quest.unit.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+    }
+    return result;
   };
 
   // Flatten all quests into a single sorted list for the table view
