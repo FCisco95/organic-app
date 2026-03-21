@@ -205,3 +205,41 @@ export function getSidebarNavSections(context: NavContext): NavSections {
 
   return { main, groups, admin, utility };
 }
+
+/** Route segment to section i18n key mapping for breadcrumbs */
+export const routeSectionMap: Record<string, string> = {
+  analytics: 'sectionOverview',
+  treasury: 'sectionOverview',
+  tasks: 'sectionWork',
+  templates: 'sectionWork',
+  sprints: 'sectionWork',
+  proposals: 'sectionGovernance',
+  ideas: 'sectionGovernance',
+  disputes: 'sectionGovernance',
+  community: 'sectionSocial',
+  quests: 'sectionSocial',
+  rewards: 'sectionSocial',
+  notifications: 'sectionSocial',
+  admin: 'sectionAdmin',
+  profile: 'sectionAdmin',
+};
+
+/** Route segment to i18n label key mapping for breadcrumbs */
+export const routeLabelMap: Record<string, string> = {
+  analytics: 'analytics',
+  treasury: 'treasury',
+  tasks: 'tasks',
+  templates: 'templates',
+  sprints: 'sprints',
+  proposals: 'proposals',
+  ideas: 'ideas',
+  disputes: 'disputes',
+  community: 'community',
+  quests: 'refAndQuests',
+  rewards: 'rewards',
+  notifications: 'notifications',
+  admin: 'sectionAdmin',
+  profile: 'profile',
+  submissions: 'submissions',
+  settings: 'settings',
+};

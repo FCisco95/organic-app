@@ -154,7 +154,10 @@
     "commandPaletteNoResults": "未找到结果。",
     "actionNewProposal": "新建提案",
     "actionNewTask": "新建任务",
-    "actionNewIdea": "新建想法"
+    "actionNewIdea": "新建想法",
+    "sectionAdmin": "管理",
+    "breadcrumbDetail": "详情",
+    "breadcrumbHome": "首页"
   },
   "Wallet": {
     "toastConnected": "钱包已连接",

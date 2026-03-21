@@ -21,6 +21,7 @@ import { Menu, User, LogOut, Sparkles, Rocket } from 'lucide-react';
 import { NotificationBell } from '@/components/notifications/notification-bell';
 import { useOnboarding } from '@/components/onboarding/onboarding-trigger';
 import { CommandPaletteTrigger } from './command-palette';
+import { Breadcrumbs } from './breadcrumbs';
 
 export function TopBar() {
   const { user, profile, loading, signOut } = useAuth();
@@ -59,7 +60,7 @@ export function TopBar() {
         <CommandPaletteTrigger />
       </div>
 
-      <div className="flex-1" />
+      <Breadcrumbs />
 
       {/* Right actions */}
       <div className="flex items-center gap-3">

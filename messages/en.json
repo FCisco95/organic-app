@@ -154,7 +154,10 @@
     "commandPaletteNoResults": "No results found.",
     "actionNewProposal": "New Proposal",
     "actionNewTask": "New Task",
-    "actionNewIdea": "New Idea"
+    "actionNewIdea": "New Idea",
+    "sectionAdmin": "Admin",
+    "breadcrumbDetail": "Detail",
+    "breadcrumbHome": "Home"
   },
   "Wallet": {
     "toastConnected": "Wallet connected",

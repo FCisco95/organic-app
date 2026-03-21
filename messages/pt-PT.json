@@ -154,7 +154,10 @@
     "commandPaletteNoResults": "Sem resultados.",
     "actionNewProposal": "Nova Proposta",
     "actionNewTask": "Nova Tarefa",
-    "actionNewIdea": "Nova Ideia"
+    "actionNewIdea": "Nova Ideia",
+    "sectionAdmin": "Administração",
+    "breadcrumbDetail": "Detalhe",
+    "breadcrumbHome": "Início"
   },
   "Wallet": {
     "toastConnected": "Carteira conectada",
