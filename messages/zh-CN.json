@@ -734,7 +734,8 @@
     "milestoneClosed": "已关闭",
     "milestoneOpenCount": "{count} 个未完成",
     "milestoneClosedCount": "{count} 个已完成",
-    "timelineCurrent": "当前"
+    "timelineCurrent": "当前",
+    "metricOpenExecution": "进行中任务"
   },
   "SprintDetail": {
     "loading": "正在加载冲刺详情...",

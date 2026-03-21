@@ -734,7 +734,8 @@
     "milestoneClosed": "Fechado",
     "milestoneOpenCount": "{count} aberto(s)",
     "milestoneClosedCount": "{count} fechado(s)",
-    "timelineCurrent": "Atual"
+    "timelineCurrent": "Atual",
+    "metricOpenExecution": "Execução aberta"
   },
   "SprintDetail": {
     "loading": "Carregando detalhes da sprint...",
