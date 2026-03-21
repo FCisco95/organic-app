@@ -1,15 +1,28 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
-import { Trophy, Medal, Award, Star, TrendingUp, Search } from 'lucide-react';
+import {
+  Trophy,
+  Medal,
+  Award,
+  Star,
+  TrendingUp,
+  Search,
+  ChevronUp,
+  ChevronDown,
+} from 'lucide-react';
 import { useAuth } from '@/features/auth/context';
 import { InfoButton } from '@/components/ui/info-button';
 import { LevelBadge } from '@/components/reputation/level-badge';
 import { formatXp, useLeaderboard, type LeaderboardEntry } from '@/features/reputation';
 import { cn } from '@/lib/utils';
+
+type SortColumn = 'rank' | 'level' | 'tasks' | 'xp';
+type SortDirection = 'asc' | 'desc';
 
 const getRankIcon = (rank: number) => {
   switch (rank) {
@@ -41,12 +54,140 @@ const getRankStyle = (rank: number) => {
   }
 };
 
+/* ── Skeleton components ── */
+
+function SkeletonPodium() {
+  return (
+    <section className="mb-8" aria-hidden="true">
+      <div className="flex items-end justify-center gap-3 sm:gap-4">
+        {/* 2nd place skeleton */}
+        <div className="flex flex-col items-center w-24 sm:w-32">
+          <div className="w-14 h-14 rounded-full bg-muted animate-pulse" />
+          <div className="mt-2 h-3 w-16 bg-muted animate-pulse rounded" />
+          <div className="mt-1 h-3 w-12 bg-muted animate-pulse rounded" />
+          <div className="mt-2 w-full h-16 bg-muted animate-pulse rounded-t-lg" />
+        </div>
+        {/* 1st place skeleton */}
+        <div className="flex flex-col items-center w-28 sm:w-36">
+          <div className="w-[72px] h-[72px] rounded-full bg-muted animate-pulse" />
+          <div className="mt-2 h-4 w-20 bg-muted animate-pulse rounded" />
+          <div className="mt-1 h-3 w-14 bg-muted animate-pulse rounded" />
+          <div className="mt-2 w-full h-24 bg-muted animate-pulse rounded-t-lg" />
+        </div>
+        {/* 3rd place skeleton */}
+        <div className="flex flex-col items-center w-24 sm:w-32">
+          <div className="w-12 h-12 rounded-full bg-muted animate-pulse" />
+          <div className="mt-2 h-3 w-16 bg-muted animate-pulse rounded" />
+          <div className="mt-1 h-3 w-12 bg-muted animate-pulse rounded" />
+          <div className="mt-2 w-full h-12 bg-muted animate-pulse rounded-t-lg" />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function SkeletonTableRow({ index }: { index: number }) {
+  return (
+    <>
+      {/* Mobile skeleton card */}
+      <div className="sm:hidden px-4 py-3 border-l-2 border-l-transparent" aria-hidden="true">
+        <div className="flex items-center gap-3">
+          <div className="w-6 h-6 rounded bg-muted animate-pulse" style={{ animationDelay: `${index * 80}ms` }} />
+          <div className="w-9 h-9 rounded-full bg-muted animate-pulse" style={{ animationDelay: `${index * 80}ms` }} />
+          <div className="flex-1 min-w-0">
+            <div className="h-4 w-24 bg-muted animate-pulse rounded" style={{ animationDelay: `${index * 80}ms` }} />
+            <div className="mt-1 h-3 w-16 bg-muted animate-pulse rounded" style={{ animationDelay: `${index * 80}ms` }} />
+          </div>
+          <div className="text-right">
+            <div className="h-4 w-12 bg-muted animate-pulse rounded ml-auto" style={{ animationDelay: `${index * 80}ms` }} />
+            <div className="mt-1 h-3 w-8 bg-muted animate-pulse rounded ml-auto" style={{ animationDelay: `${index * 80}ms` }} />
+          </div>
+        </div>
+      </div>
+      {/* Desktop skeleton row */}
+      <div className="hidden sm:grid grid-cols-12 gap-4 px-6 py-4 items-center" aria-hidden="true">
+        <div className="col-span-1">
+          <div className="w-6 h-6 rounded bg-muted animate-pulse" style={{ animationDelay: `${index * 80}ms` }} />
+        </div>
+        <div className="col-span-4 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-muted animate-pulse" style={{ animationDelay: `${index * 80}ms` }} />
+          <div>
+            <div className="h-4 w-28 bg-muted animate-pulse rounded" style={{ animationDelay: `${index * 80}ms` }} />
+            <div className="mt-1 h-3 w-16 bg-muted animate-pulse rounded" style={{ animationDelay: `${index * 80}ms` }} />
+          </div>
+        </div>
+        <div className="col-span-2 flex justify-center">
+          <div className="h-5 w-12 bg-muted animate-pulse rounded-full" style={{ animationDelay: `${index * 80}ms` }} />
+        </div>
+        <div className="col-span-2 flex justify-center">
+          <div className="h-6 w-16 bg-muted animate-pulse rounded-full" style={{ animationDelay: `${index * 80}ms` }} />
+        </div>
+        <div className="col-span-3 flex justify-end">
+          <div>
+            <div className="h-5 w-20 bg-muted animate-pulse rounded ml-auto" style={{ animationDelay: `${index * 80}ms` }} />
+            <div className="mt-1 h-3 w-12 bg-muted animate-pulse rounded ml-auto" style={{ animationDelay: `${index * 80}ms` }} />
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function SkeletonLoading() {
+  return (
+    <>
+      <SkeletonPodium />
+      <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+        {/* Skeleton table header */}
+        <div className="hidden sm:grid grid-cols-12 gap-4 px-6 py-4 bg-muted/50 border-b border-border">
+          <div className="col-span-1"><div className="h-4 w-8 bg-muted animate-pulse rounded" /></div>
+          <div className="col-span-4"><div className="h-4 w-16 bg-muted animate-pulse rounded" /></div>
+          <div className="col-span-2 flex justify-center"><div className="h-4 w-12 bg-muted animate-pulse rounded" /></div>
+          <div className="col-span-2 flex justify-center"><div className="h-4 w-12 bg-muted animate-pulse rounded" /></div>
+          <div className="col-span-3 flex justify-end"><div className="h-4 w-8 bg-muted animate-pulse rounded" /></div>
+        </div>
+        <div className="divide-y divide-border">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <SkeletonTableRow key={i} index={i} />
+          ))}
+        </div>
+      </div>
+    </>
+  );
+}
+
+function SortIndicator({
+  column,
+  activeColumn,
+  direction,
+}: {
+  column: SortColumn;
+  activeColumn: SortColumn;
+  direction: SortDirection;
+}) {
+  if (column !== activeColumn) {
+    return (
+      <ChevronDown className="w-3.5 h-3.5 text-muted-foreground/30 ml-1 inline-block" />
+    );
+  }
+  return direction === 'asc' ? (
+    <ChevronUp className="w-3.5 h-3.5 text-organic-orange ml-1 inline-block" />
+  ) : (
+    <ChevronDown className="w-3.5 h-3.5 text-organic-orange ml-1 inline-block" />
+  );
+}
+
 export function RankingsTab() {
   const { user } = useAuth();
+  const router = useRouter();
   const t = useTranslations('Leaderboard');
   const tC = useTranslations('Community');
   const { data: leaderboard = [], isLoading: loading } = useLeaderboard();
   const [search, setSearch] = useState('');
+  const [sortColumn, setSortColumn] = useState<SortColumn>('rank');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+  const [focusedIndex, setFocusedIndex] = useState<number>(-1);
+  const tableRef = useRef<HTMLDivElement>(null);
 
   const getDisplayName = (entry: LeaderboardEntry) => {
     if (entry.name) return entry.name;
@@ -54,21 +195,123 @@ export function RankingsTab() {
     return entry.email.split('@')[0];
   };
 
+  const handleSort = useCallback(
+    (column: SortColumn) => {
+      if (column === sortColumn) {
+        setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+      } else {
+        setSortColumn(column);
+        // Default direction: rank asc, others desc (highest first)
+        setSortDirection(column === 'rank' ? 'asc' : 'desc');
+      }
+    },
+    [sortColumn]
+  );
+
   const filteredLeaderboard = useMemo(() => {
-    if (!search.trim()) return leaderboard;
-    const q = search.toLowerCase();
-    return leaderboard.filter(
-      (entry) =>
-        (entry.name && entry.name.toLowerCase().includes(q)) ||
-        (entry.email && entry.email.toLowerCase().includes(q)) ||
-        (entry.organic_id && String(entry.organic_id).includes(q))
-    );
-  }, [leaderboard, search]);
+    let result = leaderboard;
+
+    // Filter by search
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      result = result.filter(
+        (entry) =>
+          (entry.name && entry.name.toLowerCase().includes(q)) ||
+          (entry.email && entry.email.toLowerCase().includes(q)) ||
+          (entry.organic_id && String(entry.organic_id).includes(q))
+      );
+    }
+
+    // Sort
+    const sorted = [...result].sort((a, b) => {
+      let cmp = 0;
+      switch (sortColumn) {
+        case 'rank':
+          cmp = a.rank - b.rank;
+          break;
+        case 'level':
+          cmp = (a.level ?? 0) - (b.level ?? 0);
+          break;
+        case 'tasks':
+          cmp = a.tasks_completed - b.tasks_completed;
+          break;
+        case 'xp':
+          cmp = a.xp_total - b.xp_total;
+          break;
+      }
+      return sortDirection === 'asc' ? cmp : -cmp;
+    });
+
+    return sorted;
+  }, [leaderboard, search, sortColumn, sortDirection]);
 
   const currentUserRank = leaderboard.find((entry) => entry.id === user?.id);
-  const podiumEntries = filteredLeaderboard.slice(0, 3);
-  const tableEntries = filteredLeaderboard.slice(3);
-  const showPodium = !search.trim() && podiumEntries.length >= 3;
+
+  // Only show podium when sorted by rank ascending and no search
+  const showPodium =
+    !search.trim() &&
+    sortColumn === 'rank' &&
+    sortDirection === 'asc' &&
+    filteredLeaderboard.length >= 3;
+
+  const podiumEntries = showPodium ? filteredLeaderboard.slice(0, 3) : [];
+  const tableEntries = showPodium
+    ? filteredLeaderboard.slice(3)
+    : filteredLeaderboard;
+
+  // Reset focused index when search or sort changes
+  useEffect(() => {
+    setFocusedIndex(-1);
+  }, [search, sortColumn, sortDirection]);
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLDivElement>) => {
+      if (tableEntries.length === 0) return;
+
+      switch (e.key) {
+        case 'ArrowDown': {
+          e.preventDefault();
+          setFocusedIndex((prev) => {
+            const next = prev < tableEntries.length - 1 ? prev + 1 : prev;
+            return next;
+          });
+          break;
+        }
+        case 'ArrowUp': {
+          e.preventDefault();
+          setFocusedIndex((prev) => {
+            const next = prev > 0 ? prev - 1 : 0;
+            return next;
+          });
+          break;
+        }
+        case 'Enter': {
+          if (focusedIndex >= 0 && focusedIndex < tableEntries.length) {
+            e.preventDefault();
+            const entry = tableEntries[focusedIndex];
+            router.push(`/community/${entry.id}`);
+          }
+          break;
+        }
+        case 'Escape': {
+          e.preventDefault();
+          setFocusedIndex(-1);
+          break;
+        }
+      }
+    },
+    [tableEntries, focusedIndex, router]
+  );
+
+  // Scroll focused row into view
+  useEffect(() => {
+    if (focusedIndex < 0 || !tableRef.current) return;
+    const rows = tableRef.current.querySelectorAll('[data-row-index]');
+    const row = rows[focusedIndex];
+    if (row) {
+      row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+  }, [focusedIndex]);
 
   const infoSections = [
     {
@@ -85,26 +328,41 @@ export function RankingsTab() {
     },
   ];
 
+  const sortableHeaderClass =
+    'cursor-pointer select-none hover:bg-muted/80 transition-colors rounded px-1 -mx-1 inline-flex items-center';
+
   return (
     <div>
-      {/* Search bar */}
-      <div className="relative mb-6">
-        <Search aria-hidden="true" className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+      {/* Command Palette Search */}
+      <div className="relative mb-8">
+        <Search
+          aria-hidden="true"
+          className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60"
+        />
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={tC('searchRankings')}
-          className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-organic-orange/30 focus:border-organic-orange"
+          className="w-full pl-11 pr-16 py-3.5 bg-card border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground/50 placeholder:font-mono focus:outline-none focus:ring-2 focus:ring-organic-orange/30 focus:border-organic-orange transition-all duration-200"
         />
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-mono text-muted-foreground/40 bg-muted px-2 py-1 rounded-md border border-border/50">
+          {tC('searchShortcut')}
+        </span>
       </div>
 
       {/* Podium */}
       {!loading && showPodium && (
-        <section className="mb-8 opacity-0 animate-fade-up stagger-2" data-testid="leaderboard-podium">
+        <section
+          className="mb-8 opacity-0 animate-fade-up stagger-2"
+          data-testid="leaderboard-podium"
+        >
           <div className="flex items-end justify-center gap-3 sm:gap-4">
             {/* 2nd place */}
-            <Link href={`/community/${podiumEntries[1].id}`} className="flex flex-col items-center w-24 sm:w-32 group">
+            <Link
+              href={`/community/${podiumEntries[1].id}`}
+              className="flex flex-col items-center w-24 sm:w-32 group"
+            >
               <div className="relative">
                 {podiumEntries[1].avatar_url ? (
                   <Image
@@ -116,18 +374,28 @@ export function RankingsTab() {
                   />
                 ) : (
                   <div className="w-14 h-14 rounded-full bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center border-2 border-gray-300">
-                    <span className="text-white font-bold text-lg">{getDisplayName(podiumEntries[1])[0].toUpperCase()}</span>
+                    <span className="text-white font-bold text-lg">
+                      {getDisplayName(podiumEntries[1])[0].toUpperCase()}
+                    </span>
                   </div>
                 )}
                 <Medal className="absolute -bottom-1 -right-1 w-5 h-5 text-gray-400" />
               </div>
-              <p className="mt-2 text-xs font-medium text-foreground truncate w-full text-center group-hover:text-organic-orange transition-colors">{getDisplayName(podiumEntries[1])}</p>
-              <p className="text-xs font-mono tabular-nums text-muted-foreground">{formatXp(podiumEntries[1].xp_total)} XP</p>
+              <p className="mt-2 text-xs font-medium text-foreground truncate w-full text-center group-hover:text-organic-orange transition-colors">
+                {getDisplayName(podiumEntries[1])}
+              </p>
+              <p className="text-xs font-mono tabular-nums text-muted-foreground">
+                {formatXp(podiumEntries[1].xp_total)} XP
+              </p>
               {podiumEntries[1].level != null && podiumEntries[1].level > 0 && (
-                <div className="mt-0.5"><LevelBadge level={podiumEntries[1].level} size="sm" /></div>
+                <div className="mt-0.5">
+                  <LevelBadge level={podiumEntries[1].level} size="sm" />
+                </div>
               )}
               {podiumEntries[1].organic_id && (
-                <p className="text-[10px] text-muted-foreground">{t('organicId', { id: podiumEntries[1].organic_id })}</p>
+                <p className="text-[10px] text-muted-foreground">
+                  {t('organicId', { id: podiumEntries[1].organic_id })}
+                </p>
               )}
               <div className="mt-2 w-full h-16 bg-gradient-to-t from-gray-200 to-gray-100 dark:from-gray-700 dark:to-gray-600 rounded-t-lg flex items-center justify-center">
                 <span className="text-lg font-bold text-muted-foreground">2</span>
@@ -135,7 +403,10 @@ export function RankingsTab() {
             </Link>
 
             {/* 1st place */}
-            <Link href={`/community/${podiumEntries[0].id}`} className="flex flex-col items-center w-28 sm:w-36 group">
+            <Link
+              href={`/community/${podiumEntries[0].id}`}
+              className="flex flex-col items-center w-28 sm:w-36 group"
+            >
               <div className="relative">
                 {podiumEntries[0].avatar_url ? (
                   <Image
@@ -148,28 +419,43 @@ export function RankingsTab() {
                   />
                 ) : (
                   <div className="w-[72px] h-[72px] rounded-full bg-gradient-to-br from-yellow-400 to-amber-500 flex items-center justify-center border-3 border-yellow-400">
-                    <span className="text-white font-bold text-2xl">{getDisplayName(podiumEntries[0])[0].toUpperCase()}</span>
+                    <span className="text-white font-bold text-2xl">
+                      {getDisplayName(podiumEntries[0])[0].toUpperCase()}
+                    </span>
                   </div>
                 )}
                 <Trophy className="absolute -bottom-1 -right-1 w-6 h-6 text-yellow-500" />
               </div>
-              <p className="mt-2 text-sm font-semibold text-foreground truncate w-full text-center group-hover:text-organic-orange transition-colors">{getDisplayName(podiumEntries[0])}</p>
-              <p className="text-xs font-mono tabular-nums text-orange-500 font-semibold">{formatXp(podiumEntries[0].xp_total)} XP</p>
+              <p className="mt-2 text-sm font-semibold text-foreground truncate w-full text-center group-hover:text-organic-orange transition-colors">
+                {getDisplayName(podiumEntries[0])}
+              </p>
+              <p className="text-xs font-mono tabular-nums text-orange-500 font-semibold">
+                {formatXp(podiumEntries[0].xp_total)} XP
+              </p>
               {podiumEntries[0].level != null && podiumEntries[0].level > 0 && (
-                <div className="mt-0.5"><LevelBadge level={podiumEntries[0].level} size="sm" /></div>
+                <div className="mt-0.5">
+                  <LevelBadge level={podiumEntries[0].level} size="sm" />
+                </div>
               )}
               {podiumEntries[0].organic_id && (
-                <p className="text-[10px] text-muted-foreground">{t('organicId', { id: podiumEntries[0].organic_id })}</p>
+                <p className="text-[10px] text-muted-foreground">
+                  {t('organicId', { id: podiumEntries[0].organic_id })}
+                </p>
               )}
               <div className="mt-2 w-full rounded-t-lg shadow-[0_0_30px_rgba(234,179,8,0.3)]">
                 <div className="h-24 bg-gradient-to-t from-yellow-200 to-yellow-100 dark:from-yellow-600/30 dark:to-yellow-500/20 rounded-t-lg flex items-center justify-center animate-glow-pulse">
-                  <span className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">1</span>
+                  <span className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+                    1
+                  </span>
                 </div>
               </div>
             </Link>
 
             {/* 3rd place */}
-            <Link href={`/community/${podiumEntries[2].id}`} className="flex flex-col items-center w-24 sm:w-32 group">
+            <Link
+              href={`/community/${podiumEntries[2].id}`}
+              className="flex flex-col items-center w-24 sm:w-32 group"
+            >
               <div className="relative">
                 {podiumEntries[2].avatar_url ? (
                   <Image
@@ -181,21 +467,33 @@ export function RankingsTab() {
                   />
                 ) : (
                   <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center border-2 border-amber-400">
-                    <span className="text-white font-bold">{getDisplayName(podiumEntries[2])[0].toUpperCase()}</span>
+                    <span className="text-white font-bold">
+                      {getDisplayName(podiumEntries[2])[0].toUpperCase()}
+                    </span>
                   </div>
                 )}
                 <Award className="absolute -bottom-1 -right-1 w-5 h-5 text-amber-600" />
               </div>
-              <p className="mt-2 text-xs font-medium text-foreground truncate w-full text-center group-hover:text-organic-orange transition-colors">{getDisplayName(podiumEntries[2])}</p>
-              <p className="text-xs font-mono tabular-nums text-muted-foreground">{formatXp(podiumEntries[2].xp_total)} XP</p>
+              <p className="mt-2 text-xs font-medium text-foreground truncate w-full text-center group-hover:text-organic-orange transition-colors">
+                {getDisplayName(podiumEntries[2])}
+              </p>
+              <p className="text-xs font-mono tabular-nums text-muted-foreground">
+                {formatXp(podiumEntries[2].xp_total)} XP
+              </p>
               {podiumEntries[2].level != null && podiumEntries[2].level > 0 && (
-                <div className="mt-0.5"><LevelBadge level={podiumEntries[2].level} size="sm" /></div>
+                <div className="mt-0.5">
+                  <LevelBadge level={podiumEntries[2].level} size="sm" />
+                </div>
               )}
               {podiumEntries[2].organic_id && (
-                <p className="text-[10px] text-muted-foreground">{t('organicId', { id: podiumEntries[2].organic_id })}</p>
+                <p className="text-[10px] text-muted-foreground">
+                  {t('organicId', { id: podiumEntries[2].organic_id })}
+                </p>
               )}
               <div className="mt-2 w-full h-12 bg-gradient-to-t from-amber-200 to-amber-100 dark:from-amber-600/20 dark:to-amber-500/10 rounded-t-lg flex items-center justify-center">
-                <span className="text-lg font-bold text-amber-600 dark:text-amber-400">3</span>
+                <span className="text-lg font-bold text-amber-600 dark:text-amber-400">
+                  3
+                </span>
               </div>
             </Link>
           </div>
@@ -230,21 +528,88 @@ export function RankingsTab() {
         </div>
       )}
 
-      {/* Leaderboard Table */}
-      <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden opacity-0 animate-fade-up stagger-4">
-        {/* Table Header */}
+      {/* Skeleton loading */}
+      {loading && (
+        <div>
+          {/* Search bar skeleton */}
+          <SkeletonLoading />
+        </div>
+      )}
+
+      {/* Leaderboard Table — keyboard-navigable */}
+      <div
+        ref={tableRef}
+        className="bg-card rounded-xl border border-border shadow-sm overflow-hidden opacity-0 animate-fade-up stagger-4 outline-none"
+        tabIndex={0}
+        role="grid"
+        aria-label={tC('tabRankings')}
+        onKeyDown={handleKeyDown}
+        onBlur={() => setFocusedIndex(-1)}
+      >
+        {/* Table Header — sortable */}
         <div className="hidden sm:grid grid-cols-12 gap-4 px-6 py-4 bg-muted/50 border-b border-border text-sm font-medium text-muted-foreground">
-          <div className="col-span-1">{t('tableRank')}</div>
+          <div className="col-span-1">
+            <button
+              type="button"
+              onClick={() => handleSort('rank')}
+              className={sortableHeaderClass}
+            >
+              {t('tableRank')}
+              <SortIndicator
+                column="rank"
+                activeColumn={sortColumn}
+                direction={sortDirection}
+              />
+            </button>
+          </div>
           <div className="col-span-4">{t('tableMember')}</div>
-          <div className="col-span-2 text-center">{t('tableLevel')}</div>
-          <div className="col-span-2 text-center">{t('tableTasks')}</div>
-          <div className="col-span-3 text-right">{t('tableXp')}</div>
+          <div className="col-span-2 text-center">
+            <button
+              type="button"
+              onClick={() => handleSort('level')}
+              className={sortableHeaderClass}
+            >
+              {t('tableLevel')}
+              <SortIndicator
+                column="level"
+                activeColumn={sortColumn}
+                direction={sortDirection}
+              />
+            </button>
+          </div>
+          <div className="col-span-2 text-center">
+            <button
+              type="button"
+              onClick={() => handleSort('tasks')}
+              className={sortableHeaderClass}
+            >
+              {t('tableTasks')}
+              <SortIndicator
+                column="tasks"
+                activeColumn={sortColumn}
+                direction={sortDirection}
+              />
+            </button>
+          </div>
+          <div className="col-span-3 text-right">
+            <button
+              type="button"
+              onClick={() => handleSort('xp')}
+              className={cn(sortableHeaderClass, 'float-right')}
+            >
+              {t('tableXp')}
+              <SortIndicator
+                column="xp"
+                activeColumn={sortColumn}
+                direction={sortDirection}
+              />
+            </button>
+          </div>
         </div>
 
         {loading ? (
           <div className="p-8 text-center">
-            <div className="w-8 h-8 border-3 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-            <p className="mt-4 text-muted-foreground">{t('loading')}</p>
+            <p className="text-muted-foreground">{t('loading')}</p>
           </div>
         ) : filteredLeaderboard.length === 0 ? (
           <div className="p-8 text-center">
@@ -254,21 +619,28 @@ export function RankingsTab() {
           </div>
         ) : (
           <div className="divide-y divide-border">
-            {(showPodium ? tableEntries : filteredLeaderboard).map((entry, idx) => {
+            {tableEntries.map((entry, idx) => {
               const isCurrentUser = entry.id === user?.id;
+              const isFocused = idx === focusedIndex;
               return (
                 <Link
                   key={entry.id}
                   href={`/community/${entry.id}`}
-                  className="block opacity-0 animate-fade-up-in"
+                  data-row-index={idx}
+                  className={cn(
+                    'block opacity-0 animate-fade-up-in outline-none transition-all duration-150 ease-out',
+                    isFocused && 'ring-2 ring-organic-orange ring-offset-2 ring-offset-card z-10 relative'
+                  )}
                   style={{ animationDelay: `${idx * 50}ms` }}
+                  tabIndex={-1}
                 >
                   {/* Mobile card */}
                   <div
                     className={cn(
                       'sm:hidden px-4 py-3 transition-all duration-200 hover:bg-muted/50 border-l-2 border-l-transparent hover:border-l-organic-orange',
                       getRankStyle(entry.rank),
-                      isCurrentUser && 'ring-2 ring-orange-500 ring-inset'
+                      isCurrentUser && 'ring-2 ring-orange-500 ring-inset',
+                      isFocused && 'bg-muted/50 border-l-organic-orange'
                     )}
                   >
                     <div className="flex items-center gap-3">
@@ -334,10 +706,13 @@ export function RankingsTab() {
                     className={cn(
                       'hidden sm:grid grid-cols-12 gap-4 px-6 py-4 items-center transition-all duration-200 hover:scale-[1.005] hover:bg-muted/50 border-l-2 border-l-transparent hover:border-l-organic-orange',
                       getRankStyle(entry.rank),
-                      isCurrentUser && 'ring-2 ring-orange-500 ring-inset'
+                      isCurrentUser && 'ring-2 ring-orange-500 ring-inset',
+                      isFocused && 'bg-muted/50 border-l-organic-orange'
                     )}
                   >
-                    <div className="col-span-1 flex items-center">{getRankIcon(entry.rank)}</div>
+                    <div className="col-span-1 flex items-center">
+                      {getRankIcon(entry.rank)}
+                    </div>
 
                     <div className="col-span-4 flex items-center gap-3">
                       {entry.avatar_url ? (
@@ -376,7 +751,9 @@ export function RankingsTab() {
                       {entry.level != null && entry.level > 0 && (
                         <LevelBadge level={entry.level} size="sm" />
                       )}
-                      <span className="text-xs text-muted-foreground">{formatXp(entry.xp_total)}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {formatXp(entry.xp_total)}
+                      </span>
                     </div>
 
                     <div className="col-span-2 text-center">

@@ -1815,7 +1815,14 @@
       "admin": "管理员",
       "council": "理事会",
       "member": "成员",
-      "guest": "访客"
+      "guest": "访客",
+      "clear": "清除筛选"
+    },
+    "sort": {
+      "label": "排序成员",
+      "byXp": "按经验排序",
+      "byTasks": "按任务排序",
+      "byJoinDate": "按加入日期排序"
     },
     "points": "分",
     "tasks": "任务",
@@ -2784,6 +2791,19 @@
     "activityComingSoon": "活动时间线即将推出。",
     "rankLabel": "排名",
     "activeThisSprint": "{count} 位本周期活跃",
-    "buildYourStreak": "建立你的连续记录"
+    "buildYourStreak": "建立你的连续记录",
+    "searchShortcut": "\u2318K",
+    "contributionActivity": "贡献活动",
+    "heatmapTooltip": "{date} 有 {count} 次贡献",
+    "contributionsInYear": "过去一年共 {total} 次贡献",
+    "activityAchievement": "获得成就: {name}",
+    "activityLevelUp": "达到等级 {level}",
+    "activityTaskCompleted": "完成了一个任务",
+    "activityVoteCast": "对提案进行了投票",
+    "activityEmpty": "暂无活动 — 开始贡献吧！",
+    "statTotalPoints": "总积分",
+    "statTasksCompleted": "已完成任务",
+    "statRank": "排名",
+    "statLevel": "等级"
   }
 }

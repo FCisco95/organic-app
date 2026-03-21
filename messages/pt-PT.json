@@ -1815,7 +1815,14 @@
       "admin": "Admin",
       "council": "Conselho",
       "member": "Membro",
-      "guest": "Convidado"
+      "guest": "Convidado",
+      "clear": "Limpar filtros"
+    },
+    "sort": {
+      "label": "Ordenar membros",
+      "byXp": "Ordenar por XP",
+      "byTasks": "Ordenar por Tarefas",
+      "byJoinDate": "Ordenar por Data de Entrada"
     },
     "points": "pts",
     "tasks": "tarefas",
@@ -2783,6 +2790,19 @@
     "activityComingSoon": "Linha do tempo de atividade em breve.",
     "rankLabel": "Posição",
     "activeThisSprint": "{count} ativos neste sprint",
-    "buildYourStreak": "Construa sua sequência"
+    "buildYourStreak": "Construa sua sequência",
+    "searchShortcut": "\u2318K",
+    "contributionActivity": "Atividade de contribuição",
+    "heatmapTooltip": "{count} contribuições em {date}",
+    "contributionsInYear": "{total} contribuições no último ano",
+    "activityAchievement": "Conquista obtida: {name}",
+    "activityLevelUp": "Alcançou o Nível {level}",
+    "activityTaskCompleted": "Concluiu uma tarefa",
+    "activityVoteCast": "Votou numa proposta",
+    "activityEmpty": "Sem atividade ainda — comece a contribuir!",
+    "statTotalPoints": "Pontos Totais",
+    "statTasksCompleted": "Tarefas Feitas",
+    "statRank": "Posição",
+    "statLevel": "Nível"
   }
 }

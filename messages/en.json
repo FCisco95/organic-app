@@ -1824,7 +1824,14 @@
       "admin": "Admin",
       "council": "Council",
       "member": "Member",
-      "guest": "Guest"
+      "guest": "Guest",
+      "clear": "Clear filters"
+    },
+    "sort": {
+      "label": "Sort members",
+      "byXp": "Sort by XP",
+      "byTasks": "Sort by Tasks",
+      "byJoinDate": "Sort by Join Date"
     },
     "points": "pts",
     "tasks": "tasks",
@@ -2792,6 +2799,19 @@
     "activityComingSoon": "Activity timeline coming soon.",
     "rankLabel": "Rank",
     "activeThisSprint": "{count} active this sprint",
-    "buildYourStreak": "Build your streak"
+    "buildYourStreak": "Build your streak",
+    "searchShortcut": "\u2318K",
+    "contributionActivity": "Contribution activity",
+    "heatmapTooltip": "{count} contributions on {date}",
+    "contributionsInYear": "{total} contributions in the last year",
+    "activityAchievement": "Earned achievement: {name}",
+    "activityLevelUp": "Reached Level {level}",
+    "activityTaskCompleted": "Completed a task",
+    "activityVoteCast": "Voted on a proposal",
+    "activityEmpty": "No activity yet — start contributing!",
+    "statTotalPoints": "Total Points",
+    "statTasksCompleted": "Tasks Done",
+    "statRank": "Rank",
+    "statLevel": "Level"
   }
 }
