@@ -114,7 +114,7 @@ Use cases:
 **Plan:** pending — write during Phase B
 
 ## 4.3 Home, Analytics, Leaderboard, and Treasury Readability
-<!-- qa-status: FIXED | severity: S1 | plan: docs/plans/2026-03-21-home-analytics-treasury.md -->
+<!-- qa-status: REVAMPED | severity: S1 | plan: docs/plans/2026-03-21-home-analytics-treasury.md -->
 Routes: `/`, `/analytics`, `/treasury`.
 
 Use cases:

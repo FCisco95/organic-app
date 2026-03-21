@@ -10,7 +10,7 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 |---|---------|-------|--------|----------|------|---------------|------------------|
 | 4.1 | Auth, Session, Entry | 12 | DONE | S3 | — | — | — |
 | 4.2 | Navigation, Layout, i18n | 8 | TESTED | S2 | — | — | — |
-| 4.3 | Home, Analytics, Leaderboard, Treasury | 8 | FIXED | S1 | [plan](plans/2026-03-21-home-analytics-treasury.md) | `main` (8e137a8) | — |
+| 4.3 | Home, Analytics, Leaderboard, Treasury | 8 | REVAMPED | S1 | [plan](plans/2026-03-21-home-analytics-treasury.md) | `main` (8e137a8) | `main` (b59c207) |
 | 4.4 | Community (Rankings + Directory + Profile) | 12 | REVAMPED | S1 | [plan](plans/2026-03-21-community-qa-revamp.md) | `main` (81da1e1) | `main` (fb00427) |
 | 4.5 | Profile, Progression, Community Profile | 11 | REVAMPED | S3 | [plan](plans/2026-03-21-profile-progression-fixes-v2.md) | `fix/4.5-profile-fixes-v2` | `fix/4.5-profile-fixes-v2` |
 | 4.6 | Quests, Referrals, Gamification | 11 | PENDING | — | — | — | — |
@@ -45,7 +45,6 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 
 | Action | Section | What to do |
 |--------|---------|------------|
-| **Next to revamp** | 4.3 Home/Analytics | UX improvements per plan (optional, S3) |
 | **Next to plan** | 4.2 Navigation | Write plan from runbook feedback — S2 priority |
 | **Next to QA** | 4.6 Quests | First PENDING section in Wave 3 |
 
@@ -158,3 +157,4 @@ Revamp section 4.{X}. Read docs/qa-dashboard.md for plan link, then use prototyp
 | 2026-03-21 | 4.1 | Re-QA tested | — | 12/12 cases (3 sessions, 3 viewports). All prior S1 fixes confirmed. No functional bugs. Severity downgraded S1→S3. Recorded only, no plan. |
 | 2026-03-21 | 4.3 | Re-QA tested + planned | — | 8/8 cases (3 sessions). S1: 2 missing i18n keys on home. Plan: `2026-03-21-home-analytics-treasury.md`. |
 | 2026-03-21 | 4.3 | Fixed | `main` (8e137a8) | 2 i18n fixes: `Home.trustSprintNoneShort` + `dashboard.activity.viewAll` in all 3 locales. 0 console errors verified. |
+| 2026-03-21 | 4.3 | Revamped (Proto B) | `main` (b59c207) | GitHub Activity Hub: 2-column contribution layout (nav cards + activity feed), "Coming soon" KPI badges, mobile analytics scroll fix, double arrow fix. 3 prototypes compared, Proto B selected. |
