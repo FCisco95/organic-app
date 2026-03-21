@@ -362,12 +362,7 @@
     "sidebarHotTopics": "Hot Topics",
     "emptySearchTitle": "No results found",
     "emptySearchDescription": "No proposals match \"{search}\". Try a different search.",
-    "emptyTitle": "Be the first to start a discussion",
-    "categoryShortFeature": "Feature",
-    "categoryShortGovernance": "Gov",
-    "categoryShortTreasury": "Treasury",
-    "categoryShortCommunity": "Community",
-    "categoryShortDevelopment": "Dev"
+    "emptyTitle": "Be the first to start a discussion"
   },
   "ProposalCreate": {
     "toastMustBeMember": "You must be a member to create proposals",
@@ -484,11 +479,7 @@
     "nextStep1": "1. Your proposal enters Draft status for you to refine",
     "nextStep2": "2. Publish it for council qualification and community feedback",
     "nextStep3": "3. Once qualified, it moves to Discussion and then Voting",
-    "nextStep4": "4. Token-weighted votes determine the outcome",
-    "stepperLabelCategory": "Category",
-    "stepperLabelProblem": "Problem",
-    "stepperLabelBudget": "Budget",
-    "stepperLabelReview": "Review"
+    "nextStep4": "4. Token-weighted votes determine the outcome"
   },
   "ProposalDetail": {
     "toastLoadFailed": "Failed to load proposal",
@@ -520,7 +511,6 @@
     "railStatus": "Status",
     "railCurrentState": "Lifecycle state",
     "railComments": "Comment signal",
-    "railExecutionStatus": "Execution status",
     "versionContextTitle": "Version context panel",
     "versionContextDescription": "Current immutable proposal version: v{version}.",
     "governanceSource": "Governance source",
@@ -585,16 +575,7 @@
     "stageCanceled": "Canceled",
     "mobileVote": "Vote",
     "mobileFollow": "Follow",
-    "mobileEdit": "Edit",
-    "accordionGovernanceStatus": "Governance Status",
-    "accordionGovernanceStatusCollapsed": "{status} · {count, plural, one {# comment} other {# comments}}",
-    "accordionVersionProvenance": "Version & Provenance",
-    "accordionVersionCollapsed": "v{version}",
-    "accordionVoteDelegation": "Vote Delegation",
-    "accordionDelegationCollapsed": "Delegation panel",
-    "voteFabLabel": "Vote",
-    "commentAuthorFormat": "{displayName} · Organic #{id}",
-    "stageTransitionChip": "{stage} · {date}"
+    "mobileEdit": "Edit"
   },
   "Sprints": {
     "title": "Sprints",
@@ -1459,7 +1440,11 @@
     "toastTwitterLinked": "Twitter/X account linked successfully!",
     "toastFailedLinkTwitter": "Failed to link Twitter/X account",
     "toastTwitterUnlinked": "Twitter/X account unlinked",
-    "toastFailedUnlinkTwitter": "Failed to unlink Twitter/X account"
+    "toastFailedUnlinkTwitter": "Failed to unlink Twitter/X account",
+    "tabAccount": "Account",
+    "tabSocial": "Social",
+    "tabWallet": "Wallet & Security",
+    "tabNotifications": "Notifications"
   },
   "Gamification": {
     "title": "Progression",
@@ -1500,6 +1485,11 @@
     "questCtaProposals": "Open proposals",
     "questCtaProfile": "Open profile",
     "questCtaDefault": "Open tasks",
+    "questTableName": "Quest",
+    "questTableCadence": "Cadence",
+    "questTableProgress": "Progress",
+    "questTableStatus": "Status",
+    "questTableAction": "Action",
     "questSourceContext": "You came from {source}. Continue there to advance related quests.",
     "questSourceCta": "Back to {source}",
     "questSourceNames": {
@@ -1507,7 +1497,6 @@
       "proposals": "Proposals",
       "profile": "Profile"
     },
-    "achievementsHeading": "Achievements ({unlocked}/{total} unlocked)",
     "questCopy": {
       "daily_task_push": {
         "title": "Daily Builder",
@@ -1602,7 +1591,7 @@
       "finalizeDescription": "This will calculate the final result and close voting permanently.",
       "finalizeEarlyWarning": "Warning: Voting period has not ended. Are you sure you want to finalize early?",
       "confirmFinalize": "Finalize",
-      "finalizationFrozen": "Finalization is frozen after {attempts} of {maxAttempts} failed attempts.",
+      "finalizationFrozen": "Finalization is frozen after {attempts} failed attempts.",
       "finalizationFrozenHelp": "Investigate the failure and use a controlled admin recovery flow before retrying finalization.",
       "unfreezeButton": "Resume Finalization",
       "unfreezeDescription": "Reset the freeze lock and retry finalization. The previous failure reason was: {reason}",
@@ -2121,10 +2110,7 @@
       "streak_7": "Consistent Grower",
       "streak_30": "Unwavering",
       "xp_1000": "Rising Star",
-      "xp_10000": "Legend in the Making",
-      "first_arbiter": "First Arbiter",
-      "justice_keeper": "Justice Keeper",
-      "vindicated": "Vindicated"
+      "xp_10000": "Legend in the Making"
     },
     "achievementDescriptions": {
       "first_task": "Complete your first task",
@@ -2141,11 +2127,7 @@
       "streak_7": "Maintain a 7-day activity streak",
       "streak_30": "Maintain a 30-day activity streak",
       "xp_1000": "Reach 1,000 XP",
-      "xp_10000": "Reach 10,000 XP",
-      "peacemaker": "Resolve 10 disputes through mediation",
-      "first_arbiter": "Participate in your first dispute resolution",
-      "justice_keeper": "Resolve 25 disputes fairly",
-      "vindicated": "Win a dispute appeal"
+      "xp_10000": "Reach 10,000 XP"
     },
     "xpSources": {
       "task_completed": "Task completed",
@@ -2791,6 +2773,15 @@
     "tabDirectory": "Directory",
     "searchRankings": "Search rankings by name or ID...",
     "backToCommunity": "Back to Community",
-    "totalMembers": "{count} members"
+    "totalMembers": "{count} members",
+    "profileTabOverview": "Overview",
+    "profileTabReputation": "Reputation",
+    "profileTabAchievements": "Achievements",
+    "profileTabActivity": "Activity",
+    "quickGlance": "Rank #{rank} \u2022 Level {level} \u2022 {tasks} tasks completed",
+    "achievementsEarned": "{earned}/{total} achievements earned",
+    "xpBreakdownComingSoon": "Detailed XP breakdown coming soon.",
+    "activityComingSoon": "Activity timeline coming soon.",
+    "rankLabel": "Rank"
   }
 }

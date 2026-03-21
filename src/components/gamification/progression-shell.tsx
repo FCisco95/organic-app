@@ -13,12 +13,13 @@ import {
   Trophy,
 } from 'lucide-react';
 import { useGamificationOverview, useQuestProgress } from '@/features/gamification';
-import type { QuestProgressItem } from '@/features/gamification';
+import type { QuestCadence, QuestProgressItem } from '@/features/gamification';
 import { LevelBadge } from '@/components/reputation/level-badge';
 import { XpProgressBar } from '@/components/reputation/xp-progress-bar';
 import { StreakDisplay } from '@/components/reputation/streak-display';
 import { AchievementGrid } from '@/components/reputation/achievement-grid';
 import { XpHistory } from '@/components/reputation/xp-history';
+import { cn } from '@/lib/utils';
 
 type SourceContext = 'tasks' | 'proposals' | 'profile';
 
@@ -50,59 +51,11 @@ const SOURCE_CONTEXT_HREF: Record<SourceContext, '/tasks' | '/proposals' | '/pro
 
 const QUEST_CADENCE_ORDER = ['daily', 'weekly', 'long_term'] as const;
 
-const CADENCE_COLORS: Record<(typeof QUEST_CADENCE_ORDER)[number], { border: string; bg: string; ring: string }> = {
-  daily: { border: 'border-l-organic-orange', bg: 'bg-orange-50', ring: 'text-organic-orange' },
-  weekly: { border: 'border-l-blue-500', bg: 'bg-blue-50', ring: 'text-blue-500' },
-  long_term: { border: 'border-l-purple-500', bg: 'bg-purple-50', ring: 'text-purple-500' },
+const CADENCE_DOT_COLOR: Record<QuestCadence, string> = {
+  daily: 'bg-blue-400',
+  weekly: 'bg-purple-400',
+  long_term: 'bg-amber-400',
 };
-
-/** SVG circular progress ring */
-function ProgressRing({
-  percent,
-  size = 48,
-  strokeWidth = 4,
-  completed = false,
-}: {
-  percent: number;
-  size?: number;
-  strokeWidth?: number;
-  completed?: boolean;
-}) {
-  const radius = (size - strokeWidth) / 2;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (percent / 100) * circumference;
-
-  return (
-    <div className="relative flex-shrink-0" style={{ width: size, height: size }}>
-      <svg width={size} height={size} className="-rotate-90">
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={strokeWidth}
-          className="text-border"
-        />
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={strokeWidth}
-          strokeDasharray={circumference}
-          strokeDashoffset={offset}
-          strokeLinecap="round"
-          className={completed ? 'text-emerald-500' : 'text-organic-orange'}
-        />
-      </svg>
-      <span className="absolute inset-0 flex items-center justify-center text-xs font-mono font-bold tabular-nums text-foreground">
-        {percent}%
-      </span>
-    </div>
-  );
-}
 
 export function ProgressionShell({ sourceContext = null }: { sourceContext?: SourceContext | null }) {
   const locale = useLocale();
@@ -116,43 +69,69 @@ export function ProgressionShell({ sourceContext = null }: { sourceContext?: Sou
 
   if (isLoading) {
     return (
-      <div className="space-y-4 animate-pulse" data-testid="progression-shell-loading">
-        <div className="h-24 rounded-2xl bg-muted" />
-        <div className="h-40 rounded-2xl bg-muted" />
-        <div className="h-64 rounded-2xl bg-muted" />
+      <div className="space-y-3 animate-pulse" data-testid="progression-shell-loading">
+        <div className="h-16 rounded-xl bg-muted" />
+        <div className="h-32 rounded-xl bg-muted" />
+        <div className="h-48 rounded-xl bg-muted" />
       </div>
     );
   }
 
   if (isError || !data) {
     return (
-      <div className="rounded-2xl border border-red-200 bg-red-50 p-4" data-testid="progression-shell-error">
+      <div className="rounded-xl border border-red-200 bg-red-50 p-4" data-testid="progression-shell-error">
         <p className="text-sm font-medium text-red-700">{t('errorLoad')}</p>
       </div>
     );
   }
 
   const pointsRemaining = Math.max(0, data.rewards.min_threshold - data.rewards.claimable_points);
+  const fallbackObjectives = {
+    daily: data.quest_summary.items
+      .filter((item) => item.cadence === 'daily')
+      .map(
+        (item): QuestProgressItem => ({
+          ...item,
+          description: '',
+          progress_percent: item.target > 0 ? Math.min(100, Math.round((item.progress / item.target) * 100)) : 0,
+          remaining: Math.max(0, item.target - item.progress),
+          reset_at: null,
+          xp_reward: 0,
+          points_reward: 0,
+          icon: '',
+        })
+      ),
+    weekly: data.quest_summary.items
+      .filter((item) => item.cadence === 'weekly')
+      .map(
+        (item): QuestProgressItem => ({
+          ...item,
+          description: '',
+          progress_percent: item.target > 0 ? Math.min(100, Math.round((item.progress / item.target) * 100)) : 0,
+          remaining: Math.max(0, item.target - item.progress),
+          reset_at: null,
+          xp_reward: 0,
+          points_reward: 0,
+          icon: '',
+        })
+      ),
+    long_term: data.quest_summary.items
+      .filter((item) => item.cadence === 'long_term')
+      .map(
+        (item): QuestProgressItem => ({
+          ...item,
+          description: '',
+          progress_percent: item.target > 0 ? Math.min(100, Math.round((item.progress / item.target) * 100)) : 0,
+          remaining: Math.max(0, item.target - item.progress),
+          reset_at: null,
+          xp_reward: 0,
+          points_reward: 0,
+          icon: '',
+        })
+      ),
+  };
 
-  const objectives = questProgress?.objectives ?? Object.fromEntries(
-    QUEST_CADENCE_ORDER.map((cadence) => [
-      cadence,
-      data.quest_summary.items
-        .filter((item) => item.cadence === cadence)
-        .map(
-          (item): QuestProgressItem => ({
-            ...item,
-            description: '',
-            progress_percent: item.target > 0 ? Math.min(100, Math.round((item.progress / item.target) * 100)) : 0,
-            remaining: Math.max(0, item.target - item.progress),
-            reset_at: null,
-            xp_reward: 0,
-            points_reward: 0,
-            icon: '',
-          })
-        ),
-    ])
-  ) as Record<(typeof QUEST_CADENCE_ORDER)[number], QuestProgressItem[]>;
+  const objectives = questProgress?.objectives ?? fallbackObjectives;
   const questSummary = questProgress?.summary ?? data.quest_summary;
 
   const resolveResetLabel = (resetAt: string | null): string | null => {
@@ -180,292 +159,259 @@ export function ProgressionShell({ sourceContext = null }: { sourceContext?: Sou
   const resolveQuestTitle = (quest: QuestProgressItem): string => {
     const key = `questCopy.${quest.id}.title` as any;
     const result = t(key);
-    // t() returns the key path on miss — detect and fall back to DB title
-    return result.startsWith('questCopy.') ? quest.title : result;
+    // t() returns full namespace path on miss (e.g. "Gamification.questCopy.<uuid>.title")
+    // Detect miss by checking if the result contains the quest UUID
+    return result.includes(quest.id) ? quest.title : result;
   };
 
-  const resolveQuestDescription = (quest: QuestProgressItem): string => {
-    const key = `questCopy.${quest.id}.description` as any;
-    const result = t(key);
-    return result.startsWith('questCopy.') ? (quest.description || '') : result;
-  };
-
-  const achievementsUnlocked = data.achievements.filter((a) => a.unlocked).length;
+  // Flatten all quests into a single sorted list for the table view
+  const allQuests: (QuestProgressItem & { cadence: QuestCadence })[] = QUEST_CADENCE_ORDER.flatMap(
+    (cadence) =>
+      objectives[cadence].map((q) => ({ ...q, cadence: cadence as QuestCadence }))
+  );
 
   return (
-    <div className="space-y-6" data-testid="progression-shell">
-      {/* Header */}
-      <section className="rounded-xl border border-border bg-card p-5 sm:p-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground font-display">{t('title')}</h1>
-            <p className="mt-1 text-sm text-muted-foreground">{t('subtitle')}</p>
-          </div>
-          <Link
-            href="/community"
-            className="inline-flex items-center gap-2 rounded-lg border border-border bg-muted px-3 py-2 text-sm font-medium text-foreground hover:bg-background"
-          >
-            <Trophy className="h-4 w-4 text-amber-500" />
-            {t('viewLeaderboard')}
-          </Link>
+    <div className="space-y-4" data-testid="progression-shell">
+      {/* ===== HEADER with leaderboard link ===== */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-xl font-bold text-foreground font-display">{t('title')}</h1>
+          <p className="text-xs text-muted-foreground">{t('subtitle')}</p>
         </div>
+        <Link
+          href="/community"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted"
+        >
+          <Trophy className="h-3.5 w-3.5 text-amber-500" />
+          {t('viewLeaderboard')}
+        </Link>
+      </div>
 
-        {sourceContext && (
-          <div
-            className="mt-4 rounded-lg border border-organic-orange/30 bg-organic-orange/5 px-3 py-2"
-            data-testid="progression-source-context"
-          >
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <p className="text-xs font-medium text-foreground">
-                {t('questSourceContext', { source: t(`questSourceNames.${sourceContext}`) })}
-              </p>
-              <Link
-                href={SOURCE_CONTEXT_HREF[sourceContext]}
-                className="inline-flex items-center gap-1 text-xs font-medium text-organic-orange hover:text-orange-600"
-              >
-                {t('questSourceCta', { source: t(`questSourceNames.${sourceContext}`) })}
-                <ArrowRight className="h-3 w-3" />
-              </Link>
-            </div>
+      {sourceContext && (
+        <div
+          className="rounded-lg border border-organic-orange/30 bg-organic-orange/5 px-3 py-2"
+          data-testid="progression-source-context"
+        >
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-xs font-medium text-foreground">
+              {t('questSourceContext', { source: t(`questSourceNames.${sourceContext}`) })}
+            </p>
+            <Link
+              href={SOURCE_CONTEXT_HREF[sourceContext]}
+              className="inline-flex items-center gap-1 text-xs font-medium text-organic-orange hover:text-orange-600"
+            >
+              {t('questSourceCta', { source: t(`questSourceNames.${sourceContext}`) })}
+              <ArrowRight className="h-3 w-3" />
+            </Link>
           </div>
-        )}
-      </section>
+        </div>
+      )}
 
-      {/* Overview cards */}
-      <section
-        className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4"
+      {/* ===== COMPACT STAT BAR — single horizontal strip ===== */}
+      <div
+        className="rounded-xl border border-border bg-card px-4 py-3 flex items-center gap-0 overflow-x-auto"
         data-testid="progression-overview-cards"
       >
-        <article className="rounded-xl border border-border bg-card p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-            {t('levelCard')}
-          </p>
-          <div className="mt-2">
-            <LevelBadge level={data.level} size="md" />
+        {/* Level */}
+        <div className="flex items-center gap-2 pr-4 border-r border-border flex-shrink-0">
+          <LevelBadge level={data.level} size="md" />
+          <div>
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{t('levelCard')}</p>
           </div>
-        </article>
+        </div>
 
-        <article className="rounded-xl border border-border bg-card p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-            {t('xpToNextCard')}
-          </p>
-          <p className="mt-2 text-2xl font-mono font-bold text-foreground tabular-nums">
+        {/* XP to next */}
+        <div className="px-4 border-r border-border flex-shrink-0 text-center">
+          <p className="text-lg font-bold font-mono tabular-nums text-foreground leading-none">
             {data.level_progress.xp_to_next_level.toLocaleString()}
           </p>
-          <p className="mt-1 text-xs text-muted-foreground">{tReputation('xp')}</p>
-        </article>
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">{t('xpToNextCard')}</p>
+        </div>
 
-        <article className="rounded-xl border border-border bg-card p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-            {t('streakCard')}
-          </p>
-          <div className="mt-2">
-            <StreakDisplay streak={data.current_streak} />
-          </div>
-        </article>
+        {/* Streak */}
+        <div className="px-4 border-r border-border flex-shrink-0">
+          <StreakDisplay streak={data.current_streak} />
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">{t('streakCard')}</p>
+        </div>
 
-        <article className="rounded-xl border border-border bg-card p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-            {t('claimablePointsCard')}
-          </p>
-          <p className="mt-2 text-2xl font-mono font-bold text-foreground tabular-nums">
+        {/* Claimable points */}
+        <div className="px-4 flex-shrink-0 text-center">
+          <p className="text-lg font-bold font-mono tabular-nums text-foreground leading-none">
             {data.rewards.claimable_points.toLocaleString()}
           </p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {t('totalPointsLine', { points: data.total_points.toLocaleString() })}
-          </p>
-        </article>
-      </section>
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">{t('claimablePointsCard')}</p>
+          <p className="text-[10px] text-muted-foreground/70">{t('totalPointsLine', { points: data.total_points.toLocaleString() })}</p>
+        </div>
+      </div>
 
-      {/* Next level progress */}
-      <section className="rounded-xl border border-border bg-card p-5 sm:p-6">
-        <div className="mb-3 flex items-center gap-2">
+      {/* ===== XP PROGRESS ===== */}
+      <section className="rounded-xl border border-border bg-card p-4">
+        <div className="flex items-center gap-2 mb-2">
           <Target className="h-4 w-4 text-organic-orange" />
           <h2 className="text-sm font-semibold text-foreground">{t('nextLevelTitle')}</h2>
         </div>
-        <div className="mb-3">
-          <p className="text-sm text-muted-foreground">
-            {data.level_progress.is_max_level
-              ? tReputation('maxLevel')
-              : t('nextLevelBody', { level: data.level + 1 })}
-          </p>
-        </div>
+        <p className="text-xs text-muted-foreground mb-2">
+          {data.level_progress.is_max_level
+            ? tReputation('maxLevel')
+            : t('nextLevelBody', { level: data.level + 1 })}
+        </p>
         <XpProgressBar xpTotal={data.xp_total} level={data.level} />
       </section>
 
-      {/* ── Timeline Quests ── */}
-      <section className="rounded-xl border border-border bg-card p-5 sm:p-6" data-testid="progression-quests-section">
-        <div className="mb-4 flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-purple-500" />
-          <h2 className="text-sm font-semibold text-foreground">{t('questsTitle')}</h2>
+      {/* ===== QUEST TABLE — dense tabular view ===== */}
+      <section className="rounded-xl border border-border bg-card p-4" data-testid="progression-quests-section">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-purple-500" />
+            <h2 className="text-sm font-semibold text-foreground">{t('questsTitle')}</h2>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {questSummary.total > 0
+              ? t('questsSummary', { completed: questSummary.completed, total: questSummary.total })
+              : t('questsEmpty')}
+          </p>
         </div>
-
-        <p className="text-sm text-muted-foreground">
-          {questSummary.total > 0
-            ? t('questsSummary', { completed: questSummary.completed, total: questSummary.total })
-            : t('questsEmpty')}
-        </p>
         {isQuestError && (
-          <p className="mt-1 text-xs text-amber-700">{t('questsFallbackNotice')}</p>
+          <p className="text-xs text-amber-700 mb-2">{t('questsFallbackNotice')}</p>
         )}
 
-        {/* Timeline cadence sections */}
-        <div className="mt-6 space-y-8">
-          {QUEST_CADENCE_ORDER.map((cadence) => {
-            const cadenceObjectives = objectives[cadence];
-            const cadenceCompleted = cadenceObjectives.filter((quest) => quest.completed).length;
-            const colors = CADENCE_COLORS[cadence];
+        {isQuestLoading && !questProgress ? (
+          <div className="space-y-2 animate-pulse">
+            <div className="h-8 rounded bg-muted" />
+            <div className="h-8 rounded bg-muted" />
+            <div className="h-8 rounded bg-muted" />
+          </div>
+        ) : allQuests.length === 0 ? (
+          <p className="text-xs text-muted-foreground py-4 text-center">{t('questCadenceEmpty')}</p>
+        ) : (
+          <div className="overflow-x-auto -mx-4 px-4">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="border-b border-border">
+                  <th className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold pb-2 pr-3">{t('questTableName')}</th>
+                  <th className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold pb-2 pr-3 hidden sm:table-cell">{t('questTableCadence')}</th>
+                  <th className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold pb-2 pr-3 w-32">{t('questTableProgress')}</th>
+                  <th className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold pb-2 pr-3">{t('questTableStatus')}</th>
+                  <th className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold pb-2 text-right">{t('questTableAction')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {allQuests.map((quest) => {
+                  const cta = quest.completed ? null : QUEST_CTA_MAP[quest.id] ?? QUEST_FALLBACK_CTA;
+                  const resetLabel = resolveResetLabel(quest.reset_at);
+                  const questTitle = resolveQuestTitle(quest);
 
-            return (
-              <div key={cadence} data-testid={`progression-quests-${cadence}`}>
-                {/* Full-width cadence divider header */}
-                <div className={`-mx-5 sm:-mx-6 px-5 sm:px-6 py-3 ${colors.bg} border-y border-border mb-4`}>
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-xs font-bold uppercase tracking-[0.14em] text-foreground">
-                      {t(`questCadences.${cadence}`)}
-                    </h3>
-                    <span className="text-xs font-mono font-medium text-muted-foreground tabular-nums">
-                      {t('questCadenceProgress', {
-                        completed: cadenceCompleted,
-                        total: cadenceObjectives.length,
-                      })}
-                    </span>
-                  </div>
-                </div>
+                  return (
+                    <tr
+                      key={quest.id}
+                      className="border-b border-border/50 last:border-0"
+                      data-testid={`progression-quest-card-${quest.id}`}
+                    >
+                      {/* Quest name */}
+                      <td className="py-2 pr-3">
+                        <p className="text-sm font-medium text-foreground leading-tight">{questTitle}</p>
+                        {resetLabel && (
+                          <span className="inline-flex items-center gap-0.5 text-[10px] text-muted-foreground mt-0.5">
+                            <CalendarClock className="h-2.5 w-2.5" />
+                            {t('questResetsLabel', { time: resetLabel })}
+                          </span>
+                        )}
+                      </td>
 
-                {/* Timeline line with quest cards */}
-                {isQuestLoading && !questProgress ? (
-                  <div className="space-y-2 animate-pulse pl-6">
-                    <div className="h-4 rounded bg-muted" />
-                    <div className="h-4 rounded bg-muted" />
-                  </div>
-                ) : cadenceObjectives.length === 0 ? (
-                  <p className="text-xs text-muted-foreground pl-6">{t('questCadenceEmpty')}</p>
-                ) : (
-                  <div className={`relative border-l-2 ${colors.border} ml-3 pl-6 space-y-4`}>
-                    {cadenceObjectives.map((quest) => {
-                      const cta = quest.completed ? null : QUEST_CTA_MAP[quest.id] ?? QUEST_FALLBACK_CTA;
-                      const resetLabel = resolveResetLabel(quest.reset_at);
-                      const questTitle = resolveQuestTitle(quest);
-                      const questDescription = resolveQuestDescription(quest);
+                      {/* Cadence badge */}
+                      <td className="py-2 pr-3 hidden sm:table-cell">
+                        <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <span className={cn('w-1.5 h-1.5 rounded-full', CADENCE_DOT_COLOR[quest.cadence])} />
+                          {t(`questCadences.${quest.cadence}`)}
+                        </span>
+                      </td>
 
-                      return (
-                        <div
-                          key={quest.id}
-                          className="relative rounded-xl border border-border bg-card p-4"
-                          data-testid={`progression-quest-card-${quest.id}`}
-                        >
-                          {/* Timeline dot */}
-                          <div
-                            className={`absolute -left-[calc(1.5rem+5px)] top-5 w-2.5 h-2.5 rounded-full border-2 border-card ${
-                              quest.completed ? 'bg-emerald-500' : 'bg-organic-orange'
-                            }`}
-                          />
-
-                          <div className="flex items-start gap-4">
-                            {/* Progress ring */}
-                            <ProgressRing
-                              percent={quest.progress_percent}
-                              completed={quest.completed}
-                              size={48}
-                              strokeWidth={4}
+                      {/* Progress bar */}
+                      <td className="py-2 pr-3 w-32">
+                        <div className="flex items-center gap-2">
+                          <div className="h-1.5 rounded-full bg-muted flex-1">
+                            <div
+                              className={cn(
+                                'h-1.5 rounded-full transition-all',
+                                quest.completed ? 'bg-emerald-500' : 'bg-organic-orange'
+                              )}
+                              style={{ width: `${quest.progress_percent}%` }}
                             />
-
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-start justify-between gap-2">
-                                <div className="min-w-0">
-                                  <p className="text-sm font-semibold text-foreground">{questTitle}</p>
-                                  {questDescription && (
-                                    <p className="mt-0.5 text-xs text-muted-foreground">{questDescription}</p>
-                                  )}
-                                </div>
-                                {quest.completed && (
-                                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-700 flex-shrink-0">
-                                    <CheckCircle2 className="h-3 w-3" />
-                                    {t('questCompleted')}
-                                  </span>
-                                )}
-                              </div>
-
-                              <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
-                                <span className="font-mono tabular-nums">
-                                  {t('questProgressCounter', {
-                                    progress: quest.progress,
-                                    target: quest.target,
-                                  })}
-                                </span>
-                                {!quest.completed && (
-                                  <span>{t('questRemaining', { remaining: quest.remaining })}</span>
-                                )}
-                              </div>
-
-                              <div className="mt-2 flex items-center justify-between gap-2">
-                                {resetLabel ? (
-                                  <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                                    <CalendarClock className="h-3 w-3" />
-                                    {t('questResetsLabel', { time: resetLabel })}
-                                  </span>
-                                ) : (
-                                  <span />
-                                )}
-
-                                {cta && (
-                                  <Link
-                                    href={cta.href}
-                                    className="inline-flex items-center gap-1 text-xs font-medium text-organic-orange hover:text-orange-600"
-                                  >
-                                    {t(cta.labelKey)}
-                                    <ArrowRight className="h-3 w-3" />
-                                  </Link>
-                                )}
-                              </div>
-                            </div>
                           </div>
+                          <span className="text-[10px] font-mono tabular-nums text-muted-foreground whitespace-nowrap">
+                            {quest.progress}/{quest.target}
+                          </span>
                         </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                      </td>
+
+                      {/* Status */}
+                      <td className="py-2 pr-3">
+                        {quest.completed ? (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-medium text-emerald-700">
+                            <CheckCircle2 className="h-2.5 w-2.5" />
+                            {t('questCompleted')}
+                          </span>
+                        ) : (
+                          <span className="text-[10px] text-muted-foreground">
+                            {t('questRemaining', { remaining: quest.remaining })}
+                          </span>
+                        )}
+                      </td>
+
+                      {/* CTA */}
+                      <td className="py-2 text-right">
+                        {cta && (
+                          <Link
+                            href={cta.href}
+                            className="inline-flex items-center gap-0.5 text-xs font-medium text-organic-orange hover:text-orange-600"
+                          >
+                            {t(cta.labelKey)}
+                            <ArrowRight className="h-3 w-3" />
+                          </Link>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+
+      {/* ===== ACHIEVEMENT GRID — 4-column on desktop ===== */}
+      <section className="rounded-xl border border-border bg-card p-4" data-testid="progression-achievements-section">
+        <h2 className="text-sm font-semibold text-foreground mb-3">{tReputation('achievements')}</h2>
+        <div className="[&>div]:grid-cols-2 [&>div]:sm:grid-cols-3 [&>div]:lg:grid-cols-4">
+          <AchievementGrid achievements={data.achievements} />
         </div>
       </section>
 
-      {/* ── Achievements with count heading ── */}
-      <section className="rounded-xl border border-border bg-card p-5 sm:p-6" data-testid="progression-achievements-section">
-        <h2 className="mb-3 text-sm font-semibold text-foreground">
-          {t('achievementsHeading', {
-            unlocked: achievementsUnlocked,
-            total: data.achievements.length,
-          })}
-        </h2>
-        <AchievementGrid achievements={data.achievements} />
-      </section>
-
-      {/* Rewards readiness */}
-      <section className="rounded-xl border border-border bg-card p-5 sm:p-6">
-        <div className="mb-3 flex items-center gap-2">
-          <Gift className="h-4 w-4 text-emerald-600" />
-          <h2 className="text-sm font-semibold text-foreground">{t('rewardsReadinessTitle')}</h2>
+      {/* ===== REWARDS READINESS — compact ===== */}
+      <section className="rounded-xl border border-border bg-card p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Gift className="h-4 w-4 text-emerald-600" />
+            <h2 className="text-sm font-semibold text-foreground">{t('rewardsReadinessTitle')}</h2>
+          </div>
+          <Link
+            href="/rewards"
+            className="inline-flex items-center gap-1 text-xs font-medium text-organic-orange hover:text-orange-600"
+          >
+            {t('openRewards')}
+            <ArrowRight className="h-3 w-3" />
+          </Link>
         </div>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-xs text-muted-foreground mt-1">
           {pointsRemaining === 0
             ? t('rewardsReady')
             : t('rewardsNotReady', { points: pointsRemaining.toLocaleString() })}
         </p>
-        <Link
-          href="/rewards"
-          className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-organic-orange hover:text-orange-600"
-        >
-          {t('openRewards')}
-          <ArrowRight className="h-4 w-4" />
-        </Link>
       </section>
 
-      {/* Recent XP */}
-      <section className="rounded-xl border border-border bg-card p-5 sm:p-6" data-testid="progression-activity-section">
-        <h2 className="mb-3 text-sm font-semibold text-foreground">{t('recentXpTitle')}</h2>
+      {/* ===== RECENT XP ===== */}
+      <section className="rounded-xl border border-border bg-card p-4" data-testid="progression-activity-section">
+        <h2 className="text-sm font-semibold text-foreground mb-3">{t('recentXpTitle')}</h2>
         <XpHistory events={data.recent_xp_events} />
       </section>
     </div>

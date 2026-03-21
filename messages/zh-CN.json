@@ -360,14 +360,9 @@
     "sidebarGovernancePulse": "治理脉搏",
     "sidebarBrowseByStage": "按阶段浏览",
     "sidebarHotTopics": "热门话题",
-    "emptySearchTitle": "\u672a\u627e\u5230\u7ed3\u679c",
-    "emptySearchDescription": "\u6ca1\u6709\u4e0e \"{search}\" \u5339\u914d\u7684\u63d0\u6848\u3002\u8bf7\u5c1d\u8bd5\u5176\u4ed6\u641c\u7d22\u3002",
-    "emptyTitle": "\u6210\u4e3a\u7b2c\u4e00\u4e2a\u53d1\u8d77\u8ba8\u8bba\u7684\u4eba",
-    "categoryShortFeature": "\u529f\u80fd",
-    "categoryShortGovernance": "\u6cbb\u7406",
-    "categoryShortTreasury": "\u8d22\u52a1",
-    "categoryShortCommunity": "\u793e\u533a",
-    "categoryShortDevelopment": "\u5f00\u53d1"
+    "emptySearchTitle": "未找到结果",
+    "emptySearchDescription": "没有与 \"{search}\" 匹配的提案。请尝试其他搜索。",
+    "emptyTitle": "成为第一个发起讨论的人"
   },
   "ProposalCreate": {
     "toastMustBeMember": "只有成员可以创建提案",
@@ -484,11 +479,7 @@
     "nextStep1": "1. 你的提案进入草稿状态，供你完善",
     "nextStep2": "2. 发布后等待理事会评估和社区反馈",
     "nextStep3": "3. 评估通过后，进入讨论和投票阶段",
-    "nextStep4": "4. \u6309\u4ee3\u5e01\u6743\u91cd\u6295\u7968\u51b3\u5b9a\u7ed3\u679c",
-    "stepperLabelCategory": "\u5206\u7c7b",
-    "stepperLabelProblem": "\u95ee\u9898",
-    "stepperLabelBudget": "\u9884\u7b97",
-    "stepperLabelReview": "\u5ba1\u6838"
+    "nextStep4": "4. 按代币权重投票决定结果"
   },
   "ProposalDetail": {
     "toastLoadFailed": "加载提案失败",
@@ -520,7 +511,6 @@
     "railStatus": "状态",
     "railCurrentState": "流程状态",
     "railComments": "评论信号",
-    "railExecutionStatus": "执行状态",
     "versionContextTitle": "版本上下文面板",
     "versionContextDescription": "当前不可变提案版本：v{version}。",
     "governanceSource": "治理来源",
@@ -583,18 +573,9 @@
     "stageVoting": "投票",
     "stageFinalized": "已定案",
     "stageCanceled": "已取消",
-    "mobileVote": "\u6295\u7968",
-    "mobileFollow": "\u5173\u6ce8",
-    "mobileEdit": "\u7f16\u8f91",
-    "accordionGovernanceStatus": "\u6cbb\u7406\u72b6\u6001",
-    "accordionGovernanceStatusCollapsed": "{status} \u00b7 {count, plural, one {# \u6761\u8bc4\u8bba} other {# \u6761\u8bc4\u8bba}}",
-    "accordionVersionProvenance": "\u7248\u672c\u4e0e\u6eaf\u6e90",
-    "accordionVersionCollapsed": "v{version}",
-    "accordionVoteDelegation": "\u6295\u7968\u59d4\u6258",
-    "accordionDelegationCollapsed": "\u59d4\u6258\u9762\u677f",
-    "voteFabLabel": "\u6295\u7968",
-    "commentAuthorFormat": "{displayName} \u00b7 Organic #{id}",
-    "stageTransitionChip": "{stage} \u00b7 {date}"
+    "mobileVote": "投票",
+    "mobileFollow": "关注",
+    "mobileEdit": "编辑"
   },
   "Sprints": {
     "title": "冲刺",
@@ -1507,7 +1488,6 @@
       "proposals": "提案",
       "profile": "个人资料"
     },
-    "achievementsHeading": "成就（已解锁 {unlocked}/{total}）",
     "questCopy": {
       "daily_task_push": {
         "title": "每日建设者",
@@ -1602,7 +1582,7 @@
       "finalizeDescription": "这将计算最终结果并永久关闭投票。",
       "finalizeEarlyWarning": "警告：投票期限尚未结束。确定要提前结束吗？",
       "confirmFinalize": "结束",
-      "finalizationFrozen": "最终结算在失败 {attempts}/{maxAttempts} 次后已被冻结。",
+      "finalizationFrozen": "最终结算在失败 {attempts} 次后已被冻结。",
       "finalizationFrozenHelp": "请先排查失败原因，再通过受控的管理员恢复流程后重试结算。",
       "unfreezeButton": "恢复结算",
       "unfreezeDescription": "重置冻结锁定并重试结算。上次失败原因：{reason}",
@@ -2121,10 +2101,7 @@
       "streak_7": "持续成长者",
       "streak_30": "坚定不移",
       "xp_1000": "冉冉新星",
-      "xp_10000": "传奇之路",
-      "first_arbiter": "首席仲裁者",
-      "justice_keeper": "正义守护者",
-      "vindicated": "沉冤昭雪"
+      "xp_10000": "传奇之路"
     },
     "achievementDescriptions": {
       "first_task": "完成你的第一个任务",
@@ -2141,11 +2118,7 @@
       "streak_7": "保持7天连续活跃",
       "streak_30": "保持30天连续活跃",
       "xp_1000": "达到1,000经验值",
-      "xp_10000": "达到10,000经验值",
-      "peacemaker": "通过调解解决10起争议",
-      "first_arbiter": "参与你的第一次争议解决",
-      "justice_keeper": "公正地解决25起争议",
-      "vindicated": "赢得一次争议上诉"
+      "xp_10000": "达到10,000经验值"
     },
     "xpSources": {
       "task_completed": "任务完成",
