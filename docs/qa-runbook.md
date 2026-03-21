@@ -269,17 +269,17 @@ Use cases:
 - [x] `SPR-04` Sprint transitions to `dispute_window`. **SKIP** — No sprint in review phase to test. Code path exists (phase engine tested).
 - [x] `SPR-05` Dispute-window timing constraints are communicated. **PASS, S3** — Countdown badge with Timer icon shows "Phase time remaining" when deadline exists. Review/dispute phases supported.
 - [x] `SPR-06` Sprint transitions to `settlement` only when valid. **SKIP** — No sprint in dispute_window to test. Code path exists.
-- [x] `SPR-07` Settlement blockers and reasons are visible/understandable. **PARTIAL, S1** — Settlement panel renders but `Sprints.metricOpenExecution` shows raw i18n key instead of translated label. 30+ console errors from this missing key.
+- [x] `SPR-07` Settlement blockers and reasons are visible/understandable. **PASS, S3** — Settlement panel renders with "Open execution: N" and "Blocked: N" as GitHub-style badges. i18n key fixed, 0 console errors.
 - [x] `SPR-08` Sprint transitions to `completed` when integrity conditions are satisfied. **PASS, S3** — Complete dialog exists with stats, incomplete task handling options (backlog/next sprint), readiness checklist on detail page.
 - [x] `SPR-09` Sprint detail timeline/rail surfaces current phase clearly. **PASS, S3** — Phase timeline sidebar on detail page shows all 6 phases with clear current/complete/awaiting indicators. Readiness checklist with 4 checks.
 - [x] `SPR-10` Past sprints page is navigable and understandable. **PASS, S3** — `/sprints/past` redirects to `?view=timeline`. Timeline view with vertical line, date badges, status pills. Sprint List view also shows Past Sprints section.
-- [x] `SPR-11` Mobile sprint list/detail remain usable. **PARTIAL, S2** — Sprint list/board load on mobile (375x812). All content accessible. Phase rail 6 chips stack in 2-col grid. Board view functional. Detail page renders fully with sidebar below main content. However: settlement panel `metricOpenExecution` raw key visible, board columns stack vertically making status overview hard to scan.
+- [x] `SPR-11` Mobile sprint list/detail remain usable. **PASS, S3** — Board columns now horizontal-scroll with snap on mobile. i18n key fixed. All content accessible at 375px.
 
 ### Feedback
 <!-- Full feedback archived in git history + plan file. Summary below. -->
-**Tested:** 2026-03-21 | **Cases:** 9/11 (2 skipped) | **Severity:** S1
-**Priority fixes:** Missing i18n key `Sprints.metricOpenExecution` (raw key visible on all views, 30+ console errors)
-**Top revamp:** Phase rail duplicated in list view, board column layout dense on mobile, settlement panel UX (Linear-style status cards), burndown chart polish
+**Tested:** 2026-03-21 | **Cases:** 9/11 (2 skipped) | **Severity:** S3 (S1 fixed)
+**Fixes applied:** i18n key `Sprints.metricOpenExecution` added. 0 console errors.
+**Revamp applied:** Full 9-component GitHub-inspired overhaul (7ef0c54) — milestone cards, phase stepper, burndown gridlines, orange theme, muted success states, horizontal mobile board.
 **Plan:** `docs/plans/2026-03-21-sprints-qa-revamp.md`
 
 ## 4.9 Proposals and Governance Workflow
