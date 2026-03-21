@@ -9,7 +9,7 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 | # | Section | Cases | Status | Severity | Plan | Fix Branch/PR | Revamp Branch/PR |
 |---|---------|-------|--------|----------|------|---------------|------------------|
 | 4.1 | Auth, Session, Entry | 12 | DONE | S3 | — | — | — |
-| 4.2 | Navigation, Layout, i18n | 8 | FIXED | S3 | [plan](plans/2026-03-21-navigation-qa-revamp.md) | `main` (28393f2) | — |
+| 4.2 | Navigation, Layout, i18n | 8 | DONE | S3 | [plan](plans/2026-03-21-navigation-qa-revamp.md) | `main` (28393f2) | `main` (4b919b6) |
 | 4.3 | Home, Analytics, Leaderboard, Treasury | 8 | DONE | S3 | [plan](plans/2026-03-21-home-analytics-treasury.md) | `main` (8e137a8) | `main` (b59c207) |
 | 4.4 | Community (Rankings + Directory + Profile) | 12 | DONE | S3 | [plan](plans/2026-03-21-community-qa-revamp.md) | `main` (81da1e1) | `main` (fb00427) |
 | 4.5 | Profile, Progression, Community Profile | 11 | DONE | S3 | [plan](plans/2026-03-21-profile-progression-fixes-v2.md) | `main` (5a76747) | `main` (5a76747) |
@@ -45,7 +45,7 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 
 | Action | Section | What to do |
 |--------|---------|------------|
-| **Next to revamp** | 4.2 Navigation | Sidebar grouping + Cmd+K palette + breadcrumbs |
+| **Next to QA** | 4.6 Quests | First PENDING section — 11 cases |
 | **Next to QA** | 4.6 Quests | First PENDING section — 11 cases |
 | **Next to QA** | 4.8 Sprints | Second PENDING section — 11 cases |
 
@@ -70,10 +70,7 @@ Issues spanning multiple sections — track resolution centrally.
 
 ## Recommended Section Order
 
-**DONE (7/19):** 4.1 Auth, 4.3 Home/Analytics, 4.4 Community, 4.5 Profile, 4.7 Tasks, 4.9 Proposals — all merged to `main`
-
-**Wave A — Tested, needs plan + fix:**
-1. 4.2 Navigation (S2 → write plan → Phase B → Phase C)
+**DONE (8/19):** 4.1 Auth, 4.2 Navigation, 4.3 Home/Analytics, 4.4 Community, 4.5 Profile, 4.7 Tasks, 4.9 Proposals — all merged to `main`
 
 **Wave B — Core feature sections (PENDING):**
 2. 4.6 Quests/Gamification (11 cases)
@@ -163,3 +160,4 @@ Revamp section 4.{X}. Read docs/qa-dashboard.md for plan link, then use prototyp
 | 2026-03-21 | 4.3 | Revamped (Proto B) | `main` (b59c207) | GitHub Activity Hub: 2-column contribution layout (nav cards + activity feed), "Coming soon" KPI badges, mobile analytics scroll fix, double arrow fix. 3 prototypes compared, Proto B selected. |
 | 2026-03-21 | 4.2 | Re-QA tested + planned | — | 8/8 PASS (3 sessions, 3 roles). S3 — no functional bugs. Severity downgraded S2→S3. Plan: `2026-03-21-navigation-qa-revamp.md` (2 fixes + 4 UX revamps: sidebar grouping, Cmd+K palette, breadcrumbs, visual polish). |
 | 2026-03-21 | 4.2 | Fixed | `main` (28393f2) | 2 fixes: mobile sidebar SheetTitle/SheetDescription a11y, settings access denied copy (3 locales). 0 console errors verified. |
+| 2026-03-21 | 4.2 | Revamped (A+B combined) | `main` (4b919b6) | Best of Linear + Stripe: collapsible sidebar sections with chevrons, Cmd+K command palette, keyboard shortcut hints (A/Linear) + breadcrumb trail in top-bar (B/Stripe). 3 prototypes compared, A+B combined. 14 new i18n keys. |
