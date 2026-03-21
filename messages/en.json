@@ -1179,7 +1179,11 @@
     "statsLevel": "Level",
     "earnCtaTitle": "Start earning with the DAO",
     "earnCtaDescription": "Claim tasks, submit work, and earn $ORG tokens. Every contribution counts.",
-    "earnCtaButton": "Create account"
+    "earnCtaButton": "Create account",
+    "earnCtaInline": "Want to earn $ORG tokens? {link} to claim tasks and start contributing.",
+    "earnCtaInlineLink": "Create an account",
+    "filtersButton": "Filters",
+    "filterActiveCount": "{count} active"
   },
   "ReviewQueue": {
     "title": "Submission review queue",
@@ -1337,7 +1341,11 @@
     "earningsTitle": "What you'll earn",
     "earningsPoints": "Points",
     "earningsXp": "XP",
-    "earningsDisclaimer": "XP estimates based on task value. Actual XP may vary based on review quality rating."
+    "earningsDisclaimer": "XP estimates based on task value. Actual XP may vary based on review quality rating.",
+    "deliveryStepComplete": "Complete",
+    "deliveryStepPending": "Pending",
+    "deliveryProgress": "{percent}% complete",
+    "earningsCompletionLabel": "Task completion"
   },
   "Profile": {
     "loadingProfile": "Loading your profile...",

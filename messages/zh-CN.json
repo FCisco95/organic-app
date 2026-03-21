@@ -1179,7 +1179,11 @@
     "statsLevel": "等级",
     "earnCtaTitle": "开始在DAO中赚取",
     "earnCtaDescription": "认领任务，提交工作，赚取$ORG代币。每一份贡献都很重要。",
-    "earnCtaButton": "创建账户"
+    "earnCtaButton": "创建账户",
+    "earnCtaInline": "想赚取 $ORG 代币吗？{link}来认领任务并开始贡献。",
+    "earnCtaInlineLink": "创建账户",
+    "filtersButton": "筛选",
+    "filterActiveCount": "{count} 个有效"
   },
   "ReviewQueue": {
     "title": "提交审核队列",
@@ -1337,7 +1341,11 @@
     "earningsTitle": "你将获得",
     "earningsPoints": "积分",
     "earningsXp": "经验值",
-    "earningsDisclaimer": "经验值估算基于任务价值。实际经验值可能因审核质量评分而异。"
+    "earningsDisclaimer": "经验值估算基于任务价值。实际经验值可能因审核质量评分而异。",
+    "deliveryStepComplete": "完成",
+    "deliveryStepPending": "待处理",
+    "deliveryProgress": "{percent}% 完成",
+    "earningsCompletionLabel": "任务完成度"
   },
   "Profile": {
     "loadingProfile": "正在加载您的个人资料...",

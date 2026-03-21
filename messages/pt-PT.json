@@ -1179,7 +1179,11 @@
     "statsLevel": "Nível",
     "earnCtaTitle": "Comece a ganhar com o DAO",
     "earnCtaDescription": "Reclame tarefas, submeta trabalho e ganhe tokens $ORG. Cada contribuição conta.",
-    "earnCtaButton": "Criar conta"
+    "earnCtaButton": "Criar conta",
+    "earnCtaInline": "Quer ganhar tokens $ORG? {link} para reclamar tarefas e comecar a contribuir.",
+    "earnCtaInlineLink": "Crie uma conta",
+    "filtersButton": "Filtros",
+    "filterActiveCount": "{count} ativo(s)"
   },
   "ReviewQueue": {
     "title": "Fila de revisão de submissões",
@@ -1337,7 +1341,11 @@
     "earningsTitle": "O que vai ganhar",
     "earningsPoints": "Pontos",
     "earningsXp": "XP",
-    "earningsDisclaimer": "Estimativas de XP baseadas no valor da tarefa. O XP real pode variar conforme a avaliação de qualidade."
+    "earningsDisclaimer": "Estimativas de XP baseadas no valor da tarefa. O XP real pode variar conforme a avaliação de qualidade.",
+    "deliveryStepComplete": "Completo",
+    "deliveryStepPending": "Pendente",
+    "deliveryProgress": "{percent}% completo",
+    "earningsCompletionLabel": "Conclusao da tarefa"
   },
   "Profile": {
     "loadingProfile": "Carregando seu perfil...",

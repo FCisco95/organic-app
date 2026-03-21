@@ -660,52 +660,52 @@ export default function TaskDetailPage() {
 
   return (
     <PageContainer layout="fluid">
-      {/* Header */}
+      {/* Compact header — back link + actions on one line */}
       <div
-        className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+        className="mb-4 flex flex-wrap items-center justify-between gap-2"
         data-testid="task-detail-header"
       >
-        <Link href="/tasks" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
-          <ArrowLeft className="w-4 h-4" />
+        <Link href="/tasks" className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+          <ArrowLeft className="h-4 w-4" />
           {t('backToTasks')}
         </Link>
 
         {!isEditing && (
-          <div className="flex flex-wrap items-center justify-start gap-2 sm:justify-end">
+          <div className="flex items-center gap-1.5">
             {user && <FollowButton subjectType="task" subjectId={taskId} />}
             {profile?.role === 'admin' && (
               <button
                 onClick={() => setShowDeleteConfirm(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg border border-transparent transition-colors"
+                className="flex items-center gap-1 px-2.5 py-1 text-sm text-muted-foreground hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
               >
-                <Trash2 className="w-3.5 h-3.5" />
+                <Trash2 className="h-3.5 w-3.5" />
                 {t('delete')}
               </button>
             )}
             {profile?.role && ['admin', 'council'].includes(profile.role) && (
               <button
                 onClick={() => setShowAssignModal(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 rounded-lg transition-colors"
+                className="flex items-center gap-1 px-2.5 py-1 text-sm text-foreground border border-input hover:bg-muted rounded-lg transition-colors"
               >
-                <UserPlus className="w-3.5 h-3.5" />
+                <UserPlus className="h-3.5 w-3.5" />
                 {t('assign')}
               </button>
             )}
             <button
               onClick={() => setIsEditing(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-organic-orange hover:bg-orange-600 text-white rounded-lg transition-colors"
+              className="flex items-center gap-1 px-2.5 py-1 text-sm bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition-colors"
             >
-              <Edit2 className="w-3.5 h-3.5" />
+              <Edit2 className="h-3.5 w-3.5" />
               {t('editTask')}
             </button>
           </div>
         )}
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]" data-testid="task-operator-layout">
-        <div className="min-w-0 space-y-6">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_380px]" data-testid="task-operator-layout">
+        <div className="min-w-0 space-y-4">
           {/* Task Details */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6" data-testid="task-summary-surface">
+          <div className="rounded-xl border border-border bg-card p-4" data-testid="task-summary-surface">
             {/* Blocked Badge - show if task has incomplete blockers */}
             {dependencyData?.dependencies && dependencyData.dependencies.length > 0 && (
               <BlockedBadge dependencies={dependencyData.dependencies} className="mb-4" />
@@ -752,7 +752,7 @@ export default function TaskDetailPage() {
             (user && task.created_by === user.id)
           ) && (
             <div
-              className="bg-white rounded-xl border border-gray-200 p-6"
+              className="rounded-xl border border-border bg-card p-4"
               data-testid="task-dependency-surface"
             >
               <DependencyPicker taskId={taskId} />
@@ -761,7 +761,7 @@ export default function TaskDetailPage() {
 
           {/* Subtasks - shown for non-subtask tasks */}
           {!task.parent_task_id && (
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <div className="rounded-xl border border-border bg-card p-4">
               <SubtaskList parentTaskId={taskId} />
             </div>
           )}
@@ -778,58 +778,120 @@ export default function TaskDetailPage() {
         </div>
 
         <aside className="space-y-4 xl:sticky xl:top-24 self-start">
+          {/* Delivery checklist with visual step indicators */}
           <div
-            className="rounded-xl border border-border bg-card p-6"
+            className="rounded-xl border border-border bg-card p-4"
             data-testid="task-delivery-checklist"
           >
             <p className="text-sm font-semibold text-foreground">
               {t('deliveryChecklistLabel')}
             </p>
-            <h3 className="mt-1 text-base font-bold text-slate-900">{t('deliveryChecklistTitle')}</h3>
-            <div className="mt-3 space-y-2 text-sm text-slate-700">
-              <p className="flex items-center justify-between gap-2">
-                <span>{t('checkAssignee')}</span>
-                <span className={task.assignee_id ? 'text-emerald-700' : 'text-amber-700'}>
-                  {task.assignee_id ? t('checkDone') : t('checkPending')}
-                </span>
-              </p>
-              <p className="flex items-center justify-between gap-2">
-                <span>{t('checkSprint')}</span>
-                <span className={task.sprint_id ? 'text-emerald-700' : 'text-amber-700'}>
-                  {task.sprint_id ? t('checkDone') : t('checkPending')}
-                </span>
-              </p>
-              <p className="flex items-center justify-between gap-2">
-                <span>{t('checkDependencies')}</span>
-                <span className={unresolvedDependencies === 0 ? 'text-emerald-700' : 'text-amber-700'}>
-                  {t('dependenciesOpenCount', { count: unresolvedDependencies })}
-                </span>
-              </p>
-              <p className="flex items-center justify-between gap-2">
-                <span>{t('checkSubmissions')}</span>
-                <span className="font-mono tabular-nums text-slate-700">
-                  {t('submissionsCount', { count: task.submissions?.length ?? 0 })}
-                </span>
-              </p>
-            </div>
+            <p className="mt-0.5 text-xs text-muted-foreground">{t('deliveryChecklistTitle')}</p>
+
+            {(() => {
+              const steps = [
+                { label: t('checkAssignee'), done: !!task.assignee_id },
+                { label: t('checkSprint'), done: !!task.sprint_id },
+                { label: t('checkDependencies'), done: unresolvedDependencies === 0 },
+                { label: t('checkSubmissions'), done: (task.submissions?.length ?? 0) > 0 },
+              ];
+              const doneCount = steps.filter((s) => s.done).length;
+              const percent = Math.round((doneCount / steps.length) * 100);
+
+              return (
+                <>
+                  <p className="mt-2 text-xs font-medium text-muted-foreground">
+                    {t('deliveryProgress', { percent })}
+                  </p>
+                  <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="h-full rounded-full bg-emerald-500 transition-all"
+                      style={{ width: `${percent}%` }}
+                    />
+                  </div>
+                  <div className="mt-3 space-y-2 text-sm">
+                    {steps.map((step) => (
+                      <div key={step.label} className="flex items-center gap-2">
+                        <span
+                          className={`inline-block h-2 w-2 shrink-0 rounded-full ${
+                            step.done ? 'bg-emerald-500' : 'bg-amber-400'
+                          }`}
+                        />
+                        <span className={step.done ? 'text-foreground' : 'text-muted-foreground'}>
+                          {step.label}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              );
+            })()}
+
             {dependenciesTotal > 0 && (
-              <p className="mt-3 rounded-lg border border-border bg-muted/50 px-3 py-2 text-xs text-slate-600">
+              <p className="mt-3 rounded-lg border border-border bg-muted/50 px-3 py-2 text-xs text-muted-foreground">
                 {t('dependencyHint', { count: dependenciesTotal })}
               </p>
             )}
           </div>
 
-          {/* Earnings calculator card */}
-          <div className="rounded-xl border border-border bg-card p-5">
+          {/* Earnings card with SVG progress ring */}
+          <div className="rounded-xl border border-border bg-card p-4">
             <h3 className="text-sm font-semibold text-foreground mb-3">{t('earningsTitle')}</h3>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="rounded-lg bg-muted/50 p-3 text-center">
-                <p className="text-xl font-bold font-mono tabular-nums text-foreground">{task.points ?? 0}</p>
-                <p className="text-xs text-muted-foreground">{t('earningsPoints')}</p>
-              </div>
-              <div className="rounded-lg bg-emerald-500/10 p-3 text-center">
-                <p className="text-xl font-bold font-mono tabular-nums text-emerald-600">{'Est. ' + ((task.points ?? 0) * 10)}</p>
-                <p className="text-xs text-muted-foreground">{t('earningsXp')}</p>
+            <div className="flex items-center gap-4">
+              {/* SVG progress ring */}
+              {(() => {
+                const statusPercent: Record<string, number> = {
+                  backlog: 0,
+                  todo: 0,
+                  in_progress: 25,
+                  review: 65,
+                  done: 100,
+                };
+                const pct = statusPercent[task.status ?? 'backlog'] ?? 0;
+                const r = 32;
+                const circumference = 2 * Math.PI * r;
+                const offset = circumference - (pct / 100) * circumference;
+
+                return (
+                  <div className="relative shrink-0">
+                    <svg width="80" height="80" viewBox="0 0 80 80" className="-rotate-90">
+                      <circle
+                        cx="40"
+                        cy="40"
+                        r={r}
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="6"
+                        className="text-muted"
+                      />
+                      <circle
+                        cx="40"
+                        cy="40"
+                        r={r}
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="6"
+                        strokeLinecap="round"
+                        strokeDasharray={circumference}
+                        strokeDashoffset={offset}
+                        className="text-emerald-500 transition-all"
+                      />
+                    </svg>
+                    <span className="absolute inset-0 flex items-center justify-center font-mono text-xs font-bold tabular-nums text-foreground">
+                      {pct}%
+                    </span>
+                  </div>
+                );
+              })()}
+              <div className="flex-1 space-y-2">
+                <div>
+                  <p className="font-mono text-lg font-bold tabular-nums text-foreground">{task.points ?? 0}</p>
+                  <p className="text-xs text-muted-foreground">{t('earningsPoints')}</p>
+                </div>
+                <div>
+                  <p className="font-mono text-lg font-bold tabular-nums text-emerald-600">+{(task.points ?? 0) * 10}</p>
+                  <p className="text-xs text-muted-foreground">{t('earningsXp')}</p>
+                </div>
               </div>
             </div>
             <p className="text-[10px] text-muted-foreground mt-2">{t('earningsDisclaimer')}</p>
@@ -837,8 +899,8 @@ export default function TaskDetailPage() {
 
           {/* Task Actions - Claim and Submit */}
           {user && profile?.organic_id && (
-            <div className="bg-white rounded-xl border border-gray-200 p-6" data-testid="task-submission-cta-block">
-              <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('actions')}</h2>
+            <div className="rounded-xl border border-border bg-card p-4" data-testid="task-submission-cta-block">
+              <h2 className="text-sm font-semibold text-foreground mb-3">{t('actions')}</h2>
 
               <div className="flex flex-wrap gap-3">
                 {/* Claim button - converts task to TaskWithRelations format for the component */}

@@ -16,7 +16,7 @@ import {
 } from '@/features/tasks';
 
 import { createClient } from '@/lib/supabase/client';
-import { ArrowRight, CheckSquare, Clock, Plus, Send, Star } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { TaskFiltersBar } from '@/components/tasks/task-filters-bar';
@@ -54,16 +54,6 @@ export default function TasksPage() {
   const [commentCounts, setCommentCounts] = useState<Record<string, number>>({});
   const [submissionCounts, setSubmissionCounts] = useState<Record<string, number>>({});
   const [contributorCounts, setContributorCounts] = useState<Record<string, number>>({});
-  // Personal stats for authenticated users
-  const myClaimedCount = user
-    ? tasks.filter((task) => task.assignee_id === user.id && task.status !== 'done').length
-    : 0;
-  const myPendingSubmissions = user
-    ? tasks.filter((task) => task.assignee_id === user.id && task.status === 'review').length
-    : 0;
-  const availablePoints = tasks
-    .filter((task) => !task.assignee_id && ['backlog', 'todo'].includes(task.status ?? 'backlog'))
-    .reduce((sum, task) => sum + (task.points ?? task.base_points ?? 0), 0);
 
   const isOrgMember = !!profile?.organic_id;
   const canManage = profile?.role === 'admin';
@@ -606,147 +596,42 @@ export default function TasksPage() {
   ];
 
   return (
-    <PageContainer layout="fluid" className="space-y-6">
-      <div data-testid="tasks-page" className="space-y-6">
+    <PageContainer layout="fluid" className="space-y-4">
+      <div data-testid="tasks-page" className="space-y-4">
+        {/* Compact header — clean card background */}
         <section
           data-testid="tasks-execution-cockpit"
-          className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-5 sm:p-6"
+          className="rounded-xl border border-border bg-card px-5 py-4"
         >
-          {/* Decorative blur glows */}
-          <div className="absolute -top-16 -left-16 h-56 w-56 rounded-full bg-primary/15 blur-3xl" />
-          <div className="absolute -bottom-20 right-0 h-44 w-44 rounded-full bg-emerald-500/10 blur-3xl" />
-
-          <div className="relative z-10 space-y-4">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
-                  {t('executionCockpitLabel')}
-                </p>
-                <h1 className="mt-1 text-3xl font-bold text-white">{t('title')}</h1>
-                <p className="mt-1 text-sm text-slate-400">{t('subtitle')}</p>
-              </div>
-
-              {/* Sprint badge */}
-              <div
-                data-testid="tasks-sprint-context-banner"
-                className="hidden shrink-0 rounded-xl border border-white/10 bg-white/5 px-4 py-2 backdrop-blur sm:block"
-              >
-                <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">
-                  {t('sprintContextLabel')}
-                </p>
-                <p className="mt-0.5 text-sm font-medium text-white">
-                  {currentSprint
-                    ? t('sprintContextActive', {
-                        name: currentSprint.name,
-                        status: currentSprint.status ?? 'active',
-                      })
-                    : t('sprintContextNone')}
-                </p>
-              </div>
-            </div>
-
-            {/* KPI stats row with icons */}
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-              <div className="flex items-center gap-3 rounded-xl bg-white/5 px-3 py-2.5">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/20">
-                  <CheckSquare className="h-4 w-4 text-primary" />
-                </div>
-                <div>
-                  <p className="text-[11px] uppercase tracking-wide text-slate-400">
-                    {t('metricOpenExecution')}
-                  </p>
-                  <p className="font-mono text-lg font-semibold tabular-nums text-white">
-                    {openExecutionCount}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 rounded-xl bg-white/5 px-3 py-2.5">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/20">
-                  <Send className="h-4 w-4 text-amber-400" />
-                </div>
-                <div>
-                  <p className="text-[11px] uppercase tracking-wide text-slate-400">
-                    {t('metricPendingReview')}
-                  </p>
-                  <p className="font-mono text-lg font-semibold tabular-nums text-white">
-                    {laneCounts.review}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 rounded-xl bg-white/5 px-3 py-2.5">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-500/20">
-                  <Clock className="h-4 w-4 text-violet-400" />
-                </div>
-                <div>
-                  <p className="text-[11px] uppercase tracking-wide text-slate-400">
-                    {t('metricNeedsAssignee')}
-                  </p>
-                  <p className="font-mono text-lg font-semibold tabular-nums text-white">
-                    {tasksNeedingAssignee}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 rounded-xl bg-white/5 px-3 py-2.5">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/20">
-                  <Star className="h-4 w-4 text-emerald-400" />
-                </div>
-                <div>
-                  <p className="text-[11px] uppercase tracking-wide text-slate-400">
-                    {t('metricCommunityQueue')}
-                  </p>
-                  <p className="font-mono text-lg font-semibold tabular-nums text-white">
-                    {communityQueueCount}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Personal stats strip for authenticated users */}
-        {user && (
-          <div className="rounded-xl border border-border bg-gradient-to-r from-orange-500/5 to-amber-500/5 p-4 grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold font-mono tabular-nums text-foreground">{profile?.tasks_completed ?? 0}</p>
-              <p className="text-xs text-muted-foreground">{t('statsCompleted')}</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold font-mono tabular-nums text-foreground">{profile?.total_points ?? 0}</p>
-              <p className="text-xs text-muted-foreground">{t('statsPoints')}</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold font-mono tabular-nums text-organic-orange">{profile?.xp_total ?? 0}</p>
-              <p className="text-xs text-muted-foreground">{t('statsXp')}</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold font-mono tabular-nums text-foreground">{profile?.level ?? 1}</p>
-              <p className="text-xs text-muted-foreground">{t('statsLevel')}</p>
-            </div>
-          </div>
-        )}
-
-        {/* Start earning CTA for unauthenticated users */}
-        {!user && (
-          <div className="rounded-xl border-2 border-dashed border-organic-orange/30 bg-organic-orange/5 p-6 text-center">
-            <h3 className="text-lg font-semibold text-foreground">{t('earnCtaTitle')}</h3>
-            <p className="text-sm text-muted-foreground mt-1">{t('earnCtaDescription')}</p>
-            <Link href="/signup" className="mt-4 inline-flex items-center gap-2 rounded-lg bg-organic-orange text-white px-5 py-2.5 text-sm font-medium hover:bg-orange-600 transition-colors">
-              {t('earnCtaButton')} <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-        )}
-
-        <section className="rounded-2xl border border-border bg-card p-4 sm:p-5">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <h2 className="text-2xl font-semibold text-foreground">{t('executionBoardTitle')}</h2>
-              <p className="mt-1 text-sm text-muted-foreground">{t('executionBoardSubtitle')}</p>
+              <h1 className="text-[28px] font-bold leading-tight text-foreground">{t('title')}</h1>
+              <p className="mt-0.5 text-sm text-muted-foreground">{t('subtitle')}</p>
+              <p
+                data-testid="tasks-sprint-context-banner"
+                className="mt-1.5 flex items-center gap-1.5 font-mono text-xs text-muted-foreground"
+              >
+                <span
+                  className={`inline-block h-2 w-2 rounded-full ${
+                    currentSprint && ['active', 'review'].includes(currentSprint.status ?? '')
+                      ? 'bg-emerald-500'
+                      : 'bg-amber-500'
+                  }`}
+                />
+                {currentSprint
+                  ? t('sprintContextActive', {
+                      name: currentSprint.name,
+                      status: currentSprint.status ?? 'active',
+                    })
+                  : t('sprintContextNone')}
+              </p>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
+
+            <div className="flex shrink-0 items-center gap-2">
               {canReview && (
                 <Link
                   href="/admin/submissions"
-                  className="inline-flex items-center gap-2 rounded-lg border border-input px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                  className="inline-flex items-center gap-2 rounded-lg border border-input px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
                 >
                   {t('reviewQueue')}
                 </Link>
@@ -754,7 +639,7 @@ export default function TasksPage() {
               {canManage && (
                 <button
                   onClick={() => setShowNewTaskModal(true)}
-                  className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                  className="inline-flex items-center gap-2 rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                 >
                   <Plus className="h-4 w-4" />
                   {t('newTask')}
@@ -763,29 +648,69 @@ export default function TasksPage() {
             </div>
           </div>
 
-          <div data-testid="tasks-status-lanes" className="mt-4">
-            <div data-testid="tasks-tab-bar" className="flex flex-wrap gap-2">
-              {visibleTabs.map((tab) => (
-                <button
-                  key={tab}
-                  type="button"
-                  onClick={() => setActiveView(tab)}
-                  data-testid={`tasks-tab-${tab}`}
-                  className={`inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${
-                    activeView === tab
-                      ? 'border-primary/40 bg-primary/10 text-primary'
-                      : 'border-input text-muted-foreground hover:bg-muted'
-                  }`}
-                >
-                  <span>{t(`tab.${tab}`)}</span>
-                  <span className="rounded-full bg-muted px-2 py-0.5 font-mono text-[11px] tabular-nums text-muted-foreground">
-                    {tabTaskCountMap[tab] ?? 0}
-                  </span>
-                </button>
-              ))}
+          {/* Inline stats strip — large mono numbers, no icons */}
+          <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <div>
+              <p className="font-mono text-2xl font-bold tabular-nums text-foreground">{openExecutionCount}</p>
+              <p className="text-xs text-muted-foreground">{t('metricOpenExecution')}</p>
+            </div>
+            <div>
+              <p className="font-mono text-2xl font-bold tabular-nums text-foreground">{laneCounts.review}</p>
+              <p className="text-xs text-muted-foreground">{t('metricPendingReview')}</p>
+            </div>
+            <div>
+              <p className="font-mono text-2xl font-bold tabular-nums text-foreground">{tasksNeedingAssignee}</p>
+              <p className="text-xs text-muted-foreground">{t('metricNeedsAssignee')}</p>
+            </div>
+            <div>
+              <p className="font-mono text-2xl font-bold tabular-nums text-foreground">{communityQueueCount}</p>
+              <p className="text-xs text-muted-foreground">{t('metricCommunityQueue')}</p>
             </div>
           </div>
         </section>
+
+        {/* Inline CTA for unauthenticated users */}
+        {!user && (
+          <p className="text-sm text-muted-foreground">
+            {t.rich('earnCtaInline', {
+              link: (chunks) => (
+                <Link href="/signup" className="font-medium text-primary underline underline-offset-2 hover:text-primary/80">
+                  {chunks}
+                </Link>
+              ),
+            })}
+          </p>
+        )}
+
+        {/* Execution board section title */}
+        <div>
+          <h2 className="text-lg font-semibold text-foreground">{t('executionBoardTitle')}</h2>
+          <p className="text-sm text-muted-foreground">{t('executionBoardSubtitle')}</p>
+        </div>
+
+        {/* Segmented pill tabs */}
+        <div data-testid="tasks-status-lanes">
+          <div data-testid="tasks-tab-bar" className="inline-flex rounded-lg border border-border bg-muted/50 p-1">
+            {visibleTabs.map((tab) => (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => setActiveView(tab)}
+                data-testid={`tasks-tab-${tab}`}
+                className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all ${
+                  activeView === tab
+                    ? 'bg-card text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <span>{t(`tab.${tab}`)}</span>
+                <span className="font-mono text-[11px] tabular-nums text-muted-foreground">
+                  {tabTaskCountMap[tab] ?? 0}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
 
       <TaskFiltersBar
         dataTestIdPrefix="tasks-filter"
