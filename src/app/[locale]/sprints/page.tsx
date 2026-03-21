@@ -734,20 +734,22 @@ export default function SprintsPage() {
             </p>
           </div>
           <div className="mt-4 space-y-3">
-            <div className="rounded-xl border border-gray-200 bg-gray-50 px-3 py-2">
-              <p className="text-xs text-gray-500">{t('metricOpenExecution')}</p>
-              <p className="text-2xl font-bold text-gray-900">{openExecutionCount}</p>
-            </div>
-            <div className="rounded-xl border border-gray-200 bg-gray-50 px-3 py-2">
-              <p className="text-xs text-gray-500">{t('settlementBlockedMetric')}</p>
-              <p className="text-2xl font-bold text-gray-900">{blockedSettlementCount}</p>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-green-200 bg-green-50 px-3 py-1 text-xs font-medium text-green-700">
+                <span className="h-2 w-2 rounded-full bg-green-500" />
+                {t('settlementOpenBadge', { count: openExecutionCount })}
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-medium text-red-700">
+                <span className="h-2 w-2 rounded-full bg-red-500" />
+                {t('settlementBlockedBadge', { count: blockedSettlementCount })}
+              </span>
             </div>
             <div
               data-testid="sprints-settlement-alert"
-              className={`rounded-xl border px-3 py-2 text-sm ${
+              className={`rounded-lg border-l-4 px-3 py-2 text-sm ${
                 referenceSprint?.settlement_blocked_reason
-                  ? 'border-red-200 bg-red-50 text-red-700'
-                  : 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                  ? 'border-l-red-500 bg-red-50 text-red-700'
+                  : 'border-l-emerald-500 bg-emerald-50 text-emerald-700'
               }`}
             >
               <div className="flex items-start gap-2">

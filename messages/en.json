@@ -730,7 +730,13 @@
     "snapshotIncomplete": "Incomplete",
     "snapshotPoints": "Points",
     "snapshotCompletionRate": "Completion rate",
-    "snapshotIncompleteAction": "Incomplete tasks: {action}"
+    "snapshotIncompleteAction": "Incomplete tasks: {action}",
+    "settlementOpenBadge": "Open: {count}",
+    "settlementBlockedBadge": "Blocked: {count}",
+    "milestoneOpen": "{open} open",
+    "milestoneClosed": "{closed} closed",
+    "timelineProgress": "{count} tasks \u2022 {percent}%",
+    "timelineCurrent": "Current"
   },
   "SprintDetail": {
     "loading": "Loading sprint details...",

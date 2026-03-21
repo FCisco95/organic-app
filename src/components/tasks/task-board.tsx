@@ -66,8 +66,8 @@ export function TaskBoard({
   const availableStatuses = moveTargets ?? visibleColumns.map((column) => column.id);
   const gridClass =
     visibleColumns.length === 4
-      ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
-      : 'grid-cols-1 md:grid-cols-3 lg:grid-cols-5';
+      ? 'md:grid-cols-2 lg:grid-cols-4'
+      : 'md:grid-cols-3 lg:grid-cols-5';
 
   const handleDragStart = (task: TaskBoardTask, event: DragEvent) => {
     setDraggedTask(task);
@@ -101,9 +101,9 @@ export function TaskBoard({
 
   if (loading) {
     return (
-      <div className={`grid ${gridClass} gap-4`}>
+      <div className={`flex snap-x snap-mandatory overflow-x-auto gap-4 pb-2 md:grid ${gridClass}`}>
         {visibleColumns.map((col) => (
-          <div key={col.id} className="bg-white rounded-lg border border-gray-200 p-4">
+          <div key={col.id} className="min-w-[280px] snap-start shrink-0 md:min-w-0 md:shrink bg-white rounded-lg border border-gray-200 p-4">
             <div className="h-6 bg-gray-200 rounded w-1/2 mb-4 animate-pulse"></div>
             <div className="space-y-3">
               {[1, 2].map((i) => (
@@ -117,14 +117,14 @@ export function TaskBoard({
   }
 
   return (
-    <div className={`grid ${gridClass} gap-4`}>
+    <div className={`flex snap-x snap-mandatory overflow-x-auto gap-4 pb-2 md:grid ${gridClass}`}>
       {visibleColumns.map((column) => {
         const columnTasks = getTasksByStatus(column.id);
         const isDropTarget = draggedTask && draggedTask.status !== column.id;
         return (
           <div
             key={column.id}
-            className={`rounded-lg border-2 p-4 ${column.color} min-h-[500px] transition-all ${
+            className={`min-w-[280px] snap-start shrink-0 md:min-w-0 md:shrink rounded-lg border-2 p-4 ${column.color} min-h-[500px] transition-all ${
               isDropTarget ? 'ring-2 ring-organic-orange ring-offset-2 scale-[1.02]' : ''
             }`}
             onDragOver={handleDragOver}
