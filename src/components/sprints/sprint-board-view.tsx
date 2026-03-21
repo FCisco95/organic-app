@@ -1,6 +1,6 @@
 'use client';
 
-import { AlertTriangle, Plus, ShieldCheck, Target } from 'lucide-react';
+import { AlertTriangle, ChevronDown, GitBranch, Plus, ShieldCheck } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { TaskBoard, TaskBoardTask, TaskStatus } from '@/components/tasks/task-board';
@@ -65,15 +65,15 @@ export function SprintBoardView({
 
   if (!selectedSprint) {
     return (
-      <div className="text-center py-12 bg-white rounded-xl border border-gray-200" data-testid="sprints-board-view">
-        <Target className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-        <p className="text-gray-500">{t('noActiveOrUpcoming')}</p>
+      <div className="rounded-md border border-gray-200 bg-white py-16 text-center" data-testid="sprints-board-view">
+        <GitBranch className="mx-auto mb-3 h-12 w-12 text-gray-300" />
+        <p className="text-sm text-gray-500">{t('noActiveOrUpcoming')}</p>
         {canCreateSprint && (
           <button
             onClick={onOpenCreate}
-            className="mt-4 inline-flex items-center gap-2 bg-organic-orange hover:bg-orange-600 text-white px-5 py-2 rounded-lg transition-colors font-medium"
+            className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-organic-orange bg-organic-orange px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-orange-600"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="h-3.5 w-3.5" />
             {t('createSprint')}
           </button>
         )}
@@ -81,138 +81,159 @@ export function SprintBoardView({
     );
   }
 
+  const getDuration = () => {
+    const start = new Date(selectedSprint.start_at);
+    const end = new Date(selectedSprint.end_at);
+    const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+    return `${days}d`;
+  };
+
   return (
-    <div className="space-y-5" data-testid="sprints-board-view">
+    <div className="space-y-4" data-testid="sprints-board-view">
+      {/* GitHub-style repo header: branch selector + sprint info */}
       <div
-        className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm"
+        className="rounded-md border border-gray-200 bg-white"
         data-testid="sprints-board-context"
       >
-        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div className="flex flex-col gap-2">
-          <label className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-            {t('assignToSprint')}
-          </label>
-          <div className="flex flex-wrap items-center gap-3">
-            <select
-              value={selectedSprintId ?? ''}
-              onChange={(event) => onSelectSprintId(event.target.value)}
-              data-testid="sprints-board-sprint-select"
-              className="min-w-[220px] rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:border-organic-orange focus:ring-2 focus:ring-organic-orange"
-            >
-              {activeSprint && (
-                <option value={activeSprint.id}>
-                  {t('activeSprintOption', { name: activeSprint.name })}
-                </option>
-              )}
-              {planningSprints.length > 0 && (
-                <optgroup label={t('planningSprintGroup')}>
-                  {planningSprints.map((sprint) => (
-                    <option key={sprint.id} value={sprint.id}>
-                      {sprint.name}
+        <div className="flex flex-col gap-3 border-b border-gray-200 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+          {/* Branch-style sprint selector */}
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div className="flex items-center">
+                <GitBranch className="mr-1.5 h-4 w-4 text-gray-500" />
+                <select
+                  value={selectedSprintId ?? ''}
+                  onChange={(event) => onSelectSprintId(event.target.value)}
+                  data-testid="sprints-board-sprint-select"
+                  className="min-w-[180px] appearance-none rounded-md border border-gray-300 bg-gray-50 py-1 pl-2 pr-7 text-sm font-medium text-gray-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                >
+                  {activeSprint && (
+                    <option value={activeSprint.id}>
+                      {t('activeSprintOption', { name: activeSprint.name })}
                     </option>
-                  ))}
-                </optgroup>
-              )}
-            </select>
-            {selectedSprint.status === 'planning' && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700">
-                {t('planningMode')}
-              </span>
-            )}
+                  )}
+                  {planningSprints.length > 0 && (
+                    <optgroup label={t('planningSprintGroup')}>
+                      {planningSprints.map((sprint) => (
+                        <option key={sprint.id} value={sprint.id}>
+                          {sprint.name}
+                        </option>
+                      ))}
+                    </optgroup>
+                  )}
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
+              </div>
+            </div>
+
             <span
               data-testid={`sprints-board-status-chip-${selectedSprint.status ?? 'planning'}`}
-              className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-700"
+              className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                selectedSprint.status === 'planning'
+                  ? 'bg-blue-100 text-blue-700'
+                  : selectedSprint.status === 'active'
+                    ? 'bg-orange-100 text-orange-700'
+                    : 'bg-gray-100 text-gray-700'
+              }`}
             >
               {t(`status.${selectedSprint.status ?? 'planning'}`)}
             </span>
           </div>
-        </div>
-        {canCreateSprint && planningSprints.length === 0 && !activeSprint && (
-          <button
-            onClick={onOpenCreate}
-            className="inline-flex items-center gap-2 rounded-lg border border-organic-orange px-4 py-2 text-sm font-medium text-organic-orange hover:bg-orange-50"
-          >
-            <Plus className="h-4 w-4" />
-            {t('createSprint')}
-          </button>
-        )}
-      </div>
-        <p className="text-xs text-gray-500">{t('boardCommandHint')}</p>
-      </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-4 mb-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-xs font-medium text-gray-500">{t('selectedSprint')}</p>
-          <h2 className="text-xl font-semibold text-gray-900">{selectedSprint.name}</h2>
-          <div className="text-sm text-gray-500">
-            {formatDate(selectedSprint.start_at)} - {formatDate(selectedSprint.end_at)}
-          </div>
-          <div className="text-sm text-gray-500 mt-1">
-            {selectedSprint.capacity_points != null
-              ? t('capacityValue', {
-                  used: currentSprintPoints,
-                  capacity: selectedSprint.capacity_points,
-                })
-              : t('capacityUncapped', { used: currentSprintPoints })}
-          </div>
-          {selectedSprint.capacity_points != null && (
-            <div className="mt-2 h-2 w-full max-w-xs rounded-full bg-gray-100 overflow-hidden">
-              <div
-                className="h-full bg-organic-orange"
-                style={{
-                  width: `${getCapacityPercent(
-                    currentSprintPoints,
-                    selectedSprint.capacity_points
-                  )}%`,
-                }}
-              ></div>
-            </div>
+          {canCreateSprint && planningSprints.length === 0 && !activeSprint && (
+            <button
+              onClick={onOpenCreate}
+              className="inline-flex items-center gap-1.5 rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              {t('createSprint')}
+            </button>
           )}
         </div>
-        <Link
-          href={`/sprints/${selectedSprint.id}`}
-          className="inline-flex items-center gap-2 text-organic-orange font-medium hover:text-orange-600"
+
+        {/* Sprint metadata row */}
+        <div className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-baseline gap-2">
+            <Link
+              href={`/sprints/${selectedSprint.id}`}
+              className="text-base font-semibold text-gray-900 hover:underline"
+            >
+              {selectedSprint.name}
+            </Link>
+            <span className="text-sm text-gray-500">
+              {formatDate(selectedSprint.start_at)} - {formatDate(selectedSprint.end_at)} · {getDuration()}
+            </span>
+          </div>
+          <div className="flex items-center gap-3 text-sm text-gray-500">
+            <span>
+              {selectedSprint.capacity_points != null
+                ? t('capacityValue', {
+                    used: currentSprintPoints,
+                    capacity: selectedSprint.capacity_points,
+                  })
+                : t('capacityUncapped', { used: currentSprintPoints })}
+            </span>
+            {selectedSprint.capacity_points != null && (
+              <div className="h-1.5 w-24 overflow-hidden rounded-full bg-gray-200">
+                <div
+                  className="h-full rounded-full bg-organic-orange transition-all"
+                  style={{
+                    width: `${Math.min(getCapacityPercent(currentSprintPoints, selectedSprint.capacity_points), 100)}%`,
+                  }}
+                />
+              </div>
+            )}
+            <Link
+              href={`/sprints/${selectedSprint.id}`}
+              className="text-sm font-medium text-blue-600 hover:underline"
+            >
+              {t('viewDetails')}
+            </Link>
+          </div>
+        </div>
+
+        {/* Settlement status banner */}
+        <div
+          className={`flex items-center gap-2 border-t px-4 py-2 text-xs ${
+            selectedSprint.settlement_blocked_reason
+              ? 'border-l-2 border-l-red-500 bg-red-50 text-red-700'
+              : 'text-gray-500'
+          }`}
+          data-testid="sprints-board-settlement-panel"
         >
-          {t('viewDetails')}
-          <Target className="w-4 h-4" />
-        </Link>
-      </div>
-
-      <div
-        className={`rounded-xl border px-4 py-3 text-sm ${
-          selectedSprint.settlement_blocked_reason
-            ? 'border-red-200 bg-red-50 text-red-700'
-            : 'border-emerald-200 bg-emerald-50 text-emerald-700'
-        }`}
-        data-testid="sprints-board-settlement-panel"
-      >
-        <div className="flex items-start gap-2">
           {selectedSprint.settlement_blocked_reason ? (
-            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+            <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
           ) : (
-            <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" />
+            <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-gray-400" />
           )}
-          <p>
+          <span>
             {selectedSprint.settlement_blocked_reason
               ? t('settlementPanelBlocked', { reason: selectedSprint.settlement_blocked_reason })
               : t('settlementReady')}
-          </p>
+          </span>
         </div>
       </div>
 
-      <TaskBoard
-        tasks={boardTasks}
-        loading={tasksLoading}
-        canManage={canAssignToSprint}
-        onStatusChange={onStatusChange}
-        onExternalDrop={onDropToSprint}
-        moveTargets={['backlog', 'todo', 'in_progress', 'review', 'done']}
-        activityCounts={activityCounts}
-        excludeStatuses={['backlog']}
-      />
+      {/* Board columns with horizontal scroll on mobile */}
+      <div className="overflow-x-auto pb-2 snap-x snap-mandatory md:overflow-x-visible">
+        <div className="min-w-[840px] md:min-w-0">
+          <TaskBoard
+            tasks={boardTasks}
+            loading={tasksLoading}
+            canManage={canAssignToSprint}
+            onStatusChange={onStatusChange}
+            onExternalDrop={onDropToSprint}
+            moveTargets={['backlog', 'todo', 'in_progress', 'review', 'done']}
+            activityCounts={activityCounts}
+            excludeStatuses={['backlog']}
+          />
+        </div>
+      </div>
 
-      <div
-        className="mt-4 bg-white rounded-xl border border-gray-200"
+      {/* Backlog — GitHub-style collapsible section */}
+      <details
+        open
+        className="group rounded-md border border-gray-200 bg-white"
         data-testid="sprints-backlog-surface"
         onDragOver={(event) => {
           if (!canAssignToSprint) return;
@@ -227,38 +248,43 @@ export function SprintBoardView({
           }
         }}
       >
-        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900">{tTasks('column.backlog')}</h3>
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-500">
-              {tTasks('listCount', { count: backlogTasks.length })}
+        <summary className="flex cursor-pointer items-center justify-between px-4 py-3 select-none">
+          <div className="flex items-center gap-2">
+            <ChevronDown className="h-4 w-4 text-gray-500 transition-transform group-open:rotate-0 -rotate-90" />
+            <h3 className="text-sm font-semibold text-gray-900">{tTasks('column.backlog')}</h3>
+            <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">
+              {backlogTasks.length}
             </span>
-            {canAssignToSprint && (
-              <button
-                onClick={onMoveSelected}
-                disabled={selectedBacklogIds.length === 0 || isMoving}
-                className="px-3 py-1.5 text-xs font-medium rounded-lg bg-organic-orange text-white hover:bg-orange-600 transition-colors disabled:opacity-50"
-              >
-                {isMoving ? t('movingToSprint') : t('moveToSprint')}
-              </button>
-            )}
           </div>
-        </div>
+          {canAssignToSprint && (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                onMoveSelected();
+              }}
+              disabled={selectedBacklogIds.length === 0 || isMoving}
+              className="rounded-md bg-blue-600 px-2.5 py-1 text-xs font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-40"
+            >
+              {isMoving ? t('movingToSprint') : t('moveToSprint')}
+            </button>
+          )}
+        </summary>
+
         {canAssignToSprint && (
-          <p className="px-6 pt-4 text-xs text-gray-500">{t('planningBacklogHint')}</p>
+          <p className="border-t border-gray-100 px-4 pt-2 text-xs text-gray-500">{t('planningBacklogHint')}</p>
         )}
 
         {tasksLoading ? (
-          <div className="p-6 space-y-3">
+          <div className="space-y-2 p-4">
             {[1, 2].map((i) => (
-              <div key={i} className="h-14 bg-gray-100 rounded animate-pulse"></div>
+              <div key={i} className="h-12 animate-pulse rounded bg-gray-100"></div>
             ))}
           </div>
         ) : backlogTasks.length === 0 ? (
-          <div className="p-6 text-center text-gray-500">{tTasks('noTasksInView')}</div>
+          <div className="border-t border-gray-100 px-4 py-8 text-center text-sm text-gray-500">{tTasks('noTasksInView')}</div>
         ) : (
           <div
-            className="divide-y divide-gray-100"
+            className="divide-y divide-gray-100 border-t border-gray-100"
             onDragOver={(event) => {
               if (!canAssignToSprint) return;
               event.preventDefault();
@@ -290,7 +316,7 @@ export function SprintBoardView({
                     event.dataTransfer.setData('text/task-id', task.id);
                     event.dataTransfer.effectAllowed = 'move';
                   }}
-                  className={`px-6 py-4 hover:bg-gray-50 transition-colors ${
+                  className={`px-4 py-3 hover:bg-gray-50 transition-colors ${
                     canAssignToSprint ? 'cursor-move' : ''
                   }`}
                 >
@@ -298,31 +324,37 @@ export function SprintBoardView({
                     {canAssignToSprint && (
                       <input
                         type="checkbox"
-                        className="mt-1 h-4 w-4 rounded border-gray-300 text-organic-orange focus:ring-organic-orange"
+                        className="mt-0.5 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                         checked={selectedBacklogIds.includes(task.id)}
                         onChange={(event) => onToggleBacklogSelect(task.id, event.target.checked)}
                       />
                     )}
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2 flex-wrap">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <Link
                           href={`/tasks/${task.id}`}
-                          className="font-medium text-gray-900 hover:text-organic-orange transition-colors"
+                          className="text-sm font-medium text-gray-900 hover:text-blue-600 hover:underline"
                         >
                           {task.title}
                         </Link>
                         {task.priority && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border bg-gray-100 text-gray-700 border-gray-300">
+                          <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-medium ${
+                            task.priority === 'high'
+                              ? 'bg-red-100 text-red-700'
+                              : task.priority === 'medium'
+                                ? 'bg-orange-100 text-orange-700'
+                                : 'bg-gray-100 text-gray-600'
+                          }`}>
                             {tTasks(`priority.${task.priority}`)}
                           </span>
                         )}
+                        {task.points && (
+                          <span className="rounded-full bg-blue-50 px-1.5 py-0.5 text-[10px] font-medium text-blue-700">
+                            {tTasks('pointsShort', { points: task.points })}
+                          </span>
+                        )}
                       </div>
-                      {task.description && (
-                        <p className="text-sm text-gray-600 line-clamp-2 mb-2">
-                          {task.description}
-                        </p>
-                      )}
-                      <div className="flex items-center flex-wrap gap-4 text-xs text-gray-500">
+                      <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
                         {task.assignee && (
                           <span>
                             {task.assignee.organic_id
@@ -338,25 +370,17 @@ export function SprintBoardView({
                             {isOverdue && ` (${tTasks('overdue')})`}
                           </span>
                         )}
-                      </div>
-                      <div className="flex items-center gap-4 text-xs text-gray-400 mt-2">
-                        <span>💬 {activity.comments}</span>
-                        <span>📤 {activity.submissions}</span>
-                        <span>👥 {activity.contributors}</span>
+                        {activity.comments > 0 && <span>{activity.comments} comments</span>}
+                        {activity.submissions > 0 && <span>{activity.submissions} submissions</span>}
                       </div>
                     </div>
-                    {task.points && (
-                      <span className="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded-full">
-                        {tTasks('pointsShort', { points: task.points })}
-                      </span>
-                    )}
                   </div>
                 </div>
               );
             })}
           </div>
         )}
-      </div>
+      </details>
     </div>
   );
 }

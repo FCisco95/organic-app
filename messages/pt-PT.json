@@ -619,7 +619,6 @@
     "phaseQueued": "Na fila",
     "settlementPanelTitle": "Postura de liquidação",
     "settlementBlockedMetric": "Liquidações bloqueadas",
-    "metricOpenExecution": "Execução aberta",
     "settlementReady": "Nenhum bloqueio de liquidação detectado para esta sprint.",
     "settlementPanelBlocked": "Bloqueado: {reason}",
     "boardCommandHint": "Selecione a sprint de destino antes de mover tarefas do backlog para execução.",
@@ -731,12 +730,12 @@
     "snapshotPoints": "Pontos",
     "snapshotCompletionRate": "Taxa de conclusão",
     "snapshotIncompleteAction": "Tarefas incompletas: {action}",
-    "settlementOpenBadge": "Aberto: {count}",
-    "settlementBlockedBadge": "Bloqueado: {count}",
-    "milestoneOpen": "{open} aberto(s)",
-    "milestoneClosed": "{closed} fechado(s)",
-    "timelineProgress": "{count} tarefas \u2022 {percent}%",
-    "timelineCurrent": "Atual"
+    "milestoneOpen": "Aberto",
+    "milestoneClosed": "Fechado",
+    "milestoneOpenCount": "{count} aberto(s)",
+    "milestoneClosedCount": "{count} fechado(s)",
+    "timelineCurrent": "Atual",
+    "metricOpenExecution": "Execução aberta"
   },
   "SprintDetail": {
     "loading": "Carregando detalhes da sprint...",

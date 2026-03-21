@@ -619,7 +619,6 @@
     "phaseQueued": "待进入",
     "settlementPanelTitle": "结算态势",
     "settlementBlockedMetric": "结算阻塞数",
-    "metricOpenExecution": "进行中任务",
     "settlementReady": "该冲刺未检测到结算阻塞。",
     "settlementPanelBlocked": "阻塞：{reason}",
     "boardCommandHint": "将待办任务移入执行前，请先选择目标冲刺。",
@@ -731,12 +730,12 @@
     "snapshotPoints": "积分",
     "snapshotCompletionRate": "完成率",
     "snapshotIncompleteAction": "未完成任务：{action}",
-    "settlementOpenBadge": "进行中: {count}",
-    "settlementBlockedBadge": "阻塞: {count}",
-    "milestoneOpen": "{open} 个未完成",
-    "milestoneClosed": "{closed} 个已完成",
-    "timelineProgress": "{count} 个任务 \u2022 {percent}%",
-    "timelineCurrent": "当前"
+    "milestoneOpen": "开放",
+    "milestoneClosed": "已关闭",
+    "milestoneOpenCount": "{count} 个未完成",
+    "milestoneClosedCount": "{count} 个已完成",
+    "timelineCurrent": "当前",
+    "metricOpenExecution": "进行中任务"
   },
   "SprintDetail": {
     "loading": "正在加载冲刺详情...",

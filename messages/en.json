@@ -619,7 +619,6 @@
     "phaseQueued": "Queued",
     "settlementPanelTitle": "Settlement posture",
     "settlementBlockedMetric": "Blocked settlements",
-    "metricOpenExecution": "Open execution",
     "settlementReady": "No settlement blockers detected for this sprint.",
     "settlementPanelBlocked": "Blocked: {reason}",
     "boardCommandHint": "Select the target sprint before moving backlog tasks into execution.",
@@ -731,12 +730,12 @@
     "snapshotPoints": "Points",
     "snapshotCompletionRate": "Completion rate",
     "snapshotIncompleteAction": "Incomplete tasks: {action}",
-    "settlementOpenBadge": "Open: {count}",
-    "settlementBlockedBadge": "Blocked: {count}",
-    "milestoneOpen": "{open} open",
-    "milestoneClosed": "{closed} closed",
-    "timelineProgress": "{count} tasks \u2022 {percent}%",
-    "timelineCurrent": "Current"
+    "milestoneOpen": "Open",
+    "milestoneClosed": "Closed",
+    "milestoneOpenCount": "{count} open",
+    "milestoneClosedCount": "{count} closed",
+    "timelineCurrent": "Current",
+    "metricOpenExecution": "Open execution"
   },
   "SprintDetail": {
     "loading": "Loading sprint details...",

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { CheckCircle2, ArrowRight } from 'lucide-react';
+import { AlertCircle, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { Sprint } from '@/features/sprints';
 
@@ -54,130 +54,139 @@ export function SprintCompleteDialog({
     setStep('summary');
   };
 
+  const openCount = stats.incompleteTasks;
+  const closedCount = stats.completedTasks;
+
   return (
     <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
       data-testid="sprint-complete-dialog"
     >
-      <div className="bg-white rounded-xl max-w-lg w-full p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">{t('completeSprintTitle')}</h2>
-        <p className="text-sm text-gray-600 mb-6">
-          {t('completeSprintSubtitle', { name: sprint.name })}
-        </p>
+      <div className="w-full max-w-lg rounded-lg border border-gray-200 bg-white shadow-xl">
+        {/* Header */}
+        <div className="border-b border-gray-200 px-5 py-3">
+          <h2 className="text-base font-semibold text-gray-900">{t('completeSprintTitle')}</h2>
+          <p className="mt-0.5 text-xs text-gray-500">
+            {t('completeSprintSubtitle', { name: sprint.name })}
+          </p>
+        </div>
 
-        {step === 'summary' && (
-          <div className="space-y-3 mb-6">
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <div className="bg-gray-50 rounded-lg p-4 text-center">
-                <p className="text-2xl font-bold text-gray-900">{stats.totalTasks}</p>
-                <p className="text-xs text-gray-500">{t('completeSummaryTotal')}</p>
-              </div>
-              <div className="bg-green-50 rounded-lg p-4 text-center">
-                <p className="text-2xl font-bold text-green-700">{stats.completedTasks}</p>
-                <p className="text-xs text-gray-500">{t('completeSummaryDone')}</p>
-              </div>
-              <div className="bg-orange-50 rounded-lg p-4 text-center">
-                <p className="text-2xl font-bold text-orange-600">{stats.incompleteTasks}</p>
-                <p className="text-xs text-gray-500">{t('completeSummaryIncomplete')}</p>
-              </div>
-              <div className="bg-blue-50 rounded-lg p-4 text-center">
-                <p className="text-2xl font-bold text-blue-700">
-                  {stats.completedPoints}/{stats.totalPoints}
-                </p>
-                <p className="text-xs text-gray-500">{t('completeSummaryPoints')}</p>
-              </div>
-            </div>
-            <div className="bg-gray-50 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-gray-600">{t('completeSummaryRate')}</span>
-                <span className="text-sm font-bold text-gray-900">{stats.completionRate}%</span>
-              </div>
-              <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-organic-orange to-organic-yellow transition-all"
-                  style={{ width: `${stats.completionRate}%` }}
-                />
-              </div>
-            </div>
-            <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">
-                {t('completeChecklistTitle')}
-              </p>
-              <ul className="space-y-1.5 text-sm text-gray-600">
-                <li>{t('completeChecklistReview')}</li>
-                <li>{t('completeChecklistDisputes')}</li>
-                <li>{t('completeChecklistSettlement')}</li>
-              </ul>
-            </div>
-          </div>
-        )}
-
-        {step === 'incomplete' && (
-          <div className="space-y-4 mb-6">
-            <p className="text-sm text-gray-700">
-              {t('incompleteTasksCount', { count: stats.incompleteTasks })}
-            </p>
-
-            <label className="flex items-start gap-3 p-3 rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors">
-              <input
-                type="radio"
-                name="incomplete_action"
-                value="backlog"
-                checked={incompleteAction === 'backlog'}
-                onChange={() => setIncompleteAction('backlog')}
-                className="mt-1 text-organic-orange focus:ring-organic-orange"
-              />
+        <div className="p-5">
+          {step === 'summary' && (
+            <div className="space-y-4">
+              {/* Chunky milestone progress bar */}
               <div>
-                <p className="font-medium text-gray-900">{t('incompleteBacklog')}</p>
-                <p className="text-sm text-gray-500">{t('incompleteBacklogDesc')}</p>
+                <div className="relative h-4 w-full overflow-hidden rounded-full bg-gray-200">
+                  <div
+                    className="h-full rounded-full bg-organic-orange transition-all"
+                    style={{ width: `${stats.completionRate}%` }}
+                  />
+                  {stats.completionRate > 15 && (
+                    <span className="absolute inset-0 flex items-center justify-center text-[11px] font-bold text-white mix-blend-difference">
+                      {stats.completionRate}%
+                    </span>
+                  )}
+                </div>
+                <div className="mt-1.5 text-xs text-gray-500">
+                  {stats.completionRate}% complete · {openCount} open · {closedCount} closed
+                </div>
               </div>
-            </label>
 
-            <label
-              className={`flex items-start gap-3 p-3 rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors ${
-                planningSprints.length === 0 ? 'opacity-50 pointer-events-none' : ''
-              }`}
-            >
-              <input
-                type="radio"
-                name="incomplete_action"
-                value="next_sprint"
-                checked={incompleteAction === 'next_sprint'}
-                onChange={() => setIncompleteAction('next_sprint')}
-                disabled={planningSprints.length === 0}
-                className="mt-1 text-organic-orange focus:ring-organic-orange"
-              />
-              <div className="flex-1">
-                <p className="font-medium text-gray-900">{t('incompleteNextSprint')}</p>
-                <p className="text-sm text-gray-500 mb-2">{t('incompleteNextSprintDesc')}</p>
-                {incompleteAction === 'next_sprint' && planningSprints.length > 0 && (
-                  <select
-                    value={nextSprintId}
-                    onChange={(e) => setNextSprintId(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-organic-orange focus:border-organic-orange"
-                  >
-                    {planningSprints.map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {s.name}
-                      </option>
-                    ))}
-                  </select>
-                )}
-                {planningSprints.length === 0 && (
-                  <p className="text-xs text-gray-400">{t('incompleteNoPlanningSprints')}</p>
-                )}
+              {/* Points summary */}
+              <div className="flex items-center gap-4 text-sm text-gray-600">
+                <span>{stats.completedPoints}/{stats.totalPoints} pts</span>
               </div>
-            </label>
-          </div>
-        )}
 
-        <div className="flex flex-col-reverse gap-3 sm:flex-row">
+              {/* Checks */}
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2 text-xs text-gray-600">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-gray-400" />
+                  <span>{t('completeChecklistReview')}</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-gray-600">
+                  {stats.incompleteTasks === 0 ? (
+                    <CheckCircle2 className="h-3.5 w-3.5 text-gray-400" />
+                  ) : (
+                    <AlertCircle className="h-3.5 w-3.5 text-amber-500" />
+                  )}
+                  <span>{t('completeChecklistDisputes')}</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-gray-600">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-gray-400" />
+                  <span>{t('completeChecklistSettlement')}</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {step === 'incomplete' && (
+            <div className="space-y-3">
+              <p className="text-sm text-gray-700">
+                {t('incompleteTasksCount', { count: stats.incompleteTasks })}
+              </p>
+
+              <label className="flex items-start gap-3 rounded-md border border-gray-200 p-3 cursor-pointer transition-colors hover:bg-gray-50">
+                <input
+                  type="radio"
+                  name="incomplete_action"
+                  value="backlog"
+                  checked={incompleteAction === 'backlog'}
+                  onChange={() => setIncompleteAction('backlog')}
+                  className="mt-0.5 text-blue-600 focus:ring-blue-500"
+                />
+                <div>
+                  <p className="text-sm font-medium text-gray-900">{t('incompleteBacklog')}</p>
+                  <p className="text-xs text-gray-500">{t('incompleteBacklogDesc')}</p>
+                </div>
+              </label>
+
+              <label
+                className={`flex items-start gap-3 rounded-md border border-gray-200 p-3 cursor-pointer transition-colors hover:bg-gray-50 ${
+                  planningSprints.length === 0 ? 'opacity-50 pointer-events-none' : ''
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="incomplete_action"
+                  value="next_sprint"
+                  checked={incompleteAction === 'next_sprint'}
+                  onChange={() => setIncompleteAction('next_sprint')}
+                  disabled={planningSprints.length === 0}
+                  className="mt-0.5 text-blue-600 focus:ring-blue-500"
+                />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900">{t('incompleteNextSprint')}</p>
+                  <p className="text-xs text-gray-500 mb-1.5">{t('incompleteNextSprintDesc')}</p>
+                  {incompleteAction === 'next_sprint' && planningSprints.length > 0 && (
+                    <select
+                      value={nextSprintId}
+                      onChange={(e) => setNextSprintId(e.target.value)}
+                      className="w-full rounded-md border border-gray-300 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    >
+                      {planningSprints.map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.name}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                  {planningSprints.length === 0 && (
+                    <p className="text-[11px] text-gray-400">{t('incompleteNoPlanningSprints')}</p>
+                  )}
+                </div>
+              </label>
+            </div>
+          )}
+        </div>
+
+        {/* Actions */}
+        <div className="flex items-center justify-end gap-2 border-t border-gray-200 px-5 py-3">
           {step === 'incomplete' ? (
             <button
               type="button"
               onClick={handleBack}
               disabled={loading}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium disabled:opacity-50"
+              className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50"
             >
               {t('back')}
             </button>
@@ -186,7 +195,7 @@ export function SprintCompleteDialog({
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium disabled:opacity-50"
+              className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50"
             >
               {t('cancel')}
             </button>
@@ -198,21 +207,21 @@ export function SprintCompleteDialog({
               loading ||
               (step === 'incomplete' && incompleteAction === 'next_sprint' && !nextSprintId)
             }
-            className="flex-1 bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition-colors font-medium disabled:opacity-50 flex items-center justify-center gap-2"
+            className="flex items-center gap-1.5 rounded-md border border-organic-orange bg-organic-orange px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-orange-600 disabled:opacity-50"
           >
             {loading ? (
               <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
                 {t('completingSprintButton')}
               </>
             ) : step === 'summary' && stats.incompleteTasks > 0 ? (
               <>
                 {t('next')}
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="h-3.5 w-3.5" />
               </>
             ) : (
               <>
-                <CheckCircle2 className="w-4 h-4" />
+                <CheckCircle2 className="h-3.5 w-3.5" />
                 {t('completeSprintButton')}
               </>
             )}
