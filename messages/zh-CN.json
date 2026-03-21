@@ -2792,6 +2792,14 @@
     "tabDirectory": "成员目录",
     "searchRankings": "按名称或 ID 搜索排名...",
     "backToCommunity": "返回社区",
-    "totalMembers": "{count} 位成员"
+    "totalMembers": "{count} 位成员",
+    "profileTabOverview": "概览",
+    "profileTabReputation": "声誉",
+    "profileTabAchievements": "成就",
+    "profileTabActivity": "活动",
+    "quickGlance": "排名 #{rank} · 等级 {level} · {tasks} 个任务已完成",
+    "xpBreakdownComingSoon": "XP 详情即将推出。",
+    "achievementsEarned": "已获得 {earned}/{total} 个成就",
+    "activityComingSoon": "活动时间线即将推出。"
   }
 }

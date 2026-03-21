@@ -2791,6 +2791,14 @@
     "tabDirectory": "Directory",
     "searchRankings": "Search rankings by name or ID...",
     "backToCommunity": "Back to Community",
-    "totalMembers": "{count} members"
+    "totalMembers": "{count} members",
+    "profileTabOverview": "Overview",
+    "profileTabReputation": "Reputation",
+    "profileTabAchievements": "Achievements",
+    "profileTabActivity": "Activity",
+    "quickGlance": "Rank #{rank} · Level {level} · {tasks} tasks completed",
+    "xpBreakdownComingSoon": "XP breakdown coming soon.",
+    "achievementsEarned": "{earned} of {total} achievements earned",
+    "activityComingSoon": "Activity timeline coming soon."
   }
 }

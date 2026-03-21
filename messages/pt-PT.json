@@ -2791,6 +2791,14 @@
     "tabDirectory": "Diretório",
     "searchRankings": "Pesquisar rankings por nome ou ID...",
     "backToCommunity": "Voltar à Comunidade",
-    "totalMembers": "{count} membros"
+    "totalMembers": "{count} membros",
+    "profileTabOverview": "Visao Geral",
+    "profileTabReputation": "Reputacao",
+    "profileTabAchievements": "Conquistas",
+    "profileTabActivity": "Atividade",
+    "quickGlance": "Rank #{rank} · Nivel {level} · {tasks} tarefas concluidas",
+    "xpBreakdownComingSoon": "Detalhamento de XP em breve.",
+    "achievementsEarned": "{earned} de {total} conquistas obtidas",
+    "activityComingSoon": "Linha do tempo de atividade em breve."
   }
 }
