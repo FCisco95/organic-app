@@ -71,10 +71,10 @@ async function main() {
       .maybeSingle();
 
     if (existing) {
-      // Update role and organic_id in case they drifted
+      // Update role, organic_id, and onboarding in case they drifted
       await supabase
         .from('user_profiles')
-        .update({ role: account.role, organic_id: account.organicId, name: account.name })
+        .update({ role: account.role, organic_id: account.organicId, name: account.name, onboarding_completed_at: new Date().toISOString() })
         .eq('id', existing.id);
       console.log(`[SKIP] ${account.email} already exists (updated role → ${account.role})`);
       continue;
@@ -106,13 +106,14 @@ async function main() {
     // Wait for trigger to create profile
     await waitForProfile(created.user.id);
 
-    // Update profile with role and organic_id
+    // Update profile with role, organic_id, and mark onboarding complete
     const { error: updateError } = await supabase
       .from('user_profiles')
       .update({
         name: account.name,
         role: account.role,
         organic_id: account.organicId,
+        onboarding_completed_at: new Date().toISOString(),
       })
       .eq('id', created.user.id);
 

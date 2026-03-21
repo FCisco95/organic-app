@@ -2101,7 +2101,11 @@
       "streak_7": "持续成长者",
       "streak_30": "坚定不移",
       "xp_1000": "冉冉新星",
-      "xp_10000": "传奇之路"
+      "xp_10000": "传奇之路",
+      "first_arbiter": "首席仲裁者",
+      "justice_keeper": "正义守护者",
+      "peacemaker": "和平缔造者",
+      "vindicated": "平反者"
     },
     "achievementDescriptions": {
       "first_task": "完成你的第一个任务",
@@ -2118,7 +2122,11 @@
       "streak_7": "保持7天连续活跃",
       "streak_30": "保持30天连续活跃",
       "xp_1000": "达到1,000经验值",
-      "xp_10000": "达到10,000经验值"
+      "xp_10000": "达到10,000经验值",
+      "first_arbiter": "在你的第一次争议中担任仲裁者",
+      "justice_keeper": "在多次争议中保持公正判断",
+      "peacemaker": "通过调解和共识解决争议",
+      "vindicated": "在最初对你不利的争议中获胜"
     },
     "xpSources": {
       "task_completed": "任务完成",
@@ -2765,6 +2773,17 @@
     "tabDirectory": "成员目录",
     "searchRankings": "按名称或 ID 搜索排名...",
     "backToCommunity": "返回社区",
-    "totalMembers": "{count} 位成员"
+    "totalMembers": "{count} 位成员",
+    "profileTabOverview": "概览",
+    "profileTabReputation": "声望",
+    "profileTabAchievements": "成就",
+    "profileTabActivity": "动态",
+    "quickGlance": "排名 #{rank} \u2022 等级 {level} \u2022 {tasks} 个任务已完成",
+    "achievementsEarned": "已获得 {earned}/{total} 个成就",
+    "xpBreakdownComingSoon": "详细经验值分析即将推出。",
+    "activityComingSoon": "活动时间线即将推出。",
+    "rankLabel": "排名",
+    "activeThisSprint": "{count} 位本周期活跃",
+    "buildYourStreak": "建立你的连续记录"
   }
 }
