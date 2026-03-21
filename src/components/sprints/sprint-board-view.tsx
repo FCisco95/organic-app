@@ -71,7 +71,7 @@ export function SprintBoardView({
         {canCreateSprint && (
           <button
             onClick={onOpenCreate}
-            className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-green-600 bg-green-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-green-700"
+            className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-organic-orange bg-organic-orange px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-orange-600"
           >
             <Plus className="h-3.5 w-3.5" />
             {t('createSprint')}
@@ -132,7 +132,7 @@ export function SprintBoardView({
                 selectedSprint.status === 'planning'
                   ? 'bg-blue-100 text-blue-700'
                   : selectedSprint.status === 'active'
-                    ? 'bg-green-100 text-green-700'
+                    ? 'bg-orange-100 text-orange-700'
                     : 'bg-gray-100 text-gray-700'
               }`}
             >
@@ -176,7 +176,7 @@ export function SprintBoardView({
             {selectedSprint.capacity_points != null && (
               <div className="h-1.5 w-24 overflow-hidden rounded-full bg-gray-200">
                 <div
-                  className="h-full rounded-full bg-green-500 transition-all"
+                  className="h-full rounded-full bg-organic-orange transition-all"
                   style={{
                     width: `${Math.min(getCapacityPercent(currentSprintPoints, selectedSprint.capacity_points), 100)}%`,
                   }}
@@ -197,14 +197,14 @@ export function SprintBoardView({
           className={`flex items-center gap-2 border-t px-4 py-2 text-xs ${
             selectedSprint.settlement_blocked_reason
               ? 'border-l-2 border-l-red-500 bg-red-50 text-red-700'
-              : 'border-l-2 border-l-green-500 bg-green-50 text-green-700'
+              : 'text-gray-500'
           }`}
           data-testid="sprints-board-settlement-panel"
         >
           {selectedSprint.settlement_blocked_reason ? (
             <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
           ) : (
-            <ShieldCheck className="h-3.5 w-3.5 shrink-0" />
+            <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-gray-400" />
           )}
           <span>
             {selectedSprint.settlement_blocked_reason

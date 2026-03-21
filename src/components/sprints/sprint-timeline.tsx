@@ -51,8 +51,8 @@ export function SprintTimeline() {
               {/* Timeline dot — status-colored, active gets pulse */}
               <div className="absolute left-0 top-5">
                 {isCompleted ? (
-                  <div className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-green-100">
-                    <CheckCircle2 className="h-4 w-4 text-green-600" />
+                  <div className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-orange-100">
+                    <CheckCircle2 className="h-4 w-4 text-orange-600" />
                   </div>
                 ) : isActive ? (
                   <div className="relative flex h-[30px] w-[30px] items-center justify-center">
@@ -72,7 +72,7 @@ export function SprintTimeline() {
                   isActive
                     ? 'border-l-2 border-l-blue-500 border-gray-200'
                     : isCompleted
-                      ? 'border-l-2 border-l-green-500 border-gray-200'
+                      ? 'border-l-2 border-l-orange-500 border-gray-200'
                       : 'border-gray-200'
                 }`}
               >
@@ -105,7 +105,7 @@ export function SprintTimeline() {
                         isCompleted
                           ? 'bg-gray-100 text-gray-600'
                           : isActive
-                            ? 'bg-green-100 text-green-700'
+                            ? 'bg-orange-100 text-orange-700'
                             : 'bg-blue-100 text-blue-700'
                       }`}
                     >
@@ -123,7 +123,7 @@ export function SprintTimeline() {
                       <div className="flex items-center gap-2">
                         <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-100">
                           <div
-                            className="h-full rounded-full bg-green-500 transition-all"
+                            className="h-full rounded-full bg-organic-orange transition-all"
                             style={{ width: `${pct}%` }}
                           />
                         </div>

@@ -273,7 +273,7 @@ export default function SprintDetailPage() {
   const getTaskStatusIcon = (status: string) => {
     switch (status) {
       case 'done':
-        return <CheckCircle2 className="h-4 w-4 text-green-500" />;
+        return <CheckCircle2 className="h-4 w-4 text-orange-500" />;
       case 'in_progress':
         return <div className="h-4 w-4 rounded-full border-2 border-orange-400 bg-orange-100" />;
       default:
@@ -410,8 +410,8 @@ export default function SprintDetailPage() {
   });
 
   const chartWidth = 640;
-  const chartHeight = 220;
-  const chartPadding = 24;
+  const chartHeight = 200;
+  const chartPadding = 20;
   const chartMax = Math.max(totalPoints, 1);
   const scaleX = (index: number) => {
     if (burndownDays.length <= 1) return chartPadding;
@@ -424,6 +424,12 @@ export default function SprintDetailPage() {
   };
   const buildPolyline = (values: number[]) =>
     values.map((value, index) => `${scaleX(index)},${scaleY(value)}`).join(' ');
+
+  // Grid lines for burndown
+  const gridLines = [0, 0.25, 0.5, 0.75, 1].map((ratio) => ({
+    y: scaleY(chartMax * ratio),
+    label: Math.round(chartMax * ratio),
+  }));
 
   return (
     <PageContainer width="wide">
@@ -455,7 +461,7 @@ export default function SprintDetailPage() {
                   className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${
                     sprint.status === 'completed'
                       ? 'border-gray-300 bg-gray-50 text-gray-600'
-                      : 'border-green-300 bg-green-50 text-green-700'
+                      : 'border-orange-300 bg-orange-50 text-orange-700'
                   }`}
                 >
                   {t(`status.${sprint.status ?? 'planning'}`)}
@@ -487,7 +493,7 @@ export default function SprintDetailPage() {
               {canManageSprint && sprint.status === 'planning' && (
                 <button
                   onClick={() => setShowStartDialog(true)}
-                  className="flex items-center gap-1 rounded-md border border-green-600 bg-green-600 px-2.5 py-1 text-xs font-medium text-white transition-colors hover:bg-green-700"
+                  className="flex items-center gap-1 rounded-md border border-organic-orange bg-organic-orange px-2.5 py-1 text-xs font-medium text-white transition-colors hover:bg-orange-600"
                   title={t('startSprint')}
                 >
                   <Play className="h-3 w-3" />
@@ -539,7 +545,7 @@ export default function SprintDetailPage() {
         <div className="px-5 py-3">
           <div className="relative h-4 w-full overflow-hidden rounded-full bg-gray-200">
             <div
-              className="h-full rounded-full bg-green-500 transition-all"
+              className="h-full rounded-full bg-organic-orange transition-all"
               style={{ width: `${progressPercentage}%` }}
             />
             {progressPercentage > 15 && (
@@ -557,7 +563,7 @@ export default function SprintDetailPage() {
             <span className="ml-1 text-gray-500">{t('totalTasks')}</span>
           </div>
           <div className="flex-1 py-2">
-            <span className="font-semibold text-green-600">{completedTasks}</span>
+            <span className="font-semibold text-orange-600">{completedTasks}</span>
             <span className="ml-1 text-gray-500">{t('completed')}</span>
           </div>
           <div className="flex-1 py-2">
@@ -585,68 +591,65 @@ export default function SprintDetailPage() {
           {/* Snapshot for completed sprints */}
           {sprint.status === 'completed' && snapshot && <SprintSnapshotCard snapshot={snapshot} />}
 
-          {/* Burndown Chart */}
-          <div className="rounded-md border border-gray-200 bg-white">
-            <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3">
-              <h2 className="text-sm font-semibold text-gray-900">{t('burndownTitle')}</h2>
-              <div className="flex items-center gap-4 text-[10px] text-gray-500">
-                <span className="inline-flex items-center gap-1.5">
-                  <span className="block h-0.5 w-3 bg-gray-300"></span>
+          {/* Burndown Chart — tight padding, gridlines with y-axis labels, dashed ideal */}
+          <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-500">{t('burndownTitle')}</h2>
+              <div className="flex items-center gap-3 text-[10px] text-gray-400">
+                <span className="inline-flex items-center gap-1">
+                  <span className="w-3 h-px bg-gray-300 block" />
                   {t('burndownIdeal')}
                 </span>
-                <span className="inline-flex items-center gap-1.5">
-                  <span className="block h-0.5 w-3 bg-green-500"></span>
+                <span className="inline-flex items-center gap-1">
+                  <span className="w-3 h-px bg-orange-500 block" />
                   {t('burndownActual')}
                 </span>
               </div>
             </div>
             {totalPoints === 0 ? (
-              <div className="px-4 py-8 text-center text-sm text-gray-500">{t('burndownEmpty')}</div>
+              <div className="text-xs text-gray-400">{t('burndownEmpty')}</div>
             ) : (
-              <div className="w-full overflow-x-auto p-4">
+              <div className="w-full overflow-x-auto">
                 <svg
                   viewBox={`0 0 ${chartWidth} ${chartHeight}`}
-                  className="h-48 w-full"
+                  className="w-full h-44"
                   role="img"
                   aria-label={t('burndownChartLabel')}
                 >
-                  {/* Grid pattern */}
-                  <defs>
-                    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#f3f4f6" strokeWidth="1"/>
-                    </pattern>
-                  </defs>
-                  <rect x={chartPadding} y={chartPadding} width={chartWidth - chartPadding * 2} height={chartHeight - chartPadding * 2} fill="url(#grid)" rx="4" />
-
-                  <line
-                    x1={chartPadding}
-                    y1={chartPadding}
-                    x2={chartPadding}
-                    y2={chartHeight - chartPadding}
-                    stroke="#e5e7eb"
-                    strokeWidth="1"
-                  />
-                  <line
-                    x1={chartPadding}
-                    y1={chartHeight - chartPadding}
-                    x2={chartWidth - chartPadding}
-                    y2={chartHeight - chartPadding}
-                    stroke="#e5e7eb"
-                    strokeWidth="1"
-                  />
+                  <rect x="0" y="0" width={chartWidth} height={chartHeight} fill="#ffffff" />
+                  {/* Grid lines */}
+                  {gridLines.map((line) => (
+                    <g key={line.label}>
+                      <line
+                        x1={chartPadding}
+                        y1={line.y}
+                        x2={chartWidth - chartPadding}
+                        y2={line.y}
+                        stroke="#f3f4f6"
+                        strokeWidth="1"
+                      />
+                      <text
+                        x={chartPadding - 4}
+                        y={line.y + 3}
+                        textAnchor="end"
+                        className="fill-gray-400"
+                        fontSize="9"
+                      >
+                        {line.label}
+                      </text>
+                    </g>
+                  ))}
                   <polyline
                     fill="none"
                     stroke="#d1d5db"
                     strokeWidth="1.5"
-                    strokeDasharray="4 4"
+                    strokeDasharray="4 3"
                     points={buildPolyline(burndownIdeal)}
                   />
                   <polyline
                     fill="none"
-                    stroke="#22c55e"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+                    stroke="#f97316"
+                    strokeWidth="2"
                     points={buildPolyline(burndownActual)}
                   />
                 </svg>
@@ -729,42 +732,42 @@ export default function SprintDetailPage() {
 
         {/* Sidebar */}
         <aside className="space-y-4">
-          {/* Phase timeline — GitHub metadata sidebar style */}
+          {/* Phase Stepper (vertical) — borrowed from Proto A */}
           <section
-            className="rounded-md border border-gray-200 bg-white"
+            className="rounded-md border border-gray-200 bg-white p-4"
             data-testid="sprint-detail-phase-timeline"
           >
-            <div className="border-b border-gray-200 px-4 py-2.5">
-              <p className="text-xs font-semibold text-gray-500">{t('phaseTimelineTitle')}</p>
-            </div>
-            <div className="px-4 py-3 space-y-1">
-              {SPRINT_PHASE_SEQUENCE.map((phase, index) => {
-                const isCurrent = currentPhaseIndex === index;
-                const isComplete = currentPhaseIndex > -1 && index < currentPhaseIndex;
-                return (
-                  <div
-                    key={phase}
-                    className="flex items-center gap-2 py-1"
-                  >
-                    {isComplete ? (
-                      <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
-                    ) : isCurrent ? (
-                      <div className="h-3.5 w-3.5 rounded-full border-2 border-blue-500 bg-blue-100" />
-                    ) : (
-                      <Circle className="h-3.5 w-3.5 text-gray-300" />
-                    )}
-                    <span className={`text-xs ${
-                      isCurrent
-                        ? 'font-semibold text-blue-600'
-                        : isComplete
-                          ? 'text-green-600'
-                          : 'text-gray-400'
-                    }`}>
-                      {t(`status.${phase}`)}
-                    </span>
-                  </div>
-                );
-              })}
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500 mb-3">
+              {t('phaseTimelineTitle')}
+            </p>
+            <div className="relative">
+              {/* Connecting line */}
+              <div className="absolute left-[7px] top-1 bottom-1 w-px bg-gray-200" />
+              <div className="space-y-2">
+                {SPRINT_PHASE_SEQUENCE.map((phase, index) => {
+                  const isCurrent = currentPhaseIndex === index;
+                  const isComplete = currentPhaseIndex > -1 && index < currentPhaseIndex;
+                  return (
+                    <div
+                      key={phase}
+                      className="relative flex items-center gap-2.5 pl-5"
+                    >
+                      <div className="absolute left-0 top-1/2 -translate-y-1/2">
+                        {isComplete ? (
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                        ) : isCurrent ? (
+                          <div className="w-3.5 h-3.5 rounded-full bg-orange-500 ring-2 ring-orange-200 ring-offset-1" />
+                        ) : (
+                          <Circle className="w-3.5 h-3.5 text-gray-300" />
+                        )}
+                      </div>
+                      <span className={`text-xs ${isCurrent ? 'font-semibold text-orange-700' : isComplete ? 'text-emerald-600' : 'text-gray-400'}`}>
+                        {t(`status.${phase}`)}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </section>
 
@@ -777,7 +780,7 @@ export default function SprintDetailPage() {
               {settlementBlocked ? (
                 <ShieldAlert className="h-3.5 w-3.5 text-red-500" />
               ) : (
-                <ShieldCheck className="h-3.5 w-3.5 text-green-500" />
+                <ShieldCheck className="h-3.5 w-3.5 text-gray-400" />
               )}
               <p className="text-xs font-semibold text-gray-500">{t('readinessChecklistTitle')}</p>
             </div>
@@ -785,13 +788,13 @@ export default function SprintDetailPage() {
             {/* Settlement status */}
             <div
               className={`flex items-center gap-2 border-b border-gray-100 px-4 py-2 text-xs ${
-                settlementBlocked ? 'text-red-600' : 'text-green-600'
+                settlementBlocked ? 'text-red-600' : 'text-gray-500'
               }`}
             >
               {settlementBlocked ? (
                 <AlertCircle className="h-3.5 w-3.5" />
               ) : (
-                <CheckCircle2 className="h-3.5 w-3.5" />
+                <CheckCircle2 className="h-3.5 w-3.5 text-gray-400" />
               )}
               <span>
                 {settlementBlocked
@@ -809,11 +812,11 @@ export default function SprintDetailPage() {
                   className="flex items-center gap-2 py-1 text-xs"
                 >
                   {item.ok ? (
-                    <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
+                    <CheckCircle2 className="h-3.5 w-3.5 text-gray-400" />
                   ) : (
                     <AlertCircle className="h-3.5 w-3.5 text-amber-500" />
                   )}
-                  <span className={item.ok ? 'text-gray-600' : 'text-amber-700'}>{item.label}</span>
+                  <span className={item.ok ? 'text-gray-500' : 'text-amber-700'}>{item.label}</span>
                 </div>
               ))}
             </div>
@@ -914,7 +917,7 @@ export default function SprintDetailPage() {
               <button
                 onClick={handleEditSprint}
                 disabled={isSaving || !editForm.name || !editForm.start_at || !editForm.end_at}
-                className="flex items-center gap-1.5 rounded-md border border-green-600 bg-green-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-green-700 disabled:opacity-50"
+                className="flex items-center gap-1.5 rounded-md border border-organic-orange bg-organic-orange px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-orange-600 disabled:opacity-50"
               >
                 <Save className="h-3.5 w-3.5" />
                 {isSaving ? t('saving') : t('saveChanges')}

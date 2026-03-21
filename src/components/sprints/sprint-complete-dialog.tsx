@@ -78,7 +78,7 @@ export function SprintCompleteDialog({
               <div>
                 <div className="relative h-4 w-full overflow-hidden rounded-full bg-gray-200">
                   <div
-                    className="h-full rounded-full bg-green-500 transition-all"
+                    className="h-full rounded-full bg-organic-orange transition-all"
                     style={{ width: `${stats.completionRate}%` }}
                   />
                   {stats.completionRate > 15 && (
@@ -100,19 +100,19 @@ export function SprintCompleteDialog({
               {/* Checks */}
               <div className="space-y-1.5">
                 <div className="flex items-center gap-2 text-xs text-gray-600">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
+                  <CheckCircle2 className="h-3.5 w-3.5 text-gray-400" />
                   <span>{t('completeChecklistReview')}</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-gray-600">
                   {stats.incompleteTasks === 0 ? (
-                    <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
+                    <CheckCircle2 className="h-3.5 w-3.5 text-gray-400" />
                   ) : (
                     <AlertCircle className="h-3.5 w-3.5 text-amber-500" />
                   )}
                   <span>{t('completeChecklistDisputes')}</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-gray-600">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
+                  <CheckCircle2 className="h-3.5 w-3.5 text-gray-400" />
                   <span>{t('completeChecklistSettlement')}</span>
                 </div>
               </div>
@@ -207,7 +207,7 @@ export function SprintCompleteDialog({
               loading ||
               (step === 'incomplete' && incompleteAction === 'next_sprint' && !nextSprintId)
             }
-            className="flex items-center gap-1.5 rounded-md border border-green-600 bg-green-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-green-700 disabled:opacity-50"
+            className="flex items-center gap-1.5 rounded-md border border-organic-orange bg-organic-orange px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-orange-600 disabled:opacity-50"
           >
             {loading ? (
               <>

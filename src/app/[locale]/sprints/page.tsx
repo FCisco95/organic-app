@@ -633,7 +633,7 @@ export default function SprintsPage() {
           {showStartButton && (
             <button
               onClick={() => setShowStartDialog(true)}
-              className="flex items-center gap-1.5 rounded-md border border-green-600 bg-green-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-green-700"
+              className="flex items-center gap-1.5 rounded-md border border-organic-orange bg-organic-orange px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-orange-600"
             >
               <Play className="h-3.5 w-3.5" />
               {t('startSprintButton')}
@@ -669,7 +669,7 @@ export default function SprintsPage() {
           {canCreateSprint && (
             <button
               onClick={() => setShowCreateModal(true)}
-              className="flex items-center gap-1.5 rounded-md border border-green-600 bg-green-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-green-700"
+              className="flex items-center gap-1.5 rounded-md border border-organic-orange bg-organic-orange px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-orange-600"
             >
               <Plus className="h-3.5 w-3.5" />
               {t('createSprint')}
@@ -713,9 +713,9 @@ export default function SprintsPage() {
                     index < SPRINT_PHASE_SEQUENCE.length - 1 ? 'mr-0.5' : ''
                   } ${
                     isComplete
-                      ? 'bg-green-500'
+                      ? 'bg-orange-400'
                       : isCurrent
-                        ? 'animate-pulse bg-blue-500'
+                        ? 'animate-pulse bg-orange-500'
                         : 'bg-gray-200'
                   }`}
                   title={t(`status.${phase}`)}
@@ -732,9 +732,9 @@ export default function SprintsPage() {
                   key={phase}
                   className={`text-[10px] font-medium ${
                     isCurrent
-                      ? 'text-blue-600'
+                      ? 'text-orange-600'
                       : isComplete
-                        ? 'text-green-600'
+                        ? 'text-orange-600'
                         : 'text-gray-400'
                   }`}
                 >
@@ -751,13 +751,13 @@ export default function SprintsPage() {
           className={`flex items-center gap-2 border-t px-4 py-2.5 text-sm ${
             referenceSprint?.settlement_blocked_reason
               ? 'border-l-4 border-l-red-500 border-t-gray-200 bg-red-50 text-red-700'
-              : 'border-l-4 border-l-green-500 border-t-gray-200 bg-green-50 text-green-700'
+              : 'border-t-gray-200 text-gray-500'
           }`}
         >
           {referenceSprint?.settlement_blocked_reason ? (
             <AlertTriangle className="h-4 w-4 shrink-0" />
           ) : (
-            <ShieldCheck className="h-4 w-4 shrink-0" />
+            <ShieldCheck className="h-4 w-4 shrink-0 text-gray-400" />
           )}
           <span>
             {referenceSprint?.settlement_blocked_reason
@@ -788,7 +788,7 @@ export default function SprintsPage() {
           {canCreateSprint && (
             <button
               onClick={() => setShowCreateModal(true)}
-              className="mt-4 inline-flex items-center gap-1.5 rounded-md border border-green-600 bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700"
+              className="mt-4 inline-flex items-center gap-1.5 rounded-md border border-organic-orange bg-organic-orange px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-600"
             >
               <Plus className="h-4 w-4" />
               {t('createFirstSprint')}

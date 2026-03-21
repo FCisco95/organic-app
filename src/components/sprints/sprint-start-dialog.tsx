@@ -60,15 +60,15 @@ export function SprintStartDialog({
           {/* GitHub-style check items */}
           <div className="space-y-1.5">
             <div className="flex items-center gap-2 text-xs text-gray-600">
-              <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
+              <CheckCircle2 className="h-3.5 w-3.5 text-gray-400" />
               <span>{t('startChecklistTaskLoad', { count: taskCount })}</span>
             </div>
             <div className="flex items-center gap-2 text-xs text-gray-600">
-              <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
+              <CheckCircle2 className="h-3.5 w-3.5 text-gray-400" />
               <span>{t('startChecklistSingleActive')}</span>
             </div>
             <div className="flex items-center gap-2 text-xs text-gray-600">
-              <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
+              <CheckCircle2 className="h-3.5 w-3.5 text-gray-400" />
               <span>{t('startChecklistIrreversible')}</span>
             </div>
           </div>
@@ -90,7 +90,7 @@ export function SprintStartDialog({
             type="button"
             onClick={onConfirm}
             disabled={loading}
-            className="flex items-center gap-1.5 rounded-md border border-green-600 bg-green-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-green-700 disabled:opacity-50"
+            className="flex items-center gap-1.5 rounded-md border border-organic-orange bg-organic-orange px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-orange-600 disabled:opacity-50"
           >
             {loading ? (
               <>

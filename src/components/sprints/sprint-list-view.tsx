@@ -66,7 +66,7 @@ export function SprintListView({
                 <span
                   className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${
                     isOpen
-                      ? 'border-green-300 bg-green-50 text-green-700'
+                      ? 'border-orange-300 bg-orange-50 text-orange-700'
                       : 'border-gray-300 bg-gray-50 text-gray-600'
                   }`}
                 >
@@ -89,7 +89,7 @@ export function SprintListView({
           <div className="mt-3 ml-6.5">
             <div className="relative h-3.5 w-full overflow-hidden rounded-full bg-gray-200">
               <div
-                className="h-full rounded-full bg-green-500 transition-all"
+                className="h-full rounded-full bg-organic-orange transition-all"
                 style={{ width: `${percent}%` }}
               />
               {percent > 20 && (
