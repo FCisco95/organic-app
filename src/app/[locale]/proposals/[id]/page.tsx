@@ -221,7 +221,7 @@ export default function ProposalDetailPage() {
         .limit(20);
 
       if (error) throw error;
-      setStageEvents((data ?? []) as StageEvent[]);
+      setStageEvents((data ?? []) as unknown as StageEvent[]);
     } catch {
       setStageEvents([]);
     }

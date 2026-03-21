@@ -55,6 +55,7 @@ const CADENCE_DOT_COLOR: Record<QuestCadence, string> = {
   daily: 'bg-blue-400',
   weekly: 'bg-purple-400',
   long_term: 'bg-amber-400',
+  event: 'bg-emerald-400',
 };
 
 export function ProgressionShell({ sourceContext = null }: { sourceContext?: SourceContext | null }) {

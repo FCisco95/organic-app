@@ -24,6 +24,7 @@ import { PageContainer } from '@/components/layout';
 import { useMember, ROLE_LABELS, ROLE_COLORS } from '@/features/members';
 import type { UserRole } from '@/types/database';
 import { useReputation, useAchievements, useLeaderboard } from '@/features/reputation';
+import type { AchievementWithStatus } from '@/features/reputation/types';
 import { LevelBadge } from '@/components/reputation/level-badge';
 import { XpProgressBar } from '@/components/reputation/xp-progress-bar';
 import { StreakDisplay } from '@/components/reputation/streak-display';
@@ -357,12 +358,9 @@ function ActivityFeed({
   reputation,
   achievements,
 }: {
-  member: { tasks_completed: number; total_points: number; created_at?: string };
+  member: { tasks_completed: number; total_points: number; created_at?: string | null };
   reputation: { level: number; xp_total: number } | null | undefined;
-  achievements:
-    | Array<{ key: string; name: string; unlocked: boolean; unlocked_at?: string | null }>
-    | null
-    | undefined;
+  achievements: AchievementWithStatus[] | null | undefined;
 }) {
   const t = useTranslations('Community');
 
@@ -386,7 +384,7 @@ function ActivityFeed({
 
       unlocked.forEach((a, i) => {
         result.push({
-          id: `ach-${a.key}`,
+          id: `ach-${a.id}`,
           icon: <Trophy className="w-4 h-4 text-yellow-500" />,
           description: t('activityAchievement', { name: a.name }),
           timestamp: a.unlocked_at
