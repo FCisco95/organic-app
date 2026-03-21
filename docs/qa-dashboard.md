@@ -17,7 +17,7 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 | 4.7 | Tasks E2E | 17 | DONE | S3 | [plan](plans/2026-03-08-tasks-qa-revamp.md) | `main` (3aed048) | `main` (e3d4439) |
 | 4.8 | Sprints E2E | 11 | DONE | S1 | [plan](plans/2026-03-21-sprints-qa-revamp.md) | `main` (25d3df6) | `main` (7ef0c54) |
 | 4.9 | Proposals, Governance | 17 | DONE | S2 | [plan](plans/2026-03-19-proposals-qa-revamp.md) | merged to main | merged to main |
-| 4.10 | Disputes | 13 | PLANNED | S1 | [plan](plans/2026-03-21-disputes-qa-revamp.md) | — | — |
+| 4.10 | Disputes | 13 | FIXED | S1 | [plan](plans/2026-03-21-disputes-qa-revamp.md) | `main` (7406bd9) | — |
 | 4.11 | Rewards | 9 | PENDING | — | — | — | — |
 | 4.12 | Notifications | 6 | PENDING | — | — | — | — |
 | 4.13 | Admin Ops | 8 | PENDING | — | — | — | — |
@@ -45,7 +45,7 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 
 | Action | Section | What to do |
 |--------|---------|------------|
-| **Next to fix** | 4.10 Disputes | PLANNED — 4 functional fixes (S1 role visibility, S2 non-party UX, S2 SLA consistency, S3 rail dedup) |
+| **Next to revamp** | 4.10 Disputes | FIXED — 4 bugs fixed, ready for prototype-executor |
 | **Next to QA** | 4.11 Rewards | First remaining PENDING section — 9 cases |
 | **Next to QA** | 4.12 Notifications | Second PENDING section — 6 cases |
 
@@ -69,7 +69,7 @@ Issues spanning multiple sections — track resolution centrally.
 **DONE (10/19):** 4.1 Auth, 4.2 Navigation, 4.3 Home/Analytics, 4.4 Community, 4.5 Profile, 4.6 Quests, 4.7 Tasks, 4.8 Sprints, 4.9 Proposals — all merged to `main`
 
 **Wave B — Core feature sections:**
-1. 4.10 Disputes (13 cases) — **PLANNED**, ready for qa-fixer
+1. 4.10 Disputes (13 cases) — **FIXED**, ready for prototype-executor
 2. 4.11 Rewards (9 cases) — PENDING
 3. 4.12 Notifications (6 cases) — PENDING
 
