@@ -73,6 +73,7 @@
     "trustActivityRecent": "动态中有 {count} 条治理/任务事件。",
     "trustActivityEmpty": "暂无近期活动事件。",
     "trustActivityWindow": "滚动动态窗口",
+    "trustSprintNoneShort": "无活跃冲刺",
     "trustSprintEnding": "即将结束",
     "trustSprintEndingDesc": "当前冲刺即将结束 -- 抓紧时间！",
     "carouselProposalsTitle": "提案与治理",
@@ -1664,7 +1665,8 @@
       "dispute_escalated": "{actor} 升级了争议：{title}",
       "dispute_resolved": "争议已解决：{title}",
       "dispute_withdrawn": "{actor} 撤回了争议：{title}",
-      "empty": "暂无活动"
+      "empty": "暂无活动",
+      "viewAll": "查看所有活动 →"
     }
   },
   "Analytics": {

@@ -73,6 +73,7 @@
     "trustActivityRecent": "{count} governance/task events in feed.",
     "trustActivityEmpty": "No recent activity events.",
     "trustActivityWindow": "Rolling feed window",
+    "trustSprintNoneShort": "No active sprint",
     "trustSprintEnding": "Ending now",
     "trustSprintEndingDesc": "The current sprint is ending -- act fast!",
     "carouselProposalsTitle": "Proposals & Governance",
@@ -1673,7 +1674,8 @@
       "dispute_escalated": "{actor} escalated dispute: {title}",
       "dispute_resolved": "Dispute resolved: {title}",
       "dispute_withdrawn": "{actor} withdrew dispute: {title}",
-      "empty": "No activity yet"
+      "empty": "No activity yet",
+      "viewAll": "View all activity →"
     }
   },
   "Analytics": {
