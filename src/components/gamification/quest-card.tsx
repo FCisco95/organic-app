@@ -6,7 +6,7 @@ import type { QuestProgressItem, QuestCadence } from '@/features/gamification/ty
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { QuestProgressRing } from './quest-progress-ring';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 
 const QUEST_CTA_MAP: Record<string, { href: string; label: string }> = {
   daily_tasks_completed: { href: '/tasks', label: 'Go to Tasks' },
