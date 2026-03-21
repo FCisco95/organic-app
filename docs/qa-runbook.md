@@ -259,7 +259,7 @@ Use cases:
 **Plan:** `docs/plans/2026-03-08-tasks-qa-revamp.md`
 
 ## 4.8 Sprints End-to-End Workflow (Planning -> Completed)
-<!-- qa-status: PLANNED | severity: S1 | plan: docs/plans/2026-03-21-sprints-qa-revamp.md -->
+<!-- qa-status: DONE | severity: S1 | plan: docs/plans/2026-03-21-sprints-qa-revamp.md | merged: main (7ef0c54) -->
 Routes: `/sprints`, `/sprints/[id]`, `/sprints/past`.
 
 Use cases:
