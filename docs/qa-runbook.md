@@ -313,31 +313,30 @@ Use cases:
 **Plan:** `docs/plans/2026-03-19-proposals-qa-revamp.md`
 
 ## 4.10 Disputes Workflow (File -> Evidence -> Resolve/Appeal)
-<!-- qa-status: PENDING -->
+<!-- qa-status: PLANNED | severity: S1 | plan: docs/plans/2026-03-21-disputes-qa-revamp.md -->
 Routes: `/disputes`, `/disputes/[id]`.
 
 Use cases:
-- [ ] `DISP-01` Eligible member can file dispute from rejected submission flow.
-- [ ] `DISP-02` Queue page filters/tabs (`queue`, `mine`) work correctly.
-- [ ] `DISP-03` Detail page shows status/tier/SLA/evidence chronology.
-- [ ] `DISP-04` Comment thread add/list works and rejects empty content.
-- [ ] `DISP-05` Evidence upload accepts allowed file types and blocks unsupported ones.
-- [ ] `DISP-06` Late evidence is tagged correctly.
-- [ ] `DISP-07` Uploads are blocked after dispute window closes.
-- [ ] `DISP-08` Mediate/assign/respond actions enforce role constraints.
-- [ ] `DISP-09` Resolve action shows XP impact estimate and summary.
-- [ ] `DISP-10` Withdraw flow works for disputant when allowed.
-- [ ] `DISP-11` Appeal path works for appeal-eligible outcomes.
-- [ ] `DISP-12` Unauthorized users cannot access restricted dispute details.
-- [ ] `DISP-13` Mobile queue/detail controls remain usable.
+- [x] `DISP-01` Eligible member can file dispute from rejected submission flow. **SKIP** — no rejected submission in QA member account to test entry point
+- [x] `DISP-02` Queue page filters/tabs (`queue`, `mine`) work correctly. **PARTIAL, S2** — filters functional but member sees full admin triage deck
+- [x] `DISP-03` Detail page shows status/tier/SLA/evidence chronology. **PARTIAL, S2** — all sections render, data correct for admin/council, but non-party member sees stripped/misleading data
+- [x] `DISP-04` Comment thread add/list works and rejects empty content. **PASS, S3** — add works, empty/whitespace rejected, author name shown
+- [x] `DISP-05` Evidence upload accepts allowed file types and blocks unsupported ones. **PARTIAL, S3** — upload button present, accepts .png/.jpg/.jpeg/.pdf; file names display as UUIDs
+- [x] `DISP-06` Late evidence is tagged correctly. **PARTIAL, S3** — late evidence tag exists in code, no late evidence in test data to verify visual
+- [x] `DISP-07` Uploads are blocked after dispute window closes. **SKIP** — no closed-window dispute to test
+- [x] `DISP-08` Mediate/assign/respond actions enforce role constraints. **PARTIAL, S1** — resolve/assign correctly role-gated, but member sees triage deck with escalation controls
+- [x] `DISP-09` Resolve action shows XP impact estimate and summary. **PASS, S3** — impact lines update per resolution type, quality picker for compromise works
+- [x] `DISP-10` Withdraw flow works for disputant when allowed. **SKIP** — member not party to any dispute
+- [x] `DISP-11` Appeal path works for appeal-eligible outcomes. **SKIP** — disputant is different account
+- [x] `DISP-12` Unauthorized users cannot access restricted dispute details. **PARTIAL, S2** — non-party member accesses page but sees "Unassigned" for all participants instead of access denial
+- [x] `DISP-13` Mobile queue/detail controls remain usable. **PARTIAL, S2** — queue usable but triage deck dominates viewport; detail page extremely long single-column
 
-Feedback:
-- What works well:
-- What does not work:
-- UI improvements requested:
-- Top 3 highest-impact changes:
-- Section severity (`S0/S1/S2/S3`):
-- Confidence score (`1-5`):
+### Feedback
+<!-- Full feedback archived in git history + plan file. Summary below. -->
+**Tested:** 2026-03-21 | **Cases:** 8/13 (4 skipped) | **Severity:** S1
+**Priority fixes:** Member role sees admin-only triage controls (escalation buttons, route-to-council/admin). Non-party member detail shows "Unassigned" instead of access restriction.
+**Top revamp:** Dispute queue needs Linear-style dense list with inline status. Detail page needs GitHub-style tabbed layout to reduce scroll depth. Mobile needs bottom-sheet detail pattern.
+**Plan:** `docs/plans/2026-03-21-disputes-qa-revamp.md`
 
 ## 4.11 Rewards and Claim Workflow
 <!-- qa-status: PENDING -->
