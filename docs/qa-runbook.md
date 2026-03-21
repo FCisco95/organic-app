@@ -135,54 +135,30 @@ Use cases:
 **Plan:** pending — write during Phase B
 
 ## 4.4 Community (Rankings + Directory + Profile)
-<!-- qa-status: TESTED | severity: S2 | plan: none -->
+<!-- qa-status: PLANNED | severity: S1 | plan: docs/plans/2026-03-21-community-qa-revamp.md -->
 Routes: `/community`, `/community/[id]`.
 Redirects: `/members` → `/community`, `/members/[id]` → `/community/[id]`, `/leaderboard` → `/community`.
 
 Use cases:
-- [x] `COMM-01` Community loads with dark hero + Rankings tab default. **PASS, S3**
-- [x] `COMM-02` Rankings: podium, your-position, ranked table, search bar works. **PASS, S3** — your-position card requires auth (by design)
+- [x] `COMM-01` Community loads with dark hero + Rankings tab default. **PARTIAL, S1** — 2 raw i18n keys in stat pills, 28 console errors
+- [x] `COMM-02` Rankings: podium, your-position, ranked table, search bar works. **PASS, S3** — your-position card hidden (QA accounts lack leaderboard data)
 - [x] `COMM-03` Directory: filterable member grid with rank/XP enriched cards. **PASS, S3**
-- [x] `COMM-04` Tab switching preserves per-tab state (search, filters, pagination). **PASS, S3** — fixed: CSS visibility toggle keeps both tabs mounted
+- [x] `COMM-04` Tab switching preserves per-tab state (search, filters, pagination). **PASS, S3** — CSS visibility toggle working
 - [x] `COMM-05` Rankings row click → `/community/[id]` profile page. **PASS, S3**
 - [x] `COMM-06` Directory card click → `/community/[id]` profile page. **PASS, S3**
-- [x] `COMM-07` Profile privacy gating works (private vs public profiles). **PARTIAL, S3** — code correct but no private profile fixture to verify live
+- [x] `COMM-07` Profile privacy gating works (private vs public profiles). **PARTIAL, S3** — code correct but no private profile fixture
 - [x] `COMM-08` `/members` redirects to `/community`. **PASS, S3**
 - [x] `COMM-09` `/members/[id]` redirects to `/community/[id]`. **PASS, S3**
 - [x] `COMM-10` `/leaderboard` redirects to `/community`. **PASS, S3**
 - [x] `COMM-11` Rankings search filters by name, email, and Organic ID. **PASS, S3**
-- [x] `COMM-12` All 3 locales (en, pt-PT, zh-CN) render Community correctly. **PASS, S3**
+- [x] `COMM-12` All 3 locales (en, pt-PT, zh-CN) render Community correctly. **PASS, S3** — same 2 raw i18n keys in all locales
 
 ### Feedback
-**Tested:** 2026-03-15 | **Cases:** 12/12 (COMM-07 partial — no private profile fixture) | **Severity:** S2
-
-**What works well:**
-- Dark gradient hero with Trophy icon and subtitle renders cleanly
-- Podium displays top 3 with avatars, XP, level badges, Organic IDs, and animated glow on 1st place pedestal
-- Ranked table has clear column headers (Rank, Member, Level, Tasks, XP) with responsive mobile/desktop layouts
-- Directory shows 417 members with rank/XP enrichment from leaderboard data, role filter buttons (All/Admin/Council/Member/Guest)
-- All 3 redirects (members, members/[id], leaderboard) work via `permanentRedirect`
-- Search works across name, email fragment, and Organic ID
-- Profile page has "Back to Community" link, section navigation, reputation, achievements, and meta row (location, website, social links, join date)
-- All 3 locales fully translated — Portuguese ("Comunidade", "Diretório"), Chinese ("社区", "排行榜", "成员目录")
-
-**What does not work:**
-- ~~**COMM-04: Tab state loss (S2)**~~ — **FIXED 2026-03-19**: replaced conditional rendering with CSS `hidden` toggle so both tabs stay mounted and preserve search/filter/pagination state.
-- ~~**Console errors on profile page**: 32 `IntlError: MISSING_MESSAGE` for achievement keys~~ — **FIXED 2026-03-19**: added 4 missing dispute achievement i18n keys (`first_arbiter`, `justice_keeper`, `peacemaker`, `vindicated`) to all 3 locales.
-- **QA login blocked**: QA fixture accounts (`qa-admin@organic.test`) return "Invalid login credentials" — cannot test auth-dependent features (your-position card, own-profile privacy link)
-
-**UI improvements requested:**
-- ~~Fix tab state preservation by lifting search/filter state to parent or using CSS visibility toggle~~ — DONE
-- ~~Add missing achievement i18n keys (pre-existing backlog)~~ — DONE
-- Create QA fixture accounts for future testing sessions
-
-**Top 3 highest-impact changes:**
-1. ~~**Fix tab state loss**~~ — DONE (CSS visibility toggle)
-2. **Add QA fixture accounts** — needed for testing auth-dependent features
-3. ~~**Add missing achievement i18n keys**~~ — DONE (4 dispute keys × 3 locales)
-
-**Section severity:** S3 (remaining issues are polish/fixture-only)
-**Confidence score:** 4/5 (12 PASS, 0 FAIL, 1 PARTIAL — auth features untested due to missing fixtures)
+<!-- Full feedback archived in git history + plan file. Summary below. -->
+**Tested:** 2026-03-21 (re-test with QA accounts) | **Cases:** 12/12 (1 partial) | **Severity:** S1
+**Priority fixes:** 2 missing Community i18n keys (activeThisSprint, buildYourStreak) + 4 missing achievement description keys
+**Top revamp:** Linear-style table keyboard nav, Vercel skeleton loading, Airtable filter chips with counts, GitHub contribution heatmap on profile
+**Plan:** `docs/plans/2026-03-21-community-qa-revamp.md`
 
 ## 4.5 My Profile, Privacy Toggle, and Progression Hub
 <!-- qa-status: REVAMPED | severity: S3 | plan: docs/plans/2026-03-21-profile-progression-fixes-v2.md -->

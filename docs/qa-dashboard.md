@@ -11,7 +11,7 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 | 4.1 | Auth, Session, Entry | 12 | TESTED | S1 | — | — | — |
 | 4.2 | Navigation, Layout, i18n | 8 | TESTED | S2 | — | — | — |
 | 4.3 | Home, Analytics, Leaderboard, Treasury | 8 | TESTED | S1 | — | — | — |
-| 4.4 | Members Directory | 8 | PENDING | — | — | — | — |
+| 4.4 | Community (Rankings + Directory + Profile) | 12 | PLANNED | S1 | [plan](plans/2026-03-21-community-qa-revamp.md) | — | — |
 | 4.5 | Profile, Progression, Community Profile | 11 | REVAMPED | S3 | [plan](plans/2026-03-21-profile-progression-fixes-v2.md) | `fix/4.5-profile-fixes-v2` | `fix/4.5-profile-fixes-v2` |
 | 4.6 | Quests, Referrals, Gamification | 11 | PENDING | — | — | — | — |
 | 4.7 | Tasks E2E | 17 | PLANNED | S1 | [plan](plans/2026-03-08-tasks-qa-revamp.md) | — | — |
@@ -45,10 +45,10 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 
 | Action | Section | What to do |
 |--------|---------|------------|
-| **Next to revamp** | 4.1 Auth | After testing + planning → visual revamp |
-| **Next to plan** | 4.1 Auth | Write plan from runbook feedback — highest S1 priority |
-| **Next to fix** | 4.7 Tasks | Plan exists → execute Phase B (functional fixes only) |
-| **Next to QA** | 4.4 Members | First PENDING section in recommended order |
+| **Next to fix** | 4.4 Community | Plan exists → qa-fixer (2 i18n keys + 4 achievement descriptions) |
+| **Next to fix** | 4.7 Tasks | Plan exists → qa-fixer (functional fixes) |
+| **Next to plan** | 4.1 Auth | Write plan from runbook feedback — S1 priority |
+| **Next to QA** | 4.6 Quests | First PENDING section in Wave 3 |
 
 ---
 
@@ -151,3 +151,4 @@ Revamp section 4.{X}. Read docs/qa-dashboard.md for plan link, then use prototyp
 | 2026-03-20 | 4.5 | Re-QA tested (fresh) | — | 11 cases (10 PROF + 1 COMM-PROF). S1: quest i18n still broken (38 errors), Twitter connect still 400, Community profile 58 i18n errors. PROF-09 callback params now PASS. QA accounts created via `scripts/create-qa-accounts.ts`. |
 | 2026-03-21 | 4.5 | Fixed (v2) | `fix/4.5-profile-fixes-v2` | 4 fixes: quest i18n prefix check, Twitter connect body, 8 Community i18n keys, peacemaker achievement name. Plan: `2026-03-21-profile-progression-fixes-v2.md`. |
 | 2026-03-21 | 4.5 | Revamped (Proto A) | `fix/4.5-profile-fixes-v2` | Executive Dashboard: dense tabbed profile, quest table, compact community header. 3 prototypes compared, Proto A selected. |
+| 2026-03-21 | 4.4 | QA re-tested + planned | — | 12/12 cases with QA accounts (3 sessions, 3 roles). S1: 2 missing Community i18n keys + 4 achievement description keys. Plan: `2026-03-21-community-qa-revamp.md` (4 fixes + 5 UX improvements). |
