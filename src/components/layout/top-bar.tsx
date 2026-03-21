@@ -62,8 +62,11 @@ export function TopBar() {
 
       <Breadcrumbs />
 
+      {/* Spacer — pushes right actions to far right even when breadcrumbs return null */}
+      <div className="flex-1" />
+
       {/* Right actions */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 shrink-0">
         {loading ? (
           <div className="h-8 w-24 rounded bg-muted animate-pulse" />
         ) : user ? (
