@@ -1,6 +1,6 @@
 'use client';
 
-import { AlertCircle, Plus, X } from 'lucide-react';
+import { AlertCircle, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { SprintFormData } from '@/features/sprints';
 
@@ -28,25 +28,27 @@ export function SprintCreateModal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl max-w-md w-full p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-gray-900">{t('modalTitle')}</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
-            <X className="w-5 h-5" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <div className="w-full max-w-lg rounded-lg border border-gray-200 bg-white shadow-xl">
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-gray-200 px-5 py-3">
+          <h2 className="text-base font-semibold text-gray-900">{t('modalTitle')}</h2>
+          <button onClick={onClose} className="text-gray-400 transition-colors hover:text-gray-600">
+            <X className="h-5 w-5" />
           </button>
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2">
-            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+          <div className="mx-5 mt-4 flex items-start gap-2 rounded-md border border-red-200 bg-red-50 px-3 py-2">
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-600" />
             <p className="text-sm text-red-700">{error}</p>
           </div>
         )}
 
-        <form onSubmit={onSubmit} className="space-y-4">
+        <form onSubmit={onSubmit} className="p-5 space-y-4">
+          {/* Name */}
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="name" className="block text-xs font-medium text-gray-600 mb-1">
               {t('formName')}
             </label>
             <input
@@ -56,12 +58,13 @@ export function SprintCreateModal({
               value={formData.name}
               onChange={(e) => onChange({ ...formData, name: e.target.value })}
               placeholder={t('formNamePlaceholder')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange transition-colors"
+              className="w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
 
+          {/* Goal */}
           <div>
-            <label htmlFor="goal" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="goal" className="block text-xs font-medium text-gray-600 mb-1">
               {t('formGoal')}
             </label>
             <textarea
@@ -70,63 +73,45 @@ export function SprintCreateModal({
               value={formData.goal}
               onChange={(e) => onChange({ ...formData, goal: e.target.value })}
               placeholder={t('formGoalPlaceholder')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange transition-colors resize-none"
+              className="w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"
             />
           </div>
 
-          <div>
-            <label htmlFor="start_at" className="block text-sm font-medium text-gray-700 mb-1">
-              {t('formStartDate')}
-            </label>
-            <input
-              type="date"
-              id="start_at"
-              required
-              value={formData.start_at}
-              onChange={(e) => onChange({ ...formData, start_at: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange transition-colors"
-            />
+          {/* Dates side by side */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label htmlFor="start_at" className="block text-xs font-medium text-gray-600 mb-1">
+                {t('formStartDate')}
+              </label>
+              <input
+                type="date"
+                id="start_at"
+                required
+                value={formData.start_at}
+                onChange={(e) => onChange({ ...formData, start_at: e.target.value })}
+                className="w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label htmlFor="end_at" className="block text-xs font-medium text-gray-600 mb-1">
+                {t('formEndDate')}
+              </label>
+              <input
+                type="date"
+                id="end_at"
+                required
+                value={formData.end_at}
+                onChange={(e) => onChange({ ...formData, end_at: e.target.value })}
+                className="w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
           </div>
 
-          <div>
-            <label htmlFor="end_at" className="block text-sm font-medium text-gray-700 mb-1">
-              {t('formEndDate')}
-            </label>
-            <input
-              type="date"
-              id="end_at"
-              required
-              value={formData.end_at}
-              onChange={(e) => onChange({ ...formData, end_at: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange transition-colors"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
-              {t('formStatus')}
-            </label>
-            <select
-              id="status"
-              value={formData.status}
-              onChange={(e) =>
-                onChange({
-                  ...formData,
-                  status: e.target.value as 'planning' | 'active' | 'completed',
-                })
-              }
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange transition-colors"
-            >
-              <option value="planning">{t('status.planning')}</option>
-              <option value="active">{t('status.active')}</option>
-              <option value="completed">{t('status.completed')}</option>
-            </select>
-          </div>
-
+          {/* Capacity */}
           <div>
             <label
               htmlFor="capacity_points"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-xs font-medium text-gray-600 mb-1"
             >
               {t('formCapacity')}
             </label>
@@ -142,35 +127,33 @@ export function SprintCreateModal({
                 })
               }
               placeholder={t('formCapacityPlaceholder')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange transition-colors"
+              className="w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
-            <p className="mt-1 text-xs text-gray-500">{t('formCapacityHelper')}</p>
+            <p className="mt-1 text-[11px] text-gray-400">{t('formCapacityHelper')}</p>
           </div>
 
-          <div className="flex gap-3 pt-4">
+          {/* Actions */}
+          <div className="flex items-center justify-end gap-2 pt-2">
             <button
               type="button"
               onClick={onClose}
               disabled={submitting}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium disabled:opacity-50"
+              className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50"
             >
               {t('cancel')}
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="flex-1 bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex items-center gap-1.5 rounded-md border border-green-600 bg-green-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-green-700 disabled:opacity-50"
             >
               {submitting ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
                   {t('creating')}
                 </>
               ) : (
-                <>
-                  <Plus className="w-4 h-4" />
-                  {t('createSprint')}
-                </>
+                t('createSprint')
               )}
             </button>
           </div>

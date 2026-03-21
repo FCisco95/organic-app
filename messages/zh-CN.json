@@ -729,7 +729,12 @@
     "snapshotIncomplete": "未完成",
     "snapshotPoints": "积分",
     "snapshotCompletionRate": "完成率",
-    "snapshotIncompleteAction": "未完成任务：{action}"
+    "snapshotIncompleteAction": "未完成任务：{action}",
+    "milestoneOpen": "开放",
+    "milestoneClosed": "已关闭",
+    "milestoneOpenCount": "{count} 个未完成",
+    "milestoneClosedCount": "{count} 个已完成",
+    "timelineCurrent": "当前"
   },
   "SprintDetail": {
     "loading": "正在加载冲刺详情...",

@@ -729,7 +729,12 @@
     "snapshotIncomplete": "Incompletas",
     "snapshotPoints": "Pontos",
     "snapshotCompletionRate": "Taxa de conclusão",
-    "snapshotIncompleteAction": "Tarefas incompletas: {action}"
+    "snapshotIncompleteAction": "Tarefas incompletas: {action}",
+    "milestoneOpen": "Aberto",
+    "milestoneClosed": "Fechado",
+    "milestoneOpenCount": "{count} aberto(s)",
+    "milestoneClosedCount": "{count} fechado(s)",
+    "timelineCurrent": "Atual"
   },
   "SprintDetail": {
     "loading": "Carregando detalhes da sprint...",

@@ -21,10 +21,11 @@ import {
   AlertTriangle,
   Calendar,
   CheckCircle2,
+  ChevronDown,
+  Milestone,
   Play,
   Plus,
   ShieldCheck,
-  Timer,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useTranslations } from 'next-intl';
@@ -610,90 +611,97 @@ export default function SprintsPage() {
 
   const isPageLoading = sprintsLoading || loading;
 
+  // Advance button dropdown state
+  const [showAdvanceDropdown, setShowAdvanceDropdown] = useState(false);
+
   return (
     <PageContainer width="wide">
-      <div className="space-y-6" data-testid="sprints-page">
-      {/* Header */}
+      <div className="space-y-5" data-testid="sprints-page">
+      {/* GitHub-style header */}
       <div
-        className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"
+        className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
         data-testid="sprints-command-header"
       >
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
-          <p className="text-gray-600 mt-1">{t('subtitle')}</p>
+        <div className="flex items-center gap-2.5">
+          <Milestone className="h-6 w-6 text-gray-500" />
+          <div>
+            <h1 className="text-xl font-semibold text-gray-900">{t('title')}</h1>
+            <p className="text-sm text-gray-500">{t('subtitle')}</p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           {showStartButton && (
             <button
               onClick={() => setShowStartDialog(true)}
-              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors font-medium"
+              className="flex items-center gap-1.5 rounded-md border border-green-600 bg-green-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-green-700"
             >
-              <Play className="w-4 h-4" />
+              <Play className="h-3.5 w-3.5" />
               {t('startSprintButton')}
             </button>
           )}
           {showCompleteButton && (
-            <button
-              onClick={() => {
-                if (selectedSprint?.status === 'settlement') {
-                  setShowCompleteDialog(true);
-                  return;
-                }
-                void handleCompleteSprint();
-              }}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors font-medium"
-            >
-              <CheckCircle2 className="w-4 h-4" />
-              {selectedSprint?.status === 'settlement'
-                ? t('completeSprintButton')
-                : t('advancePhaseButton', {
-                    phase: nextPhaseLabel ? t(`status.${nextPhaseLabel}`) : t('status.review'),
-                  })}
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => {
+                  if (selectedSprint?.status === 'settlement') {
+                    setShowCompleteDialog(true);
+                    return;
+                  }
+                  void handleCompleteSprint();
+                }}
+                className="flex items-center gap-1.5 rounded-l-md border border-blue-600 bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+              >
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                {selectedSprint?.status === 'settlement'
+                  ? t('completeSprintButton')
+                  : t('advancePhaseButton', {
+                      phase: nextPhaseLabel ? t(`status.${nextPhaseLabel}`) : t('status.review'),
+                    })}
+              </button>
+              <button
+                onClick={() => setShowAdvanceDropdown(!showAdvanceDropdown)}
+                className="rounded-r-md border border-l-0 border-blue-600 bg-blue-600 px-1.5 py-1.5 text-white transition-colors hover:bg-blue-700"
+              >
+                <ChevronDown className="h-3.5 w-3.5" />
+              </button>
+            </div>
           )}
           {canCreateSprint && (
             <button
               onClick={() => setShowCreateModal(true)}
-              className="flex items-center gap-2 bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition-colors font-medium"
+              className="flex items-center gap-1.5 rounded-md border border-green-600 bg-green-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-green-700"
             >
-              <Plus className="w-5 h-5" />
+              <Plus className="h-3.5 w-3.5" />
               {t('createSprint')}
             </button>
           )}
         </div>
       </div>
 
+      {/* GitHub-style horizontal phase progress bar */}
       <div
-        className="grid grid-cols-1 gap-4 xl:grid-cols-[2.1fr_1fr]"
+        className="rounded-md border border-gray-200 bg-white"
         data-testid="sprints-command-deck"
       >
-        <section
-          className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm"
-          data-testid="sprints-phase-rail"
-        >
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-                {t('phaseRailTitle')}
-              </p>
-              <p className="mt-1 text-sm text-gray-600">{t('phaseRailSubtitle')}</p>
-            </div>
-            {phaseCountdown && (
-              <div
-                className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700"
-                data-testid="sprints-phase-countdown"
-              >
-                <Timer className="h-3.5 w-3.5" />
-                {t('phaseTimeRemaining', { time: phaseCountdown })}
-              </div>
+        <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3">
+          <div className="flex items-center gap-2">
+            <p className="text-sm font-medium text-gray-700">{t('phaseRailTitle')}</p>
+            {referenceSprint && (
+              <span className="text-xs text-gray-500">
+                {t('phaseReferenceSprint', { name: referenceSprint.name })}
+              </span>
             )}
           </div>
-          <p className="mt-4 text-xs text-gray-500">
-            {referenceSprint
-              ? t('phaseReferenceSprint', { name: referenceSprint.name })
-              : t('phaseReferenceNone')}
-          </p>
-          <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          {phaseCountdown && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700">
+              {t('phaseTimeRemaining', { time: phaseCountdown })}
+            </span>
+          )}
+        </div>
+
+        {/* Segmented progress bar */}
+        <div className="px-4 py-3" data-testid="sprints-phase-rail">
+          <div className="flex h-2.5 w-full overflow-hidden rounded-full bg-gray-100">
             {SPRINT_PHASE_SEQUENCE.map((phase, index) => {
               const isCurrent = referencePhaseIndex === index;
               const isComplete = referencePhaseIndex > -1 && index < referencePhaseIndex;
@@ -701,125 +709,115 @@ export default function SprintsPage() {
                 <div
                   key={phase}
                   data-testid={`sprints-phase-chip-${phase}`}
-                  className={`rounded-xl border px-3 py-2 text-sm transition-colors ${
-                    isCurrent
-                      ? 'border-organic-orange/40 bg-orange-50 text-orange-700'
-                      : isComplete
-                        ? 'border-green-200 bg-green-50 text-green-700'
-                        : 'border-gray-200 bg-gray-50 text-gray-600'
+                  className={`flex-1 transition-all ${
+                    index < SPRINT_PHASE_SEQUENCE.length - 1 ? 'mr-0.5' : ''
+                  } ${
+                    isComplete
+                      ? 'bg-green-500'
+                      : isCurrent
+                        ? 'animate-pulse bg-blue-500'
+                        : 'bg-gray-200'
                   }`}
-                >
-                  <p className="font-semibold">{t(`status.${phase}`)}</p>
-                  <p className="mt-0.5 text-xs">
-                    {isCurrent
-                      ? t('phaseCurrent')
-                      : isComplete
-                        ? t('phaseCompleted')
-                        : t('phaseQueued')}
-                  </p>
-                </div>
+                  title={t(`status.${phase}`)}
+                />
               );
             })}
           </div>
-        </section>
+          <div className="mt-2 flex justify-between">
+            {SPRINT_PHASE_SEQUENCE.map((phase, index) => {
+              const isCurrent = referencePhaseIndex === index;
+              const isComplete = referencePhaseIndex > -1 && index < referencePhaseIndex;
+              return (
+                <span
+                  key={phase}
+                  className={`text-[10px] font-medium ${
+                    isCurrent
+                      ? 'text-blue-600'
+                      : isComplete
+                        ? 'text-green-600'
+                        : 'text-gray-400'
+                  }`}
+                >
+                  {t(`status.${phase}`)}
+                </span>
+              );
+            })}
+          </div>
+        </div>
 
-        <section
-          className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm"
+        {/* Settlement banner */}
+        <div
           data-testid="sprints-settlement-panel"
+          className={`flex items-center gap-2 border-t px-4 py-2.5 text-sm ${
+            referenceSprint?.settlement_blocked_reason
+              ? 'border-l-4 border-l-red-500 border-t-gray-200 bg-red-50 text-red-700'
+              : 'border-l-4 border-l-green-500 border-t-gray-200 bg-green-50 text-green-700'
+          }`}
         >
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="h-4 w-4 text-emerald-600" />
-            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-              {t('settlementPanelTitle')}
-            </p>
-          </div>
-          <div className="mt-4 space-y-3">
-            <div className="rounded-xl border border-gray-200 bg-gray-50 px-3 py-2">
-              <p className="text-xs text-gray-500">{t('metricOpenExecution')}</p>
-              <p className="text-2xl font-bold text-gray-900">{openExecutionCount}</p>
-            </div>
-            <div className="rounded-xl border border-gray-200 bg-gray-50 px-3 py-2">
-              <p className="text-xs text-gray-500">{t('settlementBlockedMetric')}</p>
-              <p className="text-2xl font-bold text-gray-900">{blockedSettlementCount}</p>
-            </div>
-            <div
-              data-testid="sprints-settlement-alert"
-              className={`rounded-xl border px-3 py-2 text-sm ${
-                referenceSprint?.settlement_blocked_reason
-                  ? 'border-red-200 bg-red-50 text-red-700'
-                  : 'border-emerald-200 bg-emerald-50 text-emerald-700'
-              }`}
-            >
-              <div className="flex items-start gap-2">
-                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
-                <p>
-                  {referenceSprint?.settlement_blocked_reason
-                    ? t('settlementPanelBlocked', {
-                        reason: referenceSprint.settlement_blocked_reason,
-                      })
-                    : t('settlementReady')}
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
+          {referenceSprint?.settlement_blocked_reason ? (
+            <AlertTriangle className="h-4 w-4 shrink-0" />
+          ) : (
+            <ShieldCheck className="h-4 w-4 shrink-0" />
+          )}
+          <span>
+            {referenceSprint?.settlement_blocked_reason
+              ? t('settlementPanelBlocked', {
+                  reason: referenceSprint.settlement_blocked_reason,
+                })
+              : t('settlementReady')}
+          </span>
+          <span className="ml-auto flex items-center gap-3 text-xs text-gray-500">
+            <span>{t('metricOpenExecution')}: {openExecutionCount}</span>
+            <span>{t('settlementBlockedMetric')}: {blockedSettlementCount}</span>
+          </span>
+        </div>
       </div>
 
       {isPageLoading ? (
         <div className="text-center py-12">
-          <div className="w-8 h-8 border-3 border-organic-orange border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="mt-4 text-gray-500">{t('loading')}</p>
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900 mx-auto"></div>
+          <p className="mt-4 text-sm text-gray-500">{t('loading')}</p>
         </div>
       ) : sprints.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
-          <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">{t('emptyTitle')}</h3>
-          <p className="text-gray-500 mb-6">
+        <div className="rounded-md border border-gray-200 bg-white py-16 text-center">
+          <Milestone className="mx-auto mb-3 h-12 w-12 text-gray-300" />
+          <h3 className="text-base font-medium text-gray-900">{t('emptyTitle')}</h3>
+          <p className="mt-1 text-sm text-gray-500">
             {canCreateSprint ? t('emptyAdmin') : t('emptyViewer')}
           </p>
           {canCreateSprint && (
             <button
               onClick={() => setShowCreateModal(true)}
-              className="inline-flex items-center gap-2 bg-organic-orange hover:bg-orange-600 text-white px-6 py-3 rounded-lg transition-colors font-medium"
+              className="mt-4 inline-flex items-center gap-1.5 rounded-md border border-green-600 bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700"
             >
-              <Plus className="w-5 h-5" />
+              <Plus className="h-4 w-4" />
               {t('createFirstSprint')}
             </button>
           )}
         </div>
       ) : (
         <>
-          <div className="flex items-center gap-2 overflow-x-auto pb-1" data-testid="sprints-view-tabs">
-            <button
-              onClick={() => setActiveView('board')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                activeView === 'board'
-                  ? 'bg-organic-orange text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
-              }`}
-            >
-              {t('currentSprintBoard')}
-            </button>
-            <button
-              onClick={() => setActiveView('list')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                activeView === 'list'
-                  ? 'bg-organic-orange text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
-              }`}
-            >
-              {t('sprintList')}
-            </button>
-            <button
-              onClick={() => setActiveView('timeline')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                activeView === 'timeline'
-                  ? 'bg-organic-orange text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
-              }`}
-            >
-              {t('timeline')}
-            </button>
+          {/* GitHub-style underline tabs */}
+          <div className="border-b border-gray-200" data-testid="sprints-view-tabs">
+            <nav className="-mb-px flex gap-6">
+              {(['board', 'list', 'timeline'] as const).map((view) => (
+                <button
+                  key={view}
+                  onClick={() => setActiveView(view)}
+                  className={`whitespace-nowrap border-b-2 px-1 pb-2.5 pt-1 text-sm font-medium transition-colors ${
+                    activeView === view
+                      ? 'border-orange-500 text-gray-900'
+                      : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                  }`}
+                >
+                  {view === 'board'
+                    ? t('currentSprintBoard')
+                    : view === 'list'
+                      ? t('sprintList')
+                      : t('timeline')}
+                </button>
+              ))}
+            </nav>
           </div>
 
           {activeView === 'board' ? (
