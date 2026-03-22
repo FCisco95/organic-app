@@ -2760,17 +2760,26 @@
     "days": "dias"
   },
   "Onboarding": {
-    "wizardTitle": "Bem-vindo ao Organic",
-    "wizardDescription": "Complete estes passos para começar como contribuidor.",
+    "wizardTitle": "Vamos configurar tudo",
+    "wizardDescription": "Complete estes passos para desbloquear a experiência completa do Organic.",
     "promptTitle": "Termine a sua configuração",
     "promptProgress": "{completed} de {total} passos concluídos",
     "promptContinue": "Continuar Configuração",
     "loading": "A carregar...",
     "back": "Voltar",
-    "next": "Seguinte",
+    "next": "Continuar",
     "skip": "Saltar por agora",
     "close": "Fechar",
     "finish": "Concluído!",
+    "stepOf": "Passo {current} de {total}",
+    "xpEarned": "+25 XP ganhos",
+    "completionTitle": "Tudo pronto!",
+    "completionSubtitle": "Completou o onboarding e ganhou",
+    "completionXp": "{xp} XP",
+    "exploreTasks": "Explorar Tarefas",
+    "viewDashboard": "Ver Painel",
+    "noTasksCta": "Ver todas as tarefas",
+    "noSprintsCta": "Ver todos os sprints",
     "steps": {
       "connect_wallet": {
         "label": "Carteira",
@@ -2794,7 +2803,8 @@
         "title": "Escolha a sua primeira tarefa",
         "description": "Navegue pelas tarefas abertas e junte-se a uma para começar a contribuir.",
         "completed": "Tarefa escolhida!",
-        "noTasks": "Nenhuma tarefa aberta disponível de momento. Volte mais tarde!",
+        "noTasks": "Nenhuma tarefa aberta disponível de momento.",
+        "noTasksHint": "Volte mais tarde ou explore todas as tarefas disponíveis.",
         "joinButton": "Juntar"
       },
       "join_sprint": {
@@ -2803,6 +2813,7 @@
         "description": "Escolha uma tarefa num sprint ativo para colaborar com a equipa.",
         "completed": "Sprint iniciado!",
         "noSprints": "Nenhum sprint ativo com tarefas abertas de momento.",
+        "noSprintsHint": "Explore todos os sprints para encontrar os próximos.",
         "joinButton": "Juntar"
       }
     }

@@ -1,12 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { ClipboardList, Check, Loader2 } from 'lucide-react';
+import { ClipboardList, Check, Loader2, ArrowRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/features/auth/context';
 import { useCompleteOnboardingStep } from '@/features/onboarding/hooks';
 import { useQuery } from '@tanstack/react-query';
+import { Link } from '@/i18n/navigation';
 
 interface StepPickTaskProps {
   completed: boolean;
@@ -18,6 +19,18 @@ interface OpenTask {
   title: string;
   task_type: string | null;
   points: number | null;
+}
+
+function TaskSkeleton() {
+  return (
+    <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border border-border animate-pulse">
+      <div className="flex-1 min-w-0 mr-3 space-y-2">
+        <div className="h-4 w-3/4 bg-muted rounded" />
+        <div className="h-3 w-1/3 bg-muted rounded" />
+      </div>
+      <div className="h-7 w-14 bg-muted rounded-md" />
+    </div>
+  );
 }
 
 export function StepPickTask({ completed, onComplete }: StepPickTaskProps) {
@@ -75,52 +88,74 @@ export function StepPickTask({ completed, onComplete }: StepPickTaskProps) {
 
   if (completed) {
     return (
-      <div className="flex flex-col items-center gap-4 py-8">
-        <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center">
-          <Check className="w-8 h-8 text-green-400" />
+      <div className="flex flex-col items-center gap-5 py-8 w-full">
+        <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center">
+          <Check className="w-6 h-6 text-green-400" />
         </div>
-        <p className="text-green-400 font-medium">{t('steps.pick_task.completed')}</p>
+        <div className="text-center space-y-1.5">
+          <p className="text-base font-medium text-green-400">{t('steps.pick_task.completed')}</p>
+          <span className="inline-block text-xs font-mono text-organic-orange bg-organic-orange/10 px-2 py-0.5 rounded">
+            {t('xpEarned')}
+          </span>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center gap-6 py-4">
-      <div className="w-14 h-14 rounded-full bg-organic-orange/20 flex items-center justify-center">
-        <ClipboardList className="w-7 h-7 text-organic-orange" />
+    <div className="flex flex-col items-center gap-6 py-4 w-full">
+      <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+        <ClipboardList className="w-6 h-6 text-organic-orange" />
       </div>
       <div className="text-center space-y-2">
-        <h3 className="text-lg font-semibold text-white">{t('steps.pick_task.title')}</h3>
-        <p className="text-sm text-gray-400 max-w-sm">{t('steps.pick_task.description')}</p>
+        <h3 className="text-xl font-semibold text-foreground">{t('steps.pick_task.title')}</h3>
+        <p className="text-sm text-muted-foreground max-w-sm">{t('steps.pick_task.description')}</p>
       </div>
 
+      {/* Skeleton loading */}
       {isLoading && (
-        <div className="flex items-center gap-2 text-gray-400">
-          <Loader2 className="w-4 h-4 animate-spin" />
-          <span className="text-sm">{t('loading')}</span>
+        <div className="w-full space-y-2">
+          <TaskSkeleton />
+          <TaskSkeleton />
+          <TaskSkeleton />
         </div>
       )}
 
+      {/* Rich empty state */}
       {!isLoading && tasks && tasks.length === 0 && (
-        <p className="text-sm text-gray-500">{t('steps.pick_task.noTasks')}</p>
+        <div className="flex flex-col items-center gap-3 py-4">
+          <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
+            <ClipboardList className="w-8 h-8 text-muted-foreground" />
+          </div>
+          <p className="text-sm text-muted-foreground text-center">{t('steps.pick_task.noTasks')}</p>
+          <p className="text-xs text-muted-foreground text-center">{t('steps.pick_task.noTasksHint')}</p>
+          <Link
+            href="/tasks"
+            className="inline-flex items-center gap-1.5 text-sm text-organic-orange hover:text-orange-400 transition-colors"
+          >
+            {t('noTasksCta')}
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
       )}
 
+      {/* Task list */}
       {!isLoading && tasks && tasks.length > 0 && (
         <div className="w-full space-y-2 max-h-[240px] overflow-y-auto">
           {tasks.map((task) => (
             <div
               key={task.id}
-              className="flex items-center justify-between p-3 rounded-lg bg-gray-800/50 border border-gray-700/50 hover:border-gray-600 transition-colors"
+              className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border border-border hover:border-muted-foreground/30 transition-colors"
             >
               <div className="flex-1 min-w-0 mr-3">
-                <p className="text-sm font-medium text-white truncate">{task.title}</p>
+                <p className="text-sm font-medium text-foreground truncate">{task.title}</p>
                 <div className="flex items-center gap-2 mt-1">
                   {task.task_type && (
-                    <span className="text-[11px] px-1.5 py-0.5 rounded bg-gray-700 text-gray-400">
+                    <span className="text-[11px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
                       {task.task_type}
                     </span>
                   )}
-                  <span className="text-[11px] text-gray-500">{task.points ?? 0} pts</span>
+                  <span className="text-[11px] font-mono text-muted-foreground">{task.points ?? 0} pts</span>
                 </div>
               </div>
               <button

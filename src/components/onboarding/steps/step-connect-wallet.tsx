@@ -5,7 +5,7 @@ import { Wallet, Check } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useAuth } from '@/features/auth/context';
 import { useCompleteOnboardingStep } from '@/features/onboarding/hooks';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 interface StepConnectWalletProps {
   completed: boolean;
@@ -17,6 +17,7 @@ export function StepConnectWallet({ completed, onComplete }: StepConnectWalletPr
   const { connected } = useWallet();
   const { profile } = useAuth();
   const completeMutation = useCompleteOnboardingStep();
+  const [justCompleted, setJustCompleted] = useState(false);
 
   const walletLinked = !!profile?.wallet_pubkey;
 
@@ -25,36 +26,48 @@ export function StepConnectWallet({ completed, onComplete }: StepConnectWalletPr
     if (walletLinked && !completed && !completeMutation.isPending) {
       completeMutation.mutate(
         { step: 'connect_wallet' },
-        { onSuccess: () => onComplete() }
+        {
+          onSuccess: () => {
+            setJustCompleted(true);
+            onComplete();
+          },
+        }
       );
     }
   }, [walletLinked, completed, completeMutation, onComplete]);
 
   if (completed || walletLinked) {
     return (
-      <div className="flex flex-col items-center gap-4 py-8">
-        <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center">
-          <Check className="w-8 h-8 text-green-400" />
+      <div className="flex flex-col items-center gap-5 py-8 w-full">
+        <div
+          className={`w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center transition-transform duration-300 ${justCompleted ? 'scale-110' : 'scale-100'}`}
+        >
+          <Check className="w-6 h-6 text-green-400 animate-in fade-in duration-300" />
         </div>
-        <p className="text-green-400 font-medium">{t('steps.connect_wallet.completed')}</p>
+        <div className="text-center space-y-1.5">
+          <p className="text-base font-medium text-green-400">{t('steps.connect_wallet.completed')}</p>
+          <span className="inline-block text-xs font-mono text-organic-orange bg-organic-orange/10 px-2 py-0.5 rounded">
+            {t('xpEarned')}
+          </span>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center gap-6 py-8">
-      <div className="w-16 h-16 rounded-full bg-organic-orange/20 flex items-center justify-center">
-        <Wallet className="w-8 h-8 text-organic-orange" />
+    <div className="flex flex-col items-center gap-6 py-8 w-full">
+      <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+        <Wallet className="w-6 h-6 text-organic-orange" />
       </div>
       <div className="text-center space-y-2">
-        <h3 className="text-lg font-semibold text-white">{t('steps.connect_wallet.title')}</h3>
-        <p className="text-sm text-gray-400 max-w-sm">{t('steps.connect_wallet.description')}</p>
+        <h3 className="text-xl font-semibold text-foreground">{t('steps.connect_wallet.title')}</h3>
+        <p className="text-sm text-muted-foreground max-w-sm">{t('steps.connect_wallet.description')}</p>
       </div>
       {connected && !walletLinked && (
         <p className="text-sm text-yellow-400">{t('steps.connect_wallet.linkPending')}</p>
       )}
       {!connected && (
-        <p className="text-sm text-gray-500">{t('steps.connect_wallet.hint')}</p>
+        <p className="text-sm text-muted-foreground">{t('steps.connect_wallet.hint')}</p>
       )}
     </div>
   );
