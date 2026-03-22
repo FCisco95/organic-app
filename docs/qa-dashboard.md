@@ -18,7 +18,7 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 | 4.8 | Sprints E2E | 11 | DONE | S1 | [plan](plans/2026-03-21-sprints-qa-revamp.md) | `main` (25d3df6) | `main` (7ef0c54) |
 | 4.9 | Proposals, Governance | 17 | DONE | S2 | [plan](plans/2026-03-19-proposals-qa-revamp.md) | merged to main | merged to main |
 | 4.10 | Disputes | 13 | DONE | S1 | [plan](plans/2026-03-21-disputes-qa-revamp.md) | `main` (7406bd9) | `main` (6968033) |
-| 4.11 | Rewards | 9 | FIXED | S2 | [plan](plans/2026-03-22-rewards-qa-revamp.md) | `main` (d26a0a2) | — |
+| 4.11 | Rewards | 9 | DONE | S2 | [plan](plans/2026-03-22-rewards-qa-revamp.md) | `main` (d26a0a2) | `main` (bcbad99) |
 | 4.12 | Notifications | 6 | PENDING | — | — | — | — |
 | 4.13 | Admin Ops | 8 | PENDING | — | — | — | — |
 | 4.14 | Error Resilience | 6 | PENDING | — | — | — | — |
@@ -45,8 +45,8 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 
 | Action | Section | What to do |
 |--------|---------|------------|
-| **Next to revamp** | 4.11 Rewards | FIXED — `/clear` then prototype-executor for Track 2 |
 | **Next to QA** | 4.12 Notifications | First remaining PENDING section — 6 cases |
+| **Next to QA** | 4.13 Admin Ops | Second PENDING section — 8 cases |
 
 ---
 
@@ -69,7 +69,7 @@ Issues spanning multiple sections — track resolution centrally.
 
 **Wave B — Core feature sections:**
 1. 4.10 Disputes (13 cases) — **DONE**
-2. 4.11 Rewards (9 cases) — **PLANNED**
+2. 4.11 Rewards (9 cases) — **DONE**
 3. 4.12 Notifications (6 cases) — PENDING
 
 **Wave C — Admin, onboarding, and integrations:**
@@ -140,3 +140,4 @@ Consolidated — one row per section showing final outcome. Full history in git 
 | 2026-03-21 | 4.7 Tasks | `main` (3aed048) | `main` (e3d4439) | 3 fixes (silent errors, locale, emoji). Revamp: A+B+C — mono stats, priority stripes, segmented tabs. |
 | 2026-03-21 | 4.8 Sprints | `main` (25d3df6) | `main` (7ef0c54) | 1 i18n fix. Revamp: Full 9-component overhaul — GitHub milestones + A's phase stepper/burndown, orange theme, muted success. |
 | 2026-03-21 | 4.9 Proposals | merged to main | merged to main | 5 fixes. Revamp: Proto C — inline accordions, vote FAB, numbered stepper, stage history. |
+| 2026-03-22 | 4.11 Rewards | `main` (d26a0a2) | `main` (bcbad99) | 3 fixes (queue age, settlement color, claim validation). Revamp: Proto B GitHub — tabbed sections, timeline chips, filter pills, expandable rows, header CTA. |
