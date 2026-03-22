@@ -96,7 +96,7 @@ export function ClaimsTable({
                   </div>
                 </div>
 
-                {showRiskSignals && (
+                {showRiskSignals && claim.status === 'pending' && (
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-700">
                       {t('claims.ageHours', { hours: ageHours })}
@@ -207,24 +207,32 @@ export function ClaimsTable({
                     <ClaimStatusBadge status={claim.status} />
                   </td>
                   {showRiskSignals && (
-                    <td className="px-4 py-3 text-gray-600">{t('claims.ageHours', { hours: ageHours })}</td>
+                    <td className="px-4 py-3 text-gray-600">
+                      {claim.status === 'pending' ? t('claims.ageHours', { hours: ageHours }) : '—'}
+                    </td>
                   )}
                   {showRiskSignals && (
                     <td className="px-4 py-3" data-testid={`rewards-claim-risk-${risk}`}>
-                      {risk === 'urgent' && (
-                        <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">
-                          {t('claims.riskUrgent')}
-                        </span>
-                      )}
-                      {risk === 'watch' && (
-                        <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
-                          {t('claims.riskWatch')}
-                        </span>
-                      )}
-                      {risk === 'none' && (
-                        <span className="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
-                          {t('claims.riskNone')}
-                        </span>
+                      {claim.status === 'pending' ? (
+                        <>
+                          {risk === 'urgent' && (
+                            <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">
+                              {t('claims.riskUrgent')}
+                            </span>
+                          )}
+                          {risk === 'watch' && (
+                            <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
+                              {t('claims.riskWatch')}
+                            </span>
+                          )}
+                          {risk === 'none' && (
+                            <span className="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
+                              {t('claims.riskNone')}
+                            </span>
+                          )}
+                        </>
+                      ) : (
+                        <span className="text-gray-400">—</span>
                       )}
                     </td>
                   )}

@@ -2323,7 +2323,10 @@
       "guardrail": "提交申请会立即扣减可领取积分。若被拒绝，积分会在审核流程中退回。",
       "cancel": "取消",
       "submit": "提交申请",
-      "submitting": "提交中..."
+      "submitting": "提交中...",
+      "validationZero": "请输入积分数量",
+      "validationMin": "最低领取额为 {min} 积分",
+      "validationMax": "您仅有 {available} 积分可用"
     },
     "reviewModal": {
       "title": "审核申请",

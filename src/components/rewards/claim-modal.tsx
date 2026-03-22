@@ -88,6 +88,15 @@ export function ClaimModal({ rewards, open, onClose }: ClaimModalProps) {
           <p className="text-xs text-gray-500 mt-1">
             {t('claimModal.available', { points: rewards.claimable_points.toLocaleString() })}
           </p>
+          {pointsInput && !isValid && (
+            <p className="text-xs text-red-500 mt-1">
+              {points <= 0
+                ? t('claimModal.validationZero')
+                : points < rewards.min_threshold
+                  ? t('claimModal.validationMin', { min: rewards.min_threshold.toLocaleString() })
+                  : t('claimModal.validationMax', { available: rewards.claimable_points.toLocaleString() })}
+            </p>
+          )}
         </div>
 
         {/* Token Preview */}

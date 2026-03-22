@@ -2323,7 +2323,10 @@
       "guardrail": "Submeter uma reclamação deduz pontos reclamáveis imediatamente. Reclamações rejeitadas são reembolsadas no fluxo de revisão.",
       "cancel": "Cancelar",
       "submit": "Submeter Reclamação",
-      "submitting": "A submeter..."
+      "submitting": "A submeter...",
+      "validationZero": "Introduza um montante de pontos",
+      "validationMin": "O mínimo para reclamar é {min} pontos",
+      "validationMax": "Só tem {available} pontos disponíveis"
     },
     "reviewModal": {
       "title": "Rever Reclamação",

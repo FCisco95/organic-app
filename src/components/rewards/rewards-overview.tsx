@@ -30,8 +30,9 @@ export function RewardsOverview({ rewards, onClaim }: RewardsOverviewProps) {
   const settlementStatus = rewards.latest_reward_settlement_status;
   const settlementReason = rewards.latest_reward_settlement_reason;
   const settlementBlocked = settlementStatus === 'held' || settlementStatus === 'killed';
+  const settlementCommitted = settlementStatus === 'committed';
   const settlementReady = !settlementBlocked;
-  const SettlementIcon = settlementBlocked ? ShieldAlert : CheckCircle2;
+  const SettlementIcon = settlementBlocked ? ShieldAlert : settlementCommitted ? CheckCircle2 : Clock3;
   const settlementStatusLabel = settlementStatus
     ? t(`overview.settlementStatus.${settlementStatus}`)
     : t('overview.settlementStatus.unknown');
@@ -185,7 +186,9 @@ export function RewardsOverview({ rewards, onClaim }: RewardsOverviewProps) {
         className={`mb-4 rounded-xl border px-4 py-3 ${
           settlementBlocked
             ? 'border-amber-200 bg-amber-50 text-amber-900'
-            : 'border-emerald-200 bg-emerald-50 text-emerald-900'
+            : settlementCommitted
+              ? 'border-emerald-200 bg-emerald-50 text-emerald-900'
+              : 'border-blue-200 bg-blue-50 text-blue-900'
         }`}
         data-testid="rewards-settlement-panel"
       >

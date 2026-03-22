@@ -2332,7 +2332,10 @@
       "guardrail": "Submitting a claim deducts claimable points immediately. Rejected claims are refunded by the review path.",
       "cancel": "Cancel",
       "submit": "Submit Claim",
-      "submitting": "Submitting..."
+      "submitting": "Submitting...",
+      "validationZero": "Enter a points amount",
+      "validationMin": "Minimum claim is {min} points",
+      "validationMax": "You only have {available} points available"
     },
     "reviewModal": {
       "title": "Review Claim",
