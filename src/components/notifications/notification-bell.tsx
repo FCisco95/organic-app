@@ -106,8 +106,8 @@ export function NotificationBell() {
         <div
           ref={panelRef}
           className={cn(
-            'absolute right-0 top-full mt-2 z-50',
-            'w-80 sm:w-96 rounded-lg border border-border bg-card shadow-lg',
+            'fixed inset-x-4 top-14 z-50 sm:absolute sm:inset-x-auto sm:right-0 sm:top-full sm:mt-2',
+            'sm:w-96 rounded-lg border border-border bg-card shadow-lg',
             'animate-in fade-in-0 zoom-in-95 slide-in-from-top-2'
           )}
         >

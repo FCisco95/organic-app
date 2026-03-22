@@ -227,7 +227,7 @@ export function useMarkAllRead() {
     onSuccess: () => {
       queryClient.setQueryData(notificationKeys.unreadCount(), 0);
       queryClient.setQueriesData<NotificationsResponse>(
-        { queryKey: notificationKeys.all },
+        { queryKey: notificationKeys.list() },
         (old) => {
           if (!old) return old;
           const now = new Date().toISOString();
@@ -240,6 +240,8 @@ export function useMarkAllRead() {
           };
         }
       );
+      // Invalidate infinite queries so the notifications page refetches with updated unread_count
+      queryClient.invalidateQueries({ queryKey: notificationKeys.infinite() });
     },
   });
 }

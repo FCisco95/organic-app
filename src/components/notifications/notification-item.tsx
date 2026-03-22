@@ -25,6 +25,7 @@ function getNotificationHref(notification: Notification): string {
   const { subject_type, subject_id, metadata } = notification;
   if (subject_type === 'task') return `/tasks/${subject_id}`;
   if (subject_type === 'proposal') return `/proposals/${subject_id}`;
+  if (subject_type === 'dispute') return `/disputes/${subject_id}`;
   // Fallback for submissions/comments — navigate to parent task
   if (metadata?.task_id) return `/tasks/${metadata.task_id}`;
   if (metadata?.proposal_id) return `/proposals/${metadata.proposal_id}`;
