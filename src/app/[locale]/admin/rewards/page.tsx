@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { ChevronDown, Gift, ShieldAlert } from 'lucide-react';
+import { ChevronDown, Gift, ShieldAlert, CheckCircle2, TrendingUp } from 'lucide-react';
 import { PageContainer } from '@/components/layout';
 import { useAuth } from '@/features/auth/context';
 import { useRewardClaims, useDistributions, useRewardsSummary } from '@/features/rewards';
@@ -41,6 +41,7 @@ export default function AdminRewardsPage() {
     return claims.filter((c) => c.status === claimFilter);
   }, [allClaims?.claims, claimFilter]);
 
+<<<<<<< HEAD
   const filterCounts = useMemo(() => {
     const claims = allClaims?.claims ?? [];
     return {
@@ -51,14 +52,20 @@ export default function AdminRewardsPage() {
       rejected: claims.filter((c) => c.status === 'rejected').length,
     };
   }, [allClaims?.claims]);
+=======
+    return { atRisk, urgent };
+  }, [pendingClaims?.claims]);
+  const pendingClaimsList = pendingClaims?.claims ?? [];
+  const pendingTotal = pendingClaims?.total ?? 0;
+>>>>>>> 6c00c35 (prototype(C): Stripe Ops Dashboard — KPI cards, accordion settings, audit timeline)
 
   if (!isAdminOrCouncil) {
     return (
       <PageContainer width="narrow">
         <div className="py-16 text-center" data-testid="rewards-admin-access-denied">
-          <ShieldAlert className="mx-auto mb-4 h-16 w-16 text-gray-300" />
-          <h2 className="mb-2 text-xl font-semibold text-gray-900">{t('admin.accessDenied')}</h2>
-          <p className="text-gray-500">{t('admin.accessDeniedDesc')}</p>
+          <ShieldAlert className="mx-auto mb-4 h-16 w-16 text-muted-foreground" />
+          <h2 className="mb-2 text-xl font-semibold text-foreground">{t('admin.accessDenied')}</h2>
+          <p className="text-muted-foreground">{t('admin.accessDeniedDesc')}</p>
         </div>
       </PageContainer>
     );
@@ -68,9 +75,19 @@ export default function AdminRewardsPage() {
     return (
       <PageContainer width="wide">
         <div className="space-y-6 animate-pulse" data-testid="rewards-admin-loading-skeleton">
+<<<<<<< HEAD
           <div className="h-8 w-1/4 rounded bg-gray-200" />
           <div className="h-12 rounded-lg bg-gray-200" />
           <div className="h-64 rounded-xl bg-gray-200" />
+=======
+          <div className="h-8 w-1/4 rounded bg-muted" />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div className="h-24 rounded-xl bg-muted" />
+            <div className="h-24 rounded-xl bg-muted" />
+            <div className="h-24 rounded-xl bg-muted" />
+          </div>
+          <div className="h-64 rounded-xl bg-muted" />
+>>>>>>> 6c00c35 (prototype(C): Stripe Ops Dashboard — KPI cards, accordion settings, audit timeline)
         </div>
       </PageContainer>
     );
@@ -92,6 +109,7 @@ export default function AdminRewardsPage() {
 
   return (
     <PageContainer width="wide">
+<<<<<<< HEAD
       <div className="space-y-4" data-testid="admin-rewards-page">
         {/* Header with actions */}
         <div className="flex items-center justify-between gap-3">
@@ -223,6 +241,107 @@ export default function AdminRewardsPage() {
             </div>
 
             <div className="rounded-xl border border-gray-200 bg-white">
+=======
+      <div className="space-y-6" data-testid="admin-rewards-page">
+        {/* Header + Action Bar */}
+        <section
+          className="rounded-2xl border border-border bg-card p-5 sm:p-6"
+          data-testid="rewards-admin-command-deck"
+        >
+          <div className="mb-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-organic-orange/10">
+                <Gift className="h-5 w-5 text-organic-orange" />
+              </div>
+              <div className="min-w-0">
+                <h1 className="text-2xl font-bold tracking-tight text-foreground">{t('admin.title')}</h1>
+                <p className="text-sm text-muted-foreground">{t('admin.subtitle')}</p>
+              </div>
+            </div>
+            {/* Action bar buttons */}
+            <div className="flex gap-2">
+              {isAdmin && (
+                <button
+                  onClick={() => setManualOpen(true)}
+                  className="rounded-lg bg-organic-orange px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-organic-orange/90"
+                  data-testid="rewards-admin-manual-action"
+                >
+                  {t('admin.manualDistribute')}
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Stats ribbon with trend indicators */}
+          <div className="mt-4 grid gap-3 sm:grid-cols-3" data-testid="rewards-admin-pending-triage">
+            <div className="rounded-xl border border-border bg-background p-3">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t('admin.pendingClaims')}</p>
+              <div className="mt-1 flex items-center gap-2">
+                <p className="font-mono text-xl font-bold tabular-nums text-foreground">{pendingTotal}</p>
+                <span className="inline-flex items-center gap-0.5 text-xs text-muted-foreground">
+                  <TrendingUp className="h-3 w-3" />
+                  {t('admin.trendLabel')}
+                </span>
+              </div>
+            </div>
+            <div className="rounded-xl border border-amber-200 bg-amber-50 p-3" data-testid="rewards-admin-risk-marker">
+              <p className="text-xs font-medium uppercase tracking-wide text-amber-800">{t('admin.atRiskClaims')}</p>
+              <div className="mt-1 flex items-center gap-2">
+                <p className="font-mono text-xl font-bold tabular-nums text-amber-900">{riskStats.atRisk}</p>
+              </div>
+              <p className="text-xs text-amber-800">{t('admin.urgentClaims', { count: riskStats.urgent })}</p>
+            </div>
+            <div className="rounded-xl border border-border bg-background p-3">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t('admin.approvedClaims')}</p>
+              <div className="mt-1 flex items-center gap-2">
+                <p className="font-mono text-xl font-bold tabular-nums text-foreground">{summary?.approved_claims_count ?? 0}</p>
+                <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {summary && <RewardsSummaryCards summary={summary} />}
+
+        <section className="grid gap-3 lg:grid-cols-2">
+          <div
+            className="rounded-xl border border-amber-200 bg-amber-50 p-4"
+            data-testid="rewards-admin-payout-guardrails"
+          >
+            <h2 className="text-sm font-semibold text-amber-900">{t('admin.payoutGuardrailsTitle')}</h2>
+            <p className="mt-1 text-xs text-amber-800">{t('admin.payoutGuardrailsBody')}</p>
+          </div>
+          <div
+            className="rounded-xl border border-emerald-200 bg-emerald-50 p-4"
+            data-testid="rewards-admin-distribution-integrity"
+          >
+            <h2 className="text-sm font-semibold text-emerald-900">{t('admin.distributionIntegrityTitle')}</h2>
+            <p className="mt-1 text-xs text-emerald-800">{t('admin.distributionIntegrityBody')}</p>
+          </div>
+        </section>
+
+        <div className="space-y-3">
+          <div className="flex gap-1.5 overflow-x-auto" data-testid="rewards-admin-tabs">
+            {tabs.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                  activeTab === tab.key
+                    ? 'bg-organic-orange text-white'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                }`}
+                data-testid={`rewards-admin-tab-${tab.key}`}
+              >
+                {tab.label}
+                {tab.key === 'pending' && pendingTotal ? ` (${pendingTotal})` : ''}
+              </button>
+            ))}
+          </div>
+
+          <div className="rounded-xl border border-border bg-card">
+            {activeTab === 'pending' && (
+>>>>>>> 6c00c35 (prototype(C): Stripe Ops Dashboard — KPI cards, accordion settings, audit timeline)
               <ClaimsTable
                 claims={filteredClaims}
                 showUser
@@ -230,6 +349,7 @@ export default function AdminRewardsPage() {
                 onReview={isAdmin ? (claim) => setReviewClaim(claim) : undefined}
                 onPay={isAdmin ? (claim) => setPayClaim(claim) : undefined}
               />
+<<<<<<< HEAD
             </div>
           </div>
         )}
@@ -252,6 +372,26 @@ export default function AdminRewardsPage() {
               >
                 {t('admin.manualDistribute')}
               </button>
+=======
+            )}
+            {activeTab === 'distributions' && (
+              <DistributionsTable distributions={distData?.distributions ?? []} showUser />
+            )}
+            {activeTab === 'manual' && (
+              <div className="p-8 text-center" data-testid="rewards-admin-manual-tab">
+                <Gift className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                <h3 className="mb-2 text-lg font-medium text-foreground">{t('admin.manualTitle')}</h3>
+                <p className="mb-4 text-muted-foreground">{t('admin.manualDescription')}</p>
+                {isAdmin && (
+                  <button
+                    onClick={() => setManualOpen(true)}
+                    className="rounded-lg bg-organic-orange px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-organic-orange/90"
+                  >
+                    {t('admin.manualDistribute')}
+                  </button>
+                )}
+              </div>
+>>>>>>> 6c00c35 (prototype(C): Stripe Ops Dashboard — KPI cards, accordion settings, audit timeline)
             )}
           </div>
         )}

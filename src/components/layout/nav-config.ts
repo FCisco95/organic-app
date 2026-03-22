@@ -7,6 +7,7 @@ import {
   FileText,
   Gift,
   Home,
+  LayoutDashboard,
   Lightbulb,
   Scale,
   Settings,
@@ -186,6 +187,12 @@ export function getSidebarNavSections(context: NavContext): NavSections {
     .filter((group) => group.items.length > 0);
 
   const admin: NavItem[] = [
+    {
+      id: 'adminDashboard',
+      href: '/admin',
+      labelKey: 'adminDashboard',
+      icon: LayoutDashboard,
+    },
     {
       id: 'submissions',
       href: '/admin/submissions',

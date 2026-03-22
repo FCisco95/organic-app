@@ -157,7 +157,8 @@
     "actionNewIdea": "新建想法",
     "sectionAdmin": "管理",
     "breadcrumbDetail": "详情",
-    "breadcrumbHome": "首页"
+    "breadcrumbHome": "首页",
+    "adminDashboard": "仪表板"
   },
   "Wallet": {
     "toastConnected": "钱包已连接",
@@ -2026,6 +2027,13 @@
       "treasuryBalanceForEmission": "发放计算国库余额",
       "treasuryBalanceForEmissionDescription": "用于计算发放上限的参考国库余额",
       "sprints": "个冲刺"
+    },
+    "accordion": {
+      "noValue": "未配置",
+      "configured": "已配置",
+      "manageMembersDesc": "管理组织成员",
+      "gamificationDesc": "XP、等级和任务",
+      "criticalGovernance": "关键治理设置"
     }
   },
   "common": {
@@ -2425,7 +2433,8 @@
         "allClaims": "所有申请",
         "distributions": "分配记录",
         "manual": "手动分配"
-      }
+      },
+      "trendLabel": "较上期"
     }
   },
   "Disputes": {
@@ -2895,5 +2904,34 @@
     "statTasksCompleted": "已完成任务",
     "statRank": "排名",
     "statLevel": "等级"
+  },
+  "AdminDashboard": {
+    "title": "管理运营",
+    "subtitle": "运营概览和快速操作",
+    "accessDenied": "访问被拒绝",
+    "accessDeniedDesc": "您需要管理员或议会权限才能访问管理仪表板。",
+    "kpi": {
+      "members": "成员",
+      "membersBreakdown": "{admin} 管理员 · {council} 议会 · {members} 成员",
+      "governance": "治理",
+      "governanceBreakdown": "{voting} 投票中 · {discussion} 讨论中",
+      "pendingActions": "待处理操作",
+      "pendingActionsDesc": "待审核的申领和提交",
+      "configChanges": "配置更改",
+      "lastChange": "上次更改 {time}"
+    },
+    "activityTimeline": "活动时间线",
+    "quickActions": "快速操作",
+    "actions": {
+      "reviewSubmissions": "审核提交",
+      "processRewards": "处理奖励",
+      "editGovernance": "编辑治理",
+      "viewMembers": "查看成员"
+    },
+    "timeline": {
+      "updated": "更新了",
+      "empty": "暂无近期活动",
+      "emptyDesc": "配置更改将在此处显示。"
+    }
   }
 }

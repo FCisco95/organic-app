@@ -157,7 +157,8 @@
     "actionNewIdea": "Nova Ideia",
     "sectionAdmin": "Administração",
     "breadcrumbDetail": "Detalhe",
-    "breadcrumbHome": "Início"
+    "breadcrumbHome": "Início",
+    "adminDashboard": "Painel"
   },
   "Wallet": {
     "toastConnected": "Carteira conectada",
@@ -2026,6 +2027,13 @@
       "treasuryBalanceForEmission": "Saldo da Tesouraria para Emissão",
       "treasuryBalanceForEmissionDescription": "Saldo de tesouraria de referência usado no cálculo do teto de emissão",
       "sprints": "sprints"
+    },
+    "accordion": {
+      "noValue": "Não configurado",
+      "configured": "Configurado",
+      "manageMembersDesc": "Gerir membros da organização",
+      "gamificationDesc": "XP, níveis e missões",
+      "criticalGovernance": "Configurações críticas de governação"
     }
   },
   "common": {
@@ -2425,7 +2433,8 @@
         "allClaims": "Todas as Reclamações",
         "distributions": "Distribuições",
         "manual": "Distribuição Manual"
-      }
+      },
+      "trendLabel": "do último período"
     }
   },
   "Disputes": {
@@ -2894,5 +2903,34 @@
     "statTasksCompleted": "Tarefas Feitas",
     "statRank": "Posição",
     "statLevel": "Nível"
+  },
+  "AdminDashboard": {
+    "title": "Operações Admin",
+    "subtitle": "Visão geral operacional e ações rápidas",
+    "accessDenied": "Acesso Negado",
+    "accessDeniedDesc": "Precisa de permissões de admin ou conselho para aceder ao painel de administração.",
+    "kpi": {
+      "members": "Membros",
+      "membersBreakdown": "{admin} admin · {council} conselho · {members} membros",
+      "governance": "Governação",
+      "governanceBreakdown": "{voting} em votação · {discussion} em discussão",
+      "pendingActions": "Ações Pendentes",
+      "pendingActionsDesc": "Pedidos + submissões para rever",
+      "configChanges": "Alterações Config",
+      "lastChange": "Última alteração {time}"
+    },
+    "activityTimeline": "Cronologia de Atividade",
+    "quickActions": "Ações Rápidas",
+    "actions": {
+      "reviewSubmissions": "Rever Submissões",
+      "processRewards": "Processar Recompensas",
+      "editGovernance": "Editar Governação",
+      "viewMembers": "Ver Membros"
+    },
+    "timeline": {
+      "updated": "atualizou",
+      "empty": "Sem atividade recente",
+      "emptyDesc": "As alterações de configuração aparecerão aqui."
+    }
   }
 }

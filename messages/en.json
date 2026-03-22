@@ -157,7 +157,8 @@
     "actionNewIdea": "New Idea",
     "sectionAdmin": "Admin",
     "breadcrumbDetail": "Detail",
-    "breadcrumbHome": "Home"
+    "breadcrumbHome": "Home",
+    "adminDashboard": "Dashboard"
   },
   "Wallet": {
     "toastConnected": "Wallet connected",
@@ -2035,6 +2036,13 @@
       "treasuryBalanceForEmission": "Treasury Balance for Emission",
       "treasuryBalanceForEmissionDescription": "Reference treasury balance used for emission-cap calculations",
       "sprints": "sprints"
+    },
+    "accordion": {
+      "noValue": "Not configured",
+      "configured": "Configured",
+      "manageMembersDesc": "Manage organization members",
+      "gamificationDesc": "XP, levels, and quests",
+      "criticalGovernance": "Critical governance settings"
     }
   },
   "common": {
@@ -2434,7 +2442,8 @@
         "allClaims": "All Claims",
         "distributions": "Distributions",
         "manual": "Manual Distribution"
-      }
+      },
+      "trendLabel": "from last period"
     }
   },
   "Disputes": {
@@ -2903,5 +2912,34 @@
     "statTasksCompleted": "Tasks Done",
     "statRank": "Rank",
     "statLevel": "Level"
+  },
+  "AdminDashboard": {
+    "title": "Admin Operations",
+    "subtitle": "Operational overview and quick actions",
+    "accessDenied": "Access Denied",
+    "accessDeniedDesc": "You need admin or council permissions to access the admin dashboard.",
+    "kpi": {
+      "members": "Members",
+      "membersBreakdown": "{admin} admin · {council} council · {members} members",
+      "governance": "Governance",
+      "governanceBreakdown": "{voting} in voting · {discussion} in discussion",
+      "pendingActions": "Pending Actions",
+      "pendingActionsDesc": "Claims + submissions to review",
+      "configChanges": "Config Changes",
+      "lastChange": "Last change {time}"
+    },
+    "activityTimeline": "Activity Timeline",
+    "quickActions": "Quick Actions",
+    "actions": {
+      "reviewSubmissions": "Review Submissions",
+      "processRewards": "Process Rewards",
+      "editGovernance": "Edit Governance",
+      "viewMembers": "View Members"
+    },
+    "timeline": {
+      "updated": "updated",
+      "empty": "No recent activity",
+      "emptyDesc": "Configuration changes will appear here as they happen."
+    }
   }
 }
