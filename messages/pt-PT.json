@@ -1908,6 +1908,8 @@
     "auditReasonLabel": "Motivo da alteração",
     "auditReasonPlaceholder": "Descreva por que esta alteração é necessária",
     "auditReasonHelp": "É obrigatório informar um motivo com pelo menos 8 caracteres em todas as alterações.",
+    "settingsUpdated": "Configurações atualizadas",
+    "settingsUpdateFailed": "Falha ao atualizar configurações",
     "tabs": {
       "general": "Geral",
       "token": "Token",
@@ -1970,7 +1972,11 @@
       "overrideTtlDescription": "Dias até uma promoção por override de admin/conselho reverter automaticamente",
       "overrideCouncilReview": "Revisão de Conselho no Override",
       "overrideCouncilReviewDescription": "Exigir revisão do conselho para promoções por override",
-      "overrideCouncilReviewLabel": "Exigir revisão do conselho em promoções por override"
+      "overrideCouncilReviewLabel": "Exigir revisão do conselho em promoções por override",
+      "warningQuorum": "Alterar o quórum afeta quantos participantes são necessários para uma votação válida. Valores baixos podem permitir que propostas passem com participação mínima.",
+      "warningApproval": "Alterar o limiar de aprovação afeta a facilidade com que propostas são aprovadas. Valores baixos podem permitir que propostas controversas sejam aprovadas.",
+      "warningDuration": "Alterar a duração da votação afeta todas as propostas futuras. Janelas curtas podem não dar tempo suficiente para os membros participarem.",
+      "governanceWarningTitle": "Configuração crítica de governança"
     },
     "sprints": {
       "description": "Padrões de sprint e configuração do Organic ID",

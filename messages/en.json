@@ -1917,6 +1917,8 @@
     "auditReasonLabel": "Change reason",
     "auditReasonPlaceholder": "Describe why this settings change is needed",
     "auditReasonHelp": "A reason with at least 8 characters is required for all settings updates.",
+    "settingsUpdated": "Settings updated",
+    "settingsUpdateFailed": "Failed to update settings",
     "tabs": {
       "general": "General",
       "token": "Token",
@@ -1979,7 +1981,11 @@
       "overrideTtlDescription": "Days before an admin/council promotion override auto-reverts",
       "overrideCouncilReview": "Override Council Review",
       "overrideCouncilReviewDescription": "Require council review flag for override promotions",
-      "overrideCouncilReviewLabel": "Require council review for override promotions"
+      "overrideCouncilReviewLabel": "Require council review for override promotions",
+      "warningQuorum": "Changing quorum affects how many participants are needed for a valid vote. Low values may allow proposals to pass with minimal participation.",
+      "warningApproval": "Changing the approval threshold affects how easily proposals pass. Low values may allow controversial proposals to succeed.",
+      "warningDuration": "Changing voting duration affects all future proposals. Short windows may not give members enough time to participate.",
+      "governanceWarningTitle": "Governance-critical setting"
     },
     "sprints": {
       "description": "Sprint defaults and Organic ID configuration",

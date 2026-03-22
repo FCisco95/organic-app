@@ -1908,6 +1908,8 @@
     "auditReasonLabel": "变更原因",
     "auditReasonPlaceholder": "请说明为什么需要这次设置变更",
     "auditReasonHelp": "所有设置更新都必须填写至少 8 个字符的原因。",
+    "settingsUpdated": "设置已更新",
+    "settingsUpdateFailed": "更新设置失败",
     "tabs": {
       "general": "常规",
       "token": "代币",
@@ -1970,7 +1972,11 @@
       "overrideTtlDescription": "管理员/理事会提升 override 自动回退前的天数",
       "overrideCouncilReview": "Override 理事会复核",
       "overrideCouncilReviewDescription": "是否要求理事会复核 override 提升",
-      "overrideCouncilReviewLabel": "对 override 提升要求理事会复核"
+      "overrideCouncilReviewLabel": "对 override 提升要求理事会复核",
+      "warningQuorum": "更改法定人数会影响有效投票所需的最少参与人数。低值可能导致提案在参与人数极少的情况下通过。",
+      "warningApproval": "更改批准阈值会影响提案通过的难易程度。低值可能导致争议性提案通过。",
+      "warningDuration": "更改投票时长会影响所有未来的提案。过短的时间窗口可能导致成员没有足够时间参与。",
+      "governanceWarningTitle": "治理关键设置"
     },
     "sprints": {
       "description": "冲刺默认值和 Organic ID 配置",

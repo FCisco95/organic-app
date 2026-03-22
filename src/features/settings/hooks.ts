@@ -1,6 +1,8 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
+import { useTranslations } from 'next-intl';
 import { fetchJson } from '@/lib/fetch-json';
 import type { OrganizationWithVoting } from './types';
 import type { SettingsPatchInput } from './schemas';
@@ -23,6 +25,7 @@ export function useOrganization() {
 
 export function useUpdateOrganization() {
   const queryClient = useQueryClient();
+  const t = useTranslations('Settings');
 
   return useMutation({
     mutationFn: async (data: SettingsPatchInput) => {
@@ -33,6 +36,10 @@ export function useUpdateOrganization() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: settingsKeys.all });
+      toast.success(t('settingsUpdated'));
+    },
+    onError: (err) => {
+      toast.error(err instanceof Error ? err.message : t('settingsUpdateFailed'));
     },
   });
 }

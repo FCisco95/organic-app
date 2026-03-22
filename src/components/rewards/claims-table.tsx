@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { ChevronDown, ListChecks } from 'lucide-react';
 import { ClaimTimeline } from './claim-timeline';
@@ -208,9 +208,8 @@ export function ClaimsTable({
               const isExpanded = expandedId === claim.id;
 
               return (
-                <>
+                <Fragment key={claim.id}>
                   <tr
-                    key={claim.id}
                     className={`transition-colors hover:bg-gray-50 ${
                       (onReview || onPay) ? 'cursor-pointer' : ''
                     } ${isExpanded ? 'bg-gray-50' : ''}`}
@@ -326,7 +325,7 @@ export function ClaimsTable({
                       </td>
                     </tr>
                   )}
-                </>
+                </Fragment>
               );
             })}
           </tbody>

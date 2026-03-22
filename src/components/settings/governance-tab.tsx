@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
+import { AlertTriangle } from 'lucide-react';
 import { SettingsField, SettingsInput, SettingsSaveBar } from './settings-field';
 import { useUpdateOrganization } from '@/features/settings';
 import type { GovernancePolicyConfig, VotingConfig } from '@/features/settings';
@@ -141,6 +142,10 @@ export function GovernanceTab({ votingConfig, governancePolicy }: GovernanceTabP
           />
           <span className="text-sm text-gray-500">%</span>
         </div>
+        <div className="mt-2 flex items-start gap-1.5 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-2.5 py-1.5">
+          <AlertTriangle aria-hidden="true" className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+          <span><strong>{t('governance.governanceWarningTitle')}.</strong> {t('governance.warningQuorum')}</span>
+        </div>
       </SettingsField>
 
       <SettingsField
@@ -158,6 +163,10 @@ export function GovernanceTab({ votingConfig, governancePolicy }: GovernanceTabP
           />
           <span className="text-sm text-gray-500">%</span>
         </div>
+        <div className="mt-2 flex items-start gap-1.5 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-2.5 py-1.5">
+          <AlertTriangle aria-hidden="true" className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+          <span><strong>{t('governance.governanceWarningTitle')}.</strong> {t('governance.warningApproval')}</span>
+        </div>
       </SettingsField>
 
       <SettingsField
@@ -174,6 +183,10 @@ export function GovernanceTab({ votingConfig, governancePolicy }: GovernanceTabP
             className="w-24"
           />
           <span className="text-sm text-gray-500">{t('governance.days')}</span>
+        </div>
+        <div className="mt-2 flex items-start gap-1.5 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-2.5 py-1.5">
+          <AlertTriangle aria-hidden="true" className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+          <span><strong>{t('governance.governanceWarningTitle')}.</strong> {t('governance.warningDuration')}</span>
         </div>
       </SettingsField>
 
