@@ -20,7 +20,7 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 | 4.10 | Disputes | 13 | DONE | S1 | [plan](plans/2026-03-21-disputes-qa-revamp.md) | `main` (7406bd9) | `main` (6968033) |
 | 4.11 | Rewards | 9 | DONE | S2 | [plan](plans/2026-03-22-rewards-qa-revamp.md) | `main` (d26a0a2) | `main` (bcbad99) |
 | 4.12 | Notifications | 6 | DONE | S1 | [plan](plans/2026-03-22-notifications-qa-revamp.md) | `main` (6258547) | `main` (35403ca) |
-| 4.13 | Admin Ops | 8 | PLANNED | S2 | [plan](plans/2026-03-22-admin-ops-qa-revamp.md) | — | — |
+| 4.13 | Admin Ops | 8 | FIXED | S2 | [plan](plans/2026-03-22-admin-ops-qa-revamp.md) | `main` (c124a13) | — |
 | 4.14 | Error Resilience | 6 | PENDING | — | — | — | — |
 | 4.15 | Locale, Accessibility | 8 | PENDING | — | — | — | — |
 | 4.16 | Operational Controls | auto | PENDING | — | — | — | — |
@@ -45,7 +45,7 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 
 | Action | Section | What to do |
 |--------|---------|------------|
-| **Next to fix** | 4.13 Admin Ops | PLANNED — 3 S2 fixes (toast, key prop, governance warnings) |
+| **Next to revamp** | 4.13 Admin Ops | FIXED — ready for prototype-executor |
 | **Next to QA** | 4.14 Error Resilience | First remaining PENDING section — 6 cases |
 
 ---
@@ -73,7 +73,7 @@ Issues spanning multiple sections — track resolution centrally.
 3. 4.12 Notifications (6 cases) — **DONE**
 
 **Wave C — Admin, onboarding, and integrations:**
-4. 4.13 Admin Ops (8 cases) — **PLANNED**
+4. 4.13 Admin Ops (8 cases) — **FIXED**
 5. 4.17 Onboarding Wizard (10 cases)
 6. 4.18 Twitter/X (12 cases)
 7. 4.19 Ideas Incubator (15 cases)
