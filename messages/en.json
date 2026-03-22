@@ -2056,12 +2056,16 @@
     "title": "Notifications",
     "pageTitle": "Notifications",
     "pageDescription": "Stay up to date with activity on tasks and proposals you follow.",
+    "activityTitle": "Activity",
+    "activitySubtitle": "Recent notifications and updates",
     "bell": "Notifications",
     "markAllRead": "Mark all read",
     "viewAll": "View all notifications",
+    "seeAllActivity": "See all activity",
+    "browseTasks": "Browse tasks",
     "empty": "No notifications yet",
-    "emptyPage": "All caught up!",
-    "emptyPageHint": "Follow tasks and proposals to get notified about updates.",
+    "emptyPage": "No activity yet",
+    "emptyPageHint": "Follow tasks and proposals to see updates here.",
     "loadMore": "Load more",
     "loadingMore": "Loading...",
     "someone": "Someone",
@@ -2070,6 +2074,12 @@
     "following": "Following",
     "tabs": {
       "all": "All"
+    },
+    "timeline": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "thisWeek": "This week",
+      "older": "Older"
     },
     "events": {
       "taskCreated": "created task \"{title}\"",
@@ -2096,6 +2106,7 @@
     },
     "preferences": {
       "title": "Notification Preferences",
+      "description": "Choose how you want to be notified for each category.",
       "category": "Category",
       "inApp": "In-app",
       "email": "Email",
@@ -2106,6 +2117,14 @@
         "comments": "Comments",
         "disputes": "Disputes",
         "system": "System"
+      },
+      "descriptions": {
+        "tasks": "Task creation, status changes, and completions",
+        "proposals": "New proposals and status updates",
+        "voting": "Vote activity and deadline reminders",
+        "comments": "New comments and replies",
+        "disputes": "Dispute filings and resolutions",
+        "system": "System announcements and alerts"
       }
     }
   },

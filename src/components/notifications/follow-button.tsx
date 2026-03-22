@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { Bell, BellOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useIsFollowing, useFollow, useUnfollow } from '@/features/notifications/hooks';
 import type { FollowSubjectType } from '@/features/notifications/types';
 
@@ -38,7 +39,18 @@ export function FollowButton({
     }
   };
 
-  if (isLoading) return null;
+  // Loading state: skeleton placeholder matching button size
+  if (isLoading) {
+    return (
+      <Skeleton
+        className={cn(
+          'rounded-md',
+          size === 'sm' ? 'h-8 w-24' : size === 'icon' ? 'h-8 w-8' : 'h-9 w-28',
+          className
+        )}
+      />
+    );
+  }
 
   return (
     <Button
@@ -46,7 +58,11 @@ export function FollowButton({
       size={size}
       onClick={handleToggle}
       disabled={isPending}
-      className={cn('gap-1.5', isFollowing && 'text-primary border-primary/30', className)}
+      className={cn(
+        'gap-1.5 transition-all duration-200',
+        isFollowing && 'text-foreground border-border',
+        className
+      )}
     >
       {isFollowing ? (
         <>

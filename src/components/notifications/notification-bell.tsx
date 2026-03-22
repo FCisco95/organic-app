@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
-import { Bell } from 'lucide-react';
+import { Bell, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -94,30 +94,30 @@ export function NotificationBell() {
       >
         <Bell className="h-4 w-4" />
         {unreadCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
+          <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[hsl(var(--organic-terracotta,15_80%_55%))] px-1 text-[10px] font-bold text-white">
             {displayCount > 0 ? displayCount : ''}
             {unreadCount > 99 && '+'}
           </span>
         )}
       </Button>
 
-      {/* Notification panel */}
+      {/* Notification panel — clean card list */}
       {open && (
         <div
           ref={panelRef}
           className={cn(
             'fixed inset-x-4 top-14 z-50 sm:absolute sm:inset-x-auto sm:right-0 sm:top-full sm:mt-2',
-            'sm:w-96 rounded-lg border border-border bg-card shadow-lg',
+            'sm:w-96 rounded-xl border border-border bg-card shadow-lg',
             'animate-in fade-in-0 zoom-in-95 slide-in-from-top-2'
           )}
         >
           {/* Header */}
           <div className="flex items-center justify-between border-b border-border px-4 py-3">
-            <h3 className="text-sm font-semibold">{t('title')}</h3>
+            <h3 className="text-sm font-semibold text-foreground">{t('title')}</h3>
             {unreadCount > 0 && (
               <button
                 onClick={handleMarkAllRead}
-                className="text-xs text-primary hover:text-primary/80 transition-colors"
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
                 disabled={markAllRead.isPending}
               >
                 {t('markAllRead')}
@@ -128,43 +128,46 @@ export function NotificationBell() {
           {/* Notification list */}
           <ScrollArea className="max-h-[400px]">
             {isLoading ? (
-              <div className="space-y-2 p-3">
+              <div className="p-4 space-y-3">
                 {Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="flex items-start gap-3 px-3 py-2">
-                    <Skeleton className="h-2 w-2 rounded-full mt-2" />
-                    <Skeleton className="h-8 w-8 rounded-full" />
-                    <div className="flex-1 space-y-1">
+                  <div key={i} className="flex items-start gap-3">
+                    <Skeleton className="h-7 w-7 rounded-full" />
+                    <div className="flex-1 space-y-1.5">
                       <Skeleton className="h-4 w-full" />
-                      <Skeleton className="h-3 w-16" />
+                      <Skeleton className="h-3 w-20" />
                     </div>
                   </div>
                 ))}
               </div>
             ) : notifications.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
-                <Bell className="h-8 w-8 text-muted-foreground/40 mb-2" />
+              <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted mb-2">
+                  <Bell className="h-5 w-5 text-muted-foreground/40" />
+                </div>
                 <p className="text-sm text-muted-foreground">{t('empty')}</p>
               </div>
             ) : (
-              <div className="py-1">
+              <div className="divide-y divide-border/50">
                 {notifications.slice(0, 10).map((notification) => (
                   <NotificationItem
                     key={notification.id}
                     notification={notification}
                     onClick={handleNotificationClick}
+                    compact
                   />
                 ))}
               </div>
             )}
           </ScrollArea>
 
-          {/* Footer */}
-          <div className="border-t border-border p-2">
+          {/* Footer — "See all activity" link */}
+          <div className="border-t border-border px-4 py-2.5">
             <button
               onClick={handleViewAll}
-              className="w-full rounded-md px-3 py-2 text-xs font-medium text-primary hover:bg-muted/50 transition-colors"
+              className="flex w-full items-center justify-center gap-1.5 rounded-md py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
-              {t('viewAll')}
+              {t('seeAllActivity')}
+              <ArrowRight className="h-3 w-3" />
             </button>
           </div>
         </div>

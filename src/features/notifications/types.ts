@@ -67,6 +67,75 @@ export const CATEGORY_LABELS: Record<NotificationCategory, string> = {
   system: 'System',
 };
 
+/** Lucide icon names for each event type (used to select icons in components) */
+export type EventIconName =
+  | 'ClipboardList'
+  | 'ArrowRightLeft'
+  | 'CheckCircle2'
+  | 'Trash2'
+  | 'Upload'
+  | 'FileCheck'
+  | 'MessageCircle'
+  | 'ScrollText'
+  | 'Vote'
+  | 'Clock'
+  | 'Scale'
+  | 'Reply'
+  | 'ArrowUp'
+  | 'Undo2'
+  | 'Settings';
+
+export const EVENT_ICON_NAMES: Record<ActivityEventType, EventIconName> = {
+  task_created: 'ClipboardList',
+  task_status_changed: 'ArrowRightLeft',
+  task_completed: 'CheckCircle2',
+  task_deleted: 'Trash2',
+  submission_created: 'Upload',
+  submission_reviewed: 'FileCheck',
+  comment_created: 'MessageCircle',
+  comment_deleted: 'Trash2',
+  proposal_created: 'ScrollText',
+  proposal_status_changed: 'ArrowRightLeft',
+  proposal_deleted: 'Trash2',
+  vote_cast: 'Vote',
+  voting_reminder_24h: 'Clock',
+  voting_reminder_1h: 'Clock',
+  dispute_created: 'Scale',
+  dispute_response_submitted: 'Reply',
+  dispute_escalated: 'ArrowUp',
+  dispute_resolved: 'CheckCircle2',
+  dispute_withdrawn: 'Undo2',
+};
+
+/** Category colors for timeline dots */
+export const CATEGORY_DOT_COLORS: Record<NotificationCategory, string> = {
+  tasks: 'bg-blue-500',
+  proposals: 'bg-violet-500',
+  voting: 'bg-amber-500',
+  comments: 'bg-emerald-500',
+  disputes: 'bg-rose-500',
+  system: 'bg-slate-400',
+};
+
+/** Category icon names */
+export type CategoryIconName =
+  | 'ClipboardList'
+  | 'ScrollText'
+  | 'Vote'
+  | 'MessageCircle'
+  | 'Scale'
+  | 'Settings';
+
+export const CATEGORY_ICON_NAMES: Record<NotificationCategory, CategoryIconName> = {
+  tasks: 'ClipboardList',
+  proposals: 'ScrollText',
+  voting: 'Vote',
+  comments: 'MessageCircle',
+  disputes: 'Scale',
+  system: 'Settings',
+};
+
+// Legacy emoji icons — kept for backward compatibility
 export const EVENT_ICONS: Record<ActivityEventType, string> = {
   task_created: '📋',
   task_status_changed: '🔄',

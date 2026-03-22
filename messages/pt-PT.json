@@ -2047,12 +2047,16 @@
     "title": "Notificações",
     "pageTitle": "Notificações",
     "pageDescription": "Fique a par da atividade em tarefas e propostas que segue.",
+    "activityTitle": "Atividade",
+    "activitySubtitle": "Notificações e atualizações recentes",
     "bell": "Notificações",
     "markAllRead": "Marcar tudo como lido",
     "viewAll": "Ver todas as notificações",
+    "seeAllActivity": "Ver toda a atividade",
+    "browseTasks": "Explorar tarefas",
     "empty": "Ainda sem notificações",
-    "emptyPage": "Tudo em dia!",
-    "emptyPageHint": "Siga tarefas e propostas para receber notificações sobre atualizações.",
+    "emptyPage": "Sem atividade ainda",
+    "emptyPageHint": "Siga tarefas e propostas para ver atualizações aqui.",
     "loadMore": "Carregar mais",
     "loadingMore": "Carregando...",
     "someone": "Alguém",
@@ -2061,6 +2065,12 @@
     "following": "A seguir",
     "tabs": {
       "all": "Tudo"
+    },
+    "timeline": {
+      "today": "Hoje",
+      "yesterday": "Ontem",
+      "thisWeek": "Esta semana",
+      "older": "Anteriores"
     },
     "events": {
       "taskCreated": "criou a tarefa \"{title}\"",
@@ -2087,6 +2097,7 @@
     },
     "preferences": {
       "title": "Preferências de Notificações",
+      "description": "Escolha como quer ser notificado para cada categoria.",
       "category": "Categoria",
       "inApp": "Na app",
       "email": "Email",
@@ -2097,6 +2108,14 @@
         "comments": "Comentários",
         "disputes": "Disputas",
         "system": "Sistema"
+      },
+      "descriptions": {
+        "tasks": "Criação de tarefas, mudanças de estado e conclusões",
+        "proposals": "Novas propostas e atualizações de estado",
+        "voting": "Atividade de votação e lembretes de prazo",
+        "comments": "Novos comentários e respostas",
+        "disputes": "Disputas apresentadas e resoluções",
+        "system": "Anúncios e alertas do sistema"
       }
     }
   },

@@ -2047,12 +2047,16 @@
     "title": "通知",
     "pageTitle": "通知",
     "pageDescription": "关注您跟踪的任务和提案的最新动态。",
+    "activityTitle": "动态",
+    "activitySubtitle": "最近的通知和更新",
     "bell": "通知",
     "markAllRead": "全部标为已读",
     "viewAll": "查看所有通知",
+    "seeAllActivity": "查看所有动态",
+    "browseTasks": "浏览任务",
     "empty": "暂无通知",
-    "emptyPage": "已全部阅读！",
-    "emptyPageHint": "关注任务和提案以接收更新通知。",
+    "emptyPage": "暂无动态",
+    "emptyPageHint": "关注任务和提案以在此查看更新。",
     "loadMore": "加载更多",
     "loadingMore": "正在加载...",
     "someone": "某人",
@@ -2061,6 +2065,12 @@
     "following": "已关注",
     "tabs": {
       "all": "全部"
+    },
+    "timeline": {
+      "today": "今天",
+      "yesterday": "昨天",
+      "thisWeek": "本周",
+      "older": "更早"
     },
     "events": {
       "taskCreated": "创建了任务「{title}」",
@@ -2087,6 +2097,7 @@
     },
     "preferences": {
       "title": "通知偏好设置",
+      "description": "选择每个类别的通知方式。",
       "category": "分类",
       "inApp": "应用内",
       "email": "邮件",
@@ -2097,6 +2108,14 @@
         "comments": "评论",
         "disputes": "争议",
         "system": "系统"
+      },
+      "descriptions": {
+        "tasks": "任务创建、状态变更和完成",
+        "proposals": "新提案和状态更新",
+        "voting": "投票活动和截止提醒",
+        "comments": "新评论和回复",
+        "disputes": "争议提出和解决",
+        "system": "系统公告和警报"
       }
     }
   },

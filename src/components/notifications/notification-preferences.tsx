@@ -4,7 +4,36 @@ import { useTranslations } from 'next-intl';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useNotificationPreferences, useUpdatePreference } from '@/features/notifications/hooks';
 import type { NotificationCategory } from '@/features/notifications/types';
-import { NOTIFICATION_CATEGORIES } from '@/features/notifications/types';
+import { NOTIFICATION_CATEGORIES, CATEGORY_ICON_NAMES } from '@/features/notifications/types';
+import {
+  ClipboardList,
+  ScrollText,
+  Vote,
+  MessageCircle,
+  Scale,
+  Settings,
+} from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import type { CategoryIconName } from '@/features/notifications/types';
+
+const CATEGORY_ICON_MAP: Record<CategoryIconName, LucideIcon> = {
+  ClipboardList,
+  ScrollText,
+  Vote,
+  MessageCircle,
+  Scale,
+  Settings,
+};
+
+/** Category descriptions for the preferences sheet */
+const CATEGORY_DESCRIPTION_KEYS: Record<NotificationCategory, string> = {
+  tasks: 'preferences.descriptions.tasks',
+  proposals: 'preferences.descriptions.proposals',
+  voting: 'preferences.descriptions.voting',
+  comments: 'preferences.descriptions.comments',
+  disputes: 'preferences.descriptions.disputes',
+  system: 'preferences.descriptions.system',
+};
 
 export function NotificationPreferences() {
   const t = useTranslations('Notifications');
@@ -13,14 +42,15 @@ export function NotificationPreferences() {
 
   if (isLoading) {
     return (
-      <div className="space-y-3">
+      <div className="space-y-4">
         {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="flex items-center justify-between">
-            <Skeleton className="h-5 w-24" />
-            <div className="flex gap-4">
-              <Skeleton className="h-5 w-10" />
-              <Skeleton className="h-5 w-10" />
+          <div key={i} className="flex items-center gap-3">
+            <Skeleton className="h-9 w-9 rounded-full" />
+            <div className="flex-1 space-y-1">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-3 w-40" />
             </div>
+            <Skeleton className="h-5 w-9 rounded-full" />
           </div>
         ))}
       </div>
@@ -41,8 +71,8 @@ export function NotificationPreferences() {
 
   return (
     <div className="space-y-1" data-testid="notification-preferences">
-      {/* Header row */}
-      <div className="flex items-center justify-between px-1 pb-2 border-b border-border">
+      {/* Header actions */}
+      <div className="flex items-center justify-between pb-4 mb-2 border-b border-border">
         <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
           {t('preferences.category')}
         </span>
@@ -56,21 +86,33 @@ export function NotificationPreferences() {
         </div>
       </div>
 
-      {/* Category rows */}
+      {/* Category rows with icon + name + description */}
       {NOTIFICATION_CATEGORIES.map((category) => {
         const pref = prefMap.get(category);
         const inApp = pref?.in_app ?? true;
         const email = pref?.email ?? true;
+        const iconName = CATEGORY_ICON_NAMES[category];
+        const IconComponent = CATEGORY_ICON_MAP[iconName];
 
         return (
           <div
             key={category}
-            className="flex items-center justify-between px-1 py-2.5 rounded-md hover:bg-muted/30 transition-colors"
+            className="flex items-center justify-between py-3 rounded-md hover:bg-muted/30 transition-colors px-1"
           >
-            <span className="text-sm font-medium capitalize">
-              {t(`preferences.categories.${category}`)}
-            </span>
-            <div className="flex gap-6">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted">
+                <IconComponent className="h-4 w-4 text-muted-foreground" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-medium capitalize">
+                  {t(`preferences.categories.${category}`)}
+                </p>
+                <p className="text-xs text-muted-foreground truncate">
+                  {t(CATEGORY_DESCRIPTION_KEYS[category])}
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-6 shrink-0">
               <div className="w-12 flex justify-center">
                 <ToggleSwitch
                   checked={inApp}
@@ -113,7 +155,7 @@ function ToggleSwitch({
         border-2 border-transparent transition-colors duration-200
         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2
         disabled:cursor-not-allowed disabled:opacity-50
-        ${checked ? 'bg-primary' : 'bg-muted-foreground/25'}
+        ${checked ? 'bg-[hsl(var(--organic-terracotta,15_80%_55%))]' : 'bg-muted-foreground/25'}
       `}
     >
       <span
