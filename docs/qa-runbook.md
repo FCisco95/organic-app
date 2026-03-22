@@ -339,27 +339,26 @@ Use cases:
 **Plan:** `docs/plans/2026-03-21-disputes-qa-revamp.md`
 
 ## 4.11 Rewards and Claim Workflow
-<!-- qa-status: PENDING -->
+<!-- qa-status: PLANNED | severity: S2 | plan: docs/plans/2026-03-22-rewards-qa-revamp.md -->
 Routes: `/rewards`, `/admin/rewards`.
 
 Use cases:
-- [ ] `RWD-01` Member rewards summary loads with claimability data.
-- [ ] `RWD-02` Claim below threshold is blocked with clear reason.
-- [ ] `RWD-03` Claim with invalid values is blocked with clear reason.
-- [ ] `RWD-04` Valid claim submits successfully.
-- [ ] `RWD-05` Claim status progression is visible and understandable.
-- [ ] `RWD-06` Admin rewards page surfaces pending review/triage clearly.
-- [ ] `RWD-07` Admin payout guardrails and warning copy are clear.
-- [ ] `RWD-08` Held/killed settlement posture is communicated clearly on rewards surfaces.
-- [ ] `RWD-09` Mobile rewards surface remains usable.
+- [x] `RWD-01` Member rewards summary loads with claimability data. **PARTIAL, S2**
+- [x] `RWD-02` Claim below threshold is blocked with clear reason. **PASS, S3**
+- [x] `RWD-03` Claim with invalid values is blocked with clear reason. **PARTIAL, S2**
+- [x] `RWD-04` Valid claim submits successfully. **PARTIAL, S3**
+- [x] `RWD-05` Claim status progression is visible and understandable. **PARTIAL, S2**
+- [x] `RWD-06` Admin rewards page surfaces pending review/triage clearly. **PARTIAL, S2**
+- [x] `RWD-07` Admin payout guardrails and warning copy are clear. **PASS, S3**
+- [x] `RWD-08` Held/killed settlement posture is communicated clearly on rewards surfaces. **PARTIAL, S2**
+- [x] `RWD-09` Mobile rewards surface remains usable. **PARTIAL, S2**
 
-Feedback:
-- What works well:
-- What does not work:
-- UI improvements requested:
-- Top 3 highest-impact changes:
-- Section severity (`S0/S1/S2/S3`):
-- Confidence score (`1-5`):
+### Feedback
+<!-- Full feedback archived in git history + plan file. Summary below. -->
+**Tested:** 2026-03-22 | **Cases:** 9/9 (0 skipped) | **Severity:** S2
+**Priority fixes:** Queue age shown on resolved claims is misleading; settlement "Pending" styled green (should be neutral); claim modal has no inline validation for invalid amounts
+**Top revamp:** Mobile CTA buried under 4+ scrolls of educational content (add FAB like Proposals); merge duplicate admin summary cards; add progressive disclosure and claim status timeline (Stripe/GitHub patterns)
+**Plan:** `docs/plans/2026-03-22-rewards-qa-revamp.md`
 
 ## 4.12 Notifications Workflow
 <!-- qa-status: PENDING -->
