@@ -2265,6 +2265,11 @@
         "unknown": "Unknown"
       }
     },
+    "tabs": {
+      "overview": "Overview",
+      "claims": "Claims",
+      "distributions": "Distributions"
+    },
     "sections": {
       "myClaims": "My Claims",
       "myDistributions": "My Distributions",
@@ -2291,6 +2296,9 @@
     },
     "claims": {
       "empty": "No claims yet",
+      "emptyHint": "Start earning by completing tasks, then claim your rewards here.",
+      "timeline": "Progress",
+      "adminNote": "Note",
       "user": "User",
       "points": "Points",
       "tokens": "Tokens",
@@ -2308,6 +2316,7 @@
     },
     "distributions": {
       "empty": "No distributions yet",
+      "emptyHint": "Token distributions from epochs and claims will appear here.",
       "user": "User",
       "type": "Type",
       "category": "Category",
@@ -2387,6 +2396,11 @@
       "manualDistribute": "Manual Distribution",
       "manualTitle": "Manual Distribution",
       "manualDescription": "Send token rewards directly to contributors for bonuses, bounties, or corrections.",
+      "summaryDistributed": "ORG distributed",
+      "summaryPending": "pending",
+      "summaryApproved": "approved",
+      "filterAll": "All",
+      "safetyIntegrity": "Safety & Integrity",
       "tabs": {
         "pending": "Pending Claims",
         "allClaims": "All Claims",

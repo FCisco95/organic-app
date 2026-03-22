@@ -1,6 +1,8 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { Inbox } from 'lucide-react';
+import { timeAgo } from './time-ago';
 import type { RewardDistribution } from '@/features/rewards';
 
 interface DistributionsTableProps {
@@ -19,8 +21,10 @@ export function DistributionsTable({
 
   if (distributions.length === 0) {
     return (
-      <div className="py-10 text-center" data-testid="rewards-distributions-empty">
-        <p className="text-sm text-gray-500">{t('distributions.empty')}</p>
+      <div className="py-12 text-center" data-testid="rewards-distributions-empty">
+        <Inbox className="mx-auto mb-3 h-10 w-10 text-gray-300" />
+        <p className="text-sm font-medium text-gray-700">{t('distributions.empty')}</p>
+        <p className="mt-1 text-xs text-gray-500">{t('distributions.emptyHint')}</p>
       </div>
     );
   }
@@ -47,8 +51,11 @@ export function DistributionsTable({
                         {dist.user_name || dist.user_id.slice(0, 8)}
                       </p>
                     )}
-                    <p className="text-xs text-gray-500">
-                      {new Date(dist.created_at).toLocaleDateString()}
+                    <p
+                      className="text-xs text-gray-500"
+                      title={new Date(dist.created_at).toLocaleString()}
+                    >
+                      {timeAgo(dist.created_at)}
                     </p>
                   </div>
                   <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700">
@@ -73,7 +80,7 @@ export function DistributionsTable({
                       {t('distributions.category')}
                     </p>
                     <p className="font-medium text-gray-900 truncate">
-                      {dist.category ? t(`distributionCategory.${dist.category}`) : '—'}
+                      {dist.category ? t(`distributionCategory.${dist.category}`) : '\u2014'}
                     </p>
                   </div>
                 </div>
@@ -169,7 +176,7 @@ export function DistributionsTable({
                     </span>
                   </td>
                   <td className="px-4 py-3 text-gray-700">
-                    {dist.category ? t(`distributionCategory.${dist.category}`) : '—'}
+                    {dist.category ? t(`distributionCategory.${dist.category}`) : '\u2014'}
                   </td>
                   <td className="px-4 py-3 text-gray-700">
                     {dist.type === 'epoch' && dist.reward_settlement_status ? (
@@ -190,7 +197,7 @@ export function DistributionsTable({
                         )}
                       </div>
                     ) : (
-                      '—'
+                      '\u2014'
                     )}
                   </td>
                   <td className="px-4 py-3" data-testid="rewards-admin-distribution-integrity-badge">
@@ -211,13 +218,16 @@ export function DistributionsTable({
                     ORG
                   </td>
                   <td className="max-w-[220px] px-4 py-3 text-gray-500">
-                    <p className="truncate">{dist.reason || '—'}</p>
+                    <p className="truncate">{dist.reason || '\u2014'}</p>
                     {dist.integrity_reason && (
                       <p className="mt-1 truncate text-xs text-red-600">{dist.integrity_reason}</p>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-gray-500">
-                    {new Date(dist.created_at).toLocaleDateString()}
+                  <td
+                    className="px-4 py-3 text-gray-500"
+                    title={new Date(dist.created_at).toLocaleString()}
+                  >
+                    {timeAgo(dist.created_at)}
                   </td>
                 </tr>
               );

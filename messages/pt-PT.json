@@ -2262,6 +2262,11 @@
       "myClaimsWithCount": "Minhas Reclamações ({count})",
       "myDistributionsWithCount": "Minhas Distribuições ({count})"
     },
+    "tabs": {
+      "overview": "Visão Geral",
+      "claims": "Reclamações",
+      "distributions": "Distribuições"
+    },
     "claimStatus": {
       "pending": "Pendente",
       "approved": "Aprovada",
@@ -2282,6 +2287,9 @@
     },
     "claims": {
       "empty": "Sem reclamações ainda",
+      "emptyHint": "Comece a ganhar completando tarefas e reclame as suas recompensas aqui.",
+      "timeline": "Progresso",
+      "adminNote": "Nota",
       "user": "Utilizador",
       "points": "Pontos",
       "tokens": "Tokens",
@@ -2299,6 +2307,7 @@
     },
     "distributions": {
       "empty": "Sem distribuições ainda",
+      "emptyHint": "Distribuições de tokens de épocas e reclamações aparecerão aqui.",
       "user": "Utilizador",
       "type": "Tipo",
       "category": "Categoria",
@@ -2378,6 +2387,11 @@
       "manualDistribute": "Distribuição Manual",
       "manualTitle": "Distribuição Manual",
       "manualDescription": "Enviar recompensas em tokens diretamente a contribuidores para bónus, recompensas ou correções.",
+      "summaryDistributed": "ORG distribuídos",
+      "summaryPending": "pendentes",
+      "summaryApproved": "aprovadas",
+      "filterAll": "Todas",
+      "safetyIntegrity": "Segurança e Integridade",
       "tabs": {
         "pending": "Pendentes",
         "allClaims": "Todas as Reclamações",
