@@ -19,7 +19,7 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 | 4.9 | Proposals, Governance | 17 | DONE | S2 | [plan](plans/2026-03-19-proposals-qa-revamp.md) | merged to main | merged to main |
 | 4.10 | Disputes | 13 | DONE | S1 | [plan](plans/2026-03-21-disputes-qa-revamp.md) | `main` (7406bd9) | `main` (6968033) |
 | 4.11 | Rewards | 9 | DONE | S2 | [plan](plans/2026-03-22-rewards-qa-revamp.md) | `main` (d26a0a2) | `main` (bcbad99) |
-| 4.12 | Notifications | 6 | PENDING | — | — | — | — |
+| 4.12 | Notifications | 6 | PLANNED | S1 | [plan](plans/2026-03-22-notifications-qa-revamp.md) | — | — |
 | 4.13 | Admin Ops | 8 | PENDING | — | — | — | — |
 | 4.14 | Error Resilience | 6 | PENDING | — | — | — | — |
 | 4.15 | Locale, Accessibility | 8 | PENDING | — | — | — | — |
@@ -45,8 +45,8 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 
 | Action | Section | What to do |
 |--------|---------|------------|
-| **Next to QA** | 4.12 Notifications | First remaining PENDING section — 6 cases |
-| **Next to QA** | 4.13 Admin Ops | Second PENDING section — 8 cases |
+| **Next to fix** | 4.12 Notifications | PLANNED — 3 functional fixes (S1 mobile overflow, S2 dispute href, S2 mark-all-read) |
+| **Next to QA** | 4.13 Admin Ops | First remaining PENDING section — 8 cases |
 
 ---
 
@@ -141,3 +141,4 @@ Consolidated — one row per section showing final outcome. Full history in git 
 | 2026-03-21 | 4.8 Sprints | `main` (25d3df6) | `main` (7ef0c54) | 1 i18n fix. Revamp: Full 9-component overhaul — GitHub milestones + A's phase stepper/burndown, orange theme, muted success. |
 | 2026-03-21 | 4.9 Proposals | merged to main | merged to main | 5 fixes. Revamp: Proto C — inline accordions, vote FAB, numbered stepper, stage history. |
 | 2026-03-22 | 4.11 Rewards | `main` (d26a0a2) | `main` (bcbad99) | 3 fixes (queue age, settlement color, claim validation). Revamp: Proto B GitHub — tabbed sections, timeline chips, filter pills, expandable rows, header CTA. |
+| 2026-03-22 | 4.12 Notifications | — | — | QA complete, plan written. 3 fixes: mobile bell overflow (S1), dispute href (S2), mark-all-read stale state (S2). |

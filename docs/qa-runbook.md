@@ -361,24 +361,23 @@ Use cases:
 **Plan:** `docs/plans/2026-03-22-rewards-qa-revamp.md`
 
 ## 4.12 Notifications Workflow
-<!-- qa-status: PENDING -->
+<!-- qa-status: TESTED | severity: S1 -->
 Routes: `/notifications`.
 
 Use cases:
-- [ ] `NOTIF-01` Notifications page loads with expected filters/tabs.
-- [ ] `NOTIF-02` Mark-as-read action updates item state.
-- [ ] `NOTIF-03` Follow/unfollow notification action behaves correctly.
-- [ ] `NOTIF-04` Preferences save and persist after reload.
-- [ ] `NOTIF-05` Empty and error states are informative.
-- [ ] `NOTIF-06` Mobile card readability and action hit targets are acceptable.
+- [x] `NOTIF-01` Notifications page loads with expected filters/tabs. **PASS, S3**
+- [x] `NOTIF-02` Mark-as-read action updates item state. **PARTIAL, S2**
+- [x] `NOTIF-03` Follow/unfollow notification action behaves correctly. **PASS, S3**
+- [x] `NOTIF-04` Preferences save and persist after reload. **PASS, S3**
+- [x] `NOTIF-05` Empty and error states are informative. **PASS, S3**
+- [x] `NOTIF-06` Mobile card readability and action hit targets are acceptable. **FAIL, S1**
 
-Feedback:
-- What works well:
-- What does not work:
-- UI improvements requested:
-- Top 3 highest-impact changes:
-- Section severity (`S0/S1/S2/S3`):
-- Confidence score (`1-5`):
+### Feedback
+<!-- Full feedback archived in git history + plan file. Summary below. -->
+**Tested:** 2026-03-22 | **Cases:** 6/6 (0 skipped) | **Severity:** S1
+**Priority fixes:** Bell dropdown panel overflows on mobile (clipped left edge, unusable). `getNotificationHref()` missing dispute subject_type mapping — all dispute notifications navigate to home.
+**Top revamp:** Notification items are visually monotone ("Someone Untitled" everywhere). Benchmark against Linear's notification center — grouped by time, rich action text, category icons, hover actions.
+**Plan:** `docs/plans/2026-03-22-notifications-qa-revamp.md`
 
 ## 4.13 Admin Ops Workflow (Settings, Submission Queue, Rewards Ops)
 <!-- qa-status: PENDING -->
