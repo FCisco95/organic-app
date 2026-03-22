@@ -46,7 +46,6 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 | Action | Section | What to do |
 |--------|---------|------------|
 | **Next to QA** | 4.14 Error Resilience | First remaining PENDING section — 6 cases |
-| **Next to QA** | 4.14 Error Resilience | First remaining PENDING section — 6 cases |
 
 ---
 
