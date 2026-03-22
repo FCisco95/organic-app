@@ -2034,6 +2034,11 @@
       "manageMembersDesc": "管理组织成员",
       "gamificationDesc": "XP、等级和任务",
       "criticalGovernance": "关键治理设置"
+    },
+    "settingsGroups": {
+      "organization": "组织",
+      "governance": "治理",
+      "operations": "运营"
     }
   },
   "common": {

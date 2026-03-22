@@ -2034,6 +2034,11 @@
       "manageMembersDesc": "Gerir membros da organização",
       "gamificationDesc": "XP, níveis e missões",
       "criticalGovernance": "Configurações críticas de governação"
+    },
+    "settingsGroups": {
+      "organization": "Organização",
+      "governance": "Governança",
+      "operations": "Operações"
     }
   },
   "common": {
