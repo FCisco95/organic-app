@@ -63,7 +63,22 @@ Full re-QA + fix + revamp pipeline completed in one session.
 - [x] Round 4: Track 1 functional fixes — Vote button visibility, execution deadline, freeze limits, garbage data script
 - [x] Round 5: Track 2 visual revamp — Proto C (inline accordions, vote FAB, numbered stepper, icon categories, display names, stage history, role-aware CTAs)
 
-**Remaining QA sections:** 4.4 (Members), 4.6 (Quests), 4.8 (Sprints), 4.10 (Disputes), 4.11 (Rewards), 4.12 (Notifications), 4.13 (Admin), 4.14 (Error Resilience), 4.15 (Locale/A11y), 4.16 (Operational Controls), 4.17 (Onboarding), 4.18 (Twitter/X), 4.19 (Ideas)
+### QA Visual Revamp — Sections 4.4–4.13, 4.17 — ✅ Complete (2026-03-21 to 2026-03-22)
+
+Full QA pipeline (test + fix + revamp) completed for 11 more sections across two sessions.
+
+- [x] 4.4 Community — 6 i18n fixes. Revamp: heatmap, keyboard nav, command search, stat cards
+- [x] 4.5 Profile — 4 fixes (quest i18n, Twitter, community keys). Revamp: executive dashboard, tabbed profile
+- [x] 4.6 Quests — 1 fix (resolveQuestTitle). Revamp: Duolingo — progress rings, tier stepper, color-coded cards
+- [x] 4.7 Tasks — 3 fixes (silent errors, locale, emoji). Revamp: mono stats, priority stripes, segmented tabs
+- [x] 4.8 Sprints — 1 i18n fix. Revamp: GitHub milestones + phase stepper/burndown, orange theme
+- [x] 4.10 Disputes — Revamp: Linear command center
+- [x] 4.11 Rewards — 3 fixes (queue age, settlement color, claim validation). Revamp: GitHub tabs, timeline chips, filter pills
+- [x] 4.12 Notifications — 3 fixes. Revamp: Vercel timeline, card items, Sheet prefs, segmented filter
+- [x] 4.13 Admin Ops — 3 fixes (toast, key prop, governance warnings). Revamp: Stripe KPI + Linear settings nav
+- [x] 4.17 Onboarding — 10/10 PASS, no bugs. Revamp: Notion progressive cards, slide transitions, XP badges
+
+**Remaining QA sections:** 4.14 (Error Resilience), 4.15 (Locale/A11y), 4.16 (Operational Controls), 4.18 (Twitter/X), 4.19 (Ideas Incubator)
 
 **Future items from this revamp (see backlog below):**
 - Personal analytics tab, On-Chain analytics tab, AI governance health summary, orange vs terracotta design system decision

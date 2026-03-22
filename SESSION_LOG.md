@@ -2,6 +2,43 @@
 
 Add newest entries at the top.
 
+## 2026-03-22 (Session: QA Pipeline — 4.10–4.13, 4.17 Onboarding)
+
+### Summary
+
+Continued the QA pipeline for remaining sections: Disputes (4.10), Rewards (4.11), Notifications (4.12), Admin Ops (4.13), and Onboarding Wizard (4.17). Each went through the full test → fix → revamp cycle. 14/19 sections now DONE.
+
+### Sections Completed
+
+| Section | Cases | Bugs Fixed | Revamp |
+|---------|-------|------------|--------|
+| 4.10 Disputes | 13 | — | Linear command center |
+| 4.11 Rewards | 9 | 3 (queue age, settlement color, claim validation) | Proto B GitHub — tabs, timeline chips, filter pills |
+| 4.12 Notifications | 6 | 3 (bell overflow, dispute href, mark-all-read stale) | Proto C Vercel — timeline, card items, Sheet prefs |
+| 4.13 Admin Ops | 8 | 3 (toast, key prop, governance warnings) | C+A combined — Stripe KPI + Linear settings nav |
+| 4.17 Onboarding | 10 | 0 (all PASS) | Proto B Notion — progress bar, slide transitions, XP badges |
+
+### Key Decisions
+- Onboarding had no functional bugs (10/10 PASS) — skipped qa-fixer, went straight to prototype-executor
+- User chose Proto B (Notion Cards) for onboarding: warm tone, full-width cards, rich empty states
+
+## 2026-03-21 (Session: QA Pipeline — 4.4–4.9 batch)
+
+### Summary
+
+Batch-processed 6 sections through the full QA pipeline: Community (4.4), Profile (4.5), Quests (4.6), Tasks (4.7), Sprints (4.8), and revisited Proposals (4.9). All completed with fixes and revamps merged to main.
+
+### Sections Completed
+
+| Section | Cases | Bugs Fixed | Revamp |
+|---------|-------|------------|--------|
+| 4.4 Community | 12 | 6 i18n fixes | Heatmap, keyboard nav, command search, stat cards |
+| 4.5 Profile | 11 | 4 (quest i18n, Twitter, community keys) | Executive dashboard, tabbed profile |
+| 4.6 Quests | 11 | 1 (resolveQuestTitle) | Duolingo — progress rings, tier stepper, color-coded cards |
+| 4.7 Tasks | 17 | 3 (silent errors, locale, emoji) | Mono stats, priority stripes, segmented tabs |
+| 4.8 Sprints | 11 | 1 i18n fix | GitHub milestones + phase stepper/burndown, orange theme |
+| 4.9 Proposals | 17 | 5 (from prior session) | Proto C — inline accordions, vote FAB, numbered stepper |
+
 ## 2026-03-19 (Session: Full Proposals QA Pipeline — test + fix + revamp)
 
 ### Summary
