@@ -20,7 +20,7 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 | 4.10 | Disputes | 13 | DONE | S1 | [plan](plans/2026-03-21-disputes-qa-revamp.md) | `main` (7406bd9) | `main` (6968033) |
 | 4.11 | Rewards | 9 | DONE | S2 | [plan](plans/2026-03-22-rewards-qa-revamp.md) | `main` (d26a0a2) | `main` (bcbad99) |
 | 4.12 | Notifications | 6 | DONE | S1 | [plan](plans/2026-03-22-notifications-qa-revamp.md) | `main` (6258547) | `main` (35403ca) |
-| 4.13 | Admin Ops | 8 | PENDING | — | — | — | — |
+| 4.13 | Admin Ops | 8 | PLANNED | S2 | [plan](plans/2026-03-22-admin-ops-qa-revamp.md) | — | — |
 | 4.14 | Error Resilience | 6 | PENDING | — | — | — | — |
 | 4.15 | Locale, Accessibility | 8 | PENDING | — | — | — | — |
 | 4.16 | Operational Controls | auto | PENDING | — | — | — | — |
@@ -45,8 +45,8 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 
 | Action | Section | What to do |
 |--------|---------|------------|
-| **Next to QA** | 4.13 Admin Ops | First remaining PENDING section — 8 cases |
-| **Next to QA** | 4.13 Admin Ops | First remaining PENDING section — 8 cases |
+| **Next to fix** | 4.13 Admin Ops | PLANNED — 3 S2 fixes (toast, key prop, governance warnings) |
+| **Next to QA** | 4.14 Error Resilience | First remaining PENDING section — 6 cases |
 
 ---
 
@@ -65,15 +65,15 @@ Issues spanning multiple sections — track resolution centrally.
 
 ## Recommended Section Order
 
-**DONE (11/19):** 4.1 Auth, 4.2 Navigation, 4.3 Home/Analytics, 4.4 Community, 4.5 Profile, 4.6 Quests, 4.7 Tasks, 4.8 Sprints, 4.9 Proposals, 4.10 Disputes — all merged to `main`
+**DONE (12/19):** 4.1 Auth, 4.2 Navigation, 4.3 Home/Analytics, 4.4 Community, 4.5 Profile, 4.6 Quests, 4.7 Tasks, 4.8 Sprints, 4.9 Proposals, 4.10 Disputes, 4.11 Rewards, 4.12 Notifications — all merged to `main`
 
 **Wave B — Core feature sections:**
 1. 4.10 Disputes (13 cases) — **DONE**
 2. 4.11 Rewards (9 cases) — **DONE**
-3. 4.12 Notifications (6 cases) — PENDING
+3. 4.12 Notifications (6 cases) — **DONE**
 
 **Wave C — Admin, onboarding, and integrations:**
-4. 4.13 Admin Ops (8 cases)
+4. 4.13 Admin Ops (8 cases) — **PLANNED**
 5. 4.17 Onboarding Wizard (10 cases)
 6. 4.18 Twitter/X (12 cases)
 7. 4.19 Ideas Incubator (15 cases)
@@ -142,3 +142,4 @@ Consolidated — one row per section showing final outcome. Full history in git 
 | 2026-03-21 | 4.9 Proposals | merged to main | merged to main | 5 fixes. Revamp: Proto C — inline accordions, vote FAB, numbered stepper, stage history. |
 | 2026-03-22 | 4.11 Rewards | `main` (d26a0a2) | `main` (bcbad99) | 3 fixes (queue age, settlement color, claim validation). Revamp: Proto B GitHub — tabbed sections, timeline chips, filter pills, expandable rows, header CTA. |
 | 2026-03-22 | 4.12 Notifications | `main` (6258547) | `main` (35403ca) | 3 fixes + Proto C Vercel timeline — card items, timeline connector, Lucide icons, Sheet prefs, segmented filter. |
+| 2026-03-22 | 4.13 Admin Ops | — | — | 8/8 tested (6 PASS, 2 PARTIAL). S2: no save toast, no governance warnings, ClaimsTable key prop. Plan written. |

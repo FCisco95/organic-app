@@ -380,26 +380,25 @@ Use cases:
 **Plan:** `docs/plans/2026-03-22-notifications-qa-revamp.md`
 
 ## 4.13 Admin Ops Workflow (Settings, Submission Queue, Rewards Ops)
-<!-- qa-status: PENDING -->
+<!-- qa-status: PLANNED | severity: S2 | plan: docs/plans/2026-03-22-admin-ops-qa-revamp.md -->
 Routes: `/admin/settings`, `/admin/submissions`, `/admin/rewards`.
 
 Use cases:
-- [ ] `ADM-01` Non-admin cannot access admin pages.
-- [ ] `ADM-02` Admin settings page tabs load and switch without stale state.
-- [ ] `ADM-03` Settings updates require reason where audit policy enforces it.
-- [ ] `ADM-04` Settings update produces user-understandable success/failure messages.
-- [ ] `ADM-05` Admin submissions queue supports daily review operations.
-- [ ] `ADM-06` Admin rewards surface supports payout triage safely.
-- [ ] `ADM-07` Risky controls include clear warning context.
-- [ ] `ADM-08` Tablet/mobile admin usability is acceptable for critical actions.
+- [x] `ADM-01` Non-admin cannot access admin pages. **PASS, S3**
+- [x] `ADM-02` Admin settings page tabs load and switch without stale state. **PASS, S3**
+- [x] `ADM-03` Settings updates require reason where audit policy enforces it. **PASS, S3**
+- [x] `ADM-04` Settings update produces user-understandable success/failure messages. **PARTIAL, S2**
+- [x] `ADM-05` Admin submissions queue supports daily review operations. **PASS, S3**
+- [x] `ADM-06` Admin rewards surface supports payout triage safely. **PASS, S3**
+- [x] `ADM-07` Risky controls include clear warning context. **PARTIAL, S2**
+- [x] `ADM-08` Tablet/mobile admin usability is acceptable for critical actions. **PASS, S3**
 
-Feedback:
-- What works well:
-- What does not work:
-- UI improvements requested:
-- Top 3 highest-impact changes:
-- Section severity (`S0/S1/S2/S3`):
-- Confidence score (`1-5`):
+### Feedback
+<!-- Full feedback archived in git history + plan file. Summary below. -->
+**Tested:** 2026-03-22 | **Cases:** 8/8 (6 PASS, 2 PARTIAL) | **Severity:** S2
+**Priority fixes:** No save success toast on settings (ADM-04), missing React key prop in ClaimsTable (ADM-06), no warning context on dangerous governance controls (ADM-07)
+**Top revamp:** Add admin dashboard landing page, surface audit trail in settings, visually distinguish dangerous governance controls — benchmarked against Linear admin panel, Vercel settings, Stripe dashboard
+**Plan:** `docs/plans/2026-03-22-admin-ops-qa-revamp.md`
 
 ## 4.14 Error Resilience and Health
 <!-- qa-status: PENDING -->
