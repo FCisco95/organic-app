@@ -531,32 +531,31 @@ Feedback:
 - Confidence score (`1-5`):
 
 ## 4.17 Onboarding Wizard and Progress APIs
-<!-- qa-status: PENDING -->
+<!-- qa-status: PLANNED | severity: S3 | plan: docs/plans/2026-03-22-onboarding-qa-revamp.md -->
 Routes: top-bar onboarding shortcut, onboarding modal, `/api/onboarding/steps`, `/api/onboarding/steps/:step/complete`.
 
 Pre-flight:
-- [ ] Test user has `user_profiles.onboarding_completed_at IS NULL`.
-- [ ] At least one task and one active sprint exist for step completion checks.
+- [x] Test user has `user_profiles.onboarding_completed_at IS NULL`.
+- [x] At least one task and one active sprint exist for step completion checks.
 
 Use cases:
-- [ ] `ONB-01` Incomplete user sees onboarding wizard auto-open on first authenticated app load.
-- [ ] `ONB-02` Wizard step order is `connect_wallet -> verify_token -> pick_task -> join_sprint`.
-- [ ] `ONB-03` `GET /api/onboarding/steps` returns all four step keys with accurate completion state.
-- [ ] `ONB-04` `connect_wallet` completion fails with clear error when wallet is not linked.
-- [ ] `ONB-05` `verify_token` completion fails with clear error when Organic ID is missing.
-- [ ] `ONB-06` `pick_task` completion enforces assigned-task requirement.
-- [ ] `ONB-07` `join_sprint` completion enforces assigned-task-in-sprint requirement.
-- [ ] `ONB-08` Completed steps remain completed after page reload and session refresh.
-- [ ] `ONB-09` Re-posting completion for an already completed step is idempotent and does not duplicate XP award.
-- [ ] `ONB-10` When all steps complete, onboarding shortcut disappears and profile `onboarding_completed_at` behavior is coherent.
+- [x] `ONB-01` Incomplete user sees onboarding wizard auto-open on first authenticated app load. **PASS, S3**
+- [x] `ONB-02` Wizard step order is `connect_wallet -> verify_token -> pick_task -> join_sprint`. **PASS, S3**
+- [x] `ONB-03` `GET /api/onboarding/steps` returns all four step keys with accurate completion state. **PASS, S3**
+- [x] `ONB-04` `connect_wallet` completion fails with clear error when wallet is not linked. **PASS, S3**
+- [x] `ONB-05` `verify_token` completion fails with clear error when Organic ID is missing. **PASS, S3**
+- [x] `ONB-06` `pick_task` completion enforces assigned-task requirement. **PASS, S3**
+- [x] `ONB-07` `join_sprint` completion enforces assigned-task-in-sprint requirement. **PASS, S3**
+- [x] `ONB-08` Completed steps remain completed after page reload and session refresh. **PASS, S3**
+- [x] `ONB-09` Re-posting completion for an already completed step is idempotent and does not duplicate XP award. **PASS, S3**
+- [x] `ONB-10` When all steps complete, onboarding shortcut disappears and profile `onboarding_completed_at` behavior is coherent. **PASS, S3**
 
-Feedback:
-- What works well:
-- What does not work:
-- UI improvements requested:
-- Top 3 highest-impact changes:
-- Section severity (`S0/S1/S2/S3`):
-- Confidence score (`1-5`):
+### Feedback
+<!-- Full feedback archived in git history + plan file. Summary below. -->
+**Tested:** 2026-03-22 | **Cases:** 10/10 PASS (0 skipped) | **Severity:** S3
+**Priority fixes:** None — all functional tests pass, no S0/S1 bugs.
+**Top revamp:** Hardcoded gray colors instead of theme tokens, no step transition animations, emoji icons instead of Lucide, poor empty states. Benchmark: Linear wizard stepper, Vercel deploy flow, Notion progressive onboarding.
+**Plan:** `docs/plans/2026-03-22-onboarding-qa-revamp.md`
 
 ## 4.18 Twitter/X Linking and Engagement Verification Workflow
 <!-- qa-status: PENDING -->

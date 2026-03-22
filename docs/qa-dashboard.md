@@ -24,7 +24,7 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 | 4.14 | Error Resilience | 6 | PENDING | — | — | — | — |
 | 4.15 | Locale, Accessibility | 8 | PENDING | — | — | — | — |
 | 4.16 | Operational Controls | auto | PENDING | — | — | — | — |
-| 4.17 | Onboarding Wizard | 10 | PENDING | — | — | — | — |
+| 4.17 | Onboarding Wizard | 10 | PLANNED | S3 | [plan](plans/2026-03-22-onboarding-qa-revamp.md) | — (no bugs) | — |
 | 4.18 | Twitter/X | 12 | PENDING | — | — | — | — |
 | 4.19 | Ideas Incubator | 15 | PENDING | — | — | — | — |
 
@@ -45,7 +45,8 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 
 | Action | Section | What to do |
 |--------|---------|------------|
-| **Next to QA** | 4.14 Error Resilience | First remaining PENDING section — 6 cases |
+| **Next to revamp** | 4.17 Onboarding Wizard | No bugs — skip qa-fixer, go straight to prototype-executor |
+| **Next to QA** | 4.18 Twitter/X | Next PENDING section — 12 cases |
 
 ---
 
