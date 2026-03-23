@@ -13,7 +13,10 @@ import {
   Gift,
   Shield,
   ArrowRight,
+  Home,
+  UserCircle,
 } from 'lucide-react';
+import { Link } from '@/i18n/navigation';
 import { PageContainer } from '@/components/layout';
 import { useAuth } from '@/features/auth/context';
 import { AdminTimeline } from '@/components/admin/admin-timeline';
@@ -122,10 +125,30 @@ export default function AdminDashboardPage() {
   if (!isAdminOrCouncil) {
     return (
       <PageContainer width="narrow">
-        <div className="py-16 text-center">
-          <Shield className="mx-auto mb-4 h-16 w-16 text-muted-foreground" />
-          <h2 className="mb-2 text-xl font-semibold text-foreground">{t('accessDenied')}</h2>
-          <p className="text-muted-foreground">{t('accessDeniedDesc')}</p>
+        <div className="flex items-center justify-center py-16">
+          <div className="w-full max-w-md rounded-xl border border-border bg-card p-8 text-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-muted">
+              <Shield className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <h2 className="mb-2 text-xl font-semibold text-foreground">{t('accessDenied')}</h2>
+            <p className="mb-6 text-sm text-muted-foreground">{t('accessDeniedExplanation')}</p>
+            <div className="flex flex-col gap-2 sm:flex-row sm:justify-center">
+              <Link
+                href="/"
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-organic-terracotta px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-organic-terracotta-hover"
+              >
+                <Home className="h-4 w-4" />
+                {t('goHome')}
+              </Link>
+              <Link
+                href="/profile"
+                className="inline-flex items-center justify-center gap-2 rounded-lg border border-border px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+              >
+                <UserCircle className="h-4 w-4" />
+                {t('viewProfile')}
+              </Link>
+            </div>
+          </div>
         </div>
       </PageContainer>
     );

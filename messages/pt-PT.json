@@ -2416,6 +2416,9 @@
       "subtitle": "Rever reclamações, gerir distribuições e acompanhar pagamentos",
       "accessDenied": "Acesso Negado",
       "accessDeniedDesc": "Acesso de admin ou conselho necessário.",
+      "accessDeniedExplanation": "Esta área é para admins e membros do conselho. Se acredita que deveria ter acesso, contacte o admin da sua organização.",
+      "goHome": "Ir para Início",
+      "viewProfile": "Ver o seu perfil",
       "totalDistributed": "Total Distribuído",
       "pendingClaims": "Reclamações Pendentes",
       "atRiskClaims": "Fila em risco",
@@ -2920,11 +2923,38 @@
     "statRank": "Posição",
     "statLevel": "Nível"
   },
+  "NotFound": {
+    "heading": "Perdido no jardim?",
+    "description": "Esta página foi movida ou já não existe. Vamos ajudá-lo a encontrar o caminho.",
+    "goBack": "Voltar à página anterior",
+    "footer": "Organic DAO",
+    "cards": {
+      "home": {
+        "title": "Início",
+        "desc": "Voltar ao painel principal"
+      },
+      "tasks": {
+        "title": "Tarefas",
+        "desc": "Ver e gerir tarefas do DAO"
+      },
+      "proposals": {
+        "title": "Propostas",
+        "desc": "Explorar propostas de governação"
+      },
+      "members": {
+        "title": "Membros",
+        "desc": "Explorar a comunidade"
+      }
+    }
+  },
   "AdminDashboard": {
     "title": "Operações Admin",
     "subtitle": "Visão geral operacional e ações rápidas",
     "accessDenied": "Acesso Negado",
     "accessDeniedDesc": "Precisa de permissões de admin ou conselho para aceder ao painel de administração.",
+    "accessDeniedExplanation": "Esta área é para admins e membros do conselho. Se acredita que deveria ter acesso, contacte o admin da sua organização.",
+    "goHome": "Ir para Início",
+    "viewProfile": "Ver o seu perfil",
     "kpi": {
       "members": "Membros",
       "membersBreakdown": "{admin} admin · {council} conselho · {members} membros",

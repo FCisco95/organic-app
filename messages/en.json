@@ -2425,6 +2425,9 @@
       "subtitle": "Review claims, manage distributions, and track payouts",
       "accessDenied": "Access Denied",
       "accessDeniedDesc": "Admin or council access required.",
+      "accessDeniedExplanation": "This area is for admins and council members. If you believe you should have access, contact your organization admin.",
+      "goHome": "Go to Home",
+      "viewProfile": "View your profile",
       "totalDistributed": "Total Distributed",
       "pendingClaims": "Pending Claims",
       "atRiskClaims": "At-risk queue",
@@ -2929,11 +2932,38 @@
     "statRank": "Rank",
     "statLevel": "Level"
   },
+  "NotFound": {
+    "heading": "Lost in the garden?",
+    "description": "This page has been moved or doesn't exist anymore. Let us help you find your way.",
+    "goBack": "Back to previous page",
+    "footer": "Organic DAO",
+    "cards": {
+      "home": {
+        "title": "Home",
+        "desc": "Return to the main dashboard"
+      },
+      "tasks": {
+        "title": "Tasks",
+        "desc": "View and manage DAO tasks"
+      },
+      "proposals": {
+        "title": "Proposals",
+        "desc": "Browse governance proposals"
+      },
+      "members": {
+        "title": "Members",
+        "desc": "Explore the community"
+      }
+    }
+  },
   "AdminDashboard": {
     "title": "Admin Operations",
     "subtitle": "Operational overview and quick actions",
     "accessDenied": "Access Denied",
     "accessDeniedDesc": "You need admin or council permissions to access the admin dashboard.",
+    "accessDeniedExplanation": "This area is for admins and council members. If you believe you should have access, contact your organization admin.",
+    "goHome": "Go to Home",
+    "viewProfile": "View your profile",
     "kpi": {
       "members": "Members",
       "membersBreakdown": "{admin} admin · {council} council · {members} members",
