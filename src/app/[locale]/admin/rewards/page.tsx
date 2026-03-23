@@ -2,8 +2,9 @@
 
 import { useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Gift, ShieldAlert, CheckCircle2, TrendingUp } from 'lucide-react';
+import { Gift, ShieldAlert, CheckCircle2, TrendingUp, Home, UserCircle } from 'lucide-react';
 import { PageContainer } from '@/components/layout';
+import { Link } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
 import { useRewardClaims, useDistributions, useRewardsSummary } from '@/features/rewards';
 import type { RewardClaim } from '@/features/rewards';
@@ -51,10 +52,30 @@ export default function AdminRewardsPage() {
   if (!isAdminOrCouncil) {
     return (
       <PageContainer width="narrow">
-        <div className="py-16 text-center" data-testid="rewards-admin-access-denied">
-          <ShieldAlert className="mx-auto mb-4 h-16 w-16 text-muted-foreground" />
-          <h2 className="mb-2 text-xl font-semibold text-foreground">{t('admin.accessDenied')}</h2>
-          <p className="text-muted-foreground">{t('admin.accessDeniedDesc')}</p>
+        <div className="flex items-center justify-center py-16" data-testid="rewards-admin-access-denied">
+          <div className="w-full max-w-md rounded-xl border border-border bg-card p-8 text-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-muted">
+              <ShieldAlert className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <h2 className="mb-2 text-xl font-semibold text-foreground">{t('admin.accessDenied')}</h2>
+            <p className="mb-6 text-sm text-muted-foreground">{t('admin.accessDeniedExplanation')}</p>
+            <div className="flex flex-col gap-2 sm:flex-row sm:justify-center">
+              <Link
+                href="/"
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#D95D39] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#D95D39]/90"
+              >
+                <Home className="h-4 w-4" />
+                {t('admin.goHome')}
+              </Link>
+              <Link
+                href="/profile"
+                className="inline-flex items-center justify-center gap-2 rounded-lg border border-border px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+              >
+                <UserCircle className="h-4 w-4" />
+                {t('admin.viewProfile')}
+              </Link>
+            </div>
+          </div>
         </div>
       </PageContainer>
     );

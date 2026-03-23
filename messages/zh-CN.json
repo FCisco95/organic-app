@@ -2416,6 +2416,9 @@
       "subtitle": "审核申请、管理分配和跟踪付款",
       "accessDenied": "访问被拒绝",
       "accessDeniedDesc": "需要管理员或委员会权限。",
+      "accessDeniedExplanation": "此区域仅限管理员和议会成员访问。如果您认为应该有权限，请联系组织管理员。",
+      "goHome": "返回首页",
+      "viewProfile": "查看个人资料",
       "totalDistributed": "总分配量",
       "pendingClaims": "待处理申请",
       "atRiskClaims": "风险队列",
@@ -2921,11 +2924,38 @@
     "statRank": "排名",
     "statLevel": "等级"
   },
+  "NotFound": {
+    "heading": "迷失在花园里？",
+    "description": "此页面已被移动或不再存在。让我们帮您找到正确的方向。",
+    "goBack": "返回上一页",
+    "footer": "Organic DAO",
+    "cards": {
+      "home": {
+        "title": "首页",
+        "desc": "返回主仪表板"
+      },
+      "tasks": {
+        "title": "任务",
+        "desc": "查看和管理DAO任务"
+      },
+      "proposals": {
+        "title": "提案",
+        "desc": "浏览治理提案"
+      },
+      "members": {
+        "title": "成员",
+        "desc": "探索社区"
+      }
+    }
+  },
   "AdminDashboard": {
     "title": "管理运营",
     "subtitle": "运营概览和快速操作",
     "accessDenied": "访问被拒绝",
     "accessDeniedDesc": "您需要管理员或议会权限才能访问管理仪表板。",
+    "accessDeniedExplanation": "此区域仅限管理员和议会成员访问。如果您认为应该有权限，请联系组织管理员。",
+    "goHome": "返回首页",
+    "viewProfile": "查看个人资料",
     "kpi": {
       "members": "成员",
       "membersBreakdown": "{admin} 管理员 · {council} 议会 · {members} 成员",
