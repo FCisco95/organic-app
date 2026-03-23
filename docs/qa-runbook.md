@@ -401,56 +401,54 @@ Use cases:
 **Plan:** `docs/plans/2026-03-22-admin-ops-qa-revamp.md`
 
 ## 4.14 Error Resilience and Health
-<!-- qa-status: PENDING -->
+<!-- qa-status: PLANNED | severity: S1 | plan: docs/plans/2026-03-23-error-locale-ops-qa.md -->
 Routes: invalid app routes, major API-backed pages, `/api/health`.
 
 Use cases:
-- [ ] `ERR-01` Invalid route shows safe fallback (`not-found`) and navigation out.
-- [ ] `ERR-02` Network/API failures show actionable UI errors (not silent failure).
-- [ ] `ERR-03` Long loading states provide feedback and do not freeze interactions.
-- [ ] `ERR-04` `/api/health` reports healthy status in target environment.
-- [ ] `ERR-05` Unauthorized API interactions fail safely (401/403) with clear UX impact.
-- [ ] `ERR-06` Mobile error states remain readable and recoverable.
+- [x] `ERR-01` Invalid route shows safe fallback (`not-found`) and navigation out. **PARTIAL, S2**
+- [x] `ERR-02` Network/API failures show actionable UI errors (not silent failure). **PARTIAL, S1**
+- [x] `ERR-03` Long loading states provide feedback and do not freeze interactions. **PARTIAL, S2**
+- [x] `ERR-04` `/api/health` reports healthy status in target environment. **PASS, S3**
+- [x] `ERR-05` Unauthorized API interactions fail safely (401/403) with clear UX impact. **PASS, S3**
+- [x] `ERR-06` Mobile error states remain readable and recoverable. **PARTIAL, S2**
 
-Feedback:
-- What works well:
-- What does not work:
-- UI improvements requested:
-- Top 3 highest-impact changes:
-- Section severity (`S0/S1/S2/S3`):
-- Confidence score (`1-5`):
+### Feedback
+<!-- Full feedback archived in git history + plan file. Summary below. -->
+**Tested:** 2026-03-23 | **Cases:** 2/6 passed (0 skipped) | **Severity:** S1
+**Priority fixes:** API 500s silently show "0 tasks" with no error message or retry button (ERR-02)
+**Top revamp:** Custom branded 404 page with nav/CTA (Linear/GitHub benchmark), skeleton loading states (Vercel benchmark)
+**Plan:** `docs/plans/2026-03-23-error-locale-ops-qa.md`
 
 ## 4.15 Locale and Accessibility Pass (Cross-Workflow)
-<!-- qa-status: PENDING -->
+<!-- qa-status: PLANNED | severity: S3 | plan: docs/plans/2026-03-23-error-locale-ops-qa.md -->
 Scope: Run this pass on core routes after completing workflow checks.
 
 Use cases:
-- [ ] `L10N-01` Validate critical flows in `en`.
-- [ ] `L10N-02` Validate critical flows in `pt-PT`.
-- [ ] `L10N-03` Validate critical flows in `zh-CN`.
-- [ ] `A11Y-01` Keyboard-only navigation works for primary workflows.
-- [ ] `A11Y-02` Focus states are visible and logical.
-- [ ] `A11Y-03` Modal/dialog close behavior works via keyboard.
-- [ ] `A11Y-04` Form validation messages are announced/visible near fields.
-- [ ] `A11Y-05` Color contrast and visual hierarchy are acceptable for dense data surfaces.
+- [x] `L10N-01` Validate critical flows in `en`. **PASS, S3**
+- [x] `L10N-02` Validate critical flows in `pt-PT`. **PASS, S3**
+- [x] `L10N-03` Validate critical flows in `zh-CN`. **PASS, S3**
+- [x] `A11Y-01` Keyboard-only navigation works for primary workflows. **PASS, S3**
+- [x] `A11Y-02` Focus states are visible and logical. **PASS, S3**
+- [x] `A11Y-03` Modal/dialog close behavior works via keyboard. **PASS, S3**
+- [x] `A11Y-04` Form validation messages are announced/visible near fields. **PASS, S3**
+- [x] `A11Y-05` Color contrast and visual hierarchy are acceptable for dense data surfaces. **PASS, S3**
 
-Feedback:
-- What works well:
-- What does not work:
-- UI improvements requested:
-- Top 3 highest-impact changes:
-- Section severity (`S0/S1/S2/S3`):
-- Confidence score (`1-5`):
+### Feedback
+<!-- Full feedback archived in git history + plan file. Summary below. -->
+**Tested:** 2026-03-23 | **Cases:** 8/8 passed (0 skipped) | **Severity:** S3
+**Priority fixes:** None — all locales and a11y flows pass
+**Top revamp:** Enhanced focus-visible rings on buttons/links for keyboard users (minor polish)
+**Plan:** `docs/plans/2026-03-23-error-locale-ops-qa.md`
 
 ## 4.16 Operational Controls (Automated Evidence)
-<!-- qa-status: PENDING -->
+<!-- qa-status: PLANNED | severity: S3 | plan: docs/plans/2026-03-23-error-locale-ops-qa.md -->
 
 Goal: verify governance and rewards safety controls with reproducible evidence.
 
 Pre-flight:
-- [ ] `.env.local` includes Supabase URL/anon key/service role key.
-- [ ] CI-mode base URL can boot successfully.
-- [ ] Admin and council fixture users can be created.
+- [x] `.env.local` includes Supabase URL/anon key/service role key.
+- [x] CI-mode base URL can boot successfully.
+- [x] Admin and council fixture users can be created.
 
 Execution command:
 
@@ -478,8 +476,15 @@ PLAYWRIGHT_BASE_URL=http://127.0.0.1:3100 npx playwright test \
 ```
 
 Expected assertions:
-- [ ] Rewards hold path returns `EMISSION_CAP_BREACH` and sprint status `held`.
-- [ ] Rewards kill-switch path returns `SETTLEMENT_KILL_SWITCH` and sprint status `killed`.
+- [ ] Rewards hold path returns `EMISSION_CAP_BREACH` and sprint status `held`. **SKIP — active sprint in env**
+- [ ] Rewards kill-switch path returns `SETTLEMENT_KILL_SWITCH` and sprint status `killed`. **SKIP — active sprint in env**
+
+### Feedback
+<!-- Full feedback archived in git history + plan file. Summary below. -->
+**Tested:** 2026-03-23 | **Cases:** 2/4 passed (2 skipped) | **Severity:** S3
+**Priority fixes:** None — voting integrity passes fully. Rewards tests correctly guarded (skip when active sprint exists)
+**Top revamp:** Re-run rewards tests after active sprint completes
+**Plan:** `docs/plans/2026-03-23-error-locale-ops-qa.md`
 - [ ] `reward_settlement_events` contains `integrity_hold` and `kill_switch` rows.
 - [ ] Voting finalization freeze path returns `FINALIZATION_FROZEN` behavior.
 - [ ] `proposal_stage_events` contains `finalization_kill_switch` with dedupe and attempt metadata.

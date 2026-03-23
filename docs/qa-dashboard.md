@@ -21,9 +21,9 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 | 4.11 | Rewards | 9 | DONE | S2 | [plan](plans/2026-03-22-rewards-qa-revamp.md) | `main` (d26a0a2) | `main` (bcbad99) |
 | 4.12 | Notifications | 6 | DONE | S1 | [plan](plans/2026-03-22-notifications-qa-revamp.md) | `main` (6258547) | `main` (35403ca) |
 | 4.13 | Admin Ops | 8 | DONE | S2 | [plan](plans/2026-03-22-admin-ops-qa-revamp.md) | `main` (c124a13) | `main` (b12079d) |
-| 4.14 | Error Resilience | 6 | PENDING | — | — | — | — |
-| 4.15 | Locale, Accessibility | 8 | PENDING | — | — | — | — |
-| 4.16 | Operational Controls | auto | PENDING | — | — | — | — |
+| 4.14 | Error Resilience | 6 | PLANNED | S1 | [plan](plans/2026-03-23-error-locale-ops-qa.md) | — | — |
+| 4.15 | Locale, Accessibility | 8 | PLANNED | S3 | [plan](plans/2026-03-23-error-locale-ops-qa.md) | — | — |
+| 4.16 | Operational Controls | 4 | PLANNED | S3 | [plan](plans/2026-03-23-error-locale-ops-qa.md) | — | — |
 | 4.17 | Onboarding Wizard | 10 | DONE | S3 | [plan](plans/2026-03-22-onboarding-qa-revamp.md) | — (no bugs) | `main` (bfa2035) |
 | 4.18 | Twitter/X | 12 | PENDING | — | — | — | — |
 | 4.19 | Ideas Incubator | 15 | PENDING | — | — | — | — |
@@ -45,6 +45,7 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 
 | Action | Section | What to do |
 |--------|---------|------------|
+| **Next to fix** | 4.14 Error Resilience | Fix S1 silent API failures + access denied CTA |
 | **Next to QA** | 4.18 Twitter/X | Next PENDING section — 12 cases |
 
 ---
@@ -66,6 +67,8 @@ Issues spanning multiple sections — track resolution centrally.
 
 **DONE (14/19):** 4.1 Auth, 4.2 Navigation, 4.3 Home/Analytics, 4.4 Community, 4.5 Profile, 4.6 Quests, 4.7 Tasks, 4.8 Sprints, 4.9 Proposals, 4.10 Disputes, 4.11 Rewards, 4.12 Notifications, 4.13 Admin Ops, 4.17 Onboarding — all merged to `main`
 
+**PLANNED (17/19):** 4.14 Error Resilience, 4.15 Locale/A11y, 4.16 Operational Controls — tested and planned
+
 **Wave B — Core feature sections:**
 1. 4.10 Disputes (13 cases) — **DONE**
 2. 4.11 Rewards (9 cases) — **DONE**
@@ -78,9 +81,9 @@ Issues spanning multiple sections — track resolution centrally.
 7. 4.19 Ideas Incubator (15 cases)
 
 **Wave D — Cross-cutting (run last):**
-8. 4.14 Error Resilience (6 cases)
-9. 4.15 Locale/A11y (8 cases)
-10. 4.16 Operational Controls (automated)
+8. 4.14 Error Resilience (6 cases) — **PLANNED**
+9. 4.15 Locale/A11y (8 cases) — **PLANNED**
+10. 4.16 Operational Controls (4 cases) — **PLANNED**
 
 ---
 
@@ -143,3 +146,6 @@ Consolidated — one row per section showing final outcome. Full history in git 
 | 2026-03-22 | 4.12 Notifications | `main` (6258547) | `main` (35403ca) | 3 fixes + Proto C Vercel timeline — card items, timeline connector, Lucide icons, Sheet prefs, segmented filter. |
 | 2026-03-22 | 4.13 Admin Ops | `main` (c124a13) | `main` (b12079d) | 3 fixes (toast, key prop, governance warnings). Revamp: C+A combined — Stripe KPI dashboard + audit timeline, Linear vertical settings nav with grouped sections. |
 | 2026-03-22 | 4.17 Onboarding | — (no bugs) | `main` (bfa2035) | 10/10 PASS, no bugs. Revamp: Proto B Notion — progress bar, slide transitions, rich empty states with actionable CTAs, warm tone, XP badges, completion screen. |
+| 2026-03-23 | 4.14 Error Resilience | — | — | 2/6 PASS, S1. Key finding: API 500s silently show empty state. Plan: custom 404, error banners, skeleton screens. |
+| 2026-03-23 | 4.15 Locale/A11y | — | — | 8/8 PASS, S3. All 3 locales fully translated. Keyboard nav + Cmd+K work. Minor: focus rings could be more prominent. |
+| 2026-03-23 | 4.16 Operational Controls | — | — | Voting integrity 2/2 PASS. Rewards 2/2 SKIP (active sprint guard). Pre-flight passed. |
