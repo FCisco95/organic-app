@@ -25,6 +25,7 @@ import dynamic from 'next/dynamic';
 const TaskNewModal = dynamic(() => import('@/components/tasks/task-new-modal').then(m => m.TaskNewModal), { ssr: false });
 import { PageContainer } from '@/components/layout';
 import { InfoButton } from '@/components/ui/info-button';
+import { FetchErrorBanner } from '@/components/ui/fetch-error-banner';
 
 type TaskSortOption = 'newest' | 'oldest' | 'dueSoon' | 'pointsHigh' | 'mostLiked';
 
@@ -47,6 +48,7 @@ export default function TasksPage() {
   const [dateTo, setDateTo] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(false);
   const [showNewTaskModal, setShowNewTaskModal] = useState(false);
   const [submissions, setSubmissions] = useState<TaskSubmissionSummary[]>([]);
   const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
@@ -78,6 +80,7 @@ export default function TasksPage() {
   const loadTasks = useCallback(async () => {
     try {
       setLoading(true);
+      setFetchError(false);
       const supabase = createClient();
 
       const { data, error } = await supabase
@@ -165,6 +168,7 @@ export default function TasksPage() {
       );
     } catch (error) {
       console.error('Error loading tasks:', error);
+      setFetchError(true);
     } finally {
       setLoading(false);
     }
@@ -668,6 +672,8 @@ export default function TasksPage() {
             </div>
           </div>
         </section>
+
+        {fetchError && <FetchErrorBanner onRetry={loadTasks} />}
 
         {/* Inline CTA for unauthenticated users */}
         {!user && (

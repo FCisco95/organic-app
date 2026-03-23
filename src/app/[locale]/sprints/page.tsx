@@ -39,6 +39,7 @@ import { SprintTimeline } from '@/components/sprints/sprint-timeline';
 import { SprintStartDialog } from '@/components/sprints/sprint-start-dialog';
 import { SprintCompleteDialog } from '@/components/sprints/sprint-complete-dialog';
 import { PageContainer } from '@/components/layout';
+import { FetchErrorBanner } from '@/components/ui/fetch-error-banner';
 
 export default function SprintsPage() {
   const { profile } = useAuth();
@@ -47,7 +48,7 @@ export default function SprintsPage() {
   const searchParams = useSearchParams();
 
   // Use React Query for sprints
-  const { data: sprintsData, isLoading: sprintsLoading, refetch: refetchSprints } = useSprints();
+  const { data: sprintsData, isLoading: sprintsLoading, isError: sprintsFetchError, refetch: refetchSprints } = useSprints();
   const sprints = useMemo(() => sprintsData ?? [], [sprintsData]);
 
   const [sprintStats, setSprintStats] = useState<SprintStats>({});
@@ -617,6 +618,8 @@ export default function SprintsPage() {
   return (
     <PageContainer width="wide">
       <div className="space-y-5" data-testid="sprints-page">
+      {sprintsFetchError && <FetchErrorBanner onRetry={() => refetchSprints()} />}
+
       {/* GitHub-style header */}
       <div
         className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"

@@ -12,6 +12,7 @@ import {
 import { Plus, Search, X, ArrowUpDown, Tag, Scale, Wallet, Users, Code } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
+import { FetchErrorBanner } from '@/components/ui/fetch-error-banner';
 import { ProposalCard } from '@/components/proposals';
 import { LiveVoteBanner } from '@/components/proposals/live-vote-banner';
 import { GovernanceSidebar } from '@/components/proposals/governance-sidebar';
@@ -103,7 +104,7 @@ export default function ProposalsPage() {
     filters.search = deferredSearch.trim();
   }
 
-  const { data: rawProposals, isLoading } = useProposals(filters);
+  const { data: rawProposals, isLoading, isError, refetch } = useProposals(filters);
   const proposals = rawProposals ? sortProposals(rawProposals, sort) : rawProposals;
   const canCreateProposal = !!profile?.organic_id;
 
@@ -332,6 +333,9 @@ export default function ProposalsPage() {
             statusFilter !== 'public' && (
               <LiveVoteBanner proposals={votingProposals} />
             )}
+
+          {/* Error banner */}
+          {isError && <FetchErrorBanner onRetry={() => refetch()} />}
 
           {/* Proposals list */}
           {isLoading ? (
