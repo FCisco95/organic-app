@@ -52,6 +52,8 @@ agents/
 *:Zone.Identifier
 logo-base64.txt
 .DS_Store
+*.pdf
+*.zip
 
 # Supabase local temp
 supabase/.temp/
