@@ -100,10 +100,23 @@ export default function IdeasPage() {
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <StatCard label={t('kpiTotalIdeas')} value={kpisQuery.data?.total_ideas ?? 0} />
-            <StatCard label={t('kpiActiveIdeas')} value={kpisQuery.data?.active_ideas ?? 0} />
-            <StatCard label={t('kpiPromoted')} value={kpisQuery.data?.promoted_ideas ?? 0} />
-            <StatCard label={t('kpiConversion')} value={`${kpisQuery.data?.conversion_rate ?? 0}%`} />
+            {kpisQuery.isLoading ? (
+              <>
+                {[1, 2, 3, 4].map((entry) => (
+                  <div key={entry} className="rounded-2xl border border-white/70 bg-white/80 px-4 py-3">
+                    <div className="h-3 w-20 animate-pulse rounded bg-gray-200" />
+                    <div className="mt-2 h-7 w-12 animate-pulse rounded bg-gray-200" />
+                  </div>
+                ))}
+              </>
+            ) : (
+              <>
+                <StatCard label={t('kpiTotalIdeas')} value={kpisQuery.data?.total_ideas ?? 0} />
+                <StatCard label={t('kpiActiveIdeas')} value={kpisQuery.data?.active_ideas ?? 0} />
+                <StatCard label={t('kpiPromoted')} value={kpisQuery.data?.promoted_ideas ?? 0} />
+                <StatCard label={t('kpiConversion')} value={`${kpisQuery.data?.conversion_rate ?? 0}%`} />
+              </>
+            )}
           </div>
 
           <div className="rounded-2xl border border-white/70 bg-white/80 px-4 py-3">
