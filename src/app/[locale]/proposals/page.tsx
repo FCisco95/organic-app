@@ -9,7 +9,7 @@ import {
   type ProposalFilters,
   PROPOSAL_CATEGORIES,
 } from '@/features/proposals';
-import { Plus, Search, X, ArrowUpDown, Tag, Scale, Wallet, Users, Code } from 'lucide-react';
+import { Plus, Search, X, ArrowUpDown, Tag, Scale, Wallet, Users, Code, Vote } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
 import { FetchErrorBanner } from '@/components/ui/fetch-error-banner';
@@ -132,43 +132,43 @@ export default function ProposalsPage() {
 
   return (
     <PageContainer layout="fluid">
-      {/* Page header */}
-      <div data-testid="proposals-governance-strip" className="mb-6">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      {/* Dark hero */}
+      <section
+        data-testid="proposals-governance-strip"
+        className="rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 sm:p-8 text-white mb-6 opacity-0 animate-fade-up stagger-1"
+      >
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-orange-600">
-              {t('governanceSignalLabel')}
-            </p>
-            <h1 className="mt-0.5 text-2xl font-black text-slate-900 sm:text-3xl">
-              {t('title')}
-            </h1>
-            <p className="mt-1 text-sm text-slate-500">{t('subtitle')}</p>
+            <div className="inline-flex items-center justify-center w-10 h-10 bg-white/10 rounded-xl mb-3">
+              <Vote className="w-5 h-5 text-orange-400" />
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{t('title')}</h1>
+            <p className="mt-2 text-sm sm:text-base text-gray-300 leading-relaxed max-w-2xl">{t('subtitle')}</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             {canCreateProposal && (
               <Link
                 href="/proposals/new"
                 data-testid="proposals-cta-primary"
-                className="inline-flex items-center gap-2 rounded-xl bg-orange-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-orange-700"
+                className="inline-flex items-center gap-2 rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
               >
                 <Plus className="h-4 w-4" />
                 {t('newProposal')}
               </Link>
             )}
-            {/* Task 9: Role-aware CTA — only show for admin/council */}
             {isAdmin && (
               <button
                 type="button"
                 data-testid="proposals-cta-secondary"
                 onClick={() => setStatusFilter('discussion')}
-                className="inline-flex items-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+                className="inline-flex items-center rounded-lg border border-white/20 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-white/10"
               >
                 {t('reviewDiscussionCta')}
               </button>
             )}
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Two-column layout */}
       <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[1fr_300px] lg:items-start xl:grid-cols-[1fr_320px]">

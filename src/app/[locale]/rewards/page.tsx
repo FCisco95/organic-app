@@ -78,44 +78,49 @@ export default function RewardsPage() {
   return (
     <PageContainer width="wide">
       <div className="space-y-4" data-testid="rewards-page">
-        {/* Compact header with pinned CTA */}
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-organic-orange/10">
-              <Gift className="h-4.5 w-4.5 text-organic-orange" />
+        {/* Dark hero */}
+        <section className="rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 sm:p-8 text-white opacity-0 animate-fade-up stagger-1">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <div className="inline-flex items-center justify-center w-10 h-10 bg-white/10 rounded-xl mb-3">
+                <Gift className="w-5 h-5 text-orange-400" />
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{t('title')}</h1>
+              <p className="mt-2 text-sm sm:text-base text-gray-300 leading-relaxed max-w-2xl">{t('subtitle')}</p>
             </div>
-            <h1 className="text-xl font-bold tracking-tight text-gray-900">{t('title')}</h1>
+            <div className="flex shrink-0 items-center gap-2">
+              <button
+                onClick={() => setClaimModalOpen(true)}
+                disabled={!canClaim}
+                className="flex items-center gap-2 whitespace-nowrap rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+                data-testid="rewards-claim-cta"
+              >
+                {t('overview.claimButton')}
+                <ArrowRight className="h-3.5 w-3.5" />
+              </button>
+            </div>
           </div>
-          <button
-            onClick={() => setClaimModalOpen(true)}
-            disabled={!canClaim}
-            className="flex items-center gap-2 rounded-lg bg-organic-orange px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-organic-orange/90 disabled:cursor-not-allowed disabled:opacity-50"
-            data-testid="rewards-claim-cta"
-          >
-            {t('overview.claimButton')}
-            <ArrowRight className="h-3.5 w-3.5" />
-          </button>
-        </div>
 
-        {/* 3 stat chips — inline horizontal pills */}
-        <div className="flex flex-wrap gap-2" data-testid="rewards-stat-chips">
-          <span className="inline-flex items-center gap-1.5 rounded-lg border border-organic-orange/20 bg-organic-orange/5 px-3 py-1.5 text-sm">
-            <span className="font-semibold text-gray-900">
-              {rewards.claimable_points.toLocaleString()}
+          {/* Stat pills */}
+          <div className="mt-6 flex flex-wrap gap-2" data-testid="rewards-stat-chips">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-4 py-1.5 text-sm">
+              <span className="font-semibold text-white">
+                {rewards.claimable_points.toLocaleString()}
+              </span>
+              <span className="text-gray-400">{t('overview.claimable')}</span>
             </span>
-            <span className="text-gray-500">{t('overview.claimable')}</span>
-          </span>
-          <span className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-sm">
-            <span className="font-semibold text-gray-900">{rewards.pending_claims}</span>
-            <span className="text-gray-500">{t('overview.pending')}</span>
-          </span>
-          <span className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-sm">
-            <span className="font-semibold text-gray-900">
-              {rewards.total_distributed.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-4 py-1.5 text-sm">
+              <span className="font-semibold text-white">{rewards.pending_claims}</span>
+              <span className="text-gray-400">{t('overview.pending')}</span>
             </span>
-            <span className="text-gray-500">{t('overview.distributed')}</span>
-          </span>
-        </div>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-4 py-1.5 text-sm">
+              <span className="font-semibold text-white">
+                {rewards.total_distributed.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+              </span>
+              <span className="text-gray-400">{t('overview.distributed')}</span>
+            </span>
+          </div>
+        </section>
 
         {/* Pill tabs */}
         <div

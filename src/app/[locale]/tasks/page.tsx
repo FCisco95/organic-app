@@ -16,7 +16,7 @@ import {
 } from '@/features/tasks';
 
 import { createClient } from '@/lib/supabase/client';
-import { Plus } from 'lucide-react';
+import { Plus, ClipboardList } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { TaskFiltersBar } from '@/components/tasks/task-filters-bar';
@@ -602,18 +602,21 @@ export default function TasksPage() {
   return (
     <PageContainer layout="fluid" className="space-y-4">
       <div data-testid="tasks-page" className="space-y-4">
-        {/* Compact header — clean card background */}
+        {/* Dark hero */}
         <section
           data-testid="tasks-execution-cockpit"
-          className="rounded-xl border border-border bg-card px-5 py-4"
+          className="rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 sm:p-8 text-white opacity-0 animate-fade-up stagger-1"
         >
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <h1 className="text-[28px] font-bold leading-tight text-foreground">{t('title')}</h1>
-              <p className="mt-0.5 text-sm text-muted-foreground">{t('subtitle')}</p>
+              <div className="inline-flex items-center justify-center w-10 h-10 bg-white/10 rounded-xl mb-3">
+                <ClipboardList className="w-5 h-5 text-orange-400" />
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{t('title')}</h1>
+              <p className="mt-2 text-sm sm:text-base text-gray-300 leading-relaxed max-w-2xl">{t('subtitle')}</p>
               <p
                 data-testid="tasks-sprint-context-banner"
-                className="mt-1.5 flex items-center gap-1.5 font-mono text-xs text-muted-foreground"
+                className="mt-2 flex items-center gap-1.5 font-mono text-xs text-gray-400"
               >
                 <span
                   className={`inline-block h-2 w-2 rounded-full ${
@@ -635,7 +638,7 @@ export default function TasksPage() {
               {canReview && (
                 <Link
                   href="/admin/submissions"
-                  className="inline-flex items-center gap-2 rounded-lg border border-input px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                  className="inline-flex items-center gap-2 rounded-lg border border-white/20 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-white/10"
                 >
                   {t('reviewQueue')}
                 </Link>
@@ -652,23 +655,23 @@ export default function TasksPage() {
             </div>
           </div>
 
-          {/* Inline stats strip — large mono numbers, no icons */}
-          <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+          {/* Inline stats strip */}
+          <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
             <div>
-              <p className="font-mono text-2xl font-bold tabular-nums text-foreground">{openExecutionCount}</p>
-              <p className="text-xs text-muted-foreground">{t('metricOpenExecution')}</p>
+              <p className="font-mono text-2xl font-bold tabular-nums text-white">{openExecutionCount}</p>
+              <p className="text-xs text-gray-400">{t('metricOpenExecution')}</p>
             </div>
             <div>
-              <p className="font-mono text-2xl font-bold tabular-nums text-foreground">{laneCounts.review}</p>
-              <p className="text-xs text-muted-foreground">{t('metricPendingReview')}</p>
+              <p className="font-mono text-2xl font-bold tabular-nums text-white">{laneCounts.review}</p>
+              <p className="text-xs text-gray-400">{t('metricPendingReview')}</p>
             </div>
             <div>
-              <p className="font-mono text-2xl font-bold tabular-nums text-foreground">{tasksNeedingAssignee}</p>
-              <p className="text-xs text-muted-foreground">{t('metricNeedsAssignee')}</p>
+              <p className="font-mono text-2xl font-bold tabular-nums text-white">{tasksNeedingAssignee}</p>
+              <p className="text-xs text-gray-400">{t('metricNeedsAssignee')}</p>
             </div>
             <div>
-              <p className="font-mono text-2xl font-bold tabular-nums text-foreground">{communityQueueCount}</p>
-              <p className="text-xs text-muted-foreground">{t('metricCommunityQueue')}</p>
+              <p className="font-mono text-2xl font-bold tabular-nums text-white">{communityQueueCount}</p>
+              <p className="text-xs text-gray-400">{t('metricCommunityQueue')}</p>
             </div>
           </div>
         </section>

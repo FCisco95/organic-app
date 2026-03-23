@@ -620,30 +620,31 @@ export default function SprintsPage() {
       <div className="space-y-5" data-testid="sprints-page">
       {sprintsFetchError && <FetchErrorBanner onRetry={() => refetchSprints()} />}
 
-      {/* GitHub-style header */}
-      <div
-        className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+      {/* Dark hero */}
+      <section
+        className="rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 sm:p-8 text-white opacity-0 animate-fade-up stagger-1"
         data-testid="sprints-command-header"
       >
-        <div className="flex items-center gap-2.5">
-          <Milestone className="h-6 w-6 text-gray-500" />
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h1 className="text-xl font-semibold text-gray-900">{t('title')}</h1>
-            <p className="text-sm text-gray-500">{t('subtitle')}</p>
+            <div className="inline-flex items-center justify-center w-10 h-10 bg-white/10 rounded-xl mb-3">
+              <Milestone className="w-5 h-5 text-orange-400" />
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{t('title')}</h1>
+            <p className="mt-2 text-sm sm:text-base text-gray-300 leading-relaxed max-w-2xl">{t('subtitle')}</p>
           </div>
-        </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 sm:shrink-0">
           {showStartButton && (
             <button
               onClick={() => setShowStartDialog(true)}
-              className="flex items-center gap-1.5 rounded-md border border-organic-orange bg-organic-orange px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-orange-600"
+              className="flex items-center gap-1.5 whitespace-nowrap rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
               <Play className="h-3.5 w-3.5" />
               {t('startSprintButton')}
             </button>
           )}
           {showCompleteButton && (
-            <div className="relative">
+            <div className="relative flex">
               <button
                 onClick={() => {
                   if (selectedSprint?.status === 'settlement') {
@@ -652,7 +653,7 @@ export default function SprintsPage() {
                   }
                   void handleCompleteSprint();
                 }}
-                className="flex items-center gap-1.5 rounded-l-md border border-blue-600 bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+                className="flex items-center gap-1.5 whitespace-nowrap rounded-l-lg border border-blue-500 bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
               >
                 <CheckCircle2 className="h-3.5 w-3.5" />
                 {selectedSprint?.status === 'settlement'
@@ -663,7 +664,7 @@ export default function SprintsPage() {
               </button>
               <button
                 onClick={() => setShowAdvanceDropdown(!showAdvanceDropdown)}
-                className="rounded-r-md border border-l-0 border-blue-600 bg-blue-600 px-1.5 py-1.5 text-white transition-colors hover:bg-blue-700"
+                className="rounded-r-lg border border-l-0 border-blue-500 bg-blue-600 px-1.5 py-1.5 text-white transition-colors hover:bg-blue-700"
               >
                 <ChevronDown className="h-3.5 w-3.5" />
               </button>
@@ -672,14 +673,15 @@ export default function SprintsPage() {
           {canCreateSprint && (
             <button
               onClick={() => setShowCreateModal(true)}
-              className="flex items-center gap-1.5 rounded-md border border-organic-orange bg-organic-orange px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-orange-600"
+              className="flex items-center gap-1.5 whitespace-nowrap rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
               <Plus className="h-3.5 w-3.5" />
               {t('createSprint')}
             </button>
           )}
         </div>
-      </div>
+        </div>
+      </section>
 
       {/* GitHub-style horizontal phase progress bar */}
       <div
