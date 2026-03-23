@@ -7,6 +7,7 @@ export interface ReputationLevel {
   color: string;
 }
 
+/** Thematic nature-progression colors — intentionally semantic, not from design tokens */
 export const REPUTATION_LEVELS: readonly ReputationLevel[] = [
   { level: 1, name: 'Seed', xpRequired: 0, color: '#8B7355' },
   { level: 2, name: 'Sprout', xpRequired: 100, color: '#90EE90' },

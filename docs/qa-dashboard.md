@@ -25,8 +25,8 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 | 4.15 | Locale, Accessibility | 8 | DONE | S3 | [plan](plans/2026-03-23-error-locale-ops-qa.md) | — | `main` (7ec1b0a) |
 | 4.16 | Operational Controls | 4 | DONE | S3 | [plan](plans/2026-03-23-error-locale-ops-qa.md) | — | — |
 | 4.17 | Onboarding Wizard | 10 | DONE | S3 | [plan](plans/2026-03-22-onboarding-qa-revamp.md) | — (no bugs) | `main` (bfa2035) |
-| 4.18 | Twitter/X | 12 | REVAMPED | S1 | [plan](plans/2026-03-23-twitter-qa-revamp.md) | `main` (6fe8fcb) | `main` (6e1b89f) |
-| 4.19 | Ideas Incubator | 15 | REVAMPED | S2 | [plan](plans/2026-03-23-ideas-incubator-qa-revamp.md) | `main` (e1fd0f5) | `main` (65f9722) |
+| 4.18 | Twitter/X | 12 | DONE | S1 | [plan](plans/2026-03-23-twitter-qa-revamp.md) | `main` (6fe8fcb) | `main` (6e1b89f) |
+| 4.19 | Ideas Incubator | 15 | DONE | S2 | [plan](plans/2026-03-23-ideas-incubator-qa-revamp.md) | `main` (e1fd0f5) | `main` (65f9722) |
 
 ### Status Legend
 
@@ -45,8 +45,7 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 
 | Action | Section | What to do |
 |--------|---------|------------|
-| **Mark DONE** | 4.19 Ideas Incubator | REVAMPED — verify and close |
-| **Mark DONE** | 4.18 Twitter/X | Already REVAMPED, verify and close |
+| **All 19/19 DONE** | — | QA pipeline complete. Next: production readiness (Twitter OAuth credentials, deploy checklist). |
 
 ---
 
@@ -67,8 +66,7 @@ Issues spanning multiple sections — track resolution centrally.
 
 ## Recommended Section Order
 
-**DONE (17/19):** 4.1 Auth, 4.2 Navigation, 4.3 Home/Analytics, 4.4 Community, 4.5 Profile, 4.6 Quests, 4.7 Tasks, 4.8 Sprints, 4.9 Proposals, 4.10 Disputes, 4.11 Rewards, 4.12 Notifications, 4.13 Admin Ops, 4.14 Error Resilience, 4.15 Locale/A11y, 4.16 Operational Controls, 4.17 Onboarding — all merged to `main`
-**REVAMPED (2):** 4.18 Twitter/X, 4.19 Ideas Incubator — both revamped and merged
+**DONE (19/19):** All sections complete — 4.1 through 4.19 merged to `main`
 
 **Wave B — Core feature sections:**
 1. 4.10 Disputes (13 cases) — **DONE**
@@ -151,3 +149,5 @@ Consolidated — one row per section showing final outcome. Full history in git 
 | 2026-03-23 | 4.15 Locale/A11y | — | `main` (7ec1b0a) | 8/8 PASS, S3. Focus rings enhanced via shared revamp commit. |
 | 2026-03-23 | 4.16 Operational Controls | — | — | Voting integrity 2/2 PASS. Rewards 2/2 SKIP (active sprint guard). No fixes/revamp needed. |
 | 2026-03-23 | 4.18 Twitter/X | `main` (6fe8fcb) | `main` (6e1b89f) | 2 fixes: submission form body + task_assignees FK. Revamp: Proto A Stripe — connected account cards, structured submission sections, color-coded engagement pills, X brand icons, skeleton loading. |
+| 2026-03-23 | 4.19 Ideas Incubator | `main` (e1fd0f5) | `main` (65f9722) | Revamp: Proto C Stripe/Vercel + Reddit vote rail — dark hero, KPI cards with trends, orange underline tabs, vote rail feed cards, dialog composer, activity timeline, threaded comments. |
+| 2026-03-23 | **Pipeline Complete** | — | — | 19/19 DONE. Go/No-Go → **Go**. Audit-log build fix (display_name → name). Remaining: Twitter OAuth prod credentials (~2026-03-30). |

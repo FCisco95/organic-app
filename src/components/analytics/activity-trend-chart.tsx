@@ -12,6 +12,7 @@ import {
   Legend,
 } from 'recharts';
 import { ChartCard } from './chart-card';
+import { CHART_COLORS } from '@/lib/chart-colors';
 import type { ActivityTrendPoint } from '@/features/analytics';
 
 interface ActivityTrendChartProps {
@@ -49,28 +50,28 @@ export function ActivityTrendChart({ data, loading }: ActivityTrendChartProps) {
             <AreaChart data={formatted} margin={{ top: 4, right: 4, left: -16, bottom: 0 }}>
               <defs>
                 <linearGradient id="gradTasks" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#FF7A00" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#FF7A00" stopOpacity={0} />
+                  <stop offset="5%" stopColor={CHART_COLORS.terracotta} stopOpacity={0.3} />
+                  <stop offset="95%" stopColor={CHART_COLORS.terracotta} stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="gradGovernance" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                  <stop offset="5%" stopColor={CHART_COLORS.indigo} stopOpacity={0.3} />
+                  <stop offset="95%" stopColor={CHART_COLORS.indigo} stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="gradComments" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                  <stop offset="5%" stopColor={CHART_COLORS.emerald} stopOpacity={0.3} />
+                  <stop offset="95%" stopColor={CHART_COLORS.emerald} stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
+              <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} />
               <XAxis
                 dataKey="label"
-                tick={{ fontSize: 11, fill: '#9ca3af' }}
+                tick={{ fontSize: 11, fill: CHART_COLORS.axis }}
                 tickLine={false}
                 axisLine={false}
                 interval="preserveStartEnd"
               />
               <YAxis
-                tick={{ fontSize: 11, fill: '#9ca3af' }}
+                tick={{ fontSize: 11, fill: CHART_COLORS.axis }}
                 tickLine={false}
                 axisLine={false}
                 allowDecimals={false}
@@ -79,7 +80,7 @@ export function ActivityTrendChart({ data, loading }: ActivityTrendChartProps) {
                 contentStyle={{
                   fontSize: 12,
                   borderRadius: 8,
-                  border: '1px solid #e5e7eb',
+                  border: `1px solid ${CHART_COLORS.tooltipBorder}`,
                   boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
                 }}
               />
@@ -92,7 +93,7 @@ export function ActivityTrendChart({ data, loading }: ActivityTrendChartProps) {
                 type="monotone"
                 dataKey="task_events"
                 name={t('charts.tasks')}
-                stroke="#FF7A00"
+                stroke={CHART_COLORS.terracotta}
                 fill="url(#gradTasks)"
                 strokeWidth={2}
                 stackId="1"
@@ -101,7 +102,7 @@ export function ActivityTrendChart({ data, loading }: ActivityTrendChartProps) {
                 type="monotone"
                 dataKey="governance_events"
                 name={t('charts.governance')}
-                stroke="#6366f1"
+                stroke={CHART_COLORS.indigo}
                 fill="url(#gradGovernance)"
                 strokeWidth={2}
                 stackId="1"
@@ -110,7 +111,7 @@ export function ActivityTrendChart({ data, loading }: ActivityTrendChartProps) {
                 type="monotone"
                 dataKey="comment_events"
                 name={t('charts.comments')}
-                stroke="#10b981"
+                stroke={CHART_COLORS.emerald}
                 fill="url(#gradComments)"
                 strokeWidth={2}
                 stackId="1"

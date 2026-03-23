@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
 import { DisputeQueue } from '@/components/disputes/dispute-queue';
 import { cn } from '@/lib/utils';
-import { AlertCircle, Search } from 'lucide-react';
+import { AlertCircle, Search, Shield } from 'lucide-react';
 
 export default function DisputesPage() {
   const { profile } = useAuth();
@@ -21,24 +21,30 @@ export default function DisputesPage() {
   return (
     <PageContainer layout="fluid">
       <div data-testid="disputes-page" className="space-y-4">
-        {/* Compact command bar — GitHub-style horizontal */}
-        <div
+        {/* Dark hero */}
+        <section
           data-testid="disputes-command-deck"
-          className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm sm:flex-row sm:items-center sm:justify-between"
+          className="rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 sm:p-8 text-white opacity-0 animate-fade-up stagger-1"
         >
-          <div className="flex items-center gap-3">
-            <h1 className="text-lg font-semibold text-gray-900">{t('pageTitle')}</h1>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <div className="inline-flex items-center justify-center w-10 h-10 bg-white/10 rounded-xl mb-3">
+                <Shield className="w-5 h-5 text-orange-400" />
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{t('pageTitle')}</h1>
+              <p className="mt-2 text-sm sm:text-base text-gray-300 leading-relaxed max-w-2xl">{t('pageDescription')}</p>
+            </div>
             {isCouncilOrAdmin && (
-              <div data-testid="disputes-view-tabs" className="flex rounded-md border border-gray-200">
+              <div data-testid="disputes-view-tabs" className="flex rounded-lg overflow-hidden border border-white/20">
                 <button
                   type="button"
                   data-testid="disputes-view-tab-queue"
                   onClick={() => setTab('queue')}
                   className={cn(
-                    'px-3 py-1.5 text-sm font-medium transition-colors first:rounded-l-md last:rounded-r-md',
+                    'px-3 py-1.5 text-sm font-medium transition-colors',
                     tab === 'queue'
-                      ? 'bg-gray-900 text-white'
-                      : 'bg-white text-gray-600 hover:bg-gray-50'
+                      ? 'bg-white text-gray-900'
+                      : 'text-gray-300 hover:bg-white/10'
                   )}
                 >
                   {t('queueTitle')}
@@ -48,10 +54,10 @@ export default function DisputesPage() {
                   data-testid="disputes-view-tab-mine"
                   onClick={() => setTab('mine')}
                   className={cn(
-                    'border-l border-gray-200 px-3 py-1.5 text-sm font-medium transition-colors last:rounded-r-md',
+                    'border-l border-white/20 px-3 py-1.5 text-sm font-medium transition-colors',
                     tab === 'mine'
-                      ? 'bg-gray-900 text-white'
-                      : 'bg-white text-gray-600 hover:bg-gray-50'
+                      ? 'bg-white text-gray-900'
+                      : 'text-gray-300 hover:bg-white/10'
                   )}
                 >
                   {t('title')}
@@ -59,11 +65,7 @@ export default function DisputesPage() {
               </div>
             )}
           </div>
-
-          {isCouncilOrAdmin && (
-            <p className="text-xs text-gray-500">{t('pageDescription')}</p>
-          )}
-        </div>
+        </section>
 
         {!isCouncilOrAdmin && (
           <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50/60 px-3 py-2">

@@ -3018,5 +3018,141 @@
       "empty": "No recent activity",
       "emptyDesc": "Configuration changes will appear here as they happen."
     }
+  },
+  "PageGuides": {
+    "Dashboard": {
+      "step1Title": "Welcome to Organic",
+      "step1Desc": "The dashboard is your home base. It shows the hero section with a quick overview of what Organic is — a visibility-first coordination platform where real community work is made public and verifiable.",
+      "step2Title": "Trust Pulse",
+      "step2Desc": "Four live cards show key DAO health signals at a glance: the current sprint countdown, proposal stages, top contributors on the leaderboard, and recent activity count. This is your real-time trust surface.",
+      "step3Title": "Quick Navigation",
+      "step3Desc": "Below the trust pulse, navigation cards let you jump directly into Tasks, Proposals, Sprints, Analytics, and more. Each card shows a brief description so you know what to expect.",
+      "step4Title": "Member Status",
+      "step4Desc": "This section shows your identity within the DAO — whether you're signed in, if you have an Organic ID, and your governance access level. Link a wallet holding $ORG to unlock full contributor capabilities.",
+      "step5Title": "Supporting Stats",
+      "step5Desc": "A compact stats bar at the bottom summarizes platform-wide metrics: total tasks, active sprints, members, and proposals. Hover over any bar for more detail."
+    },
+    "Tasks": {
+      "step1Title": "Task Board Overview",
+      "step1Desc": "The tasks page is where all DAO work lives. Browse open tasks, filter by category or sprint, and find work that matches your skills.",
+      "step2Title": "Task Statuses",
+      "step2Desc": "Tasks flow through stages: Open → Claimed → In Review → Approved. Each status is color-coded so you can see progress at a glance.",
+      "step3Title": "Claiming a Task",
+      "step3Desc": "Found something you want to work on? Click the task card to see details, then hit Claim to assign it to yourself. You need an Organic ID to claim tasks.",
+      "step4Title": "Submitting Work",
+      "step4Desc": "When you're done, submit your work for review. Attach proof (links, screenshots, descriptions) so reviewers can verify your contribution.",
+      "step5Title": "Points and XP",
+      "step5Desc": "Each task has a point value. Approved tasks earn you XP that builds your reputation and unlocks higher-tier work.",
+      "step6Title": "Filters and Sorting",
+      "step6Desc": "Use the filter bar to narrow tasks by category, contributor, sprint, or search term. Sort by newest, due date, or point value to find what matters most."
+    },
+    "Proposals": {
+      "step1Title": "Governance Hub",
+      "step1Desc": "Proposals are how the DAO makes decisions. Anyone with an Organic ID can submit a proposal for the community to consider.",
+      "step2Title": "Proposal Lifecycle",
+      "step2Desc": "Proposals flow through stages: Public → Qualified → Discussion → Voting → Finalized. Each stage has specific requirements before advancing.",
+      "step3Title": "Submitting a Proposal",
+      "step3Desc": "Click 'New Proposal' to start. Provide a title, description, category, and what you're proposing. The community will review and discuss before voting.",
+      "step4Title": "Qualification",
+      "step4Desc": "New proposals need community engagement to qualify for voting. Sufficient comments, likes, and views signal the community wants to vote on it.",
+      "step5Title": "Voting",
+      "step5Desc": "Qualified proposals enter a voting window. Token holders cast votes weighted by their $ORG holdings. Results are binding — approved proposals become actionable.",
+      "step6Title": "Filtering and Discovery",
+      "step6Desc": "Sort proposals by New, Hot, Most Discussed, or Most Voted to find what's active. Filter by category to focus on your area of interest."
+    },
+    "Sprints": {
+      "step1Title": "Sprint Overview",
+      "step1Desc": "Sprints are focused execution cycles where the DAO ships work. They group tasks into time-boxed periods with clear start and end dates.",
+      "step2Title": "Sprint Lifecycle",
+      "step2Desc": "Sprints progress through phases: Planning → Active → Review → Dispute Window → Settlement. Each phase has specific rules for what can happen.",
+      "step3Title": "Views",
+      "step3Desc": "Switch between Board, List, and Timeline views to see sprint work in the format that suits you best. Board shows Kanban-style columns, List is compact, Timeline shows dates.",
+      "step4Title": "Phase Advancement",
+      "step4Desc": "Admins advance sprints through phases. When a sprint moves to Review, all submitted work gets evaluated. The dispute window allows challenges before final settlement.",
+      "step5Title": "Capacity Planning",
+      "step5Desc": "Each sprint has a capacity limit. The progress bar shows how much of the sprint's point budget is allocated, helping the team plan realistic workloads."
+    },
+    "Rewards": {
+      "step1Title": "Rewards Overview",
+      "step1Desc": "The rewards page tracks how contributions turn into payouts. View your earned points, pending claims, and payout history.",
+      "step2Title": "Points System",
+      "step2Desc": "Approved tasks earn you points. Points accumulate and become claimable when they reach the threshold set by the DAO.",
+      "step3Title": "Claiming Rewards",
+      "step3Desc": "When you have enough points, submit a claim. Your claim goes through an approval process before the payout is released.",
+      "step4Title": "Approval Flow",
+      "step4Desc": "Claims are reviewed by council members. Approved claims enter the payout queue. The treasury processes payouts in batches.",
+      "step5Title": "Payout History",
+      "step5Desc": "The Distributions tab shows all completed payouts. Track when payments were made, amounts, and transaction status."
+    },
+    "Disputes": {
+      "step1Title": "Dispute System",
+      "step1Desc": "Disputes exist to keep the DAO fair. If you believe a task review was incorrect or a decision was unfair, you can file a dispute.",
+      "step2Title": "When to File",
+      "step2Desc": "File a dispute during the sprint's dispute window. You need to stake XP to file — this prevents frivolous disputes and shows you're serious.",
+      "step3Title": "XP Stake",
+      "step3Desc": "Filing a dispute requires staking XP. If the dispute is upheld, you get your stake back plus the resolution. If denied, you lose the stake.",
+      "step4Title": "Arbitration Process",
+      "step4Desc": "Council members review disputes and vote on the outcome. The process is transparent — all parties can see the reasoning behind the decision.",
+      "step5Title": "Resolution",
+      "step5Desc": "Once arbitration is complete, the decision is binding. Task reviews may be overturned, points adjusted, and XP stakes settled accordingly."
+    },
+    "Quests": {
+      "step1Title": "Quest System",
+      "step1Desc": "Quests are gamified challenges that reward consistent participation. Complete daily, weekly, and long-term objectives to earn bonus XP.",
+      "step2Title": "Daily Quests",
+      "step2Desc": "Small, daily actions like logging in, commenting on a proposal, or reviewing a task submission. These reset every 24 hours.",
+      "step3Title": "Weekly Quests",
+      "step3Desc": "Larger objectives that span a week: complete a task, vote on proposals, or participate in discussions. Higher XP rewards for weekly consistency.",
+      "step4Title": "Long-Term Quests",
+      "step4Desc": "Achievement-style quests for sustained contribution: complete your first sprint, earn a reputation tier, or hit a streak milestone.",
+      "step5Title": "XP and Cadence",
+      "step5Desc": "Quest XP adds to your total reputation score. The cadence system rewards consistency — maintaining streaks multiplies your quest rewards over time."
+    },
+    "Analytics": {
+      "step1Title": "Analytics Overview",
+      "step1Desc": "Analytics provides a data-driven view of DAO health. Track activity trends, member growth, task velocity, and governance participation.",
+      "step2Title": "Activity Trends",
+      "step2Desc": "The activity chart shows daily/weekly event volume — task completions, proposal submissions, votes, and comments. Spot patterns and engagement cycles.",
+      "step3Title": "Personal Stats",
+      "step3Desc": "Switch to the Personal tab to see your own contribution metrics: tasks completed, proposals voted on, XP earned, and your activity streak.",
+      "step4Title": "Governance Health",
+      "step4Desc": "The Governance tab tracks proposal outcomes, voter participation rates, and decision quality. A healthy DAO shows consistent engagement across all stages.",
+      "step5Title": "KPI Cards",
+      "step5Desc": "Key performance indicators at the top give you instant snapshots: total members, active contributors, tasks this sprint, and governance participation rate."
+    },
+    "Treasury": {
+      "step1Title": "Treasury Overview",
+      "step1Desc": "The treasury page shows how the DAO manages its funds. Transparency is core to Organic — anyone can inspect balances and allocation principles.",
+      "step2Title": "Balance and Allocation",
+      "step2Desc": "See the current treasury balance and how funds are allocated across categories: operations, rewards, development, and reserves.",
+      "step3Title": "Emission Policy",
+      "step3Desc": "The emission policy defines how tokens flow from treasury to contributors. This controls the rate of reward distribution to maintain sustainability.",
+      "step4Title": "Transaction History",
+      "step4Desc": "A ledger of all treasury movements — inflows, outflows, reward payouts, and operational expenses. Each entry is timestamped and categorized.",
+      "step5Title": "On-Chain Transparency",
+      "step5Desc": "Treasury operations are verifiable on-chain. The press-and-hold reveal feature lets you inspect sensitive details only when you intentionally choose to look."
+    },
+    "Community": {
+      "step1Title": "Community Hub",
+      "step1Desc": "The community page showcases the people behind the DAO. See who's contributing, how they rank, and explore the member directory.",
+      "step2Title": "Leaderboard",
+      "step2Desc": "Rankings are based on verified XP earned through real contributions — not just token holdings. The leaderboard updates in real-time as work gets approved.",
+      "step3Title": "Member Directory",
+      "step3Desc": "Browse all members, their roles, contribution history, and reputation scores. Find collaborators or see who's active in specific areas.",
+      "step4Title": "Rankings System",
+      "step4Desc": "Members are ranked by consistency and quality of contribution. The system rewards sustained participation over bursts of activity."
+    },
+    "Ideas": {
+      "step1Title": "Ideas Incubator",
+      "step1Desc": "Ideas are lightweight pre-proposal discussions. Share rough concepts, get community feedback, and refine before committing to a formal proposal.",
+      "step2Title": "Submitting an Idea",
+      "step2Desc": "Post an idea with a title and description. Keep it casual — ideas are meant to be exploratory. The community will vote and comment to shape direction.",
+      "step3Title": "Voting on Ideas",
+      "step3Desc": "Upvote ideas you think deserve attention. The vote count helps surface the most promising concepts and signals community interest to the author.",
+      "step4Title": "Trending and Discovery",
+      "step4Desc": "Sort by Hot, New, Top This Week, or Top All Time. The Trending tab highlights ideas gaining rapid momentum.",
+      "step5Title": "Promotion to Proposal",
+      "step5Desc": "When an idea has enough traction, the author can promote it to a formal proposal. This carries over the discussion context and community support signals."
+    }
   }
 }

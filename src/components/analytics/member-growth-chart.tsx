@@ -11,6 +11,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { ChartCard } from './chart-card';
+import { CHART_COLORS } from '@/lib/chart-colors';
 import type { MemberGrowthPoint } from '@/features/analytics';
 
 interface MemberGrowthChartProps {
@@ -47,19 +48,19 @@ export function MemberGrowthChart({ data, loading }: MemberGrowthChartProps) {
             <AreaChart data={formatted} margin={{ top: 4, right: 4, left: -16, bottom: 0 }}>
               <defs>
                 <linearGradient id="gradMembers" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#FF7A00" stopOpacity={0.25} />
-                  <stop offset="95%" stopColor="#FF7A00" stopOpacity={0} />
+                  <stop offset="5%" stopColor={CHART_COLORS.terracotta} stopOpacity={0.25} />
+                  <stop offset="95%" stopColor={CHART_COLORS.terracotta} stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
+              <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} />
               <XAxis
                 dataKey="label"
-                tick={{ fontSize: 11, fill: '#9ca3af' }}
+                tick={{ fontSize: 11, fill: CHART_COLORS.axis }}
                 tickLine={false}
                 axisLine={false}
               />
               <YAxis
-                tick={{ fontSize: 11, fill: '#9ca3af' }}
+                tick={{ fontSize: 11, fill: CHART_COLORS.axis }}
                 tickLine={false}
                 axisLine={false}
                 allowDecimals={false}
@@ -68,7 +69,7 @@ export function MemberGrowthChart({ data, loading }: MemberGrowthChartProps) {
                 contentStyle={{
                   fontSize: 12,
                   borderRadius: 8,
-                  border: '1px solid #e5e7eb',
+                  border: `1px solid ${CHART_COLORS.tooltipBorder}`,
                   boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
                 }}
               />
@@ -76,7 +77,7 @@ export function MemberGrowthChart({ data, loading }: MemberGrowthChartProps) {
                 type="monotone"
                 dataKey="cumulative_members"
                 name={t('charts.totalMembers')}
-                stroke="#FF7A00"
+                stroke={CHART_COLORS.terracotta}
                 fill="url(#gradMembers)"
                 strokeWidth={2}
               />

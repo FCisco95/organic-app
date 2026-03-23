@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { ChartCard } from './chart-card';
+import { CHART_COLORS, CHART_SERIES } from '@/lib/chart-colors';
 import type { ProposalCategoryData } from '@/features/analytics';
 
 interface ProposalCategoryChartProps {
@@ -10,7 +11,7 @@ interface ProposalCategoryChartProps {
   loading: boolean;
 }
 
-const COLORS = ['#FF7A00', '#6366f1', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6'];
+const COLORS = CHART_SERIES;
 
 const CATEGORY_LABELS: Record<string, string> = {
   feature: 'Feature',
@@ -59,7 +60,7 @@ export function ProposalCategoryChart({ data, loading }: ProposalCategoryChartPr
                   contentStyle={{
                     fontSize: 12,
                     borderRadius: 8,
-                    border: '1px solid #e5e7eb',
+                    border: `1px solid ${CHART_COLORS.tooltipBorder}`,
                     boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
                   }}
                 />

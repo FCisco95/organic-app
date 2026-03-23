@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { ChartCard } from './chart-card';
+import { CHART_COLORS } from '@/lib/chart-colors';
 import type { TaskCompletionPoint } from '@/features/analytics';
 
 interface TaskCompletionChartProps {
@@ -37,15 +38,15 @@ export function TaskCompletionChart({ data, loading }: TaskCompletionChartProps)
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={formatted} margin={{ top: 4, right: 4, left: -16, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
+              <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} />
               <XAxis
                 dataKey="label"
-                tick={{ fontSize: 11, fill: '#9ca3af' }}
+                tick={{ fontSize: 11, fill: CHART_COLORS.axis }}
                 tickLine={false}
                 axisLine={false}
               />
               <YAxis
-                tick={{ fontSize: 11, fill: '#9ca3af' }}
+                tick={{ fontSize: 11, fill: CHART_COLORS.axis }}
                 tickLine={false}
                 axisLine={false}
                 allowDecimals={false}
@@ -54,14 +55,14 @@ export function TaskCompletionChart({ data, loading }: TaskCompletionChartProps)
                 contentStyle={{
                   fontSize: 12,
                   borderRadius: 8,
-                  border: '1px solid #e5e7eb',
+                  border: `1px solid ${CHART_COLORS.tooltipBorder}`,
                   boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
                 }}
               />
               <Bar
                 dataKey="completed_count"
                 name={t('charts.completed')}
-                fill="#FF7A00"
+                fill={CHART_COLORS.terracotta}
                 radius={[4, 4, 0, 0]}
                 maxBarSize={40}
               />
