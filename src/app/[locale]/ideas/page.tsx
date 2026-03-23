@@ -3,29 +3,32 @@
 import { useMemo, useState } from 'react';
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
-import { Search, TrendingUp } from 'lucide-react';
+import { Flame, Lightbulb, MessageCircle, Search, Sparkles, TrendingUp } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { PageContainer } from '@/components/layout';
 import { useAuth } from '@/features/auth/context';
 import {
   type IdeaSort,
-  type IdeaListItem,
-  useCreateIdea,
   useIdeas,
   useIdeasKpis,
   useVoteIdea,
 } from '@/features/ideas';
 import { cn } from '@/lib/utils';
 import { isIdeasIncubatorEnabled } from '@/config/feature-flags';
-import { Skeleton } from '@/components/ui/skeleton';
 import { IdeaKpiCard } from '@/components/ideas/IdeaKpiCard';
-import { IdeaFeedCard } from '@/components/ideas/IdeaFeedCard';
+import { IdeaFeedCard, IdeaCardSkeleton } from '@/components/ideas/IdeaFeedCard';
 import { IdeaComposerDialog, IdeaComposerFab } from '@/components/ideas/IdeaComposerDialog';
 import { IdeaEmptyState } from '@/components/ideas/IdeaEmptyState';
 
 type FeedTab = 'all' | 'trending' | 'promoted';
 
 const SORTS: IdeaSort[] = ['hot', 'new', 'top_week', 'top_all'];
+
+const TAB_CONFIG: { key: FeedTab; icon: typeof Flame }[] = [
+  { key: 'all', icon: Lightbulb },
+  { key: 'trending', icon: Flame },
+  { key: 'promoted', icon: TrendingUp },
+];
 
 export default function IdeasPage() {
   const t = useTranslations('Ideas');
@@ -40,10 +43,8 @@ export default function IdeasPage() {
   const kpisQuery = useIdeasKpis({ enabled });
   const voteIdea = useVoteIdea();
 
-  // Derive spotlight from KPI data
   const spotlightId = kpisQuery.data?.spotlight?.id ?? null;
 
-  // Client-side tab filtering
   const filteredIdeas = useMemo(() => {
     const items = ideasQuery.data ?? [];
     switch (activeTab) {
@@ -56,7 +57,7 @@ export default function IdeasPage() {
     }
   }, [ideasQuery.data, activeTab]);
 
-  async function onVote(ideaId: string, next: 'up' | 'none') {
+  async function onVote(ideaId: string, next: 'up' | 'down' | 'none') {
     try {
       await voteIdea.mutateAsync({ ideaId, input: { value: next } });
     } catch (error) {
@@ -74,7 +75,6 @@ export default function IdeasPage() {
     );
   }
 
-  // Compute KPI bar percentages (relative to total)
   const totalIdeas = kpisQuery.data?.total_ideas ?? 0;
   const activeIdeas = kpisQuery.data?.active_ideas ?? 0;
   const promotedIdeas = kpisQuery.data?.promoted_ideas ?? 0;
@@ -83,18 +83,17 @@ export default function IdeasPage() {
 
   return (
     <PageContainer layout="fluid">
-      {/* ── Dark gradient header ────────────────────────────────── */}
-      <section className="relative -mx-4 -mt-6 overflow-hidden bg-foreground px-4 pb-8 pt-10 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 xl:-mx-12 xl:px-12">
-        {/* Gradient fade at bottom */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background to-transparent" />
-
-        <div className="relative z-10 mx-auto max-w-[1600px]">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      <div className="space-y-6">
+        {/* ── Dark Hero (matching Analytics/Treasury style) ─────── */}
+        <div className="rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 sm:p-8 text-white opacity-0 animate-fade-up stagger-1">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
-              <h1 className="font-display text-3xl font-bold text-white">{t('title')}</h1>
-              <p className="mt-1 max-w-2xl text-white/70">{t('subtitle')}</p>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{t('title')}</h1>
+              <p className="mt-2 text-sm sm:text-base text-gray-300 leading-relaxed max-w-2xl">
+                {t('subtitle')}
+              </p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 shrink-0">
               <Link
                 href="/proposals"
                 className="inline-flex items-center gap-2 rounded-lg border border-white/20 px-4 py-2.5 text-sm font-semibold text-white/80 transition-colors hover:border-white/40 hover:text-white"
@@ -108,111 +107,130 @@ export default function IdeasPage() {
             </div>
           </div>
 
-          {/* ── KPI cards ─────────────────────────────────────── */}
-          <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <IdeaKpiCard
-              label={t('kpiTotalIdeas')}
-              value={totalIdeas}
-              barPercent={100}
-              barColor="bg-foreground/30"
-              isLoading={kpiLoading}
-            />
-            <IdeaKpiCard
-              label={t('kpiActiveIdeas')}
-              value={activeIdeas}
-              trend={totalIdeas > 0 ? Math.round((activeIdeas / totalIdeas) * 100) : 0}
-              barPercent={totalIdeas > 0 ? (activeIdeas / totalIdeas) * 100 : 0}
-              barColor="bg-emerald-500"
-              isLoading={kpiLoading}
-            />
-            <IdeaKpiCard
-              label={t('kpiPromoted')}
-              value={promotedIdeas}
-              trend={totalIdeas > 0 ? Math.round((promotedIdeas / totalIdeas) * 100) : 0}
-              barPercent={totalIdeas > 0 ? (promotedIdeas / totalIdeas) * 100 : 0}
-              barColor="bg-organic-terracotta"
-              isLoading={kpiLoading}
-            />
-            <IdeaKpiCard
-              label={t('kpiConversion')}
-              value={`${conversionRate}%`}
-              barPercent={conversionRate}
-              barColor="bg-organic-golden"
-              isLoading={kpiLoading}
-            />
+          {/* 3 principle cards (matching Analytics hero) */}
+          <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="flex items-start gap-3">
+              <div className="rounded-lg bg-white/10 p-2">
+                <Lightbulb className="h-4 w-4 text-orange-400" />
+              </div>
+              <div>
+                <p className="text-sm font-medium">{t('heroProposeTitle')}</p>
+                <p className="text-xs text-gray-400">{t('heroProposeDesc')}</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="rounded-lg bg-white/10 p-2">
+                <MessageCircle className="h-4 w-4 text-green-400" />
+              </div>
+              <div>
+                <p className="text-sm font-medium">{t('heroDiscussTitle')}</p>
+                <p className="text-xs text-gray-400">{t('heroDiscussDesc')}</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="rounded-lg bg-white/10 p-2">
+                <Sparkles className="h-4 w-4 text-blue-400" />
+              </div>
+              <div>
+                <p className="text-sm font-medium">{t('heroPromoteTitle')}</p>
+                <p className="text-xs text-gray-400">{t('heroPromoteDesc')}</p>
+              </div>
+            </div>
           </div>
         </div>
-      </section>
 
-      {/* ── Tab-based feed views ──────────────────────────────── */}
-      <section className="mt-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          {/* Tabs */}
-          <div className="flex gap-0 overflow-x-auto border-b border-border">
-            {(['all', 'trending', 'promoted'] as FeedTab[]).map((tab) => (
+        {/* ── KPI Cards ───────────────────────────────────────── */}
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4 opacity-0 animate-fade-up stagger-2">
+          <IdeaKpiCard
+            label={t('kpiTotalIdeas')}
+            value={totalIdeas}
+            barPercent={100}
+            barColor="bg-foreground/30"
+            isLoading={kpiLoading}
+          />
+          <IdeaKpiCard
+            label={t('kpiActiveIdeas')}
+            value={activeIdeas}
+            trend={totalIdeas > 0 ? Math.round((activeIdeas / totalIdeas) * 100) : 0}
+            barPercent={totalIdeas > 0 ? (activeIdeas / totalIdeas) * 100 : 0}
+            barColor="bg-emerald-500"
+            isLoading={kpiLoading}
+          />
+          <IdeaKpiCard
+            label={t('kpiPromoted')}
+            value={promotedIdeas}
+            trend={totalIdeas > 0 ? Math.round((promotedIdeas / totalIdeas) * 100) : 0}
+            barPercent={totalIdeas > 0 ? (promotedIdeas / totalIdeas) * 100 : 0}
+            barColor="bg-organic-terracotta"
+            isLoading={kpiLoading}
+          />
+          <IdeaKpiCard
+            label={t('kpiConversion')}
+            value={`${conversionRate}%`}
+            barPercent={conversionRate}
+            barColor="bg-organic-golden"
+            isLoading={kpiLoading}
+          />
+        </div>
+
+        {/* ── Tabs with icons + orange underline (matching Analytics) */}
+        <div className="flex items-center gap-1 border-b border-border opacity-0 animate-fade-up stagger-3">
+          {TAB_CONFIG.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.key;
+            return (
               <button
-                key={tab}
+                key={tab.key}
                 type="button"
-                onClick={() => setActiveTab(tab)}
+                onClick={() => setActiveTab(tab.key)}
                 className={cn(
-                  'relative whitespace-nowrap px-4 py-2.5 text-sm font-medium transition-colors',
-                  activeTab === tab
-                    ? 'font-bold text-foreground'
-                    : 'text-muted-foreground hover:text-foreground'
+                  'inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px',
+                  isActive
+                    ? 'border-orange-500 text-orange-600 dark:text-orange-400 font-bold bg-orange-50 dark:bg-orange-500/5 rounded-t-lg'
+                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
                 )}
               >
-                {t(`tab_${tab}` as 'tab_all' | 'tab_trending' | 'tab_promoted')}
-                {activeTab === tab && (
-                  <span className="absolute inset-x-0 bottom-0 h-0.5 bg-organic-terracotta transition-all duration-200" />
-                )}
+                <Icon className={cn('h-4 w-4', isActive && 'text-orange-500')} />
+                {t(`tab_${tab.key}` as 'tab_all' | 'tab_trending' | 'tab_promoted')}
               </button>
-            ))}
-          </div>
-
-          {/* Search + sort */}
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder={t('searchPlaceholder')}
-                className="w-full rounded-lg border border-border bg-card py-2 pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30 sm:w-64"
-              />
-            </div>
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value as IdeaSort)}
-              className="rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30"
-            >
-              {SORTS.map((s) => (
-                <option key={s} value={s}>
-                  {t(`sort_${s}` as 'sort_hot' | 'sort_new' | 'sort_top_week' | 'sort_top_all')}
-                </option>
-              ))}
-            </select>
-          </div>
+            );
+          })}
         </div>
 
-        {/* ── Feed cards ──────────────────────────────────────── */}
-        <div className="mt-5">
+        {/* ── Search + Sort ───────────────────────────────────── */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between opacity-0 animate-fade-up stagger-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={t('searchPlaceholder')}
+              className="w-full rounded-lg border border-border bg-card py-2 pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-orange-500/30 sm:w-72"
+            />
+          </div>
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value as IdeaSort)}
+            className="rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-orange-500/30"
+          >
+            {SORTS.map((s) => (
+              <option key={s} value={s}>
+                {t(`sort_${s}` as 'sort_hot' | 'sort_new' | 'sort_top_week' | 'sort_top_all')}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* ── Feed list ───────────────────────────────────────── */}
+        <div className="opacity-0 animate-fade-up" style={{ animationDelay: '320ms' }}>
           {ideasQuery.isLoading ? (
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="rounded-xl border border-border bg-card p-5">
-                  <Skeleton className="mb-3 h-5 w-16" />
-                  <Skeleton className="mb-2 h-6 w-3/4" />
-                  <Skeleton className="mb-2 h-4 w-full" />
-                  <Skeleton className="h-4 w-2/3" />
-                  <div className="mt-4 flex justify-between">
-                    <Skeleton className="h-4 w-24" />
-                    <Skeleton className="h-4 w-16" />
-                  </div>
-                </div>
+            <div className="space-y-3">
+              {[1, 2, 3, 4].map((i) => (
+                <IdeaCardSkeleton key={i} />
               ))}
             </div>
           ) : ideasQuery.isError ? (
-            <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center">
+            <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-center">
               <p className="text-sm font-medium text-red-800">{t('feedError')}</p>
               <button
                 type="button"
@@ -223,10 +241,7 @@ export default function IdeasPage() {
               </button>
             </div>
           ) : filteredIdeas.length > 0 ? (
-            <div
-              className="grid gap-4 md:grid-cols-2 xl:grid-cols-3"
-              data-testid="ideas-feed-list"
-            >
+            <div className="space-y-3" data-testid="ideas-feed-list">
               {filteredIdeas.map((idea, index) => (
                 <IdeaFeedCard
                   key={idea.id}
@@ -244,7 +259,7 @@ export default function IdeasPage() {
             <IdeaEmptyState />
           )}
         </div>
-      </section>
+      </div>
 
       {/* Mobile FAB */}
       <IdeaComposerFab />

@@ -2873,7 +2873,13 @@
     "ideaCreateError": "Falha ao publicar ideia",
     "voteError": "Falha ao atualizar voto",
     "disabledTitle": "A incubadora de ideias está desativada",
-    "disabledDescription": "Ativa a feature flag para aceder à experiência de ideias."
+    "disabledDescription": "Ativa a feature flag para aceder à experiência de ideias.",
+    "heroProposeTitle": "Propor ideias",
+    "heroProposeDesc": "Partilhe conceitos para consideração da comunidade",
+    "heroDiscussTitle": "Discutir e refinar",
+    "heroDiscussDesc": "Debata e melhore ideias em conjunto",
+    "heroPromoteTitle": "Promover a propostas",
+    "heroPromoteDesc": "As melhores ideias tornam-se propostas formais de governação"
   },
   "IdeaDetail": {
     "disabledTitle": "A incubadora de ideias está desativada",

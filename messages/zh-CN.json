@@ -2874,7 +2874,13 @@
     "ideaCreateError": "发布想法失败",
     "voteError": "更新投票失败",
     "disabledTitle": "想法孵化器已关闭",
-    "disabledDescription": "请开启功能开关后再访问该页面。"
+    "disabledDescription": "请开启功能开关后再访问该页面。",
+    "heroProposeTitle": "提出想法",
+    "heroProposeDesc": "分享概念供社区考虑",
+    "heroDiscussTitle": "讨论与完善",
+    "heroDiscussDesc": "共同讨论和改进想法",
+    "heroPromoteTitle": "提升为提案",
+    "heroPromoteDesc": "最佳想法将成为正式治理提案"
   },
   "IdeaDetail": {
     "disabledTitle": "想法孵化器已关闭",

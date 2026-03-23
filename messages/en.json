@@ -2882,7 +2882,13 @@
     "ideaCreateError": "Failed to publish idea",
     "voteError": "Failed to update vote",
     "disabledTitle": "Ideas incubator is disabled",
-    "disabledDescription": "Enable the feature flag to access the ideas experience."
+    "disabledDescription": "Enable the feature flag to access the ideas experience.",
+    "heroProposeTitle": "Propose ideas",
+    "heroProposeDesc": "Share concepts for community consideration",
+    "heroDiscussTitle": "Discuss & refine",
+    "heroDiscussDesc": "Debate and improve ideas together",
+    "heroPromoteTitle": "Promote to proposals",
+    "heroPromoteDesc": "Best ideas become formal governance proposals"
   },
   "IdeaDetail": {
     "disabledTitle": "Ideas incubator is disabled",

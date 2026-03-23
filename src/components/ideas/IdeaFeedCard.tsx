@@ -1,16 +1,18 @@
 'use client';
 
+import { useState } from 'react';
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
-import { ArrowUp, MessageCircle } from 'lucide-react';
+import { ChevronUp, ChevronDown, MessageCircle } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import type { IdeaListItem } from '@/features/ideas';
 
 interface IdeaFeedCardProps {
   idea: IdeaListItem;
-  onVote: (ideaId: string, next: 'up' | 'none') => void;
+  onVote: (ideaId: string, next: 'up' | 'down' | 'none') => void;
   isSpotlight?: boolean;
   style?: React.CSSProperties;
 }
@@ -43,113 +45,189 @@ function getInitials(name: string | null | undefined, email?: string | null): st
   return '?';
 }
 
+/** Relative time string (e.g. "2h ago", "3d ago") */
+function relativeTime(dateStr: string): string {
+  const now = Date.now();
+  const then = new Date(dateStr).getTime();
+  const diffMs = now - then;
+  const diffMin = Math.floor(diffMs / 60000);
+  if (diffMin < 1) return 'now';
+  if (diffMin < 60) return `${diffMin}m`;
+  const diffH = Math.floor(diffMin / 60);
+  if (diffH < 24) return `${diffH}h`;
+  const diffD = Math.floor(diffH / 24);
+  if (diffD < 30) return `${diffD}d`;
+  const diffM = Math.floor(diffD / 30);
+  return `${diffM}mo`;
+}
+
 export function IdeaFeedCard({ idea, onVote, isSpotlight, style }: IdeaFeedCardProps) {
   const t = useTranslations('Ideas');
   const vote = idea.user_vote;
+  const [animating, setAnimating] = useState<'up' | 'down' | null>(null);
+
   const authorName = idea.author?.organic_id
     ? `Organic #${idea.author.organic_id}`
     : idea.author?.name ?? idea.author?.email ?? t('unknownAuthor');
 
+  function handleVote(direction: 'up' | 'down') {
+    const next =
+      (direction === 'up' && vote === 1) || (direction === 'down' && vote === -1)
+        ? 'none'
+        : direction;
+    setAnimating(direction);
+    onVote(idea.id, next);
+    setTimeout(() => setAnimating(null), 300);
+  }
+
   return (
     <article
       className={cn(
-        'group relative rounded-xl border border-border bg-card p-5 transition-all duration-200 hover:border-border/80 hover:shadow-md',
-        isSpotlight && 'border-l-4 border-l-organic-terracotta'
+        'group rounded-xl border bg-card transition-shadow duration-200 hover:shadow-md',
+        isSpotlight
+          ? 'border-l-4 border-l-organic-terracotta border-t-border border-r-border border-b-border'
+          : 'border-border'
       )}
       style={style}
     >
-      {/* Status badge + spotlight badge */}
-      <div className="mb-3 flex items-center gap-2">
-        <Badge
-          className={cn(
-            'border text-[10px] uppercase tracking-wider',
-            getStatusColor(idea.status)
-          )}
-        >
-          {idea.status}
-        </Badge>
-        {isSpotlight && (
-          <Badge className="border border-organic-terracotta-light bg-organic-terracotta-lightest text-[10px] uppercase tracking-wider text-organic-terracotta">
-            {t('spotlightLabel')}
-          </Badge>
-        )}
-        {idea.is_pinned && (
-          <Badge className="border border-amber-200 bg-amber-100 text-[10px] uppercase tracking-wider text-amber-700">
-            {t('pinned')}
-          </Badge>
-        )}
-      </div>
+      <div className="flex">
+        {/* Vote rail — Reddit/ProductHunt style */}
+        <div className="flex w-12 shrink-0 flex-col items-center gap-0.5 border-r border-border py-3 sm:w-14">
+          <button
+            type="button"
+            onClick={() => handleVote('up')}
+            className={cn(
+              'rounded-lg p-1 transition-all duration-200 ease-out',
+              vote === 1
+                ? 'bg-organic-terracotta text-white'
+                : 'text-muted-foreground hover:bg-organic-terracotta-lightest hover:text-organic-terracotta',
+              animating === 'up' && 'scale-110'
+            )}
+            aria-label={t('upvote')}
+          >
+            <ChevronUp className="h-4 w-4" strokeWidth={2.5} />
+          </button>
+          <span
+            className={cn(
+              'font-mono text-sm font-bold tabular-nums transition-colors duration-200',
+              vote === 1 && 'text-organic-terracotta',
+              vote === -1 && 'text-muted-foreground',
+              vote === 0 && 'text-foreground'
+            )}
+          >
+            {idea.score}
+          </span>
+          <button
+            type="button"
+            onClick={() => handleVote('down')}
+            className={cn(
+              'rounded-lg p-1 transition-all duration-200 ease-out',
+              vote === -1
+                ? 'bg-muted text-muted-foreground'
+                : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+              animating === 'down' && 'scale-110'
+            )}
+            aria-label={t('downvote')}
+          >
+            <ChevronDown className="h-4 w-4" strokeWidth={2.5} />
+          </button>
+        </div>
 
-      {/* Title */}
-      <Link href={`/ideas/${idea.id}`} className="block">
-        <h3 className="line-clamp-2 text-lg font-bold text-foreground transition-colors group-hover:text-organic-terracotta">
-          {idea.title}
-        </h3>
-      </Link>
-
-      {/* Body preview */}
-      <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
-        {idea.body}
-      </p>
-
-      {/* Bottom metadata row */}
-      <div className="mt-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          {/* Author */}
+        {/* Content area */}
+        <div className="min-w-0 flex-1 p-4">
+          {/* Author + badges row */}
           <div className="flex items-center gap-2">
             <Avatar className="h-6 w-6">
               <AvatarFallback className="bg-muted text-[10px] font-semibold text-muted-foreground">
                 {getInitials(idea.author?.name, idea.author?.email)}
               </AvatarFallback>
             </Avatar>
-            <span className="text-xs text-muted-foreground">{authorName}</span>
+            <span className="text-xs font-medium text-muted-foreground">{authorName}</span>
+            <span className="text-xs text-muted-foreground/60">{relativeTime(idea.created_at)}</span>
+
+            {/* Badges */}
+            <div className="ml-auto flex items-center gap-1.5">
+              <Badge
+                className={cn(
+                  'border text-[10px] uppercase tracking-wider',
+                  getStatusColor(idea.status)
+                )}
+              >
+                {idea.status}
+              </Badge>
+              {isSpotlight && (
+                <Badge className="border border-organic-terracotta-light bg-organic-terracotta-lightest text-[10px] uppercase tracking-wider text-organic-terracotta">
+                  {t('spotlightLabel')}
+                </Badge>
+              )}
+              {idea.is_pinned && (
+                <Badge className="border border-amber-200 bg-amber-100 text-[10px] uppercase tracking-wider text-amber-700">
+                  {t('pinned')}
+                </Badge>
+              )}
+            </div>
           </div>
 
-          {/* Timestamp */}
-          <span className="font-mono text-xs text-muted-foreground">
-            {new Date(idea.created_at).toLocaleDateString()}
-          </span>
-        </div>
+          {/* Title */}
+          <Link href={`/ideas/${idea.id}`} className="mt-2 block group-hover:no-underline">
+            <h3 className="line-clamp-2 text-base font-bold text-foreground transition-colors group-hover:text-organic-terracotta">
+              {idea.title}
+            </h3>
+          </Link>
 
-        <div className="flex items-center gap-3">
-          {/* Vote count — click to upvote */}
-          <button
-            type="button"
-            onClick={() => onVote(idea.id, vote === 1 ? 'none' : 'up')}
-            className={cn(
-              'flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold transition-all duration-200',
-              vote === 1
-                ? 'bg-emerald-100 text-emerald-700'
-                : 'text-muted-foreground hover:bg-muted'
-            )}
-            aria-label={t('upvote')}
-          >
-            <ArrowUp
-              className={cn(
-                'h-3.5 w-3.5 transition-transform duration-200',
-                vote === 1 && 'scale-110'
-              )}
-            />
-            <span className="font-mono">{idea.score}</span>
-          </button>
+          {/* Body preview */}
+          <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+            {idea.body}
+          </p>
 
-          {/* Comment count */}
-          <span className="flex items-center gap-1 text-xs text-muted-foreground">
-            <MessageCircle className="h-3.5 w-3.5" />
-            <span className="font-mono">{idea.comments_count ?? 0}</span>
-          </span>
-
-          {/* Linked proposal */}
-          {idea.promoted_to_proposal_id && (
+          {/* Bottom meta */}
+          <div className="mt-3 flex items-center gap-3 text-xs text-muted-foreground">
             <Link
-              href={`/proposals/${idea.promoted_to_proposal_id}`}
-              className="text-xs font-medium text-organic-terracotta hover:text-organic-terracotta-hover"
+              href={`/ideas/${idea.id}`}
+              className="inline-flex items-center gap-1 transition-colors hover:text-foreground"
             >
-              {t('linkedProposal')}
+              <MessageCircle className="h-3.5 w-3.5" />
+              <span className="font-mono">{idea.comments_count ?? 0}</span>
             </Link>
-          )}
+            {idea.promoted_to_proposal_id && (
+              <Link
+                href={`/proposals/${idea.promoted_to_proposal_id}`}
+                className="font-medium text-organic-terracotta hover:text-organic-terracotta-hover"
+              >
+                {t('linkedProposal')}
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </article>
+  );
+}
+
+/** Skeleton loader that matches the vote rail card layout */
+export function IdeaCardSkeleton() {
+  return (
+    <div className="rounded-xl border border-border bg-card">
+      <div className="flex">
+        <div className="flex w-12 flex-col items-center gap-1 border-r border-border px-2 py-3 sm:w-14">
+          <Skeleton className="h-4 w-4 rounded" />
+          <Skeleton className="h-4 w-6 rounded" />
+          <Skeleton className="h-4 w-4 rounded" />
+        </div>
+        <div className="flex-1 p-4">
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-6 w-6 rounded-full" />
+            <Skeleton className="h-3 w-20" />
+            <Skeleton className="h-3 w-8" />
+          </div>
+          <Skeleton className="mt-2 h-5 w-3/4" />
+          <Skeleton className="mt-1.5 h-3 w-full" />
+          <Skeleton className="mt-1 h-3 w-2/3" />
+          <div className="mt-3 flex gap-3">
+            <Skeleton className="h-3 w-16" />
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
