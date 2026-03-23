@@ -10,12 +10,11 @@ import {
   Share2,
   Link as LinkIcon,
   Heart,
-  Repeat2,
-  MessageCircle,
   ImageIcon,
 } from 'lucide-react';
 import type { TaskSubmissionWithReviewer } from '@/features/tasks';
 import { useTranslations } from 'next-intl';
+import { engagementIcons, engagementColors } from '@/components/ui/x-brand-icon';
 
 export function SubmissionContent({
   submission,
@@ -140,10 +139,8 @@ export function SubmissionContent({
         </div>
       )}
 
-      {/* Twitter — Stripe-inspired structured display */}
       {type === 'twitter' && (
         <div className="space-y-3">
-          {/* Screenshot evidence as card */}
           {twitterScreenshotUrl && (
             <a
               href={twitterScreenshotUrl}
@@ -162,24 +159,16 @@ export function SubmissionContent({
             </a>
           )}
 
-          {/* Engagement type pill */}
           {twitterEngagementType && (() => {
-            const engIcons: Record<string, React.ElementType> = { like: Heart, retweet: Repeat2, comment: MessageCircle };
-            const engColors: Record<string, string> = {
-              like: 'bg-rose-50 text-rose-700 border-rose-200',
-              retweet: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-              comment: 'bg-sky-50 text-sky-700 border-sky-200',
-            };
-            const EngIcon = engIcons[twitterEngagementType] || Heart;
+            const EngIcon = engagementIcons[twitterEngagementType] || Heart;
             return (
-              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${engColors[twitterEngagementType] || 'bg-muted text-muted-foreground border-border'}`}>
+              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${engagementColors[twitterEngagementType] || 'bg-muted text-muted-foreground border-border'}`}>
                 <EngIcon className="w-3 h-3" />
                 {t('twitterEngagement')}: {twitterEngagementType}
               </span>
             );
           })()}
 
-          {/* Comment in styled blockquote */}
           {!compact && twitterCommentText && (
             <div className="border-l-2 border-sky-300 pl-3 py-1">
               <p className="text-xs font-medium text-muted-foreground mb-1">{t('commentText')}</p>

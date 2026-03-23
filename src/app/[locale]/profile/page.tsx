@@ -9,7 +9,6 @@ import { useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import Image from 'next/image';
 import {
-  AtSign,
   CheckCircle2,
   Edit2,
   Save,
@@ -30,6 +29,7 @@ import {
   Hash,
   Award,
 } from 'lucide-react';
+import { XBrandIcon } from '@/components/ui/x-brand-icon';
 import toast from 'react-hot-toast';
 import bs58 from 'bs58';
 import { formatDistanceToNow } from 'date-fns';
@@ -1032,13 +1032,10 @@ export default function ProfilePage() {
                   )}
                 </div>
 
-                {/* Twitter/X linking — Stripe connected account pattern */}
                 <div className="rounded-xl border border-border bg-card p-5">
                   <div className="flex items-center gap-2 mb-4">
                     <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-muted text-muted-foreground">
-                      <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5" aria-hidden="true">
-                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                      </svg>
+                      <XBrandIcon className="w-3.5 h-3.5" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h2 className="text-sm font-semibold text-foreground">{t('twitterAccountTitle')}</h2>
@@ -1050,7 +1047,6 @@ export default function ProfilePage() {
                   {twitterAccount ? (
                     <div className="flex items-center justify-between gap-3 rounded-lg border border-border bg-background p-3">
                       <div className="flex items-center gap-3 min-w-0">
-                        {/* Avatar with X badge overlay */}
                         <div className="relative flex-shrink-0">
                           <div className="w-10 h-10 rounded-full overflow-hidden bg-muted border-2 border-emerald-200">
                             {twitterAccount.profile_image_url ? (
@@ -1062,20 +1058,15 @@ export default function ProfilePage() {
                               />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                                <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4" aria-hidden="true">
-                                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                                </svg>
+                                <XBrandIcon className="w-4 h-4" />
                               </div>
                             )}
                           </div>
                           <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-foreground text-background flex items-center justify-center border-2 border-card">
-                            <svg viewBox="0 0 24 24" fill="currentColor" className="w-2.5 h-2.5" aria-hidden="true">
-                              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                            </svg>
+                            <XBrandIcon className="w-2.5 h-2.5" />
                           </div>
                         </div>
 
-                        {/* Name + username */}
                         <div className="min-w-0">
                           <p className="text-sm font-semibold text-foreground truncate">
                             {twitterAccount.display_name || twitterAccount.twitter_username}
@@ -1085,14 +1076,12 @@ export default function ProfilePage() {
                           </p>
                         </div>
 
-                        {/* Verified status pill */}
                         <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-200 flex-shrink-0">
                           <CheckCircle2 className="w-3 h-3" />
                           {t('twitterAccountVerified')}
                         </span>
                       </div>
 
-                      {/* Disconnect — ghost button */}
                       <button
                         type="button"
                         onClick={handleUnlinkTwitter}
@@ -1108,12 +1097,9 @@ export default function ProfilePage() {
                       </button>
                     </div>
                   ) : (
-                    /* Disconnected empty state — centered CTA */
                     <div className="flex flex-col items-center text-center py-6 rounded-lg border border-dashed border-border bg-muted/30">
                       <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3">
-                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-muted-foreground" aria-hidden="true">
-                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                        </svg>
+                        <XBrandIcon className="w-5 h-5 text-muted-foreground" />
                       </div>
                       <p className="text-sm font-medium text-foreground mb-1">{t('twitterConnectHeading')}</p>
                       <p className="text-xs text-muted-foreground mb-4 max-w-xs">{t('twitterConnectValueProp')}</p>
@@ -1126,9 +1112,7 @@ export default function ProfilePage() {
                         {twitterLinking ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
                         ) : (
-                          <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4" aria-hidden="true">
-                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                          </svg>
+                          <XBrandIcon className="w-4 h-4" />
                         )}
                         {twitterLinking ? t('connectingTwitter') : t('connectTwitter')}
                       </button>

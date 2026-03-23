@@ -11,9 +11,9 @@ import {
   ImageIcon,
   ExternalLink,
   Heart,
-  Repeat2,
   MessageCircle,
 } from 'lucide-react';
+import { XBrandIcon, engagementIcons, engagementColors } from '@/components/ui/x-brand-icon';
 import { cn } from '@/lib/utils';
 import {
   useSubmitTask,
@@ -39,32 +39,6 @@ type LinkedTwitterAccount = {
   twitter_username: string;
   display_name: string | null;
   profile_image_url: string | null;
-};
-
-/* Inline X logo — simple bold "X" as SVG */
-function XBrandIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      className={className}
-      aria-hidden="true"
-    >
-      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-    </svg>
-  );
-}
-
-const engagementIcons: Record<string, React.ElementType> = {
-  like: Heart,
-  retweet: Repeat2,
-  comment: MessageCircle,
-};
-
-const engagementColors: Record<string, string> = {
-  like: 'bg-rose-50 text-rose-700 border-rose-200',
-  retweet: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  comment: 'bg-sky-50 text-sky-700 border-sky-200',
 };
 
 export function TwitterSubmissionForm({ task, onSuccess, onCancel }: SubmissionFormProps) {
@@ -210,7 +184,6 @@ export function TwitterSubmissionForm({ task, onSuccess, onCancel }: SubmissionF
     }
   };
 
-  /* Loading skeleton — Stripe-style shimmer */
   if (isLoadingContext) {
     return (
       <div className="space-y-5">
@@ -249,7 +222,6 @@ export function TwitterSubmissionForm({ task, onSuccess, onCancel }: SubmissionF
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       <input type="hidden" {...register('submission_type')} value="twitter" />
 
-      {/* Section 1: Target Tweet — Stripe structured card */}
       <div className="rounded-xl border border-border bg-card p-5">
         <div className="flex items-center gap-2 mb-4">
           <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-sky-100 text-sky-700">
@@ -260,7 +232,6 @@ export function TwitterSubmissionForm({ task, onSuccess, onCancel }: SubmissionF
           </h3>
         </div>
 
-        {/* Tweet URL as clickable card */}
         <a
           href={taskConfig.target_tweet_url}
           target="_blank"
@@ -273,7 +244,6 @@ export function TwitterSubmissionForm({ task, onSuccess, onCancel }: SubmissionF
           </span>
         </a>
 
-        {/* Engagement type pill + instructions */}
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <span
             className={cn(
@@ -293,7 +263,6 @@ export function TwitterSubmissionForm({ task, onSuccess, onCancel }: SubmissionF
         )}
       </div>
 
-      {/* Section 2: Account Status — Stripe connected account card */}
       <div className="rounded-xl border border-border bg-card p-5">
         <div className="flex items-center gap-2 mb-4">
           <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-muted text-muted-foreground">
@@ -307,7 +276,6 @@ export function TwitterSubmissionForm({ task, onSuccess, onCancel }: SubmissionF
         {account ? (
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3 min-w-0">
-              {/* Avatar with X badge overlay */}
               <div className="relative flex-shrink-0">
                 <div className="w-10 h-10 rounded-full overflow-hidden bg-muted border-2 border-emerald-200">
                   {account.profile_image_url ? (
@@ -328,7 +296,6 @@ export function TwitterSubmissionForm({ task, onSuccess, onCancel }: SubmissionF
                 </div>
               </div>
 
-              {/* Name + username + status */}
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-foreground truncate">
                   {account.display_name || account.twitter_username}
@@ -338,14 +305,12 @@ export function TwitterSubmissionForm({ task, onSuccess, onCancel }: SubmissionF
                 </p>
               </div>
 
-              {/* Verified status pill */}
               <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-200 flex-shrink-0">
                 <CheckCircle2 className="w-3 h-3" />
                 {t('twitterVerifiedStatus')}
               </span>
             </div>
 
-            {/* Disconnect button — ghost style */}
             <button
               type="button"
               onClick={handleDisconnectTwitter}
@@ -361,7 +326,6 @@ export function TwitterSubmissionForm({ task, onSuccess, onCancel }: SubmissionF
             </button>
           </div>
         ) : (
-          /* Disconnected empty state — Stripe pattern */
           <div className="flex flex-col items-center text-center py-4">
             <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3">
               <XBrandIcon className="w-5 h-5 text-muted-foreground" />
@@ -392,30 +356,26 @@ export function TwitterSubmissionForm({ task, onSuccess, onCancel }: SubmissionF
         )}
       </div>
 
-      {/* Section 3: Evidence — clean input card */}
       <div className="rounded-xl border border-border bg-card p-5">
         <label className="flex items-center gap-2 text-sm font-semibold text-foreground mb-3 font-[family-name:var(--font-fraunces)]">
           <ImageIcon className="w-4 h-4 text-muted-foreground" />
           {t('twitterScreenshotLabel')} <span className="text-destructive">*</span>
         </label>
-        <div className="relative">
-          <input
-            {...register('screenshot_url')}
-            type="url"
-            placeholder={t('twitterScreenshotPlaceholder')}
-            className={cn(
-              'w-full px-3 py-2.5 border rounded-lg bg-background text-sm text-foreground placeholder:text-muted-foreground/50 transition-colors duration-150',
-              'focus:outline-none focus:ring-2 focus:ring-organic-terracotta focus:border-transparent',
-              errors.screenshot_url ? 'border-destructive' : 'border-border'
-            )}
-          />
-        </div>
+        <input
+          {...register('screenshot_url')}
+          type="url"
+          placeholder={t('twitterScreenshotPlaceholder')}
+          className={cn(
+            'w-full px-3 py-2.5 border rounded-lg bg-background text-sm text-foreground placeholder:text-muted-foreground/50 transition-colors duration-150',
+            'focus:outline-none focus:ring-2 focus:ring-organic-terracotta focus:border-transparent',
+            errors.screenshot_url ? 'border-destructive' : 'border-border'
+          )}
+        />
         {errors.screenshot_url && (
           <p className="mt-1.5 text-xs text-destructive">{errors.screenshot_url.message}</p>
         )}
       </div>
 
-      {/* Section 4: Comment (conditional) */}
       {taskConfig.engagement_type === 'comment' && (
         <div className="rounded-xl border border-border bg-card p-5">
           <label className="flex items-center gap-2 text-sm font-semibold text-foreground mb-3 font-[family-name:var(--font-fraunces)]">
@@ -431,7 +391,6 @@ export function TwitterSubmissionForm({ task, onSuccess, onCancel }: SubmissionF
         </div>
       )}
 
-      {/* Section 5: Optional notes */}
       <div className="rounded-xl border border-border bg-card p-5">
         <label className="block text-sm font-medium text-foreground mb-2">
           {t('descriptionLabel')}
