@@ -592,39 +592,38 @@ Use cases:
 **Plan:** `docs/plans/2026-03-23-twitter-qa-revamp.md`
 
 ## 4.19 Ideas Incubator Workflow (Feature-Flagged)
-<!-- qa-status: PENDING -->
+<!-- qa-status: PLANNED | severity: S2 | plan: docs/plans/2026-03-23-ideas-incubator-qa-revamp.md -->
 Routes: `/ideas`, `/ideas/[id]`, `/api/ideas`, `/api/ideas/:id`, `/api/ideas/:id/vote`, `/api/ideas/:id/comments`, `/api/ideas/kpis`.
 
 Pre-flight:
-- [ ] Feature flag enabled (`NEXT_PUBLIC_IDEAS_INCUBATOR_ENABLED=true` or no falsey override).
-- [ ] Ideas schema/tables are available in target environment.
-- [ ] Test users include: member with Organic ID, member without Organic ID, admin/council.
+- [x] Feature flag enabled (`NEXT_PUBLIC_IDEAS_INCUBATOR_ENABLED=true` or no falsey override).
+- [x] Ideas schema/tables are available in target environment.
+- [x] Test users include: member with Organic ID, member without Organic ID, admin/council.
 - [ ] At least one open promotion cycle row exists for winner-selection coverage.
 
 Use cases:
-- [ ] `IDEA-01` `/ideas` loads feed, sort tabs, search, KPI strip, and weekly spotlight without layout breakage.
-- [ ] `IDEA-02` Organic ID member can create an idea; title/body validation boundaries are enforced.
-- [ ] `IDEA-03` Member without Organic ID is blocked from create with clear messaging.
-- [ ] `IDEA-04` Vote toggle behavior is idempotent (`up/down` repeat clears to neutral) and score updates remain coherent.
-- [ ] `IDEA-05` Self-vote is blocked with explicit error message.
-- [ ] `IDEA-06` Comment creation requires Organic ID and rejects empty payloads.
-- [ ] `IDEA-07` Idea detail page renders author, status, body, score breakdown, and comments chronology correctly.
-- [ ] `IDEA-08` Author edit permissions are enforced; non-author/non-admin edits are rejected.
-- [ ] `IDEA-09` Admin/council moderation capabilities behave as expected for editable idea fields.
-- [ ] `IDEA-10` Feature-flag disabled posture returns safe fallback UX (`not found` / disabled panel).
-- [ ] `IDEA-11` API responses fail safely when ideas backend schema is unavailable (clear error/no crash).
-- [ ] `IDEA-12` Mobile usability is acceptable for feed cards, vote rail, composer, and detail discussion.
-- [ ] `IDEA-13` Admin/council can promote an idea to proposal (`POST /api/ideas/:id/promote`) and receives linked proposal id.
-- [ ] `IDEA-14` Promotion cycle winner selection endpoint (`POST /api/ideas/cycles/:id/select-winner`) supports explicit and auto-computed winner paths.
-- [ ] `IDEA-15` Promoted proposal detail shows source-idea badge/link back to ideas detail.
+- [x] `IDEA-01` `/ideas` loads feed, sort tabs, search, KPI strip, and weekly spotlight without layout breakage. **PASS, S3**
+- [x] `IDEA-02` Organic ID member can create an idea; title/body validation boundaries are enforced. **PASS, S3**
+- [x] `IDEA-03` Member without Organic ID is blocked from create with clear messaging. **PASS, S3**
+- [x] `IDEA-04` Vote toggle behavior is idempotent (`up/down` repeat clears to neutral) and score updates remain coherent. **PASS, S3**
+- [x] `IDEA-05` Self-vote is blocked with explicit error message. **PASS, S3**
+- [x] `IDEA-06` Comment creation requires Organic ID and rejects empty payloads. **PASS, S3**
+- [x] `IDEA-07` Idea detail page renders author, status, body, score breakdown, and comments chronology correctly. **PASS, S3**
+- [x] `IDEA-08` Author edit permissions are enforced; non-author/non-admin edits are rejected. **PASS, S3**
+- [x] `IDEA-09` Admin/council moderation capabilities behave as expected for editable idea fields. **PASS, S3**
+- [x] `IDEA-10` Feature-flag disabled posture returns safe fallback UX (`not found` / disabled panel). **PASS, S3** (code review)
+- [x] `IDEA-11` API responses fail safely when ideas backend schema is unavailable (clear error/no crash). **PASS, S3** (code review)
+- [x] `IDEA-12` Mobile usability is acceptable for feed cards, vote rail, composer, and detail discussion. **PARTIAL, S2**
+- [x] `IDEA-13` Admin/council can promote an idea to proposal (`POST /api/ideas/:id/promote`) and receives linked proposal id. **PASS, S3**
+- [x] `IDEA-14` Promotion cycle winner selection endpoint (`POST /api/ideas/cycles/:id/select-winner`) supports explicit and auto-computed winner paths. **PASS, S3** (code review)
+- [x] `IDEA-15` Promoted proposal detail shows source-idea badge/link back to ideas detail. **PASS, S3**
 
-Feedback:
-- What works well:
-- What does not work:
-- UI improvements requested:
-- Top 3 highest-impact changes:
-- Section severity (`S0/S1/S2/S3`):
-- Confidence score (`1-5`):
+### Feedback
+<!-- Full feedback archived in git history + plan file. Summary below. -->
+**Tested:** 2026-03-23 | **Cases:** 15/15 (0 skipped) | **Severity:** S2
+**Priority fixes:** Admin composer shows "You need an Organic ID" despite having one (auth context race); KPIs flash 0 before data loads
+**Top revamp:** Generic vibecoded UI — needs benchmark-driven redesign (Reddit/ProductHunt feed patterns, Linear detail views, Notion empty states)
+**Plan:** `docs/plans/2026-03-23-ideas-incubator-qa-revamp.md`
 
 ---
 
