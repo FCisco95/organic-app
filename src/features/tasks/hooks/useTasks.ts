@@ -92,7 +92,7 @@ export function useTask(taskId: string) {
           sprint:sprints(id, name, status),
           assignees:task_assignees(
             *,
-            user:user_profiles(id, name, email, organic_id, avatar_url)
+            user:user_profiles!task_assignees_user_id_profile_fkey(id, name, email, organic_id, avatar_url)
           ),
           submissions:task_submissions(
             *,

@@ -8,7 +8,7 @@ export async function parseJsonBody<T = Record<string, unknown>>(
   try {
     const text = await request.text();
     if (!text || text.trim() === '') {
-      return { data: null as T, error: null };
+      return { data: undefined as T, error: null };
     }
     const data = JSON.parse(text) as T;
     return { data, error: null };

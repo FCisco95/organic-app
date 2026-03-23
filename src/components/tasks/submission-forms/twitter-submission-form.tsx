@@ -112,6 +112,7 @@ export function TwitterSubmissionForm({ task, onSuccess, onCancel }: SubmissionF
       const response = await fetch('/api/twitter/link/start', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
       });
 
       const payload = await response.json();

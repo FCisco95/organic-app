@@ -136,7 +136,7 @@ export function useTaskAssignees(taskId: string) {
         .select(
           `
           *,
-          user:user_profiles(id, name, email, organic_id, avatar_url)
+          user:user_profiles!task_assignees_user_id_profile_fkey(id, name, email, organic_id, avatar_url)
         `
         )
         .eq('task_id', taskId)
