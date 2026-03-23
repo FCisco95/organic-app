@@ -1,3 +1,9 @@
+// TODO(launch-blocker): Before go-live (~2026-03-30), configure production X OAuth:
+//   1. Register callback URL in X Developer Portal (https://developer.x.com)
+//   2. Set TWITTER_CLIENT_ID and TWITTER_CLIENT_SECRET in production env
+//   3. Set TWITTER_REDIRECT_URI to production callback (e.g. https://app.organic.org/api/twitter/link/callback)
+//   4. Remove ngrok dependency — currently dev relies on ngrok tunnel for OAuth redirects
+
 type ResolveTwitterRedirectUriOptions = {
   override?: string;
   fallbackOrigin?: string;

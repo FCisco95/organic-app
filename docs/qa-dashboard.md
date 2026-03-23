@@ -25,7 +25,7 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 | 4.15 | Locale, Accessibility | 8 | DONE | S3 | [plan](plans/2026-03-23-error-locale-ops-qa.md) | — | `main` (7ec1b0a) |
 | 4.16 | Operational Controls | 4 | DONE | S3 | [plan](plans/2026-03-23-error-locale-ops-qa.md) | — | — |
 | 4.17 | Onboarding Wizard | 10 | DONE | S3 | [plan](plans/2026-03-22-onboarding-qa-revamp.md) | — (no bugs) | `main` (bfa2035) |
-| 4.18 | Twitter/X | 12 | FIXED | S1 | [plan](plans/2026-03-23-twitter-qa-revamp.md) | `main` (6fe8fcb) | — |
+| 4.18 | Twitter/X | 12 | REVAMPED | S1 | [plan](plans/2026-03-23-twitter-qa-revamp.md) | `main` (6fe8fcb) | `main` (6e1b89f) |
 | 4.19 | Ideas Incubator | 15 | PENDING | — | — | — | — |
 
 ### Status Legend
@@ -45,7 +45,6 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 
 | Action | Section | What to do |
 |--------|---------|------------|
-| **Next to revamp** | 4.18 Twitter/X | FIXED — ready for prototype-executor |
 | **Next to QA** | 4.19 Ideas Incubator | Next PENDING section — 15 cases |
 
 ---
@@ -61,13 +60,14 @@ Issues spanning multiple sections — track resolution centrally.
 | Page titles show "Next.js" instead of page name | 4.1, 4.2 | S3 | Open |
 | Garbage test data from prototype QA sessions | 4.9 | S3 | Script ready: `scripts/cleanup-qa-garbage.sql` |
 | task_assignees query 400: join to user_profiles fails, blocking Join Task → Submit Work for all task types | 4.7, 4.18 | S1 | **Fixed** — FK migration `6fe8fcb` |
+| **Twitter/X OAuth production setup**: App needs production X API credentials + callback URL configured before go-live. Currently using ngrok tunnel for dev. Must register production callback URL in X Developer Portal and set `TWITTER_CLIENT_ID`, `TWITTER_CLIENT_SECRET`, `TWITTER_REDIRECT_URI` env vars in production. | 4.18 | S0 | **OPEN — launch blocker (go-live ~2026-03-30)** |
 
 ---
 
 ## Recommended Section Order
 
 **DONE (17/19):** 4.1 Auth, 4.2 Navigation, 4.3 Home/Analytics, 4.4 Community, 4.5 Profile, 4.6 Quests, 4.7 Tasks, 4.8 Sprints, 4.9 Proposals, 4.10 Disputes, 4.11 Rewards, 4.12 Notifications, 4.13 Admin Ops, 4.14 Error Resilience, 4.15 Locale/A11y, 4.16 Operational Controls, 4.17 Onboarding — all merged to `main`
-**FIXED (1):** 4.18 Twitter/X — 2 bugs fixed, ready for revamp
+**REVAMPED (1):** 4.18 Twitter/X — Stripe-inspired UI revamp merged
 
 **Wave B — Core feature sections:**
 1. 4.10 Disputes (13 cases) — **DONE**
@@ -149,4 +149,4 @@ Consolidated — one row per section showing final outcome. Full history in git 
 | 2026-03-23 | 4.14 Error Resilience | `main` (991cf7d) | `main` (7ec1b0a) | 2/6 PASS, S1. Fix: FetchErrorBanner for API failures. Revamp: Proto B Notion — branded 404 with compass/cards, shimmer skeletons, terracotta focus rings, access denied card CTAs. |
 | 2026-03-23 | 4.15 Locale/A11y | — | `main` (7ec1b0a) | 8/8 PASS, S3. Focus rings enhanced via shared revamp commit. |
 | 2026-03-23 | 4.16 Operational Controls | — | — | Voting integrity 2/2 PASS. Rewards 2/2 SKIP (active sprint guard). No fixes/revamp needed. |
-| 2026-03-23 | 4.18 Twitter/X | `main` (6fe8fcb) | — | 2 fixes: submission form body + task_assignees FK migration. Join/submit flow unblocked for all task types. |
+| 2026-03-23 | 4.18 Twitter/X | `main` (6fe8fcb) | `main` (6e1b89f) | 2 fixes: submission form body + task_assignees FK. Revamp: Proto A Stripe — connected account cards, structured submission sections, color-coded engagement pills, X brand icons, skeleton loading. |
