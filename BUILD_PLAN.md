@@ -96,7 +96,10 @@ Latest revalidation snapshot (2026-03-01):
 - Operational-control audit evidence captured for:
   - rewards `integrity_hold` + `kill_switch` (`reward_settlement_events`)
   - proposal `finalization_kill_switch` + `finalization_manual_resume` (`proposal_stage_events`)
-- Go/No-Go remains **No-Go** pending blocking manual QA matrix completion and staging schema-cache drift on proposal execution-window writes (`PGRST204` for `execution_deadline` path).
+- Go/No-Go: **Go** (2026-03-23). Both blockers resolved:
+  - Manual QA matrix: 19/19 sections DONE (full test → fix → revamp pipeline complete).
+  - Schema-cache drift (PGRST204): mitigated with non-blocking fallback in finalize route. Production deploy will clear via `NOTIFY pgrst, 'reload schema'`.
+  - Remaining launch blocker: Twitter/X OAuth production credentials (~2026-03-30).
 
 ### Phase 20a — Onboarding Foundation — 🟡 Partial (2026-02-28)
 

@@ -58,11 +58,11 @@ export async function GET() {
     if (actorIds.length > 0) {
       const { data: profiles } = await supabase
         .from('user_profiles')
-        .select('id, display_name')
+        .select('id, name')
         .in('id', actorIds);
 
       if (profiles) {
-        actorMap = Object.fromEntries(profiles.map((p) => [p.id, p.display_name ?? 'Unknown']));
+        actorMap = Object.fromEntries(profiles.map((p) => [p.id, p.name ?? 'Unknown']));
       }
     }
 
