@@ -10,7 +10,8 @@ import {
 } from '@/features/disputes/sla';
 import { DisputeCard } from './dispute-card';
 import { cn } from '@/lib/utils';
-import { AlertTriangle, TrendingUp, CheckCircle } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { AlertTriangle, TrendingUp, CheckCircle, Scale } from 'lucide-react';
 
 const STATUS_TABS: { key: string; statuses?: DisputeStatus }[] = [
   { key: 'all' },
@@ -172,10 +173,14 @@ export function DisputeQueue({ myDisputes = false, showTriageControls = false }:
       {isLoading ? (
         <div className="space-y-0 divide-y divide-gray-100 rounded-lg border border-gray-200 bg-white">
           {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="h-[72px] animate-pulse bg-gray-50"
-            />
+            <div key={i} className="flex items-center gap-3 px-4 py-4">
+              <Skeleton className="h-4 w-4 rounded-full" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-3 w-1/2" />
+              </div>
+              <Skeleton className="h-5 w-16 rounded-full" />
+            </div>
           ))}
         </div>
       ) : isError ? (
@@ -183,11 +188,12 @@ export function DisputeQueue({ myDisputes = false, showTriageControls = false }:
           {(error as Error)?.message || t('queueEmptyHint')}
         </div>
       ) : rawDisputes.length === 0 ? (
-        <div className="py-12 text-center">
-          <p className="text-sm text-gray-500">
+        <div className="flex flex-col items-center py-12 text-center rounded-lg border border-dashed border-border bg-muted/30">
+          <Scale className="h-10 w-10 text-muted-foreground/40 mb-3" />
+          <p className="text-sm font-medium text-foreground">
             {myDisputes ? t('myDisputesEmpty') : t('queueEmpty')}
           </p>
-          <p className="mt-1 text-xs text-gray-400">
+          <p className="mt-1 text-xs text-muted-foreground max-w-xs">
             {myDisputes ? t('myDisputesEmptyHint') : t('queueEmptyHint')}
           </p>
         </div>
