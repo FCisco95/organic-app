@@ -2,9 +2,16 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { X, Coins, AlertCircle } from 'lucide-react';
+import { Coins, AlertCircle } from 'lucide-react';
 import type { UserRewardsInfo } from '@/features/rewards';
 import { useSubmitClaim } from '@/features/rewards';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 interface ClaimModalProps {
   rewards: UserRewardsInfo;
@@ -16,8 +23,6 @@ export function ClaimModal({ rewards, open, onClose }: ClaimModalProps) {
   const t = useTranslations('Rewards');
   const submitClaim = useSubmitClaim();
   const [pointsInput, setPointsInput] = useState('');
-
-  if (!open) return null;
 
   const points = parseInt(pointsInput, 10) || 0;
   const tokenAmount = points / rewards.conversion_rate;
@@ -44,24 +49,23 @@ export function ClaimModal({ rewards, open, onClose }: ClaimModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center" data-testid="rewards-claim-modal">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-xl border border-gray-200 shadow-xl w-full max-w-md mx-4 p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+      <DialogContent
+        className="max-w-md bg-white border-gray-200"
+        data-testid="rewards-claim-modal"
+        onInteractOutside={(e) => e.preventDefault()}
+      >
+        <DialogHeader>
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-organic-orange/10 rounded-lg flex items-center justify-center">
               <Coins className="w-4 h-4 text-organic-orange" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900">{t('claimModal.title')}</h3>
+            <DialogTitle className="text-gray-900">{t('claimModal.title')}</DialogTitle>
           </div>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+          <DialogDescription className="sr-only">
+            {t('claimModal.title')}
+          </DialogDescription>
+        </DialogHeader>
 
         {/* Points Input */}
         <div className="mb-4">
@@ -158,7 +162,7 @@ export function ClaimModal({ rewards, open, onClose }: ClaimModalProps) {
             {submitClaim.isPending ? t('claimModal.submitting') : t('claimModal.submit')}
           </button>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

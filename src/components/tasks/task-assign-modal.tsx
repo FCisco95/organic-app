@@ -3,6 +3,13 @@
 import { useTranslations } from 'next-intl';
 import { User } from 'lucide-react';
 import type { Member } from '@/features/tasks';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 type TaskAssignModalProps = {
   open: boolean;
@@ -25,15 +32,15 @@ export function TaskAssignModal({
 }: TaskAssignModalProps) {
   const t = useTranslations('TaskDetail');
 
-  if (!open) return null;
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 className="text-xl font-bold text-gray-900 mb-4">{t('assignTitle')}</h3>
-        <p className="text-gray-600 mb-4">{t('assignDescription')}</p>
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+      <DialogContent className="max-w-md bg-white border-gray-200">
+        <DialogHeader>
+          <DialogTitle className="text-gray-900">{t('assignTitle')}</DialogTitle>
+          <DialogDescription>{t('assignDescription')}</DialogDescription>
+        </DialogHeader>
 
-        <div className="space-y-2 max-h-96 overflow-y-auto mb-6">
+        <div className="space-y-2 max-h-96 overflow-y-auto">
           <button
             onClick={() => onAssign('')}
             disabled={isAssigning}
@@ -79,17 +86,7 @@ export function TaskAssignModal({
             </button>
           ))}
         </div>
-
-        <div className="flex gap-3 justify-end">
-          <button
-            onClick={onClose}
-            disabled={isAssigning}
-            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors disabled:opacity-50"
-          >
-            {t('cancel')}
-          </button>
-        </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

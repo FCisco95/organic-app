@@ -13,6 +13,13 @@ import {
   type TaskPriority,
   type TaskType,
 } from '@/features/tasks';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 const LABEL_ICONS: Record<string, typeof Megaphone> = {
   Growth: Megaphone,
@@ -148,9 +155,15 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div className="bg-white rounded-lg max-w-2xl w-full p-6 my-8 max-h-[calc(100dvh-2rem)] overflow-y-auto">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('createTaskTitle')}</h2>
+    <Dialog open onOpenChange={(isOpen) => !isOpen && onClose()}>
+      <DialogContent
+        className="max-w-2xl bg-white border-gray-200 max-h-[calc(100dvh-2rem)] overflow-y-auto"
+        onInteractOutside={(e) => e.preventDefault()}
+      >
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold text-gray-900">{t('createTaskTitle')}</DialogTitle>
+          <DialogDescription className="sr-only">{t('createTaskTitle')}</DialogDescription>
+        </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -445,7 +458,7 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

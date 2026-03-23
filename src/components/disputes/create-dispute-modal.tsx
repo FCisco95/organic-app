@@ -5,7 +5,15 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { useCreateDispute, useDisputeEligibility } from '@/features/disputes/hooks';
 import type { DisputeReason } from '@/features/disputes/types';
-import { AlertCircle, X, Plus, Loader2, Upload, Paperclip } from 'lucide-react';
+import { AlertCircle, Plus, Loader2, Upload, Paperclip } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
+import { X } from 'lucide-react';
 
 interface CreateDisputeModalProps {
   submissionId: string;
@@ -141,24 +149,22 @@ export function CreateDisputeModal({
     !isUploadingEvidence;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div
+    <Dialog open onOpenChange={(isOpen) => !isOpen && onClose()}>
+      <DialogContent
+        className="max-w-lg bg-white border-gray-200 max-h-[90vh] overflow-y-auto p-0"
         data-testid="create-dispute-modal"
-        className="mx-4 max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl bg-white shadow-xl"
+        onInteractOutside={(e) => e.preventDefault()}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b">
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900">
+          <DialogHeader className="space-y-0.5">
+            <DialogTitle className="text-lg font-semibold text-gray-900">
               {t('createTitle')}
-            </h2>
-            <p className="text-sm text-gray-500 mt-0.5">
+            </DialogTitle>
+            <DialogDescription className="text-sm text-gray-500">
               {t('createDescription')}
-            </p>
-          </div>
-          <button type="button" onClick={onClose} className="p-1 rounded hover:bg-gray-100">
-            <X className="w-5 h-5 text-gray-400" />
-          </button>
+            </DialogDescription>
+          </DialogHeader>
         </div>
 
         <div className="p-5 space-y-5">
@@ -388,7 +394,7 @@ export function CreateDisputeModal({
             </p>
           </div>
         )}
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

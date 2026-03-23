@@ -1,8 +1,15 @@
 'use client';
 
-import { AlertCircle, X } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { SprintFormData } from '@/features/sprints';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 type SprintCreateModalProps = {
   open: boolean;
@@ -25,17 +32,18 @@ export function SprintCreateModal({
 }: SprintCreateModalProps) {
   const t = useTranslations('Sprints');
 
-  if (!open) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="w-full max-w-lg rounded-lg border border-gray-200 bg-white shadow-xl">
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+      <DialogContent
+        className="max-w-lg bg-white border-gray-200 p-0"
+        onInteractOutside={(e) => e.preventDefault()}
+      >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-200 px-5 py-3">
-          <h2 className="text-base font-semibold text-gray-900">{t('modalTitle')}</h2>
-          <button onClick={onClose} className="text-gray-400 transition-colors hover:text-gray-600">
-            <X className="h-5 w-5" />
-          </button>
+          <DialogHeader className="space-y-0">
+            <DialogTitle className="text-base font-semibold text-gray-900">{t('modalTitle')}</DialogTitle>
+            <DialogDescription className="sr-only">{t('modalTitle')}</DialogDescription>
+          </DialogHeader>
         </div>
 
         {error && (
@@ -158,7 +166,7 @@ export function SprintCreateModal({
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

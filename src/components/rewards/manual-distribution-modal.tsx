@@ -2,8 +2,15 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { X, Plus, Trash2, AlertCircle } from 'lucide-react';
+import { Plus, Trash2, AlertCircle } from 'lucide-react';
 import { useManualDistribution } from '@/features/rewards';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 interface DistributionRow {
   user_id: string;
@@ -28,8 +35,6 @@ export function ManualDistributionModal({ open, onClose }: ManualDistributionMod
   const t = useTranslations('Rewards');
   const manualDist = useManualDistribution();
   const [rows, setRows] = useState<DistributionRow[]>([{ ...EMPTY_ROW }]);
-
-  if (!open) return null;
 
   const addRow = () => {
     setRows((prev) => [...prev, { ...EMPTY_ROW }]);
@@ -70,22 +75,18 @@ export function ManualDistributionModal({ open, onClose }: ManualDistributionMod
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center"
-      data-testid="rewards-manual-distribution-modal"
-    >
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-xl border border-gray-200 shadow-xl w-full max-w-2xl mx-4 p-6 max-h-[80vh] overflow-y-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-gray-900">{t('manualModal.title')}</h3>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+      <DialogContent
+        className="max-w-2xl bg-white border-gray-200 max-h-[80vh] overflow-y-auto"
+        data-testid="rewards-manual-distribution-modal"
+        onInteractOutside={(e) => e.preventDefault()}
+      >
+        <DialogHeader>
+          <DialogTitle className="text-gray-900">{t('manualModal.title')}</DialogTitle>
+          <DialogDescription className="sr-only">
+            {t('manualModal.title')}
+          </DialogDescription>
+        </DialogHeader>
 
         {/* Rows */}
         <div className="space-y-4 mb-4">
@@ -186,7 +187,7 @@ export function ManualDistributionModal({ open, onClose }: ManualDistributionMod
             {manualDist.isPending ? t('manualModal.sending') : t('manualModal.submit')}
           </button>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

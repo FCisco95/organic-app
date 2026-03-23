@@ -2,6 +2,13 @@
 
 import { useTranslations } from 'next-intl';
 import type { TaskSubmissionWithReviewer } from '@/features/tasks';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 type Contributor = NonNullable<TaskSubmissionWithReviewer['user']>;
 
@@ -20,21 +27,21 @@ export function TaskContributorsModal({
 }: TaskContributorsModalProps) {
   const t = useTranslations('TaskDetail');
 
-  if (!open) return null;
-
   const getContributorName = (contributor: Contributor) => {
     if (contributor.organic_id) return t('organicId', { id: contributor.organic_id });
     return contributor.name ?? contributor.email;
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 className="text-xl font-bold text-gray-900 mb-2">{t('contributorsModalTitle')}</h3>
-        <p className="text-sm text-gray-500 mb-4">
-          {t('submissionsCount', { count: submissionCount })}
-        </p>
-        <div className="max-h-64 overflow-y-auto space-y-2 mb-6">
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+      <DialogContent className="max-w-md bg-white border-gray-200">
+        <DialogHeader>
+          <DialogTitle className="text-gray-900">{t('contributorsModalTitle')}</DialogTitle>
+          <DialogDescription>
+            {t('submissionsCount', { count: submissionCount })}
+          </DialogDescription>
+        </DialogHeader>
+        <div className="max-h-64 overflow-y-auto space-y-2">
           {contributors.length === 0 ? (
             <p className="text-sm text-gray-500">{t('noContributors')}</p>
           ) : (
@@ -48,15 +55,7 @@ export function TaskContributorsModal({
             ))
           )}
         </div>
-        <div className="flex justify-end">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors"
-          >
-            {t('cancel')}
-          </button>
-        </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

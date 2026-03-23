@@ -2,9 +2,16 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { X, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import type { RewardClaim } from '@/features/rewards';
 import { useReviewClaim } from '@/features/rewards';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 interface ClaimReviewModalProps {
   claim: RewardClaim | null;
@@ -17,7 +24,7 @@ export function ClaimReviewModal({ claim, open, onClose }: ClaimReviewModalProps
   const reviewClaim = useReviewClaim();
   const [adminNote, setAdminNote] = useState('');
 
-  if (!open || !claim) return null;
+  if (!claim) return null;
 
   const handleAction = (status: 'approved' | 'rejected') => {
     reviewClaim.mutate(
@@ -32,25 +39,21 @@ export function ClaimReviewModal({ claim, open, onClose }: ClaimReviewModalProps
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center"
-      data-testid="rewards-claim-review-modal"
-    >
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-xl border border-gray-200 shadow-xl w-full max-w-md mx-4 p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-gray-900">{t('reviewModal.title')}</h3>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+      <DialogContent
+        className="max-w-md bg-white border-gray-200"
+        data-testid="rewards-claim-review-modal"
+        onInteractOutside={(e) => e.preventDefault()}
+      >
+        <DialogHeader>
+          <DialogTitle className="text-gray-900">{t('reviewModal.title')}</DialogTitle>
+          <DialogDescription className="sr-only">
+            {t('reviewModal.title')}
+          </DialogDescription>
+        </DialogHeader>
 
         {/* Claim Details */}
-        <div className="bg-gray-50 rounded-lg p-4 mb-4 space-y-2">
+        <div className="bg-gray-50 rounded-lg p-4 space-y-2">
           <div className="flex justify-between text-sm">
             <span className="text-gray-500">{t('reviewModal.user')}</span>
             <span className="font-medium text-gray-900">
@@ -128,7 +131,7 @@ export function ClaimReviewModal({ claim, open, onClose }: ClaimReviewModalProps
             {t('reviewModal.approve')}
           </button>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

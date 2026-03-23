@@ -5,6 +5,16 @@ import { Play, Square, Loader2, AlertTriangle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
 import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from '@/components/ui/alert-dialog';
+import {
   ProposalWithVoting,
   getVotingStatus,
   useStartVoting,
@@ -166,35 +176,34 @@ export function AdminVotingControls({
         </button>
 
         {/* Finalize Confirmation Modal */}
-        {showFinalizeConfirm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">{t('admin.finalizeTitle')}</h3>
-              <p className="text-gray-600 mb-4">
+        <AlertDialog open={showFinalizeConfirm} onOpenChange={setShowFinalizeConfirm}>
+          <AlertDialogContent className="max-w-md">
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t('admin.finalizeTitle')}</AlertDialogTitle>
+              <AlertDialogDescription>
                 {canFinalize ? t('admin.finalizeDescription') : t('admin.finalizeEarlyWarning')}
-              </p>
-
-              <div className="flex gap-3 justify-end">
-                <button
-                  onClick={() => setShowFinalizeConfirm(false)}
-                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors"
-                >
-                  {t('common.cancel')}
-                </button>
-                <button
-                  onClick={() => handleFinalizeVoting(!canFinalize)}
-                  disabled={finalizeVotingMutation.isPending}
-                  className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
-                >
-                  {finalizeVotingMutation.isPending ? (
-                    <Loader2 className="w-4 h-4 animate-spin inline mr-2" />
-                  ) : null}
-                  {t('admin.confirmFinalize')}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="flex gap-3 justify-end">
+              <AlertDialogCancel
+                onClick={() => setShowFinalizeConfirm(false)}
+                className="bg-gray-100 hover:bg-gray-200 text-gray-700"
+              >
+                {t('common.cancel')}
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => handleFinalizeVoting(!canFinalize)}
+                disabled={finalizeVotingMutation.isPending}
+                className="bg-orange-600 hover:bg-orange-700 text-white"
+              >
+                {finalizeVotingMutation.isPending ? (
+                  <Loader2 className="w-4 h-4 animate-spin inline mr-2" />
+                ) : null}
+                {t('admin.confirmFinalize')}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     );
   }
