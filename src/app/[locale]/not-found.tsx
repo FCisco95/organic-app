@@ -41,7 +41,7 @@ export default function NotFound() {
       <div className="flex flex-col items-center py-12 sm:py-20">
         {/* Illustration zone */}
         <div className="mb-8 flex h-32 w-32 items-center justify-center rounded-2xl bg-muted sm:h-40 sm:w-40">
-          <Compass className="h-16 w-16 text-[#D95D39] sm:h-20 sm:w-20" strokeWidth={1.5} />
+          <Compass className="h-16 w-16 text-organic-terracotta sm:h-20 sm:w-20" strokeWidth={1.5} />
         </div>
 
         {/* Heading — Fraunces display */}
@@ -65,10 +65,10 @@ export default function NotFound() {
               <Link
                 key={page.href}
                 href={page.href}
-                className="group flex items-start gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:border-[#D95D39]/30 hover:bg-muted/50"
+                className="group flex items-start gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:border-organic-terracotta/30 hover:bg-muted/50"
               >
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted">
-                  <Icon className="h-4.5 w-4.5 text-muted-foreground transition-colors group-hover:text-[#D95D39]" />
+                  <Icon className="h-4.5 w-4.5 text-muted-foreground transition-colors group-hover:text-organic-terracotta" />
                 </div>
                 <div className="min-w-0">
                   <p className="text-sm font-semibold text-foreground">{t(page.titleKey)}</p>

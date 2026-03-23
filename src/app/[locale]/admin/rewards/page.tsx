@@ -62,7 +62,7 @@ export default function AdminRewardsPage() {
             <div className="flex flex-col gap-2 sm:flex-row sm:justify-center">
               <Link
                 href="/"
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#D95D39] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#D95D39]/90"
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-organic-terracotta px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-organic-terracotta-hover"
               >
                 <Home className="h-4 w-4" />
                 {t('admin.goHome')}
