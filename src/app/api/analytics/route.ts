@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { unstable_cache } from 'next/cache';
 import { createAnonClient } from '@/lib/supabase/server';
 import { calculateMarketCap } from '@/config/token';
@@ -7,6 +7,7 @@ import {
   buildMarketDataHeaders,
   getMarketPriceSnapshot,
 } from '@/features/market-data/server/service';
+import { analyticsQuerySchema } from '@/features/analytics/schemas';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,8 +24,9 @@ function countDistinct<T>(rows: T[], key: (row: T) => string | null | undefined)
 }
 
 // Cache analytics data for 120s — survives cold starts unlike in-memory cache
-const getCachedAnalytics = unstable_cache(
-  async () => {
+function getCachedAnalytics(days: number, weeks: number, months: number) {
+  return unstable_cache(
+    async () => {
     const supabase = createAnonClient();
     const now = Date.now();
     const windowStartIso = new Date(now - TRUST_WINDOW_DAYS * 24 * 60 * 60 * 1000).toISOString();
@@ -58,9 +60,9 @@ const getCachedAnalytics = unstable_cache(
         .select('id', { count: 'exact', head: true })
         .in('status', ['voting', 'submitted', 'approved']),
       getMarketPriceSnapshot('org_price'),
-      supabase.rpc('get_activity_trends', { days: 30 }),
-      supabase.rpc('get_member_growth', { months: 12 }),
-      supabase.rpc('get_task_completions', { weeks: 12 }),
+      supabase.rpc('get_activity_trends', { days }),
+      supabase.rpc('get_member_growth', { months }),
+      supabase.rpc('get_task_completions', { weeks }),
       supabase.rpc('get_proposals_by_category'),
       supabase.rpc('get_voting_participation', { result_limit: 10 }),
       supabase
@@ -139,13 +141,21 @@ const getCachedAnalytics = unstable_cache(
       marketSnapshot: orgPriceSnapshot,
     };
   },
-  ['analytics-data'],
-  { revalidate: 120 }
-);
+    ['analytics-data', String(days), String(weeks), String(months)],
+    { revalidate: 120 }
+  )();
+}
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const response = await getCachedAnalytics();
+    const { searchParams } = new URL(request.url);
+    const params = analyticsQuerySchema.parse({
+      days: searchParams.get('days') ?? undefined,
+      weeks: searchParams.get('weeks') ?? undefined,
+      months: searchParams.get('months') ?? undefined,
+    });
+
+    const response = await getCachedAnalytics(params.days, params.weeks, params.months);
 
     return NextResponse.json(
       { data: response.data },

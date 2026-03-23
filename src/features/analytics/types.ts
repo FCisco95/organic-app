@@ -1,3 +1,15 @@
+export type AnalyticsPreset = '7d' | '14d' | '30d' | '90d';
+
+export const ANALYTICS_PRESETS: Record<
+  AnalyticsPreset,
+  { days: number; weeks: number; months: number }
+> = {
+  '7d': { days: 7, weeks: 1, months: 1 },
+  '14d': { days: 14, weeks: 2, months: 2 },
+  '30d': { days: 30, weeks: 4, months: 6 },
+  '90d': { days: 90, weeks: 12, months: 12 },
+};
+
 export interface AnalyticsKPIs {
   total_users: number;
   org_holders: number;
