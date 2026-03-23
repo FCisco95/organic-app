@@ -100,8 +100,8 @@
 
 ### Phase 1: Functional fixes (qa-fixer)
 
-1. Add error state handling for API failures in data fetching (ERR-02) — show error banner + retry button
-2. Add "Go to Home" CTA on Access Denied page (ERR-05)
+1. ~~Add error state handling for API failures in data fetching (ERR-02)~~ — DONE (991cf7d). FetchErrorBanner on tasks/proposals/sprints pages.
+2. Add "Go to Home" CTA on Access Denied page (ERR-05) — moved to prototype-executor
 
 ### Phase 2: Visual/UX improvements (prototype-executor)
 

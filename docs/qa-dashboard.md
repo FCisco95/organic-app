@@ -21,7 +21,7 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 | 4.11 | Rewards | 9 | DONE | S2 | [plan](plans/2026-03-22-rewards-qa-revamp.md) | `main` (d26a0a2) | `main` (bcbad99) |
 | 4.12 | Notifications | 6 | DONE | S1 | [plan](plans/2026-03-22-notifications-qa-revamp.md) | `main` (6258547) | `main` (35403ca) |
 | 4.13 | Admin Ops | 8 | DONE | S2 | [plan](plans/2026-03-22-admin-ops-qa-revamp.md) | `main` (c124a13) | `main` (b12079d) |
-| 4.14 | Error Resilience | 6 | PLANNED | S1 | [plan](plans/2026-03-23-error-locale-ops-qa.md) | — | — |
+| 4.14 | Error Resilience | 6 | FIXED | S1 | [plan](plans/2026-03-23-error-locale-ops-qa.md) | `main` (991cf7d) | — |
 | 4.15 | Locale, Accessibility | 8 | PLANNED | S3 | [plan](plans/2026-03-23-error-locale-ops-qa.md) | — | — |
 | 4.16 | Operational Controls | 4 | PLANNED | S3 | [plan](plans/2026-03-23-error-locale-ops-qa.md) | — | — |
 | 4.17 | Onboarding Wizard | 10 | DONE | S3 | [plan](plans/2026-03-22-onboarding-qa-revamp.md) | — (no bugs) | `main` (bfa2035) |
@@ -45,7 +45,7 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 
 | Action | Section | What to do |
 |--------|---------|------------|
-| **Next to fix** | 4.14 Error Resilience | Fix S1 silent API failures + access denied CTA |
+| **Next to revamp** | 4.14 Error Resilience | Custom 404, skeletons, focus rings via prototype-executor |
 | **Next to QA** | 4.18 Twitter/X | Next PENDING section — 12 cases |
 
 ---
