@@ -25,7 +25,7 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 | 4.15 | Locale, Accessibility | 8 | DONE | S3 | [plan](plans/2026-03-23-error-locale-ops-qa.md) | — | `main` (7ec1b0a) |
 | 4.16 | Operational Controls | 4 | DONE | S3 | [plan](plans/2026-03-23-error-locale-ops-qa.md) | — | — |
 | 4.17 | Onboarding Wizard | 10 | DONE | S3 | [plan](plans/2026-03-22-onboarding-qa-revamp.md) | — (no bugs) | `main` (bfa2035) |
-| 4.18 | Twitter/X | 12 | PENDING | — | — | — | — |
+| 4.18 | Twitter/X | 12 | PLANNED | S1 | [plan](plans/2026-03-23-twitter-qa-revamp.md) | — | — |
 | 4.19 | Ideas Incubator | 15 | PENDING | — | — | — | — |
 
 ### Status Legend
@@ -45,8 +45,8 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 
 | Action | Section | What to do |
 |--------|---------|------------|
-| **Next to QA** | 4.18 Twitter/X | Next PENDING section — 12 cases |
-| **Next to QA** | 4.19 Ideas Incubator | 15 cases |
+| **Next to fix** | 4.18 Twitter/X | S1 — 2 functional fixes (submission form body, task_assignees cross-cutting) |
+| **Next to QA** | 4.19 Ideas Incubator | Next PENDING section — 15 cases |
 
 ---
 
@@ -60,12 +60,14 @@ Issues spanning multiple sections — track resolution centrally.
 | Console errors: Sentry CSP warnings on some pages | 4.1, 4.2, 4.3 | S2 | Open — most i18n errors now fixed across sections |
 | Page titles show "Next.js" instead of page name | 4.1, 4.2 | S3 | Open |
 | Garbage test data from prototype QA sessions | 4.9 | S3 | Script ready: `scripts/cleanup-qa-garbage.sql` |
+| task_assignees query 400: join to user_profiles fails, blocking Join Task → Submit Work for all task types | 4.7, 4.18 | S1 | Open — blocks all task submission flows |
 
 ---
 
 ## Recommended Section Order
 
 **DONE (17/19):** 4.1 Auth, 4.2 Navigation, 4.3 Home/Analytics, 4.4 Community, 4.5 Profile, 4.6 Quests, 4.7 Tasks, 4.8 Sprints, 4.9 Proposals, 4.10 Disputes, 4.11 Rewards, 4.12 Notifications, 4.13 Admin Ops, 4.14 Error Resilience, 4.15 Locale/A11y, 4.16 Operational Controls, 4.17 Onboarding — all merged to `main`
+**PLANNED (1):** 4.18 Twitter/X — S1, 2 fixes needed
 
 **Wave B — Core feature sections:**
 1. 4.10 Disputes (13 cases) — **DONE**
@@ -147,3 +149,4 @@ Consolidated — one row per section showing final outcome. Full history in git 
 | 2026-03-23 | 4.14 Error Resilience | `main` (991cf7d) | `main` (7ec1b0a) | 2/6 PASS, S1. Fix: FetchErrorBanner for API failures. Revamp: Proto B Notion — branded 404 with compass/cards, shimmer skeletons, terracotta focus rings, access denied card CTAs. |
 | 2026-03-23 | 4.15 Locale/A11y | — | `main` (7ec1b0a) | 8/8 PASS, S3. Focus rings enhanced via shared revamp commit. |
 | 2026-03-23 | 4.16 Operational Controls | — | — | Voting integrity 2/2 PASS. Rewards 2/2 SKIP (active sprint guard). No fixes/revamp needed. |
+| 2026-03-23 | 4.18 Twitter/X | — | — | 9/12 PASS, 2 PARTIAL, 1 SKIP. S1: TwitterSubmissionForm missing body in connect POST, task_assignees 400 cross-cutting. Plan written. |
