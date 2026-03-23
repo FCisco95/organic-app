@@ -1032,10 +1032,15 @@ export default function ProfilePage() {
                   )}
                 </div>
 
-                {/* Twitter/X linking */}
+                {/* Twitter/X linking — Stripe connected account pattern */}
                 <div className="rounded-xl border border-border bg-card p-5">
-                  <div className="flex flex-col items-start justify-between gap-2 mb-3 sm:flex-row sm:items-center">
-                    <div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-muted text-muted-foreground">
+                      <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5" aria-hidden="true">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                      </svg>
+                    </div>
+                    <div className="flex-1 min-w-0">
                       <h2 className="text-sm font-semibold text-foreground">{t('twitterAccountTitle')}</h2>
                       <p className="text-xs text-muted-foreground">{t('twitterAccountDescription')}</p>
                     </div>
@@ -1043,10 +1048,11 @@ export default function ProfilePage() {
                   </div>
 
                   {twitterAccount ? (
-                    <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3">
-                      <div className="flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <div className="w-8 h-8 rounded-full overflow-hidden bg-white border border-emerald-200 flex-shrink-0">
+                    <div className="flex items-center justify-between gap-3 rounded-lg border border-border bg-background p-3">
+                      <div className="flex items-center gap-3 min-w-0">
+                        {/* Avatar with X badge overlay */}
+                        <div className="relative flex-shrink-0">
+                          <div className="w-10 h-10 rounded-full overflow-hidden bg-muted border-2 border-emerald-200">
                             {twitterAccount.profile_image_url ? (
                               // eslint-disable-next-line @next/next/no-img-element
                               <img
@@ -1055,49 +1061,75 @@ export default function ProfilePage() {
                                 className="w-full h-full object-cover"
                               />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center text-emerald-700">
-                                <AtSign className="w-3 h-3" />
+                              <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                                <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4" aria-hidden="true">
+                                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                                </svg>
                               </div>
                             )}
                           </div>
-                          <div className="min-w-0">
-                            <p className="text-xs font-medium text-emerald-900 flex items-center gap-1">
-                              <CheckCircle2 className="w-3.5 h-3.5" />
-                              {t('twitterAccountConnected')}
-                            </p>
-                            <p className="text-xs text-emerald-800 truncate">
-                              {t('twitterLinkedAs', {
-                                username: `@${twitterAccount.twitter_username}`,
-                                name: twitterAccount.display_name || `@${twitterAccount.twitter_username}`,
-                              })}
-                            </p>
+                          <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-foreground text-background flex items-center justify-center border-2 border-card">
+                            <svg viewBox="0 0 24 24" fill="currentColor" className="w-2.5 h-2.5" aria-hidden="true">
+                              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                            </svg>
                           </div>
                         </div>
-                        <button
-                          type="button"
-                          onClick={handleUnlinkTwitter}
-                          disabled={twitterUnlinking || twitterLinking}
-                          className="inline-flex items-center gap-1 rounded-md border border-emerald-300 px-2 py-1 text-xs text-emerald-800 hover:bg-emerald-100 disabled:opacity-50"
-                        >
-                          {twitterUnlinking ? (
-                            <Loader2 className="w-3 h-3 animate-spin" />
-                          ) : (
-                            <Unlink2 className="w-3 h-3" />
-                          )}
-                          {twitterUnlinking ? t('unlinkingTwitter') : t('unlinkTwitter')}
-                        </button>
+
+                        {/* Name + username */}
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-foreground truncate">
+                            {twitterAccount.display_name || twitterAccount.twitter_username}
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            @{twitterAccount.twitter_username}
+                          </p>
+                        </div>
+
+                        {/* Verified status pill */}
+                        <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-200 flex-shrink-0">
+                          <CheckCircle2 className="w-3 h-3" />
+                          {t('twitterAccountVerified')}
+                        </span>
                       </div>
+
+                      {/* Disconnect — ghost button */}
+                      <button
+                        type="button"
+                        onClick={handleUnlinkTwitter}
+                        disabled={twitterUnlinking || twitterLinking}
+                        className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted border border-transparent hover:border-border transition-all duration-150 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-organic-terracotta"
+                      >
+                        {twitterUnlinking ? (
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                        ) : (
+                          <Unlink2 className="w-3 h-3" />
+                        )}
+                        <span className="hidden sm:inline">{twitterUnlinking ? t('unlinkingTwitter') : t('unlinkTwitter')}</span>
+                      </button>
                     </div>
                   ) : (
-                    <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
-                      <p className="text-xs text-amber-900 mb-2">{t('twitterAccountNotLinked')}</p>
+                    /* Disconnected empty state — centered CTA */
+                    <div className="flex flex-col items-center text-center py-6 rounded-lg border border-dashed border-border bg-muted/30">
+                      <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3">
+                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-muted-foreground" aria-hidden="true">
+                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                        </svg>
+                      </div>
+                      <p className="text-sm font-medium text-foreground mb-1">{t('twitterConnectHeading')}</p>
+                      <p className="text-xs text-muted-foreground mb-4 max-w-xs">{t('twitterConnectValueProp')}</p>
                       <button
                         type="button"
                         onClick={handleStartTwitterLink}
                         disabled={twitterLinking || twitterUnlinking}
-                        className="inline-flex items-center gap-1.5 rounded-md bg-sky-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-sky-700 disabled:opacity-50"
+                        className="inline-flex items-center gap-2 rounded-lg bg-foreground text-background px-4 py-2 text-sm font-medium hover:opacity-90 transition-opacity duration-150 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-organic-terracotta focus:ring-offset-2"
                       >
-                        {twitterLinking ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <AtSign className="w-3.5 h-3.5" />}
+                        {twitterLinking ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4" aria-hidden="true">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                          </svg>
+                        )}
                         {twitterLinking ? t('connectingTwitter') : t('connectTwitter')}
                       </button>
                     </div>

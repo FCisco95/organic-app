@@ -6,10 +6,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import {
   Loader2,
-  AtSign,
   CheckCircle2,
   Unlink2,
   ImageIcon,
+  ExternalLink,
+  Heart,
+  Repeat2,
+  MessageCircle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -36,6 +39,32 @@ type LinkedTwitterAccount = {
   twitter_username: string;
   display_name: string | null;
   profile_image_url: string | null;
+};
+
+/* Inline X logo — simple bold "X" as SVG */
+function XBrandIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  );
+}
+
+const engagementIcons: Record<string, React.ElementType> = {
+  like: Heart,
+  retweet: Repeat2,
+  comment: MessageCircle,
+};
+
+const engagementColors: Record<string, string> = {
+  like: 'bg-rose-50 text-rose-700 border-rose-200',
+  retweet: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  comment: 'bg-sky-50 text-sky-700 border-sky-200',
 };
 
 export function TwitterSubmissionForm({ task, onSuccess, onCancel }: SubmissionFormProps) {
@@ -181,60 +210,106 @@ export function TwitterSubmissionForm({ task, onSuccess, onCancel }: SubmissionF
     }
   };
 
+  /* Loading skeleton — Stripe-style shimmer */
   if (isLoadingContext) {
     return (
-      <div className="py-8 text-sm text-gray-500 flex items-center gap-2">
-        <Loader2 className="w-4 h-4 animate-spin" />
-        {t('twitterLoadingContext')}
+      <div className="space-y-5">
+        <div className="rounded-xl border border-border bg-card p-5 animate-pulse">
+          <div className="h-4 w-32 bg-muted rounded mb-3" />
+          <div className="h-10 bg-muted rounded-lg" />
+        </div>
+        <div className="rounded-xl border border-border bg-card p-5 animate-pulse">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-muted" />
+            <div className="space-y-2 flex-1">
+              <div className="h-4 w-40 bg-muted rounded" />
+              <div className="h-3 w-24 bg-muted rounded" />
+            </div>
+          </div>
+        </div>
+        <div className="rounded-xl border border-border bg-card p-5 animate-pulse">
+          <div className="h-4 w-48 bg-muted rounded mb-3" />
+          <div className="h-10 bg-muted rounded-lg" />
+        </div>
       </div>
     );
   }
 
   if (!taskConfig) {
     return (
-      <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+      <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-5 text-sm text-destructive">
         {t('twitterTaskConfigMissing')}
       </div>
     );
   }
 
+  const EngagementIcon = engagementIcons[taskConfig.engagement_type] || Heart;
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       <input type="hidden" {...register('submission_type')} value="twitter" />
 
-      <div className="rounded-lg border border-sky-200 bg-sky-50 p-4">
-        <p className="text-sm font-medium text-sky-900">{t('twitterTargetTweetLabel')}</p>
+      {/* Section 1: Target Tweet — Stripe structured card */}
+      <div className="rounded-xl border border-border bg-card p-5">
+        <div className="flex items-center gap-2 mb-4">
+          <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-sky-100 text-sky-700">
+            <XBrandIcon className="w-3.5 h-3.5" />
+          </div>
+          <h3 className="text-sm font-semibold text-foreground font-[family-name:var(--font-fraunces)]">
+            {t('twitterTargetTweetLabel')}
+          </h3>
+        </div>
+
+        {/* Tweet URL as clickable card */}
         <a
           href={taskConfig.target_tweet_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 mt-1 text-sm text-sky-700 hover:underline break-all"
+          className="group flex items-center gap-3 rounded-lg border border-sky-200 bg-sky-50/50 p-3 transition-colors duration-150 hover:bg-sky-50 hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-organic-terracotta"
         >
-          <AtSign className="w-4 h-4" />
-          {taskConfig.target_tweet_url}
+          <ExternalLink className="w-4 h-4 text-sky-600 flex-shrink-0 transition-transform duration-150 group-hover:scale-110" />
+          <span className="text-sm text-sky-700 break-all font-mono font-[family-name:var(--font-jetbrains-mono)] line-clamp-1">
+            {taskConfig.target_tweet_url}
+          </span>
         </a>
-        <p className="mt-2 text-xs text-sky-800">
-          {t('twitterEngagementTypeLabel')}:{' '}
-          {t(`twitterEngagementTypes.${taskConfig.engagement_type}`)}
-        </p>
+
+        {/* Engagement type pill + instructions */}
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <span
+            className={cn(
+              'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border',
+              engagementColors[taskConfig.engagement_type] || 'bg-muted text-muted-foreground border-border'
+            )}
+          >
+            <EngagementIcon className="w-3 h-3" />
+            {t(`twitterEngagementTypes.${taskConfig.engagement_type}`)}
+          </span>
+        </div>
+
         {taskConfig.instructions && (
-          <p className="mt-2 text-sm text-sky-900">
-            <strong>{t('twitterInstructionsLabel')}:</strong> {taskConfig.instructions}
+          <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+            {taskConfig.instructions}
           </p>
         )}
       </div>
 
-      <div
-        className={cn(
-          'rounded-lg border p-4',
-          account ? 'border-emerald-200 bg-emerald-50' : 'border-amber-200 bg-amber-50'
-        )}
-      >
+      {/* Section 2: Account Status — Stripe connected account card */}
+      <div className="rounded-xl border border-border bg-card p-5">
+        <div className="flex items-center gap-2 mb-4">
+          <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-muted text-muted-foreground">
+            <XBrandIcon className="w-3.5 h-3.5" />
+          </div>
+          <h3 className="text-sm font-semibold text-foreground font-[family-name:var(--font-fraunces)]">
+            {t('twitterAccountStatusTitle')}
+          </h3>
+        </div>
+
         {account ? (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full overflow-hidden bg-white border border-emerald-200">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              {/* Avatar with X badge overlay */}
+              <div className="relative flex-shrink-0">
+                <div className="w-10 h-10 rounded-full overflow-hidden bg-muted border-2 border-emerald-200">
                   {account.profile_image_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -243,103 +318,129 @@ export function TwitterSubmissionForm({ task, onSuccess, onCancel }: SubmissionF
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-emerald-700">
-                      <AtSign className="w-4 h-4" />
+                    <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                      <XBrandIcon className="w-4 h-4" />
                     </div>
                   )}
                 </div>
-                <div>
-                  <p className="text-sm font-medium text-emerald-900 flex items-center gap-1">
-                    <CheckCircle2 className="w-4 h-4" />
-                    {t('twitterAccountConnected')}
-                  </p>
-                  <p className="text-sm text-emerald-800">
-                    {account.display_name || account.twitter_username} (@
-                    {account.twitter_username})
-                  </p>
+                <div className="absolute -bottom-0.5 -right-0.5 w-4.5 h-4.5 rounded-full bg-foreground text-background flex items-center justify-center border-2 border-card">
+                  <XBrandIcon className="w-2.5 h-2.5" />
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={handleDisconnectTwitter}
-                disabled={isDisconnecting}
-                className="inline-flex items-center gap-1 rounded-md border border-emerald-300 px-3 py-1.5 text-sm text-emerald-800 hover:bg-emerald-100 disabled:opacity-50"
-              >
-                {isDisconnecting ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Unlink2 className="w-4 h-4" />
-                )}
-                {t('twitterUnlink')}
-              </button>
+
+              {/* Name + username + status */}
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-foreground truncate">
+                  {account.display_name || account.twitter_username}
+                </p>
+                <p className="text-xs text-muted-foreground truncate">
+                  @{account.twitter_username}
+                </p>
+              </div>
+
+              {/* Verified status pill */}
+              <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-200 flex-shrink-0">
+                <CheckCircle2 className="w-3 h-3" />
+                {t('twitterVerifiedStatus')}
+              </span>
             </div>
-            <p className="text-xs text-emerald-900">{t('twitterManageInProfile')}</p>
+
+            {/* Disconnect button — ghost style */}
+            <button
+              type="button"
+              onClick={handleDisconnectTwitter}
+              disabled={isDisconnecting}
+              className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted border border-transparent hover:border-border transition-all duration-150 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-organic-terracotta"
+            >
+              {isDisconnecting ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <Unlink2 className="w-3.5 h-3.5" />
+              )}
+              {t('twitterUnlink')}
+            </button>
           </div>
         ) : (
-          <div className="flex flex-col gap-2">
-            <p className="text-sm text-amber-900">{t('twitterLinkRequired')}</p>
+          /* Disconnected empty state — Stripe pattern */
+          <div className="flex flex-col items-center text-center py-4">
+            <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3">
+              <XBrandIcon className="w-5 h-5 text-muted-foreground" />
+            </div>
+            <p className="text-sm font-medium text-foreground mb-1">
+              {t('twitterConnectHeading')}
+            </p>
+            <p className="text-xs text-muted-foreground mb-4 max-w-xs">
+              {t('twitterConnectValueProp')}
+            </p>
             <button
               type="button"
               onClick={handleConnectTwitter}
               disabled={isConnecting}
-              className="inline-flex w-fit items-center gap-2 rounded-md bg-sky-600 px-3 py-2 text-sm font-medium text-white hover:bg-sky-700 disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-lg bg-foreground text-background px-4 py-2 text-sm font-medium hover:opacity-90 transition-opacity duration-150 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-organic-terracotta focus:ring-offset-2"
             >
               {isConnecting ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
-                <AtSign className="w-4 h-4" />
+                <XBrandIcon className="w-4 h-4" />
               )}
               {t('twitterConnect')}
             </button>
-            <p className="text-xs text-amber-900">{t('twitterManageInProfile')}</p>
+            <p className="text-[11px] text-muted-foreground mt-3">
+              {t('twitterManageInProfile')}
+            </p>
           </div>
         )}
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          {t('twitterScreenshotLabel')} <span className="text-red-500">*</span>
+      {/* Section 3: Evidence — clean input card */}
+      <div className="rounded-xl border border-border bg-card p-5">
+        <label className="flex items-center gap-2 text-sm font-semibold text-foreground mb-3 font-[family-name:var(--font-fraunces)]">
+          <ImageIcon className="w-4 h-4 text-muted-foreground" />
+          {t('twitterScreenshotLabel')} <span className="text-destructive">*</span>
         </label>
         <div className="relative">
-          <ImageIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             {...register('screenshot_url')}
             type="url"
             placeholder={t('twitterScreenshotPlaceholder')}
             className={cn(
-              'w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent',
-              errors.screenshot_url ? 'border-red-300' : 'border-gray-300'
+              'w-full px-3 py-2.5 border rounded-lg bg-background text-sm text-foreground placeholder:text-muted-foreground/50 transition-colors duration-150',
+              'focus:outline-none focus:ring-2 focus:ring-organic-terracotta focus:border-transparent',
+              errors.screenshot_url ? 'border-destructive' : 'border-border'
             )}
           />
         </div>
         {errors.screenshot_url && (
-          <p className="mt-1 text-sm text-red-600">{errors.screenshot_url.message}</p>
+          <p className="mt-1.5 text-xs text-destructive">{errors.screenshot_url.message}</p>
         )}
       </div>
 
+      {/* Section 4: Comment (conditional) */}
       {taskConfig.engagement_type === 'comment' && (
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            {t('twitterCommentLabel')} <span className="text-red-500">*</span>
+        <div className="rounded-xl border border-border bg-card p-5">
+          <label className="flex items-center gap-2 text-sm font-semibold text-foreground mb-3 font-[family-name:var(--font-fraunces)]">
+            <MessageCircle className="w-4 h-4 text-muted-foreground" />
+            {t('twitterCommentLabel')} <span className="text-destructive">*</span>
           </label>
           <textarea
             {...register('comment_text')}
             rows={3}
             placeholder={t('twitterCommentPlaceholder')}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none"
+            className="w-full px-3 py-2.5 border border-border rounded-lg bg-background text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-organic-terracotta focus:border-transparent resize-none transition-colors duration-150"
           />
         </div>
       )}
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+      {/* Section 5: Optional notes */}
+      <div className="rounded-xl border border-border bg-card p-5">
+        <label className="block text-sm font-medium text-foreground mb-2">
           {t('descriptionLabel')}
         </label>
         <textarea
           {...register('description')}
           rows={2}
           placeholder={t('twitterDescriptionPlaceholder')}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none"
+          className="w-full px-3 py-2.5 border border-border rounded-lg bg-background text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-organic-terracotta focus:border-transparent resize-none transition-colors duration-150"
         />
       </div>
 

@@ -1085,7 +1085,11 @@
       "twitterScreenshotPlaceholder": "https://...",
       "twitterCommentLabel": "Comment text",
       "twitterCommentPlaceholder": "Paste the exact comment you posted...",
-      "twitterDescriptionPlaceholder": "Optional notes for the reviewer..."
+      "twitterDescriptionPlaceholder": "Optional notes for the reviewer...",
+      "twitterAccountStatusTitle": "账户状态",
+      "twitterVerifiedStatus": "已验证",
+      "twitterConnectHeading": "连接您的 X 账户",
+      "twitterConnectValueProp": "关联您的 X 账户以验证参与度并解锁 Twitter/X 任务。"
     },
     "dueDate": {
       "today": "今天截止",
@@ -1485,7 +1489,9 @@
     "toastTwitterLinked": "Twitter/X 账号关联成功！",
     "toastFailedLinkTwitter": "关联 Twitter/X 账号失败",
     "toastTwitterUnlinked": "Twitter/X 账号已取消关联",
-    "toastFailedUnlinkTwitter": "取消关联 Twitter/X 账号失败"
+    "toastFailedUnlinkTwitter": "取消关联 Twitter/X 账号失败",
+    "twitterConnectHeading": "连接您的 X 账户",
+    "twitterConnectValueProp": "关联您的 X 账户以验证参与任务并建立您的链上声誉。"
   },
   "Gamification": {
     "title": "成长进度",

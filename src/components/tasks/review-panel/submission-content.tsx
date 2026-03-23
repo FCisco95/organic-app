@@ -5,11 +5,14 @@ import {
   Code,
   FileText,
   Palette,
-  AtSign,
   Eye,
   ThumbsUp,
   Share2,
   Link as LinkIcon,
+  Heart,
+  Repeat2,
+  MessageCircle,
+  ImageIcon,
 } from 'lucide-react';
 import type { TaskSubmissionWithReviewer } from '@/features/tasks';
 import { useTranslations } from 'next-intl';
@@ -137,30 +140,51 @@ export function SubmissionContent({
         </div>
       )}
 
-      {/* Twitter */}
+      {/* Twitter — Stripe-inspired structured display */}
       {type === 'twitter' && (
-        <div>
+        <div className="space-y-3">
+          {/* Screenshot evidence as card */}
           {twitterScreenshotUrl && (
             <a
               href={twitterScreenshotUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium"
+              className="group flex items-center gap-3 rounded-lg border border-border bg-card p-3 transition-colors duration-150 hover:bg-muted/50 hover:border-border"
             >
-              <AtSign aria-hidden="true" className="w-4 h-4" />
-              {t('viewEvidence')}
-              <ExternalLink aria-hidden="true" className="w-3 h-3" />
+              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex-shrink-0">
+                <ImageIcon aria-hidden="true" className="w-4 h-4" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-foreground">{t('viewEvidence')}</p>
+                <p className="text-xs text-muted-foreground truncate">{twitterScreenshotUrl}</p>
+              </div>
+              <ExternalLink aria-hidden="true" className="w-4 h-4 text-muted-foreground flex-shrink-0 transition-transform duration-150 group-hover:scale-110" />
             </a>
           )}
-          {twitterEngagementType && (
-            <p className="mt-2 text-sm text-gray-600">
-              <strong>{t('twitterEngagement')}:</strong> {twitterEngagementType}
-            </p>
-          )}
+
+          {/* Engagement type pill */}
+          {twitterEngagementType && (() => {
+            const engIcons: Record<string, React.ElementType> = { like: Heart, retweet: Repeat2, comment: MessageCircle };
+            const engColors: Record<string, string> = {
+              like: 'bg-rose-50 text-rose-700 border-rose-200',
+              retweet: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+              comment: 'bg-sky-50 text-sky-700 border-sky-200',
+            };
+            const EngIcon = engIcons[twitterEngagementType] || Heart;
+            return (
+              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${engColors[twitterEngagementType] || 'bg-muted text-muted-foreground border-border'}`}>
+                <EngIcon className="w-3 h-3" />
+                {t('twitterEngagement')}: {twitterEngagementType}
+              </span>
+            );
+          })()}
+
+          {/* Comment in styled blockquote */}
           {!compact && twitterCommentText && (
-            <p className="mt-2 text-sm text-gray-700 bg-gray-50 p-3 rounded-lg whitespace-pre-wrap">
-              <strong>{t('commentText')}:</strong> {twitterCommentText}
-            </p>
+            <div className="border-l-2 border-sky-300 pl-3 py-1">
+              <p className="text-xs font-medium text-muted-foreground mb-1">{t('commentText')}</p>
+              <p className="text-sm text-foreground whitespace-pre-wrap">{twitterCommentText}</p>
+            </div>
           )}
         </div>
       )}

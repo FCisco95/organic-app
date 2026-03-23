@@ -1085,7 +1085,11 @@
       "twitterScreenshotPlaceholder": "https://...",
       "twitterCommentLabel": "Comment text",
       "twitterCommentPlaceholder": "Paste the exact comment you posted...",
-      "twitterDescriptionPlaceholder": "Optional notes for the reviewer..."
+      "twitterDescriptionPlaceholder": "Optional notes for the reviewer...",
+      "twitterAccountStatusTitle": "Estado da Conta",
+      "twitterVerifiedStatus": "Verificado",
+      "twitterConnectHeading": "Conecte a sua conta X",
+      "twitterConnectValueProp": "Vincule a sua conta X para verificar engajamento e desbloquear tarefas do Twitter/X."
     },
     "dueDate": {
       "today": "Entrega hoje",
@@ -1485,7 +1489,9 @@
     "toastTwitterLinked": "Conta Twitter/X ligada com sucesso!",
     "toastFailedLinkTwitter": "Falha ao ligar conta Twitter/X",
     "toastTwitterUnlinked": "Conta Twitter/X desligada",
-    "toastFailedUnlinkTwitter": "Falha ao desligar conta Twitter/X"
+    "toastFailedUnlinkTwitter": "Falha ao desligar conta Twitter/X",
+    "twitterConnectHeading": "Conecte a sua conta X",
+    "twitterConnectValueProp": "Vincule a sua conta X para verificar tarefas de engajamento e construir a sua reputação on-chain."
   },
   "Gamification": {
     "title": "Progressão",

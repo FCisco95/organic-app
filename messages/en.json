@@ -1085,7 +1085,11 @@
       "twitterScreenshotPlaceholder": "https://...",
       "twitterCommentLabel": "Comment text",
       "twitterCommentPlaceholder": "Paste the exact comment you posted...",
-      "twitterDescriptionPlaceholder": "Optional notes for the reviewer..."
+      "twitterDescriptionPlaceholder": "Optional notes for the reviewer...",
+      "twitterAccountStatusTitle": "Account Status",
+      "twitterVerifiedStatus": "Verified",
+      "twitterConnectHeading": "Connect your X account",
+      "twitterConnectValueProp": "Link your X account to verify engagement and unlock Twitter/X tasks."
     },
     "dueDate": {
       "today": "Due today",
@@ -1489,7 +1493,9 @@
     "tabAccount": "Account",
     "tabSocial": "Social",
     "tabWallet": "Wallet & Security",
-    "tabNotifications": "Notifications"
+    "tabNotifications": "Notifications",
+    "twitterConnectHeading": "Connect your X account",
+    "twitterConnectValueProp": "Link your X account to verify engagement tasks and build your on-chain reputation."
   },
   "Gamification": {
     "title": "Progression",
