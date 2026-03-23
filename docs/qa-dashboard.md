@@ -26,7 +26,7 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 | 4.16 | Operational Controls | 4 | DONE | S3 | [plan](plans/2026-03-23-error-locale-ops-qa.md) | — | — |
 | 4.17 | Onboarding Wizard | 10 | DONE | S3 | [plan](plans/2026-03-22-onboarding-qa-revamp.md) | — (no bugs) | `main` (bfa2035) |
 | 4.18 | Twitter/X | 12 | REVAMPED | S1 | [plan](plans/2026-03-23-twitter-qa-revamp.md) | `main` (6fe8fcb) | `main` (6e1b89f) |
-| 4.19 | Ideas Incubator | 15 | PENDING | — | — | — | — |
+| 4.19 | Ideas Incubator | 15 | PLANNED | S2 | [plan](plans/2026-03-23-ideas-incubator-qa-revamp.md) | — | — |
 
 ### Status Legend
 
@@ -45,7 +45,9 @@ Single source of truth for QA/revamp pipeline progress. Updated after each sessi
 
 | Action | Section | What to do |
 |--------|---------|------------|
-| **Next to QA** | 4.19 Ideas Incubator | Next PENDING section — 15 cases |
+| **Next to fix** | 4.19 Ideas Incubator | Fix 2 S2 bugs (auth context, KPI skeletons) via qa-fixer |
+| **Next to revamp** | 4.19 Ideas Incubator | After fix — 3 prototypes via prototype-executor |
+| **Mark DONE** | 4.18 Twitter/X | Already REVAMPED, verify and close |
 
 ---
 
@@ -68,6 +70,7 @@ Issues spanning multiple sections — track resolution centrally.
 
 **DONE (17/19):** 4.1 Auth, 4.2 Navigation, 4.3 Home/Analytics, 4.4 Community, 4.5 Profile, 4.6 Quests, 4.7 Tasks, 4.8 Sprints, 4.9 Proposals, 4.10 Disputes, 4.11 Rewards, 4.12 Notifications, 4.13 Admin Ops, 4.14 Error Resilience, 4.15 Locale/A11y, 4.16 Operational Controls, 4.17 Onboarding — all merged to `main`
 **REVAMPED (1):** 4.18 Twitter/X — Stripe-inspired UI revamp merged
+**PLANNED (1):** 4.19 Ideas Incubator — 15/15 tested, 2 S2 fixes + full visual revamp planned
 
 **Wave B — Core feature sections:**
 1. 4.10 Disputes (13 cases) — **DONE**
