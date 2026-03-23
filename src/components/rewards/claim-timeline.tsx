@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { cn } from '@/lib/utils';
 import type { RewardClaimStatus } from '@/features/rewards';
 
 const TIMELINE_STEPS: RewardClaimStatus[] = ['pending', 'approved', 'paid'];
@@ -73,22 +74,14 @@ export function ClaimTimeline({ status }: ClaimTimelineProps) {
               />
             )}
             <div
-              className={`flex h-2 w-2 rounded-full ${
-                isPast || isCurrent ? colors.dot : 'bg-gray-200'
-              } ${isCurrent ? 'ring-2 ring-offset-1 ring-' + step : ''}`}
-              style={
-                isCurrent
-                  ? {
-                      boxShadow: `0 0 0 2px white, 0 0 0 3.5px ${
-                        step === 'pending'
-                          ? '#f59e0b'
-                          : step === 'approved'
-                            ? '#3b82f6'
-                            : '#10b981'
-                      }`,
-                    }
-                  : undefined
-              }
+              className={cn(
+                'flex h-2 w-2 rounded-full',
+                isPast || isCurrent ? colors.dot : 'bg-gray-200',
+                isCurrent && 'ring-2 ring-offset-1',
+                isCurrent && step === 'pending' && 'ring-amber-500',
+                isCurrent && step === 'approved' && 'ring-blue-500',
+                isCurrent && step === 'paid' && 'ring-emerald-500',
+              )}
               title={t(`claimStatus.${step}`)}
             />
           </div>

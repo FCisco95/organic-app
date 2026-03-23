@@ -5,7 +5,7 @@
 /*
  * Typography: DM Sans (body) + Fraunces (display) + JetBrains Mono (data)
  * Theme: dark sidebar + refined light content area
- * Orange accent: #FF7A00 — used sparingly
+ * Terracotta accent: #D95D39 — used sparingly
  */
 
 @layer base {
@@ -68,6 +68,11 @@
     --sidebar-muted: 217 33% 15%;
     --sidebar-muted-foreground: 215 15% 50%;
 
+    /* Chart neutrals (dark mode overrides below) */
+    --chart-grid: #f3f4f6;
+    --chart-axis: #9ca3af;
+    --chart-tooltip-border: #e5e7eb;
+
     /* Extended palette (non-HSL, used by fun components) */
     --orange: #ff6b2c;
     --orange-glow: #ff6b2c55;
@@ -103,6 +108,10 @@
     --border: 220 6% 18%;
     --input: 220 6% 18%;
     --ring: 28 100% 50%;
+
+    --chart-grid: #374151;
+    --chart-axis: #6b7280;
+    --chart-tooltip-border: #374151;
 
     --sidebar: 224 10% 5%;
     --sidebar-foreground: 0 0% 95%;

@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { useReferralStats } from '@/features/gamification/hooks';
 import { cn } from '@/lib/utils';
 
+/** Semantic tier colors — real metal hex values (Bronze, Silver, Gold) */
 const TIERS = [
   { name: 'Bronze', color: '#CD7F32', min: 0 },
   { name: 'Silver', color: '#C0C0C0', min: 5 },
@@ -102,7 +103,7 @@ export function ReferralSection() {
                       boxShadow: `0 0 12px ${tier.color}50`,
                     } : isPast ? {
                       backgroundColor: tier.color,
-                      color: '#1a1a1a',
+                      color: '#111827',
                     } : {}),
                   }}
                 >

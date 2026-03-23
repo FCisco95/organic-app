@@ -5,6 +5,7 @@ import { Target, Vote, Zap, Calendar, CheckCircle2, ArrowRight } from 'lucide-re
 import type { QuestProgressItem, QuestCadence } from '@/features/gamification/types';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { CHART_COLORS } from '@/lib/chart-colors';
 import { QuestProgressRing } from './quest-progress-ring';
 import { Link } from '@/i18n/navigation';
 
@@ -20,6 +21,7 @@ const QUEST_CTA_MAP: Record<string, { href: string; label: string }> = {
   long_term_streak: { href: '/tasks', label: 'Keep Streak' },
 };
 
+/** Semantic cadence colors — Tailwind palette hex for SVG ring strokes */
 const CADENCE_COLORS: Record<QuestCadence, { ring: string; badge: string; icon: string }> = {
   daily: { ring: '#60a5fa', badge: 'bg-blue-500/15 text-blue-400', icon: 'text-blue-400' },
   weekly: { ring: '#a78bfa', badge: 'bg-purple-500/15 text-purple-400', icon: 'text-purple-400' },
@@ -68,7 +70,7 @@ export function QuestCard({ quest }: QuestCardProps) {
             percent={quest.progress_percent}
             size={48}
             strokeWidth={4}
-            color={isCompleted ? '#10b981' : colors.ring}
+            color={isCompleted ? CHART_COLORS.emerald : colors.ring}
           >
             <Icon className={cn('h-5 w-5', isCompleted ? 'text-emerald-500' : colors.icon)} />
           </QuestProgressRing>
