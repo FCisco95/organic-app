@@ -4,13 +4,58 @@ import { FormEvent, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
-import { ArrowLeft, MessageCircle, ThumbsDown, ThumbsUp, TrendingUp } from 'lucide-react';
+import {
+  ArrowUp,
+  ArrowDown,
+  ChevronRight,
+  MessageCircle,
+  TrendingUp,
+} from 'lucide-react';
 import toast from 'react-hot-toast';
 import { PageContainer } from '@/components/layout';
 import { useAuth } from '@/features/auth/context';
-import { useAddIdeaComment, useIdea, useIdeaComments, usePromoteIdea, useVoteIdea } from '@/features/ideas';
+import {
+  useAddIdeaComment,
+  useIdea,
+  useIdeaComments,
+  usePromoteIdea,
+  useVoteIdea,
+} from '@/features/ideas';
 import { cn } from '@/lib/utils';
 import { isIdeasIncubatorEnabled } from '@/config/feature-flags';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { IdeaTimeline } from '@/components/ideas/IdeaTimeline';
+
+function getInitials(name: string | null | undefined, email?: string | null): string {
+  if (name) {
+    return name
+      .split(' ')
+      .map((w) => w[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  }
+  if (email) return email[0].toUpperCase();
+  return '?';
+}
+
+function getStatusColor(status: string): string {
+  switch (status) {
+    case 'active':
+      return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+    case 'promoted':
+      return 'bg-organic-terracotta-lightest text-organic-terracotta border-organic-terracotta-light';
+    case 'archived':
+      return 'bg-muted text-muted-foreground border-border';
+    case 'removed':
+      return 'bg-red-100 text-red-700 border-red-200';
+    default:
+      return 'bg-muted text-muted-foreground border-border';
+  }
+}
 
 export default function IdeaDetailPage() {
   const t = useTranslations('IdeaDetail');
@@ -70,19 +115,28 @@ export default function IdeaDetailPage() {
   if (!enabled) {
     return (
       <PageContainer width="narrow" className="py-14 text-center">
-        <h1 className="text-2xl font-bold text-gray-900">{t('disabledTitle')}</h1>
-        <p className="mt-2 text-gray-600">{t('disabledDescription')}</p>
+        <h1 className="text-2xl font-bold text-foreground">{t('disabledTitle')}</h1>
+        <p className="mt-2 text-muted-foreground">{t('disabledDescription')}</p>
       </PageContainer>
     );
   }
 
   if (ideaQuery.isLoading) {
     return (
-      <PageContainer width="narrow">
-        <div className="space-y-3">
-          <div className="h-8 w-3/4 animate-pulse rounded bg-gray-200" />
-          <div className="h-4 w-full animate-pulse rounded bg-gray-200" />
-          <div className="h-4 w-5/6 animate-pulse rounded bg-gray-200" />
+      <PageContainer width="default">
+        <div className="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
+          <Skeleton className="h-4 w-12" />
+          <ChevronRight className="h-3 w-3" />
+          <Skeleton className="h-4 w-40" />
+        </div>
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+          <div className="space-y-4">
+            <Skeleton className="h-8 w-3/4" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-5/6" />
+            <Skeleton className="h-4 w-2/3" />
+          </div>
+          <Skeleton className="h-64 w-full rounded-xl" />
         </div>
       </PageContainer>
     );
@@ -91,11 +145,30 @@ export default function IdeaDetailPage() {
   if (!idea) {
     return (
       <PageContainer width="narrow" className="py-12 text-center">
-        <h1 className="text-2xl font-bold text-gray-900">{t('notFoundTitle')}</h1>
-        <p className="mt-2 text-gray-600">{t('notFoundDescription')}</p>
-        <Link href="/ideas" className="mt-5 inline-block rounded-lg bg-organic-orange px-4 py-2 text-white">
+        <h1 className="text-2xl font-bold text-foreground">{t('notFoundTitle')}</h1>
+        <p className="mt-2 text-muted-foreground">{t('notFoundDescription')}</p>
+        <Link
+          href="/ideas"
+          className="mt-5 inline-block rounded-lg bg-organic-terracotta px-4 py-2 text-white hover:bg-organic-terracotta-hover"
+        >
           {t('backToIdeas')}
         </Link>
+      </PageContainer>
+    );
+  }
+
+  if (ideaQuery.isError) {
+    return (
+      <PageContainer width="narrow" className="py-12 text-center">
+        <h1 className="text-2xl font-bold text-foreground">{t('errorTitle')}</h1>
+        <p className="mt-2 text-muted-foreground">{t('errorDescription')}</p>
+        <button
+          type="button"
+          onClick={() => ideaQuery.refetch()}
+          className="mt-4 text-sm font-semibold text-organic-terracotta hover:text-organic-terracotta-hover"
+        >
+          {t('retry')}
+        </button>
       </PageContainer>
     );
   }
@@ -104,150 +177,219 @@ export default function IdeaDetailPage() {
 
   return (
     <PageContainer width="default">
-      <Link href="/ideas" className="mb-6 inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900">
-        <ArrowLeft className="h-4 w-4" />
-        {t('backToIdeas')}
-      </Link>
+      {/* Breadcrumb */}
+      <nav className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
+        <Link href="/ideas" className="transition-colors hover:text-foreground">
+          {t('breadcrumbIdeas')}
+        </Link>
+        <ChevronRight className="h-3 w-3" />
+        <span className="truncate font-medium text-foreground">{idea.title}</span>
+      </nav>
 
-      <div className="grid gap-6 xl:grid-cols-[72px_minmax(0,1fr)]">
-        <aside className="rounded-2xl border border-gray-200 bg-white p-3 shadow-sm">
-          <div className="flex flex-col items-center gap-2">
-            <button
-              type="button"
-              onClick={() => onVote(vote === 1 ? 'none' : 'up')}
-              className={cn(
-                'rounded-lg p-2 transition-colors',
-                vote === 1 ? 'bg-emerald-100 text-emerald-700' : 'text-gray-500 hover:bg-gray-100'
-              )}
-              aria-label={t('upvote')}
-            >
-              <ThumbsUp className="h-5 w-5" />
-            </button>
-            <span className="text-xl font-black text-slate-900">{idea.score}</span>
-            <button
-              type="button"
-              onClick={() => onVote(vote === -1 ? 'none' : 'down')}
-              className={cn(
-                'rounded-lg p-2 transition-colors',
-                vote === -1 ? 'bg-rose-100 text-rose-700' : 'text-gray-500 hover:bg-gray-100'
-              )}
-              aria-label={t('downvote')}
-            >
-              <ThumbsDown className="h-5 w-5" />
-            </button>
-          </div>
-        </aside>
-
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+        {/* ── Main content ──────────────────────────────────── */}
         <main className="space-y-6">
-          <article className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-            <div className="mb-2 flex flex-wrap items-center gap-2 text-xs text-gray-500">
-              <span>
+          {/* Title + status + metadata */}
+          <article className="rounded-xl border border-border bg-card p-6">
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              <Badge
+                className={cn(
+                  'border text-[10px] uppercase tracking-wider',
+                  getStatusColor(idea.status)
+                )}
+              >
+                {idea.status}
+              </Badge>
+              <span className="text-xs text-muted-foreground">
                 {idea.author?.organic_id
                   ? t('authorOrganic', { id: idea.author.organic_id })
                   : idea.author?.name ?? idea.author?.email ?? t('unknownAuthor')}
               </span>
-              <span>•</span>
-              <span>{new Date(idea.created_at).toLocaleString()}</span>
-              <span>•</span>
-              <span>{t('status', { status: idea.status })}</span>
-            </div>
-            <h1 className="text-3xl font-black text-slate-900">{idea.title}</h1>
-            <p className="mt-4 whitespace-pre-wrap text-sm leading-7 text-gray-700">{idea.body}</p>
-
-            <div className="mt-5 flex flex-wrap items-center gap-3 text-sm text-gray-500">
-              <span className="inline-flex items-center gap-1">
-                <MessageCircle className="h-4 w-4" />
-                {t('commentsCount', { count: idea.comments_count ?? 0 })}
-              </span>
-              <span className="inline-flex items-center gap-1">
-                <TrendingUp className="h-4 w-4" />
-                {t('voteBreakdown', { up: idea.upvotes ?? 0, down: idea.downvotes ?? 0 })}
+              <span className="text-xs text-muted-foreground">&middot;</span>
+              <span className="font-mono text-xs text-muted-foreground">
+                {new Date(idea.created_at).toLocaleString()}
               </span>
             </div>
 
-            {idea.linked_proposal ? (
-              <div className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900">
-                <p className="font-semibold">{t('linkedProposalLabel')}</p>
-                <Link
-                  href={`/proposals/${idea.linked_proposal.id}`}
-                  className="mt-1 inline-block font-medium text-emerald-700 hover:text-emerald-800"
-                >
-                  {idea.linked_proposal.title}
-                </Link>
-              </div>
-            ) : null}
+            <h1 className="font-display text-2xl font-bold text-foreground">{idea.title}</h1>
+            <p className="mt-4 whitespace-pre-wrap text-sm leading-7 text-muted-foreground">
+              {idea.body}
+            </p>
 
-            {canModerate && !idea.promoted_to_proposal_id ? (
+            {/* Vote panel — horizontal */}
+            <div className="mt-6 flex items-center gap-1 rounded-lg border border-border p-1">
               <button
                 type="button"
-                onClick={onPromote}
-                disabled={promoteIdea.isPending}
-                className="mt-5 inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-slate-800 disabled:opacity-60"
+                onClick={() => onVote(vote === 1 ? 'none' : 'up')}
+                className={cn(
+                  'flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium transition-all duration-200',
+                  vote === 1
+                    ? 'bg-emerald-100 text-emerald-700'
+                    : 'text-muted-foreground hover:bg-muted'
+                )}
+                aria-label={t('upvote')}
               >
-                {promoteIdea.isPending ? t('promoting') : t('promoteToProposal')}
+                <ArrowUp
+                  className={cn(
+                    'h-4 w-4 transition-transform duration-200',
+                    vote === 1 && 'scale-110'
+                  )}
+                />
+                <span className="font-mono text-xs">{idea.upvotes ?? 0}</span>
               </button>
-            ) : null}
+
+              <span className="px-2 font-mono text-lg font-bold text-foreground">
+                {idea.score}
+              </span>
+
+              <button
+                type="button"
+                onClick={() => onVote(vote === -1 ? 'none' : 'down')}
+                className={cn(
+                  'flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium transition-all duration-200',
+                  vote === -1
+                    ? 'bg-rose-100 text-rose-700'
+                    : 'text-muted-foreground hover:bg-muted'
+                )}
+                aria-label={t('downvote')}
+              >
+                <ArrowDown
+                  className={cn(
+                    'h-4 w-4 transition-transform duration-200',
+                    vote === -1 && 'scale-110'
+                  )}
+                />
+                <span className="font-mono text-xs">{idea.downvotes ?? 0}</span>
+              </button>
+
+              <div className="ml-auto flex items-center gap-3 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1">
+                  <MessageCircle className="h-3.5 w-3.5" />
+                  <span className="font-mono">{idea.comments_count ?? 0}</span>
+                </span>
+              </div>
+            </div>
+
+            {/* Linked proposal */}
+            {idea.linked_proposal && (
+              <div className="mt-5 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm">
+                <p className="font-semibold text-emerald-900">{t('linkedProposalLabel')}</p>
+                <Link
+                  href={`/proposals/${idea.linked_proposal.id}`}
+                  className="mt-1 inline-flex items-center gap-1 font-medium text-emerald-700 hover:text-emerald-800"
+                >
+                  {idea.linked_proposal.title}
+                  <ChevronRight className="h-3 w-3" />
+                </Link>
+              </div>
+            )}
           </article>
 
-          <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h2 className="text-xl font-bold text-slate-900">{t('discussionTitle')}</h2>
+          {/* Promote action (admin/council only) */}
+          {canModerate && !idea.promoted_to_proposal_id && (
+            <div className="rounded-lg border-l-4 border-l-organic-terracotta bg-muted p-4">
+              <h3 className="text-sm font-semibold text-foreground">{t('promoteToProposal')}</h3>
+              <p className="mt-1 text-xs text-muted-foreground">{t('promoteDescription')}</p>
+              <Button
+                onClick={onPromote}
+                disabled={promoteIdea.isPending}
+                className="mt-3 bg-organic-terracotta text-white hover:bg-organic-terracotta-hover disabled:opacity-60"
+                size="sm"
+              >
+                <TrendingUp className="h-4 w-4" />
+                {promoteIdea.isPending ? t('promoting') : t('promoteToProposal')}
+              </Button>
+            </div>
+          )}
+
+          {/* ── Discussion section ────────────────────────────── */}
+          <section className="rounded-xl border border-border bg-card p-6">
+            <h2 className="text-lg font-bold text-foreground">{t('discussionTitle')}</h2>
 
             {user ? (
               <form onSubmit={onSubmitComment} className="mt-4 space-y-3">
                 <textarea
                   value={comment}
-                  onChange={(event) => setComment(event.target.value)}
+                  onChange={(e) => setComment(e.target.value)}
                   placeholder={t('commentPlaceholder')}
                   rows={4}
-                  className="w-full resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm"
+                  className="w-full resize-none rounded-lg border border-border bg-background px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30"
                 />
-                <button
+                <Button
                   type="submit"
                   disabled={commentMutation.isPending || comment.trim().length === 0}
-                  className="rounded-xl bg-organic-orange px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-orange-600 disabled:opacity-60"
+                  className="bg-organic-terracotta text-white hover:bg-organic-terracotta-hover disabled:opacity-60"
+                  size="sm"
                 >
                   {commentMutation.isPending ? t('commentPosting') : t('commentSubmit')}
-                </button>
+                </Button>
               </form>
             ) : (
-              <div className="mt-4 rounded-xl border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700">
+              <div className="mt-4 rounded-lg border border-border bg-muted p-4 text-sm text-muted-foreground">
                 <p>{t('signInPrompt')}</p>
-                <Link href="/login" className="mt-2 inline-block font-semibold text-organic-orange">
+                <Link href="/login" className="mt-2 inline-block font-semibold text-organic-terracotta">
                   {t('signIn')}
                 </Link>
               </div>
             )}
 
-            <div className="mt-6 space-y-3">
+            {/* Comments with timeline connector */}
+            <div className="mt-6 space-y-0">
               {commentsQuery.isLoading ? (
-                <div className="space-y-2">
-                  {[1, 2].map((entry) => (
-                    <div key={entry} className="h-20 animate-pulse rounded-xl bg-gray-100" />
+                <div className="space-y-3">
+                  {[1, 2].map((i) => (
+                    <div key={i} className="flex gap-3">
+                      <Skeleton className="h-8 w-8 shrink-0 rounded-full" />
+                      <div className="flex-1 space-y-2">
+                        <Skeleton className="h-3 w-32" />
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-3/4" />
+                      </div>
+                    </div>
                   ))}
                 </div>
               ) : commentsQuery.data?.comments.length ? (
-                commentsQuery.data.comments.map((entry) => (
-                  <article key={entry.id} className="rounded-xl border border-gray-200 p-4">
-                    <div className="mb-1 flex flex-wrap items-center gap-2 text-xs text-gray-500">
-                      <span>
-                        {entry.user_profiles.organic_id
-                          ? t('authorOrganic', { id: entry.user_profiles.organic_id })
-                          : entry.user_profiles.name ?? entry.user_profiles.email}
-                      </span>
-                      <span>•</span>
-                      <span>{new Date(entry.created_at).toLocaleString()}</span>
+                commentsQuery.data.comments.map((entry, index) => (
+                  <div key={entry.id} className="relative flex gap-3 pb-5">
+                    {/* Timeline connector line */}
+                    {index < (commentsQuery.data?.comments.length ?? 0) - 1 && (
+                      <div className="absolute left-[15px] top-10 h-[calc(100%-2rem)] w-px border-l-2 border-border" />
+                    )}
+                    <Avatar className="relative z-10 h-8 w-8 shrink-0">
+                      <AvatarFallback className="bg-muted text-[10px] font-semibold text-muted-foreground">
+                        {getInitials(entry.user_profiles.name, entry.user_profiles.email)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                        <span className="font-medium text-foreground">
+                          {entry.user_profiles.organic_id
+                            ? t('authorOrganic', { id: entry.user_profiles.organic_id })
+                            : entry.user_profiles.name ?? entry.user_profiles.email}
+                        </span>
+                        <span className="font-mono">
+                          {new Date(entry.created_at).toLocaleString()}
+                        </span>
+                      </div>
+                      <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-foreground">
+                        {entry.body}
+                      </p>
                     </div>
-                    <p className="whitespace-pre-wrap text-sm text-gray-700">{entry.body}</p>
-                  </article>
+                  </div>
                 ))
               ) : (
-                <p className="rounded-xl border border-dashed border-gray-300 p-6 text-center text-sm text-gray-500">
+                <p className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
                   {t('commentsEmpty')}
                 </p>
               )}
             </div>
           </section>
         </main>
+
+        {/* ── Right sidebar — Activity timeline ───────────── */}
+        <aside className="space-y-4">
+          <IdeaTimeline idea={idea} />
+        </aside>
       </div>
     </PageContainer>
   );
