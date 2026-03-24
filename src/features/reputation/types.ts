@@ -79,6 +79,7 @@ export const XP_SOURCE_LABELS: Record<string, string> = {
 // ─── Achievements ──────────────────────────────────────────────────────
 
 export type AchievementCategory = 'contribution' | 'governance' | 'community' | 'milestone';
+export type AchievementRarity = 'bronze' | 'silver' | 'gold' | 'platinum' | 'secret';
 
 export const ACHIEVEMENT_CATEGORIES: AchievementCategory[] = [
   'contribution',
@@ -86,6 +87,16 @@ export const ACHIEVEMENT_CATEGORIES: AchievementCategory[] = [
   'community',
   'milestone',
 ];
+
+export const RARITY_ORDER: AchievementRarity[] = ['bronze', 'silver', 'gold', 'platinum', 'secret'];
+
+export const RARITY_COLORS: Record<AchievementRarity, { bg: string; text: string; border: string; glow: string }> = {
+  bronze: { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-300', glow: 'shadow-amber-200/50' },
+  silver: { bg: 'bg-slate-50', text: 'text-slate-600', border: 'border-slate-300', glow: 'shadow-slate-200/50' },
+  gold: { bg: 'bg-yellow-50', text: 'text-yellow-700', border: 'border-yellow-400', glow: 'shadow-yellow-300/50' },
+  platinum: { bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-400', glow: 'shadow-indigo-300/60' },
+  secret: { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-400', glow: 'shadow-purple-300/50' },
+};
 
 export const ACHIEVEMENT_CATEGORY_LABELS: Record<AchievementCategory, string> = {
   contribution: 'Contribution',
@@ -111,7 +122,30 @@ export interface Achievement {
   condition_field: string;
   condition_threshold: number;
   xp_reward: number;
+  rarity: AchievementRarity;
+  set_id: string | null;
+  chain_id: string | null;
+  chain_order: number;
+  is_hidden: boolean;
+  prerequisite_achievement_id: string | null;
   created_at: string;
+}
+
+export interface AchievementSet {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  platinum_id: string | null;
+  total_count: number;
+  created_at: string;
+}
+
+export interface UserAchievementProgress {
+  user_id: string;
+  achievement_id: string;
+  current_value: number;
+  updated_at: string;
 }
 
 export interface UserAchievement {
@@ -124,6 +158,7 @@ export interface UserAchievement {
 export interface AchievementWithStatus extends Achievement {
   unlocked: boolean;
   unlocked_at: string | null;
+  progress?: number; // current_value from user_achievement_progress
 }
 
 // ─── User Reputation (composite) ───────────────────────────────────────
