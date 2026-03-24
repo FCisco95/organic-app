@@ -125,7 +125,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const finalVote: -1 | 0 | 1 = shouldClearVote ? 0 : desiredVote;
 
     const service = createServiceClient();
-    const xpPromises: Promise<unknown>[] = [
+    await Promise.allSettled([
       service.from('idea_events').insert({
         idea_id: ideaId,
         actor_id: user.id,
@@ -134,40 +134,37 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
           previous: existingValue,
           next: finalVote,
         },
-      }),
-    ];
-
-    if (finalVote !== 0) {
-      xpPromises.push(
-        service.from('activity_log').insert({
-          actor_id: user.id,
-          event_type: 'idea_voted',
-          subject_type: 'idea',
-          subject_id: ideaId,
-          metadata: { value: finalVote },
-        }),
-        // XP for the voter (1 XP, cap 5/day)
-        awardXp(service, {
-          userId: user.id,
-          eventType: 'idea_voted',
-          xpAmount: 1,
-          sourceType: 'idea_vote',
-          sourceId: ideaId,
-          metadata: { value: finalVote },
-        }),
-        // XP for the idea author (1 XP for receiving a vote, cap 10/day)
-        awardXp(service, {
-          userId: idea.author_id,
-          eventType: 'idea_vote_received',
-          xpAmount: 1,
-          sourceType: 'idea_vote',
-          sourceId: `${ideaId}:${user.id}`,
-          metadata: { voter_id: user.id, idea_id: ideaId },
-        })
-      );
-    }
-
-    await Promise.allSettled(xpPromises);
+      }).then(),
+      ...(finalVote !== 0
+        ? [
+            service.from('activity_log').insert({
+              actor_id: user.id,
+              event_type: 'idea_voted' as any,
+              subject_type: 'idea',
+              subject_id: ideaId,
+              metadata: { value: finalVote },
+            }).then(),
+            // XP for the voter (1 XP, cap 5/day)
+            awardXp(service, {
+              userId: user.id,
+              eventType: 'idea_voted',
+              xpAmount: 1,
+              sourceType: 'idea_vote',
+              sourceId: ideaId,
+              metadata: { value: finalVote },
+            }),
+            // XP for the idea author (1 XP for receiving a vote, cap 10/day)
+            awardXp(service, {
+              userId: idea.author_id,
+              eventType: 'idea_vote_received',
+              xpAmount: 1,
+              sourceType: 'idea_vote',
+              sourceId: `${ideaId}:${user.id}`,
+              metadata: { voter_id: user.id, idea_id: ideaId },
+            }),
+          ]
+        : []),
+    ]);
 
     const { data: ideaSnapshot, error: snapshotError } = await supabase
       .from('ideas')

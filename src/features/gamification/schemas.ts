@@ -14,6 +14,8 @@ export const gamificationXpEventSchema = z.object({
   created_at: z.string(),
 });
 
+export const achievementRaritySchema = z.enum(['bronze', 'silver', 'gold', 'platinum', 'secret']);
+
 export const gamificationAchievementSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -24,9 +26,16 @@ export const gamificationAchievementSchema = z.object({
   condition_field: z.string(),
   condition_threshold: z.number().int().nonnegative(),
   xp_reward: z.number().int().nonnegative(),
+  rarity: achievementRaritySchema.default('bronze'),
+  set_id: z.string().nullable().default(null),
+  chain_id: z.string().nullable().default(null),
+  chain_order: z.number().int().default(0),
+  is_hidden: z.boolean().default(false),
+  prerequisite_achievement_id: z.string().nullable().default(null),
   created_at: z.string(),
   unlocked: z.boolean(),
   unlocked_at: z.string().nullable(),
+  progress: z.number().int().nonnegative().optional(),
 });
 
 export const gamificationLevelProgressSchema = z.object({
@@ -184,6 +193,10 @@ export const gamificationConfigSchema = z.object({
   xp_vote_cast: z.number().int().nonnegative().optional(),
   xp_proposal_created: z.number().int().nonnegative().optional(),
   xp_comment_created: z.number().int().nonnegative().optional(),
+  xp_idea_created: z.number().int().nonnegative().optional(),
+  xp_idea_voted: z.number().int().nonnegative().optional(),
+  xp_idea_vote_received: z.number().int().nonnegative().optional(),
+  xp_idea_promoted_winner: z.number().int().nonnegative().optional(),
   leveling_mode: z.enum(['auto', 'manual_burn']).optional(),
   burn_cost_multiplier: z.number().positive().optional(),
   referral_enabled: z.boolean().optional(),

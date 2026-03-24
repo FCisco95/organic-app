@@ -192,7 +192,7 @@ export async function POST(request: NextRequest) {
       }),
       service.from('activity_log').insert({
         actor_id: user.id,
-        event_type: 'idea_created',
+        event_type: 'idea_created' as any,
         subject_type: 'idea',
         subject_id: idea.id,
         metadata: { source: 'ideas' },

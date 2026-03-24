@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { logger } from '@/lib/logger';
 
 const ACHIEVEMENT_COLUMNS =
-  'id, name, description, icon, category, condition_type, condition_field, condition_threshold, xp_reward, created_at';
+  'id, name, description, icon, category, condition_type, condition_field, condition_threshold, xp_reward, rarity, set_id, chain_id, chain_order, is_hidden, prerequisite_achievement_id, created_at';
 
 export async function GET(request: NextRequest) {
   try {
@@ -40,10 +40,10 @@ export async function GET(request: NextRequest) {
       canReadUnlockStatus = true;
     }
 
-    // Fetch all achievement definitions
+    // Fetch all achievement definitions (using * to include new schema columns)
     const { data: achievements, error } = await supabase
       .from('achievements')
-      .select(ACHIEVEMENT_COLUMNS)
+      .select('*')
       .order('category')
       .order('condition_threshold');
 

@@ -12,7 +12,7 @@ const USER_PROFILE_COLUMNS =
 const XP_EVENT_COLUMNS =
   'id, user_id, event_type, source_type, source_id, xp_amount, metadata, created_at';
 const ACHIEVEMENT_COLUMNS =
-  'id, name, description, icon, category, condition_type, condition_field, condition_threshold, xp_reward, created_at';
+  'id, name, description, icon, category, condition_type, condition_field, condition_threshold, xp_reward, rarity, set_id, chain_id, chain_order, is_hidden, prerequisite_achievement_id, created_at';
 
 function parseRewardsConfig(value: unknown): RewardsConfig {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
@@ -88,7 +88,7 @@ export async function GET() {
         .limit(20),
       supabase
         .from('achievements')
-        .select(ACHIEVEMENT_COLUMNS)
+        .select('*')
         .order('category', { ascending: true })
         .order('condition_threshold', { ascending: true }),
       supabase
@@ -126,12 +126,21 @@ export async function GET() {
       (userAchievementsResult.data ?? []).map((entry) => [entry.achievement_id, entry.unlocked_at])
     );
 
-    const achievements: AchievementShape[] = (achievementDefsResult.data ?? []).map((achievement) => ({
-      ...achievement,
-      category: achievement.category as AchievementShape['category'],
-      unlocked: unlockedMap.has(achievement.id),
-      unlocked_at: unlockedMap.get(achievement.id) ?? null,
-    }));
+    const achievements: AchievementShape[] = (achievementDefsResult.data ?? []).map((achievement) => {
+      const row = achievement as Record<string, unknown>;
+      return {
+        ...achievement,
+        category: achievement.category as AchievementShape['category'],
+        rarity: ((row.rarity as string) ?? 'bronze') as AchievementShape['rarity'],
+        set_id: (row.set_id as string | null) ?? null,
+        chain_id: (row.chain_id as string | null) ?? null,
+        chain_order: (row.chain_order as number) ?? 0,
+        is_hidden: (row.is_hidden as boolean) ?? false,
+        prerequisite_achievement_id: (row.prerequisite_achievement_id as string | null) ?? null,
+        unlocked: unlockedMap.has(achievement.id),
+        unlocked_at: unlockedMap.get(achievement.id) ?? null,
+      };
+    });
     const achievementCount = achievements.filter((achievement) => achievement.unlocked).length;
 
     const level = profile.level ?? 1;

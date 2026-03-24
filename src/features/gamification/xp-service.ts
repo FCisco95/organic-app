@@ -173,14 +173,15 @@ async function insertXpAward(
 
   // 6. Deduplication: unique index (user_id, event_type, source_type, source_id)
   //    will reject duplicates when source_id is provided.
-  const { error: xpError } = await supabase.from('xp_events').insert({
+  const insertPayload = {
     user_id: userId,
     event_type: eventType,
     source_type: sourceType ?? null,
     source_id: sourceId ?? null,
     xp_amount: xpAmount,
     metadata: metadata ?? {},
-  });
+  };
+  const { error: xpError } = await supabase.from('xp_events').insert(insertPayload as any);
 
   if (xpError) {
     // Unique violation = duplicate, treat as success (already awarded)

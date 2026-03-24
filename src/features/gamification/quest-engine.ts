@@ -101,8 +101,8 @@ function getWindowMetrics(
     if (row.event_type === 'vote_cast') votesCast += 1;
     if (row.event_type === 'comment_created') commentsCreated += 1;
     if (row.event_type === 'proposal_created') proposalsCreated += 1;
-    if (row.event_type === 'idea_created') ideasCreated += 1;
-    if (row.event_type === 'idea_voted') ideaVotesCast += 1;
+    if ((row.event_type as string) === 'idea_created') ideasCreated += 1;
+    if ((row.event_type as string) === 'idea_voted') ideaVotesCast += 1;
   }
 
   for (const row of xpRows) {
