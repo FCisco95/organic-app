@@ -5,6 +5,7 @@ import { logger } from '@/lib/logger';
 import { addIdeaCommentSchema } from '@/features/ideas/schemas';
 import { applyUserRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { isIdeasIncubatorEnabled } from '@/config/feature-flags';
+import { awardXp } from '@/features/gamification/xp-service';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -167,6 +168,16 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         subject_type: 'idea',
         subject_id: ideaId,
         metadata: { comment_id: comment.id },
+      }),
+      // Uses existing comment_created event — 5 XP via DB trigger
+      // Additional idea-specific XP via centralized service
+      awardXp(service, {
+        userId: user.id,
+        eventType: 'idea_comment_created',
+        xpAmount: 5,
+        sourceType: 'idea_comment',
+        sourceId: comment.id,
+        metadata: { idea_id: ideaId },
       }),
     ]);
 

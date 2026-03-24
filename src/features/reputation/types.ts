@@ -68,6 +68,12 @@ export const XP_SOURCE_LABELS: Record<string, string> = {
   proposal_created: 'Proposal created',
   comment_created: 'Comment posted',
   achievement_unlocked: 'Achievement bonus',
+  idea_created: 'Idea shared',
+  idea_voted: 'Idea vote cast',
+  idea_vote_received: 'Received idea vote',
+  idea_comment_created: 'Idea comment posted',
+  idea_promoted_winner: 'Idea selected as winner',
+  referral_completed: 'Referral completed',
 };
 
 // ─── Achievements ──────────────────────────────────────────────────────

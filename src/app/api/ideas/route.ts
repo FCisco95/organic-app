@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { createServiceClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { parseJsonBody } from '@/lib/parse-json-body';
 import { logger } from '@/lib/logger';
 import { applyUserRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { createIdeaSchema, listIdeasQuerySchema } from '@/features/ideas/schemas';
 import { isIdeasIncubatorEnabled } from '@/config/feature-flags';
+import { awardXp } from '@/features/gamification/xp-service';
 
 const IDEA_SELECT =
   '*, author:user_profiles!ideas_author_id_fkey(id,name,email,organic_id,avatar_url)';
@@ -192,10 +192,18 @@ export async function POST(request: NextRequest) {
       }),
       service.from('activity_log').insert({
         actor_id: user.id,
-        event_type: 'proposal_created',
+        event_type: 'idea_created',
         subject_type: 'idea',
         subject_id: idea.id,
         metadata: { source: 'ideas' },
+      }),
+      awardXp(service, {
+        userId: user.id,
+        eventType: 'idea_created',
+        xpAmount: 5,
+        sourceType: 'idea',
+        sourceId: idea.id,
+        metadata: { title },
       }),
     ]);
 

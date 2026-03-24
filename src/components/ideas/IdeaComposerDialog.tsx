@@ -13,6 +13,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/features/auth/context';
 import { useCreateIdea } from '@/features/ideas';
 import toast from 'react-hot-toast';
@@ -22,7 +23,7 @@ const BODY_MAX = 10000;
 
 export function IdeaComposerDialog() {
   const t = useTranslations('Ideas');
-  const { user, profile } = useAuth();
+  const { user, profile, loading } = useAuth();
   const canCreate = Boolean(profile?.organic_id);
   const createIdea = useCreateIdea();
 
@@ -91,7 +92,13 @@ export function IdeaComposerDialog() {
           <DialogDescription>{t('composerSubtitle')}</DialogDescription>
         </DialogHeader>
 
-        {!canCreate ? (
+        {loading ? (
+          <div className="space-y-4">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-40 w-full" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        ) : !canCreate ? (
           <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
             {t('organicRequired')}
           </div>
@@ -137,7 +144,7 @@ export function IdeaComposerDialog() {
 export function IdeaComposerFab() {
   const t = useTranslations('Ideas');
   const [open, setOpen] = useState(false);
-  const { user, profile } = useAuth();
+  const { user, profile, loading } = useAuth();
   const canCreate = Boolean(profile?.organic_id);
   const createIdea = useCreateIdea();
   const [title, setTitle] = useState('');
@@ -177,7 +184,13 @@ export function IdeaComposerFab() {
           <DialogTitle>{t('composerTitle')}</DialogTitle>
           <DialogDescription>{t('composerSubtitle')}</DialogDescription>
         </DialogHeader>
-        {!user ? (
+        {loading ? (
+          <div className="space-y-4">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-40 w-full" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        ) : !user ? (
           <div className="text-center">
             <p className="text-sm text-muted-foreground">{t('signinPrompt')}</p>
             <Link

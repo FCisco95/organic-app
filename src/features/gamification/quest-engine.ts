@@ -17,18 +17,24 @@ type QuestMetricKey =
   | 'daily_tasks_completed'
   | 'daily_votes_cast'
   | 'daily_xp_earned'
+  | 'daily_ideas_created'
+  | 'daily_idea_votes_cast'
   | 'weekly_tasks_completed'
   | 'weekly_governance_actions'
   | 'weekly_active_days'
+  | 'weekly_ideas_created'
   | 'long_term_level'
   | 'long_term_achievements'
-  | 'long_term_streak';
+  | 'long_term_streak'
+  | 'long_term_ideas_promoted';
 
 interface WindowMetrics {
   tasks_completed: number;
   votes_cast: number;
   comments_created: number;
   proposals_created: number;
+  ideas_created: number;
+  idea_votes_cast: number;
   governance_actions: number;
   active_days: number;
   xp_earned: number;
@@ -45,14 +51,18 @@ interface QuestContext {
     votes_cast: number;
     comments_created: number;
     proposals_created: number;
+    ideas_promoted: number;
   };
 }
 
-const TRACKED_ACTIVITY_EVENTS: Database['public']['Enums']['activity_event_type'][] = [
+const TRACKED_ACTIVITY_EVENTS: string[] = [
   'task_completed',
   'vote_cast',
   'comment_created',
   'proposal_created',
+  'idea_created',
+  'idea_voted',
+  'idea_promoted_winner',
 ];
 
 function getUtcDayStart(date: Date): Date {
@@ -75,6 +85,8 @@ function getWindowMetrics(
   let votesCast = 0;
   let commentsCreated = 0;
   let proposalsCreated = 0;
+  let ideasCreated = 0;
+  let ideaVotesCast = 0;
   let xpEarned = 0;
   const activeDays = new Set<string>();
 
@@ -89,6 +101,8 @@ function getWindowMetrics(
     if (row.event_type === 'vote_cast') votesCast += 1;
     if (row.event_type === 'comment_created') commentsCreated += 1;
     if (row.event_type === 'proposal_created') proposalsCreated += 1;
+    if (row.event_type === 'idea_created') ideasCreated += 1;
+    if (row.event_type === 'idea_voted') ideaVotesCast += 1;
   }
 
   for (const row of xpRows) {
@@ -103,6 +117,8 @@ function getWindowMetrics(
     votes_cast: votesCast,
     comments_created: commentsCreated,
     proposals_created: proposalsCreated,
+    ideas_created: ideasCreated,
+    idea_votes_cast: ideaVotesCast,
     governance_actions: votesCast + proposalsCreated,
     active_days: activeDays.size,
     xp_earned: xpEarned,
@@ -117,18 +133,26 @@ function resolveQuestMetric(metricType: string, context: QuestContext): number {
       return context.daily.votes_cast;
     case 'daily_xp_earned':
       return context.daily.xp_earned;
+    case 'daily_ideas_created':
+      return context.daily.ideas_created;
+    case 'daily_idea_votes_cast':
+      return context.daily.idea_votes_cast;
     case 'weekly_tasks_completed':
       return context.weekly.tasks_completed;
     case 'weekly_governance_actions':
       return context.weekly.governance_actions;
     case 'weekly_active_days':
       return context.weekly.active_days;
+    case 'weekly_ideas_created':
+      return context.weekly.ideas_created;
     case 'long_term_level':
       return context.totals.level;
     case 'long_term_achievements':
       return context.totals.achievements_unlocked;
     case 'long_term_streak':
       return context.totals.current_streak;
+    case 'long_term_ideas_promoted':
+      return context.totals.ideas_promoted;
     default:
       return 0;
   }
@@ -230,7 +254,7 @@ export async function getQuestProgress(
   const nextWeekStart = new Date(weekStart);
   nextWeekStart.setUTCDate(nextWeekStart.getUTCDate() + 7);
 
-  const [questDefs, profileResult, activityCountsResult, achievementsCountResult, weeklyActivityResult, weeklyXpResult] =
+  const [questDefs, profileResult, activityCountsResult, achievementsCountResult, weeklyActivityResult, weeklyXpResult, ideasPromotedResult] =
     await Promise.all([
       loadQuestDefinitions(supabase, now),
       supabase
@@ -251,13 +275,18 @@ export async function getQuestProgress(
         .from('activity_log')
         .select('event_type, created_at')
         .eq('actor_id', userId)
-        .in('event_type', TRACKED_ACTIVITY_EVENTS)
+        .in('event_type', TRACKED_ACTIVITY_EVENTS as any)
         .gte('created_at', weekStart.toISOString()),
       supabase
         .from('xp_events')
         .select('xp_amount, created_at')
         .eq('user_id', userId)
         .gte('created_at', weekStart.toISOString()),
+      supabase
+        .from('ideas')
+        .select('*', { count: 'exact', head: true })
+        .eq('author_id', userId)
+        .eq('status', 'promoted'),
     ]);
 
   if (profileResult.error || !profileResult.data) {
@@ -282,6 +311,7 @@ export async function getQuestProgress(
       votes_cast: activityCounts?.votes_cast ?? 0,
       comments_created: activityCounts?.comments_created ?? 0,
       proposals_created: activityCounts?.proposals_created ?? 0,
+      ideas_promoted: ideasPromotedResult.count ?? 0,
     },
   };
 

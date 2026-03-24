@@ -146,6 +146,10 @@ export interface GamificationConfig {
   xp_vote_cast: number;
   xp_proposal_created: number;
   xp_comment_created: number;
+  xp_idea_created: number;
+  xp_idea_voted: number;
+  xp_idea_vote_received: number;
+  xp_idea_promoted_winner: number;
   leveling_mode: 'auto' | 'manual_burn';
   burn_cost_multiplier: number;
   referral_enabled: boolean;

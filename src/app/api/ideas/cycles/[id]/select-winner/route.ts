@@ -6,6 +6,7 @@ import { selectIdeaWinnerSchema } from '@/features/ideas/schemas';
 import { isAdminOrCouncil } from '@/features/ideas/server';
 import { applyUserRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { isIdeasIncubatorEnabled } from '@/config/feature-flags';
+import { awardXp } from '@/features/gamification/xp-service';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -118,6 +119,24 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       });
 
       return NextResponse.json({ error: 'Failed to select winner' }, { status: 500 });
+    }
+
+    // Award 25 XP to the winning idea's author
+    const { data: winnerIdea } = await service
+      .from('ideas')
+      .select('author_id')
+      .eq('id', winnerId)
+      .single();
+
+    if (winnerIdea?.author_id) {
+      await awardXp(service, {
+        userId: winnerIdea.author_id,
+        eventType: 'idea_promoted_winner',
+        xpAmount: 25,
+        sourceType: 'idea_cycle',
+        sourceId: cycleId,
+        metadata: { idea_id: winnerId, cycle_id: cycleId },
+      });
     }
 
     return NextResponse.json({ cycle_id: cycleId, winner_idea_id: winnerId, status: 'selected' });
