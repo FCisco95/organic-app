@@ -26,6 +26,15 @@ export const createIdeaSchema = z.object({
 
 export const updateIdeaSchema = createIdeaSchema.partial();
 
+/** Admin-only moderation fields — merged with updateIdeaSchema on the route */
+export const moderateIdeaSchema = z.object({
+  is_pinned: z.boolean().optional(),
+  status: z.enum(['open', 'locked', 'removed']).optional(),
+  removed_reason: z.string().trim().max(500).optional(),
+});
+
+export type ModerateIdeaInput = z.infer<typeof moderateIdeaSchema>;
+
 export const voteIdeaSchema = z.object({
   value: z.enum(['up', 'down', 'none']),
 });

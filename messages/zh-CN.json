@@ -2888,7 +2888,14 @@
     "heroDiscussTitle": "讨论与完善",
     "heroDiscussDesc": "共同讨论和改进想法",
     "heroPromoteTitle": "提升为提案",
-    "heroPromoteDesc": "最佳想法将成为正式治理提案"
+    "heroPromoteDesc": "最佳想法将成为正式治理提案",
+    "modPin": "置顶想法",
+    "modUnpin": "取消置顶",
+    "modLock": "锁定想法",
+    "modUnlock": "解锁想法",
+    "modRemove": "移除想法",
+    "moderationSuccess": "管理操作已执行。",
+    "moderationError": "管理操作执行失败"
   },
   "IdeaDetail": {
     "disabledTitle": "想法孵化器已关闭",
@@ -2928,7 +2935,16 @@
     "timelineVotes": "{count, plural, one {# 票} other {# 票}}",
     "timelineComments": "{count, plural, one {# 条评论} other {# 条评论}}",
     "timelinePromoted": "已晋级为提案",
-    "timelinePending": "等待晋级"
+    "timelinePending": "等待晋级",
+    "moderationTitle": "管理面板",
+    "modPin": "置顶想法",
+    "modUnpin": "取消置顶",
+    "modLock": "锁定想法",
+    "modUnlock": "解锁想法",
+    "modRemove": "移除想法",
+    "moderationSuccess": "管理操作已执行。",
+    "moderationError": "管理操作执行失败",
+    "removedReason": "移除原因"
   },
   "Community": {
     "title": "社区",

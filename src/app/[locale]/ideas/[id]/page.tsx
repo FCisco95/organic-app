@@ -8,8 +8,12 @@ import {
   ArrowUp,
   ArrowDown,
   ChevronRight,
+  Lock,
   MessageCircle,
+  Pin,
+  Trash2,
   TrendingUp,
+  Unlock,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { PageContainer } from '@/components/layout';
@@ -18,6 +22,7 @@ import {
   useAddIdeaComment,
   useIdea,
   useIdeaComments,
+  useModerateIdea,
   usePromoteIdea,
   useVoteIdea,
 } from '@/features/ideas';
@@ -71,6 +76,7 @@ export default function IdeaDetailPage() {
   const voteMutation = useVoteIdea();
   const commentMutation = useAddIdeaComment();
   const promoteIdea = usePromoteIdea();
+  const moderateIdea = useModerateIdea();
 
   const idea = ideaQuery.data;
   const canModerate = profile?.role === 'admin' || profile?.role === 'council';
@@ -95,6 +101,17 @@ export default function IdeaDetailPage() {
       toast.success(t('commentPosted'));
     } catch (error) {
       const message = error instanceof Error ? error.message : t('commentError');
+      toast.error(message);
+    }
+  }
+
+  async function onModerate(action: Record<string, unknown>) {
+    if (!idea) return;
+    try {
+      await moderateIdea.mutateAsync({ ideaId: idea.id, action });
+      toast.success(t('moderationSuccess'));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : t('moderationError');
       toast.error(message);
     }
   }
@@ -299,6 +316,55 @@ export default function IdeaDetailPage() {
                 <TrendingUp className="h-4 w-4" />
                 {promoteIdea.isPending ? t('promoting') : t('promoteToProposal')}
               </Button>
+            </div>
+          )}
+
+          {/* Moderation panel (admin/council only) */}
+          {canModerate && (
+            <div className="rounded-xl border border-border bg-card p-4">
+              <h3 className="text-sm font-semibold text-foreground">{t('moderationTitle')}</h3>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onModerate({ is_pinned: !idea.is_pinned })}
+                  disabled={moderateIdea.isPending}
+                >
+                  <Pin className="mr-1 h-3.5 w-3.5" />
+                  {idea.is_pinned ? t('modUnpin') : t('modPin')}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    onModerate({ status: idea.status === 'locked' ? 'open' : 'locked' })
+                  }
+                  disabled={moderateIdea.isPending}
+                >
+                  {idea.status === 'locked' ? (
+                    <><Unlock className="mr-1 h-3.5 w-3.5" />{t('modUnlock')}</>
+                  ) : (
+                    <><Lock className="mr-1 h-3.5 w-3.5" />{t('modLock')}</>
+                  )}
+                </Button>
+                {idea.status !== 'removed' && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onModerate({ status: 'removed' })}
+                    disabled={moderateIdea.isPending}
+                    className="text-red-600 hover:text-red-700 border-red-200 hover:bg-red-50"
+                  >
+                    <Trash2 className="mr-1 h-3.5 w-3.5" />
+                    {t('modRemove')}
+                  </Button>
+                )}
+              </div>
+              {idea.removed_at && idea.removed_reason && (
+                <p className="mt-3 text-xs text-red-600">
+                  {t('removedReason')}: {idea.removed_reason}
+                </p>
+              )}
             </div>
           )}
 

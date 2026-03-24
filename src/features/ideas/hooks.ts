@@ -5,6 +5,7 @@ import type {
   AddIdeaCommentInput,
   CreateIdeaInput,
   IdeaSortInput,
+  ModerateIdeaInput,
   UpdateIdeaInput,
   VoteIdeaInput,
 } from './schemas';
@@ -91,6 +92,22 @@ export function useUpdateIdea() {
       fetchJson<IdeaDetail>(`/api/ideas/${ideaId}`, {
         method: 'PATCH',
         body: JSON.stringify(updates),
+      }),
+    onSuccess: (idea) => {
+      queryClient.invalidateQueries({ queryKey: ideaKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: ideaKeys.detail(idea.id) });
+    },
+  });
+}
+
+export function useModerateIdea() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ ideaId, action }: { ideaId: string; action: ModerateIdeaInput }) =>
+      fetchJson<IdeaDetail>(`/api/ideas/${ideaId}`, {
+        method: 'PATCH',
+        body: JSON.stringify(action),
       }),
     onSuccess: (idea) => {
       queryClient.invalidateQueries({ queryKey: ideaKeys.lists() });

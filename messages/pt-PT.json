@@ -2887,7 +2887,14 @@
     "heroDiscussTitle": "Discutir e refinar",
     "heroDiscussDesc": "Debata e melhore ideias em conjunto",
     "heroPromoteTitle": "Promover a propostas",
-    "heroPromoteDesc": "As melhores ideias tornam-se propostas formais de governação"
+    "heroPromoteDesc": "As melhores ideias tornam-se propostas formais de governação",
+    "modPin": "Fixar ideia",
+    "modUnpin": "Desafixar ideia",
+    "modLock": "Bloquear ideia",
+    "modUnlock": "Desbloquear ideia",
+    "modRemove": "Remover ideia",
+    "moderationSuccess": "Ação de moderação aplicada.",
+    "moderationError": "Falha ao aplicar ação de moderação"
   },
   "IdeaDetail": {
     "disabledTitle": "A incubadora de ideias está desativada",
@@ -2927,7 +2934,16 @@
     "timelineVotes": "{count, plural, one {# voto recebido} other {# votos recebidos}}",
     "timelineComments": "{count, plural, one {# comentário} other {# comentários}}",
     "timelinePromoted": "Promovida para proposta",
-    "timelinePending": "A aguardar promoção"
+    "timelinePending": "A aguardar promoção",
+    "moderationTitle": "Moderação",
+    "modPin": "Fixar ideia",
+    "modUnpin": "Desafixar ideia",
+    "modLock": "Bloquear ideia",
+    "modUnlock": "Desbloquear ideia",
+    "modRemove": "Remover ideia",
+    "moderationSuccess": "Ação de moderação aplicada.",
+    "moderationError": "Falha ao aplicar ação de moderação",
+    "removedReason": "Motivo da remoção"
   },
   "Community": {
     "title": "Comunidade",

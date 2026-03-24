@@ -3,16 +3,30 @@
 import { useState } from 'react';
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
-import { ChevronUp, ChevronDown, MessageCircle } from 'lucide-react';
+import { ChevronUp, ChevronDown, MessageCircle, MoreVertical, Pin, Lock, Trash2, Unlock } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import type { IdeaListItem } from '@/features/ideas';
+
+export interface IdeaModerationAction {
+  type: 'pin' | 'unpin' | 'lock' | 'unlock' | 'remove';
+  ideaId: string;
+}
 
 interface IdeaFeedCardProps {
   idea: IdeaListItem;
   onVote: (ideaId: string, next: 'up' | 'down' | 'none') => void;
+  onModerate?: (action: IdeaModerationAction) => void;
+  canModerate?: boolean;
   isSpotlight?: boolean;
   style?: React.CSSProperties;
 }
@@ -61,7 +75,7 @@ function relativeTime(dateStr: string): string {
   return `${diffM}mo`;
 }
 
-export function IdeaFeedCard({ idea, onVote, isSpotlight, style }: IdeaFeedCardProps) {
+export function IdeaFeedCard({ idea, onVote, onModerate, canModerate, isSpotlight, style }: IdeaFeedCardProps) {
   const t = useTranslations('Ideas');
   const vote = idea.user_vote;
   const [animating, setAnimating] = useState<'up' | 'down' | null>(null);
@@ -164,6 +178,49 @@ export function IdeaFeedCard({ idea, onVote, isSpotlight, style }: IdeaFeedCardP
                 <Badge className="border border-amber-200 bg-amber-100 text-[10px] uppercase tracking-wider text-amber-700">
                   {t('pinned')}
                 </Badge>
+              )}
+              {canModerate && onModerate && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      type="button"
+                      className="rounded-md p-1 text-muted-foreground opacity-0 transition-opacity hover:bg-muted hover:text-foreground group-hover:opacity-100"
+                      aria-label="Moderation actions"
+                    >
+                      <MoreVertical className="h-4 w-4" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-44">
+                    <DropdownMenuItem
+                      onClick={() => onModerate({ type: idea.is_pinned ? 'unpin' : 'pin', ideaId: idea.id })}
+                    >
+                      <Pin className="mr-2 h-4 w-4" />
+                      {idea.is_pinned ? t('modUnpin') : t('modPin')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() =>
+                        onModerate({
+                          type: idea.status === 'locked' ? 'unlock' : 'lock',
+                          ideaId: idea.id,
+                        })
+                      }
+                    >
+                      {idea.status === 'locked' ? (
+                        <><Unlock className="mr-2 h-4 w-4" />{t('modUnlock')}</>
+                      ) : (
+                        <><Lock className="mr-2 h-4 w-4" />{t('modLock')}</>
+                      )}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={() => onModerate({ type: 'remove', ideaId: idea.id })}
+                      className="text-red-600 focus:text-red-600"
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      {t('modRemove')}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
             </div>
           </div>

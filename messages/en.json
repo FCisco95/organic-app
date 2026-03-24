@@ -2896,7 +2896,14 @@
     "heroDiscussTitle": "Discuss & refine",
     "heroDiscussDesc": "Debate and improve ideas together",
     "heroPromoteTitle": "Promote to proposals",
-    "heroPromoteDesc": "Best ideas become formal governance proposals"
+    "heroPromoteDesc": "Best ideas become formal governance proposals",
+    "modPin": "Pin idea",
+    "modUnpin": "Unpin idea",
+    "modLock": "Lock idea",
+    "modUnlock": "Unlock idea",
+    "modRemove": "Remove idea",
+    "moderationSuccess": "Moderation action applied.",
+    "moderationError": "Failed to apply moderation action"
   },
   "IdeaDetail": {
     "disabledTitle": "Ideas incubator is disabled",
@@ -2936,7 +2943,16 @@
     "timelineVotes": "{count, plural, one {# vote received} other {# votes received}}",
     "timelineComments": "{count, plural, one {# comment} other {# comments}}",
     "timelinePromoted": "Promoted to proposal",
-    "timelinePending": "Awaiting promotion"
+    "timelinePending": "Awaiting promotion",
+    "moderationTitle": "Moderation",
+    "modPin": "Pin idea",
+    "modUnpin": "Unpin idea",
+    "modLock": "Lock idea",
+    "modUnlock": "Unlock idea",
+    "modRemove": "Remove idea",
+    "moderationSuccess": "Moderation action applied.",
+    "moderationError": "Failed to apply moderation action",
+    "removedReason": "Removal reason"
   },
   "Community": {
     "title": "Community",

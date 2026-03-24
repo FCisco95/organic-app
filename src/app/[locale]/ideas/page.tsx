@@ -11,12 +11,13 @@ import {
   type IdeaSort,
   useIdeas,
   useIdeasKpis,
+  useModerateIdea,
   useVoteIdea,
 } from '@/features/ideas';
 import { cn } from '@/lib/utils';
 import { isIdeasIncubatorEnabled } from '@/config/feature-flags';
 import { IdeaKpiCard } from '@/components/ideas/IdeaKpiCard';
-import { IdeaFeedCard, IdeaCardSkeleton } from '@/components/ideas/IdeaFeedCard';
+import { IdeaFeedCard, IdeaCardSkeleton, type IdeaModerationAction } from '@/components/ideas/IdeaFeedCard';
 import { IdeaComposerDialog, IdeaComposerFab } from '@/components/ideas/IdeaComposerDialog';
 import { IdeaEmptyState } from '@/components/ideas/IdeaEmptyState';
 
@@ -42,6 +43,9 @@ export default function IdeasPage() {
   const ideasQuery = useIdeas({ sort, search, enabled });
   const kpisQuery = useIdeasKpis({ enabled });
   const voteIdea = useVoteIdea();
+  const moderateIdea = useModerateIdea();
+
+  const canModerate = profile?.role === 'admin' || profile?.role === 'council';
 
   const spotlightId = kpisQuery.data?.spotlight?.id ?? null;
 
@@ -62,6 +66,24 @@ export default function IdeasPage() {
       await voteIdea.mutateAsync({ ideaId, input: { value: next } });
     } catch (error) {
       const message = error instanceof Error ? error.message : t('voteError');
+      toast.error(message);
+    }
+  }
+
+  async function onModerate(action: IdeaModerationAction) {
+    const actionMap = {
+      pin: { is_pinned: true },
+      unpin: { is_pinned: false },
+      lock: { status: 'locked' as const },
+      unlock: { status: 'open' as const },
+      remove: { status: 'removed' as const },
+    };
+
+    try {
+      await moderateIdea.mutateAsync({ ideaId: action.ideaId, action: actionMap[action.type] });
+      toast.success(t('moderationSuccess'));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : t('moderationError');
       toast.error(message);
     }
   }
@@ -247,6 +269,8 @@ export default function IdeasPage() {
                   key={idea.id}
                   idea={idea}
                   onVote={onVote}
+                  onModerate={canModerate ? onModerate : undefined}
+                  canModerate={canModerate}
                   isSpotlight={idea.id === spotlightId}
                   style={{
                     animationDelay: `${index * 80}ms`,
