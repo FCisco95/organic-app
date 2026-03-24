@@ -74,6 +74,9 @@ export const XP_SOURCE_LABELS: Record<string, string> = {
   idea_comment_created: 'Idea comment posted',
   idea_promoted_winner: 'Idea selected as winner',
   referral_completed: 'Referral completed',
+  donation_verified: 'Donation verified',
+  holding_reward: 'Holding reward',
+  streak_milestone: 'Streak milestone',
 };
 
 // ─── Achievements ──────────────────────────────────────────────────────

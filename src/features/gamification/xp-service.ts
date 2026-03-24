@@ -33,6 +33,8 @@ const DAILY_CAPS: Record<string, number> = {
   post_created: 3,
   post_liked: 10,
   donation_verified: 5,
+  holding_reward: 1,      // 1 holding reward sync/day
+  streak_milestone: 1,    // 1 milestone claim/day
 };
 
 /** After this many awards in a day, XP starts diminishing (50% per extra). */
