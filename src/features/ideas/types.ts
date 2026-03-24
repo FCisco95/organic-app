@@ -75,4 +75,39 @@ export interface IdeasKpisResponse {
   } | null;
 }
 
+export interface HarvestContributor {
+  user: {
+    id: string;
+    name: string | null;
+    email: string;
+    organic_id: number | null;
+    avatar_url: string | null;
+  };
+  xp_earned: number;
+}
+
+export interface HarvestWinner {
+  id: string;
+  title: string;
+  body: string;
+  score: number;
+  upvotes: number;
+  downvotes: number;
+  comments_count: number;
+  created_at: string;
+  author: IdeaAuthor | null;
+}
+
+export interface HarvestResponse {
+  week_start: string;
+  week_end: string;
+  winner: HarvestWinner | null;
+  top_contributors: HarvestContributor[];
+  stats: {
+    total_votes: number;
+    new_ideas: number;
+    active_streaks: number;
+  };
+}
+
 export const IDEA_PROPOSAL_CATEGORY_FALLBACK: ProposalCategory = 'community';

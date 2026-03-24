@@ -10,6 +10,7 @@ import type {
   VoteIdeaInput,
 } from './schemas';
 import type {
+  HarvestResponse,
   IdeaCommentsResponse,
   IdeaDetail,
   IdeaFeedResponse,
@@ -27,6 +28,7 @@ export const ideaKeys = {
   detail: (ideaId: string) => [...ideaKeys.details(), ideaId] as const,
   comments: (ideaId: string) => [...ideaKeys.all, 'comments', ideaId] as const,
   kpis: () => [...ideaKeys.all, 'kpis'] as const,
+  harvest: () => [...ideaKeys.all, 'harvest'] as const,
 };
 
 export function useIdeas(options?: { sort?: IdeaSortInput; search?: string; enabled?: boolean }) {
@@ -65,6 +67,15 @@ export function useIdeasKpis(options?: { enabled?: boolean }) {
     queryKey: ideaKeys.kpis(),
     queryFn: async () => fetchJson<IdeasKpisResponse>('/api/ideas/kpis'),
     enabled: options?.enabled ?? true,
+  });
+}
+
+export function useHarvest(options?: { enabled?: boolean }) {
+  return useQuery({
+    queryKey: ideaKeys.harvest(),
+    queryFn: async () => fetchJson<HarvestResponse>('/api/ideas/harvest'),
+    enabled: options?.enabled ?? true,
+    staleTime: 60_000,
   });
 }
 
