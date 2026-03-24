@@ -2,18 +2,26 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { fetchJson } from '@/lib/fetch-json';
-import type { AnalyticsData } from './types';
+import type { AnalyticsData, AnalyticsPreset } from './types';
+import { ANALYTICS_PRESETS } from './types';
 
 export const analyticsKeys = {
   all: ['analytics'] as const,
-  data: () => [...analyticsKeys.all, 'data'] as const,
+  data: (preset?: AnalyticsPreset) => [...analyticsKeys.all, 'data', preset ?? '30d'] as const,
 };
 
-export function useAnalytics() {
+export function useAnalytics(preset: AnalyticsPreset = '30d') {
+  const { days, weeks, months } = ANALYTICS_PRESETS[preset];
+
   return useQuery({
-    queryKey: analyticsKeys.data(),
+    queryKey: analyticsKeys.data(preset),
     queryFn: async (): Promise<AnalyticsData> => {
-      const json = await fetchJson<{ data: AnalyticsData }>('/api/analytics');
+      const params = new URLSearchParams({
+        days: String(days),
+        weeks: String(weeks),
+        months: String(months),
+      });
+      const json = await fetchJson<{ data: AnalyticsData }>(`/api/analytics?${params}`);
       return json.data;
     },
     staleTime: 120_000,

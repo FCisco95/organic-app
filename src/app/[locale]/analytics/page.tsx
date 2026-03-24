@@ -5,7 +5,9 @@ import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
 import { useAnalytics } from '@/features/analytics';
+import type { AnalyticsPreset } from '@/features/analytics/types';
 import { useAuth } from '@/features/auth/context';
+import { DateRangeSelector } from '@/components/analytics/date-range-selector';
 import { KPICards } from '@/components/analytics/kpi-cards';
 import { InfoButton } from '@/components/ui/info-button';
 import { Activity, TimerReset, BarChart3, CheckCircle2, Landmark, User, Lock } from 'lucide-react';
@@ -41,7 +43,8 @@ type AnalyticsTab = 'overview' | 'personal' | 'governance';
 export default function AnalyticsPage() {
   const t = useTranslations('Analytics');
   const { user } = useAuth();
-  const { data, isLoading } = useAnalytics();
+  const [preset, setPreset] = useState<AnalyticsPreset>('30d');
+  const { data, isLoading } = useAnalytics(preset);
   const trust = data?.trust;
   const updatedAtLabel = trust?.updated_at
     ? new Date(trust.updated_at).toLocaleString()
@@ -124,9 +127,14 @@ export default function AnalyticsPage() {
           </div>
         </div>
 
+        {/* Date range selector */}
+        <div className="flex items-center justify-between opacity-0 animate-fade-up stagger-2">
+          <DateRangeSelector value={preset} onChange={setPreset} />
+        </div>
+
         {/* Governance health strip */}
         <section
-          className="rounded-2xl border border-border bg-card p-5 opacity-0 animate-fade-up stagger-2"
+          className="rounded-2xl border border-border bg-card p-5 opacity-0 animate-fade-up stagger-3"
           data-testid="analytics-governance-health"
         >
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -156,12 +164,12 @@ export default function AnalyticsPage() {
         </section>
 
         {/* KPI Cards with sparklines */}
-        <div className="opacity-0 animate-fade-up stagger-3">
+        <div className="opacity-0 animate-fade-up stagger-4">
           <KPICards kpis={data?.kpis} trust={trust} loading={isLoading} />
         </div>
 
         {/* Tabs with icons + orange underline */}
-        <div className="flex items-center gap-1 border-b border-border opacity-0 animate-fade-up stagger-4">
+        <div className="flex items-center gap-1 border-b border-border opacity-0 animate-fade-up stagger-5">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.key;

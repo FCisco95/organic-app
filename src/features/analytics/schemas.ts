@@ -1,5 +1,11 @@
 import { z } from 'zod';
 
+export const analyticsQuerySchema = z.object({
+  days: z.coerce.number().int().min(1).max(365).optional().default(30),
+  weeks: z.coerce.number().int().min(1).max(52).optional().default(12),
+  months: z.coerce.number().int().min(1).max(24).optional().default(12),
+});
+
 export const analyticsKPIsSchema = z.object({
   total_users: z.number(),
   org_holders: z.number(),
