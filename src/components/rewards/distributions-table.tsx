@@ -68,7 +68,7 @@ export function DistributionsTable({
                     <p className="text-[11px] uppercase tracking-wide text-gray-500">
                       {t('distributions.tokens')}
                     </p>
-                    <p className="font-semibold text-gray-900">
+                    <p className="font-semibold font-mono tabular-nums text-gray-900">
                       {Number(dist.token_amount).toLocaleString(undefined, {
                         maximumFractionDigits: 4,
                       })}{' '}
@@ -211,7 +211,7 @@ export function DistributionsTable({
                       </span>
                     )}
                   </td>
-                  <td className="px-4 py-3 font-medium text-gray-900">
+                  <td className="px-4 py-3 font-medium font-mono tabular-nums text-gray-900">
                     {Number(dist.token_amount).toLocaleString(undefined, {
                       maximumFractionDigits: 4,
                     })}{' '}

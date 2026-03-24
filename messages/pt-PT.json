@@ -674,6 +674,14 @@
       "settlement": "Liquidação",
       "completed": "Concluída"
     },
+    "phaseTooltip": {
+      "planning": "Planeamento — Definir objetivos, atribuir tarefas e preparar o backlog do sprint.",
+      "active": "Ativo — Sprint em andamento, tarefas em execução.",
+      "review": "Revisão — Trabalho submetido e em revisão pelos revisores.",
+      "dispute_window": "Janela de Disputas — Membros podem levantar disputas sobre resultados de revisão.",
+      "settlement": "Liquidação — A finalizar recompensas e resolver disputas pendentes.",
+      "completed": "Concluído — Sprint terminado, todas as recompensas liquidadas."
+    },
     "capacityValue": "{used} / {capacity} pts",
     "capacityUncapped": "{used} pts planejados",
     "formGoal": "Objetivo da sprint",

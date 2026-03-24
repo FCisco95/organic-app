@@ -84,7 +84,7 @@ export function ClaimsTable({
                       </p>
                     )}
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold text-gray-900">
+                      <span className="text-sm font-semibold font-mono tabular-nums text-gray-900">
                         {claim.points_amount.toLocaleString()} pts
                       </span>
                       <ClaimTimeline status={claim.status} />
@@ -110,7 +110,7 @@ export function ClaimsTable({
                         <p className="text-[11px] uppercase tracking-wide text-gray-500">
                           {t('claims.points')}
                         </p>
-                        <p className="font-semibold text-gray-900">
+                        <p className="font-semibold font-mono tabular-nums text-gray-900">
                           {claim.points_amount.toLocaleString()}
                         </p>
                       </div>
@@ -118,7 +118,7 @@ export function ClaimsTable({
                         <p className="text-[11px] uppercase tracking-wide text-gray-500">
                           {t('claims.tokens')}
                         </p>
-                        <p className="font-semibold text-gray-900">
+                        <p className="font-semibold font-mono tabular-nums text-gray-900">
                           {Number(claim.token_amount).toLocaleString(undefined, {
                             maximumFractionDigits: 4,
                           })}{' '}
@@ -221,10 +221,10 @@ export function ClaimsTable({
                         {claim.user_name || claim.user_email || claim.user_id.slice(0, 8)}
                       </td>
                     )}
-                    <td className="px-4 py-3 font-medium text-gray-900">
+                    <td className="px-4 py-3 font-medium font-mono tabular-nums text-gray-900">
                       {claim.points_amount.toLocaleString()}
                     </td>
-                    <td className="px-4 py-3 text-gray-700">
+                    <td className="px-4 py-3 font-mono tabular-nums text-gray-700">
                       {Number(claim.token_amount).toLocaleString(undefined, {
                         maximumFractionDigits: 4,
                       })}{' '}

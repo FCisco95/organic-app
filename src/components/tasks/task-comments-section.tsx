@@ -3,12 +3,14 @@
 import Image from 'next/image';
 import { MessageSquare, Send } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { Skeleton } from '@/components/ui/skeleton';
 import type { TaskComment } from '@/features/tasks';
 
 type TaskCommentsSectionProps = {
   comments: TaskComment[];
   newComment: string;
   isSubmitting: boolean;
+  loading?: boolean;
   onChange: (value: string) => void;
   onSubmit: (event: React.FormEvent) => void;
   getDisplayName: (user: TaskComment['user']) => string;
@@ -19,6 +21,7 @@ export function TaskCommentsSection({
   comments,
   newComment,
   isSubmitting,
+  loading = false,
   onChange,
   onSubmit,
   getDisplayName,
@@ -39,9 +42,11 @@ export function TaskCommentsSection({
           onChange={(e) => onChange(e.target.value)}
           placeholder={t('commentPlaceholder')}
           rows={3}
+          maxLength={1000}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange mb-2"
         />
-        <div className="flex justify-end">
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-muted-foreground">{newComment.length}/1000</span>
           <button
             type="submit"
             disabled={isSubmitting || !newComment.trim()}
@@ -54,7 +59,21 @@ export function TaskCommentsSection({
       </form>
 
       <div className="space-y-4">
-        {comments.length === 0 ? (
+        {loading ? (
+          [1, 2, 3].map((i) => (
+            <div key={i} className="flex items-start gap-3 border-l-2 border-gray-200 pl-4 py-2">
+              <Skeleton className="h-8 w-8 rounded-full shrink-0" />
+              <div className="flex-1 space-y-2">
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-3 w-16" />
+                </div>
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-2/3" />
+              </div>
+            </div>
+          ))
+        ) : comments.length === 0 ? (
           <p className="text-gray-500 text-center py-4">{t('noComments')}</p>
         ) : (
           comments.map((comment) => (

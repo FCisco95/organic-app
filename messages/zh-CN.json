@@ -674,6 +674,14 @@
       "settlement": "结算",
       "completed": "已完成"
     },
+    "phaseTooltip": {
+      "planning": "规划 — 设定目标、分配任务并准备冲刺待办列表。",
+      "active": "进行中 — 冲刺正在进行，任务正在执行。",
+      "review": "审核 — 工作已提交，正在由审核人员审查。",
+      "dispute_window": "争议窗口 — 成员可以对审核结果提出争议。",
+      "settlement": "结算 — 正在最终确定奖励并解决剩余争议。",
+      "completed": "已完成 — 冲刺结束，所有奖励已结算。"
+    },
     "capacityValue": "{used} / {capacity} 分",
     "capacityUncapped": "已规划 {used} 分",
     "formGoal": "冲刺目标",

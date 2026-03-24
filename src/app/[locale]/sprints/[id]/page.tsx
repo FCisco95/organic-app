@@ -751,6 +751,7 @@ export default function SprintDetailPage() {
                     <div
                       key={phase}
                       className="relative flex items-center gap-2.5 pl-5"
+                      title={t(`phaseTooltip.${phase}`)}
                     >
                       <div className="absolute left-0 top-1/2 -translate-y-1/2">
                         {isComplete ? (

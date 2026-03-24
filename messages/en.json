@@ -674,6 +674,14 @@
       "settlement": "Settlement",
       "completed": "Completed"
     },
+    "phaseTooltip": {
+      "planning": "Planning — Define goals, assign tasks, and prepare the sprint backlog.",
+      "active": "Active — Sprint is in progress, tasks are being worked on.",
+      "review": "Review — Work is submitted and under review by reviewers.",
+      "dispute_window": "Dispute Window — Members can raise disputes on review outcomes.",
+      "settlement": "Settlement — Finalizing rewards and resolving remaining disputes.",
+      "completed": "Completed — Sprint is done, all rewards settled."
+    },
     "capacityValue": "{used} / {capacity} pts",
     "capacityUncapped": "{used} pts planned",
     "formGoal": "Sprint Goal",

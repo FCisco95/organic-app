@@ -381,7 +381,7 @@ export function RankingsTab() {
                 )}
                 <Medal className="absolute -bottom-1 -right-1 w-5 h-5 text-gray-400" />
               </div>
-              <p className="mt-2 text-xs font-medium text-foreground truncate w-full text-center group-hover:text-organic-orange transition-colors">
+              <p className="mt-2 text-xs font-medium text-foreground truncate w-full text-center group-hover:text-organic-orange transition-colors" title={getDisplayName(podiumEntries[1])}>
                 {getDisplayName(podiumEntries[1])}
               </p>
               <p className="text-xs font-mono tabular-nums text-muted-foreground">
@@ -426,7 +426,7 @@ export function RankingsTab() {
                 )}
                 <Trophy className="absolute -bottom-1 -right-1 w-6 h-6 text-yellow-500" />
               </div>
-              <p className="mt-2 text-sm font-semibold text-foreground truncate w-full text-center group-hover:text-organic-orange transition-colors">
+              <p className="mt-2 text-sm font-semibold text-foreground truncate w-full text-center group-hover:text-organic-orange transition-colors" title={getDisplayName(podiumEntries[0])}>
                 {getDisplayName(podiumEntries[0])}
               </p>
               <p className="text-xs font-mono tabular-nums text-orange-500 font-semibold">
@@ -474,7 +474,7 @@ export function RankingsTab() {
                 )}
                 <Award className="absolute -bottom-1 -right-1 w-5 h-5 text-amber-600" />
               </div>
-              <p className="mt-2 text-xs font-medium text-foreground truncate w-full text-center group-hover:text-organic-orange transition-colors">
+              <p className="mt-2 text-xs font-medium text-foreground truncate w-full text-center group-hover:text-organic-orange transition-colors" title={getDisplayName(podiumEntries[2])}>
                 {getDisplayName(podiumEntries[2])}
               </p>
               <p className="text-xs font-mono tabular-nums text-muted-foreground">
@@ -662,7 +662,7 @@ export function RankingsTab() {
                       )}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <p className="font-medium text-foreground truncate">
+                          <p className="font-medium text-foreground truncate" title={getDisplayName(entry)}>
                             {getDisplayName(entry)}
                           </p>
                           {isCurrentUser && (
