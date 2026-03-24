@@ -14,11 +14,13 @@ import {
   Info,
   Hash,
   Award,
+  Trophy,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
 import { ReputationSummary } from '@/components/reputation/reputation-summary';
+import { TrophyShowcase } from '@/components/reputation/trophy-showcase';
 import { useUpdatePrivacy } from '@/features/members';
 import { cn } from '@/lib/utils';
 import {
@@ -466,6 +468,11 @@ export default function ProfilePage() {
             <div className="lg:sticky lg:top-20">
               <div data-testid="profile-reputation-section">
                 <ReputationSummary />
+              </div>
+
+              {/* Trophy showcase */}
+              <div className="mt-4">
+                <TrophyShowcase />
               </div>
 
               {/* Activity stats card */}

@@ -66,14 +66,36 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Merge unlock status
+    // Fetch achievement progress for user
+    let progressMap: Record<string, number> = {};
+    if (canReadUnlockStatus && unlocksUserId) {
+      const { data: progress } = await supabase
+        .from('user_achievement_progress')
+        .select('achievement_id, current_value')
+        .eq('user_id', unlocksUserId);
+
+      if (progress) {
+        progressMap = Object.fromEntries(
+          progress.map((p) => [p.achievement_id, p.current_value])
+        );
+      }
+    }
+
+    // Fetch achievement sets
+    const { data: sets } = await supabase
+      .from('achievement_sets')
+      .select('*')
+      .order('name');
+
+    // Merge unlock status + progress
     const result = (achievements ?? []).map((a) => ({
       ...a,
       unlocked: a.id in unlockedMap,
       unlocked_at: unlockedMap[a.id] ?? null,
+      progress: progressMap[a.id] ?? undefined,
     }));
 
-    return NextResponse.json({ achievements: result });
+    return NextResponse.json({ achievements: result, sets: sets ?? [] });
   } catch (error) {
     logger.error('Achievements GET error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

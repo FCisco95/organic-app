@@ -6,6 +6,7 @@ import { buildQueryString } from '@/lib/query-string';
 import type {
   UserReputation,
   AchievementWithStatus,
+  AchievementSet,
   XpEvent,
   CheckLevelUpResponse,
   LeaderboardEntry,
@@ -41,13 +42,32 @@ export function useReputation(userId?: string, options?: { enabled?: boolean }) 
 
 // ─── useAchievements ───────────────────────────────────────────────────
 
+interface AchievementsResponse {
+  achievements: AchievementWithStatus[];
+  sets: AchievementSet[];
+}
+
 export function useAchievements(userId?: string, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: reputationKeys.achievements(userId),
     queryFn: async (): Promise<AchievementWithStatus[]> => {
       const qs = buildQueryString({ userId });
-      const data = await fetchJson<{ achievements: AchievementWithStatus[] }>(`/api/achievements${qs}`);
+      const data = await fetchJson<AchievementsResponse>(`/api/achievements${qs}`);
       return data.achievements;
+    },
+    staleTime: 60_000,
+    enabled: options?.enabled,
+  });
+}
+
+// ─── useAchievementsWithSets ──────────────────────────────────────────
+
+export function useAchievementsWithSets(userId?: string, options?: { enabled?: boolean }) {
+  return useQuery({
+    queryKey: [...reputationKeys.achievements(userId), 'with-sets'],
+    queryFn: async (): Promise<AchievementsResponse> => {
+      const qs = buildQueryString({ userId });
+      return fetchJson<AchievementsResponse>(`/api/achievements${qs}`);
     },
     staleTime: 60_000,
     enabled: options?.enabled,
