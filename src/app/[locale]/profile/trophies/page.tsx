@@ -103,8 +103,8 @@ function RarestShowcase({ achievements }: { achievements: AchievementWithStatus[
 export default function TrophiesPage() {
   const t = useTranslations('Reputation');
   const { data, isLoading } = useAchievementsWithSets();
-  const achievements = data?.achievements ?? [];
-  const sets = data?.sets ?? [];
+  const achievements = useMemo(() => data?.achievements ?? [], [data]);
+  const sets = useMemo(() => data?.sets ?? [], [data]);
 
   const stats = useMemo(() => {
     const total = achievements.length;

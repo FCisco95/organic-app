@@ -67,22 +67,25 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch achievement progress for user
+    // Tables from B1 migration not yet in generated types — cast to any
     let progressMap: Record<string, number> = {};
     if (canReadUnlockStatus && unlocksUserId) {
-      const { data: progress } = await supabase
+      const { data: progress } = await (supabase as any)
         .from('user_achievement_progress')
         .select('achievement_id, current_value')
         .eq('user_id', unlocksUserId);
 
       if (progress) {
         progressMap = Object.fromEntries(
-          progress.map((p) => [p.achievement_id, p.current_value])
+          (progress as Array<{ achievement_id: string; current_value: number }>).map(
+            (p) => [p.achievement_id, p.current_value]
+          )
         );
       }
     }
 
     // Fetch achievement sets
-    const { data: sets } = await supabase
+    const { data: sets } = await (supabase as any)
       .from('achievement_sets')
       .select('*')
       .order('name');

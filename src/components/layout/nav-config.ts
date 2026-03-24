@@ -9,6 +9,7 @@ import {
   Home,
   LayoutDashboard,
   Lightbulb,
+  MessageSquare,
   Scale,
   Settings,
   Sparkles,
@@ -124,6 +125,14 @@ const mainItemDefs: (NavItem & { groupId: string; showWhen?: (ctx: NavContext) =
   // Social
   {
     groupId: 'social',
+    id: 'posts',
+    href: '/posts',
+    labelKey: 'posts',
+    icon: MessageSquare,
+    showWhen: (ctx) => ctx.isAuthenticated,
+  },
+  {
+    groupId: 'social',
     id: 'community',
     href: '/community',
     labelKey: 'community',
@@ -223,6 +232,7 @@ export const routeSectionMap: Record<string, string> = {
   proposals: 'sectionGovernance',
   ideas: 'sectionGovernance',
   disputes: 'sectionGovernance',
+  posts: 'sectionSocial',
   community: 'sectionSocial',
   quests: 'sectionSocial',
   rewards: 'sectionSocial',
@@ -241,6 +251,7 @@ export const routeLabelMap: Record<string, string> = {
   proposals: 'proposals',
   ideas: 'ideas',
   disputes: 'disputes',
+  posts: 'posts',
   community: 'community',
   quests: 'refAndQuests',
   rewards: 'rewards',
