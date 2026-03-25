@@ -52,7 +52,7 @@ const NAV_CARDS: NavCard[] = [
     titleKey: 'carouselAnalyticsTitle',
     descKey: 'navAnalyticsDesc',
     icon: BarChart3,
-    href: '/analytics',
+    href: '/pulse',
     badgeKey: 'navAnalyticsBadge',
   },
   {
@@ -60,7 +60,7 @@ const NAV_CARDS: NavCard[] = [
     titleKey: 'carouselTreasuryTitle',
     descKey: 'navTreasuryDesc',
     icon: Landmark,
-    href: '/treasury',
+    href: '/vault',
     badgeKey: 'navTreasuryBadge',
   },
   {

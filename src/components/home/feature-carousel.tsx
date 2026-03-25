@@ -63,7 +63,7 @@ const CARDS: CarouselCard[] = [
     ctaKey: 'carouselAnalyticsCta',
     fomoKey: 'carouselAnalyticsFomo',
     icon: BarChart3,
-    href: '/analytics',
+    href: '/pulse',
   },
   {
     id: 'treasury',
@@ -72,7 +72,7 @@ const CARDS: CarouselCard[] = [
     ctaKey: 'carouselTreasuryCta',
     fomoKey: 'carouselTreasuryFomo',
     icon: Landmark,
-    href: '/treasury',
+    href: '/vault',
     glow: true,
   },
   {

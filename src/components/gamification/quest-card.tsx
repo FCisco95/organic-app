@@ -16,7 +16,7 @@ const QUEST_CTA_MAP: Record<string, { href: string; label: string }> = {
   weekly_tasks_completed: { href: '/tasks', label: 'Go to Tasks' },
   weekly_governance_actions: { href: '/proposals', label: 'Go to Proposals' },
   weekly_active_days: { href: '/tasks', label: 'Stay Active' },
-  long_term_level: { href: '/quests', label: 'Level Up' },
+  long_term_level: { href: '/earn?tab=quests', label: 'Level Up' },
   long_term_achievements: { href: '/profile/progression', label: 'View Achievements' },
   long_term_streak: { href: '/tasks', label: 'Keep Streak' },
 };

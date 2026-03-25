@@ -20,6 +20,7 @@ const defaultLocale: Locale = 'en';
 const PROTECTED_ROUTE_PREFIXES = [
   '/profile',
   '/notifications',
+  '/earn',
   '/rewards',
   '/quests',
   '/disputes',
