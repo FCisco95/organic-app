@@ -159,7 +159,18 @@
     "sectionAdmin": "Administração",
     "breadcrumbDetail": "Detalhe",
     "breadcrumbHome": "Início",
-    "adminDashboard": "Painel"
+    "adminDashboard": "Painel",
+    "sectionNavigate": "Navegar",
+    "sectionGovern": "Governar",
+    "sectionBuild": "Construir",
+    "sectionEngage": "Participar",
+    "pulse": "Pulso",
+    "vault": "Cofre",
+    "feed": "Feed",
+    "ranks": "Rankings",
+    "earn": "Ganhar",
+    "resolve": "Resolver",
+    "forProjects": "Para Projetos"
   },
   "Wallet": {
     "toastConnected": "Carteira conectada",

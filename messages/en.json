@@ -159,7 +159,18 @@
     "sectionAdmin": "Admin",
     "breadcrumbDetail": "Detail",
     "breadcrumbHome": "Home",
-    "adminDashboard": "Dashboard"
+    "adminDashboard": "Dashboard",
+    "sectionNavigate": "Navigate",
+    "sectionGovern": "Govern",
+    "sectionBuild": "Build",
+    "sectionEngage": "Engage",
+    "pulse": "Pulse",
+    "vault": "Vault",
+    "feed": "Feed",
+    "ranks": "Ranks",
+    "earn": "Earn",
+    "resolve": "Resolve",
+    "forProjects": "For Projects"
   },
   "Wallet": {
     "toastConnected": "Wallet connected",

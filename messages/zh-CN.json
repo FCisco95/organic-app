@@ -159,7 +159,18 @@
     "sectionAdmin": "管理",
     "breadcrumbDetail": "详情",
     "breadcrumbHome": "首页",
-    "adminDashboard": "仪表板"
+    "adminDashboard": "仪表盘",
+    "sectionNavigate": "导航",
+    "sectionGovern": "治理",
+    "sectionBuild": "建设",
+    "sectionEngage": "参与",
+    "pulse": "脉搏",
+    "vault": "金库",
+    "feed": "动态",
+    "ranks": "排行榜",
+    "earn": "赚取",
+    "resolve": "仲裁",
+    "forProjects": "合作入驻"
   },
   "Wallet": {
     "toastConnected": "钱包已连接",

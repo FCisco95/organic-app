@@ -1,15 +1,14 @@
 import type { LucideIcon } from 'lucide-react';
 import {
   BarChart3,
-  Bell,
   CheckSquare,
   ClipboardCheck,
-  FileText,
   Gift,
   Home,
   LayoutDashboard,
   Lightbulb,
   MessageSquare,
+  Rocket,
   Scale,
   Settings,
   Sparkles,
@@ -50,55 +49,36 @@ export interface NavSections {
 
 /**
  * All main nav items with their group assignment.
- * Group IDs: overview, work, governance, social
+ * Group IDs: navigate, govern, build, engage
  */
 const mainItemDefs: (NavItem & { groupId: string; showWhen?: (ctx: NavContext) => boolean })[] = [
-  // Overview
-  { groupId: 'overview', id: 'home', href: '/', labelKey: 'home', icon: Home, shortcutHint: 'G H' },
+  // Navigate
   {
-    groupId: 'overview',
-    id: 'analytics',
-    href: '/analytics',
-    labelKey: 'analytics',
+    groupId: 'navigate',
+    id: 'home',
+    href: '/',
+    labelKey: 'home',
+    icon: Home,
+    shortcutHint: 'G H',
+  },
+  {
+    groupId: 'navigate',
+    id: 'pulse',
+    href: '/pulse',
+    labelKey: 'pulse',
     icon: BarChart3,
     shortcutHint: 'G A',
   },
   {
-    groupId: 'overview',
-    id: 'treasury',
-    href: '/treasury',
-    labelKey: 'treasury',
+    groupId: 'navigate',
+    id: 'vault',
+    href: '/vault',
+    labelKey: 'vault',
     icon: Wallet,
   },
-  // Work
+  // Govern
   {
-    groupId: 'work',
-    id: 'tasks',
-    href: '/tasks',
-    labelKey: 'tasks',
-    icon: CheckSquare,
-    shortcutHint: 'G T',
-    showWhen: (ctx) => ctx.hasOrganicId,
-  },
-  {
-    groupId: 'work',
-    id: 'templates',
-    href: '/tasks/templates',
-    labelKey: 'templates',
-    icon: FileText,
-    showWhen: (ctx) => ctx.isAdminOrCouncil,
-  },
-  {
-    groupId: 'work',
-    id: 'sprints',
-    href: '/sprints',
-    labelKey: 'sprints',
-    icon: Zap,
-    showWhen: (ctx) => ctx.hasOrganicId,
-  },
-  // Governance
-  {
-    groupId: 'governance',
+    groupId: 'govern',
     id: 'proposals',
     href: '/proposals',
     labelKey: 'proposals',
@@ -107,7 +87,7 @@ const mainItemDefs: (NavItem & { groupId: string; showWhen?: (ctx: NavContext) =
     showWhen: (ctx) => ctx.isAuthenticated,
   },
   {
-    groupId: 'governance',
+    groupId: 'govern',
     id: 'ideas',
     href: '/ideas',
     labelKey: 'ideas',
@@ -115,61 +95,63 @@ const mainItemDefs: (NavItem & { groupId: string; showWhen?: (ctx: NavContext) =
     showWhen: (ctx) => ctx.isAuthenticated,
   },
   {
-    groupId: 'governance',
-    id: 'disputes',
+    groupId: 'govern',
+    id: 'resolve',
     href: '/disputes',
-    labelKey: 'disputes',
+    labelKey: 'resolve',
     icon: Scale,
     showWhen: (ctx) => ctx.isAuthenticated,
   },
-  // Social
+  // Build
   {
-    groupId: 'social',
-    id: 'posts',
+    groupId: 'build',
+    id: 'tasks',
+    href: '/tasks',
+    labelKey: 'tasks',
+    icon: CheckSquare,
+    shortcutHint: 'G T',
+    showWhen: (ctx) => ctx.hasOrganicId,
+  },
+  {
+    groupId: 'build',
+    id: 'sprints',
+    href: '/sprints',
+    labelKey: 'sprints',
+    icon: Zap,
+    showWhen: (ctx) => ctx.hasOrganicId,
+  },
+  // Engage
+  {
+    groupId: 'engage',
+    id: 'feed',
     href: '/posts',
-    labelKey: 'posts',
+    labelKey: 'feed',
     icon: MessageSquare,
     showWhen: (ctx) => ctx.isAuthenticated,
   },
   {
-    groupId: 'social',
-    id: 'community',
+    groupId: 'engage',
+    id: 'ranks',
     href: '/community',
-    labelKey: 'community',
+    labelKey: 'ranks',
     icon: Trophy,
     showWhen: (ctx) => ctx.isAuthenticated,
   },
   {
-    groupId: 'social',
-    id: 'quests',
-    href: '/quests',
-    labelKey: 'refAndQuests',
+    groupId: 'engage',
+    id: 'earn',
+    href: '/earn',
+    labelKey: 'earn',
     icon: Sparkles,
-    showWhen: (ctx) => ctx.isAuthenticated,
-  },
-  {
-    groupId: 'social',
-    id: 'rewards',
-    href: '/rewards',
-    labelKey: 'rewards',
-    icon: Gift,
-    showWhen: (ctx) => ctx.isAuthenticated,
-  },
-  {
-    groupId: 'social',
-    id: 'notifications',
-    href: '/notifications',
-    labelKey: 'notifications',
-    icon: Bell,
     showWhen: (ctx) => ctx.isAuthenticated,
   },
 ];
 
 const groupDefs: { id: string; labelKey: string }[] = [
-  { id: 'overview', labelKey: 'sectionOverview' },
-  { id: 'work', labelKey: 'sectionWork' },
-  { id: 'governance', labelKey: 'sectionGovernance' },
-  { id: 'social', labelKey: 'sectionSocial' },
+  { id: 'navigate', labelKey: 'sectionNavigate' },
+  { id: 'govern', labelKey: 'sectionGovern' },
+  { id: 'build', labelKey: 'sectionBuild' },
+  { id: 'engage', labelKey: 'sectionEngage' },
 ];
 
 export function getSidebarNavSections(context: NavContext): NavSections {
@@ -216,46 +198,57 @@ export function getSidebarNavSections(context: NavContext): NavSections {
   });
 
   const utility: NavItem[] = [
-    { id: 'profile', href: '/profile', labelKey: 'profile', icon: User },
-  ].filter(() => context.isAuthenticated);
+    { id: 'forProjects', href: '/for-projects', labelKey: 'forProjects', icon: Rocket },
+    ...(context.isAuthenticated
+      ? [{ id: 'profile', href: '/profile', labelKey: 'profile', icon: User } as NavItem]
+      : []),
+  ];
 
   return { main, groups, admin, utility };
 }
 
 /** Route segment to section i18n key mapping for breadcrumbs */
 export const routeSectionMap: Record<string, string> = {
-  analytics: 'sectionOverview',
-  treasury: 'sectionOverview',
-  tasks: 'sectionWork',
-  templates: 'sectionWork',
-  sprints: 'sectionWork',
-  proposals: 'sectionGovernance',
-  ideas: 'sectionGovernance',
-  disputes: 'sectionGovernance',
-  posts: 'sectionSocial',
-  community: 'sectionSocial',
-  quests: 'sectionSocial',
-  rewards: 'sectionSocial',
-  notifications: 'sectionSocial',
+  pulse: 'sectionNavigate',
+  vault: 'sectionNavigate',
+  analytics: 'sectionNavigate', // backward compat
+  treasury: 'sectionNavigate', // backward compat
+  tasks: 'sectionBuild',
+  templates: 'sectionBuild',
+  sprints: 'sectionBuild',
+  proposals: 'sectionGovern',
+  ideas: 'sectionGovern',
+  disputes: 'sectionGovern',
+  posts: 'sectionEngage',
+  community: 'sectionEngage',
+  earn: 'sectionEngage',
+  quests: 'sectionEngage', // backward compat
+  rewards: 'sectionEngage', // backward compat
+  notifications: 'sectionEngage', // backward compat
+  'for-projects': 'sectionNavigate',
   admin: 'sectionAdmin',
   profile: 'sectionAdmin',
 };
 
 /** Route segment to i18n label key mapping for breadcrumbs */
 export const routeLabelMap: Record<string, string> = {
-  analytics: 'analytics',
-  treasury: 'treasury',
+  pulse: 'pulse',
+  vault: 'vault',
+  analytics: 'pulse', // backward compat
+  treasury: 'vault', // backward compat
   tasks: 'tasks',
   templates: 'templates',
   sprints: 'sprints',
   proposals: 'proposals',
   ideas: 'ideas',
-  disputes: 'disputes',
-  posts: 'posts',
-  community: 'community',
-  quests: 'refAndQuests',
-  rewards: 'rewards',
+  disputes: 'resolve',
+  posts: 'feed',
+  community: 'ranks',
+  earn: 'earn',
+  quests: 'earn', // backward compat
+  rewards: 'earn', // backward compat
   notifications: 'notifications',
+  'for-projects': 'forProjects',
   admin: 'sectionAdmin',
   profile: 'profile',
   submissions: 'submissions',
