@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
-import { Flame, Lightbulb, MessageCircle, Search, Sparkles, TrendingUp } from 'lucide-react';
+import { CalendarDays, Flame, Lightbulb, MessageCircle, Search, Sparkles, TrendingUp } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { PageContainer } from '@/components/layout';
 import { useAuth } from '@/features/auth/context';
@@ -116,6 +116,13 @@ export default function IdeasPage() {
               </p>
             </div>
             <div className="flex items-center gap-3 shrink-0">
+              <Link
+                href="/ideas/harvest"
+                className="inline-flex items-center gap-2 rounded-lg border border-white/20 px-4 py-2.5 text-sm font-semibold text-white/80 transition-colors hover:border-white/40 hover:text-white"
+              >
+                <CalendarDays className="h-4 w-4" />
+                {t('harvestCta')}
+              </Link>
               <Link
                 href="/proposals"
                 className="inline-flex items-center gap-2 rounded-lg border border-white/20 px-4 py-2.5 text-sm font-semibold text-white/80 transition-colors hover:border-white/40 hover:text-white"

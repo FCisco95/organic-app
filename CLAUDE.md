@@ -31,6 +31,17 @@ Use these files instead:
 - `BUILD_PLAN.md` for roadmap and phase status
 - `README.md` for onboarding and setup context
 
+## Test account for browser QA
+
+When you need to log in to the app for testing or QA, use this account:
+
+- **Email:** `claude-test@organic-dao.dev`
+- **Password:** `OrganicTest2026!`
+- **Role:** admin (organic_id: 999)
+- **Auth state file:** run `playwright-cli state-load auth.json` if a saved session exists
+
+This account has full admin access to all pages and features.
+
 ## Project snapshot
 
 Organic App is a DAO-style platform built with Next.js App Router, Supabase, and Solana wallet linking.

@@ -402,7 +402,7 @@ export function ProgressionShell({ sourceContext = null }: { sourceContext?: Sou
             <h2 className="text-sm font-semibold text-foreground">{t('rewardsReadinessTitle')}</h2>
           </div>
           <Link
-            href="/rewards"
+            href="/earn?tab=rewards"
             className="inline-flex items-center gap-1 text-xs font-medium text-organic-orange hover:text-orange-600"
           >
             {t('openRewards')}

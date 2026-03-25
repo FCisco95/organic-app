@@ -455,6 +455,7 @@ export default function ProposalsPage() {
           user={user}
         />
       </div>
+
     </PageContainer>
   );
 }

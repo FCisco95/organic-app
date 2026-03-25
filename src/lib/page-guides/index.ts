@@ -18,13 +18,17 @@ const routeGuideMap: Record<string, PageGuide> = {
   '/tasks': tasksGuide,
   '/proposals': proposalsGuide,
   '/sprints': sprintsGuide,
-  '/rewards': rewardsGuide,
+  '/earn': rewardsGuide,
   '/disputes': disputesGuide,
+  '/pulse': analyticsGuide,
+  '/vault': treasuryGuide,
+  '/community': communityGuide,
+  '/ideas': ideasGuide,
+  // Backward compat — old routes still resolve a guide
+  '/rewards': rewardsGuide,
   '/quests': questsGuide,
   '/analytics': analyticsGuide,
   '/treasury': treasuryGuide,
-  '/community': communityGuide,
-  '/ideas': ideasGuide,
 };
 
 export function getGuideForRoute(route: string): PageGuide | null {

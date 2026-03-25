@@ -24,7 +24,6 @@ import { TaskListSection } from '@/components/tasks/task-list-section';
 import dynamic from 'next/dynamic';
 const TaskNewModal = dynamic(() => import('@/components/tasks/task-new-modal').then(m => m.TaskNewModal), { ssr: false });
 import { PageContainer } from '@/components/layout';
-import { InfoButton } from '@/components/ui/info-button';
 import { FetchErrorBanner } from '@/components/ui/fetch-error-banner';
 
 type TaskSortOption = 'newest' | 'oldest' | 'dueSoon' | 'pointsHigh' | 'mostLiked';
@@ -572,33 +571,6 @@ export default function TasksPage() {
     }
   };
 
-  const infoSections = [
-    {
-      title: t('infoSection1Title'),
-      points: [
-        t('infoSection1Point1'),
-        t('infoSection1Point2'),
-        t('infoSection1Point3'),
-      ],
-    },
-    {
-      title: t('infoSection2Title'),
-      points: [
-        t('infoSection2Point1'),
-        t('infoSection2Point2'),
-        t('infoSection2Point3'),
-      ],
-    },
-    {
-      title: t('infoSection3Title'),
-      points: [
-        t('infoSection3Point1'),
-        t('infoSection3Point2'),
-        t('infoSection3Point3'),
-      ],
-    },
-  ];
-
   return (
     <PageContainer layout="fluid" className="space-y-4">
       <div data-testid="tasks-page" className="space-y-4">
@@ -782,8 +754,6 @@ export default function TasksPage() {
         />
       )}
       </div>
-
-      <InfoButton sections={infoSections} />
     </PageContainer>
   );
 }

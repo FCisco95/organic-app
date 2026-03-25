@@ -33,7 +33,6 @@ import { DependencyPicker } from '@/components/tasks/dependency-picker';
 import { useTaskDependencies } from '@/features/tasks';
 import { PageContainer } from '@/components/layout';
 import { FollowButton } from '@/components/notifications/follow-button';
-import { InfoButton } from '@/components/ui/info-button';
 
 // Local type alias for the task shape used in this page
 type Task = TaskWithRelations;
@@ -54,21 +53,6 @@ export default function TaskDetailPage() {
   const taskId = typeof params.id === 'string' ? params.id : (params.id?.[0] ?? '');
   const { data: dependencyData } = useTaskDependencies(taskId);
   const canLike = !!profile?.role && ['member', 'council', 'admin'].includes(profile.role);
-  const infoSections = [
-    {
-      title: t('infoSection1Title'),
-      points: [t('infoSection1Point1'), t('infoSection1Point2'), t('infoSection1Point3')],
-    },
-    {
-      title: t('infoSection2Title'),
-      points: [t('infoSection2Point1'), t('infoSection2Point2'), t('infoSection2Point3')],
-    },
-    {
-      title: t('infoSection3Title'),
-      points: [t('infoSection3Point1'), t('infoSection3Point2'), t('infoSection3Point3')],
-    },
-  ];
-
   const [task, setTask] = useState<Task | null>(null);
   const [comments, setComments] = useState<TaskComment[]>([]);
   const [members, setMembers] = useState<Member[]>([]);
@@ -974,7 +958,6 @@ export default function TaskDetailPage() {
         onConfirm={handleDeleteTask}
       />
 
-      <InfoButton sections={infoSections} />
     </PageContainer>
   );
 }

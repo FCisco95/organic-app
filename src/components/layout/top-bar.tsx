@@ -125,7 +125,7 @@ export function TopBar() {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/quests" className="flex items-center gap-2">
+                  <Link href="/earn" className="flex items-center gap-2">
                     <Sparkles className="h-4 w-4" />
                     {t('refAndQuests')}
                   </Link>

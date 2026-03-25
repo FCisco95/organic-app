@@ -4,6 +4,22 @@ For session-by-session implementation notes see `SESSION_LOG.md`.
 
 ---
 
+## Planned — UI Revamps
+
+### Posts Page Revamp
+The `/posts` page needs a full UI rework to match the design language of other pages (dark hero header, consistent filters, proper spacing). Currently uses hardcoded English strings (partially fixed with i18n), minimal styling, and a different layout pattern from the rest of the app. Needs a dedicated planning session to define the target design.
+
+### Notifications Page Revamp
+The `/notifications` page needs a UI revamp. Needs a dedicated planning session.
+
+### Analytics — ORG Price & Chart
+The Analytics page shows "Coming soon" for ORG price and Market cap, but these are now live. Needs:
+- Live ORG token price display (replace "Coming soon")
+- Live market cap display
+- DexScreener chart embed or custom chart component for ORG price history
+
+---
+
 ## Current Status
 
 ### Gamification Revamp — ✅ Complete (2026-02-23)
