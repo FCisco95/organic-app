@@ -12,6 +12,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ChevronDown, LogOut } from 'lucide-react';
 import { getSidebarNavSections, type NavItem } from './nav-config';
+import { SidebarWidget } from './sidebar-widget';
 
 export function Sidebar() {
   const { user, profile, signOut } = useAuth();
@@ -65,6 +66,8 @@ export function Sidebar() {
       </div>
 
       <div className="mx-3 h-px bg-sidebar-border" />
+
+      <SidebarWidget collapsed={collapsed} />
 
       {/* Main nav — grouped sections */}
       <ScrollArea className="flex-1 min-h-0 pt-2 pb-2">

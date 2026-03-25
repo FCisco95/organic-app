@@ -16,6 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { WalletConnectDrawer } from '@/components/wallet';
 import { LogOut, Wallet } from 'lucide-react';
 import { getSidebarNavSections } from './nav-config';
+import { SidebarWidget } from './sidebar-widget';
 
 export function MobileSidebar() {
   const { user, profile, signOut } = useAuth();
@@ -84,6 +85,8 @@ export function MobileSidebar() {
         </div>
 
         <Separator className="bg-sidebar-border" />
+
+        <SidebarWidget />
 
         <ScrollArea className="flex-1 min-h-0 py-2">
           <nav className="flex flex-col px-2">
