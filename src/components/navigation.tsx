@@ -17,28 +17,17 @@ export function Navigation() {
   const t = useTranslations('Navigation');
   const { connected, publicKey, disconnect } = useWallet();
   const [isWalletDrawerOpen, setIsWalletDrawerOpen] = useState(false);
-  const progressionSource = pathname.startsWith('/tasks')
-    ? 'tasks'
-    : pathname.startsWith('/proposals')
-      ? 'proposals'
-      : pathname.startsWith('/ideas')
-        ? 'proposals'
-      : pathname.startsWith('/profile')
-        ? 'profile'
-        : null;
-  const progressionHref = progressionSource
-    ? `/profile/progression?from=${progressionSource}`
-    : '/profile/progression';
-
   const navLinks = [
     { href: '/', label: t('home'), show: true },
-    { href: '/profile', label: t('profile'), show: !!user },
+    { href: '/pulse', label: t('pulse'), show: true },
+    { href: '/vault', label: t('vault'), show: true },
     { href: '/proposals', label: t('proposals'), show: !!user },
     { href: '/ideas', label: t('ideas'), show: !!user },
     { href: '/tasks', label: t('tasks'), show: !!profile?.organic_id },
     { href: '/sprints', label: t('sprints'), show: !!profile?.organic_id },
-    { href: '/community', label: t('community'), show: !!user },
-    { href: progressionHref, label: t('progression'), show: !!user },
+    { href: '/posts', label: t('feed'), show: !!user },
+    { href: '/community', label: t('ranks'), show: !!user },
+    { href: '/earn', label: t('earn'), show: !!user },
   ];
 
   return (
