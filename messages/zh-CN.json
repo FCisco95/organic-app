@@ -1744,7 +1744,39 @@
       "voteParticipation": "投票参与率",
       "activeMembers": "活跃成员：{count}",
       "submitters": "任务提交者：{count}",
-      "commenters": "评论者：{count}"
+      "commenters": "评论者：{count}",
+      "activeContributors": "活跃贡献者"
+    },
+    "marketStrip": {
+      "totalSupply": "总供应量"
+    },
+    "chartTitle": "代币价格图表",
+    "chartUnavailableTitle": "图表不可用",
+    "chartUnavailableDesc": "代币铸造地址未配置。代币设置完成后将显示价格图表。",
+    "chartLoading": "加载图表中...",
+    "market": {
+      "price": "{symbol} 价格",
+      "marketCap": "市值",
+      "volume24h": "24小时交易量",
+      "volume1h": "1小时交易量",
+      "liquidity": "流动性",
+      "onChainHolders": "链上持有者",
+      "transactions": "交易",
+      "buys": "买入",
+      "sells": "卖出",
+      "via": "通过"
+    },
+    "holders": {
+      "concentration": "持有者集中度",
+      "distribution": "供应分布",
+      "top10": "前10名钱包",
+      "top50": "前50名钱包",
+      "whales": "持有≥{threshold}的钱包",
+      "wallets": "钱包",
+      "healthyDistribution": "健康的代币分布",
+      "healthyDesc": "仅{whaleCount}个钱包持有≥1%的供应量。前10名集中度为{top10}%——远低于操纵风险的典型阈值。",
+      "median": "中位数",
+      "average": "平均值"
     },
     "sections": {
       "governance": "治理"
@@ -1950,7 +1982,15 @@
       "mint": "代币铸造地址",
       "mintDescription": "Solana SPL 代币铸造地址",
       "decimals": "小数位数",
-      "totalSupply": "总供应量"
+      "totalSupply": "总供应量",
+      "analyticsTitle": "分析配置",
+      "analyticsDescription": "配置代币分析的显示方式——LP 金库排除和图表嵌入设置。",
+      "lpVaults": "LP 金库排除",
+      "lpVaultsDescription": "要从持有者分布分析中排除的 DEX 流动性池金库钱包地址。这些地址持有代币作为流动性，而非个人持有者。",
+      "lpVaultPlaceholder": "粘贴 Solana 地址...",
+      "dexPair": "DexScreener 交易对地址",
+      "dexPairDescription": "用于图表嵌入的 DexScreener 交易对地址。留空则从代币铸造地址自动解析。",
+      "dexPairPlaceholder": "例如 FYP5yMwo6Lam1fJQ..."
     },
     "treasury": {
       "description": "国库钱包和资金分配",
@@ -2841,6 +2881,7 @@
     "kicker": "想法孵化器",
     "title": "社区想法",
     "subtitle": "先轻量讨论并投票，再把最好的想法推进为正式提案。",
+    "harvestCta": "每周精选",
     "governanceCta": "查看提案",
     "kpiTotalIdeas": "总想法数",
     "kpiActiveIdeas": "活跃想法",

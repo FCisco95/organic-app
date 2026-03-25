@@ -1744,7 +1744,39 @@
       "voteParticipation": "Participação em votos",
       "activeMembers": "Membros ativos: {count}",
       "submitters": "Submissores de tarefas: {count}",
-      "commenters": "Comentadores: {count}"
+      "commenters": "Comentadores: {count}",
+      "activeContributors": "Contribuidores ativos"
+    },
+    "marketStrip": {
+      "totalSupply": "Oferta Total"
+    },
+    "chartTitle": "Gráfico de Preço do Token",
+    "chartUnavailableTitle": "Gráfico indisponível",
+    "chartUnavailableDesc": "O endereço mint do token não está configurado. O gráfico de preço aparecerá quando o token estiver configurado.",
+    "chartLoading": "A carregar gráfico...",
+    "market": {
+      "price": "Preço {symbol}",
+      "marketCap": "Capitalização",
+      "volume24h": "Volume 24h",
+      "volume1h": "Volume 1h",
+      "liquidity": "Liquidez",
+      "onChainHolders": "Detentores on-chain",
+      "transactions": "Txns",
+      "buys": "compras",
+      "sells": "vendas",
+      "via": "via"
+    },
+    "holders": {
+      "concentration": "Concentração de Detentores",
+      "distribution": "Distribuição de Oferta",
+      "top10": "Top 10 carteiras",
+      "top50": "Top 50 carteiras",
+      "whales": "Carteiras com ≥{threshold}",
+      "wallets": "carteiras",
+      "healthyDistribution": "Distribuição saudável de tokens",
+      "healthyDesc": "Apenas {whaleCount} carteira(s) detém ≥1% da oferta. Concentração do top 10 é {top10}% — bem abaixo dos limites típicos de risco de manipulação.",
+      "median": "Mediana",
+      "average": "Média"
     },
     "sections": {
       "governance": "Governança"
@@ -1950,7 +1982,15 @@
       "mint": "Endereço Mint do Token",
       "mintDescription": "Endereço mint do token SPL Solana",
       "decimals": "Decimais",
-      "totalSupply": "Fornecimento Total"
+      "totalSupply": "Fornecimento Total",
+      "analyticsTitle": "Configuração de Análises",
+      "analyticsDescription": "Configure como as análises do token são exibidas — exclusões de cofres LP e configurações de gráficos.",
+      "lpVaults": "Exclusões de Cofres LP",
+      "lpVaultsDescription": "Endereços de carteiras de cofres de liquidez DEX a excluir da análise de distribuição de detentores.",
+      "lpVaultPlaceholder": "Colar endereço Solana...",
+      "dexPair": "Endereço do Par DexScreener",
+      "dexPairDescription": "O endereço do par DexScreener para gráficos incorporados. Deixe vazio para resolver automaticamente a partir do mint.",
+      "dexPairPlaceholder": "ex. FYP5yMwo6Lam1fJQ..."
     },
     "treasury": {
       "description": "Carteira da tesouraria e alocação de fundos",
@@ -2840,6 +2880,7 @@
     "kicker": "Incubadora de Ideias",
     "title": "Ideias da Comunidade",
     "subtitle": "Inicia discussões leves, vota cedo e destaca as melhores ideias antes de virarem propostas formais.",
+    "harvestCta": "Colheita Semanal",
     "governanceCta": "Ver propostas",
     "kpiTotalIdeas": "Ideias totais",
     "kpiActiveIdeas": "Ideias ativas",

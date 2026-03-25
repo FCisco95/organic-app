@@ -6,11 +6,17 @@ export const generalSettingsSchema = z.object({
   logo_url: z.string().url().nullable().or(z.literal('')),
 });
 
+export const tokenAnalyticsConfigSchema = z.object({
+  lp_vault_exclusions: z.array(z.string().trim().min(32).max(64)).default([]),
+  dexscreener_pair: z.string().trim().min(32).max(64).nullable().optional(),
+});
+
 export const tokenSettingsSchema = z.object({
   token_symbol: z.string().min(1).max(20),
   token_mint: z.string().nullable().or(z.literal('')),
   token_decimals: z.coerce.number().int().min(0).max(18),
   token_total_supply: z.coerce.number().int().positive(),
+  token_analytics_config: tokenAnalyticsConfigSchema.optional(),
 });
 
 const treasuryAllocationItemSchema = z.object({
@@ -107,6 +113,7 @@ const orgFieldsSchema = z.object({
   token_mint: z.string().nullable().or(z.literal('')),
   token_decimals: z.coerce.number().int().min(0).max(18),
   token_total_supply: z.coerce.number().int().positive(),
+  token_analytics_config: tokenAnalyticsConfigSchema,
   treasury_wallet: z.string().nullable().or(z.literal('')),
   treasury_allocations: z.array(treasuryAllocationItemSchema),
   default_sprint_capacity: z.coerce.number().int().min(1),

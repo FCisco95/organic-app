@@ -9,8 +9,9 @@ import type { AnalyticsPreset } from '@/features/analytics/types';
 import { useAuth } from '@/features/auth/context';
 import { DateRangeSelector } from '@/components/analytics/date-range-selector';
 import { KPICards } from '@/components/analytics/kpi-cards';
-import { InfoButton } from '@/components/ui/info-button';
-import { Activity, TimerReset, BarChart3, CheckCircle2, Landmark, User, Lock } from 'lucide-react';
+import { TokenChart } from '@/components/analytics/token-chart';
+import { TokenAnalytics } from '@/components/analytics/token-analytics';
+import { Activity, BarChart3, CheckCircle2, Landmark, User, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const ActivityTrendChart = dynamic(
@@ -45,10 +46,6 @@ export default function AnalyticsPage() {
   const { user } = useAuth();
   const [preset, setPreset] = useState<AnalyticsPreset>('30d');
   const { data, isLoading } = useAnalytics(preset);
-  const trust = data?.trust;
-  const updatedAtLabel = trust?.updated_at
-    ? new Date(trust.updated_at).toLocaleString()
-    : t('notAvailable');
   const [activeTab, setActiveTab] = useState<AnalyticsTab>('overview');
 
   const isAuthenticated = !!user;
@@ -59,37 +56,10 @@ export default function AnalyticsPage() {
     { key: 'governance', label: t('tabGovernance'), icon: Landmark },
   ];
 
-  const infoSections = [
-    {
-      title: t('infoSection1Title'),
-      points: [
-        t('infoSection1Point1'),
-        t('infoSection1Point2'),
-        t('infoSection1Point3'),
-      ],
-    },
-    {
-      title: t('infoSection2Title'),
-      points: [
-        t('infoSection2Point1'),
-        t('infoSection2Point2'),
-        t('infoSection2Point3'),
-      ],
-    },
-    {
-      title: t('infoSection3Title'),
-      points: [
-        t('infoSection3Point1'),
-        t('infoSection3Point2'),
-        t('infoSection3Point3'),
-      ],
-    },
-  ];
-
   return (
     <PageContainer layout="fluid">
       <div className="space-y-6">
-        {/* Dark Hero with B's 3 principle cards */}
+        {/* Dark Hero */}
         <div className="rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 sm:p-8 text-white opacity-0 animate-fade-up stagger-1">
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{t('title')}</h1>
           <p className="mt-2 text-sm sm:text-base text-gray-300 leading-relaxed max-w-2xl">
@@ -127,71 +97,48 @@ export default function AnalyticsPage() {
           </div>
         </div>
 
-        {/* Date range selector */}
-        <div className="flex items-center justify-between opacity-0 animate-fade-up stagger-2">
+        {/* Token Market Analytics (price, volume, holder distribution) */}
+        <div className="opacity-0 animate-fade-up stagger-2">
+          <TokenAnalytics />
+        </div>
+
+        {/* Token Price Chart */}
+        <div className="opacity-0 animate-fade-up stagger-3">
+          <TokenChart />
+        </div>
+
+        {/* Governance KPIs + Trust Panel */}
+        <div className="opacity-0 animate-fade-up stagger-4">
+          <KPICards kpis={data?.kpis} trust={data?.trust} loading={isLoading} />
+        </div>
+
+        {/* Tabs with date selector inline */}
+        <div className="flex items-center justify-between border-b border-border opacity-0 animate-fade-up stagger-5">
+          <div className="flex items-center gap-1">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.key;
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key)}
+                  className={cn(
+                    'inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px',
+                    isActive
+                      ? 'border-orange-500 text-orange-600 dark:text-orange-400 font-bold bg-orange-50 dark:bg-orange-500/5 rounded-t-lg'
+                      : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                  )}
+                >
+                  <Icon className={cn('h-4 w-4', isActive && 'text-orange-500')} />
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
           <DateRangeSelector value={preset} onChange={setPreset} />
         </div>
 
-        {/* Governance health strip */}
-        <section
-          className="rounded-2xl border border-border bg-card p-5 opacity-0 animate-fade-up stagger-3"
-          data-testid="analytics-governance-health"
-        >
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-foreground">
-                {t('governanceHealthTitle')}
-              </h2>
-              <p className="mt-1 text-sm text-muted-foreground">{t('governanceHealthDescription')}</p>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <span
-                className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-[11px] text-muted-foreground"
-                data-testid="analytics-trust-updated"
-              >
-                <TimerReset className="h-3.5 w-3.5 text-muted-foreground" />
-                {t('updatedAt', { date: updatedAtLabel })}
-              </span>
-              <span
-                className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-[11px] text-muted-foreground"
-                data-testid="analytics-trust-cadence"
-              >
-                <Activity className="h-3.5 w-3.5 text-emerald-500" />
-                {t('refreshCadence', { seconds: trust?.refresh_interval_seconds ?? 120 })}
-              </span>
-            </div>
-          </div>
-        </section>
-
-        {/* KPI Cards with sparklines */}
-        <div className="opacity-0 animate-fade-up stagger-4">
-          <KPICards kpis={data?.kpis} trust={trust} loading={isLoading} />
-        </div>
-
-        {/* Tabs with icons + orange underline */}
-        <div className="flex items-center gap-1 border-b border-border opacity-0 animate-fade-up stagger-5">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.key;
-            return (
-              <button
-                key={tab.key}
-                onClick={() => setActiveTab(tab.key)}
-                className={cn(
-                  'inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px',
-                  isActive
-                    ? 'border-orange-500 text-orange-600 dark:text-orange-400 font-bold bg-orange-50 dark:bg-orange-500/5 rounded-t-lg'
-                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
-                )}
-              >
-                <Icon className={cn('h-4 w-4', isActive && 'text-orange-500')} />
-                {tab.label}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Tab content — all panels exist in DOM for proper scroll calculation */}
+        {/* Tab content */}
         <div className="min-h-0 overflow-y-auto">
           <div className={cn(activeTab === 'overview' ? 'block' : 'hidden')}>
             <div className="space-y-6 opacity-0 animate-fade-up" style={{ animationDelay: '320ms' }}>
@@ -235,8 +182,6 @@ export default function AnalyticsPage() {
           </div>
         </div>
       </div>
-
-      <InfoButton sections={infoSections} />
     </PageContainer>
   );
 }

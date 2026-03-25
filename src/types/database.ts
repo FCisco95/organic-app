@@ -1127,6 +1127,7 @@ export type Database = {
           slug: string
           sprint_policy: Json
           theme: Json | null
+          token_analytics_config: Json
           token_decimals: number
           token_mint: string | null
           token_symbol: string
@@ -1150,6 +1151,7 @@ export type Database = {
           slug: string
           sprint_policy?: Json
           theme?: Json | null
+          token_analytics_config?: Json
           token_decimals?: number
           token_mint?: string | null
           token_symbol?: string
@@ -1173,6 +1175,7 @@ export type Database = {
           slug?: string
           sprint_policy?: Json
           theme?: Json | null
+          token_analytics_config?: Json
           token_decimals?: number
           token_mint?: string | null
           token_symbol?: string

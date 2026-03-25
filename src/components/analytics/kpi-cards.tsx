@@ -4,7 +4,18 @@ import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import type { AnalyticsKPIs, AnalyticsTrustMeta } from '@/features/analytics';
 import { TOKEN_CONFIG } from '@/config/token';
-import { ArrowUpRight, Activity, Gauge, ShieldAlert } from 'lucide-react';
+import {
+  ArrowUpRight,
+  ArrowDownRight,
+  Activity,
+  Gauge,
+  ShieldAlert,
+  Coins,
+  Users,
+  BarChart3,
+  CheckCircle2,
+  Vote,
+} from 'lucide-react';
 
 interface KPICardsProps {
   kpis: AnalyticsKPIs | undefined;
@@ -13,151 +24,268 @@ interface KPICardsProps {
 }
 
 function formatCompact(value: number): string {
-  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(2)}M`;
-  if (value >= 1_000) return `${(value / 1_000).toFixed(1)}K`;
-  return value.toLocaleString();
+  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(2)}M`;
+  if (value >= 1_000) return `$${(value / 1_000).toFixed(1)}K`;
+  return `$${value.toLocaleString()}`;
 }
 
-function MiniSparkline() {
+function formatPrice(value: number): string {
+  if (value < 0.01) return `$${value.toFixed(6)}`;
+  if (value < 1) return `$${value.toFixed(4)}`;
+  return `$${value.toFixed(2)}`;
+}
+
+function Skeleton({ className }: { className?: string }) {
+  return <div className={cn('rounded-md bg-muted animate-pulse', className)} />;
+}
+
+/* ─── Token Market Strip ──────────────────────────────────────────── */
+
+function TokenMarketStrip({
+  kpis,
+  loading,
+  t,
+}: {
+  kpis: AnalyticsKPIs | undefined;
+  loading: boolean;
+  t: ReturnType<typeof useTranslations<'Analytics'>>;
+}) {
+  const priceAvailable = kpis?.org_price != null;
+  const mcapAvailable = kpis?.market_cap != null;
+
+  const items = [
+    {
+      label: t('kpi.orgPrice', { symbol: TOKEN_CONFIG.symbol }),
+      value: priceAvailable ? formatPrice(kpis!.org_price!) : null,
+      icon: Coins,
+      iconColor: 'text-orange-500',
+      mono: true,
+    },
+    {
+      label: t('kpi.marketCap'),
+      value: mcapAvailable ? formatCompact(kpis!.market_cap!) : null,
+      icon: BarChart3,
+      iconColor: 'text-blue-500',
+      mono: true,
+    },
+    {
+      label: t('kpi.orgHolders', { symbol: TOKEN_CONFIG.symbol }),
+      value: kpis?.org_holders != null ? kpis.org_holders.toLocaleString() : null,
+      icon: Users,
+      iconColor: 'text-emerald-500',
+    },
+    {
+      label: t('marketStrip.totalSupply'),
+      value: TOKEN_CONFIG.totalSupply
+        ? `${(TOKEN_CONFIG.totalSupply / 1_000_000_000).toFixed(0)}B`
+        : null,
+      icon: Activity,
+      iconColor: 'text-purple-500',
+    },
+  ];
+
   return (
-    <div className="flex items-end gap-px h-5 mt-1">
-      {[3, 5, 4, 7, 6, 8, 5, 9, 7, 10, 8, 6].map((h, i) => (
-        <div
-          key={i}
-          className="w-1 rounded-sm bg-muted-foreground/15"
-          style={{ height: `${h * 10}%` }}
-        />
-      ))}
+    <div className="rounded-2xl bg-gradient-to-r from-orange-500/5 via-transparent to-orange-500/5 border border-orange-500/10 p-1">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-px">
+        {items.map((item) => {
+          const Icon = item.icon;
+          return (
+            <div key={item.label} className="flex items-center gap-3 px-4 py-3">
+              <div className="rounded-lg bg-background/80 p-2 shadow-sm">
+                <Icon className={cn('h-4 w-4', item.iconColor)} />
+              </div>
+              <div className="min-w-0">
+                {loading ? (
+                  <>
+                    <Skeleton className="h-5 w-16" />
+                    <Skeleton className="mt-1 h-3 w-20" />
+                  </>
+                ) : item.value ? (
+                  <>
+                    <p
+                      className={cn(
+                        'text-base font-bold text-foreground leading-none truncate',
+                        item.mono && 'font-mono tabular-nums'
+                      )}
+                    >
+                      {item.value}
+                    </p>
+                    <p className="mt-0.5 text-[11px] text-muted-foreground leading-tight">
+                      {item.label}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-[10px] font-medium bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-full px-2 py-0.5 inline-block">
+                      {t('kpiComingSoon')}
+                    </span>
+                    <p className="mt-0.5 text-[11px] text-muted-foreground leading-tight">
+                      {item.label}
+                    </p>
+                  </>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
 
-export function KPICards({ kpis, trust, loading }: KPICardsProps) {
-  const t = useTranslations('Analytics');
+/* ─── Governance KPI Cards ────────────────────────────────────────── */
 
-  const priceHasData = kpis?.org_price != null;
-  const marketCapHasData = kpis?.market_cap != null;
-
-  const items: { label: string; value: string | number | null; mono?: boolean; helper?: string; hasTrend: boolean; comingSoon?: boolean }[] = [
-    { label: t('kpi.totalUsers'), value: kpis?.total_users ?? '\u2014', hasTrend: true },
-    { label: t('kpi.orgHolders', { symbol: TOKEN_CONFIG.symbol }), value: kpis?.org_holders ?? '\u2014', hasTrend: true },
+function GovernanceKPIs({
+  kpis,
+  trust,
+  loading,
+  t,
+}: {
+  kpis: AnalyticsKPIs | undefined;
+  trust: AnalyticsTrustMeta | undefined;
+  loading: boolean;
+  t: ReturnType<typeof useTranslations<'Analytics'>>;
+}) {
+  const items = [
     {
-      label: t('kpi.orgPrice', { symbol: TOKEN_CONFIG.symbol }),
-      value: priceHasData ? `$${kpis!.org_price!.toFixed(6)}` : null,
-      mono: true,
-      helper: !priceHasData ? t('kpiPriceHelper') : undefined,
-      hasTrend: priceHasData,
-      comingSoon: !priceHasData,
+      label: t('kpi.totalUsers'),
+      value: kpis?.total_users?.toLocaleString() ?? '\u2014',
+      icon: Users,
+      iconColor: 'text-blue-500',
     },
     {
-      label: t('kpi.marketCap'),
-      value: marketCapHasData ? `$${formatCompact(kpis!.market_cap!)}` : null,
-      mono: true,
-      helper: !marketCapHasData ? t('kpiMarketCapHelper') : undefined,
-      hasTrend: marketCapHasData,
-      comingSoon: !marketCapHasData,
+      label: t('kpi.tasksCompleted'),
+      value: kpis?.tasks_completed?.toLocaleString() ?? '\u2014',
+      icon: CheckCircle2,
+      iconColor: 'text-green-500',
     },
-    { label: t('kpi.tasksCompleted'), value: kpis?.tasks_completed ?? '\u2014', hasTrend: true },
-    { label: t('kpi.activeProposals'), value: kpis?.active_proposals ?? '\u2014', hasTrend: true },
+    {
+      label: t('kpi.activeProposals'),
+      value: kpis?.active_proposals?.toLocaleString() ?? '\u2014',
+      icon: Vote,
+      iconColor: 'text-indigo-500',
+    },
+    {
+      label: t('trustPanel.voteParticipation'),
+      value: trust ? `${trust.vote_participation_30d.participation_rate.toFixed(1)}%` : '\u2014',
+      icon: Gauge,
+      iconColor: 'text-orange-500',
+    },
   ];
 
   return (
-    <div className="space-y-4">
-      <div className="rounded-2xl bg-card shadow-sm ring-1 ring-border divide-x divide-border grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
-        {items.map((item) => (
-          <div key={item.label} className="flex flex-col justify-center px-5 py-5">
-            {loading ? (
-              <>
-                <div className="h-7 w-14 rounded-md bg-muted animate-pulse" />
-                <div className="mt-2 h-3 w-20 rounded bg-muted/60 animate-pulse" />
-              </>
-            ) : (
-              <>
-                {item.comingSoon ? (
-                  <span className="text-[10px] font-medium bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-full px-2 py-0.5 inline-block w-fit">
-                    {t('kpiComingSoon')}
-                  </span>
-                ) : (
-                  <p
-                    className={cn(
-                      'text-2xl font-bold text-foreground leading-none',
-                      item.mono && 'font-mono tabular-nums text-xl'
-                    )}
-                  >
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      {items.map((item) => {
+        const Icon = item.icon;
+        return (
+          <div
+            key={item.label}
+            className="rounded-xl border border-border bg-card px-4 py-3 flex items-center gap-3"
+          >
+            <div className="rounded-lg bg-muted/50 p-2">
+              <Icon className={cn('h-4 w-4', item.iconColor)} />
+            </div>
+            <div className="min-w-0">
+              {loading ? (
+                <>
+                  <Skeleton className="h-5 w-12" />
+                  <Skeleton className="mt-1 h-3 w-16" />
+                </>
+              ) : (
+                <>
+                  <p className="text-lg font-bold text-foreground leading-none font-mono tabular-nums">
                     {item.value}
                   </p>
-                )}
-                {item.hasTrend && !item.comingSoon ? (
-                  <MiniSparkline />
-                ) : item.helper ? (
-                  <p className="mt-1.5 text-[10px] text-muted-foreground/70 leading-tight">{item.helper}</p>
-                ) : !item.comingSoon ? (
-                  <p className="mt-1.5 text-[10px] text-muted-foreground/60 leading-tight">{t('kpiNoTrend')}</p>
-                ) : null}
-                <p className="mt-1 text-xs text-muted-foreground leading-tight">{item.label}</p>
-              </>
-            )}
+                  <p className="mt-0.5 text-[11px] text-muted-foreground leading-tight">
+                    {item.label}
+                  </p>
+                </>
+              )}
+            </div>
           </div>
-        ))}
+        );
+      })}
+    </div>
+  );
+}
+
+/* ─── Trust Panel (compact) ───────────────────────────────────────── */
+
+function TrustPanel({
+  trust,
+  loading,
+  t,
+}: {
+  trust: AnalyticsTrustMeta | undefined;
+  loading: boolean;
+  t: ReturnType<typeof useTranslations<'Analytics'>>;
+}) {
+  return (
+    <div className="rounded-xl border border-border bg-card p-4">
+      <div className="flex items-center justify-between gap-3 mb-3">
+        <p className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground font-semibold">
+          {t('trustPanel.title')}
+        </p>
+        <span className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-0.5 text-[10px] text-muted-foreground">
+          <Activity className="h-3 w-3 text-emerald-500" />
+          {t('trustPanel.window30d')}
+        </span>
       </div>
 
-      <div className="rounded-2xl border border-border bg-card p-4">
-        <div className="flex items-center justify-between gap-3">
-          <p className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
-            {t('trustPanel.title')}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="rounded-lg border border-border bg-muted/30 px-3 py-2">
+          <p className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+            {t('trustPanel.proposalThroughput')}
           </p>
-          <span className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-1 text-[10px] text-muted-foreground">
-            <Activity className="h-3.5 w-3.5 text-emerald-500" />
-            {t('trustPanel.window30d')}
-          </span>
+          <p className="mt-1 text-sm font-semibold font-mono tabular-nums text-foreground">
+            {loading || !trust
+              ? '\u2014'
+              : `${trust.proposal_throughput_30d.created} / ${trust.proposal_throughput_30d.finalized} / ${trust.proposal_throughput_30d.passed}`}
+          </p>
         </div>
-
-        <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div className="rounded-xl border border-border bg-muted/30 px-3 py-2">
-            <p className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
-              {t('trustPanel.proposalThroughput')}
-            </p>
-            <p className="mt-1 text-sm font-semibold font-mono tabular-nums text-foreground" data-testid="analytics-throughput">
-              {loading || !trust
-                ? '\u2014'
-                : `${trust.proposal_throughput_30d.created} / ${trust.proposal_throughput_30d.finalized} / ${trust.proposal_throughput_30d.passed}`}
-            </p>
-          </div>
-          <div className="rounded-xl border border-border bg-muted/30 px-3 py-2">
-            <p className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
-              {t('trustPanel.disputeHealth')}
-            </p>
-            <p className="mt-1 text-sm font-semibold font-mono tabular-nums text-foreground" data-testid="analytics-disputes">
-              {loading || !trust
-                ? '\u2014'
-                : `${trust.dispute_aggregate_30d.opened} / ${trust.dispute_aggregate_30d.resolved} / ${trust.dispute_aggregate_30d.unresolved}`}
-            </p>
-          </div>
-          <div className="rounded-xl border border-border bg-muted/30 px-3 py-2">
-            <p className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
-              {t('trustPanel.voteParticipation')}
-            </p>
-            <p className="mt-1 text-sm font-semibold font-mono tabular-nums text-foreground" data-testid="analytics-participation">
-              {loading || !trust ? '\u2014' : `${trust.vote_participation_30d.participation_rate.toFixed(1)}%`}
-            </p>
-          </div>
+        <div className="rounded-lg border border-border bg-muted/30 px-3 py-2">
+          <p className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+            {t('trustPanel.disputeHealth')}
+          </p>
+          <p className="mt-1 text-sm font-semibold font-mono tabular-nums text-foreground">
+            {loading || !trust
+              ? '\u2014'
+              : `${trust.dispute_aggregate_30d.opened} / ${trust.dispute_aggregate_30d.resolved} / ${trust.dispute_aggregate_30d.unresolved}`}
+          </p>
         </div>
-
-        <div className="mt-3 flex flex-wrap gap-2 text-xs text-muted-foreground">
-          <span className="inline-flex items-center gap-1 rounded-full bg-card border border-border px-2.5 py-1">
-            <Gauge className="h-3.5 w-3.5 text-blue-500" />
-            {t('trustPanel.activeMembers', { count: trust?.active_contributor_signals_30d.active_members ?? 0 })}
-          </span>
-          <span className="inline-flex items-center gap-1 rounded-full bg-card border border-border px-2.5 py-1">
-            <ArrowUpRight className="h-3.5 w-3.5 text-orange-500" />
-            {t('trustPanel.submitters', { count: trust?.active_contributor_signals_30d.task_submitters ?? 0 })}
-          </span>
-          <span className="inline-flex items-center gap-1 rounded-full bg-card border border-border px-2.5 py-1">
-            <ShieldAlert className="h-3.5 w-3.5 text-purple-500" />
-            {t('trustPanel.commenters', { count: trust?.active_contributor_signals_30d.commenters ?? 0 })}
-          </span>
+        <div className="rounded-lg border border-border bg-muted/30 px-3 py-2">
+          <p className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+            {t('trustPanel.activeContributors')}
+          </p>
+          <div className="mt-1 flex flex-wrap gap-1.5">
+            <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
+              <ArrowUpRight className="h-3 w-3 text-orange-500" />
+              {trust?.active_contributor_signals_30d.active_members ?? 0}
+            </span>
+            <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
+              <CheckCircle2 className="h-3 w-3 text-green-500" />
+              {trust?.active_contributor_signals_30d.task_submitters ?? 0}
+            </span>
+            <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
+              <ShieldAlert className="h-3 w-3 text-purple-500" />
+              {trust?.active_contributor_signals_30d.commenters ?? 0}
+            </span>
+          </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ─── Main Export ──────────────────────────────────────────────────── */
+
+export function KPICards({ kpis, trust, loading }: KPICardsProps) {
+  const t = useTranslations('Analytics');
+
+  return (
+    <div className="space-y-4">
+      <GovernanceKPIs kpis={kpis} trust={trust} loading={loading} t={t} />
+      <TrustPanel trust={trust} loading={loading} t={t} />
     </div>
   );
 }

@@ -29,6 +29,11 @@ export interface RewardsConfig {
   treasury_balance_for_emission?: number;
 }
 
+export interface TokenAnalyticsConfig {
+  lp_vault_exclusions: string[];
+  dexscreener_pair: string | null;
+}
+
 export interface Organization {
   id: string;
   name: string;
@@ -40,6 +45,7 @@ export interface Organization {
   token_mint: string | null;
   token_decimals: number;
   token_total_supply: number;
+  token_analytics_config: TokenAnalyticsConfig;
   // Treasury config
   treasury_wallet: string | null;
   treasury_allocations: TreasuryAllocationConfig[];

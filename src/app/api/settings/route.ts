@@ -6,7 +6,7 @@ import { logger } from '@/lib/logger';
 import type { Json } from '@/types/database';
 
 const ORG_COLUMNS =
-  'id, name, slug, description, logo_url, theme, token_symbol, token_mint, token_decimals, token_total_supply, treasury_wallet, treasury_allocations, organic_id_threshold, default_sprint_duration_days, default_sprint_capacity, governance_policy, sprint_policy, rewards_config, created_at, updated_at';
+  'id, name, slug, description, logo_url, theme, token_symbol, token_mint, token_decimals, token_total_supply, token_analytics_config, treasury_wallet, treasury_allocations, organic_id_threshold, default_sprint_duration_days, default_sprint_capacity, governance_policy, sprint_policy, rewards_config, created_at, updated_at';
 const VOTING_CONFIG_COLUMNS =
   'id, org_id, quorum_percentage, approval_threshold, voting_duration_days, proposal_threshold_org, proposer_cooldown_days, max_live_proposals, abstain_counts_toward_quorum, created_at, updated_at';
 

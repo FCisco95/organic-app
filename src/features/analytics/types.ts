@@ -86,6 +86,57 @@ export interface VotingParticipationData {
   abstain_votes: number;
 }
 
+export interface MarketData {
+  price: number;
+  priceChange1h: number;
+  priceChange24h: number;
+  volume1h: number;
+  volume24h: number;
+  txns1h: { buys: number; sells: number };
+  txns24h: { buys: number; sells: number };
+  liquidity: number;
+  marketCap: number | null;
+  fdv: number | null;
+  dex: string;
+  pairAddress: string;
+  fetchedAt: string;
+}
+
+export interface HolderTier {
+  label: string;
+  count: number;
+  percentage: number;
+  totalBalance: number;
+  supplyPercentage: number;
+}
+
+export interface TopHolder {
+  rank: number;
+  address: string;
+  balance: number;
+  supplyPercentage: number;
+}
+
+export interface HolderDistribution {
+  totalHolders: number;
+  circulatingSupply: number;
+  maxSupply: number;
+  top10Concentration: number;
+  top50Concentration: number;
+  whaleCount: number;
+  whaleConcentration: number;
+  topHolders: TopHolder[];
+  tiers: HolderTier[];
+  medianBalance: number;
+  averageBalance: number;
+  fetchedAt: string;
+}
+
+export interface MarketAnalyticsData {
+  market: MarketData | null;
+  holders: HolderDistribution | null;
+}
+
 export interface AnalyticsData {
   kpis: AnalyticsKPIs;
   activity_trends: ActivityTrendPoint[];

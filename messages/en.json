@@ -394,7 +394,18 @@
     "sidebarHotTopics": "Hot Topics",
     "emptySearchTitle": "No results found",
     "emptySearchDescription": "No proposals match \"{search}\". Try a different search.",
-    "emptyTitle": "Be the first to start a discussion"
+    "emptyTitle": "Be the first to start a discussion",
+    "infoSection1Title": "How Proposals Work",
+    "infoSection1Point1": "**Proposals are the heartbeat of governance.** Any member with an Organic ID can submit a proposal to suggest features, allocate treasury funds, or shape the DAO's direction.",
+    "infoSection1Point2": "Each proposal moves through stages: **Public → Qualified → Discussion → Voting → Finalized.** Community engagement at every stage determines what moves forward.",
+    "infoSection1Point3": "Proposals that reach the voting stage are decided by the full community. One member, one vote — transparent and on-the-record.",
+    "infoSection2Title": "Your Role",
+    "infoSection2Point1": "**Vote on active proposals** to shape the DAO's future. Every vote earns XP and moves you up the governance track.",
+    "infoSection2Point2": "**Comment on discussions** to refine proposals before they go to vote. Thoughtful feedback is rewarded with XP.",
+    "infoSection2Point3": "**Submit your own proposals** when you see an opportunity to improve the DAO. Great proposals start with a clear problem and a concrete solution.",
+    "infoSection3Title": "Pro Tips",
+    "infoSection3Point1": "Use the **category filters** to focus on what matters to you — Treasury, Governance, Community, Development, or Feature proposals.",
+    "infoSection3Point2": "The **Governance Sidebar** shows the pulse of current activity — hot topics, stage distribution, and community engagement trends."
   },
   "ProposalCreate": {
     "toastMustBeMember": "You must be a member to create proposals",
@@ -1753,7 +1764,39 @@
       "voteParticipation": "Vote participation",
       "activeMembers": "Active members: {count}",
       "submitters": "Task submitters: {count}",
-      "commenters": "Commenters: {count}"
+      "commenters": "Commenters: {count}",
+      "activeContributors": "Active contributors"
+    },
+    "marketStrip": {
+      "totalSupply": "Total Supply"
+    },
+    "chartTitle": "Token Price Chart",
+    "chartUnavailableTitle": "Chart unavailable",
+    "chartUnavailableDesc": "Token mint address is not configured. Price chart will appear once the token is set up.",
+    "chartLoading": "Loading chart...",
+    "market": {
+      "price": "{symbol} Price",
+      "marketCap": "Market Cap",
+      "volume24h": "24h Volume",
+      "volume1h": "1h Volume",
+      "liquidity": "Liquidity",
+      "onChainHolders": "On-chain Holders",
+      "transactions": "Txns",
+      "buys": "buys",
+      "sells": "sells",
+      "via": "via"
+    },
+    "holders": {
+      "concentration": "Holder Concentration",
+      "distribution": "Supply Distribution",
+      "top10": "Top 10 wallets",
+      "top50": "Top 50 wallets",
+      "whales": "Wallets holding ≥{threshold}",
+      "wallets": "wallets",
+      "healthyDistribution": "Healthy token distribution",
+      "healthyDesc": "Only {whaleCount} wallet(s) hold ≥1% of supply. Top 10 concentration is {top10}% — well below typical thresholds for manipulation risk.",
+      "median": "Median",
+      "average": "Average"
     },
     "sections": {
       "governance": "Governance"
@@ -1959,7 +2002,15 @@
       "mint": "Token Mint Address",
       "mintDescription": "Solana SPL token mint address",
       "decimals": "Decimals",
-      "totalSupply": "Total Supply"
+      "totalSupply": "Total Supply",
+      "analyticsTitle": "Analytics Configuration",
+      "analyticsDescription": "Configure how token analytics are displayed — LP vault exclusions and chart embed settings.",
+      "lpVaults": "LP Vault Exclusions",
+      "lpVaultsDescription": "Wallet addresses of DEX liquidity pool vaults to exclude from holder distribution analysis. These hold tokens as liquidity, not as individual holders.",
+      "lpVaultPlaceholder": "Paste Solana address...",
+      "dexPair": "DexScreener Pair Address",
+      "dexPairDescription": "The DexScreener pair address for chart embeds. Leave empty to auto-resolve from token mint.",
+      "dexPairPlaceholder": "e.g. FYP5yMwo6Lam1fJQ..."
     },
     "treasury": {
       "description": "Treasury wallet and fund allocation",
@@ -2953,7 +3004,19 @@
     "modRemove": "Remove idea",
     "moderationSuccess": "Moderation action applied.",
     "moderationError": "Failed to apply moderation action",
-    "removedReason": "Removal reason"
+    "removedReason": "Removal reason",
+    "harvestCta": "Weekly Harvest",
+    "infoSection1Title": "What Are Ideas?",
+    "infoSection1Point1": "**Ideas are lightweight proposals** — a space to float concepts before committing to a formal governance proposal. Think of it as the DAO's brainstorming board.",
+    "infoSection1Point2": "Upvote ideas you believe in. The most supported ideas get **promoted to full proposals** and enter the governance pipeline.",
+    "infoSection1Point3": "Ideas with momentum earn their authors XP and achievement progress. Top ideas are featured in the **Weekly Harvest** spotlight.",
+    "infoSection2Title": "Getting Involved",
+    "infoSection2Point1": "**Submit ideas** about anything — features, partnerships, events, governance improvements. No idea is too small to start a conversation.",
+    "infoSection2Point2": "**Vote and comment** to help the best ideas rise. Your engagement here directly shapes what the DAO works on next.",
+    "infoSection2Point3": "Check the **Trending** tab to see what's generating buzz, or browse **Promoted** to see which ideas made it to proposals.",
+    "infoSection3Title": "Earning Rewards",
+    "infoSection3Point1": "Creating ideas, voting, and commenting all earn **XP and quest progress.** Daily quests like \"Share an Idea\" and \"Vote on Ideas\" reward consistent participation.",
+    "infoSection3Point2": "The **Idea Champion** quest rewards having an idea promoted to a proposal — the ultimate validation from your community."
   },
   "Harvest": {
     "title": "Weekly Harvest",
@@ -2970,7 +3033,13 @@
     "statIdeas": "New ideas",
     "statStreaks": "Active streaks",
     "nextWeekTitle": "Next week's challenge",
-    "nextWeekDescription": "Share an idea and get 3 upvotes to earn the Community Voice quest bonus. Top contributor earns a spotlight badge!"
+    "nextWeekDescription": "Share an idea and get 3 upvotes to earn the Community Voice quest bonus. Top contributor earns a spotlight badge!",
+    "infoSection1Title": "The Weekly Harvest",
+    "infoSection1Point1": "**Every week, the best ideas are spotlighted here.** The winning idea, top contributors, and community stats are curated into a single page.",
+    "infoSection1Point2": "This is where momentum becomes visible — see who's driving the DAO forward and what concepts are gaining traction.",
+    "infoSection2Title": "How to Get Featured",
+    "infoSection2Point1": "**Submit ideas that resonate.** Ideas with the most upvotes and engagement rise to the top of the weekly spotlight.",
+    "infoSection2Point2": "**Stay active.** Consistent contributors who vote, comment, and propose ideas earn spotlight recognition and bonus XP."
   },
   "Community": {
     "title": "Community",
@@ -3003,7 +3072,40 @@
     "statTotalPoints": "Total Points",
     "statTasksCompleted": "Tasks Done",
     "statRank": "Rank",
-    "statLevel": "Level"
+    "statLevel": "Level",
+    "infoSection1Title": "Community Rankings",
+    "infoSection1Point1": "**Rankings reflect real contribution, not just activity.** XP earned from tasks, governance, and community engagement determines your position on the leaderboard.",
+    "infoSection1Point2": "Levels unlock new abilities — higher levels can create proposals, moderate content, and access exclusive quests.",
+    "infoSection1Point3": "Your rank updates in real time as you and others earn XP. Every action counts.",
+    "infoSection2Title": "Member Directory",
+    "infoSection2Point1": "**Browse the full member list** to find collaborators, see who's active, and explore individual profiles with contribution history.",
+    "infoSection2Point2": "Each member card shows their role, level, XP, and recent activity — a quick snapshot of their DAO involvement.",
+    "infoSection3Title": "Climbing the Ranks",
+    "infoSection3Point1": "**Complete tasks** for the biggest XP gains. Development, content, and design tasks all contribute to your rank.",
+    "infoSection3Point2": "**Participate in governance** — voting, commenting, and proposing ideas all earn XP and boost your standing."
+  },
+  "Posts": {
+    "title": "Community Posts",
+    "subtitle": "Share updates, start discussions, and connect with the community.",
+    "searchPlaceholder": "Search posts...",
+    "sortNew": "New",
+    "sortPopular": "Popular",
+    "sortTopWeek": "Top This Week",
+    "filterAll": "All",
+    "filterPosts": "Posts",
+    "filterThreads": "Threads",
+    "filterAnnouncements": "Announcements",
+    "filterLinks": "Links",
+    "emptyState": "No posts yet. Be the first to share!",
+    "likeError": "You must be logged in to like posts",
+    "likeFailure": "Failed to like post",
+    "infoSection1Title": "What Are Posts?",
+    "infoSection1Point1": "**Posts are the community's open forum.** Share updates, start discussions, drop links, or publish threaded deep-dives — this is where the DAO talks.",
+    "infoSection1Point2": "Unlike Ideas (which feed governance), posts are for **general conversation** — project updates, ecosystem news, questions, and celebrations.",
+    "infoSection1Point3": "Posts, threads, announcements, and link shares each serve a different purpose. Use the type filters to find what you need.",
+    "infoSection2Title": "Earning Through Posts",
+    "infoSection2Point1": "**Creating posts earns 10 XP** (up to 3 per day). Quality over quantity — thoughtful posts that spark discussion are what the community values.",
+    "infoSection2Point2": "**Getting likes earns 2 XP per like** to the author (capped at 10/day). Write something worth reading and the community will reward you."
   },
   "NotFound": {
     "heading": "Lost in the garden?",
