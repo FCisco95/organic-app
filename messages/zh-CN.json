@@ -3087,5 +3087,11 @@
       "empty": "暂无近期活动",
       "emptyDesc": "配置更改将在此处显示。"
     }
+  },
+  "Earn": {
+    "title": "赚取",
+    "subtitle": "完成任务并领取奖励",
+    "tab_quests": "任务挑战",
+    "tab_rewards": "奖励"
   }
 }

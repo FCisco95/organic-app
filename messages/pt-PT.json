@@ -3086,5 +3086,11 @@
       "empty": "Sem atividade recente",
       "emptyDesc": "As alterações de configuração aparecerão aqui."
     }
+  },
+  "Earn": {
+    "title": "Ganhar",
+    "subtitle": "Completa quests e reclama recompensas",
+    "tab_quests": "Quests",
+    "tab_rewards": "Recompensas"
   }
 }
