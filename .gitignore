@@ -76,3 +76,4 @@ alt-*.png
 .playwright-cli/
 # Sentry Config File
 .env.sentry-build-plugin
+auth.json
