@@ -181,7 +181,7 @@ export default function PostDetailPage() {
         {/* Post */}
         <article
           className={cn(
-            'rounded-2xl border bg-card p-5 sm:p-6 mb-6 opacity-0 animate-fade-up stagger-2',
+            'relative z-10 rounded-2xl border bg-card p-5 sm:p-6 mb-6 opacity-0 animate-fade-up stagger-2',
             isAnnouncement
               ? 'border-l-4 border-l-amber-500/80 border-t-border border-r-border border-b-border'
               : isPromotedActive
