@@ -1359,3 +1359,37 @@ Completed Task 1 from `docs/plans/2026-02-20-core-features-revamp-test-implement
 
 - Build validation surfaced an unrelated strict-cast issue in `src/app/[locale]/admin/submissions/page.tsx`; applied minimal type-cast compatibility fix to unblock production build validation during this workstream.
 
+---
+
+## Session — 2026-03-26: Post-Phase 30 QA + Bug Fixes
+
+### Multi-user engagement testing (Phase 30 QA)
+
+Tested cross-account post engagement using QA fixture accounts (qa-admin, qa-member, qa-council) in headed Playwright browsers against the production build.
+
+**Results:**
+- **Like (organic post):** API works, XP awarded correctly (2 XP liker, 3 XP author). Points awarded to author (1 pt).
+- **Comment (organic post):** Comment posted, XP correct (8 XP commenter, 5 XP author), points correct (+2 pts to author).
+- **Flag (organic post):** Flag recorded (flag_count=1), organic_bonus_revoked stays false (single flag below threshold), Flag button hidden after flagging.
+
+### Bugs found and fixed
+
+**Bug 1: Like toggle awarded duplicate points**
+- Root cause: `awardPoints()` had no deduplication — unlike `awardXp()` which uses a unique index on xp_events.
+- Fix: Added partial unique index `idx_points_ledger_dedupe` on `(user_id, source_type, source_id)` to `points_ledger`. Updated `awardPoints()` to catch 23505 and roll back balance on duplicate.
+
+**Bug 2: likes_count and comments_count stuck at 0**
+- Root cause: DB triggers (`sync_post_likes_count`, `sync_post_comments_count`) lacked `SECURITY DEFINER`, so RLS blocked the UPDATE on posts.
+- Fix: Recreated triggers with `SECURITY DEFINER`. Added inline count sync from actual tables in like/comment API routes as fallback. Backfilled all existing counts.
+
+**Migration:** `20260326300000_fix_post_engagement_bugs.sql` — applied to live Supabase.
+
+### Decisions
+
+- **Promoted posts expiry cleanup:** Skipped. `getPromotionMultiplier()` already returns 1.0 for expired promotions, so no user impact. A cron to flip `is_promoted=false` is nice-to-have but not needed now.
+- **E8 (Analytics/DexScreener) and E9 (Navigation restructure):** Confirmed both already fully implemented from prior sessions.
+
+### Commit
+
+`110f004` — `fix(posts): deduplicate engagement points + fix like/comment count triggers`
+
