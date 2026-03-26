@@ -24,6 +24,9 @@ export interface Post {
   comments_count: number;
   twitter_url: string | null;
   boostable: boolean;
+  og_title: string | null;
+  og_description: string | null;
+  og_image_url: string | null;
   removed_at: string | null;
   removed_reason: string | null;
   created_at: string;
