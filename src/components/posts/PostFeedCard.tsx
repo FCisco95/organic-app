@@ -1,9 +1,12 @@
 'use client';
 
-import { Heart, MessageCircle, Pin, Megaphone, LinkIcon, AlignLeft } from 'lucide-react';
+import { Heart, MessageCircle, Pin, Megaphone, LinkIcon, AlignLeft, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { PostListItem } from '@/features/posts';
 import type { PostType } from '@/features/posts/types';
+import { useTranslations } from 'next-intl';
+
+/* ─── Shared types ─────────────────────────────────────────────────────── */
 
 interface PostFeedCardProps {
   post: PostListItem;
@@ -12,6 +15,14 @@ interface PostFeedCardProps {
   likeLoading?: boolean;
 }
 
+interface FeaturedPostCardProps extends PostFeedCardProps {
+  index: number;
+}
+
+interface CompactPostRowProps extends PostFeedCardProps {}
+
+/* ─── Lookup maps ──────────────────────────────────────────────────────── */
+
 const POST_TYPE_ICONS: Record<PostType, typeof AlignLeft> = {
   text: AlignLeft,
   thread: AlignLeft,
@@ -19,12 +30,14 @@ const POST_TYPE_ICONS: Record<PostType, typeof AlignLeft> = {
   link_share: LinkIcon,
 };
 
-const POST_TYPE_LABELS: Record<PostType, string> = {
-  text: 'Post',
-  thread: 'Thread',
-  announcement: 'Announcement',
-  link_share: 'Link',
+const POST_TYPE_LABEL_KEYS: Record<PostType, string> = {
+  text: 'typePost',
+  thread: 'typeThread',
+  announcement: 'typeAnnouncement',
+  link_share: 'typeLink',
 };
+
+/* ─── Helpers ──────────────────────────────────────────────────────────── */
 
 function timeAgo(dateStr: string): string {
   const now = Date.now();
@@ -40,32 +53,187 @@ function timeAgo(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString();
 }
 
+function AuthorAvatar({ author, size }: { author: PostListItem['author']; size: number }) {
+  return (
+    <div
+      className="rounded-full bg-gradient-to-br from-orange-400 to-yellow-300 flex items-center justify-center overflow-hidden shrink-0"
+      style={{ width: size, height: size }}
+    >
+      {author.avatar_url ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={author.avatar_url} alt="" className="w-full h-full object-cover" />
+      ) : (
+        <span
+          className="font-bold text-white"
+          style={{ fontSize: size * 0.38 }}
+        >
+          {(author.name || author.email).charAt(0).toUpperCase()}
+        </span>
+      )}
+    </div>
+  );
+}
+
+function XLikeButton({ post, iconOnly = false }: { post: PostListItem; iconOnly?: boolean }) {
+  if (!post.twitter_url) return null;
+  return (
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        window.open(post.twitter_url!, '_blank');
+      }}
+      className={cn(
+        'inline-flex items-center gap-1 text-xs font-medium transition-all',
+        'text-muted-foreground hover:text-foreground',
+        'hover:scale-105',
+        iconOnly ? 'px-0' : 'px-1.5 py-0.5 rounded-md hover:bg-muted'
+      )}
+      title="Like on X"
+    >
+      <span className="font-bold text-[13px] leading-none" style={{ fontFamily: 'serif' }}>
+        &#120143;
+      </span>
+      {!iconOnly && <span>Like</span>}
+    </button>
+  );
+}
+
+/* ─── Featured Post Card ───────────────────────────────────────────────── */
+
+export function FeaturedPostCard({ post, onLike, onClick, likeLoading, index }: FeaturedPostCardProps) {
+  const t = useTranslations('Posts');
+  const TypeIcon = POST_TYPE_ICONS[post.post_type] ?? AlignLeft;
+  const author = post.author;
+  const isAnnouncement = post.post_type === 'announcement';
+
+  return (
+    <div
+      className={cn(
+        'group relative rounded-2xl border bg-card p-5 sm:p-6 transition-all duration-300',
+        'hover:shadow-lg hover:shadow-black/5 hover:scale-[1.005]',
+        'opacity-0 animate-fade-up',
+        index === 0 ? 'stagger-2' : 'stagger-3',
+        isAnnouncement
+          ? 'border-l-4 border-l-amber-500/80 border-t-border border-r-border border-b-border'
+          : post.is_pinned
+            ? 'border-amber-500/30'
+            : 'border-border',
+        onClick && 'cursor-pointer',
+      )}
+      onClick={() => onClick?.(post.id)}
+    >
+      {/* Badges */}
+      <div className="flex items-center gap-2 mb-3">
+        {isAnnouncement && (
+          <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full">
+            <Megaphone className="w-3 h-3" />
+            {t('badgeAnnouncement')}
+          </span>
+        )}
+        {post.is_pinned && (
+          <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full">
+            <Pin className="w-3 h-3" />
+            {t('badgePinned')}
+          </span>
+        )}
+        {!isAnnouncement && !post.is_pinned && (
+          <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">
+            <TypeIcon className="w-2.5 h-2.5" />
+            {t(POST_TYPE_LABEL_KEYS[post.post_type])}
+          </span>
+        )}
+      </div>
+
+      {/* Title — large */}
+      <h3 className="text-lg font-bold text-foreground mb-2 line-clamp-2 font-display leading-snug">
+        {post.title}
+      </h3>
+
+      {/* Body — extended preview */}
+      {post.body && (
+        <p className="text-sm text-muted-foreground line-clamp-6 mb-4 leading-relaxed">{post.body}</p>
+      )}
+
+      {/* Tags */}
+      {post.tags.length > 0 && (
+        <div className="flex gap-1 flex-wrap mb-3">
+          {post.tags.map((tag) => (
+            <span key={tag} className="text-[10px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* Author row */}
+      <div className="flex items-center gap-2.5 mb-3">
+        <AuthorAvatar author={author} size={32} />
+        <div>
+          <span className="text-sm font-medium text-foreground">
+            {author.name || 'Anonymous'}
+          </span>
+          {author.organic_id && (
+            <span className="text-[10px] font-mono text-muted-foreground ml-1">#{author.organic_id}</span>
+          )}
+          <p className="text-[11px] text-muted-foreground flex items-center gap-1">
+            <Clock className="w-3 h-3" />
+            {timeAgo(post.created_at)}
+          </p>
+        </div>
+      </div>
+
+      {/* Engagement bar */}
+      <div className="flex items-center gap-4 pt-3 border-t border-border">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onLike?.(post.id);
+          }}
+          disabled={likeLoading}
+          className={cn(
+            'flex items-center gap-1.5 text-xs font-medium transition-all',
+            post.user_liked
+              ? 'text-red-500'
+              : 'text-muted-foreground hover:text-red-500',
+          )}
+        >
+          <Heart
+            className={cn(
+              'w-4 h-4 transition-transform',
+              post.user_liked && 'fill-current scale-110',
+            )}
+          />
+          <span className="tabular-nums">{post.likes_count}</span>
+        </button>
+        <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <MessageCircle className="w-4 h-4" />
+          <span className="tabular-nums">{post.comments_count}</span>
+        </span>
+        <XLikeButton post={post} />
+      </div>
+    </div>
+  );
+}
+
+/* ─── Regular Post Card ────────────────────────────────────────────────── */
+
 export function PostFeedCard({ post, onLike, onClick, likeLoading }: PostFeedCardProps) {
+  const t = useTranslations('Posts');
   const TypeIcon = POST_TYPE_ICONS[post.post_type] ?? AlignLeft;
   const author = post.author;
 
   return (
     <div
       className={cn(
-        'rounded-xl border border-border bg-card p-4 transition-all hover:shadow-sm',
-        post.is_pinned && 'border-amber-200 bg-amber-50/30',
-        onClick && 'cursor-pointer'
+        'group rounded-xl border border-border bg-card p-4 transition-all duration-200',
+        'hover:shadow-sm hover:border-border/80',
+        onClick && 'cursor-pointer',
       )}
       onClick={() => onClick?.(post.id)}
     >
       {/* Header */}
       <div className="flex items-center gap-2 mb-2">
-        {/* Avatar */}
-        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-orange-400 to-yellow-300 flex items-center justify-center overflow-hidden shrink-0">
-          {author.avatar_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={author.avatar_url} alt="" className="w-full h-full object-cover" />
-          ) : (
-            <span className="text-[10px] font-bold text-white">
-              {(author.name || author.email).charAt(0).toUpperCase()}
-            </span>
-          )}
-        </div>
+        <AuthorAvatar author={author} size={28} />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
             <span className="text-xs font-medium text-foreground truncate">
@@ -81,7 +249,7 @@ export function PostFeedCard({ post, onLike, onClick, likeLoading }: PostFeedCar
           {post.is_pinned && <Pin className="w-3 h-3 text-amber-500" />}
           <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">
             <TypeIcon className="w-2.5 h-2.5" />
-            {POST_TYPE_LABELS[post.post_type]}
+            {t(POST_TYPE_LABEL_KEYS[post.post_type])}
           </span>
         </div>
       </div>
@@ -91,7 +259,7 @@ export function PostFeedCard({ post, onLike, onClick, likeLoading }: PostFeedCar
 
       {/* Body preview */}
       {post.body && (
-        <p className="text-xs text-muted-foreground line-clamp-3 mb-2">{post.body}</p>
+        <p className="text-[13px] text-muted-foreground line-clamp-3 mb-2">{post.body}</p>
       )}
 
       {/* Tags */}
@@ -105,7 +273,7 @@ export function PostFeedCard({ post, onLike, onClick, likeLoading }: PostFeedCar
         </div>
       )}
 
-      {/* Footer: actions */}
+      {/* Footer */}
       <div className="flex items-center gap-4 pt-1">
         <button
           onClick={(e) => {
@@ -114,23 +282,95 @@ export function PostFeedCard({ post, onLike, onClick, likeLoading }: PostFeedCar
           }}
           disabled={likeLoading}
           className={cn(
-            'flex items-center gap-1 text-xs transition-colors',
+            'flex items-center gap-1 text-xs transition-all',
             post.user_liked
               ? 'text-red-500'
-              : 'text-muted-foreground hover:text-red-500'
+              : 'text-muted-foreground hover:text-red-500',
           )}
         >
-          <Heart className={cn('w-3.5 h-3.5', post.user_liked && 'fill-current')} />
+          <Heart
+            className={cn(
+              'w-3.5 h-3.5 transition-transform',
+              post.user_liked && 'fill-current scale-110',
+            )}
+          />
           <span className="tabular-nums">{post.likes_count}</span>
         </button>
         <span className="flex items-center gap-1 text-xs text-muted-foreground">
           <MessageCircle className="w-3.5 h-3.5" />
           <span className="tabular-nums">{post.comments_count}</span>
         </span>
+        <XLikeButton post={post} />
       </div>
     </div>
   );
 }
+
+/* ─── Compact List Row ─────────────────────────────────────────────────── */
+
+export function CompactPostRow({ post, onLike, onClick, likeLoading }: CompactPostRowProps) {
+  const t = useTranslations('Posts');
+  const TypeIcon = POST_TYPE_ICONS[post.post_type] ?? AlignLeft;
+  const author = post.author;
+
+  return (
+    <div
+      className={cn(
+        'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-150',
+        'hover:bg-muted/50',
+        'border-b border-border/50 last:border-b-0',
+        onClick && 'cursor-pointer',
+      )}
+      onClick={() => onClick?.(post.id)}
+    >
+      {/* Type icon */}
+      <TypeIcon className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+
+      {/* Pinned indicator */}
+      {post.is_pinned && <Pin className="w-3 h-3 text-amber-500 shrink-0 -ml-1" />}
+
+      {/* Title */}
+      <h4 className="text-sm font-medium text-foreground truncate flex-1 min-w-0">
+        {post.title}
+      </h4>
+
+      {/* Author */}
+      <span className="text-[11px] text-muted-foreground truncate max-w-[100px] hidden sm:inline">
+        {author.name || 'Anonymous'}
+      </span>
+
+      {/* Time */}
+      <span className="text-[11px] text-muted-foreground tabular-nums shrink-0 w-12 text-right">
+        {timeAgo(post.created_at)}
+      </span>
+
+      {/* Stats */}
+      <div className="flex items-center gap-2.5 shrink-0">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onLike?.(post.id);
+          }}
+          disabled={likeLoading}
+          className={cn(
+            'flex items-center gap-0.5 text-[11px] transition-colors',
+            post.user_liked ? 'text-red-500' : 'text-muted-foreground hover:text-red-500',
+          )}
+        >
+          <Heart className={cn('w-3 h-3', post.user_liked && 'fill-current')} />
+          <span className="tabular-nums">{post.likes_count}</span>
+        </button>
+        <span className="flex items-center gap-0.5 text-[11px] text-muted-foreground">
+          <MessageCircle className="w-3 h-3" />
+          <span className="tabular-nums">{post.comments_count}</span>
+        </span>
+        <XLikeButton post={post} iconOnly />
+      </div>
+    </div>
+  );
+}
+
+/* ─── Skeleton ─────────────────────────────────────────────────────────── */
 
 export function PostCardSkeleton() {
   return (
@@ -146,6 +386,37 @@ export function PostCardSkeleton() {
         <div className="h-3 w-10 bg-muted rounded" />
         <div className="h-3 w-10 bg-muted rounded" />
       </div>
+    </div>
+  );
+}
+
+export function FeaturedCardSkeleton() {
+  return (
+    <div className="rounded-2xl border border-border bg-card p-5 sm:p-6 animate-pulse">
+      <div className="h-4 w-24 bg-muted rounded-full mb-3" />
+      <div className="h-5 w-3/4 bg-muted rounded mb-2" />
+      <div className="h-3 w-full bg-muted rounded mb-1" />
+      <div className="h-3 w-full bg-muted rounded mb-1" />
+      <div className="h-3 w-2/3 bg-muted rounded mb-4" />
+      <div className="flex items-center gap-2.5 mb-3">
+        <div className="w-8 h-8 rounded-full bg-muted" />
+        <div className="h-3 w-32 bg-muted rounded" />
+      </div>
+      <div className="flex gap-4 pt-3 border-t border-border">
+        <div className="h-3 w-12 bg-muted rounded" />
+        <div className="h-3 w-12 bg-muted rounded" />
+      </div>
+    </div>
+  );
+}
+
+export function CompactRowSkeleton() {
+  return (
+    <div className="flex items-center gap-3 px-3 py-2.5 animate-pulse">
+      <div className="w-3.5 h-3.5 bg-muted rounded" />
+      <div className="h-3 flex-1 bg-muted rounded" />
+      <div className="h-3 w-16 bg-muted rounded" />
+      <div className="h-3 w-12 bg-muted rounded" />
     </div>
   );
 }
