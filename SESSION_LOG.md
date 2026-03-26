@@ -2,6 +2,63 @@
 
 Add newest entries at the top.
 
+## 2026-03-26 (Session: Phase 30 — Points Economy for Posts)
+
+### Summary
+
+Designed, implemented, QA'd, and merged the Phase 30 Points Economy. Posts now cost points to create (non-organic), organic-related posts get 3 free per week with bonus engagement rewards, users can promote posts for visibility, and community flagging enforces organic classification integrity.
+
+### What was done
+
+- Created comprehensive plan (`docs/plans/2026-03-26-points-economy.md`) with economy design from 5-persona brainstorm
+- Database migration: new columns on `posts` (is_organic, points_cost, promotion fields, flag_count), `post_flags` table, `points_ledger` audit table
+- Built `points-service.ts`: deductPoints, awardPoints, calculatePostCost, weekly organic counter, engagement caps, promotion config
+- Updated XP service with new daily caps: post_like_received, post_comment_created, post_comment_received
+- Updated post creation API: point cost calculation, deduction, organic creation bonus (+3 pts, +15 XP)
+- Updated like route: liker XP, organic bonus XP+points to author, promotion multiplier
+- Updated comment route: commenter XP, organic bonus XP+points to author, promotion multiplier
+- Created promote API (`/api/posts/[id]/promote`): 3 tiers (Spotlight/Feature/Mega), point burn, 1-active-per-user
+- Created flag API (`/api/posts/[id]/flag`): POST to flag, DELETE for admin restore + false flagger penalty
+- Created points balance API (`/api/user/points`): balance, free organic remaining, weekly stats
+- Updated composer: organic toggle, free posts counter, point cost preview, balance display
+- Updated feed cards: organic badge (green leaf), promoted badge (sparkle), flag button
+- Updated compact list rows with organic/promoted indicators
+- Updated post detail page: organic/promoted badges, promote dropdown with affordability, admin flag review panel
+- Fixed z-index stacking issue on promote dropdown
+- Created 5-step page guide explaining Points & XP economy
+- Added promoted posts feed surfacing (top 3 active promotions pinned)
+- Full i18n for en, pt-PT, zh-CN (30+ new keys)
+- Applied migrations to live Supabase (posts system + OG metadata + points economy)
+- Full QA in headed browser: all flows verified
+- Merged PR #31 to main (3 commits, 21 files, ~1,830 insertions)
+
+### Key files
+
+- `supabase/migrations/20260326200000_points_economy.sql`
+- `src/features/gamification/points-service.ts`
+- `src/app/api/user/points/route.ts`
+- `src/app/api/posts/[id]/promote/route.ts`
+- `src/app/api/posts/[id]/flag/route.ts`
+- `src/lib/page-guides/posts.tsx`
+
+### Economy summary
+
+| What | Details |
+|------|---------|
+| Organic posts | 3 free/week, then 3-8 pts |
+| Non-organic posts | 5-12 pts |
+| Organic engagement | Author: +1 pt/like, +2 pts/comment |
+| Promoted posts | 25/50/100 pts for 24/48/72h, 1.5x/2x/2.5x multipliers |
+| Weekly cap | 200 pts from engagement |
+| Flagging | 3 flags = bonus revoked, admin review |
+
+### Next session suggestions
+
+- Phase 30 continued: test with real multi-user engagement (liking others' posts, flagging)
+- Promoted post visual testing once a user accumulates 25+ pts
+- PR for any remaining Phase 30 scope (promoted posts expiry cleanup)
+- Begin Phase 31 or revisit E8 (Analytics ORG price chart) / E9 (navigation restructure)
+
 ## 2026-03-23 (Session: QA Revamp — 4.19 Ideas Incubator)
 
 ### Summary

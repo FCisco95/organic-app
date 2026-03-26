@@ -42,6 +42,10 @@ When you need to log in to the app for testing or QA, use this account:
 
 This account has full admin access to all pages and features.
 
+## Reading large files
+
+When reading large files, run `wc -l` first, to check the line count. If the file is over 2000 lines, use the `offset`and `limit` parameters on the Read tool to read in chunks rather than attempting to read the entire file at once.
+
 ## Project snapshot
 
 Organic App is a DAO-style platform built with Next.js App Router, Supabase, and Solana wallet linking.
@@ -63,12 +67,12 @@ Core domains: auth, tasks, proposals, voting, sprints, members, notifications, r
 
 Use git worktrees for parallel work streams:
 
-| Worktree | Branch Pattern | Purpose |
-|---|---|---|
-| main repo | `main` | Stable base, PR merges |
-| worktree-1 | `phase/*` | Feature development |
-| worktree-2 | `fix/*` | Bug fixes (parallel) |
-| worktree-3 | `docs/*` | Documentation (parallel) |
+| Worktree   | Branch Pattern | Purpose                  |
+| ---------- | -------------- | ------------------------ |
+| main repo  | `main`         | Stable base, PR merges   |
+| worktree-1 | `phase/*`      | Feature development      |
+| worktree-2 | `fix/*`        | Bug fixes (parallel)     |
+| worktree-3 | `docs/*`       | Documentation (parallel) |
 
 Use the `using-git-worktrees` skill to create worktrees. Clean up worktrees after merging.
 
