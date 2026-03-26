@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import type { PostListItem } from '@/features/posts';
 import type { PostType } from '@/features/posts/types';
 import { useTranslations } from 'next-intl';
+import { LinkPreviewCard } from '@/components/posts/LinkPreviewCard';
 
 /* ─── Shared types ─────────────────────────────────────────────────────── */
 
@@ -154,6 +155,18 @@ export function FeaturedPostCard({ post, onLike, onClick, likeLoading, index }: 
         <p className="text-sm text-muted-foreground line-clamp-6 mb-4 leading-relaxed">{post.body}</p>
       )}
 
+      {/* Link preview */}
+      {post.twitter_url && (
+        <div className="mb-3">
+          <LinkPreviewCard
+            url={post.twitter_url}
+            ogTitle={post.og_title}
+            ogDescription={post.og_description}
+            ogImageUrl={post.og_image_url}
+          />
+        </div>
+      )}
+
       {/* Tags */}
       {post.tags.length > 0 && (
         <div className="flex gap-1 flex-wrap mb-3">
@@ -262,6 +275,19 @@ export function PostFeedCard({ post, onLike, onClick, likeLoading }: PostFeedCar
         <p className="text-[13px] text-muted-foreground line-clamp-3 mb-2">{post.body}</p>
       )}
 
+      {/* Link preview */}
+      {post.twitter_url && (
+        <div className="mb-2">
+          <LinkPreviewCard
+            url={post.twitter_url}
+            ogTitle={post.og_title}
+            ogDescription={post.og_description}
+            ogImageUrl={post.og_image_url}
+            compact
+          />
+        </div>
+      )}
+
       {/* Tags */}
       {post.tags.length > 0 && (
         <div className="flex gap-1 flex-wrap mb-2">
@@ -333,6 +359,13 @@ export function CompactPostRow({ post, onLike, onClick, likeLoading }: CompactPo
       <h4 className="text-sm font-medium text-foreground truncate flex-1 min-w-0">
         {post.title}
       </h4>
+
+      {/* Link domain */}
+      {post.twitter_url && (
+        <span className="text-[10px] text-muted-foreground/60 truncate max-w-[80px] hidden md:inline">
+          {(() => { try { return new URL(post.twitter_url).hostname.replace('www.', ''); } catch { return ''; } })()}
+        </span>
+      )}
 
       {/* Author */}
       <span className="text-[11px] text-muted-foreground truncate max-w-[100px] hidden sm:inline">
