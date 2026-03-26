@@ -11,29 +11,39 @@ export const listPostsQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(50).optional().default(20),
 });
 
-export const createPostSchema = z.object({
-  title: z
-    .string()
-    .trim()
-    .min(3, 'Title must be at least 3 characters')
-    .max(200, 'Title must be under 200 characters'),
-  body: z
-    .string()
-    .trim()
-    .min(1, 'Post body is required')
-    .max(10000, 'Post body must be under 10000 characters'),
-  post_type: postTypeSchema.optional().default('text'),
-  tags: z.array(z.string().trim().min(1).max(24)).max(5).optional(),
-  twitter_url: z.string().url().optional().nullable(),
-  thread_parts: z
-    .array(
-      z.object({
-        body: z.string().trim().min(1).max(5000),
-      })
-    )
-    .max(20)
-    .optional(),
-});
+export const createPostSchema = z
+  .object({
+    title: z
+      .string()
+      .trim()
+      .min(3, 'Title must be at least 3 characters')
+      .max(200, 'Title must be under 200 characters'),
+    body: z
+      .string()
+      .trim()
+      .min(1, 'Post body is required')
+      .max(10000, 'Post body must be under 10000 characters'),
+    post_type: postTypeSchema.optional().default('text'),
+    tags: z.array(z.string().trim().min(1).max(24)).max(5).optional(),
+    twitter_url: z.string().url('Must be a valid URL').optional().nullable(),
+    thread_parts: z
+      .array(
+        z.object({
+          body: z.string().trim().min(1).max(5000),
+        }),
+      )
+      .max(20)
+      .optional(),
+  })
+  .refine(
+    (data) =>
+      data.post_type === 'announcement' ||
+      (data.twitter_url && data.twitter_url.trim().length > 0),
+    {
+      message: 'A link URL is required for all non-announcement posts',
+      path: ['twitter_url'],
+    },
+  );
 
 export const updatePostSchema = z.object({
   title: z.string().trim().min(3).max(200).optional(),

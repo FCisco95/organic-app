@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { Plus, X } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Plus, X, ChevronDown } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useTranslations } from 'next-intl';
 import { useAuth } from '@/features/auth/context';
 import { useCreatePost } from '@/features/posts/hooks';
 import type { PostType } from '@/features/posts/types';
@@ -13,24 +14,81 @@ interface PostComposerDialogProps {
   onClose: () => void;
 }
 
-const TYPE_OPTIONS: { value: PostType; label: string; description: string }[] = [
-  { value: 'text', label: 'Post', description: 'Share a thought or update' },
-  { value: 'thread', label: 'Thread', description: 'Multi-part discussion' },
-  { value: 'link_share', label: 'Link', description: 'Share an external link' },
-  { value: 'announcement', label: 'Announcement', description: 'Admin only' },
+const TYPE_OPTIONS: { value: PostType; labelKey: string; descriptionKey: string }[] = [
+  { value: 'text', labelKey: 'composerTypePost', descriptionKey: 'composerTypePostDesc' },
+  { value: 'thread', labelKey: 'composerTypeThread', descriptionKey: 'composerTypeThreadDesc' },
+  { value: 'link_share', labelKey: 'composerTypeLink', descriptionKey: 'composerTypeLinkDesc' },
+  { value: 'announcement', labelKey: 'composerTypeAnnouncement', descriptionKey: 'composerTypeAnnouncementDesc' },
 ];
 
+/* ─── Inline Compose Bar ───────────────────────────────────────────────── */
+
+export function InlineComposeBar({ onExpand }: { onExpand: () => void }) {
+  const t = useTranslations('Posts');
+  const { profile } = useAuth();
+
+  if (!profile?.organic_id) return null;
+
+  return (
+    <div
+      className="rounded-xl border border-border bg-card p-3 transition-all hover:border-primary/30 hover:shadow-sm cursor-pointer opacity-0 animate-fade-up stagger-2"
+      onClick={onExpand}
+    >
+      <div className="flex items-center gap-3">
+        {/* Avatar */}
+        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-yellow-300 flex items-center justify-center overflow-hidden shrink-0">
+          {profile.avatar_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
+          ) : (
+            <span className="text-xs font-bold text-white">
+              {(profile.name || profile.email || '?').charAt(0).toUpperCase()}
+            </span>
+          )}
+        </div>
+
+        {/* Prompt */}
+        <span className="text-sm text-muted-foreground flex-1">{t('composerPrompt')}</span>
+
+        {/* Type pills (decorative) */}
+        <div className="hidden sm:flex items-center gap-1.5">
+          <span className="text-[10px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+            {t('composerTypePost')}
+          </span>
+          <span className="text-[10px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+            {t('composerTypeThread')}
+          </span>
+          <span className="text-[10px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+            {t('composerTypeLink')}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Full Composer Dialog ─────────────────────────────────────────────── */
+
 export function PostComposerDialog({ open, onClose }: PostComposerDialogProps) {
+  const t = useTranslations('Posts');
   const { profile } = useAuth();
   const createPost = useCreatePost();
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [postType, setPostType] = useState<PostType>('text');
+  const [linkUrl, setLinkUrl] = useState('');
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>([]);
+  const titleRef = useRef<HTMLInputElement>(null);
 
   const isAdmin = profile?.role === 'admin';
   const availableTypes = isAdmin ? TYPE_OPTIONS : TYPE_OPTIONS.filter((t) => t.value !== 'announcement');
+
+  useEffect(() => {
+    if (open && titleRef.current) {
+      setTimeout(() => titleRef.current?.focus(), 100);
+    }
+  }, [open]);
 
   function handleAddTag() {
     const tag = tagInput.trim();
@@ -42,7 +100,12 @@ export function PostComposerDialog({ open, onClose }: PostComposerDialogProps) {
 
   async function handleSubmit() {
     if (!title.trim() || !body.trim()) {
-      toast.error('Title and body are required');
+      toast.error(t('composerRequired'));
+      return;
+    }
+
+    if (postType !== 'announcement' && !linkUrl.trim()) {
+      toast.error(t('composerLinkRequired'));
       return;
     }
 
@@ -52,15 +115,17 @@ export function PostComposerDialog({ open, onClose }: PostComposerDialogProps) {
         body: body.trim(),
         post_type: postType,
         tags: tags.length > 0 ? tags : undefined,
+        twitter_url: postType !== 'announcement' ? linkUrl.trim() : undefined,
       });
-      toast.success('Post created!');
+      toast.success(t('composerSuccess'));
       setTitle('');
       setBody('');
+      setLinkUrl('');
       setPostType('text');
       setTags([]);
       onClose();
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to create post';
+      const message = error instanceof Error ? error.message : t('composerError');
       toast.error(message);
     }
   }
@@ -68,12 +133,15 @@ export function PostComposerDialog({ open, onClose }: PostComposerDialogProps) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="w-full max-w-lg mx-4 rounded-2xl bg-card border border-border shadow-xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
+      <div
+        className="w-full max-w-lg mx-4 rounded-2xl bg-card border border-border shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3 border-b border-border">
-          <h2 className="text-sm font-semibold text-foreground">Create Post</h2>
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
+          <h2 className="text-sm font-semibold text-foreground">{t('composerTitle')}</h2>
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -89,33 +157,48 @@ export function PostComposerDialog({ open, onClose }: PostComposerDialogProps) {
                 className={cn(
                   'text-xs font-medium px-3 py-1.5 rounded-full whitespace-nowrap transition-colors',
                   postType === opt.value
-                    ? 'bg-gray-900 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80',
                 )}
               >
-                {opt.label}
+                {t(opt.labelKey)}
               </button>
             ))}
           </div>
 
+          {/* Link URL — required for non-announcements */}
+          {postType !== 'announcement' && (
+            <div>
+              <input
+                type="url"
+                placeholder={t('composerLinkPlaceholder')}
+                value={linkUrl}
+                onChange={(e) => setLinkUrl(e.target.value)}
+                className="w-full text-sm px-3 py-2 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+              />
+              <p className="text-[10px] text-muted-foreground mt-1">{t('composerLinkHint')}</p>
+            </div>
+          )}
+
           {/* Title */}
           <input
+            ref={titleRef}
             type="text"
-            placeholder="Post title"
+            placeholder={t('composerTitlePlaceholder')}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             maxLength={200}
-            className="w-full text-sm px-3 py-2 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-orange-200"
+            className="w-full text-sm px-3 py-2 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
           />
 
           {/* Body */}
           <textarea
-            placeholder={postType === 'thread' ? 'First part of your thread...' : 'What\'s on your mind?'}
+            placeholder={postType === 'thread' ? t('composerBodyThread') : t('composerBodyDefault')}
             value={body}
             onChange={(e) => setBody(e.target.value)}
             rows={5}
             maxLength={10000}
-            className="w-full text-sm px-3 py-2 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-orange-200 resize-none"
+            className="w-full text-sm px-3 py-2 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
           />
 
           {/* Tags */}
@@ -123,7 +206,7 @@ export function PostComposerDialog({ open, onClose }: PostComposerDialogProps) {
             <div className="flex items-center gap-2">
               <input
                 type="text"
-                placeholder="Add a tag"
+                placeholder={t('composerTagPlaceholder')}
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyDown={(e) => {
@@ -133,14 +216,14 @@ export function PostComposerDialog({ open, onClose }: PostComposerDialogProps) {
                   }
                 }}
                 maxLength={24}
-                className="flex-1 text-xs px-2.5 py-1.5 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-orange-200"
+                className="flex-1 text-xs px-2.5 py-1.5 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
               />
               <button
                 onClick={handleAddTag}
                 disabled={!tagInput.trim() || tags.length >= 5}
-                className="text-xs px-2.5 py-1.5 rounded-lg bg-muted text-muted-foreground hover:bg-gray-200 disabled:opacity-50"
+                className="text-xs px-2.5 py-1.5 rounded-lg bg-muted text-muted-foreground hover:bg-muted/80 disabled:opacity-50 transition-colors"
               >
-                Add
+                {t('composerTagAdd')}
               </button>
             </div>
             {tags.length > 0 && (
@@ -166,16 +249,16 @@ export function PostComposerDialog({ open, onClose }: PostComposerDialogProps) {
           <div className="flex gap-2">
             <button
               onClick={onClose}
-              className="text-xs font-medium px-3 py-1.5 rounded-lg border border-border text-foreground hover:bg-muted"
+              className="text-xs font-medium px-3 py-1.5 rounded-lg border border-border text-foreground hover:bg-muted transition-colors"
             >
-              Cancel
+              {t('composerCancel')}
             </button>
             <button
               onClick={handleSubmit}
-              disabled={createPost.isPending || !title.trim() || !body.trim()}
-              className="text-xs font-medium px-4 py-1.5 rounded-lg bg-organic-orange text-white hover:bg-orange-600 disabled:opacity-50"
+              disabled={createPost.isPending || !title.trim() || !body.trim() || (postType !== 'announcement' && !linkUrl.trim())}
+              className="text-xs font-medium px-4 py-1.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors"
             >
-              {createPost.isPending ? 'Posting...' : 'Post'}
+              {createPost.isPending ? t('composerPosting') : t('composerSubmit')}
             </button>
           </div>
         </div>
@@ -185,13 +268,14 @@ export function PostComposerDialog({ open, onClose }: PostComposerDialogProps) {
 }
 
 export function PostComposerFab({ onClick }: { onClick: () => void }) {
+  const t = useTranslations('Posts');
   return (
     <button
       onClick={onClick}
-      className="fixed bottom-6 right-6 z-40 flex items-center gap-1.5 rounded-full bg-organic-orange px-4 py-2.5 text-sm font-medium text-white shadow-lg hover:bg-orange-600 transition-colors"
+      className="fixed bottom-6 right-6 z-40 flex items-center gap-1.5 rounded-full bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-lg hover:bg-primary/90 transition-all hover:scale-105"
     >
       <Plus className="w-4 h-4" />
-      Post
+      {t('composerSubmit')}
     </button>
   );
 }
