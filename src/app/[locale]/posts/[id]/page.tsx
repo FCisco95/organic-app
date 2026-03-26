@@ -24,7 +24,7 @@ import {
 import toast from 'react-hot-toast';
 import { PageContainer } from '@/components/layout';
 import { useAuth } from '@/features/auth/context';
-import { usePost, usePostComments, useLikePost, useAddPostComment, useFlagPost, usePromotePost } from '@/features/posts/hooks';
+import { usePost, usePostComments, useLikePost, useAddPostComment, useFlagPost, usePromotePost, useUserPoints } from '@/features/posts/hooks';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { LinkPreviewCard } from '@/components/posts/LinkPreviewCard';
@@ -73,9 +73,11 @@ export default function PostDetailPage() {
   const addComment = useAddPostComment();
   const flagPost = useFlagPost();
   const promotePost = usePromotePost();
+  const { data: pointsData } = useUserPoints();
 
   const [commentBody, setCommentBody] = useState('');
   const [showPromoteMenu, setShowPromoteMenu] = useState(false);
+  const userBalance = pointsData?.claimable_points ?? 0;
 
   const post = postQuery.data;
   const comments = commentsQuery.data?.comments ?? [];
@@ -348,18 +350,27 @@ export default function PostDetailPage() {
                         const cfg = PROMOTION_CONFIG[tier];
                         const tierKey = tier === 'spotlight' ? 'promoteSpotlight' : tier === 'feature' ? 'promoteFeature' : 'promoteMega';
                         const descKey = `${tierKey}Desc` as const;
+                        const canAfford = userBalance >= cfg.cost;
                         return (
                           <button
                             key={tier}
                             onClick={() => handlePromote(tier)}
-                            disabled={promotePost.isPending}
-                            className="w-full text-left rounded-lg border border-border p-2.5 hover:border-primary/50 hover:bg-muted/50 transition-colors disabled:opacity-50"
+                            disabled={promotePost.isPending || !canAfford}
+                            className={cn(
+                              'w-full text-left rounded-lg border p-2.5 transition-colors disabled:opacity-50',
+                              canAfford
+                                ? 'border-border hover:border-primary/50 hover:bg-muted/50'
+                                : 'border-border/50 opacity-60',
+                            )}
                           >
                             <div className="flex items-center justify-between">
                               <span className="text-xs font-medium text-foreground">{t(tierKey)}</span>
-                              <span className="text-[10px] font-bold text-primary tabular-nums">{cfg.cost} pts</span>
+                              <span className={cn('text-[10px] font-bold tabular-nums', canAfford ? 'text-primary' : 'text-muted-foreground')}>{cfg.cost} pts</span>
                             </div>
                             <p className="text-[10px] text-muted-foreground mt-0.5">{t(descKey)}</p>
+                            {!canAfford && (
+                              <p className="text-[9px] text-red-500 mt-0.5">Need {cfg.cost - userBalance} more pts</p>
+                            )}
                           </button>
                         );
                       })}

@@ -21,7 +21,7 @@ interface FeaturedPostCardProps extends PostFeedCardProps {
   index: number;
 }
 
-interface CompactPostRowProps extends PostFeedCardProps {}
+// CompactPostRow uses PostFeedCardProps directly
 
 /* ─── Lookup maps ──────────────────────────────────────────────────────── */
 
@@ -387,10 +387,11 @@ export function PostFeedCard({ post, onLike, onClick, onFlag, likeLoading }: Pos
 
 /* ─── Compact List Row ─────────────────────────────────────────────────── */
 
-export function CompactPostRow({ post, onLike, onClick, likeLoading }: CompactPostRowProps) {
+export function CompactPostRow({ post, onLike, onClick, onFlag, likeLoading }: PostFeedCardProps) {
   const t = useTranslations('Posts');
   const TypeIcon = POST_TYPE_ICONS[post.post_type] ?? AlignLeft;
   const author = post.author;
+  const isPromotedActive = post.is_promoted && post.promotion_expires_at && new Date(post.promotion_expires_at) > new Date();
 
   return (
     <div
@@ -398,6 +399,7 @@ export function CompactPostRow({ post, onLike, onClick, likeLoading }: CompactPo
         'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-150',
         'hover:bg-muted/50',
         'border-b border-border/50 last:border-b-0',
+        isPromotedActive && 'bg-amber-500/5',
         onClick && 'cursor-pointer',
       )}
       onClick={() => onClick?.(post.id)}
@@ -407,6 +409,12 @@ export function CompactPostRow({ post, onLike, onClick, likeLoading }: CompactPo
 
       {/* Pinned indicator */}
       {post.is_pinned && <Pin className="w-3 h-3 text-amber-500 shrink-0 -ml-1" />}
+
+      {/* Organic indicator */}
+      {post.is_organic && !post.organic_bonus_revoked && <Leaf className="w-3 h-3 text-green-500 shrink-0 -ml-1" />}
+
+      {/* Promoted indicator */}
+      {isPromotedActive && <Sparkles className="w-3 h-3 text-amber-500 shrink-0 -ml-1" />}
 
       {/* Title */}
       <h4 className="text-sm font-medium text-foreground truncate flex-1 min-w-0">

@@ -314,6 +314,7 @@ export default function PostsPage() {
                 key={post.id}
                 post={post}
                 onLike={onLike}
+                onFlag={onFlag}
                 onClick={(id) => router.push(`/posts/${id}`)}
                 likeLoading={likePost.isPending}
               />
