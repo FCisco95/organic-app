@@ -9,7 +9,7 @@ const cspDirectives = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://*.supabase.co https://raw.githubusercontent.com https://pbs.twimg.com",
+  "img-src 'self' data: blob: https://*.supabase.co https://raw.githubusercontent.com https://pbs.twimg.com https://abs.twimg.com https://opengraph.githubassets.com https:",
   "font-src 'self'",
   "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.mainnet-beta.solana.com https://*.helius.dev https://*.quiknode.pro https://api.jup.ag https://*.ingest.sentry.io https://*.ingest.de.sentry.io",
   "frame-src https://dexscreener.com https://www.geckoterminal.com",
