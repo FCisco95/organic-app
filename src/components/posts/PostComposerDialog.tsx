@@ -76,6 +76,7 @@ export function PostComposerDialog({ open, onClose }: PostComposerDialogProps) {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [postType, setPostType] = useState<PostType>('text');
+  const [linkUrl, setLinkUrl] = useState('');
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const titleRef = useRef<HTMLInputElement>(null);
@@ -103,16 +104,23 @@ export function PostComposerDialog({ open, onClose }: PostComposerDialogProps) {
       return;
     }
 
+    if (postType !== 'announcement' && !linkUrl.trim()) {
+      toast.error(t('composerLinkRequired'));
+      return;
+    }
+
     try {
       await createPost.mutateAsync({
         title: title.trim(),
         body: body.trim(),
         post_type: postType,
         tags: tags.length > 0 ? tags : undefined,
+        twitter_url: postType !== 'announcement' ? linkUrl.trim() : undefined,
       });
       toast.success(t('composerSuccess'));
       setTitle('');
       setBody('');
+      setLinkUrl('');
       setPostType('text');
       setTags([]);
       onClose();
@@ -157,6 +165,20 @@ export function PostComposerDialog({ open, onClose }: PostComposerDialogProps) {
               </button>
             ))}
           </div>
+
+          {/* Link URL — required for non-announcements */}
+          {postType !== 'announcement' && (
+            <div>
+              <input
+                type="url"
+                placeholder={t('composerLinkPlaceholder')}
+                value={linkUrl}
+                onChange={(e) => setLinkUrl(e.target.value)}
+                className="w-full text-sm px-3 py-2 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+              />
+              <p className="text-[10px] text-muted-foreground mt-1">{t('composerLinkHint')}</p>
+            </div>
+          )}
 
           {/* Title */}
           <input
@@ -233,7 +255,7 @@ export function PostComposerDialog({ open, onClose }: PostComposerDialogProps) {
             </button>
             <button
               onClick={handleSubmit}
-              disabled={createPost.isPending || !title.trim() || !body.trim()}
+              disabled={createPost.isPending || !title.trim() || !body.trim() || (postType !== 'announcement' && !linkUrl.trim())}
               className="text-xs font-medium px-4 py-1.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors"
             >
               {createPost.isPending ? t('composerPosting') : t('composerSubmit')}
