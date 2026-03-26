@@ -21,6 +21,7 @@ import { useAuth } from '@/features/auth/context';
 import { usePost, usePostComments, useLikePost, useAddPostComment } from '@/features/posts/hooks';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
+import { LinkPreviewCard } from '@/components/posts/LinkPreviewCard';
 
 function timeAgo(dateStr: string): string {
   const now = Date.now();
@@ -188,6 +189,18 @@ export default function PostDetailPage() {
           {/* Title + body */}
           <h1 className="text-xl font-bold text-foreground mb-3 font-display leading-snug">{post.title}</h1>
           <div className="text-sm text-foreground/80 whitespace-pre-wrap mb-4 leading-relaxed">{post.body}</div>
+
+          {/* Link preview */}
+          {post.twitter_url && (
+            <div className="mb-4">
+              <LinkPreviewCard
+                url={post.twitter_url}
+                ogTitle={post.og_title}
+                ogDescription={post.og_description}
+                ogImageUrl={post.og_image_url}
+              />
+            </div>
+          )}
 
           {/* Thread parts */}
           {post.thread_parts && post.thread_parts.length > 0 && (
