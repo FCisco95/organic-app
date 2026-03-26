@@ -3209,6 +3209,9 @@
     "infoSection1Point3": "Posts, threads, announcements, and link shares each serve a different purpose. Use the type filters to find what you need.",
     "infoSection2Title": "Earning Through Posts",
     "infoSection2Point1": "**Creating posts earns 10 XP** (up to 3 per day). Quality over quantity.",
-    "infoSection2Point2": "**Getting likes earns 2 XP per like** to the author (capped at 10/day)."
+    "infoSection2Point2": "**Getting likes earns 2 XP per like** to the author (capped at 10/day).",
+    "composerLinkPlaceholder": "Paste a link (tweet, article, website...)",
+    "composerLinkHint": "Every post needs a link. Share a tweet, article, or any URL.",
+    "composerLinkRequired": "A link URL is required"
   }
 }

@@ -3160,7 +3160,10 @@
     "detailCommentPlaceholder": "Add a comment...",
     "detailCommentSuccess": "Comment posted",
     "detailCommentError": "Failed to post comment",
-    "detailNoComments": "No comments yet."
+    "detailNoComments": "No comments yet.",
+    "composerLinkPlaceholder": "Paste a link (tweet, article, website...)",
+    "composerLinkHint": "Every post needs a link. Share a tweet, article, or any URL.",
+    "composerLinkRequired": "A link URL is required"
   },
   "NotFound": {
     "heading": "Lost in the garden?",

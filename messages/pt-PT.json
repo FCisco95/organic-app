@@ -3208,6 +3208,9 @@
     "infoSection1Point3": "Publicacoes, temas, anuncios e partilhas de links servem propositos diferentes. Use os filtros de tipo para encontrar o que precisa.",
     "infoSection2Title": "Ganhar Atraves de Publicacoes",
     "infoSection2Point1": "**Criar publicacoes ganha 10 XP** (ate 3 por dia). Qualidade acima de quantidade.",
-    "infoSection2Point2": "**Receber gostos ganha 2 XP por gosto** para o autor (maximo 10/dia)."
+    "infoSection2Point2": "**Receber gostos ganha 2 XP por gosto** para o autor (maximo 10/dia).",
+    "composerLinkPlaceholder": "Paste a link (tweet, article, website...)",
+    "composerLinkHint": "Every post needs a link. Share a tweet, article, or any URL.",
+    "composerLinkRequired": "A link URL is required"
   }
 }
