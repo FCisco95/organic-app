@@ -5,6 +5,7 @@ import { logger } from '@/lib/logger';
 import { applyUserRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { createPostSchema, listPostsQuerySchema } from '@/features/posts/schemas';
 import { awardXp } from '@/features/gamification/xp-service';
+import { fetchOgMetadata } from '@/lib/og-preview';
 
 const POST_SELECT =
   '*, author:user_profiles!posts_author_id_fkey(id,name,email,organic_id,avatar_url)';
@@ -150,6 +151,16 @@ export async function POST(request: NextRequest) {
 
     const { title, body, post_type, tags, twitter_url, thread_parts } = parsed.data;
 
+    // Fetch OG metadata from the link URL (non-blocking failure)
+    let ogData = {
+      og_title: null as string | null,
+      og_description: null as string | null,
+      og_image_url: null as string | null,
+    };
+    if (twitter_url) {
+      ogData = await fetchOgMetadata(twitter_url);
+    }
+
     // Announcements are admin only
     if (post_type === 'announcement' && profile.role !== 'admin') {
       return NextResponse.json(
@@ -167,6 +178,9 @@ export async function POST(request: NextRequest) {
         post_type: post_type ?? 'text',
         tags: tags ?? [],
         twitter_url: twitter_url ?? null,
+        og_title: ogData.og_title,
+        og_description: ogData.og_description,
+        og_image_url: ogData.og_image_url,
       })
       .select(POST_SELECT)
       .single();
