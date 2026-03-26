@@ -237,8 +237,9 @@ export async function awardPoints(
     .update({ claimable_points: newClaimable, total_points: newTotal } as never)
     .eq('id', userId);
 
-  // Record in ledger
-  await (supabase as any).from('points_ledger').insert({
+  // Record in ledger (unique index on (user_id, source_type, source_id)
+  // prevents duplicate awards, e.g. from like toggle cycles)
+  const { error: ledgerError } = await (supabase as any).from('points_ledger').insert({
     user_id: userId,
     amount: effectiveAmount,
     reason,
@@ -246,6 +247,21 @@ export async function awardPoints(
     source_id: sourceId ?? null,
     balance_after: newClaimable,
   });
+
+  if (ledgerError) {
+    // Unique violation = already awarded for this source — roll back balance update
+    if (ledgerError.code === '23505') {
+      await supabase
+        .from('user_profiles')
+        .update({
+          claimable_points: (profile.claimable_points ?? 0),
+          total_points: (profile.total_points ?? 0),
+        } as never)
+        .eq('id', userId);
+      return { success: false, amount: 0, newBalance: profile.claimable_points ?? 0, reason: 'duplicate' };
+    }
+    throw new Error(`Failed to insert points ledger: ${ledgerError.message}`);
+  }
 
   return { success: true, amount: effectiveAmount, newBalance: newClaimable };
 }

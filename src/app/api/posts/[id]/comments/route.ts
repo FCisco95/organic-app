@@ -208,6 +208,19 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     await Promise.allSettled(rewards);
 
+    // Sync count from comments as fallback (trigger should handle this,
+    // but may not exist or may be blocked by RLS on some environments)
+    const { count: freshCount } = await (service as any)
+      .from('comments')
+      .select('*', { count: 'exact', head: true })
+      .eq('subject_type', 'post')
+      .eq('subject_id', postId);
+
+    await (service as any)
+      .from('posts')
+      .update({ comments_count: freshCount ?? 0 })
+      .eq('id', postId);
+
     return NextResponse.json(comment, { status: 201 });
   } catch (error) {
     logger.error('Post comments POST route error', error);

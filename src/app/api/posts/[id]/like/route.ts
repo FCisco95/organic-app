@@ -128,16 +128,22 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       await Promise.allSettled(rewards);
     }
 
-    // Get updated count
-    const { data: updated } = await (supabase as any)
+    // Sync count from post_likes as fallback (triggers should handle this,
+    // but may not exist or may be blocked by RLS on some environments)
+    const svc = createServiceClient();
+    const { count: freshCount } = await (svc as any)
+      .from('post_likes')
+      .select('*', { count: 'exact', head: true })
+      .eq('post_id', postId);
+
+    await (svc as any)
       .from('posts')
-      .select('likes_count')
-      .eq('id', postId)
-      .single();
+      .update({ likes_count: freshCount ?? 0 })
+      .eq('id', postId);
 
     return NextResponse.json({
       liked,
-      likes_count: updated?.likes_count ?? 0,
+      likes_count: freshCount ?? 0,
     });
   } catch (error) {
     logger.error('Post like route error', error);
