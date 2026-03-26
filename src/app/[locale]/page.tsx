@@ -23,6 +23,7 @@ import { normalizeProposalStatus } from '@/features/proposals/types';
 import { useLeaderboard, formatXp } from '@/features/reputation';
 import { cn } from '@/lib/utils';
 import { useActivityFeed } from '@/features/activity';
+import { GovernanceSummaryCard } from '@/components/analytics/governance-summary-card';
 
 function formatCountdown(target: string | null | undefined): string {
   if (!target) return '';
@@ -292,8 +293,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/* -- Contribution Layout (nav cards + activity feed) -- */}
+      {/* -- AI Governance Summary -- */}
       <section className="mb-8 opacity-0 animate-fade-up stagger-4">
+        <GovernanceSummaryCard variant="compact" />
+      </section>
+
+      {/* -- Contribution Layout (nav cards + activity feed) -- */}
+      <section className="mb-8 opacity-0 animate-fade-up stagger-5">
         <ContributionLayout
           proposalCount={proposalStageCounts.public + proposalStageCounts.qualified + proposalStageCounts.discussion + proposalStageCounts.voting}
           sprintActive={!!inFlightSprint}

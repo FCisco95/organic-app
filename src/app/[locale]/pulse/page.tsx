@@ -13,6 +13,28 @@ import { TokenChart } from '@/components/analytics/token-chart';
 import { TokenAnalytics } from '@/components/analytics/token-analytics';
 import { Activity, BarChart3, CheckCircle2, Landmark, User, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { usePersonalAnalytics } from '@/features/analytics/personal-hooks';
+
+const GovernanceSummaryCard = dynamic(
+  () => import('@/components/analytics/governance-summary-card').then((mod) => mod.GovernanceSummaryCard),
+  { loading: () => <div className="h-40 rounded-2xl bg-muted animate-pulse" /> }
+);
+const PersonalStatsCards = dynamic(
+  () => import('@/components/analytics/personal-stats-cards').then((mod) => mod.PersonalStatsCards),
+  { loading: () => <div className="h-24 rounded-2xl bg-muted animate-pulse" /> }
+);
+const XpTrendChart = dynamic(
+  () => import('@/components/analytics/xp-trend-chart').then((mod) => mod.XpTrendChart),
+  { loading: () => <div className="h-80 rounded-2xl bg-muted animate-pulse" /> }
+);
+const ActivityHeatmap = dynamic(
+  () => import('@/components/analytics/activity-heatmap').then((mod) => mod.ActivityHeatmap),
+  { loading: () => <div className="h-48 rounded-2xl bg-muted animate-pulse" /> }
+);
+const EngagementBreakdown = dynamic(
+  () => import('@/components/analytics/engagement-breakdown').then((mod) => mod.EngagementBreakdown),
+  { loading: () => <div className="h-80 rounded-2xl bg-muted animate-pulse" /> }
+);
 
 const ActivityTrendChart = dynamic(
   () => import('@/components/analytics/activity-trend-chart').then((mod) => mod.ActivityTrendChart),
@@ -49,6 +71,9 @@ export default function AnalyticsPage() {
   const [activeTab, setActiveTab] = useState<AnalyticsTab>('overview');
 
   const isAuthenticated = !!user;
+  const { data: personalData, isLoading: personalLoading } = usePersonalAnalytics({
+    enabled: isAuthenticated && activeTab === 'personal',
+  });
 
   const tabs: { key: AnalyticsTab; label: string; icon: typeof BarChart3; requiresAuth?: boolean }[] = [
     { key: 'overview', label: t('tabOverview'), icon: BarChart3 },
@@ -153,12 +178,11 @@ export default function AnalyticsPage() {
           <div className={cn(activeTab === 'personal' ? 'block' : 'hidden')}>
             <div className="opacity-0 animate-fade-up" style={{ animationDelay: '320ms' }}>
               {isAuthenticated ? (
-                <div className="rounded-2xl border border-border bg-card p-8 text-center">
-                  <User className="h-12 w-12 text-orange-500/30 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-foreground mb-2">{t('personalTitle')}</h3>
-                  <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
-                    {t('personalPlaceholder')}
-                  </p>
+                <div className="space-y-6">
+                  <PersonalStatsCards stats={personalData?.stats} loading={personalLoading} />
+                  <XpTrendChart data={personalData?.xp_trend} loading={personalLoading} />
+                  <ActivityHeatmap data={personalData?.activity_heatmap} loading={personalLoading} />
+                  <EngagementBreakdown data={personalData?.engagement} loading={personalLoading} />
                 </div>
               ) : (
                 <div className="rounded-2xl border border-border bg-card p-8 text-center">
@@ -174,6 +198,7 @@ export default function AnalyticsPage() {
 
           <div className={cn(activeTab === 'governance' ? 'block' : 'hidden')}>
             <div className="space-y-6 opacity-0 animate-fade-up" style={{ animationDelay: '320ms' }}>
+              <GovernanceSummaryCard variant="full" />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <ProposalCategoryChart data={data?.proposals_by_category} loading={isLoading} />
                 <VotingParticipationList data={data?.voting_participation} loading={isLoading} />
