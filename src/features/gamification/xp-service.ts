@@ -26,15 +26,18 @@ export interface AwardXpResult {
 
 /** Maximum XP awards per event type per day. 0 = unlimited. */
 const DAILY_CAPS: Record<string, number> = {
-  idea_created: 5,        // 5 ideas/day
-  idea_voted: 5,          // 5 vote XP awards/day
-  idea_vote_received: 10, // 10 "vote received" XP awards/day
+  idea_created: 5,            // 5 ideas/day
+  idea_voted: 5,              // 5 vote XP awards/day
+  idea_vote_received: 10,     // 10 "vote received" XP awards/day
   idea_comment_created: 5,
-  post_created: 3,
-  post_liked: 10,
+  post_created: 5,            // 5 posts/day
+  post_liked: 15,             // liker XP: 15 likes/day
+  post_like_received: 20,     // author XP from likes: 20/day
+  post_comment_created: 10,   // commenter XP: 10 comments/day
+  post_comment_received: 15,  // author XP from comments: 15/day
   donation_verified: 5,
-  holding_reward: 1,      // 1 holding reward sync/day
-  streak_milestone: 1,    // 1 milestone claim/day
+  holding_reward: 1,          // 1 holding reward sync/day
+  streak_milestone: 1,        // 1 milestone claim/day
 };
 
 /** After this many awards in a day, XP starts diminishing (50% per extra). */

@@ -10,12 +10,13 @@ import {
   MessageSquare,
   LayoutGrid,
   List,
+  Leaf,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { PageContainer } from '@/components/layout';
 import { PageHero } from '@/components/ui/page-hero';
 import { useAuth } from '@/features/auth/context';
-import { usePosts, useLikePost, type PostSortInput } from '@/features/posts';
+import { usePosts, useLikePost, useFlagPost, type PostSortInput } from '@/features/posts';
 import { cn } from '@/lib/utils';
 import {
   PostFeedCard,
@@ -86,8 +87,10 @@ export default function PostsPage() {
   const [composerOpen, setComposerOpen] = useState(false);
   const [viewMode, setViewMode] = useViewMode();
 
-  const postsQuery = usePosts({ sort, search, type: typeFilter });
+  const [organicFilter, setOrganicFilter] = useState(false);
+  const postsQuery = usePosts({ sort, search, type: typeFilter, organic: organicFilter ? 'true' : undefined });
   const likePost = useLikePost();
+  const flagPost = useFlagPost();
 
   const hasOrganicId = Boolean(profile?.organic_id);
 
@@ -100,6 +103,18 @@ export default function PostsPage() {
       await likePost.mutateAsync(postId);
     } catch (error) {
       const message = error instanceof Error ? error.message : t('likeFailure');
+      toast.error(message);
+    }
+  }
+
+  async function onFlag(postId: string) {
+    if (!profile) return;
+    if (!window.confirm(t('flagConfirm'))) return;
+    try {
+      await flagPost.mutateAsync(postId);
+      toast.success(t('flagSuccess'));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : t('flagError');
       toast.error(message);
     }
   }
@@ -211,7 +226,7 @@ export default function PostsPage() {
               onClick={() => setTypeFilter(opt.value)}
               className={cn(
                 'text-[10px] font-medium px-2 py-1 rounded-full whitespace-nowrap transition-colors',
-                typeFilter === opt.value
+                typeFilter === opt.value && !organicFilter
                   ? 'bg-primary text-primary-foreground'
                   : 'bg-muted text-muted-foreground hover:bg-muted/80',
               )}
@@ -219,6 +234,19 @@ export default function PostsPage() {
               {t(opt.labelKey)}
             </button>
           ))}
+          <span className="w-px bg-border self-stretch shrink-0" />
+          <button
+            onClick={() => setOrganicFilter(!organicFilter)}
+            className={cn(
+              'inline-flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded-full whitespace-nowrap transition-colors',
+              organicFilter
+                ? 'bg-green-500 text-white'
+                : 'bg-muted text-muted-foreground hover:bg-muted/80',
+            )}
+          >
+            <Leaf className="w-2.5 h-2.5" />
+            {t('filterOrganic')}
+          </button>
         </div>
 
         {/* Feed */}
@@ -254,6 +282,7 @@ export default function PostsPage() {
                     post={post}
                     index={idx}
                     onLike={onLike}
+                    onFlag={onFlag}
                     onClick={(id) => router.push(`/posts/${id}`)}
                     likeLoading={likePost.isPending}
                   />
@@ -269,6 +298,7 @@ export default function PostsPage() {
                     key={post.id}
                     post={post}
                     onLike={onLike}
+                    onFlag={onFlag}
                     onClick={(id) => router.push(`/posts/${id}`)}
                     likeLoading={likePost.isPending}
                   />
@@ -284,6 +314,7 @@ export default function PostsPage() {
                 key={post.id}
                 post={post}
                 onLike={onLike}
+                onFlag={onFlag}
                 onClick={(id) => router.push(`/posts/${id}`)}
                 likeLoading={likePost.isPending}
               />

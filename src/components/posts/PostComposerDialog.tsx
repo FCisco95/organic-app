@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { Plus, X, ChevronDown } from 'lucide-react';
+import { useState, useRef, useEffect, useMemo } from 'react';
+import { Plus, X, Leaf, Info, Coins } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
 import { useAuth } from '@/features/auth/context';
-import { useCreatePost } from '@/features/posts/hooks';
+import { useCreatePost, useUserPoints } from '@/features/posts/hooks';
 import type { PostType } from '@/features/posts/types';
 import { cn } from '@/lib/utils';
 
@@ -73,10 +73,12 @@ export function PostComposerDialog({ open, onClose }: PostComposerDialogProps) {
   const t = useTranslations('Posts');
   const { profile } = useAuth();
   const createPost = useCreatePost();
+  const { data: pointsData } = useUserPoints({ enabled: open });
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [postType, setPostType] = useState<PostType>('text');
   const [linkUrl, setLinkUrl] = useState('');
+  const [isOrganic, setIsOrganic] = useState(false);
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const titleRef = useRef<HTMLInputElement>(null);
@@ -84,11 +86,33 @@ export function PostComposerDialog({ open, onClose }: PostComposerDialogProps) {
   const isAdmin = profile?.role === 'admin';
   const availableTypes = isAdmin ? TYPE_OPTIONS : TYPE_OPTIONS.filter((t) => t.value !== 'announcement');
 
+  // Calculate cost dynamically
+  const postCost = useMemo(() => {
+    if (postType === 'announcement') return 0;
+    if (!pointsData) return 0;
+
+    if (isOrganic) {
+      if (pointsData.free_organic_remaining > 0) return 0;
+      return pointsData.costs.organic_paid[postType] ?? 0;
+    }
+
+    return pointsData.costs.non_organic[postType] ?? 0;
+  }, [postType, isOrganic, pointsData]);
+
+  const balance = pointsData?.claimable_points ?? 0;
+  const canAfford = balance >= postCost;
+  const freeOrganicRemaining = pointsData?.free_organic_remaining ?? 0;
+
   useEffect(() => {
     if (open && titleRef.current) {
       setTimeout(() => titleRef.current?.focus(), 100);
     }
   }, [open]);
+
+  // Reset organic when switching to announcement
+  useEffect(() => {
+    if (postType === 'announcement') setIsOrganic(false);
+  }, [postType]);
 
   function handleAddTag() {
     const tag = tagInput.trim();
@@ -109,6 +133,11 @@ export function PostComposerDialog({ open, onClose }: PostComposerDialogProps) {
       return;
     }
 
+    if (!canAfford) {
+      toast.error(t('composerInsufficientPoints'));
+      return;
+    }
+
     try {
       await createPost.mutateAsync({
         title: title.trim(),
@@ -116,12 +145,14 @@ export function PostComposerDialog({ open, onClose }: PostComposerDialogProps) {
         post_type: postType,
         tags: tags.length > 0 ? tags : undefined,
         twitter_url: postType !== 'announcement' ? linkUrl.trim() : undefined,
+        is_organic: isOrganic,
       });
       toast.success(t('composerSuccess'));
       setTitle('');
       setBody('');
       setLinkUrl('');
       setPostType('text');
+      setIsOrganic(false);
       setTags([]);
       onClose();
     } catch (error) {
@@ -141,9 +172,17 @@ export function PostComposerDialog({ open, onClose }: PostComposerDialogProps) {
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3 border-b border-border">
           <h2 className="text-sm font-semibold text-foreground">{t('composerTitle')}</h2>
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors">
-            <X className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-3">
+            {/* Points balance */}
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Coins className="w-3.5 h-3.5" />
+              <span className="tabular-nums font-medium">{balance}</span>
+              <span>{t('composerPointsLabel')}</span>
+            </div>
+            <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* Form */}
@@ -165,6 +204,45 @@ export function PostComposerDialog({ open, onClose }: PostComposerDialogProps) {
               </button>
             ))}
           </div>
+
+          {/* Organic toggle */}
+          {postType !== 'announcement' && (
+            <div className="flex items-center justify-between rounded-lg border border-border bg-muted/30 px-3 py-2.5">
+              <div className="flex items-center gap-2">
+                <Leaf className={cn('w-4 h-4', isOrganic ? 'text-green-500' : 'text-muted-foreground')} />
+                <div>
+                  <p className="text-xs font-medium text-foreground">{t('composerOrganicLabel')}</p>
+                  <p className="text-[10px] text-muted-foreground">{t('composerOrganicHint')}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                {isOrganic && (
+                  <span className="text-[10px] text-green-600 dark:text-green-400 font-medium">
+                    {freeOrganicRemaining > 0
+                      ? t('composerFreeRemaining', { count: freeOrganicRemaining })
+                      : t('composerNoFreeRemaining')}
+                  </span>
+                )}
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={isOrganic}
+                  onClick={() => setIsOrganic(!isOrganic)}
+                  className={cn(
+                    'relative inline-flex h-5 w-9 items-center rounded-full transition-colors',
+                    isOrganic ? 'bg-green-500' : 'bg-muted-foreground/30',
+                  )}
+                >
+                  <span
+                    className={cn(
+                      'inline-block h-3.5 w-3.5 rounded-full bg-white transition-transform',
+                      isOrganic ? 'translate-x-4' : 'translate-x-0.5',
+                    )}
+                  />
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Link URL — required for non-announcements */}
           {postType !== 'announcement' && (
@@ -243,9 +321,25 @@ export function PostComposerDialog({ open, onClose }: PostComposerDialogProps) {
 
         {/* Footer */}
         <div className="flex items-center justify-between px-5 py-3 border-t border-border">
-          <p className="text-[10px] text-muted-foreground">
-            {body.length}/10000
-          </p>
+          <div className="flex items-center gap-3">
+            <p className="text-[10px] text-muted-foreground">
+              {body.length}/10000
+            </p>
+            {/* Cost display */}
+            {postType !== 'announcement' && (
+              <div className={cn(
+                'flex items-center gap-1 text-[10px] font-medium rounded-full px-2 py-0.5',
+                postCost === 0
+                  ? 'bg-green-500/10 text-green-600 dark:text-green-400'
+                  : canAfford
+                    ? 'bg-muted text-muted-foreground'
+                    : 'bg-red-500/10 text-red-600 dark:text-red-400',
+              )}>
+                <Coins className="w-3 h-3" />
+                {postCost === 0 ? t('composerFreePost') : t('composerCost', { cost: postCost })}
+              </div>
+            )}
+          </div>
           <div className="flex gap-2">
             <button
               onClick={onClose}
@@ -255,7 +349,13 @@ export function PostComposerDialog({ open, onClose }: PostComposerDialogProps) {
             </button>
             <button
               onClick={handleSubmit}
-              disabled={createPost.isPending || !title.trim() || !body.trim() || (postType !== 'announcement' && !linkUrl.trim())}
+              disabled={
+                createPost.isPending ||
+                !title.trim() ||
+                !body.trim() ||
+                (postType !== 'announcement' && !linkUrl.trim()) ||
+                !canAfford
+              }
               className="text-xs font-medium px-4 py-1.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors"
             >
               {createPost.isPending ? t('composerPosting') : t('composerSubmit')}

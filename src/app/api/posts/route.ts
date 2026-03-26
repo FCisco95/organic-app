@@ -6,6 +6,13 @@ import { applyUserRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { createPostSchema, listPostsQuerySchema } from '@/features/posts/schemas';
 import { awardXp } from '@/features/gamification/xp-service';
 import { fetchOgMetadata } from '@/lib/og-preview';
+import {
+  calculatePostCost,
+  deductPoints,
+  awardPoints,
+  getWeeklyOrganicPostCount,
+  type PostType,
+} from '@/features/gamification/points-service';
 
 const POST_SELECT =
   '*, author:user_profiles!posts_author_id_fkey(id,name,email,organic_id,avatar_url)';
@@ -19,6 +26,7 @@ export async function GET(request: NextRequest) {
       sort: searchParams.get('sort') ?? undefined,
       search: searchParams.get('search') ?? undefined,
       type: searchParams.get('type') ?? undefined,
+      organic: searchParams.get('organic') ?? undefined,
       limit: searchParams.get('limit') ?? undefined,
     });
 
@@ -29,7 +37,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const { sort, search, type, limit } = queryResult.data;
+    const { sort, search, type, organic, limit } = queryResult.data;
 
     let query = (supabase as any)
       .from('posts')
@@ -44,6 +52,10 @@ export async function GET(request: NextRequest) {
 
     if (type) {
       query = query.eq('post_type', type);
+    }
+
+    if (organic === 'true') {
+      query = query.eq('is_organic', true);
     }
 
     if (sort === 'popular') {
@@ -77,13 +89,23 @@ export async function GET(request: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user || !posts || posts.length === 0) {
+    // Surface actively promoted posts at top (max 3), then rest
+    const now = new Date().toISOString();
+    const sorted = (posts ?? []) as Record<string, unknown>[];
+    const promoted = sorted.filter(
+      (p) => p.is_promoted && p.promotion_expires_at && (p.promotion_expires_at as string) > now
+    ).slice(0, 3);
+    const promotedIds = new Set(promoted.map((p) => p.id));
+    const rest = sorted.filter((p) => !promotedIds.has(p.id));
+    const orderedPosts = [...promoted, ...rest];
+
+    if (!user || orderedPosts.length === 0) {
       return NextResponse.json({
-        items: (posts ?? []).map((p: Record<string, unknown>) => ({ ...p, user_liked: false })),
+        items: orderedPosts.map((p) => ({ ...p, user_liked: false })),
       });
     }
 
-    const postIds = posts.map((p: Record<string, unknown>) => p.id as string);
+    const postIds = orderedPosts.map((p) => p.id as string);
     const { data: likes } = await (supabase as any)
       .from('post_likes')
       .select('post_id')
@@ -93,7 +115,7 @@ export async function GET(request: NextRequest) {
     const likedSet = new Set((likes ?? []).map((l: { post_id: string }) => l.post_id));
 
     return NextResponse.json({
-      items: posts.map((p: Record<string, unknown>) => ({
+      items: orderedPosts.map((p) => ({
         ...p,
         user_liked: likedSet.has(p.id as string),
       })),
@@ -149,7 +171,47 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { title, body, post_type, tags, twitter_url, thread_parts } = parsed.data;
+    const { title, body, post_type, tags, twitter_url, is_organic, thread_parts } = parsed.data;
+
+    // Announcements are admin only
+    if (post_type === 'announcement' && profile.role !== 'admin') {
+      return NextResponse.json(
+        { error: 'Only admins can create announcements' },
+        { status: 403 }
+      );
+    }
+
+    const service = createServiceClient();
+    const effectiveType = (post_type ?? 'text') as PostType;
+    const isOrganic = is_organic && post_type !== 'announcement';
+
+    // Calculate point cost
+    const weeklyOrganicCount = isOrganic
+      ? await getWeeklyOrganicPostCount(service, user.id)
+      : 0;
+    const pointCost = calculatePostCost(effectiveType, isOrganic, weeklyOrganicCount);
+
+    // Deduct points if cost > 0
+    if (pointCost > 0) {
+      const deduction = await deductPoints(
+        service,
+        user.id,
+        pointCost,
+        `Post creation (${effectiveType}${isOrganic ? ', organic' : ''})`,
+        'post',
+      );
+
+      if (!deduction.success) {
+        return NextResponse.json(
+          {
+            error: 'Insufficient points',
+            required: pointCost,
+            balance: deduction.newBalance,
+          },
+          { status: 400 }
+        );
+      }
+    }
 
     // Fetch OG metadata from the link URL (non-blocking failure)
     let ogData = {
@@ -161,39 +223,39 @@ export async function POST(request: NextRequest) {
       ogData = await fetchOgMetadata(twitter_url);
     }
 
-    // Announcements are admin only
-    if (post_type === 'announcement' && profile.role !== 'admin') {
-      return NextResponse.json(
-        { error: 'Only admins can create announcements' },
-        { status: 403 }
-      );
-    }
-
     const { data: post, error: insertError } = await (supabase as any)
       .from('posts')
       .insert({
         author_id: user.id,
         title,
         body,
-        post_type: post_type ?? 'text',
+        post_type: effectiveType,
         tags: tags ?? [],
         twitter_url: twitter_url ?? null,
         og_title: ogData.og_title,
         og_description: ogData.og_description,
         og_image_url: ogData.og_image_url,
+        is_organic: isOrganic,
+        points_cost: pointCost,
       })
       .select(POST_SELECT)
       .single();
 
     if (insertError || !post) {
       logger.error('Post creation failed', insertError);
+      // Refund points on insert failure
+      if (pointCost > 0) {
+        await awardPoints(service, user.id, pointCost, 'Refund: post creation failed', 'refund');
+      }
       return NextResponse.json({ error: 'Failed to create post' }, { status: 500 });
     }
+
+    const postId = (post as Record<string, unknown>).id as string;
 
     // Insert thread parts if it's a thread
     if (post_type === 'thread' && thread_parts && thread_parts.length > 0) {
       const parts = thread_parts.map((part, idx) => ({
-        post_id: (post as Record<string, unknown>).id as string,
+        post_id: postId,
         part_order: idx + 1,
         body: part.body,
       }));
@@ -201,25 +263,36 @@ export async function POST(request: NextRequest) {
       await (supabase as any).from('post_thread_parts').insert(parts);
     }
 
-    // Award XP + log activity (non-blocking)
-    const service = createServiceClient();
-    await Promise.allSettled([
+    // XP amount: 15 for organic, 10 for non-organic
+    const xpAmount = isOrganic ? 15 : 10;
+
+    // Award XP + log activity + organic creation bonus (non-blocking)
+    const rewards: PromiseLike<unknown>[] = [
       service.from('activity_log').insert({
         actor_id: user.id,
         event_type: 'post_created' as any,
         subject_type: 'post',
-        subject_id: (post as Record<string, unknown>).id as string,
-        metadata: { title, post_type: post_type ?? 'text' },
-      }),
+        subject_id: postId,
+        metadata: { title, post_type: effectiveType, is_organic: isOrganic, points_cost: pointCost },
+      }) as any,
       awardXp(service, {
         userId: user.id,
         eventType: 'post_created',
-        xpAmount: 10,
+        xpAmount,
         sourceType: 'post',
-        sourceId: (post as Record<string, unknown>).id as string,
-        metadata: { title },
+        sourceId: postId,
+        metadata: { title, is_organic: isOrganic },
       }),
-    ]);
+    ];
+
+    // Organic creation bonus: 3 points
+    if (isOrganic) {
+      rewards.push(
+        awardPoints(service, user.id, 3, 'Organic post creation bonus', 'engagement', postId)
+      );
+    }
+
+    await Promise.allSettled(rewards);
 
     return NextResponse.json({ ...(post as object), user_liked: false }, { status: 201 });
   } catch (error) {

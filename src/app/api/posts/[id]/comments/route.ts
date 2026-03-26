@@ -5,6 +5,7 @@ import { logger } from '@/lib/logger';
 import { applyUserRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { addPostCommentSchema } from '@/features/posts/schemas';
 import { awardXp } from '@/features/gamification/xp-service';
+import { awardPoints, getPromotionMultiplier, type PromotionTier } from '@/features/gamification/points-service';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -98,7 +99,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     // Check post exists and is not locked/removed
     const { data: post } = await (supabase as any)
       .from('posts')
-      .select('id, status, removed_at')
+      .select('id, author_id, status, removed_at, is_organic, organic_bonus_revoked, is_promoted, promotion_tier, promotion_expires_at')
       .eq('id', postId)
       .single();
 
@@ -144,23 +145,68 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     }
 
     const service = createServiceClient();
-    await Promise.allSettled([
+    const isOrganicActive = post.is_organic && !post.organic_bonus_revoked;
+    const promoMultiplier = getPromotionMultiplier(
+      post.is_promoted,
+      post.promotion_tier as PromotionTier | null,
+      post.promotion_expires_at
+    );
+
+    // Commenter XP: 5 (normal) or 8 (organic)
+    const commenterXp = isOrganicActive ? 8 : 5;
+
+    // Author XP: 3 (normal) or 5 (organic), with promotion multiplier
+    const authorBaseXp = isOrganicActive ? 5 : 3;
+    const authorXp = Math.round(authorBaseXp * promoMultiplier);
+
+    const rewards: PromiseLike<unknown>[] = [
       service.from('activity_log').insert({
         actor_id: user.id,
         event_type: 'post_commented' as any,
         subject_type: 'post',
         subject_id: postId,
-        metadata: { comment_id: comment.id },
-      }),
+        metadata: { comment_id: comment.id, is_organic: isOrganicActive },
+      }) as any,
       awardXp(service, {
         userId: user.id,
-        eventType: 'comment_created',
-        xpAmount: 5,
+        eventType: 'post_comment_created',
+        xpAmount: commenterXp,
         sourceType: 'post_comment',
         sourceId: comment.id as string,
-        metadata: { post_id: postId },
+        metadata: { post_id: postId, is_organic: isOrganicActive },
       }),
-    ]);
+    ];
+
+    // Author XP for receiving a comment
+    if (post.author_id !== user.id) {
+      rewards.push(
+        awardXp(service, {
+          userId: post.author_id,
+          eventType: 'post_comment_received',
+          xpAmount: authorXp,
+          sourceType: 'post_comment',
+          sourceId: comment.id as string,
+          metadata: { post_id: postId, commenter_id: user.id, is_organic: isOrganicActive, promo_multiplier: promoMultiplier },
+        })
+      );
+
+      // Author points: 2 pts for comments on organic posts (with promotion multiplier)
+      if (isOrganicActive) {
+        const authorPts = Math.round(2 * promoMultiplier);
+        rewards.push(
+          awardPoints(
+            service,
+            post.author_id,
+            authorPts,
+            'Comment received on organic post',
+            'engagement',
+            `comment:${postId}:${comment.id}`
+          )
+        );
+      }
+    }
+
+    await Promise.allSettled(rewards);
 
     return NextResponse.json(comment, { status: 201 });
   } catch (error) {

@@ -14,14 +14,22 @@ import {
   Clock,
   LinkIcon,
   AlignLeft,
+  Leaf,
+  Sparkles,
+  Flag,
+  Rocket,
+  ShieldCheck,
+  ShieldX,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { PageContainer } from '@/components/layout';
 import { useAuth } from '@/features/auth/context';
-import { usePost, usePostComments, useLikePost, useAddPostComment } from '@/features/posts/hooks';
+import { usePost, usePostComments, useLikePost, useAddPostComment, useFlagPost, usePromotePost, useUserPoints } from '@/features/posts/hooks';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { LinkPreviewCard } from '@/components/posts/LinkPreviewCard';
+import { PROMOTION_CONFIG, type PromotionTier } from '@/features/gamification/points-service';
+import { fetchJson } from '@/lib/fetch-json';
 
 function timeAgo(dateStr: string): string {
   const now = Date.now();
@@ -63,11 +71,19 @@ export default function PostDetailPage() {
   const commentsQuery = usePostComments(postId);
   const likePost = useLikePost();
   const addComment = useAddPostComment();
+  const flagPost = useFlagPost();
+  const promotePost = usePromotePost();
+  const { data: pointsData } = useUserPoints();
 
   const [commentBody, setCommentBody] = useState('');
+  const [showPromoteMenu, setShowPromoteMenu] = useState(false);
+  const userBalance = pointsData?.claimable_points ?? 0;
 
   const post = postQuery.data;
   const comments = commentsQuery.data?.comments ?? [];
+  const isAuthor = post && profile && post.author_id === profile.id;
+  const isAdmin = profile?.role === 'admin';
+  const isPromotedActive = post?.is_promoted && post?.promotion_expires_at && new Date(post.promotion_expires_at) > new Date();
 
   async function handleLike() {
     if (!profile) {
@@ -89,6 +105,37 @@ export default function PostDetailPage() {
       toast.success(t('detailCommentSuccess'));
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t('detailCommentError'));
+    }
+  }
+
+  async function handleFlag() {
+    if (!profile || !post) return;
+    if (!window.confirm(t('flagConfirm'))) return;
+    try {
+      await flagPost.mutateAsync(postId);
+      toast.success(t('flagSuccess'));
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : t('flagError'));
+    }
+  }
+
+  async function handlePromote(tier: PromotionTier) {
+    try {
+      await promotePost.mutateAsync({ postId, tier });
+      toast.success(t('promoteSuccess'));
+      setShowPromoteMenu(false);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : t('promoteError'));
+    }
+  }
+
+  async function handleAdminRestoreBonus() {
+    try {
+      await fetchJson(`/api/posts/${postId}/flag`, { method: 'DELETE' });
+      toast.success('Organic bonus restored, false flaggers penalized');
+      postQuery.refetch();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to restore bonus');
     }
   }
 
@@ -136,29 +183,50 @@ export default function PostDetailPage() {
         {/* Post */}
         <article
           className={cn(
-            'rounded-2xl border bg-card p-5 sm:p-6 mb-6 opacity-0 animate-fade-up stagger-2',
+            'relative z-10 rounded-2xl border bg-card p-5 sm:p-6 mb-6 opacity-0 animate-fade-up stagger-2',
             isAnnouncement
               ? 'border-l-4 border-l-amber-500/80 border-t-border border-r-border border-b-border'
-              : 'border-border',
+              : isPromotedActive
+                ? 'border-amber-400/50 shadow-amber-500/5 shadow-md'
+                : 'border-border',
           )}
         >
           {/* Badges */}
-          {(isAnnouncement || post.is_pinned) && (
-            <div className="flex items-center gap-2 mb-3">
-              {isAnnouncement && (
-                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full">
-                  <Megaphone className="w-3 h-3" />
-                  {t('badgeAnnouncement')}
-                </span>
-              )}
-              {post.is_pinned && (
-                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full">
-                  <Pin className="w-3 h-3" />
-                  {t('badgePinned')}
-                </span>
-              )}
-            </div>
-          )}
+          <div className="flex items-center gap-2 mb-3 flex-wrap">
+            {isAnnouncement && (
+              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full">
+                <Megaphone className="w-3 h-3" />
+                {t('badgeAnnouncement')}
+              </span>
+            )}
+            {post.is_pinned && (
+              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full">
+                <Pin className="w-3 h-3" />
+                {t('badgePinned')}
+              </span>
+            )}
+            {post.is_organic && !post.organic_bonus_revoked && (
+              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-green-500 bg-green-500/10 px-2 py-0.5 rounded-full">
+                <Leaf className="w-3 h-3" />
+                {t('badgeOrganic')}
+              </span>
+            )}
+            {post.is_organic && post.organic_bonus_revoked && (
+              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-full">
+                <Flag className="w-3 h-3" />
+                {t('organicBonusRevoked')}
+              </span>
+            )}
+            {isPromotedActive && (
+              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-full">
+                <Sparkles className="w-3 h-3" />
+                {post.promotion_tier === 'mega' ? t('badgeMegaBoost') : post.promotion_tier === 'feature' ? t('badgeFeatured') : t('badgePromoted')}
+              </span>
+            )}
+            {post.points_cost > 0 && (
+              <span className="text-[10px] text-muted-foreground">{post.points_cost} pts</span>
+            )}
+          </div>
 
           {/* Author header */}
           <div className="flex items-center gap-2.5 mb-4">
@@ -250,7 +318,87 @@ export default function PostDetailPage() {
               {post.comments_count} {post.comments_count === 1 ? t('detailCommentSingular') : t('detailCommentPlural')}
             </span>
             <XLikeButton twitterUrl={post.twitter_url} />
+
+            <div className="flex items-center gap-2 ml-auto">
+              {/* Flag button — organic posts, not own post */}
+              {post.is_organic && !post.organic_bonus_revoked && !isAuthor && profile && (
+                <button
+                  onClick={handleFlag}
+                  disabled={flagPost.isPending}
+                  className="flex items-center gap-1 text-[11px] text-muted-foreground/60 hover:text-orange-500 transition-colors"
+                  title={t('flagButton')}
+                >
+                  <Flag className="w-3.5 h-3.5" />
+                  {post.flag_count > 0 && <span className="tabular-nums">{post.flag_count}</span>}
+                </button>
+              )}
+
+              {/* Promote button — author only, not already promoted */}
+              {isAuthor && !isPromotedActive && (
+                <div className="relative">
+                  <button
+                    onClick={() => setShowPromoteMenu(!showPromoteMenu)}
+                    className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-primary transition-colors px-2 py-1 rounded-lg hover:bg-muted"
+                  >
+                    <Rocket className="w-3.5 h-3.5" />
+                    {t('promoteButton')}
+                  </button>
+                  {showPromoteMenu && (
+                    <div className="absolute right-0 top-full mt-1 w-64 rounded-xl border border-border bg-card shadow-xl z-20 p-3 space-y-2">
+                      <p className="text-xs font-semibold text-foreground mb-2">{t('promoteTitle')}</p>
+                      {(['spotlight', 'feature', 'mega'] as const).map((tier) => {
+                        const cfg = PROMOTION_CONFIG[tier];
+                        const tierKey = tier === 'spotlight' ? 'promoteSpotlight' : tier === 'feature' ? 'promoteFeature' : 'promoteMega';
+                        const descKey = `${tierKey}Desc` as const;
+                        const canAfford = userBalance >= cfg.cost;
+                        return (
+                          <button
+                            key={tier}
+                            onClick={() => handlePromote(tier)}
+                            disabled={promotePost.isPending || !canAfford}
+                            className={cn(
+                              'w-full text-left rounded-lg border p-2.5 transition-colors disabled:opacity-50',
+                              canAfford
+                                ? 'border-border hover:border-primary/50 hover:bg-muted/50'
+                                : 'border-border/50 opacity-60',
+                            )}
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-medium text-foreground">{t(tierKey)}</span>
+                              <span className={cn('text-[10px] font-bold tabular-nums', canAfford ? 'text-primary' : 'text-muted-foreground')}>{cfg.cost} pts</span>
+                            </div>
+                            <p className="text-[10px] text-muted-foreground mt-0.5">{t(descKey)}</p>
+                            {!canAfford && (
+                              <p className="text-[9px] text-red-500 mt-0.5">Need {cfg.cost - userBalance} more pts</p>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
+
+          {/* Admin flag review panel */}
+          {isAdmin && post.is_organic && post.organic_bonus_revoked && (
+            <div className="mt-3 p-3 rounded-lg border border-orange-500/30 bg-orange-500/5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-orange-500">Organic bonus revoked ({post.flag_count} flags)</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">Review: restore bonus (penalizes flaggers -5 pts each) or leave revoked.</p>
+                </div>
+                <button
+                  onClick={handleAdminRestoreBonus}
+                  className="flex items-center gap-1 text-xs font-medium text-green-500 hover:text-green-400 px-2.5 py-1.5 rounded-lg border border-green-500/30 hover:bg-green-500/10 transition-colors"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  Restore
+                </button>
+              </div>
+            </div>
+          )}
         </article>
 
         {/* Comments */}

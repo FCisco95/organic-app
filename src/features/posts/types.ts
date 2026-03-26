@@ -11,6 +11,8 @@ export interface PostAuthor {
   avatar_url: string | null;
 }
 
+export type PromotionTier = 'spotlight' | 'feature' | 'mega';
+
 export interface Post {
   id: string;
   author_id: string;
@@ -27,6 +29,14 @@ export interface Post {
   og_title: string | null;
   og_description: string | null;
   og_image_url: string | null;
+  is_organic: boolean;
+  points_cost: number;
+  is_promoted: boolean;
+  promotion_tier: PromotionTier | null;
+  promotion_points: number;
+  promotion_expires_at: string | null;
+  flag_count: number;
+  organic_bonus_revoked: boolean;
   removed_at: string | null;
   removed_reason: string | null;
   created_at: string;
