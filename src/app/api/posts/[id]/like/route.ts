@@ -3,6 +3,7 @@ import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { logger } from '@/lib/logger';
 import { applyUserRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { awardXp } from '@/features/gamification/xp-service';
+import { awardPoints, getPromotionMultiplier, type PromotionTier } from '@/features/gamification/points-service';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -23,10 +24,10 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const rateLimited = await applyUserRateLimit(user.id, 'posts:like', RATE_LIMITS.write);
     if (rateLimited) return rateLimited;
 
-    // Check post exists and is published
+    // Check post exists and is published — include organic/promotion fields
     const { data: post } = await (supabase as any)
       .from('posts')
-      .select('id, author_id, status')
+      .select('id, author_id, status, is_organic, organic_bonus_revoked, is_promoted, promotion_tier, promotion_expires_at')
       .eq('id', postId)
       .eq('status', 'published')
       .single();
@@ -61,7 +62,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         .insert({ post_id: postId, user_id: user.id });
 
       if (likeError) {
-        // Duplicate — already liked
         if (likeError.code === '23505') {
           return NextResponse.json({ liked: true, likes_count: 0 });
         }
@@ -69,18 +69,63 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       }
       liked = true;
 
-      // Award XP to post author (non-blocking)
+      // Determine organic bonus (organic + not revoked)
+      const isOrganicActive = post.is_organic && !post.organic_bonus_revoked;
+
+      // Promotion multiplier
+      const promoMultiplier = getPromotionMultiplier(
+        post.is_promoted,
+        post.promotion_tier as PromotionTier | null,
+        post.promotion_expires_at
+      );
+
+      // Award XP + points (non-blocking)
       const service = createServiceClient();
-      await Promise.allSettled([
+      const rewards: Promise<unknown>[] = [];
+
+      // Liker XP: 1 (normal) or 2 (organic)
+      const likerXp = isOrganicActive ? 2 : 1;
+      rewards.push(
         awardXp(service, {
-          userId: post.author_id,
+          userId: user.id,
           eventType: 'post_liked',
-          xpAmount: 2,
+          xpAmount: likerXp,
           sourceType: 'post_like',
           sourceId: `${postId}:${user.id}`,
-          metadata: { post_id: postId, liker_id: user.id },
-        }),
-      ]);
+          metadata: { post_id: postId, is_organic: isOrganicActive },
+        })
+      );
+
+      // Author XP: 2 (normal) or 3 (organic), with promotion multiplier
+      const authorBaseXp = isOrganicActive ? 3 : 2;
+      const authorXp = Math.round(authorBaseXp * promoMultiplier);
+      rewards.push(
+        awardXp(service, {
+          userId: post.author_id,
+          eventType: 'post_like_received',
+          xpAmount: authorXp,
+          sourceType: 'post_like',
+          sourceId: `${postId}:${user.id}`,
+          metadata: { post_id: postId, liker_id: user.id, is_organic: isOrganicActive, promo_multiplier: promoMultiplier },
+        })
+      );
+
+      // Author points: 1 pt for organic post likes (with promotion multiplier)
+      if (isOrganicActive) {
+        const authorPts = Math.round(1 * promoMultiplier);
+        rewards.push(
+          awardPoints(
+            service,
+            post.author_id,
+            authorPts,
+            'Like received on organic post',
+            'engagement',
+            `like:${postId}:${user.id}`
+          )
+        );
+      }
+
+      await Promise.allSettled(rewards);
     }
 
     // Get updated count

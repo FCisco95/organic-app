@@ -1,6 +1,6 @@
 'use client';
 
-import { Heart, MessageCircle, Pin, Megaphone, LinkIcon, AlignLeft, Clock } from 'lucide-react';
+import { Heart, MessageCircle, Pin, Megaphone, LinkIcon, AlignLeft, Clock, Leaf, Flag, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { PostListItem } from '@/features/posts';
 import type { PostType } from '@/features/posts/types';
@@ -13,6 +13,7 @@ interface PostFeedCardProps {
   post: PostListItem;
   onLike?: (postId: string) => void;
   onClick?: (postId: string) => void;
+  onFlag?: (postId: string) => void;
   likeLoading?: boolean;
 }
 
@@ -101,11 +102,12 @@ function XLikeButton({ post, iconOnly = false }: { post: PostListItem; iconOnly?
 
 /* ─── Featured Post Card ───────────────────────────────────────────────── */
 
-export function FeaturedPostCard({ post, onLike, onClick, likeLoading, index }: FeaturedPostCardProps) {
+export function FeaturedPostCard({ post, onLike, onClick, onFlag, likeLoading, index }: FeaturedPostCardProps & { onFlag?: (postId: string) => void }) {
   const t = useTranslations('Posts');
   const TypeIcon = POST_TYPE_ICONS[post.post_type] ?? AlignLeft;
   const author = post.author;
   const isAnnouncement = post.post_type === 'announcement';
+  const isPromotedActive = post.is_promoted && post.promotion_expires_at && new Date(post.promotion_expires_at) > new Date();
 
   return (
     <div
@@ -116,9 +118,11 @@ export function FeaturedPostCard({ post, onLike, onClick, likeLoading, index }: 
         index === 0 ? 'stagger-2' : 'stagger-3',
         isAnnouncement
           ? 'border-l-4 border-l-amber-500/80 border-t-border border-r-border border-b-border'
-          : post.is_pinned
-            ? 'border-amber-500/30'
-            : 'border-border',
+          : isPromotedActive
+            ? 'border-amber-400/50 shadow-amber-500/5 shadow-md'
+            : post.is_pinned
+              ? 'border-amber-500/30'
+              : 'border-border',
         onClick && 'cursor-pointer',
       )}
       onClick={() => onClick?.(post.id)}
@@ -137,7 +141,19 @@ export function FeaturedPostCard({ post, onLike, onClick, likeLoading, index }: 
             {t('badgePinned')}
           </span>
         )}
-        {!isAnnouncement && !post.is_pinned && (
+        {post.is_organic && !post.organic_bonus_revoked && (
+          <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-green-500 bg-green-500/10 px-2 py-0.5 rounded-full">
+            <Leaf className="w-3 h-3" />
+            {t('badgeOrganic')}
+          </span>
+        )}
+        {isPromotedActive && (
+          <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-full">
+            <Sparkles className="w-3 h-3" />
+            {post.promotion_tier === 'mega' ? t('badgeMegaBoost') : post.promotion_tier === 'feature' ? t('badgeFeatured') : t('badgePromoted')}
+          </span>
+        )}
+        {!isAnnouncement && !post.is_pinned && !post.is_organic && !isPromotedActive && (
           <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">
             <TypeIcon className="w-2.5 h-2.5" />
             {t(POST_TYPE_LABEL_KEYS[post.post_type])}
@@ -223,6 +239,19 @@ export function FeaturedPostCard({ post, onLike, onClick, likeLoading, index }: 
           <span className="tabular-nums">{post.comments_count}</span>
         </span>
         <XLikeButton post={post} />
+        {/* Flag button — only on organic posts */}
+        {post.is_organic && !post.organic_bonus_revoked && onFlag && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onFlag(post.id);
+            }}
+            className="flex items-center gap-1 text-[11px] text-muted-foreground/60 hover:text-orange-500 transition-colors ml-auto"
+            title={t('flagButton')}
+          >
+            <Flag className="w-3 h-3" />
+          </button>
+        )}
       </div>
     </div>
   );
@@ -230,16 +259,18 @@ export function FeaturedPostCard({ post, onLike, onClick, likeLoading, index }: 
 
 /* ─── Regular Post Card ────────────────────────────────────────────────── */
 
-export function PostFeedCard({ post, onLike, onClick, likeLoading }: PostFeedCardProps) {
+export function PostFeedCard({ post, onLike, onClick, onFlag, likeLoading }: PostFeedCardProps) {
   const t = useTranslations('Posts');
   const TypeIcon = POST_TYPE_ICONS[post.post_type] ?? AlignLeft;
   const author = post.author;
+  const isPromotedActive = post.is_promoted && post.promotion_expires_at && new Date(post.promotion_expires_at) > new Date();
 
   return (
     <div
       className={cn(
-        'group rounded-xl border border-border bg-card p-4 transition-all duration-200',
+        'group rounded-xl border bg-card p-4 transition-all duration-200',
         'hover:shadow-sm hover:border-border/80',
+        isPromotedActive ? 'border-amber-400/50' : 'border-border',
         onClick && 'cursor-pointer',
       )}
       onClick={() => onClick?.(post.id)}
@@ -260,6 +291,16 @@ export function PostFeedCard({ post, onLike, onClick, likeLoading }: PostFeedCar
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
           {post.is_pinned && <Pin className="w-3 h-3 text-amber-500" />}
+          {post.is_organic && !post.organic_bonus_revoked && (
+            <span className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-green-500 bg-green-500/10 px-1.5 py-0.5 rounded-full">
+              <Leaf className="w-2.5 h-2.5" />
+            </span>
+          )}
+          {isPromotedActive && (
+            <span className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded-full">
+              <Sparkles className="w-2.5 h-2.5" />
+            </span>
+          )}
           <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">
             <TypeIcon className="w-2.5 h-2.5" />
             {t(POST_TYPE_LABEL_KEYS[post.post_type])}
@@ -327,6 +368,18 @@ export function PostFeedCard({ post, onLike, onClick, likeLoading }: PostFeedCar
           <span className="tabular-nums">{post.comments_count}</span>
         </span>
         <XLikeButton post={post} />
+        {post.is_organic && !post.organic_bonus_revoked && onFlag && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onFlag(post.id);
+            }}
+            className="flex items-center gap-1 text-[11px] text-muted-foreground/60 hover:text-orange-500 transition-colors ml-auto"
+            title={t('flagButton')}
+          >
+            <Flag className="w-3 h-3" />
+          </button>
+        )}
       </div>
     </div>
   );

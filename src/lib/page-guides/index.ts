@@ -12,6 +12,7 @@ import { guide as analyticsGuide } from './analytics';
 import { guide as treasuryGuide } from './treasury';
 import { guide as communityGuide } from './community';
 import { guide as ideasGuide } from './ideas';
+import { guide as postsGuide } from './posts';
 
 const routeGuideMap: Record<string, PageGuide> = {
   '/': dashboardGuide,
@@ -24,6 +25,7 @@ const routeGuideMap: Record<string, PageGuide> = {
   '/vault': treasuryGuide,
   '/community': communityGuide,
   '/ideas': ideasGuide,
+  '/posts': postsGuide,
   // Backward compat — old routes still resolve a guide
   '/rewards': rewardsGuide,
   '/quests': questsGuide,

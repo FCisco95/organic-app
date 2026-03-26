@@ -17,6 +17,19 @@ import type {
 import { fetchJson } from '@/lib/fetch-json';
 import { buildQueryString } from '@/lib/query-string';
 
+export interface UserPointsData {
+  claimable_points: number;
+  total_points: number;
+  weekly_organic_posts: number;
+  free_organic_remaining: number;
+  weekly_engagement_points: number;
+  weekly_engagement_cap: number;
+  costs: {
+    non_organic: Record<string, number>;
+    organic_paid: Record<string, number>;
+  };
+}
+
 export const postKeys = {
   all: ['posts'] as const,
   lists: () => [...postKeys.all, 'list'] as const,
@@ -25,16 +38,18 @@ export const postKeys = {
   details: () => [...postKeys.all, 'detail'] as const,
   detail: (postId: string) => [...postKeys.details(), postId] as const,
   comments: (postId: string) => [...postKeys.all, 'comments', postId] as const,
+  userPoints: () => ['user-points'] as const,
 };
 
-export function usePosts(options?: { sort?: PostSortInput; search?: string; type?: string; enabled?: boolean }) {
+export function usePosts(options?: { sort?: PostSortInput; search?: string; type?: string; organic?: string; enabled?: boolean }) {
   const sort = options?.sort ?? 'new';
   const search = options?.search?.trim() ?? '';
   const type = options?.type;
-  const qs = buildQueryString({ sort, search, type });
+  const organic = options?.organic;
+  const qs = buildQueryString({ sort, search, type, organic });
 
   return useQuery({
-    queryKey: postKeys.list(sort, search, type),
+    queryKey: postKeys.list(sort, search, type ? `${type}${organic ? ':organic' : ''}` : organic),
     queryFn: async () => {
       const data = await fetchJson<PostFeedResponse>(`/api/posts${qs}`);
       return data.items as PostListItem[];
@@ -70,6 +85,7 @@ export function useCreatePost() {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: postKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: postKeys.userPoints() });
     },
   });
 }
@@ -114,6 +130,48 @@ export function useLikePost() {
       fetchJson<{ liked: boolean; likes_count: number }>(`/api/posts/${postId}/like`, {
         method: 'POST',
       }),
+    onSuccess: (_, postId) => {
+      queryClient.invalidateQueries({ queryKey: postKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: postKeys.detail(postId) });
+    },
+  });
+}
+
+export function useUserPoints(options?: { enabled?: boolean }) {
+  return useQuery({
+    queryKey: postKeys.userPoints(),
+    queryFn: async () => fetchJson<UserPointsData>('/api/user/points'),
+    enabled: options?.enabled ?? true,
+    staleTime: 30_000, // 30s — balance doesn't change that fast
+  });
+}
+
+export function usePromotePost() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ postId, tier }: { postId: string; tier: string }) =>
+      fetchJson(`/api/posts/${postId}/promote`, {
+        method: 'POST',
+        body: JSON.stringify({ tier }),
+      }),
+    onSuccess: (_, { postId }) => {
+      queryClient.invalidateQueries({ queryKey: postKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: postKeys.detail(postId) });
+      queryClient.invalidateQueries({ queryKey: postKeys.userPoints() });
+    },
+  });
+}
+
+export function useFlagPost() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (postId: string) =>
+      fetchJson<{ flagged: boolean; flag_count: number; bonus_revoked: boolean }>(
+        `/api/posts/${postId}/flag`,
+        { method: 'POST' }
+      ),
     onSuccess: (_, postId) => {
       queryClient.invalidateQueries({ queryKey: postKeys.lists() });
       queryClient.invalidateQueries({ queryKey: postKeys.detail(postId) });

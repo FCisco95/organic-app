@@ -8,6 +8,7 @@ export const listPostsQuerySchema = z.object({
   sort: postSortSchema.optional().default('new'),
   search: z.string().trim().max(120).optional(),
   type: postTypeSchema.optional(),
+  organic: z.enum(['true', 'false']).optional(),
   limit: z.coerce.number().int().min(1).max(50).optional().default(20),
 });
 
@@ -26,6 +27,7 @@ export const createPostSchema = z
     post_type: postTypeSchema.optional().default('text'),
     tags: z.array(z.string().trim().min(1).max(24)).max(5).optional(),
     twitter_url: z.string().url('Must be a valid URL').optional().nullable(),
+    is_organic: z.boolean().optional().default(false),
     thread_parts: z
       .array(
         z.object({
