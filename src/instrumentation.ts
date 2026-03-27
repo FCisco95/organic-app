@@ -5,7 +5,8 @@ export async function register(): Promise<void> {
     await import('./sentry.server.config');
   }
 
-  if (process.env.NEXT_RUNTIME === 'edge') {
+  // Edge runtime disabled in dev — causes EvalError with strict CSP
+  if (process.env.NEXT_RUNTIME === 'edge' && process.env.NODE_ENV === 'production') {
     await import('./sentry.edge.config');
   }
 }
