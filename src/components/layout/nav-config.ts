@@ -7,6 +7,7 @@ import {
   Home,
   LayoutDashboard,
   Lightbulb,
+  Megaphone,
   MessageSquare,
   Rocket,
   Scale,
@@ -18,6 +19,7 @@ import {
   Wallet,
   Zap,
 } from 'lucide-react';
+import { isMarketplaceEnabled } from '@/config/feature-flags';
 
 export interface NavContext {
   isAuthenticated: boolean;
@@ -145,6 +147,14 @@ const mainItemDefs: (NavItem & { groupId: string; showWhen?: (ctx: NavContext) =
     icon: Sparkles,
     showWhen: (ctx) => ctx.isAuthenticated,
   },
+  {
+    groupId: 'engage',
+    id: 'marketplace',
+    href: '/marketplace',
+    labelKey: 'marketplace',
+    icon: Megaphone,
+    showWhen: (ctx) => ctx.isAuthenticated && isMarketplaceEnabled(),
+  },
 ];
 
 const groupDefs: { id: string; labelKey: string }[] = [
@@ -222,6 +232,7 @@ export const routeSectionMap: Record<string, string> = {
   posts: 'sectionEngage',
   community: 'sectionEngage',
   earn: 'sectionEngage',
+  marketplace: 'sectionEngage',
   quests: 'sectionEngage', // backward compat
   rewards: 'sectionEngage', // backward compat
   notifications: 'sectionEngage', // backward compat
@@ -245,6 +256,7 @@ export const routeLabelMap: Record<string, string> = {
   posts: 'feed',
   community: 'ranks',
   earn: 'earn',
+  marketplace: 'marketplace',
   quests: 'earn', // backward compat
   rewards: 'earn', // backward compat
   notifications: 'notifications',
