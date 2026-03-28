@@ -28,19 +28,11 @@ export function DirectoryTab() {
     return map;
   }, [leaderboard]);
 
-  // Compute role counts from the full member list
+  // Use server-provided global role counts (not page-scoped)
   const roleCounts = useMemo(() => {
-    const members = data?.members ?? [];
-    const counts: Partial<Record<UserRole | 'all', number>> = {
-      all: data?.total ?? 0,
-    };
-    if (members.length > 0) {
-      const roleSet: UserRole[] = ['admin', 'council', 'member', 'guest'];
-      for (const r of roleSet) {
-        counts[r] = members.filter((m) => m.role === r).length;
-      }
-    }
-    return counts;
+    const serverCounts = (data as any)?.role_counts;
+    if (serverCounts) return serverCounts as Partial<Record<UserRole | 'all', number>>;
+    return { all: data?.total ?? 0 } as Partial<Record<UserRole | 'all', number>>;
   }, [data]);
 
   // Sort members client-side

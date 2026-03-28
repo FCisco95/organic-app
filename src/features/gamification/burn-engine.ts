@@ -19,12 +19,12 @@ export async function getBurnCost(
       .from('user_profiles')
       .select('xp_total, level, claimable_points')
       .eq('id', userId)
-      .single(),
+      .maybeSingle(),
     supabase
       .from('orgs')
       .select('gamification_config')
       .limit(1)
-      .single(),
+      .maybeSingle(),
   ]);
 
   if (profileResult.error || !profileResult.data) {

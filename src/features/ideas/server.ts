@@ -49,7 +49,7 @@ export async function getAuthenticatedProfile() {
     .from('user_profiles')
     .select(IDEA_PROFILE_COLUMNS)
     .eq('id', user.id)
-    .single();
+    .maybeSingle();
 
   return {
     supabase,

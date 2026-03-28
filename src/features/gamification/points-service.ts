@@ -154,7 +154,7 @@ export async function deductPoints(
     .from('user_profiles')
     .select('claimable_points')
     .eq('id', userId)
-    .single();
+    .maybeSingle();
 
   if (!profile) {
     return { success: false, newBalance: 0, reason: 'profile_not_found' };
@@ -222,7 +222,7 @@ export async function awardPoints(
     .from('user_profiles')
     .select('claimable_points, total_points')
     .eq('id', userId)
-    .single();
+    .maybeSingle();
 
   if (!profile) {
     return { success: false, amount: 0, newBalance: 0, reason: 'profile_not_found' };

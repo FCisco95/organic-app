@@ -82,7 +82,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       .from('user_profiles')
       .select('role, wallet_pubkey')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (profileError || !profile) {
       return NextResponse.json({ error: 'User profile not found' }, { status: 404 });
@@ -223,7 +223,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
       .from('user_profiles')
       .select('wallet_pubkey')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     const { weight, source } = await getVotingWeight(
       supabase,

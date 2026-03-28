@@ -33,7 +33,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       .from('user_profiles')
       .select('role')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     const role = profile?.role;
     if (role !== 'council' && role !== 'admin') {
@@ -421,37 +421,26 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: 'Failed to complete sprint' }, { status: 500 });
     }
 
-    // Phase 16: Auto-escalate unresolved disputes tied to the completed sprint.
+    // Consolidate post-completion actions: escalate disputes + clone templates
     let disputesEscalated = 0;
-    let adminDisputeExtensions = 0;
-    const { data: escalationData, error: escalationError } = await supabase.rpc(
-      'auto_escalate_sprint_disputes',
-      { p_sprint_id: id }
-    );
-
-    if (escalationError) {
-      logger.error('Error auto-escalating sprint disputes:', escalationError);
-    } else if (Array.isArray(escalationData) && escalationData.length > 0) {
-      disputesEscalated = escalationData[0]?.escalated_count ?? 0;
-      adminDisputeExtensions = escalationData[0]?.admin_extended_count ?? 0;
-    }
-
-    // Phase 12: Auto-clone recurring task templates into next sprint
     let recurringTasksCloned = 0;
     const targetSprintId =
       incompleteAction === 'next_sprint' && nextSprintId ? nextSprintId : null;
 
-    if (targetSprintId) {
-      const { data: cloneResult, error: cloneError } = await supabase.rpc(
-        'clone_recurring_templates',
-        { p_sprint_id: targetSprintId }
-      );
-
-      if (cloneError) {
-        logger.error('Error cloning recurring templates:', cloneError);
-      } else {
-        recurringTasksCloned = cloneResult ?? 0;
+    const { data: finalizeData, error: finalizeError } = await supabase.rpc(
+      'finalize_sprint_completion' as any,
+      {
+        p_sprint_id: id,
+        p_target_sprint_id: targetSprintId,
       }
+    );
+
+    if (finalizeError) {
+      logger.error('finalize_sprint_completion RPC error:', finalizeError);
+    } else {
+      const result = finalizeData as { ok: boolean; disputes_escalated?: number; templates_cloned?: number } | null;
+      disputesEscalated = result?.disputes_escalated ?? 0;
+      recurringTasksCloned = result?.templates_cloned ?? 0;
     }
 
     return NextResponse.json({
@@ -461,7 +450,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       epoch_distributions: epochDistributions,
       reward_settlement: rewardSettlement,
       disputes_escalated: disputesEscalated,
-      admin_dispute_extensions: adminDisputeExtensions,
       settlement_blockers: settlementBlockers,
       phase_transition: { from: 'settlement', to: 'completed' },
     });

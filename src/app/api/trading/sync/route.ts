@@ -25,7 +25,7 @@ export async function POST() {
       .from('user_profiles')
       .select('id, wallet_pubkey')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (!profile?.wallet_pubkey) {
       return NextResponse.json(

@@ -107,7 +107,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       .from('user_profiles')
       .select('role')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     const role = profile?.role;
     if (role !== 'council' && role !== 'admin') {
@@ -177,7 +177,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
       .from('user_profiles')
       .select('role')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (profile?.role !== 'admin') {
       return NextResponse.json({ error: 'Only admin members can delete sprints' }, { status: 403 });

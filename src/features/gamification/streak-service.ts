@@ -91,7 +91,7 @@ export async function awardStreakFreeze(
     .from('user_profiles')
     .select('streak_freezes')
     .eq('id', userId)
-    .single();
+    .maybeSingle();
 
   const currentFreezes = Number((profile as Record<string, unknown> | null)?.streak_freezes ?? 0);
 
@@ -129,7 +129,7 @@ export async function useStreakFreeze(
     .from('user_profiles')
     .select('streak_freezes, current_streak')
     .eq('id', userId)
-    .single();
+    .maybeSingle();
 
   const p = profile as Record<string, unknown> | null;
   const currentFreezes = Number(p?.streak_freezes ?? 0);
@@ -189,7 +189,7 @@ export async function checkStreakDanger(
     .from('user_profiles')
     .select('current_streak, last_active_date, streak_freezes')
     .eq('id', userId)
-    .single();
+    .maybeSingle();
 
   if (!profile) {
     return { atRisk: false, currentStreak: 0, hasFreezes: false, message: null };

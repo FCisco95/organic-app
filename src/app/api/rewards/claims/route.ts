@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
       .from('user_profiles')
       .select('role')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     const isAdminOrCouncil = profile?.role === 'admin' || profile?.role === 'council';
 
@@ -153,7 +153,7 @@ export async function POST(request: NextRequest) {
       .select('rewards_config')
       .order('created_at', { ascending: true })
       .limit(1)
-      .single();
+      .maybeSingle();
 
     const config = parseRewardsConfig(org?.rewards_config);
 
@@ -173,7 +173,7 @@ export async function POST(request: NextRequest) {
       .from('user_profiles')
       .select('claimable_points, wallet_pubkey')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (!profile) {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 });

@@ -201,7 +201,7 @@ async function insertXpAward(
     .from('user_profiles')
     .select('xp_total')
     .eq('id', userId)
-    .single();
+    .maybeSingle();
 
   if (profile) {
     const newXp = (profile.xp_total ?? 0) + xpAmount;

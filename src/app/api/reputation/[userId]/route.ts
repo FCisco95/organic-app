@@ -22,7 +22,7 @@ export async function GET(
         'xp_total, level, current_streak, longest_streak, last_active_date, total_points, tasks_completed, profile_visible'
       )
       .eq('id', userId)
-      .single();
+      .maybeSingle();
 
     if (profileError || !profile) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });

@@ -118,7 +118,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       .from('user_profiles')
       .select('role')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (profileError || !profile || !profile.role || !['admin', 'council'].includes(profile.role)) {
       return NextResponse.json(

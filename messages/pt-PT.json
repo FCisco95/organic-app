@@ -2290,6 +2290,8 @@
       "vote_cast": "Voto registado",
       "proposal_created": "Proposta criada",
       "comment_created": "Comentário publicado",
+      "post_created": "Publicação criada",
+      "post_comment_created": "Comentário em publicação",
       "achievement_unlocked": "Bónus de conquista"
     },
     "toast": {

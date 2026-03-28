@@ -192,7 +192,7 @@ export function RankingsTab() {
   const getDisplayName = (entry: LeaderboardEntry) => {
     if (entry.name) return entry.name;
     if (entry.organic_id) return t('organicId', { id: entry.organic_id });
-    return entry.email.split('@')[0];
+    return entry.email?.split('@')[0] ?? 'Member';
   };
 
   const handleSort = useCallback(

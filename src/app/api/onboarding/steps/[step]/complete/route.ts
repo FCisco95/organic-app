@@ -167,7 +167,7 @@ export async function POST(
           .from('user_profiles')
           .select('xp_total')
           .eq('id', user.id)
-          .single();
+          .maybeSingle();
 
         if (currentProfile) {
           await serviceSupabase

@@ -66,7 +66,7 @@ export async function POST(
       .from('orgs')
       .select('gamification_config')
       .limit(1)
-      .single();
+      .maybeSingle();
 
     const config: DisputeConfig = {
       ...DEFAULT_DISPUTE_CONFIG,

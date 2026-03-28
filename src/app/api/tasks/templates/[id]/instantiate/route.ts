@@ -35,7 +35,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       .from('user_profiles')
       .select('organic_id')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (!profile?.organic_id) {
       return NextResponse.json(

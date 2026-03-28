@@ -13,7 +13,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         'id, name, email, avatar_url, organic_id, role, total_points, tasks_completed, profile_visible, bio, location, website, twitter, discord, wallet_pubkey, created_at'
       )
       .eq('id', id)
-      .single();
+      .maybeSingle();
 
     if (error || !data) {
       return NextResponse.json({ error: 'Member not found' }, { status: 404 });
@@ -43,7 +43,18 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       });
     }
 
-    return NextResponse.json({ data });
+    // Check if the requester is viewing their own profile
+    const { data: { user } } = await supabase.auth.getUser();
+    const isSelf = user?.id === data.id;
+
+    // Redact sensitive PII for non-self views
+    const sanitized = {
+      ...data,
+      email: isSelf ? data.email : data.email.split('@')[0] + '@***',
+      wallet_pubkey: isSelf ? data.wallet_pubkey : null,
+    };
+
+    return NextResponse.json({ data: sanitized });
   } catch (err) {
     logger.error('Member detail API error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

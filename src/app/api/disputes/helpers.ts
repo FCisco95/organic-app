@@ -81,7 +81,7 @@ export async function loadDisputeConfig(
     .from('orgs')
     .select('gamification_config')
     .limit(1)
-    .single();
+    .maybeSingle();
 
   return {
     ...DEFAULT_DISPUTE_CONFIG,
@@ -102,7 +102,7 @@ export async function handleEligibilityCheck(
     .from('user_profiles')
     .select('xp_total, role')
     .eq('id', userId)
-    .single();
+    .maybeSingle();
 
   if (!profile) {
     return NextResponse.json({
@@ -225,7 +225,7 @@ export async function handlePendingCount(
     .from('user_profiles')
     .select('role')
     .eq('id', userId)
-    .single();
+    .maybeSingle();
 
   const isCouncilOrAdmin = profile?.role === 'admin' || profile?.role === 'council';
 
@@ -259,7 +259,7 @@ export async function handleArbitratorStats(
     .from('user_profiles')
     .select('role')
     .eq('id', userId)
-    .single();
+    .maybeSingle();
 
   const isCouncilOrAdmin = profile?.role === 'admin' || profile?.role === 'council';
   if (!isCouncilOrAdmin) {
@@ -293,7 +293,7 @@ export async function handleReviewerAccuracy(
     .from('user_profiles')
     .select('role')
     .eq('id', userId)
-    .single();
+    .maybeSingle();
 
   const isCouncilOrAdmin = profile?.role === 'admin' || profile?.role === 'council';
   if (!isCouncilOrAdmin) {

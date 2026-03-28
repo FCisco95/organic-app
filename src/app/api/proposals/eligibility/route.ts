@@ -23,7 +23,7 @@ export async function GET() {
       .from('user_profiles')
       .select('role, wallet_pubkey, organic_id')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (!profile?.organic_id) {
       return NextResponse.json({
@@ -47,7 +47,7 @@ export async function GET() {
       .from('voting_config')
       .select('proposal_threshold_org, max_live_proposals, proposer_cooldown_days')
       .is('org_id', null)
-      .single();
+      .maybeSingle();
 
     const threshold = config?.proposal_threshold_org ?? 0;
     const maxLive = config?.max_live_proposals ?? 3;

@@ -58,7 +58,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       .from('user_profiles')
       .select('wallet_pubkey')
       .eq('id', targetUserId)
-      .single();
+      .maybeSingle();
 
     let ownWeight = 0;
 

@@ -17,7 +17,7 @@ async function requireAdmin(supabase: Awaited<ReturnType<typeof createClient>>) 
     .from('user_profiles')
     .select('role')
     .eq('id', user.id)
-    .single();
+    .maybeSingle();
 
   if (!profile || !['admin', 'council'].includes(profile.role ?? '')) {
     return { error: NextResponse.json({ error: 'Forbidden' }, { status: 403 }), user, profile: null };

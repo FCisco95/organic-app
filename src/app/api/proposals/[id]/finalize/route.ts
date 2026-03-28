@@ -82,7 +82,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       .from('user_profiles')
       .select('role')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (profileError || !profile || !profile.role || !['admin', 'council'].includes(profile.role)) {
       return NextResponse.json(
@@ -162,7 +162,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           .from('voting_config')
           .select('execution_window_days')
           .is('org_id', null)
-          .single();
+          .maybeSingle();
 
         const windowDays = config?.execution_window_days ?? 7;
         const deadline = new Date(Date.now() + windowDays * 24 * 60 * 60 * 1000).toISOString();

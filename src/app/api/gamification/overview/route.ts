@@ -79,7 +79,7 @@ export async function GET() {
       pendingClaimsResult,
       questProgressResult,
     ] = await Promise.all([
-      supabase.from('user_profiles').select(USER_PROFILE_COLUMNS).eq('id', user.id).single(),
+      supabase.from('user_profiles').select(USER_PROFILE_COLUMNS).eq('id', user.id).maybeSingle(),
       supabase
         .from('xp_events')
         .select(XP_EVENT_COLUMNS)

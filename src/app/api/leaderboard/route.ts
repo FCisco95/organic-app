@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { unstable_cache } from 'next/cache';
-import { createAnonClient } from '@/lib/supabase/server';
+import { createAnonClient, createClient } from '@/lib/supabase/server';
 import { Database } from '@/types/database';
 import { logger } from '@/lib/logger';
 import {
@@ -11,7 +11,6 @@ import {
 type LeaderboardRow = {
   id: string | null;
   name: string | null;
-  email: string | null;
   organic_id: number | null;
   avatar_url: string | null;
   total_points: number | null;
@@ -24,20 +23,21 @@ type LeaderboardRow = {
   current_streak: number | null;
 };
 const RESPONSE_CACHE_CONTROL = 'public, s-maxage=300, stale-while-revalidate=600';
+// No email or wallet — PII must not appear in public leaderboard
 const LEADERBOARD_COLUMNS =
-  'id, name, email, organic_id, avatar_url, total_points, tasks_completed, role, rank, dense_rank, xp_total, level, current_streak';
+  'id, name, organic_id, avatar_url, total_points, tasks_completed, role, rank, dense_rank, xp_total, level, current_streak';
 
 type NormalizedLeaderboardEntry = Omit<LeaderboardEntry, 'rank'>;
 
 function normalizeLeaderboardRow(row: LeaderboardRow): NormalizedLeaderboardEntry | null {
-  if (!row.id || !row.email) {
+  if (!row.id) {
     return null;
   }
 
   return {
     id: row.id,
     name: row.name,
-    email: row.email,
+    email: null,
     organic_id: row.organic_id,
     avatar_url: row.avatar_url,
     total_points: row.total_points ?? 0,
@@ -50,7 +50,7 @@ function normalizeLeaderboardRow(row: LeaderboardRow): NormalizedLeaderboardEntr
 }
 
 async function queryLeaderboardMaterialized() {
-  const supabase = createAnonClient();
+  const supabase = await createClient();
   return supabase
     .from('leaderboard_materialized')
     .select(LEADERBOARD_COLUMNS)
@@ -63,7 +63,7 @@ async function queryLeaderboardMaterialized() {
 }
 
 async function queryLeaderboardView() {
-  const supabase = createAnonClient();
+  const supabase = await createClient();
   return supabase
     .from('leaderboard_view')
     .select(LEADERBOARD_COLUMNS)
@@ -113,6 +113,7 @@ async function fetchLeaderboardPayload(forceLiveView = false): Promise<{ leaderb
   return {
     leaderboard: ranked.map((entry) => ({
       ...entry,
+      email: null,
       rank: entry.rank,
     })),
   };

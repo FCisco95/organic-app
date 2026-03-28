@@ -244,7 +244,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
       .from('user_profiles')
       .select('role')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     const role = profile?.role;
     if (role !== 'council' && role !== 'admin') {

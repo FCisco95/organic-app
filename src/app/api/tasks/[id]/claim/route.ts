@@ -22,7 +22,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       .from('user_profiles')
       .select('id, organic_id, role')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (!profile?.organic_id) {
       return NextResponse.json({ error: 'You need an Organic ID to join tasks' }, { status: 403 });

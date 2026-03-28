@@ -16,7 +16,7 @@ async function requireAdminOrCouncil(supabase: Awaited<ReturnType<typeof createC
     .from('user_profiles')
     .select('role')
     .eq('id', user.id)
-    .single();
+    .maybeSingle();
 
   if (!profile || !['admin', 'council'].includes(profile.role ?? '')) {
     return { error: NextResponse.json({ error: 'Forbidden' }, { status: 403 }), user, profile: null };

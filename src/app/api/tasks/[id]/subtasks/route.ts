@@ -75,7 +75,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       .from('user_profiles')
       .select('role, organic_id')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (!profile || !profile.role || !['admin', 'council'].includes(profile.role)) {
       // Non-admin must be task creator

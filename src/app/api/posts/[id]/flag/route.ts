@@ -115,7 +115,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       .from('user_profiles')
       .select('role')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (profile?.role !== 'admin') {
       return NextResponse.json({ error: 'Admin only' }, { status: 403 });

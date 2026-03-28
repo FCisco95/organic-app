@@ -132,7 +132,7 @@ export async function POST(request: Request) {
       .from('user_profiles')
       .select('role')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     const isParty =
       user.id === dispute.disputant_id ||

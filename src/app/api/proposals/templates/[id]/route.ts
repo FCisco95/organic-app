@@ -57,7 +57,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       .from('user_profiles')
       .select('role')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (profileError || !profile || !profile.role || !['admin', 'council'].includes(profile.role)) {
       return NextResponse.json(
@@ -122,7 +122,7 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
       .from('user_profiles')
       .select('role')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (profileError || !profile || !profile.role || !['admin', 'council'].includes(profile.role)) {
       return NextResponse.json(

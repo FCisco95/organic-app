@@ -184,7 +184,7 @@ export interface UserReputation {
 export interface LeaderboardEntry {
   id: string;
   name: string | null;
-  email: string;
+  email: string | null;
   organic_id: number | null;
   avatar_url: string | null;
   total_points: number;

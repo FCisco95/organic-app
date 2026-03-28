@@ -256,7 +256,7 @@ export async function completeReferral(
         .from('user_profiles')
         .select('xp_total')
         .eq('id', ref.referrer_id)
-        .single();
+        .maybeSingle();
 
       if (profile) {
         const newXp = (profile.xp_total ?? 0) + xpReward;
