@@ -25,7 +25,7 @@ export async function getOrgConfig(): Promise<OrgConfig> {
       )
       .order('created_at', { ascending: true })
       .limit(1)
-      .single();
+      .maybeSingle();
 
     if (org) {
       const config: OrgConfig = {

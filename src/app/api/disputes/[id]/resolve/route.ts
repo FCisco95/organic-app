@@ -30,7 +30,7 @@ export async function POST(
       .from('user_profiles')
       .select('role')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (!profile || (profile.role !== 'admin' && profile.role !== 'council')) {
       return NextResponse.json(

@@ -79,7 +79,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       .from('user_profiles')
       .select('role')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     const canViewAll = profile?.role && ['admin', 'council'].includes(profile.role);
 
@@ -200,7 +200,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       .from('user_profiles')
       .select('organic_id')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (profileError) {
       return NextResponse.json({ error: 'Failed to verify Organic ID' }, { status: 500 });

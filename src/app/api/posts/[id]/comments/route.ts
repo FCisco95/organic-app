@@ -87,7 +87,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       .from('user_profiles')
       .select('id, organic_id')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (!profile?.organic_id) {
       return NextResponse.json(

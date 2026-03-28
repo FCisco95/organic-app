@@ -50,7 +50,7 @@ export async function POST(request: Request) {
       .from('user_profiles')
       .select('role')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (!profile?.role || !['admin', 'council'].includes(profile.role)) {
       return NextResponse.json(
@@ -132,7 +132,7 @@ export async function POST(request: Request) {
       .select('id')
       .order('created_at', { ascending: true })
       .limit(1)
-      .single();
+      .maybeSingle();
 
     // Create the task
     const { data: task, error: insertError } = await supabase

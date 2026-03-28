@@ -23,7 +23,7 @@ export async function GET() {
       .from('user_profiles')
       .select('claimable_points, total_points')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (!profile) {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 });

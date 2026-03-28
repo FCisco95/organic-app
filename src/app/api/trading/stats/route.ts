@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
       .from('user_profiles')
       .select('wallet_pubkey, holding_start_date, holding_days, holding_multiplier, min_balance_held')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (!profile) {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 });

@@ -26,7 +26,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       .from('user_profiles')
       .select('role')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     const role = profile?.role;
     if (role !== 'council' && role !== 'admin') {

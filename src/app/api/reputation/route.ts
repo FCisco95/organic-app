@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
             'xp_total, level, current_streak, longest_streak, last_active_date, total_points, tasks_completed'
           )
           .eq('id', user.id)
-          .single(),
+          .maybeSingle(),
         supabase
           .from('user_achievements')
           .select('achievement_id, unlocked_at')
@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
           .limit(10),
       ]);
 
-    if (profileResult.error) {
+    if (profileResult.error || !profileResult.data) {
       return NextResponse.json({ error: 'Failed to fetch reputation' }, { status: 500 });
     }
 

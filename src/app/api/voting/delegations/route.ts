@@ -126,7 +126,7 @@ export async function POST(request: Request) {
       .from('user_profiles')
       .select('role, organic_id')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (!profile || !profile.role || !['member', 'council', 'admin'].includes(profile.role)) {
       return NextResponse.json({ error: 'Must be a member to delegate' }, { status: 403 });

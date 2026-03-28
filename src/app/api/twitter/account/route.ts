@@ -30,7 +30,7 @@ export async function GET() {
           .from('user_profiles')
           .select('twitter, twitter_verified')
           .eq('id', user.id)
-          .single(),
+          .maybeSingle(),
       ]);
 
     if (accountError) {
@@ -44,8 +44,8 @@ export async function GET() {
     return NextResponse.json({
       account,
       profile: {
-        twitter: profile.twitter,
-        twitter_verified: profile.twitter_verified,
+        twitter: profile?.twitter ?? null,
+        twitter_verified: profile?.twitter_verified ?? false,
       },
     });
   } catch (error: unknown) {

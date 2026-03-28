@@ -58,7 +58,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       .from('user_profiles')
       .select('role')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (!profile || !profile.role || !['admin', 'council'].includes(profile.role)) {
       return NextResponse.json({ error: 'Only council and admin can manage templates' }, { status: 403 });
@@ -115,7 +115,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
       .from('user_profiles')
       .select('role')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (!profile || !profile.role || !['admin', 'council'].includes(profile.role)) {
       return NextResponse.json({ error: 'Only council and admin can manage templates' }, { status: 403 });

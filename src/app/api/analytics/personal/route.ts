@@ -40,7 +40,7 @@ export async function GET() {
           'xp_total, level, current_streak, longest_streak, total_points, claimable_points, tasks_completed'
         )
         .eq('id', userId)
-        .single(),
+        .maybeSingle(),
 
       // 2. XP events grouped by day (last 90 days)
       supabase

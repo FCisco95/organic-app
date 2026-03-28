@@ -136,6 +136,10 @@ export function getVotingStatus(proposal: ProposalWithVoting): VotingStatus {
   if (proposal.result === 'quorum_not_met') return 'finalized_quorum_not_met';
 
   if (!proposal.voting_starts_at || !proposal.voting_ends_at) {
+    // If the proposal lifecycle status is 'voting' but timestamps are missing,
+    // treat it as open so the voting UI renders (timestamps should have been set
+    // by start_proposal_voting_integrity RPC).
+    if ((proposal as any).status === 'voting') return 'voting_open';
     return 'not_started';
   }
 

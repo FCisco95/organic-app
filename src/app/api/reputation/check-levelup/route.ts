@@ -18,7 +18,7 @@ export async function POST() {
       .from('user_profiles')
       .select('level')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     const oldLevel = profileBefore?.level ?? 1;
 
@@ -36,7 +36,7 @@ export async function POST() {
       .from('user_profiles')
       .select('level')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     const newLevel = profileAfter?.level ?? oldLevel;
 

@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
       .from('user_profiles')
       .select('organic_id, role, wallet_pubkey')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (profileError || !profile) {
       return NextResponse.json({ error: 'User profile not found' }, { status: 404 });
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
         .from('voting_config')
         .select('proposal_threshold_org, proposer_cooldown_days, max_live_proposals')
         .is('org_id', null)
-        .single();
+        .maybeSingle();
 
       if (config) {
         // 1. Token threshold gate
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
             .eq('wallet_pubkey', profile.wallet_pubkey)
             .order('taken_at', { ascending: false })
             .limit(1)
-            .single();
+            .maybeSingle();
 
           const balance = snapshot ? Number(snapshot.balance_ui) : 0;
           if (balance < threshold) {
@@ -139,7 +139,7 @@ export async function POST(request: NextRequest) {
             .not('status', 'eq', 'draft')
             .order('created_at', { ascending: false })
             .limit(1)
-            .single();
+            .maybeSingle();
 
           if (latestProposal?.created_at) {
             const createdAt = new Date(latestProposal.created_at).getTime();

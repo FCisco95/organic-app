@@ -76,7 +76,7 @@ export async function PATCH(request: NextRequest) {
       .from('user_profiles')
       .select('role')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (!profile || profile.role !== 'admin') {
       return NextResponse.json({ error: 'Forbidden: admin access required' }, { status: 403 });
@@ -131,7 +131,7 @@ export async function PATCH(request: NextRequest) {
       .select('id')
       .order('created_at', { ascending: true })
       .limit(1)
-      .single();
+      .maybeSingle();
 
     if (!orgIdRow) {
       return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
@@ -141,7 +141,7 @@ export async function PATCH(request: NextRequest) {
       .from('orgs')
       .select(ORG_COLUMNS)
       .eq('id', orgIdRow.id)
-      .single();
+      .maybeSingle();
 
     if (orgBeforeError || !orgBefore) {
       logger.error('Org fetch before update error:', orgBeforeError);
@@ -152,7 +152,7 @@ export async function PATCH(request: NextRequest) {
       .from('voting_config')
       .select(VOTING_CONFIG_COLUMNS)
       .eq('org_id', orgIdRow.id)
-      .single();
+      .maybeSingle();
 
     // Update org if there are org fields
     if (Object.keys(orgUpdate).length > 0) {

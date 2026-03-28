@@ -62,7 +62,7 @@ export async function syncWalletBalance(
     .from('user_profiles')
     .select('holding_start_date, min_balance_held')
     .eq('id', userId)
-    .single();
+    .maybeSingle();
 
   let holdingStartDate = (profile as Record<string, unknown> | null)?.holding_start_date as string | null;
   let minBalanceHeld = Number((profile as Record<string, unknown> | null)?.min_balance_held ?? 0);

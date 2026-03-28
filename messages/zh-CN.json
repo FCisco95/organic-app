@@ -2290,6 +2290,8 @@
       "vote_cast": "投票已提交",
       "proposal_created": "提案已创建",
       "comment_created": "评论已发布",
+      "post_created": "帖子已创建",
+      "post_comment_created": "帖子评论",
       "achievement_unlocked": "成就奖励"
     },
     "toast": {

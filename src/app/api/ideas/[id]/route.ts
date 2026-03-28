@@ -77,7 +77,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       .from('user_profiles')
       .select('id, role')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (!profile) {
       return NextResponse.json({ error: 'User profile not found' }, { status: 404 });

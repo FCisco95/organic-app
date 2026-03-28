@@ -52,7 +52,7 @@ export async function GET() {
       .from('user_profiles')
       .select('claimable_points, total_points, wallet_pubkey')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (!profile) {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
@@ -64,7 +64,7 @@ export async function GET() {
       .select('rewards_config')
       .order('created_at', { ascending: true })
       .limit(1)
-      .single();
+      .maybeSingle();
 
     const config = parseRewardsConfig(org?.rewards_config);
 

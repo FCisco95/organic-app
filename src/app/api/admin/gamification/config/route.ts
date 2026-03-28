@@ -24,7 +24,7 @@ export async function PATCH(request: Request) {
       .from('user_profiles')
       .select('role')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (!profile || profile.role !== 'admin') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
@@ -43,7 +43,7 @@ export async function PATCH(request: Request) {
       .from('orgs')
       .select('id, gamification_config')
       .limit(1)
-      .single();
+      .maybeSingle();
 
     if (!org) {
       return NextResponse.json({ error: 'Organization not found' }, { status: 404 });

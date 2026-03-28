@@ -93,7 +93,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       .from('user_profiles')
       .select('role')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (!profile || !profile.role || !['admin', 'council'].includes(profile.role)) {
       // Check if user is the task creator
@@ -194,7 +194,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
       .from('user_profiles')
       .select('role')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (!profile || !profile.role || !['admin', 'council'].includes(profile.role)) {
       const { data: task } = await supabase

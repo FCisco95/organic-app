@@ -52,7 +52,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const desiredVote = normalizeVoteValue(parsed.data.value);
 
     const [profileResult, ideaResult, existingResult] = await Promise.all([
-      supabase.from('user_profiles').select('id, organic_id').eq('id', user.id).single(),
+      supabase.from('user_profiles').select('id, organic_id').eq('id', user.id).maybeSingle(),
       supabase
         .from('ideas')
         .select('id, author_id, status, removed_at')

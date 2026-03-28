@@ -261,7 +261,7 @@ export async function getQuestProgress(
         .from('user_profiles')
         .select('level, current_streak, tasks_completed')
         .eq('id', userId)
-        .single(),
+        .maybeSingle(),
       supabase
         .from('user_activity_counts')
         .select('tasks_completed, votes_cast, comments_created, proposals_created')

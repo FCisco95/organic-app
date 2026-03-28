@@ -52,12 +52,33 @@ export async function GET(request: NextRequest) {
       level: m.level ?? 1,
     }));
 
+    // Fetch global role counts (independent of current page/filters)
+    const roleCountQuery = await supabase
+      .from('user_profiles')
+      .select('role')
+      .not('role', 'is', null);
+
+    const allProfiles = roleCountQuery.data ?? [];
+    const role_counts: Record<string, number> = {
+      all: allProfiles.length,
+      admin: 0,
+      council: 0,
+      member: 0,
+      guest: 0,
+    };
+    for (const p of allProfiles) {
+      if (p.role && p.role in role_counts) {
+        role_counts[p.role]++;
+      }
+    }
+
     return NextResponse.json({
       data: {
         members,
         total: count ?? 0,
         page,
         limit,
+        role_counts,
       },
     });
   } catch (err) {

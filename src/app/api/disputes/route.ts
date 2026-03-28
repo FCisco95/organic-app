@@ -66,12 +66,18 @@ export async function GET(request: NextRequest) {
     }
 
     // Parse filters
-    const filters = disputeFilterSchema.parse({
+    const filterResult = disputeFilterSchema.safeParse({
       status: searchParams.get('status') || undefined,
       tier: searchParams.get('tier') || undefined,
       sprint_id: searchParams.get('sprint_id') || undefined,
       my_disputes: searchParams.get('my_disputes') === 'true' || undefined,
     });
+
+    if (!filterResult.success) {
+      return NextResponse.json({ error: 'Invalid filter parameters' }, { status: 400 });
+    }
+
+    const filters = filterResult.data;
 
     const page = Math.max(1, Number(searchParams.get('page')) || 1);
     const limit = Math.min(50, Math.max(1, Number(searchParams.get('limit')) || 20));
@@ -82,7 +88,7 @@ export async function GET(request: NextRequest) {
       .from('user_profiles')
       .select('role')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     const isCouncilOrAdmin = profile?.role === 'admin' || profile?.role === 'council';
 
@@ -153,7 +159,7 @@ export async function POST(request: NextRequest) {
       .from('user_profiles')
       .select('role, xp_total')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (profileError || !profile) {
       return NextResponse.json({ error: 'User profile not found' }, { status: 404 });

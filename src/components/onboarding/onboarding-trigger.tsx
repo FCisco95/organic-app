@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, createContext, useContext } from 'react';
+import { useState, useEffect, useCallback, useRef, createContext, useContext } from 'react';
 import { useAuth } from '@/features/auth/context';
 import { useOnboardingProgress } from '@/features/onboarding/hooks';
 import { OnboardingWizard } from './onboarding-wizard';
@@ -25,9 +25,12 @@ const ONBOARDING_SKIP_KEY = 'organic-onboarding-skipped';
 export function OnboardingProvider({ children }: { children: React.ReactNode }) {
   const { user, profile, loading } = useAuth();
   const [wizardOpen, setWizardOpen] = useState(false);
-  const [hasAutoOpened, setHasAutoOpened] = useState(false);
+  // Use ref to survive re-renders without retriggering effects
+  const hasAutoOpenedRef = useRef(false);
 
-  const shouldFetch = !!user && !loading && profile?.onboarding_completed_at === null;
+  // Don't fetch onboarding state for admin/council — they don't need the wizard
+  const isPrivileged = profile?.role === 'admin' || profile?.role === 'council';
+  const shouldFetch = !!user && !loading && !isPrivileged && profile?.onboarding_completed_at === null;
 
   const { data: onboardingState, refetch } = useOnboardingProgress({
     enabled: shouldFetch,
@@ -35,16 +38,18 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
 
   const isIncomplete = !!onboardingState && !onboardingState.all_complete;
 
-  // Auto-open wizard once per session unless user has skipped it
+  // Check skip key upfront — don't rely on effect timing
+  const isSkipped = typeof window !== 'undefined' && localStorage.getItem(ONBOARDING_SKIP_KEY) === '1';
+
+  // Auto-open wizard once per mount unless user has skipped
   useEffect(() => {
-    if (isIncomplete && !hasAutoOpened) {
-      const skipped = localStorage.getItem(ONBOARDING_SKIP_KEY);
-      if (!skipped) {
-        setWizardOpen(true);
-      }
-      setHasAutoOpened(true);
+    if (isIncomplete && !hasAutoOpenedRef.current && !isSkipped) {
+      setWizardOpen(true);
     }
-  }, [isIncomplete, hasAutoOpened]);
+    if (isIncomplete) {
+      hasAutoOpenedRef.current = true;
+    }
+  }, [isIncomplete, isSkipped]);
 
   const openWizard = useCallback(() => {
     setWizardOpen(true);

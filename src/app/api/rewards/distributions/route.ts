@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
       .from('user_profiles')
       .select('role')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     const isAdminOrCouncil = profile?.role === 'admin' || profile?.role === 'council';
 

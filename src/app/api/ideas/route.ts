@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
       .from('user_profiles')
       .select('id, organic_id')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (profileError || !profile) {
       return NextResponse.json({ error: 'User profile not found' }, { status: 404 });

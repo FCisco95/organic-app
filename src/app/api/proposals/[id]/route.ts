@@ -94,7 +94,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       .from('user_profiles')
       .select('role')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     const isAuthor = user.id === proposal.created_by;
     const isAdmin = Boolean(profile?.role && ['admin', 'council'].includes(profile.role));

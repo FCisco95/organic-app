@@ -103,7 +103,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       .from('user_profiles')
       .select('id, role')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     const isOwner = existingPost.author_id === user.id;
     const isAdmin = profile?.role === 'admin';

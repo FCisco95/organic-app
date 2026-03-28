@@ -57,7 +57,7 @@ export async function POST(request: Request) {
       .from('user_profiles')
       .select('role')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (!profile || !profile.role || !['admin', 'council'].includes(profile.role)) {
       return NextResponse.json({ error: 'Only council and admin can manage templates' }, { status: 403 });
