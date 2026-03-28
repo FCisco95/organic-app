@@ -26,18 +26,22 @@ create index if not exists idx_xp_events_created_at_brin
 create index if not exists idx_points_ledger_created_at_brin
   on points_ledger using brin (created_at);
 
-create index if not exists idx_engagement_metrics_daily_date_brin
-  on engagement_metrics_daily using brin (date);
+do $$ begin
+  if exists (select 1 from pg_class where relname = 'engagement_metrics_daily') then
+    create index if not exists idx_engagement_metrics_daily_date_brin
+      on engagement_metrics_daily using brin (date);
+  end if;
+end $$;
 
 -- ═══════════════════════════════════════════════════════════════════════
 -- 2. Covering indexes (INCLUDE) for high-traffic queries
 --    Avoids heap fetches by including frequently selected columns.
 -- ═══════════════════════════════════════════════════════════════════════
 
--- Notifications: user_id lookup returns created_at, type, read for list display
+-- Notifications: user_id lookup returns created_at, event_type, read for list display
 create index if not exists idx_notifications_user_covering
   on notifications (user_id, created_at desc)
-  include (type, read);
+  include (event_type, read);
 
 -- Leaderboard: organic_id filter + sort columns included
 create index if not exists idx_user_profiles_leaderboard_covering
@@ -238,7 +242,11 @@ alter table points_ledger set (
   autovacuum_analyze_scale_factor = 0.02
 );
 
-alter table engagement_metrics_daily set (
-  autovacuum_vacuum_scale_factor = 0.1,
-  autovacuum_analyze_scale_factor = 0.05
-);
+do $$ begin
+  if exists (select 1 from pg_class where relname = 'engagement_metrics_daily') then
+    alter table engagement_metrics_daily set (
+      autovacuum_vacuum_scale_factor = 0.1,
+      autovacuum_analyze_scale_factor = 0.05
+    );
+  end if;
+end $$;

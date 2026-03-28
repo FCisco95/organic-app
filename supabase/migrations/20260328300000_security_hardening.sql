@@ -290,44 +290,50 @@ create policy "Admins can delete flags" on post_flags
     exists (select 1 from user_profiles where id = (select auth.uid()) and role = 'admin')
   );
 
--- donations
-drop policy if exists "donations_select_own" on donations;
-drop policy if exists "donations_insert_own" on donations;
-create policy "donations_select_own" on donations
-  for select using (donor_id = (select auth.uid()));
-create policy "donations_insert_own" on donations
-  for insert with check (donor_id = (select auth.uid()));
+-- Tables that may not exist on all environments — guard with IF EXISTS checks
+do $$ begin
+  -- donations
+  if exists (select 1 from pg_class where relname = 'donations' and relkind = 'r') then
+    drop policy if exists "donations_select_own" on donations;
+    drop policy if exists "donations_insert_own" on donations;
+    execute 'create policy "donations_select_own" on donations for select using (donor_id = (select auth.uid()))';
+    execute 'create policy "donations_insert_own" on donations for insert with check (donor_id = (select auth.uid()))';
+  end if;
 
--- wallet_balance_snapshots
-drop policy if exists "snapshots_select_own" on wallet_balance_snapshots;
-drop policy if exists "snapshots_insert_service" on wallet_balance_snapshots;
-create policy "snapshots_select_own" on wallet_balance_snapshots
-  for select using (user_id = (select auth.uid()));
-create policy "snapshots_insert_service" on wallet_balance_snapshots
-  for insert with check (user_id = (select auth.uid()));
+  -- wallet_balance_snapshots
+  if exists (select 1 from pg_class where relname = 'wallet_balance_snapshots' and relkind = 'r') then
+    drop policy if exists "snapshots_select_own" on wallet_balance_snapshots;
+    drop policy if exists "snapshots_insert_service" on wallet_balance_snapshots;
+    execute 'create policy "snapshots_select_own" on wallet_balance_snapshots for select using (user_id = (select auth.uid()))';
+    execute 'create policy "snapshots_insert_service" on wallet_balance_snapshots for insert with check (user_id = (select auth.uid()))';
+  end if;
 
--- boost_requests
-drop policy if exists "Anyone can read active boost requests" on boost_requests;
-drop policy if exists "Users can create own boost requests" on boost_requests;
-create policy "Anyone can read active boost requests" on boost_requests
-  for select using (status = 'active' or user_id = (select auth.uid()));
-create policy "Users can create own boost requests" on boost_requests
-  for insert to authenticated with check (user_id = (select auth.uid()));
+  -- boost_requests
+  if exists (select 1 from pg_class where relname = 'boost_requests' and relkind = 'r') then
+    drop policy if exists "Anyone can read active boost requests" on boost_requests;
+    drop policy if exists "Users can create own boost requests" on boost_requests;
+    execute 'create policy "Anyone can read active boost requests" on boost_requests for select using (status = ''active'' or user_id = (select auth.uid()))';
+    execute 'create policy "Users can create own boost requests" on boost_requests for insert to authenticated with check (user_id = (select auth.uid()))';
+  end if;
 
--- engagement_proofs
-drop policy if exists "Users can create own engagement proofs" on engagement_proofs;
-create policy "Users can create own engagement proofs" on engagement_proofs
-  for insert to authenticated with check (engager_id = (select auth.uid()));
+  -- engagement_proofs
+  if exists (select 1 from pg_class where relname = 'engagement_proofs' and relkind = 'r') then
+    drop policy if exists "Users can create own engagement proofs" on engagement_proofs;
+    execute 'create policy "Users can create own engagement proofs" on engagement_proofs for insert to authenticated with check (engager_id = (select auth.uid()))';
+  end if;
 
--- points_escrow
-drop policy if exists "Users can read own escrow" on points_escrow;
-create policy "Users can read own escrow" on points_escrow
-  for select using (user_id = (select auth.uid()));
+  -- points_escrow
+  if exists (select 1 from pg_class where relname = 'points_escrow' and relkind = 'r') then
+    drop policy if exists "Users can read own escrow" on points_escrow;
+    execute 'create policy "Users can read own escrow" on points_escrow for select using (user_id = (select auth.uid()))';
+  end if;
 
--- points_ledger
-drop policy if exists "Users can view own ledger" on points_ledger;
-create policy "Users can view own ledger" on points_ledger
-  for select using (user_id = (select auth.uid()));
+  -- points_ledger
+  if exists (select 1 from pg_class where relname = 'points_ledger' and relkind = 'r') then
+    drop policy if exists "Users can view own ledger" on points_ledger;
+    execute 'create policy "Users can view own ledger" on points_ledger for select using (user_id = (select auth.uid()))';
+  end if;
+end $$;
 
 -- dispute_evidence_events
 drop policy if exists "Dispute evidence events are viewable by parties" on dispute_evidence_events;
@@ -347,7 +353,7 @@ create policy "Dispute evidence events are viewable by parties" on dispute_evide
   );
 create policy "Dispute evidence events are insertable by parties" on dispute_evidence_events
   for insert with check (
-    actor_id = (select auth.uid())
+    uploaded_by = (select auth.uid())
     and exists (
       select 1 from disputes d
       where d.id = dispute_evidence_events.dispute_id
