@@ -80,8 +80,8 @@ export async function GET(request: NextRequest) {
     const { data: posts, error } = await query;
 
     if (error) {
-      logger.error('Posts feed query failed', error);
-      return NextResponse.json({ error: 'Failed to fetch posts' }, { status: 500 });
+      logger.error('Posts feed query failed', { message: error.message, code: error.code, details: error.details });
+      return NextResponse.json({ items: [], error: 'Failed to fetch posts' }, { status: 200 });
     }
 
     // Check user likes
@@ -122,7 +122,7 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     logger.error('Posts GET route error', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ items: [], error: 'Internal server error' }, { status: 200 });
   }
 }
 
@@ -242,7 +242,11 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (insertError || !post) {
-      logger.error('Post creation failed', insertError);
+      logger.error('Post creation failed', {
+        message: insertError?.message,
+        code: insertError?.code,
+        details: insertError?.details,
+      });
       // Refund points on insert failure
       if (pointCost > 0) {
         await awardPoints(service, user.id, pointCost, 'Refund: post creation failed', 'refund');

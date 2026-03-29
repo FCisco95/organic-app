@@ -7,6 +7,22 @@ import { createBoost } from '@/features/marketplace/marketplace-service';
 
 export const dynamic = 'force-dynamic';
 
+/**
+ * Returns true when the Supabase/PostgREST error indicates the underlying
+ * table (or a referenced relation) does not exist yet.  This lets us degrade
+ * gracefully when the marketplace migration has not been applied.
+ */
+function isTableMissingError(error: { message?: string; code?: string } | null): boolean {
+  if (!error) return false;
+  const msg = error.message ?? '';
+  return (
+    msg.includes('relation') ||
+    msg.includes('does not exist') ||
+    msg.includes('undefined table') ||
+    error.code === '42P01' // PostgreSQL: undefined_table
+  );
+}
+
 export async function GET(request: NextRequest) {
   if (!isMarketplaceEnabled()) {
     return NextResponse.json({ error: 'Marketplace is not enabled' }, { status: 403 });
@@ -36,6 +52,10 @@ export async function GET(request: NextRequest) {
         .limit(50);
 
       if (error) {
+        if (isTableMissingError(error)) {
+          logger.warn('boost_requests table not available, returning empty list');
+          return NextResponse.json({ data: [] });
+        }
         logger.error('Failed to fetch my boosts', error);
         return NextResponse.json({ error: 'Failed to fetch boosts' }, { status: 500 });
       }
@@ -43,15 +63,19 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ data: data ?? [] });
     }
 
-    // List active boosts
+    // List active boosts — use left join (no !inner) so missing profiles don't break the query
     const { data, error } = await db
       .from('boost_requests')
-      .select('*, user_profiles!inner(name, avatar_url)')
+      .select('*, user_profiles(name, avatar_url)')
       .eq('status', 'active')
       .order('created_at', { ascending: false })
       .limit(50);
 
     if (error) {
+      if (isTableMissingError(error)) {
+        logger.warn('boost_requests table not available, returning empty list');
+        return NextResponse.json({ data: [] });
+      }
       logger.error('Failed to fetch active boosts', error);
       return NextResponse.json({ error: 'Failed to fetch boosts' }, { status: 500 });
     }

@@ -30,18 +30,34 @@ async function handleGenerate(request: Request) {
 
   logger.info('Governance summary generation triggered');
 
-  const result = await generateGovernanceSummary();
+  try {
+    const result = await generateGovernanceSummary();
 
-  if (!result.ok) {
-    logger.error('Governance summary generation failed', { error: result.error });
-    return NextResponse.json({ error: result.error }, { status: 500 });
+    if (!result.ok) {
+      logger.error('Governance summary generation/storage failed', { error: result.error });
+      // Return 200 for cron endpoints to avoid immediate retry spam
+      return NextResponse.json({
+        ok: false,
+        error: result.error,
+        generated_at: new Date().toISOString(),
+      });
+    }
+
+    return NextResponse.json({
+      ok: true,
+      id: result.id,
+      generated_at: new Date().toISOString(),
+    });
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
+    logger.error('Governance summary generation/storage failed (unhandled)', { error: msg });
+    // Return 200 for cron endpoints to avoid immediate retry spam
+    return NextResponse.json({
+      ok: false,
+      error: 'Governance summary generation failed unexpectedly',
+      generated_at: new Date().toISOString(),
+    });
   }
-
-  return NextResponse.json({
-    ok: true,
-    id: result.id,
-    generated_at: new Date().toISOString(),
-  });
 }
 
 export async function GET(request: Request) {
