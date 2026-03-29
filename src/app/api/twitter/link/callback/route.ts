@@ -85,12 +85,12 @@ export async function GET(request: Request) {
       const msg = error instanceof Error ? error.message : String(error);
       logger.warn('getUserInfo failed, falling back to manual handle entry:', { message: msg });
 
-      // Free-tier Twitter apps can't call /users/me — store account with placeholder
+      // Free-tier Twitter apps can't call /users/me — store with placeholder username
       // and let the user update their handle from the profile page.
       twitterProfile = {
-        id: `unknown_${Date.now()}`,
-        name: '',
-        username: '',
+        id: `pending_${Date.now()}`,
+        name: 'pending',
+        username: 'pending',
       };
     }
 
@@ -146,7 +146,7 @@ export async function GET(request: Request) {
     }
 
     const profileUpdate: Record<string, unknown> = { twitter_verified: true };
-    if (twitterProfile.username) {
+    if (twitterProfile.username && twitterProfile.username !== 'pending') {
       profileUpdate.twitter = withAtPrefix(twitterProfile.username);
     }
 
@@ -161,7 +161,12 @@ export async function GET(request: Request) {
 
     await serviceClient.from('twitter_oauth_sessions').delete().eq('id', oauthSession.id);
 
-    return NextResponse.redirect(buildProfileRedirect(appOrigin, true));
+    const needsHandle = twitterProfile.username === 'pending';
+    const redirect = buildProfileRedirect(appOrigin, true);
+    if (needsHandle) {
+      redirect.searchParams.set('twitter_needs_handle', '1');
+    }
+    return NextResponse.redirect(redirect);
   } catch (error: unknown) {
     logger.error('Error handling Twitter OAuth callback:', error);
     return NextResponse.redirect(buildProfileRedirect(appOrigin, false, 'oauth_callback_failed'));

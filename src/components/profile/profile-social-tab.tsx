@@ -184,8 +184,8 @@ export function ProfileSocialTab({
     }
   };
 
-  const needsHandle = twitterAccount && !twitterAccount.twitter_username;
-  const linkedTwitterHandle = twitterAccount && twitterAccount.twitter_username
+  const needsHandle = twitterAccount && (!twitterAccount.twitter_username || twitterAccount.twitter_username === 'pending');
+  const linkedTwitterHandle = twitterAccount && twitterAccount.twitter_username && twitterAccount.twitter_username !== 'pending'
     ? `@${twitterAccount.twitter_username}`
     : profile.twitter;
 
