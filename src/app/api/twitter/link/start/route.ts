@@ -46,6 +46,57 @@ export async function POST(request: Request) {
       );
     }
 
+    // Rate limit: max 5 OAuth attempts per hour
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    const { count: recentAttempts } = await serviceClient
+      .from('twitter_oauth_sessions')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .gte('created_at', oneHourAgo);
+
+    if (recentAttempts !== null && recentAttempts >= 5) {
+      return NextResponse.json(
+        { error: 'Too many link attempts. Try again later.' },
+        { status: 429 }
+      );
+    }
+
+    // Cooldown: cannot re-link within 24h of unlinking
+    const { data: lastUnlinked } = await serviceClient
+      .from('twitter_accounts')
+      .select('updated_at')
+      .eq('user_id', user.id)
+      .eq('is_active', false)
+      .order('updated_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (lastUnlinked?.updated_at) {
+      const unlinkedAt = new Date(lastUnlinked.updated_at).getTime();
+      const cooldownMs = 24 * 60 * 60 * 1000;
+      if (Date.now() - unlinkedAt < cooldownMs) {
+        return NextResponse.json(
+          { error: 'You must wait 24 hours after unlinking before linking a new account.' },
+          { status: 429 }
+        );
+      }
+    }
+
+    // Block if user already has an active linked account
+    const { data: existingActive } = await serviceClient
+      .from('twitter_accounts')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('is_active', true)
+      .maybeSingle();
+
+    if (existingActive) {
+      return NextResponse.json(
+        { error: 'You already have a linked Twitter account. Unlink it first.' },
+        { status: 409 }
+      );
+    }
+
     const state = randomUUID();
     const { codeVerifier, codeChallenge } = generatePkcePair();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();

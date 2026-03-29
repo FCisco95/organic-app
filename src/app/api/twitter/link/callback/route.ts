@@ -119,6 +119,22 @@ export async function GET(request: Request) {
       ? tokenResponse.scope.split(/\s+/).filter(Boolean)
       : [];
 
+    // Check if this Twitter account is already linked to a different user
+    if (!twitterProfile.id.startsWith('pending_')) {
+      const { data: existingAccount } = await serviceClient
+        .from('twitter_accounts')
+        .select('id, user_id')
+        .eq('twitter_user_id', twitterProfile.id)
+        .eq('is_active', true)
+        .neq('user_id', oauthSession.user_id)
+        .maybeSingle();
+
+      if (existingAccount) {
+        await serviceClient.from('twitter_oauth_sessions').delete().eq('id', oauthSession.id);
+        return NextResponse.redirect(buildProfileRedirect(appOrigin, false, 'twitter_already_linked'));
+      }
+    }
+
     await serviceClient
       .from('twitter_accounts')
       .update({
