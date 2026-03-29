@@ -219,8 +219,18 @@ export class TwitterClient {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
-    const payload = (await response.json()) as T | Record<string, unknown>;
-    if (!response.ok) throw new Error(getApiError(payload, `Twitter API request failed for ${path}`));
+    const text = await response.text();
+    let payload: T | Record<string, unknown>;
+    try {
+      payload = text ? JSON.parse(text) : {};
+    } catch {
+      payload = { detail: text };
+    }
+
+    if (!response.ok) {
+      console.error(`[twitter] API error ${response.status} for ${path}:`, payload);
+      throw new Error(getApiError(payload, `Twitter API request failed for ${path} (${response.status})`));
+    }
     return payload as T;
   }
 }
