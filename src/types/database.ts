@@ -3158,10 +3158,10 @@ export type Database = {
       check_achievements: {
         Args: { p_user_id: string }
         Returns: {
-          achievement_id: string
+          out_achievement_id: string
           achievement_name: string
-          icon: string
           xp_reward: number
+          rarity: string
         }[]
       }
       check_quorum_met: { Args: { p_proposal_id: string }; Returns: boolean }

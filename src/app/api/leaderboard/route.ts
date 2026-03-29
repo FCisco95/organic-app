@@ -50,7 +50,8 @@ function normalizeLeaderboardRow(row: LeaderboardRow): NormalizedLeaderboardEntr
 }
 
 async function queryLeaderboardMaterialized() {
-  const supabase = await createClient();
+  // Use anon client — safe because materialized view has no PII (email removed)
+  const supabase = createAnonClient();
   return supabase
     .from('leaderboard_materialized')
     .select(LEADERBOARD_COLUMNS)
@@ -63,7 +64,7 @@ async function queryLeaderboardMaterialized() {
 }
 
 async function queryLeaderboardView() {
-  const supabase = await createClient();
+  const supabase = createAnonClient();
   return supabase
     .from('leaderboard_view')
     .select(LEADERBOARD_COLUMNS)
