@@ -74,8 +74,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Please link your wallet first' }, { status: 400 });
     }
 
-    // Check if user holds ORG tokens
-    const isHolder = await isOrgHolder(profile.wallet_pubkey);
+    // Check if user holds ORG tokens (bypass cache for this critical security check)
+    const isHolder = await isOrgHolder(profile.wallet_pubkey, { skipCache: true });
 
     if (!isHolder) {
       return NextResponse.json(

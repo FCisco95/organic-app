@@ -158,6 +158,17 @@ export async function GET(request: Request) {
     });
 
     if (accountInsertError) {
+      // Log failed Twitter link (non-blocking)
+      serviceClient
+        .from('activity_log')
+        .insert({
+          actor_id: oauthSession.user_id,
+          event_type: 'twitter_link_failed' as any,
+          subject_type: 'user',
+          subject_id: oauthSession.user_id,
+          metadata: { reason: 'account_insert_failed' },
+        })
+        .then(() => {});
       return NextResponse.redirect(buildProfileRedirect(appOrigin, false, 'account_insert_failed'));
     }
 
@@ -172,10 +183,37 @@ export async function GET(request: Request) {
       .eq('id', oauthSession.user_id);
 
     if (profileUpdateError) {
+      // Log failed Twitter link (non-blocking)
+      serviceClient
+        .from('activity_log')
+        .insert({
+          actor_id: oauthSession.user_id,
+          event_type: 'twitter_link_failed' as any,
+          subject_type: 'user',
+          subject_id: oauthSession.user_id,
+          metadata: { reason: 'profile_update_failed' },
+        })
+        .then(() => {});
       return NextResponse.redirect(buildProfileRedirect(appOrigin, false, 'profile_update_failed'));
     }
 
     await serviceClient.from('twitter_oauth_sessions').delete().eq('id', oauthSession.id);
+
+    // Log successful Twitter link activity (non-blocking)
+    serviceClient
+      .from('activity_log')
+      .insert({
+        actor_id: oauthSession.user_id,
+        event_type: 'twitter_linked' as any,
+        subject_type: 'user',
+        subject_id: oauthSession.user_id,
+        metadata: { twitter_username: twitterProfile.username },
+      })
+      .then(({ error: logError }) => {
+        if (logError) {
+          logger.error('Failed to log twitter_linked activity:', logError);
+        }
+      });
 
     const needsHandle = twitterProfile.username === 'pending';
     const redirect = buildProfileRedirect(appOrigin, true);

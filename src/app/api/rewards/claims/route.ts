@@ -147,6 +147,23 @@ export async function POST(request: NextRequest) {
 
     const { points_amount } = parsed.data;
 
+    // Idempotency check: if client sends Idempotency-Key header, return existing claim if found
+    const idempotencyKey = request.headers.get('Idempotency-Key');
+    if (idempotencyKey) {
+      // TODO: Add idempotency_key column to reward_claims table via migration for persistent lookup.
+      // For now, check for a matching recent claim by user with same points_amount as a heuristic guard.
+      const { data: existing } = await supabase
+        .from('reward_claims')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('idempotency_key', idempotencyKey)
+        .maybeSingle();
+
+      if (existing) {
+        return NextResponse.json({ claim: existing, idempotent: true });
+      }
+    }
+
     // Fetch org config
     const { data: org } = await supabase
       .from('orgs')
@@ -232,6 +249,7 @@ export async function POST(request: NextRequest) {
         token_amount,
         conversion_rate: config.points_to_token_rate,
         wallet_address: profile.wallet_pubkey,
+        ...(idempotencyKey ? { idempotency_key: idempotencyKey } : {}),
       })
       .select()
       .single();

@@ -135,7 +135,8 @@ export function ProfileWalletTab({ profile, userId, refreshProfile }: ProfileWal
       const nonceResponse = await fetch('/api/auth/nonce');
       const { nonce } = await nonceResponse.json();
 
-      const message = `Sign this message to link your wallet to Organic App.\n\nNonce: ${nonce}`;
+      const appDomain = window.location.host;
+      const message = `${appDomain} wants you to sign in with your Solana account.\n\nSign this message to link your wallet to Organic App.\n\nNonce: ${nonce}`;
       const encodedMessage = new TextEncoder().encode(message);
       const signature = await signMessage(encodedMessage);
 

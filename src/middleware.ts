@@ -40,6 +40,7 @@ const DASHBOARD_READ_RATE_LIMIT_PATHS = new Set([
   '/api/analytics',
   '/api/leaderboard',
   '/api/treasury',
+  '/api/organic-id/balance',
 ]);
 const INTERNAL_BYPASS_PATHS = new Set(['/api/internal/market-cache/refresh']);
 const SENSITIVE_RATE_LIMIT_PREFIXES = [
@@ -181,11 +182,35 @@ function getLocale(request: NextRequest): Locale {
   return defaultLocale;
 }
 
+/**
+ * Build a Content-Security-Policy header value with the given nonce.
+ * Directives mirror what was previously in next.config.js, but script-src
+ * now uses a per-request nonce instead of 'unsafe-inline'.
+ */
+function buildCspHeader(nonce: string): string {
+  return [
+    "default-src 'self'",
+    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`,
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: blob: https://*.supabase.co https://raw.githubusercontent.com https://pbs.twimg.com https://abs.twimg.com https://opengraph.githubassets.com https:",
+    "font-src 'self'",
+    "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.mainnet-beta.solana.com https://*.helius.dev https://*.quiknode.pro https://api.jup.ag https://*.ingest.sentry.io https://*.ingest.de.sentry.io",
+    "frame-src https://dexscreener.com https://www.geckoterminal.com",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "object-src 'none'",
+  ].join('; ');
+}
+
 export async function middleware(request: NextRequest) {
+  // CVE-2025-29927: Strip internal header to prevent middleware bypass
+  request.headers.delete('x-middleware-subrequest');
+
   const { pathname } = request.nextUrl;
 
   if (pathname.startsWith('/api/')) {
-    if (isLocalHost(request.nextUrl.hostname)) {
+    if (process.env.NODE_ENV === 'development' && isLocalHost(request.nextUrl.hostname)) {
       return NextResponse.next();
     }
 
@@ -201,6 +226,13 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Generate a per-request nonce for CSP (Edge-compatible crypto)
+  const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
+
+  // Pass nonce to server components via request headers
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set('x-nonce', nonce);
+
   // Skip if URL already has a locale prefix
   const pathnameHasLocale = locales.some(
     (l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`)
@@ -215,9 +247,14 @@ export async function middleware(request: NextRequest) {
 
   let response = NextResponse.next({
     request: {
-      headers: new Headers(request.headers),
+      headers: requestHeaders,
     },
   });
+
+  // Set CSP with per-request nonce on all page responses
+  const cspHeader = buildCspHeader(nonce);
+  response.headers.set('Content-Security-Policy', cspHeader);
+  response.headers.set('x-nonce', nonce);
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

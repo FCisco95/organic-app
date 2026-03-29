@@ -3,7 +3,7 @@ import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 
 let cachedConnection: { rpcUrl: string; connection: Connection } | null = null;
 let cachedOrgMint: { mintAddress: string; mint: PublicKey } | null = null;
-const TOKEN_BALANCE_CACHE_TTL_MS = 60 * 1000;
+const TOKEN_BALANCE_CACHE_TTL_MS = 15 * 1000;
 const TOKEN_HOLDERS_CACHE_TTL_MS = 5 * 60 * 1000;
 
 const tokenBalanceCache = new Map<string, { balance: number; timestamp: number }>();
@@ -19,7 +19,7 @@ export function getConnection(): Connection {
     return cachedConnection.connection;
   }
 
-  const connection = new Connection(rpcUrl, 'confirmed');
+  const connection = new Connection(rpcUrl, 'finalized');
   cachedConnection = { rpcUrl, connection };
   return connection;
 }
@@ -49,12 +49,13 @@ export const ORG_TOKEN_MINT = getOrgTokenMint();
  */
 export async function getTokenBalance(
   walletAddress: string,
-  mintAddress: PublicKey = ORG_TOKEN_MINT
+  mintAddress: PublicKey = ORG_TOKEN_MINT,
+  options?: { skipCache?: boolean }
 ): Promise<number> {
   const cacheKey = `${walletAddress}:${mintAddress.toBase58()}`;
   const now = Date.now();
   const cachedBalance = tokenBalanceCache.get(cacheKey);
-  if (cachedBalance && now - cachedBalance.timestamp < TOKEN_BALANCE_CACHE_TTL_MS) {
+  if (!options?.skipCache && cachedBalance && now - cachedBalance.timestamp < TOKEN_BALANCE_CACHE_TTL_MS) {
     return cachedBalance.balance;
   }
 
@@ -106,8 +107,11 @@ export async function getTokenBalance(
  * @param walletAddress - Solana wallet public key
  * @returns Boolean indicating if wallet holds tokens
  */
-export async function isOrgHolder(walletAddress: string): Promise<boolean> {
-  const balance = await getTokenBalance(walletAddress);
+export async function isOrgHolder(
+  walletAddress: string,
+  options?: { skipCache?: boolean }
+): Promise<boolean> {
+  const balance = await getTokenBalance(walletAddress, ORG_TOKEN_MINT, options);
   return balance > 0;
 }
 

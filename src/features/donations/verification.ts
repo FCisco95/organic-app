@@ -31,7 +31,7 @@ export async function verifyDonationTransaction(
     const tx: ParsedTransactionWithMeta | null =
       await connection.getParsedTransaction(txSignature, {
         maxSupportedTransactionVersion: 0,
-        commitment: 'confirmed',
+        commitment: 'finalized',
       });
 
     if (!tx) {
@@ -122,8 +122,8 @@ function verifySPLTransfer(
 
       if (!authority || !destination) continue;
 
-      // For SPL transfers, authority is the wallet owner
-      if (authority === expectedFrom || destination === expectedTo) {
+      // For SPL transfers, authority is the wallet owner — require BOTH wallets match
+      if (authority === expectedFrom && destination === expectedTo) {
         const tolerance = expectedAmount * 0.01;
         if (Math.abs(amount - expectedAmount) <= tolerance) {
           return {

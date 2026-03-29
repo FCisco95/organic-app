@@ -121,7 +121,8 @@ export async function POST(
       }
     }
 
-    // Use service client for writes that bypass RLS
+    // Service client required: inserts into xp_events (no INSERT RLS policy)
+    // and updates user_profiles.xp_total / onboarding_completed_at (no UPDATE policy for users)
     const serviceSupabase = createServiceClient();
 
     // Upsert onboarding step (idempotent)

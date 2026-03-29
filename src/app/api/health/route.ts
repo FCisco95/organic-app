@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createServiceClient } from '@/lib/supabase/server';
+import { createAnonClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 
@@ -7,7 +7,7 @@ export async function GET() {
   const timestamp = new Date().toISOString();
 
   try {
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
       return NextResponse.json(
         {
           status: 'degraded',
@@ -20,20 +20,22 @@ export async function GET() {
       );
     }
 
-    const supabase = createServiceClient();
-    const [{ error: nonceError }, { error: snapshotError }] = await Promise.all([
-      supabase.from('wallet_nonces').select('id', { head: true }).limit(1),
-      supabase.from('market_snapshots').select('key', { head: true }).limit(1),
-    ]);
+    // Use anon client — market_snapshots has RLS disabled so anon can read it.
+    // wallet_nonces requires service_role (RLS blocks anon), so we only ping
+    // market_snapshots for a lightweight DB connectivity check.
+    const supabase = createAnonClient();
+    const { error: snapshotError } = await supabase
+      .from('market_snapshots')
+      .select('key', { head: true })
+      .limit(1);
 
-    if (nonceError || snapshotError) {
+    if (snapshotError) {
       return NextResponse.json(
         {
           status: 'degraded',
           timestamp,
           checks: {
-            supabase: nonceError ? 'error' : 'ok',
-            market_cache: snapshotError ? 'error' : 'ok',
+            supabase: 'error',
           },
         },
         { status: 503 }
@@ -45,7 +47,6 @@ export async function GET() {
       timestamp,
       checks: {
         supabase: 'ok',
-        market_cache: 'ok',
       },
     });
   } catch {
