@@ -142,7 +142,52 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     const input = parseResult.data;
-    const holders = input.snapshot_holders ?? (await getAllTokenHolders());
+
+    // SECURITY: Always fetch token holders from on-chain data.
+    // Never trust client-provided snapshot_holders — an admin could
+    // submit manipulated balances to skew voting power.
+    if (input.snapshot_holders) {
+      logger.warn('Client-provided snapshot_holders ignored — using on-chain data', {
+        proposal_id: proposalId,
+        client_holders_count: input.snapshot_holders.length,
+        actor_id: user.id,
+      });
+    }
+
+    const holders = await getAllTokenHolders();
+
+    if (!holders.length) {
+      logger.error('On-chain snapshot returned zero holders', { proposal_id: proposalId });
+      return NextResponse.json(
+        { error: 'Failed to fetch token holders from blockchain', code: 'CHAIN_FETCH_FAILED' },
+        { status: 502 }
+      );
+    }
+
+    // Sanity check: total supply should not exceed expected maximum.
+    // Catches RPC data corruption or unexpected token minting.
+    const totalSnapshotSupply = holders.reduce((sum, h) => sum + h.balance, 0);
+    const expectedMaxSupply = Number(process.env.NEXT_PUBLIC_TOKEN_TOTAL_SUPPLY || 1_000_000_000);
+    if (totalSnapshotSupply > expectedMaxSupply * 1.01) {
+      logger.error('Snapshot total exceeds expected supply — possible data corruption', {
+        proposal_id: proposalId,
+        total_snapshot_supply: totalSnapshotSupply,
+        expected_max_supply: expectedMaxSupply,
+      });
+      return NextResponse.json(
+        { error: 'Snapshot integrity check failed', code: 'SUPPLY_EXCEEDS_EXPECTED' },
+        { status: 500 }
+      );
+    }
+
+    // Audit trail for snapshot provenance
+    logger.info('Voting snapshot sourced from on-chain data', {
+      proposal_id: proposalId,
+      holder_count: holders.length,
+      total_supply: totalSnapshotSupply,
+      actor_id: user.id,
+      timestamp: new Date().toISOString(),
+    });
 
     const { data: rpcData, error: rpcError } = await startVotingWithRetry({
       supabase,
@@ -183,7 +228,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           voting_ends_at: result.voting_ends_at ?? null,
           integrity: {
             server_voting_started_at: result.voting_starts_at ?? null,
-            snapshot_source: input.snapshot_holders ? 'request' : 'chain',
+            snapshot_source: 'chain',
           },
         },
         { status: 200 }
@@ -197,7 +242,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       voting_ends_at: proposal.voting_ends_at,
       integrity: {
         server_voting_started_at: proposal.server_voting_started_at,
-        snapshot_source: input.snapshot_holders ? 'request' : 'chain',
+        snapshot_source: 'chain',
       },
     });
   } catch (error) {

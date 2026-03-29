@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient, createServiceClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { logger } from '@/lib/logger';
 import {
   getWeeklyOrganicPostCount,
@@ -29,11 +29,9 @@ export async function GET() {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
     }
 
-    const service = createServiceClient();
-
     const [weeklyOrganicCount, weeklyEngagementPts] = await Promise.all([
-      getWeeklyOrganicPostCount(service, user.id),
-      getWeeklyEngagementPoints(service, user.id),
+      getWeeklyOrganicPostCount(supabase, user.id),
+      getWeeklyEngagementPoints(supabase, user.id),
     ]);
 
     const freeOrganicRemaining = Math.max(

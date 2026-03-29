@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getTokenBalance } from '@/lib/solana';
+import { createClient } from '@/lib/supabase/server';
 import { parseJsonBody } from '@/lib/parse-json-body';
 import { logger } from '@/lib/logger';
 
@@ -12,6 +13,26 @@ const CACHE_TTL_MS = 30 * 1000;
 
 export async function POST(request: Request) {
   try {
+    // Authenticate the request
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Missing authorization token' }, { status: 401 });
+    }
+
+    const token = authHeader.split(' ')[1];
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser(token);
+
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: 'Not authenticated. Please sign in again.' },
+        { status: 401 }
+      );
+    }
+
     const parsedBody = await parseJsonBody<{ walletAddress?: string }>(request);
     if (parsedBody.error !== null) {
       return NextResponse.json({ error: parsedBody.error }, { status: 400 });

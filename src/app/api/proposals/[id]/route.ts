@@ -16,8 +16,9 @@ const PROPOSAL_DETAIL_SELECT = `
   ),
   user_profiles!proposals_created_by_fkey(
     organic_id,
-    email,
-    wallet_pubkey
+    name,
+    avatar_url,
+    role
   )
 `;
 

@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
 import { Eye, EyeOff, AlertCircle, Loader2 } from 'lucide-react';
 import { AuthSplitPanel } from '@/components/auth/auth-split-panel';
+import { sanitizeReturnTo } from '@/lib/security';
 
 export default function LoginPage() {
   const t = useTranslations('Login');
@@ -20,7 +21,7 @@ export default function LoginPage() {
   const [loginError, setLoginError] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const returnTo = searchParams.get('returnTo') ?? '/';
+  const returnTo = sanitizeReturnTo(searchParams.get('returnTo'));
   const supabase = createClient();
 
   const validateForm = () => {

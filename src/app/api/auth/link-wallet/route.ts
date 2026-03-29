@@ -14,6 +14,14 @@ function extractNonceFromMessage(message: string): string | null {
   return match ? match[1].trim() : null;
 }
 
+// Validate that the signed message contains the expected app domain
+// to prevent cross-app signature replay attacks
+function validateMessageDomain(message: string): boolean {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://organic-app-rust.vercel.app';
+  const appDomain = new URL(appUrl).host;
+  return message.includes(appDomain);
+}
+
 export async function POST(request: Request) {
   try {
     const rateLimited = await applyIpRateLimit(request, 'auth:link-wallet', RATE_LIMITS.auth);
@@ -35,6 +43,11 @@ export async function POST(request: Request) {
     }
 
     const { walletAddress, signature, message } = validationResult.data;
+
+    // Validate message domain binding (prevent cross-app signature replay)
+    if (!validateMessageDomain(message)) {
+      return NextResponse.json({ error: 'Invalid message domain' }, { status: 400 });
+    }
 
     // Extract and validate nonce from message
     const nonce = extractNonceFromMessage(message);
@@ -131,6 +144,22 @@ export async function POST(request: Request) {
     if (updateError) {
       return NextResponse.json({ error: 'Failed to link wallet' }, { status: 500 });
     }
+
+    // Log wallet link activity (non-blocking — logging must never break the main flow)
+    serviceClient
+      .from('activity_log')
+      .insert({
+        actor_id: user.id,
+        event_type: 'wallet_linked' as any,
+        subject_type: 'user',
+        subject_id: user.id,
+        metadata: { wallet_pubkey: walletAddress },
+      })
+      .then(({ error: logError }) => {
+        if (logError) {
+          logger.error('Failed to log wallet_linked activity:', logError);
+        }
+      });
 
     return NextResponse.json({ success: true, walletAddress });
   } catch (error) {

@@ -29,7 +29,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         ),
         user_profiles!comments_user_id_fkey(
           organic_id,
-          email
+          name,
+          avatar_url,
+          role
         )
       `
       )
@@ -121,7 +123,9 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         ),
         user_profiles!comments_user_id_fkey(
           organic_id,
-          email
+          name,
+          avatar_url,
+          role
         )
       `
       )

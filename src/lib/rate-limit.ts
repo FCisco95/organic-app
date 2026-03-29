@@ -1,4 +1,13 @@
 import { NextResponse } from 'next/server';
+// Simple FNV-1a hash for identifier preview (Edge Runtime compatible, no Node.js crypto needed)
+function fnv1aHash(str: string): string {
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < str.length; i++) {
+    hash ^= str.charCodeAt(i);
+    hash = (hash * 0x01000193) >>> 0;
+  }
+  return hash.toString(16).padStart(8, '0');
+}
 import { logger } from '@/lib/logger';
 
 /**
@@ -11,6 +20,18 @@ type RateLimitEntry = {
 };
 
 const store = new Map<string, RateLimitEntry>();
+
+// Warn once at module load when Upstash is not configured in production.
+// In-memory rate limiting is ineffective on serverless (each cold start gets a fresh Map).
+if (
+  process.env.NODE_ENV === 'production' &&
+  (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN)
+) {
+  console.warn(
+    '[SECURITY] Rate limiting is using in-memory fallback in production. ' +
+      'Configure UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN for effective rate limiting.'
+  );
+}
 
 // Periodic cleanup to prevent unbounded memory growth
 const CLEANUP_INTERVAL = 60_000; // 1 minute
@@ -237,15 +258,13 @@ export async function applyRateLimit(
   if (!result.success) {
     if (process.env.RATE_LIMIT_DEBUG === 'true' || process.env.NODE_ENV === 'production') {
       const identifier = context?.identifier ?? key;
+      const identifierPreview = fnv1aHash(identifier);
       logger.warn('Rate limit blocked request', {
         key,
         path: context?.path ?? 'unknown',
         bucket: context?.bucket ?? 'unknown',
         scope: context?.scope ?? 'unknown',
-        identifier_preview:
-          identifier.length > 8
-            ? `${identifier.slice(0, 4)}...${identifier.slice(-4)}`
-            : identifier,
+        identifier_preview: identifierPreview,
         retry_after_seconds: Math.ceil(result.resetMs / 1000),
       });
     }
