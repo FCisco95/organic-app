@@ -55,6 +55,51 @@ export async function GET() {
   }
 }
 
+export async function PATCH(request: Request) {
+  try {
+    const supabase = await createClient();
+    const serviceClient = createServiceClient();
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    }
+
+    const body = await request.json().catch(() => null);
+    const username = typeof body?.username === 'string' ? body.username.replace(/^@/, '').trim() : '';
+
+    if (!username) {
+      return NextResponse.json({ error: 'Username is required' }, { status: 400 });
+    }
+
+    const [{ error: accountError }, { error: profileError }] = await Promise.all([
+      serviceClient
+        .from('twitter_accounts')
+        .update({ twitter_username: username, display_name: username })
+        .eq('user_id', user.id)
+        .eq('is_active', true),
+      serviceClient
+        .from('user_profiles')
+        .update({ twitter: `@${username}` })
+        .eq('id', user.id),
+    ]);
+
+    if (accountError || profileError) {
+      return NextResponse.json({ error: 'Failed to update Twitter handle' }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error: unknown) {
+    logger.error('Error updating Twitter handle:', error);
+    const message = error instanceof Error ? error.message : 'Internal server error';
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
 export async function DELETE() {
   try {
     const supabase = await createClient();

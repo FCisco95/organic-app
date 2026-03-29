@@ -1499,6 +1499,8 @@
     "twitterAccountTitle": "Conta Twitter/X",
     "twitterAccountDescription": "Ligue a sua conta Twitter/X para verificar tarefas de engagement.",
     "twitterAccountNotLinked": "Ainda não há conta Twitter/X ligada.",
+    "twitterConnectedEnterHandle": "Conta ligada! Introduza o seu handle do X abaixo.",
+    "twitterHandlePlaceholder": "seu_handle",
     "twitterAccountConnected": "Conta Twitter/X ligada",
     "twitterAccountVerified": "Verificada para tarefas de engagement",
     "twitterLinkedAs": "{name} ({username})",

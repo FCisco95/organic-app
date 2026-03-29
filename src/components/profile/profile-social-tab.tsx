@@ -62,6 +62,8 @@ export function ProfileSocialTab({
   const [twitterLoading, setTwitterLoading] = useState(false);
   const [twitterLinking, setTwitterLinking] = useState(false);
   const [twitterUnlinking, setTwitterUnlinking] = useState(false);
+  const [twitterHandleInput, setTwitterHandleInput] = useState('');
+  const [twitterHandleSaving, setTwitterHandleSaving] = useState(false);
 
   const loadTwitterAccount = useCallback(async () => {
     if (!userId) {
@@ -156,7 +158,36 @@ export function ProfileSocialTab({
     }
   };
 
-  const linkedTwitterHandle = twitterAccount ? `@${twitterAccount.twitter_username}` : profile.twitter;
+  const handleSaveTwitterHandle = async () => {
+    const handle = twitterHandleInput.replace(/^@/, '').trim();
+    if (!handle) return;
+
+    setTwitterHandleSaving(true);
+    try {
+      const response = await fetch('/api/twitter/account', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: handle }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save handle');
+      }
+
+      toast.success(t('toastTwitterLinked'));
+      await refreshProfile();
+      await loadTwitterAccount();
+    } catch {
+      toast.error(t('toastFailedLinkTwitter'));
+    } finally {
+      setTwitterHandleSaving(false);
+    }
+  };
+
+  const needsHandle = twitterAccount && !twitterAccount.twitter_username;
+  const linkedTwitterHandle = twitterAccount && twitterAccount.twitter_username
+    ? `@${twitterAccount.twitter_username}`
+    : profile.twitter;
 
   return (
     <div className="space-y-4">
@@ -299,6 +330,43 @@ export function ProfileSocialTab({
         </div>
 
         {twitterAccount ? (
+          needsHandle ? (
+            <div className="rounded-lg border border-border bg-background p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                <p className="text-sm font-medium text-foreground">{t('twitterConnectedEnterHandle')}</p>
+              </div>
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">@</span>
+                  <input
+                    type="text"
+                    value={twitterHandleInput}
+                    onChange={(e) => setTwitterHandleInput(e.target.value)}
+                    placeholder={t('twitterHandlePlaceholder')}
+                    className="w-full pl-8 pr-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent bg-background text-foreground text-sm"
+                    maxLength={50}
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={handleSaveTwitterHandle}
+                  disabled={twitterHandleSaving || !twitterHandleInput.replace(/^@/, '').trim()}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-foreground text-background px-4 py-2 text-sm font-medium hover:opacity-90 transition-opacity duration-150 disabled:opacity-50"
+                >
+                  {twitterHandleSaving ? <Loader2 className="w-3 h-3 animate-spin" /> : t('save')}
+                </button>
+              </div>
+              <button
+                type="button"
+                onClick={handleUnlinkTwitter}
+                disabled={twitterUnlinking}
+                className="mt-2 text-xs text-muted-foreground hover:text-foreground"
+              >
+                {twitterUnlinking ? t('unlinkingTwitter') : t('unlinkTwitter')}
+              </button>
+            </div>
+          ) : (
           <div className="flex items-center justify-between gap-3 rounded-lg border border-border bg-background p-3">
             <div className="flex items-center gap-3 min-w-0">
               <div className="relative flex-shrink-0">
@@ -350,6 +418,7 @@ export function ProfileSocialTab({
               <span className="hidden sm:inline">{twitterUnlinking ? t('unlinkingTwitter') : t('unlinkTwitter')}</span>
             </button>
           </div>
+          )
         ) : (
           <div className="flex flex-col items-center text-center py-6 rounded-lg border border-dashed border-border bg-muted/30">
             <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3">

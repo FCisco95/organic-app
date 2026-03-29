@@ -1499,6 +1499,8 @@
     "twitterAccountTitle": "Twitter/X 账号",
     "twitterAccountDescription": "关联你的 Twitter/X 账号以验证互动任务。",
     "twitterAccountNotLinked": "尚未关联 Twitter/X 账号。",
+    "twitterConnectedEnterHandle": "账号已连接！请在下方输入你的 X 用户名。",
+    "twitterHandlePlaceholder": "你的用户名",
     "twitterAccountConnected": "Twitter/X 账号已关联",
     "twitterAccountVerified": "已用于互动任务验证",
     "twitterLinkedAs": "{name} ({username})",

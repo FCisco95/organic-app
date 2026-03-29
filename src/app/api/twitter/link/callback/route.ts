@@ -83,14 +83,15 @@ export async function GET(request: Request) {
       twitterProfile = await twitterClient.getUserInfo(tokenResponse.access_token);
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);
-      logger.error('Error fetching Twitter user profile:', {
-        message: msg,
-        tokenScopes: tokenResponse.scope,
-        tokenType: tokenResponse.token_type,
-        hasAccessToken: !!tokenResponse.access_token,
-        accessTokenLength: tokenResponse.access_token?.length,
-      });
-      return NextResponse.redirect(buildProfileRedirect(appOrigin, false, 'twitter_profile_failed'));
+      logger.warn('getUserInfo failed, falling back to manual handle entry:', { message: msg });
+
+      // Free-tier Twitter apps can't call /users/me — store account with placeholder
+      // and let the user update their handle from the profile page.
+      twitterProfile = {
+        id: `unknown_${Date.now()}`,
+        name: '',
+        username: '',
+      };
     }
 
     const encryptionKey = process.env.TWITTER_TOKEN_ENCRYPTION_KEY;
@@ -144,12 +145,14 @@ export async function GET(request: Request) {
       return NextResponse.redirect(buildProfileRedirect(appOrigin, false, 'account_insert_failed'));
     }
 
+    const profileUpdate: Record<string, unknown> = { twitter_verified: true };
+    if (twitterProfile.username) {
+      profileUpdate.twitter = withAtPrefix(twitterProfile.username);
+    }
+
     const { error: profileUpdateError } = await serviceClient
       .from('user_profiles')
-      .update({
-        twitter: withAtPrefix(twitterProfile.username),
-        twitter_verified: true,
-      })
+      .update(profileUpdate)
       .eq('id', oauthSession.user_id);
 
     if (profileUpdateError) {
