@@ -150,8 +150,7 @@ export async function POST(request: NextRequest) {
     // Idempotency check: if client sends Idempotency-Key header, return existing claim if found
     const idempotencyKey = request.headers.get('Idempotency-Key');
     if (idempotencyKey) {
-      // TODO: Add idempotency_key column to reward_claims table via migration for persistent lookup.
-      // For now, check for a matching recent claim by user with same points_amount as a heuristic guard.
+      // Lookup by idempotency_key column (added in migration 20260329000001).
       const { data: existing } = await supabase
         .from('reward_claims')
         .select('*')

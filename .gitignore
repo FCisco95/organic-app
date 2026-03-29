@@ -55,6 +55,10 @@ logo-base64.txt
 *.pdf
 *.zip
 
+# Reference docs (not part of source)
+COMPLETE-SECURITY-BIBLE.md
+screenshots/
+
 # Supabase local temp
 supabase/.temp/
 .envrc
