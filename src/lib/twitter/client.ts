@@ -162,7 +162,10 @@ export class TwitterClient {
       accessToken
     );
 
-    if (!response.data) throw new Error('Twitter user profile is missing in response');
+    if (!response.data) {
+      console.error('[twitter] getUserInfo: response missing data field', JSON.stringify(response));
+      throw new Error('Twitter user profile is missing in response');
+    }
     return response.data;
   }
 

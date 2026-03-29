@@ -82,7 +82,14 @@ export async function GET(request: Request) {
     try {
       twitterProfile = await twitterClient.getUserInfo(tokenResponse.access_token);
     } catch (error) {
-      logger.error('Error fetching Twitter user profile:', error);
+      const msg = error instanceof Error ? error.message : String(error);
+      logger.error('Error fetching Twitter user profile:', {
+        message: msg,
+        tokenScopes: tokenResponse.scope,
+        tokenType: tokenResponse.token_type,
+        hasAccessToken: !!tokenResponse.access_token,
+        accessTokenLength: tokenResponse.access_token?.length,
+      });
       return NextResponse.redirect(buildProfileRedirect(appOrigin, false, 'twitter_profile_failed'));
     }
 
