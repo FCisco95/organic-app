@@ -69,7 +69,13 @@ export async function GET(request: Request) {
       return NextResponse.redirect(buildProfileRedirect(appOrigin, false, 'redirect_uri_config_failed'));
     }
 
-    const twitterClient = new TwitterClient({ redirectUri });
+    let twitterClient: TwitterClient;
+    try {
+      twitterClient = new TwitterClient({ redirectUri });
+    } catch (configError) {
+      logger.error('Twitter integration is not configured:', configError);
+      return NextResponse.redirect(buildProfileRedirect(appOrigin, false, 'twitter_not_configured'));
+    }
     let tokenResponse: TwitterTokenResponse;
     try {
       tokenResponse = await twitterClient.exchangeCodeForToken(code, oauthSession.code_verifier);
@@ -83,7 +89,12 @@ export async function GET(request: Request) {
       twitterProfile = await twitterClient.getUserInfo(tokenResponse.access_token);
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);
-      logger.warn('getUserInfo failed, falling back to manual handle entry:', { message: msg });
+      const isProjectError = msg.includes('v2 Project') || msg.includes('Client Forbidden');
+      if (isProjectError) {
+        logger.warn('Twitter API v2 Project not configured, falling back to manual handle entry:', { message: msg });
+      } else {
+        logger.warn('getUserInfo failed, falling back to manual handle entry:', { message: msg });
+      }
 
       // Free-tier Twitter apps can't call /users/me — store with placeholder username
       // and let the user update their handle from the profile page.

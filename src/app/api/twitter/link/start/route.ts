@@ -124,7 +124,16 @@ export async function POST(request: Request) {
       fallbackOrigin: requestUrl.origin,
     });
 
-    const twitterClient = new TwitterClient({ redirectUri });
+    let twitterClient: TwitterClient;
+    try {
+      twitterClient = new TwitterClient({ redirectUri });
+    } catch (configError) {
+      logger.error('Twitter integration is not configured:', configError);
+      return NextResponse.json(
+        { error: 'Twitter integration is not configured' },
+        { status: 503 }
+      );
+    }
     const authUrl = twitterClient.generateAuthUrl(state, codeChallenge);
 
     return NextResponse.json({

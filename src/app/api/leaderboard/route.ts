@@ -1,12 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { unstable_cache } from 'next/cache';
-import { createAnonClient, createClient } from '@/lib/supabase/server';
+import { createServerClient } from '@supabase/ssr';
 import { Database } from '@/types/database';
 import { logger } from '@/lib/logger';
 import {
   rankLeaderboardEntries,
   type LeaderboardEntry,
 } from '@/features/reputation/types';
+
+// Inline anon client to avoid importing from server.ts which references cookies().
+// unstable_cache does not allow modules that touch dynamic data sources.
+function createCacheSafeAnonClient() {
+  return createServerClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return [];
+        },
+        setAll() {},
+      },
+    }
+  );
+}
 
 type LeaderboardRow = {
   id: string | null;
@@ -51,7 +68,7 @@ function normalizeLeaderboardRow(row: LeaderboardRow): NormalizedLeaderboardEntr
 
 async function queryLeaderboardMaterialized() {
   // Use anon client — safe because materialized view has no PII (email removed)
-  const supabase = createAnonClient();
+  const supabase = createCacheSafeAnonClient();
   return supabase
     .from('leaderboard_materialized')
     .select(LEADERBOARD_COLUMNS)
@@ -64,7 +81,7 @@ async function queryLeaderboardMaterialized() {
 }
 
 async function queryLeaderboardView() {
-  const supabase = createAnonClient();
+  const supabase = createCacheSafeAnonClient();
   return supabase
     .from('leaderboard_view')
     .select(LEADERBOARD_COLUMNS)

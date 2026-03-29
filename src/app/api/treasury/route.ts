@@ -239,6 +239,20 @@ export async function GET() {
       },
     });
   } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
+    const isSolanaRpcError = msg.includes('failed to get') || msg.includes('SolanaJSONRPC');
+    if (isSolanaRpcError) {
+      logger.warn('Treasury API: Solana RPC transient error, returning cached data if available', { message: msg });
+      if (cached) {
+        return NextResponse.json(cached.data, {
+          headers: {
+            'Cache-Control': RESPONSE_CACHE_CONTROL,
+            ...cached.marketHeaders,
+            'X-Treasury-Stale': '1',
+          },
+        });
+      }
+    }
     logger.error('Treasury API error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

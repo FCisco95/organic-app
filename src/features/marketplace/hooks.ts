@@ -16,10 +16,11 @@ export function useActiveBoosts(options?: { enabled?: boolean }) {
     queryKey: marketplaceKeys.boosts(),
     queryFn: async (): Promise<BoostRequest[]> => {
       const json = await fetchJson<{ data: BoostRequest[] }>('/api/marketplace/boosts');
-      return json.data;
+      return json.data ?? [];
     },
     staleTime: 30_000,
     refetchOnWindowFocus: false,
+    retry: false,
     enabled: options?.enabled,
   });
 }
@@ -29,10 +30,11 @@ export function useMyBoosts(options?: { enabled?: boolean }) {
     queryKey: marketplaceKeys.myBoosts(),
     queryFn: async (): Promise<BoostRequest[]> => {
       const json = await fetchJson<{ data: BoostRequest[] }>('/api/marketplace/boosts?mine=true');
-      return json.data;
+      return json.data ?? [];
     },
     staleTime: 30_000,
     refetchOnWindowFocus: false,
+    retry: false,
     enabled: options?.enabled,
   });
 }
