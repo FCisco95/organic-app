@@ -115,6 +115,20 @@
     "navLeaderboardDesc": "Contribuidores classificados por XP",
     "navLeaderboardBadge": "Rankings"
   },
+  "HowItWorks": {
+    "title": "Como funciona o Organic",
+    "subtitle": "Tudo o que precisas de saber para começar a contribuir",
+    "xpTitle": "XP e Níveis",
+    "xpBody": "Ganha XP completando tarefas, votando em propostas, partilhando ideias e publicando. O XP sobe o teu nível — níveis mais altos desbloqueiam acesso ao conselho, ferramentas de IA e recompensas NFT.",
+    "pointsTitle": "Pontos",
+    "pointsBody": "Pontos são a tua moeda de gasto. Ganha através de participação, gasta para promover posts e ideias. O limite semanal mantém a economia saudável.",
+    "pipelineTitle": "O Pipeline",
+    "pipelineBody": "Ideias tornam-se Propostas. Propostas aprovadas criam Tarefas. Tarefas são feitas em Sprints. Qualquer pessoa pode começar partilhando uma ideia.",
+    "xTitle": "Integração X",
+    "xBody": "Publica sobre Organic no X para ganhar pontos. Os teus posts são grátis (3/semana). Interagir com posts de outros sobre Organic ganha XP bónus.",
+    "perksTitle": "Recompensas por Nível",
+    "perksBody": "Cada nível desbloqueia novas habilidades: criar propostas no Nv3, ferramentas IA no Nv7, elegibilidade para conselho no Nv5, cunhagem NFT no Nv11."
+  },
   "Navigation": {
     "home": "Início",
     "profile": "Perfil",
@@ -1529,6 +1543,7 @@
     "totalPointsLine": "Pontos totais: {points}",
     "nextLevelTitle": "Objetivo do próximo nível",
     "nextLevelBody": "Continue a contribuir para chegar ao Nível {level}.",
+    "nextUnlockLabel": "Nível {level} ({name}) desbloqueia",
     "questsTitle": "Missões",
     "questsEmpty": "O sistema de missões está quase pronto. As suas missões vão aparecer em breve.",
     "rewardsReadinessTitle": "Prontidão para recompensas",

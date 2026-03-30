@@ -24,6 +24,7 @@ import { useLeaderboard, formatXp } from '@/features/reputation';
 import { cn } from '@/lib/utils';
 import { useActivityFeed } from '@/features/activity';
 import { GovernanceSummaryCard } from '@/components/analytics/governance-summary-card';
+import { HowItWorksCard } from '@/components/dashboard/how-it-works-card';
 
 function formatCountdown(target: string | null | undefined): string {
   if (!target) return '';
@@ -293,13 +294,18 @@ export default function Home() {
         </div>
       </section>
 
-      {/* -- AI Governance Summary -- */}
+      {/* -- How It Works -- */}
       <section className="mb-8 opacity-0 animate-fade-up stagger-4">
+        <HowItWorksCard />
+      </section>
+
+      {/* -- AI Governance Summary -- */}
+      <section className="mb-8 opacity-0 animate-fade-up stagger-5">
         <GovernanceSummaryCard variant="compact" />
       </section>
 
       {/* -- Contribution Layout (nav cards + activity feed) -- */}
-      <section className="mb-8 opacity-0 animate-fade-up stagger-5">
+      <section className="mb-8 opacity-0 animate-fade-up stagger-6">
         <ContributionLayout
           proposalCount={proposalStageCounts.public + proposalStageCounts.qualified + proposalStageCounts.discussion + proposalStageCounts.voting}
           sprintActive={!!inFlightSprint}
@@ -308,7 +314,7 @@ export default function Home() {
       </section>
 
       {/* -- Member Status -- */}
-      <section className="rounded-xl border border-border bg-card p-6 sm:p-8 mb-8 opacity-0 animate-fade-up stagger-6">
+      <section className="rounded-xl border border-border bg-card p-6 sm:p-8 mb-8 opacity-0 animate-fade-up stagger-7">
         <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
           <div className="flex-1">
             <h2 className="text-lg font-semibold text-foreground">
@@ -407,7 +413,7 @@ export default function Home() {
       </section>
 
       {/* -- Supporting Stats -- */}
-      <section className="border border-border rounded-lg bg-muted/30 px-5 py-4 mb-6 opacity-0 animate-fade-up stagger-7">
+      <section className="border border-border rounded-lg bg-muted/30 px-5 py-4 mb-6 opacity-0 animate-fade-up stagger-8">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             {t('supportingStats')}
@@ -420,7 +426,7 @@ export default function Home() {
       </section>
 
       {/* -- Footer -- */}
-      <footer className="border-t border-border pt-5 pb-2 opacity-0 animate-fade-up stagger-8">
+      <footer className="border-t border-border pt-5 pb-2 opacity-0 animate-fade-up stagger-9">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs text-muted-foreground/70">
           <span>{t('poweredByOrgDescription')}</span>
           <code className="font-mono text-[11px] text-muted-foreground/70">

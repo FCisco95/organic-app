@@ -5,21 +5,22 @@ export interface ReputationLevel {
   name: string;
   xpRequired: number;
   color: string;
+  perks: string;
 }
 
 /** Thematic nature-progression colors — intentionally semantic, not from design tokens */
 export const REPUTATION_LEVELS: readonly ReputationLevel[] = [
-  { level: 1, name: 'Seed', xpRequired: 0, color: '#8B7355' },
-  { level: 2, name: 'Sprout', xpRequired: 100, color: '#90EE90' },
-  { level: 3, name: 'Sapling', xpRequired: 300, color: '#3CB371' },
-  { level: 4, name: 'Vine', xpRequired: 600, color: '#2E8B57' },
-  { level: 5, name: 'Branch', xpRequired: 1_200, color: '#228B22' },
-  { level: 6, name: 'Trunk', xpRequired: 2_500, color: '#6B4226' },
-  { level: 7, name: 'Bloom', xpRequired: 5_000, color: '#FF6B6B' },
-  { level: 8, name: 'Grove', xpRequired: 10_000, color: '#2F4F4F' },
-  { level: 9, name: 'Forest', xpRequired: 20_000, color: '#006400' },
-  { level: 10, name: 'Canopy', xpRequired: 40_000, color: '#FFD700' },
-  { level: 11, name: 'Ancient Oak', xpRequired: 80_000, color: '#DAA520' },
+  { level: 1, name: 'Seed', xpRequired: 0, color: '#8B7355', perks: 'Access community feed, vote on ideas' },
+  { level: 2, name: 'Sprout', xpRequired: 100, color: '#90EE90', perks: 'Post in the feed, react to content' },
+  { level: 3, name: 'Sapling', xpRequired: 300, color: '#3CB371', perks: 'Create proposals, join sprint planning' },
+  { level: 4, name: 'Vine', xpRequired: 600, color: '#2E8B57', perks: 'Claim tasks, submit work for review' },
+  { level: 5, name: 'Branch', xpRequired: 1_200, color: '#228B22', perks: 'Council nomination eligibility, advanced analytics' },
+  { level: 6, name: 'Trunk', xpRequired: 2_500, color: '#6B4226', perks: 'Review submissions, moderate discussions' },
+  { level: 7, name: 'Bloom', xpRequired: 5_000, color: '#FF6B6B', perks: 'AI-assisted tools access, priority task claims' },
+  { level: 8, name: 'Grove', xpRequired: 10_000, color: '#2F4F4F', perks: 'Create sprints, manage task templates' },
+  { level: 9, name: 'Forest', xpRequired: 20_000, color: '#006400', perks: 'Dispute arbitration, treasury proposals' },
+  { level: 10, name: 'Canopy', xpRequired: 40_000, color: '#FFD700', perks: 'Governance weight multiplier' },
+  { level: 11, name: 'Ancient Oak', xpRequired: 80_000, color: '#DAA520', perks: 'NFT badge minting, max governance power' },
 ] as const;
 
 /** Get level info by level number (1-based) */

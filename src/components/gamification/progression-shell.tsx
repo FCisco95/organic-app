@@ -20,6 +20,7 @@ import { StreakDisplay } from '@/components/reputation/streak-display';
 import { AchievementGrid } from '@/components/reputation/achievement-grid';
 import { XpHistory } from '@/components/reputation/xp-history';
 import { cn } from '@/lib/utils';
+import { getLevelInfo } from '@/features/reputation/types';
 
 type SourceContext = 'tasks' | 'proposals' | 'profile';
 
@@ -263,6 +264,15 @@ export function ProgressionShell({ sourceContext = null }: { sourceContext?: Sou
             : t('nextLevelBody', { level: data.level + 1 })}
         </p>
         <XpProgressBar xpTotal={data.xp_total} level={data.level} />
+        {!data.level_progress.is_max_level && (
+          <div className="mt-2 flex items-start gap-2 rounded-lg bg-organic-orange/5 border border-organic-orange/20 px-3 py-2">
+            <Sparkles className="h-3.5 w-3.5 text-organic-orange mt-0.5 flex-shrink-0" />
+            <p className="text-xs text-foreground">
+              <span className="font-semibold">{t('nextUnlockLabel', { level: data.level + 1, name: getLevelInfo(data.level + 1).name })}:</span>{' '}
+              <span className="text-muted-foreground">{getLevelInfo(data.level + 1).perks}</span>
+            </p>
+          </div>
+        )}
       </section>
 
       {/* ===== QUEST TABLE — dense tabular view ===== */}
