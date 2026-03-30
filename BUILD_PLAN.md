@@ -4,6 +4,36 @@ For session-by-session implementation notes see `SESSION_LOG.md`.
 
 ---
 
+## Launch Status — Production Ready (2026-03-30)
+
+The app is production-ready. Security hardened, seed content live, 2x XP launch event active.
+
+### Pre-Launch Checklist
+- [x] Security: Avatar MIME allowlist, CSP upgrade-insecure-requests, npm audit
+- [x] Security: Leaderboard view `security_invoker`, email confirmation verified
+- [x] Infrastructure: Upstash Redis configured on Vercel (rate limiting works)
+- [x] Content: How It Works dashboard card (3 languages)
+- [x] Content: Level perks on all 11 levels + "Next unlock" teaser
+- [x] Content: Genesis Sprint + 5 tasks + 3 ideas + 2 proposals + welcome post
+- [x] Event: 2x XP multiplier active (expires 2026-04-06)
+- [x] Event: Launch Week banner (dismissible, 3 languages)
+- [x] Social: OG meta tags for X/Discord sharing
+- [x] Database: 415 QA users + all QA content cleaned
+- [ ] Secret rotation: `.envrc` OpenAI + Supabase tokens
+- [ ] Domain: Buy + configure on Vercel
+- [ ] OG image: Create `/public/og-image.png` (1200x630)
+- [ ] Sprint activation: Flip Genesis Sprint to `active`
+
+### Upcoming — Easter Campaign (week of 2026-04-05)
+Plan an Easter-themed promotional campaign:
+- Create Easter-themed tasks (e.g., design an Easter Organic logo, create promotional artwork)
+- Ideas for community to vote on: Easter egg hunt in the app, special Easter badge NFT
+- Social media content tasks: Easter launch thread on X
+- Consider a special Easter XP bonus or limited-time quest
+- Tie it to app promotion: "Share Organic on X with #OrganicEaster for bonus points"
+
+---
+
 ## Planned — UI Revamps
 
 ### Posts Page Revamp

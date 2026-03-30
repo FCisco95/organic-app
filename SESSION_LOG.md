@@ -2,6 +2,92 @@
 
 Add newest entries at the top.
 
+## 2026-03-30 (Session: Launch Readiness — Full 2-Day Sprint)
+
+### Summary
+
+Executed a complete launch readiness sprint with a 5-specialist panel (Security, UX/UI, DevOps, Product, QA). Shipped security fixes, onboarding content, seed data, launch event, and cleaned the entire QA database. The app is production-ready for public launch.
+
+### What was done
+
+**Planning & Audit**
+- Spawned 5 specialist agents (Security Auditor, UX/UI Reviewer, DevOps/Infra, Product Strategist, QA/Reliability) to audit the full codebase
+- Created 2-day launch plan at `~/.claude/plans/deep-enchanting-reef.md`
+- Identified and corrected false positives: wallet nonce validation IS implemented, @solana/web3.js v1.98.4 is safe
+
+**Security Fixes (PR #35)**
+- Tightened avatar upload MIME validation to allowlist (JPEG/PNG/WebP/GIF + extension check)
+- Added `upgrade-insecure-requests` CSP directive in middleware
+- Ran `npm audit fix` — resolved 14 vulnerabilities (34 remaining are Solana transitive deps)
+- Applied `ALTER VIEW public.leaderboard_view SET (security_invoker = true)` via Supabase Management API
+- Verified email confirmation is enabled (`mailer_autoconfirm: false`)
+- Verified `.envrc` is gitignored and never committed (secrets need manual rotation)
+
+**Product Content (PR #35)**
+- Built "How It Works" collapsible dashboard card with 5 sections: XP & Levels, Points, Pipeline, X Integration, Level Perks
+- Added perk descriptions to all 11 reputation levels in `types.ts`
+- Added "Next unlock" teaser to progression shell (shows what next level unlocks)
+- Full i18n for all new content (EN, PT-PT, ZH-CN)
+
+**Seed Content**
+- Created `scripts/seed-launch-content.ts` (rerunnable, skip-on-duplicate)
+- Seeded: Genesis Sprint (planning, 30pts, 7 days), 5 tasks (26pts), 3 ideas, 2 proposals, 1 pinned welcome post
+
+**Launch Event (PR #36)**
+- Added `event_xp_multiplier` config with expiration to gamification system
+- Applied multiplier in `awardXp()` for both capped and uncapped XP paths
+- Activated 2x XP in DB config (expires 2026-04-06)
+- Built dismissible "Launch Week — 2x XP" gradient banner (3 languages)
+- Added OpenGraph + Twitter card meta tags for social sharing
+
+**Infrastructure**
+- Configured Upstash Redis on Vercel (rate limiting now works on serverless)
+- Cleaned 415 QA users, 111 QA proposals, 25 QA sprints, and all related data from production DB
+- Removed 3 garbage proposals with localhost URLs
+- Set up Claude Code workspace: global settings, safety hooks, path-specific rules, 4 sub-agents
+
+**QA (against production build)**
+- Login flow: test account works, redirects correctly
+- Dashboard: How It Works card renders with all 5 sections
+- Proposals: seeded proposals visible with correct statuses
+- Tasks: all 5 seeded tasks visible, linked to Genesis Sprint
+- Sprints: Genesis Sprint in Planning mode
+- Ideas: all 3 seeded ideas visible
+- Posts: welcome announcement pinned
+- Community: leaderboard shows rankings
+- Progression: "Level 2 (Sprout) unlocks: Post in the feed, react to content"
+- i18n: verified pt-PT and zh-CN translations
+
+### Key files
+
+- `src/components/dashboard/how-it-works-card.tsx` (new)
+- `src/components/layout/launch-banner.tsx` (new)
+- `scripts/seed-launch-content.ts` (new)
+- `scripts/cleanup-all-qa-data.ts` (new)
+- `src/features/gamification/xp-service.ts` (2x XP multiplier)
+- `src/features/gamification/types.ts` (event_xp_multiplier config)
+- `src/features/reputation/types.ts` (level perks)
+- `src/components/gamification/progression-shell.tsx` (next unlock teaser)
+- `src/app/[locale]/page.tsx` (How It Works card)
+- `src/app/[locale]/layout.tsx` (OG meta + launch banner)
+- `src/app/api/profile/upload-avatar/route.ts` (MIME fix)
+- `src/middleware.ts` (CSP fix)
+
+### PRs
+
+- PR #35: `feat: launch readiness — security, content, onboarding`
+- PR #36: `feat: launch week — 2x XP event, banner, OG tags`
+
+### What remains for launch
+
+- [ ] Rotate `.envrc` secrets (OpenAI key + Supabase access token)
+- [ ] Buy domain + configure on Vercel + update `NEXT_PUBLIC_APP_URL`
+- [ ] Create OG image (`/public/og-image.png`, 1200x630)
+- [ ] Activate Genesis Sprint (flip from `planning` → `active`)
+- [ ] Easter campaign: create tasks/ideas for Easter-themed content and app promotion
+
+---
+
 ## 2026-03-26 (Session: Phase 30 — Points Economy for Posts)
 
 ### Summary
