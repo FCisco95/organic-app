@@ -28,9 +28,23 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      return NextResponse.json({ error: 'File must be an image' }, { status: 400 });
+    // Validate file type (allowlist only safe image formats)
+    const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+    const ALLOWED_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'webp', 'gif']);
+
+    if (!ALLOWED_MIME_TYPES.has(file.type)) {
+      return NextResponse.json(
+        { error: 'Only JPEG, PNG, WebP, and GIF images are allowed' },
+        { status: 400 }
+      );
+    }
+
+    const ext = file.name.split('.').pop()?.toLowerCase();
+    if (!ext || !ALLOWED_EXTENSIONS.has(ext)) {
+      return NextResponse.json(
+        { error: 'Unsupported file extension' },
+        { status: 400 }
+      );
     }
 
     // Validate file size (max 5MB)

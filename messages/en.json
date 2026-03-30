@@ -115,6 +115,20 @@
     "navLeaderboardDesc": "XP-ranked contributors and competition",
     "navLeaderboardBadge": "Rankings"
   },
+  "HowItWorks": {
+    "title": "How Organic works",
+    "subtitle": "Everything you need to know to start contributing",
+    "xpTitle": "XP & Levels",
+    "xpBody": "Earn XP by completing tasks, voting on proposals, sharing ideas, and posting. XP levels you up — higher levels unlock council access, AI tools, and NFT rewards.",
+    "pointsTitle": "Points",
+    "pointsBody": "Points are your spending currency. Earn through engagement, spend to boost posts and promote ideas. Weekly cap keeps the economy healthy.",
+    "pipelineTitle": "The Pipeline",
+    "pipelineBody": "Ideas become Proposals. Approved Proposals create Tasks. Tasks get done in Sprints. Anyone can start by sharing an idea.",
+    "xTitle": "X Integration",
+    "xBody": "Post about Organic on X to earn points. Your own posts are free (3/week). Engaging with others' Organic posts earns bonus XP.",
+    "perksTitle": "Level Perks",
+    "perksBody": "Each level unlocks new abilities: create proposals at Lv3, AI tools at Lv7, council eligibility at Lv5, NFT minting at Lv11."
+  },
   "Navigation": {
     "home": "Home",
     "profile": "Profile",
@@ -1558,6 +1572,7 @@
     "totalPointsLine": "Total points: {points}",
     "nextLevelTitle": "Next level target",
     "nextLevelBody": "Keep contributing to reach Level {level}.",
+    "nextUnlockLabel": "Level {level} ({name}) unlocks",
     "questsTitle": "Quests",
     "questsEmpty": "Quest system is almost ready. Your missions will appear here soon.",
     "rewardsReadinessTitle": "Rewards readiness",

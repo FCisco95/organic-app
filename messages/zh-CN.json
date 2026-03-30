@@ -115,6 +115,20 @@
     "navLeaderboardDesc": "按 XP 排名的贡献者竞争",
     "navLeaderboardBadge": "排名"
   },
+  "HowItWorks": {
+    "title": "Organic 如何运作",
+    "subtitle": "开始贡献所需的一切",
+    "xpTitle": "XP 与等级",
+    "xpBody": "通过完成任务、投票提案、分享想法和发帖赚取 XP。XP 提升你的等级——更高等级解锁理事会权限、AI 工具和 NFT 奖励。",
+    "pointsTitle": "积分",
+    "pointsBody": "积分是你的消费货币。通过参与赚取，花费来推广帖子和想法。每周上限保持经济健康。",
+    "pipelineTitle": "流程管线",
+    "pipelineBody": "想法变成提案，批准的提案创建任务，任务在冲刺中完成。任何人都可以从分享想法开始。",
+    "xTitle": "X 集成",
+    "xBody": "在 X 上发布关于 Organic 的内容赚取积分。你自己的帖子免费（每周3次）。与他人的 Organic 帖子互动可获得额外 XP。",
+    "perksTitle": "等级特权",
+    "perksBody": "每个等级解锁新能力：3级创建提案，7级AI工具，5级理事会资格，11级NFT铸造。"
+  },
   "Navigation": {
     "home": "首页",
     "profile": "个人资料",
@@ -1529,6 +1543,7 @@
     "totalPointsLine": "总积分：{points}",
     "nextLevelTitle": "下一级目标",
     "nextLevelBody": "继续贡献即可达到等级 {level}。",
+    "nextUnlockLabel": "等级 {level}（{name}）解锁",
     "questsTitle": "任务挑战",
     "questsEmpty": "任务挑战系统即将上线，你的任务会很快出现在这里。",
     "rewardsReadinessTitle": "奖励准备状态",
