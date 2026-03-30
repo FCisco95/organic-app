@@ -129,6 +129,10 @@
     "perksTitle": "Recompensas por Nível",
     "perksBody": "Cada nível desbloqueia novas habilidades: criar propostas no Nv3, ferramentas IA no Nv7, elegibilidade para conselho no Nv5, cunhagem NFT no Nv11."
   },
+  "LaunchBanner": {
+    "message": "Semana de Lançamento — 2x XP em todas as ações!",
+    "dismiss": "Fechar"
+  },
   "Navigation": {
     "home": "Início",
     "profile": "Perfil",

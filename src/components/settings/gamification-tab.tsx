@@ -40,6 +40,9 @@ const DEFAULT_GAMIFICATION_CONFIG: GamificationConfig = {
   referral_point_share_percent: 5,
   referral_share_duration_days: 30,
   referral_tiers: [],
+  event_xp_multiplier: 1,
+  event_xp_multiplier_label: '',
+  event_xp_multiplier_ends_at: null,
 };
 
 export function GamificationTab({ org }: GamificationTabProps) {

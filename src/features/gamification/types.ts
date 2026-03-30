@@ -161,4 +161,7 @@ export interface GamificationConfig {
   referral_point_share_percent: number;
   referral_share_duration_days: number;
   referral_tiers: ReferralTier[];
+  event_xp_multiplier: number;
+  event_xp_multiplier_label: string;
+  event_xp_multiplier_ends_at: string | null;
 }

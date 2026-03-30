@@ -129,6 +129,10 @@
     "perksTitle": "Level Perks",
     "perksBody": "Each level unlocks new abilities: create proposals at Lv3, AI tools at Lv7, council eligibility at Lv5, NFT minting at Lv11."
   },
+  "LaunchBanner": {
+    "message": "Launch Week — 2x XP on all actions!",
+    "dismiss": "Dismiss"
+  },
   "Navigation": {
     "home": "Home",
     "profile": "Profile",

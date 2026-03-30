@@ -204,6 +204,9 @@ export const gamificationConfigSchema = z.object({
   referral_point_share_percent: z.number().min(0).max(100).optional(),
   referral_share_duration_days: z.number().int().positive().optional(),
   referral_tiers: z.array(referralTierSchema).optional(),
+  event_xp_multiplier: z.number().min(1).max(10).optional(),
+  event_xp_multiplier_label: z.string().max(100).optional(),
+  event_xp_multiplier_ends_at: z.string().nullable().optional(),
 });
 
 export type CreateQuestInput = z.infer<typeof createQuestSchema>;

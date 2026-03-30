@@ -129,6 +129,10 @@
     "perksTitle": "等级特权",
     "perksBody": "每个等级解锁新能力：3级创建提案，7级AI工具，5级理事会资格，11级NFT铸造。"
   },
+  "LaunchBanner": {
+    "message": "上线周 — 所有操作 2 倍 XP！",
+    "dismiss": "关闭"
+  },
   "Navigation": {
     "home": "首页",
     "profile": "个人资料",

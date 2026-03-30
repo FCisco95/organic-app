@@ -77,6 +77,18 @@ function levelFromXp(xp: number): number {
   return 1;
 }
 
+/** Returns the active event XP multiplier, or 1 if expired/not set. */
+function getActiveEventMultiplier(config: GamificationConfig): number {
+  const multiplier = config.event_xp_multiplier ?? 1;
+  if (multiplier <= 1) return 1;
+
+  const endsAt = config.event_xp_multiplier_ends_at;
+  if (endsAt && new Date(endsAt).getTime() < Date.now()) {
+    return 1; // Event expired
+  }
+  return multiplier;
+}
+
 // ─── Core Service ───────────────────────────────────────────────────────
 
 /**
@@ -137,9 +149,14 @@ export async function awardXp(
     }
 
     // 5. Trust score multiplier (default 1.0, extensible via user_profiles)
-    // For now we default to 1.0 — future: read from user_profiles.trust_score
     const trustMultiplier = 1.0;
     adjustedXp = Math.round(adjustedXp * trustMultiplier);
+
+    // 6. Global event multiplier (e.g. 2x XP launch week)
+    const eventMultiplier = getActiveEventMultiplier(config);
+    if (eventMultiplier > 1) {
+      adjustedXp = Math.round(adjustedXp * eventMultiplier);
+    }
 
     return await insertXpAward(supabase, config, {
       ...options,
@@ -154,11 +171,15 @@ export async function awardXp(
     });
   }
 
-  // No daily cap — apply bonus roll only
+  // No daily cap — apply bonus roll + event multiplier
   let adjustedXp = xpAmount;
   const bonusApplied = Math.random() < BONUS_ROLL_CHANCE;
   if (bonusApplied) {
     adjustedXp = adjustedXp * BONUS_MULTIPLIER;
+  }
+  const noCappedEventMultiplier = getActiveEventMultiplier(config);
+  if (noCappedEventMultiplier > 1) {
+    adjustedXp = Math.round(adjustedXp * noCappedEventMultiplier);
   }
 
   return await insertXpAward(supabase, config, {
