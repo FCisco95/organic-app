@@ -19,7 +19,6 @@ The app is production-ready. Security hardened, seed content live, 2x XP launch 
 - [x] Event: Launch Week banner (dismissible, 3 languages)
 - [x] Social: OG meta tags for X/Discord sharing
 - [x] Database: 415 QA users + all QA content cleaned
-- [ ] Secret rotation: `.envrc` OpenAI + Supabase tokens
 - [ ] Domain: Buy + configure on Vercel
 - [ ] OG image: Create `/public/og-image.png` (1200x630)
 - [ ] Sprint activation: Flip Genesis Sprint to `active`

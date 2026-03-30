@@ -80,7 +80,6 @@ Executed a complete launch readiness sprint with a 5-specialist panel (Security,
 
 ### What remains for launch
 
-- [ ] Rotate `.envrc` secrets (OpenAI key + Supabase access token)
 - [ ] Buy domain + configure on Vercel + update `NEXT_PUBLIC_APP_URL`
 - [ ] Create OG image (`/public/og-image.png`, 1200x630)
 - [ ] Activate Genesis Sprint (flip from `planning` → `active`)
