@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Eye, EyeOff, ExternalLink, Egg, Sparkles, Zap } from 'lucide-react';
 import {
   useAdminCampaigns,
@@ -258,6 +258,62 @@ function CampaignForm({
   );
 }
 
+function RateSlider({
+  label,
+  field,
+  value,
+  min,
+  max,
+  divisor,
+  decimals,
+  accent,
+  onSave,
+}: {
+  label: string;
+  field: string;
+  value: number;
+  min: number;
+  max: number;
+  divisor: number;
+  decimals: number;
+  accent: string;
+  onSave: (field: string, value: number) => void;
+}) {
+  const [local, setLocal] = useState(Math.round(value * divisor));
+  const [dragging, setDragging] = useState(false);
+
+  // Sync with server value when not dragging
+  useEffect(() => {
+    if (!dragging) setLocal(Math.round(value * divisor));
+  }, [value, divisor, dragging]);
+
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-xs text-muted-foreground">{label}:</span>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        value={local}
+        onChange={(e) => setLocal(parseInt(e.target.value))}
+        onPointerDown={() => setDragging(true)}
+        onPointerUp={() => {
+          setDragging(false);
+          onSave(field, local / divisor);
+        }}
+        onTouchEnd={() => {
+          setDragging(false);
+          onSave(field, local / divisor);
+        }}
+        className={`flex-1 h-1.5 ${accent}`}
+      />
+      <span className="text-xs font-mono text-muted-foreground w-10 text-right">
+        {((local / divisor) * 100).toFixed(decimals)}%
+      </span>
+    </div>
+  );
+}
+
 function EggHuntControls() {
   const { data: config, isLoading } = useEggHuntConfig();
   const { data: stats } = useEggHuntStats();
@@ -272,9 +328,10 @@ function EggHuntControls() {
     }
   };
 
-  const updateRate = async (field: string, value: number) => {
+  const saveRate = async (field: string, value: number) => {
     try {
       await updateConfig.mutateAsync({ [field]: value });
+      toast.success('Rate updated');
     } catch (err: any) {
       toast.error(err.message ?? 'Failed to update');
     }
@@ -319,20 +376,7 @@ function EggHuntControls() {
               }`} />
             </button>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">Rate:</span>
-            <input
-              type="range"
-              min={10}
-              max={100}
-              value={Math.round(Number(config.shimmer_rate) * 1000)}
-              onChange={(e) => updateRate('shimmer_rate', parseInt(e.target.value) / 1000)}
-              className="flex-1 h-1.5 accent-orange-500"
-            />
-            <span className="text-xs font-mono text-muted-foreground w-10 text-right">
-              {(Number(config.shimmer_rate) * 100).toFixed(1)}%
-            </span>
-          </div>
+          <RateSlider label="Rate" field="shimmer_rate" value={Number(config.shimmer_rate)} min={10} max={100} divisor={1000} decimals={1} accent="accent-orange-500" onSave={saveRate} />
         </div>
 
         {/* Egg Hunt */}
@@ -353,20 +397,7 @@ function EggHuntControls() {
               }`} />
             </button>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">Base rate:</span>
-            <input
-              type="range"
-              min={1}
-              max={100}
-              value={Math.round(Number(config.base_spawn_rate) * 10000)}
-              onChange={(e) => updateRate('base_spawn_rate', parseInt(e.target.value) / 10000)}
-              className="flex-1 h-1.5 accent-emerald-500"
-            />
-            <span className="text-xs font-mono text-muted-foreground w-10 text-right">
-              {(Number(config.base_spawn_rate) * 100).toFixed(2)}%
-            </span>
-          </div>
+          <RateSlider label="Base rate" field="base_spawn_rate" value={Number(config.base_spawn_rate)} min={1} max={100} divisor={10000} decimals={2} accent="accent-emerald-500" onSave={saveRate} />
         </div>
 
         {/* Probability Override */}
@@ -387,20 +418,7 @@ function EggHuntControls() {
               }`} />
             </button>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">Override rate:</span>
-            <input
-              type="range"
-              min={10}
-              max={500}
-              value={Math.round(Number(config.override_rate) * 10000)}
-              onChange={(e) => updateRate('override_rate', parseInt(e.target.value) / 10000)}
-              className="flex-1 h-1.5 accent-amber-500"
-            />
-            <span className="text-xs font-mono text-muted-foreground w-10 text-right">
-              {(Number(config.override_rate) * 100).toFixed(2)}%
-            </span>
-          </div>
+          <RateSlider label="Override rate" field="override_rate" value={Number(config.override_rate)} min={10} max={500} divisor={10000} decimals={2} accent="accent-amber-500" onSave={saveRate} />
         </div>
 
         {/* Campaign Reveal */}
