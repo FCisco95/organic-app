@@ -17,12 +17,13 @@ export async function GET() {
       return NextResponse.json(EMPTY);
     }
 
-    // Rate limit: 1 check per 3 seconds per user
+    // Rate limit: ~6 checks per minute per user (1 per 10s)
     const rateLimited = await applyUserRateLimit(user.id, 'egg-check', {
-      limit: 20,
-      windowMs: 60_000, // 20 per minute (~1 per 3s)
+      limit: 6,
+      windowMs: 60_000,
     });
     if (rateLimited) {
+      // Return empty instead of 429 — egg hunt should never show errors
       return NextResponse.json(EMPTY);
     }
 

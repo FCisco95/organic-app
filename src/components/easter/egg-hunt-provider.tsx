@@ -8,6 +8,9 @@ import { GoldenEgg } from './golden-egg';
 import { DiscoveryOverlay } from './discovery-overlay';
 import type { EggCheckResponse } from '@/features/easter/schemas';
 
+// Minimum 10 seconds between API calls to avoid rate limiting
+const MIN_CHECK_INTERVAL = 10_000;
+
 export function EggHuntProvider() {
   const { user } = useAuth();
   const pathname = usePathname();
@@ -20,16 +23,19 @@ export function EggHuntProvider() {
     xpAwarded: number;
   } | null>(null);
 
-  // Debounce ref to prevent rapid calls
+  // Stable refs for debouncing — survive re-renders
   const lastCheckRef = useRef(0);
+  const checkingRef = useRef(false);
 
   const checkForEggs = useCallback(async () => {
     if (!user) return;
+    if (checkingRef.current) return;
 
-    // Debounce: at least 3s between checks
+    // Debounce: at least MIN_CHECK_INTERVAL between checks
     const now = Date.now();
-    if (now - lastCheckRef.current < 3000) return;
+    if (now - lastCheckRef.current < MIN_CHECK_INTERVAL) return;
     lastCheckRef.current = now;
+    checkingRef.current = true;
 
     try {
       const res = await fetch('/api/easter/egg-check');
@@ -51,12 +57,17 @@ export function EggHuntProvider() {
       }
     } catch {
       // Silently fail — egg hunt should never break the app
+    } finally {
+      checkingRef.current = false;
     }
-  }, [user]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
-  // Check on route change
+  // Check on route change — debounced by the ref inside checkForEggs
   useEffect(() => {
-    checkForEggs();
+    // Small delay to avoid calling during rapid navigation
+    const timer = setTimeout(checkForEggs, 500);
+    return () => clearTimeout(timer);
   }, [pathname, checkForEggs]);
 
   const handleClaim = useCallback(async () => {
