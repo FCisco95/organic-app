@@ -12,6 +12,7 @@ import {
   Users,
   Gift,
   Sparkles,
+  Megaphone,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { PageContainer } from '@/components/layout';
@@ -26,6 +27,7 @@ import { SprintsTab } from '@/components/settings/sprints-tab';
 import { MembersTab } from '@/components/settings/members-tab';
 import { RewardsTab } from '@/components/settings/rewards-tab';
 import { GamificationTab } from '@/components/settings/gamification-tab';
+import { CampaignsTab } from '@/components/settings/campaigns-tab';
 
 interface TabDef {
   key: SettingsTab;
@@ -59,6 +61,7 @@ const TAB_GROUPS: TabGroup[] = [
       { key: 'members', icon: Users },
       { key: 'rewards', icon: Gift },
       { key: 'gamification', icon: Sparkles },
+      { key: 'campaigns', icon: Megaphone },
     ],
   },
 ];
@@ -124,6 +127,8 @@ export default function AdminSettingsPage() {
         return <RewardsTab org={org} />;
       case 'gamification':
         return <GamificationTab org={org} />;
+      case 'campaigns':
+        return <CampaignsTab />;
     }
   };
 
