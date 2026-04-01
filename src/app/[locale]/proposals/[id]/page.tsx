@@ -864,7 +864,7 @@ export default function ProposalDetailPage() {
                 comments.map((comment) => {
                   const commentVersion = comment.proposal_versions?.version_number ?? 1;
                   const outdated = commentVersion < currentVersionNumber;
-                  const displayName = comment.user_profiles.display_name;
+                  const displayName = comment.user_profiles.name;
                   const organicId = comment.user_profiles.organic_id;
 
                   // Task 10: show "Display Name · Organic #ID" format
