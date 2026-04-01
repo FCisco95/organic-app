@@ -156,9 +156,6 @@ export function useProposalComments(proposalId: string) {
         .select(
           `
           *,
-          proposal_versions!comments_proposal_version_id_fkey(
-            version_number
-          ),
           user_profiles!comments_user_id_fkey(
             organic_id,
             email,
@@ -171,7 +168,10 @@ export function useProposalComments(proposalId: string) {
         .order('created_at', { ascending: true });
 
       if (error) throw error;
-      return data as unknown as ProposalComment[];
+      return (data ?? []).map((c) => ({
+        ...c,
+        proposal_versions: null,
+      })) as unknown as ProposalComment[];
     },
     enabled: !!proposalId,
   });
