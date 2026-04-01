@@ -3541,6 +3541,24 @@
       "step4Desc": "Sort by Hot, New, Top This Week, or Top All Time. The Trending tab highlights ideas gaining rapid momentum.",
       "step5Title": "Promotion to Proposal",
       "step5Desc": "When an idea has enough traction, the author can promote it to a formal proposal. This carries over the discussion context and community support signals."
+    },
+    "Posts": {
+      "step1Title": "Points & XP — Two Currencies",
+      "step1Desc": "Points are your spendable currency — earn them from tasks, quests, and organic posts. Claim them for ORG tokens when ready. XP tracks your growth — everything earns XP, and leveling up unlocks airdrops, NFTs, and access to higher-value tasks.",
+      "step2Title": "Earning Points",
+      "step2Desc": "Complete bounty tasks, post organic content, and let the community engage with your posts. Daily and weekly quests also reward points. Organic posts earn bonus points when others like and comment.",
+      "step3Title": "Spending Points",
+      "step3Desc": "Creating non-organic posts costs points (keeping the feed spam-free). You can also promote your posts for extra visibility — promoted posts get highlighted and earn bonus rewards from engagement.",
+      "step4Title": "Organic Posts — Free & Rewarding",
+      "step4Desc": "Posts about Organic DAO get 3 free per week and earn bonus rewards. Toggle \"Organic-related\" in the composer. The community can flag posts that aren't truly organic — 3 flags removes the bonus.",
+      "step5Title": "Getting Started",
+      "step5Desc": "New to the community? Start with free organic posts, engage with others, and check the quests page. Your first task bounty will give you enough points to start creating paid content and promoting posts."
+    },
+    "Marketplace": {
+      "step1Title": "Boost Your Tweets",
+      "step1Desc": "The Engagement Marketplace lets you spend points to boost your tweets. Other members earn points by engaging with your content — likes, retweets, and comments. Points are held in escrow and paid out when engagement is verified.",
+      "step2Title": "Earning by Engaging",
+      "step2Desc": "Browse active boosts and engage with tweets to earn points. Submit proof of your engagement (like, retweet, or comment) and receive points once verified. The more you engage, the more you earn."
     }
   },
   "Earn": {

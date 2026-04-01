@@ -209,6 +209,7 @@ function CapacityPlanningVisual() {
 /* ------------------------------------------------------------------ */
 export const guide: PageGuide = {
   title: 'Sprints',
+  i18nSection: 'Sprints',
   steps: [
     {
       title: 'Sprint Overview',

@@ -3638,6 +3638,24 @@
       "step4Desc": "Ordena por Populares, Novas, Top da Semana ou Top de Sempre. O separador Tendências destaca ideias com impulso rápido.",
       "step5Title": "Promoção a Proposta",
       "step5Desc": "Quando uma ideia tem tração suficiente, o autor pode promovê-la a proposta formal. Isto transporta o contexto da discussão e sinais de apoio da comunidade."
+    },
+    "Posts": {
+      "step1Title": "Pontos e XP — Duas Moedas",
+      "step1Desc": "Os pontos são a tua moeda gastável — ganha-os com tarefas, missões e publicações orgânicas. Reclama-os por tokens ORG quando quiseres. O XP acompanha o teu crescimento — tudo ganha XP, e subir de nível desbloqueia airdrops, NFTs e acesso a tarefas de maior valor.",
+      "step2Title": "Ganhar Pontos",
+      "step2Desc": "Completa tarefas de recompensa, publica conteúdo orgânico e deixa a comunidade interagir com as tuas publicações. Missões diárias e semanais também recompensam pontos.",
+      "step3Title": "Gastar Pontos",
+      "step3Desc": "Criar publicações não-orgânicas custa pontos (mantendo o feed livre de spam). Também podes promover as tuas publicações para mais visibilidade — publicações promovidas são destacadas e ganham recompensas bónus.",
+      "step4Title": "Publicações Orgânicas — Gratuitas e Recompensadoras",
+      "step4Desc": "Publicações sobre a Organic DAO têm 3 gratuitas por semana e ganham recompensas bónus. Ativa \"Relacionado com Organic\" no compositor. A comunidade pode sinalizar publicações que não são verdadeiramente orgânicas — 3 sinalizações removem o bónus.",
+      "step5Title": "Começar",
+      "step5Desc": "Novo na comunidade? Começa com publicações orgânicas gratuitas, interage com outros e verifica a página de missões. A tua primeira tarefa de recompensa dar-te-á pontos suficientes para começar a criar conteúdo pago."
+    },
+    "Marketplace": {
+      "step1Title": "Impulsiona os Teus Tweets",
+      "step1Desc": "O Mercado de Envolvimento permite-te gastar pontos para impulsionar os teus tweets. Outros membros ganham pontos ao interagir com o teu conteúdo — gostos, retweets e comentários. Os pontos ficam em custódia e são pagos quando o envolvimento é verificado.",
+      "step2Title": "Ganhar ao Interagir",
+      "step2Desc": "Navega pelos impulsos ativos e interage com tweets para ganhar pontos. Submete prova do teu envolvimento (gosto, retweet ou comentário) e recebe pontos após verificação."
     }
   }
 }

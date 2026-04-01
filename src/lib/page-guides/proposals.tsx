@@ -239,6 +239,7 @@ function FilterDiscoveryVisual() {
 /* ------------------------------------------------------------------ */
 export const guide: PageGuide = {
   title: 'Proposals',
+  i18nSection: 'Proposals',
   steps: [
     {
       title: 'Governance Hub',

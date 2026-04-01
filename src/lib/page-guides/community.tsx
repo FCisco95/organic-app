@@ -148,6 +148,7 @@ function RankingsSystemVisual() {
 /* ------------------------------------------------------------------ */
 export const guide: PageGuide = {
   title: 'Community',
+  i18nSection: 'Community',
   steps: [
     {
       title: 'Community Hub',

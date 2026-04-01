@@ -176,6 +176,7 @@ function KpiCardsVisual() {
 /* ------------------------------------------------------------------ */
 export const guide: PageGuide = {
   title: 'Analytics',
+  i18nSection: 'Analytics',
   steps: [
     {
       title: 'Analytics Overview',

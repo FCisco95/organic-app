@@ -221,6 +221,7 @@ function FiltersAndSortingVisual() {
 /* ------------------------------------------------------------------ */
 export const guide: PageGuide = {
   title: 'Tasks',
+  i18nSection: 'Tasks',
   steps: [
     {
       title: 'Task Board Overview',
