@@ -156,7 +156,7 @@ export function useProposalComments(proposalId: string) {
         .select(
           `
           *,
-          proposal_versions(
+          proposal_versions!comments_proposal_version_id_fkey(
             version_number
           ),
           user_profiles!comments_user_id_fkey(
