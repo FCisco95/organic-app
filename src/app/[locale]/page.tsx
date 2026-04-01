@@ -120,7 +120,7 @@ export default function Home() {
             <p className="text-xs uppercase tracking-[0.18em] text-gray-400">
               {t('heroLead')}
             </p>
-            <h1 className="mt-3 text-3xl sm:text-4xl lg:text-[42px] font-bold leading-[1.1] text-white tracking-tight">
+            <h1 className="mt-3 text-2xl sm:text-3xl font-bold leading-[1.1] text-white tracking-tight">
               {t('heroTitle')}{' '}
               <span className="text-[#E8845C] animate-organic-grow inline-block">Organic</span>
             </h1>

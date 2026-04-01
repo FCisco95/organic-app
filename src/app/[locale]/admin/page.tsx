@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { PageContainer } from '@/components/layout';
+import { PageHero } from '@/components/ui/page-hero';
 import { useAuth } from '@/features/auth/context';
 import { AdminTimeline } from '@/components/admin/admin-timeline';
 
@@ -164,23 +165,17 @@ export default function AdminDashboardPage() {
   return (
     <PageContainer width="wide">
       <div className="space-y-6" data-testid="admin-dashboard-page">
-        {/* Header */}
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-organic-terracotta/10">
-            <LayoutDashboard className="h-5 w-5 text-organic-terracotta" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold tracking-tight text-foreground">
-                {t('title')}
-              </h1>
-              <span className="inline-flex items-center rounded-full bg-organic-terracotta/10 px-2 py-0.5 text-xs font-medium text-organic-terracotta">
-                {profile?.role}
-              </span>
-            </div>
-            <p className="text-sm text-muted-foreground">{t('subtitle')}</p>
-          </div>
-        </div>
+        <PageHero
+          icon={Settings}
+          title={t('title')}
+          description={t('subtitle')}
+          variant="dark"
+          badge={
+            <span className="inline-flex items-center rounded-full bg-white/10 px-2 py-0.5 text-xs font-medium text-[#E8845C]">
+              {profile?.role}
+            </span>
+          }
+        />
 
         {/* KPI Cards */}
         {kpiLoading ? (

@@ -188,7 +188,8 @@
     "ranks": "Rankings",
     "earn": "Ganhar",
     "resolve": "Resolver",
-    "forProjects": "Para Projetos"
+    "forProjects": "Para Projetos",
+    "marketplace": "Impulsionar"
   },
   "Wallet": {
     "toastConnected": "Carteira conectada",
@@ -423,7 +424,23 @@
     "sidebarHotTopics": "Tópicos em Destaque",
     "emptySearchTitle": "Nenhum resultado encontrado",
     "emptySearchDescription": "Nenhuma proposta corresponde a \"{search}\". Tente uma pesquisa diferente.",
-    "emptyTitle": "Seja o primeiro a iniciar uma discussão"
+    "emptyTitle": "Seja o primeiro a iniciar uma discussão",
+    "categoryShortFeature": "Funcionalidade",
+    "categoryShortGovernance": "Governação",
+    "categoryShortTreasury": "Tesouraria",
+    "categoryShortCommunity": "Comunidade",
+    "categoryShortDevelopment": "Desenvolvimento",
+    "infoSection1Title": "Como Funcionam as Propostas",
+    "infoSection1Point1": "**As propostas são o coração da governação.** Qualquer membro com um ID Orgânico pode submeter uma proposta para sugerir funcionalidades, alocar fundos da tesouraria ou definir a direção da DAO.",
+    "infoSection1Point2": "Cada proposta passa por fases: **Pública → Qualificada → Discussão → Votação → Finalizada.** O envolvimento da comunidade em cada fase determina o que avança.",
+    "infoSection1Point3": "As propostas que chegam à fase de votação são decididas por toda a comunidade. Um membro, um voto — transparente e registado.",
+    "infoSection2Title": "O Teu Papel",
+    "infoSection2Point1": "**Vota em propostas ativas** para moldar o futuro da DAO. Cada voto ganha XP e avança-te no percurso de governação.",
+    "infoSection2Point2": "**Comenta nas discussões** para refinar propostas antes da votação. Feedback construtivo é recompensado com XP.",
+    "infoSection2Point3": "**Submete as tuas próprias propostas** quando vires uma oportunidade de melhorar a DAO. Boas propostas começam com um problema claro e uma solução concreta.",
+    "infoSection3Title": "Dicas",
+    "infoSection3Point1": "Usa os **filtros de categoria** para te focares no que te interessa — propostas de Tesouraria, Governação, Comunidade, Desenvolvimento ou Funcionalidade.",
+    "infoSection3Point2": "A **Barra Lateral de Governação** mostra o pulso da atividade atual — temas quentes, distribuição por fase e tendências de envolvimento da comunidade."
   },
   "ProposalCreate": {
     "toastMustBeMember": "Você precisa ser membro para criar propostas",
@@ -540,7 +557,11 @@
     "nextStep1": "1. A sua proposta fica em estado de Rascunho para aperfeiçoamento",
     "nextStep2": "2. Publique-a para qualificação do conselho e feedback da comunidade",
     "nextStep3": "3. Uma vez qualificada, avança para Discussão e depois Votação",
-    "nextStep4": "4. Votos ponderados por tokens determinam o resultado"
+    "nextStep4": "4. Votos ponderados por tokens determinam o resultado",
+    "stepperLabelCategory": "Categoria",
+    "stepperLabelProblem": "Problema",
+    "stepperLabelBudget": "Orçamento",
+    "stepperLabelReview": "Revisão"
   },
   "ProposalDetail": {
     "toastLoadFailed": "Falha ao carregar proposta",
@@ -636,7 +657,16 @@
     "stageCanceled": "Cancelada",
     "mobileVote": "Votar",
     "mobileFollow": "Seguir",
-    "mobileEdit": "Editar"
+    "mobileEdit": "Editar",
+    "accordionGovernanceStatus": "Estado da Governação",
+    "accordionGovernanceStatusCollapsed": "Estado: {status}",
+    "accordionVersionProvenance": "Histórico de Versões",
+    "accordionVersionCollapsed": "Versão {version}",
+    "accordionDelegationCollapsed": "Definições de delegação",
+    "accordionVoteDelegation": "Delegação de Voto",
+    "commentAuthorFormat": "{displayName} #{id}",
+    "railExecutionStatus": "Estado de Execução",
+    "voteFabLabel": "Votar nesta proposta"
   },
   "Sprints": {
     "title": "Sprints",
@@ -1531,7 +1561,12 @@
     "toastTwitterUnlinked": "Conta Twitter/X desligada",
     "toastFailedUnlinkTwitter": "Falha ao desligar conta Twitter/X",
     "twitterConnectHeading": "Conecte a sua conta X",
-    "twitterConnectValueProp": "Vincule a sua conta X para verificar tarefas de engajamento e construir a sua reputação on-chain."
+    "twitterConnectValueProp": "Vincule a sua conta X para verificar tarefas de engajamento e construir a sua reputação on-chain.",
+    "tabAccount": "Conta",
+    "tabSocial": "Redes Sociais",
+    "tabWallet": "Carteira e Segurança",
+    "tabNotifications": "Notificações",
+    "save": "Guardar"
   },
   "Gamification": {
     "title": "Progressão",
@@ -1617,7 +1652,12 @@
         "title": "Mestre de sequência",
         "description": "Mantenha uma sequência de atividade de 30 dias."
       }
-    }
+    },
+    "questTableName": "Missão",
+    "questTableCadence": "Cadência",
+    "questTableProgress": "Progresso",
+    "questTableStatus": "Estado",
+    "questTableAction": "Ação"
   },
   "Voting": {
     "title": "Votação Ponderada por Tokens",
@@ -1861,7 +1901,46 @@
     "infoSection3Point1": "**As categorias de propostas revelam onde a DAO concentra atenção.** Uma distribuição saudável entre governança, tesouraria e desenvolvimento significa tomada de decisão equilibrada.",
     "infoSection3Point2": "**A participação em votações é o sinal de qualidade.** Muitas propostas com baixa adesão de votantes significa que as decisões estão a ser tomadas por um grupo pequeno — vale a pena observar.",
     "infoSection3Point3": "**A faixa de confiança no topo mostra a produtividade de 30 dias**, taxas de disputa e contagens de contribuidores ativos — a saúde da sua governança num relance.",
-    "empty": "Sem dados disponíveis ainda"
+    "empty": "Sem dados disponíveis ainda",
+    "personal": {
+      "totalXp": "XP Total",
+      "xp": "XP Total",
+      "level": "Nível",
+      "currentStreak": "Sequência",
+      "streak": "Sequência",
+      "claimablePoints": "Pontos",
+      "points": "Pontos",
+      "tasksCompleted": "Tarefas Concluídas",
+      "tasks": "Tarefas Concluídas",
+      "longestStreak": "Melhor Sequência",
+      "achievements": "Melhor Sequência",
+      "xpTrendTitle": "XP Ganho ao Longo do Tempo",
+      "xpTrendDesc": "XP diário ganho nos últimos 90 dias",
+      "xpEarned": "XP Ganho",
+      "heatmapTitle": "Mapa de Atividade",
+      "heatmapDesc": "A tua atividade diária no último ano",
+      "engagementTitle": "Detalhes de Envolvimento",
+      "engagementDesc": "As tuas publicações, comentários e gostos",
+      "posts": "Publicações",
+      "comments": "Comentários",
+      "likesGiven": "Gostos Dados",
+      "likesReceived": "Gostos Recebidos",
+      "noData": "Sem dados ainda",
+      "less": "Menos",
+      "more": "Mais"
+    },
+    "aiSummary": {
+      "title": "Resumo de Governação por IA",
+      "noSummary": "Ainda não há resumo de governação disponível. Os resumos são gerados diariamente.",
+      "insights": "Perceções",
+      "risks": "Riscos",
+      "generatedBy": "Gerado por {model}",
+      "sentiment": {
+        "healthy": "Saudável",
+        "caution": "Cautela",
+        "critical": "Crítico"
+      }
+    }
   },
   "Treasury": {
     "heroTitle": "Tesouraria da DAO",
@@ -1975,7 +2054,15 @@
     "website": "Website",
     "memberSince": "Membro desde {date}",
     "totalPoints": "Total de Pontos",
-    "tasksCompleted": "Tarefas Concluídas"
+    "tasksCompleted": "Tarefas Concluídas",
+    "activityAchievement": "Conquista desbloqueada",
+    "activityEmpty": "Sem atividade recente",
+    "activityLevelUp": "Subiu para o nível {level}",
+    "activityTaskCompleted": "Tarefa concluída",
+    "activityVoteCast": "Votou",
+    "contributionActivity": "Atividade de Contribuição",
+    "contributionsInYear": "{total} contribuições no último ano",
+    "heatmapTooltip": "{count} contribuições em {date}"
   },
   "Settings": {
     "title": "Definições",
@@ -2748,6 +2835,14 @@
       "memberQueueTitle": "Seu espaço de disputas",
       "memberQueueSubtitle": "Acompanhe prazos e atualizações de evidências das disputas que envolvem você.",
       "createGuardrail": "Antes de abrir, garanta que a evidência é específica, verificável e ligada aos requisitos da tarefa."
+    },
+    "tabs": {
+      "commentedAgo": "há {time}",
+      "discussionPartyOnly": "Discussão visível apenas para as partes",
+      "filterHint": "Filtrar por estado",
+      "noResolutionYet": "Ainda sem resolução",
+      "openedAgo": "Aberta há {time}",
+      "triageLabel": "Triagem"
     }
   },
   "GlobalError": {
@@ -2769,7 +2864,20 @@
     "pointsEarnedStat": "Pontos Ganhos",
     "xpLabel": "XP de referências",
     "pointsLabel": "Pontos de referências",
-    "completedOf": "{completed} de {total} concluídas"
+    "completedOf": "{completed} de {total} concluídas",
+    "earnStat": "Ganho",
+    "loadingReferrals": "A carregar referências...",
+    "shareMessage": "Junta-te a mim no Organic! Usa o meu link de referência para te registares e ambos ganhamos recompensas.",
+    "statPointsEarned": "Pontos Ganhos",
+    "statReferrals": "Referências",
+    "statXpEarned": "XP Ganho",
+    "statsStat": "Estatísticas",
+    "tierBronze": "Bronze",
+    "tierGold": "Ouro",
+    "tierLabel": "Nível",
+    "tierSilver": "Prata",
+    "yourReferralCode": "O Teu Código de Referência",
+    "yourReferralLink": "O Teu Link de Referência"
   },
   "Quests": {
     "sectionLabel": "MISSÕES",
@@ -2796,7 +2904,23 @@
     "confirmBurn": "Queimar & Subir",
     "burning": "A queimar...",
     "burnSuccess": "Subiu para o Nível {level}!",
-    "burnFailed": "Falha ao queimar pontos"
+    "burnFailed": "Falha ao queimar pontos",
+    "alreadyMaxLevel": "Já estás no nível máximo",
+    "burnDialogAvailable": "Disponível",
+    "burnDialogCancel": "Cancelar",
+    "burnDialogConfirm": "Queimar e Subir de Nível",
+    "burnDialogCost": "Custo",
+    "burnDialogFrom": "De",
+    "burnDialogPoints": "pontos",
+    "burnDialogTo": "Para",
+    "burnError": "Falha ao queimar pontos",
+    "insufficientPoints": "Pontos insuficientes para subir de nível",
+    "levelSidebarTitle": "Subir de Nível",
+    "progressLabel": "Progresso",
+    "questPoints": "pts",
+    "questXp": "XP",
+    "streak": "Sequência de {days} dias",
+    "xpProgress": "{current} / {target} XP"
   },
   "GamificationAdmin": {
     "description": "Configure missões, XP, modo de nível e programa de referência.",
@@ -2850,7 +2974,33 @@
     "referralSharePercentDescription": "Percentagem dos pontos do utilizador referido partilhada",
     "referralDuration": "Duração da Partilha",
     "referralDurationDescription": "Número de dias que a partilha de pontos está ativa",
-    "days": "dias"
+    "days": "dias",
+    "burnCostMultiplierDesc": "Multiplicador aplicado ao custo em pontos para subir de nível",
+    "cadenceDaily": "Diária",
+    "cadenceEvent": "Evento",
+    "cadenceLongTerm": "Longo prazo",
+    "cadenceWeekly": "Semanal",
+    "confirmDeleteQuest": "Tens a certeza que queres desativar esta missão?",
+    "levelingModeAuto": "Automático",
+    "levelingModeAutoDesc": "Os membros sobem de nível automaticamente ao ganhar XP",
+    "levelingModeDesc": "Controla como os membros sobem de nível",
+    "levelingModeManualBurn": "Queima Manual",
+    "levelingModeManualBurnDesc": "Os membros gastam pontos para subir de nível manualmente",
+    "noQuests": "Ainda não há missões configuradas",
+    "questEndDate": "Data de Fim",
+    "questIsActive": "Ativa",
+    "questManagementDesc": "Criar e gerir missões para membros",
+    "questMetricType": "Tipo de Métrica",
+    "questStartDate": "Data de Início",
+    "questTargetValue": "Valor Alvo",
+    "questUnit": "Unidade",
+    "referralPointSharePercent": "Percentagem de Partilha",
+    "referralSettingsDesc": "Configurar recompensas e partilha de referências",
+    "referralShareDurationDays": "Duração da Partilha (dias)",
+    "saveError": "Falha ao guardar configuração",
+    "saveQuest": "Guardar Missão",
+    "savedSuccessfully": "Configuração guardada",
+    "xpConfigurationDesc": "Definir recompensas de XP para diferentes ações"
   },
   "Onboarding": {
     "wizardTitle": "Vamos configurar tudo",
@@ -3020,7 +3170,19 @@
     "modRemove": "Remover ideia",
     "moderationSuccess": "Ação de moderação aplicada.",
     "moderationError": "Falha ao aplicar ação de moderação",
-    "removedReason": "Motivo da remoção"
+    "removedReason": "Motivo da remoção",
+    "harvestCta": "Colheita Semanal",
+    "infoSection1Title": "O Que São Ideias?",
+    "infoSection1Point1": "**As ideias são propostas ligeiras** — um espaço para lançar conceitos antes de se comprometer com uma proposta formal de governação. Pensa nisto como o quadro de brainstorming da DAO.",
+    "infoSection1Point2": "Vota nas ideias em que acreditas. As ideias mais apoiadas são **promovidas a propostas completas** e entram no processo de governação.",
+    "infoSection1Point3": "Ideias com impulso ganham XP e progresso em conquistas para os seus autores. As melhores ideias são destacadas no resumo da **Colheita Semanal**.",
+    "infoSection2Title": "Como Participar",
+    "infoSection2Point1": "**Submete ideias** sobre qualquer tema — funcionalidades, parcerias, eventos, melhorias de governação. Nenhuma ideia é pequena demais para iniciar uma conversa.",
+    "infoSection2Point2": "**Vota e comenta** para ajudar as melhores ideias a destacarem-se. O teu envolvimento aqui molda diretamente o que a DAO trabalha a seguir.",
+    "infoSection2Point3": "Consulta o separador **Tendências** para ver o que está a gerar interesse, ou navega em **Promovidas** para ver quais ideias se tornaram propostas.",
+    "infoSection3Title": "Ganhar Recompensas",
+    "infoSection3Point1": "Criar ideias, votar e comentar ganha **XP e progresso em missões.** Missões diárias como \"Partilhar uma Ideia\" e \"Votar em Ideias\" recompensam participação consistente.",
+    "infoSection3Point2": "A missão **Campeão de Ideias** recompensa ter uma ideia promovida a proposta — a validação máxima da tua comunidade."
   },
   "Community": {
     "title": "Comunidade",
@@ -3053,7 +3215,18 @@
     "statTotalPoints": "Pontos Totais",
     "statTasksCompleted": "Tarefas Feitas",
     "statRank": "Posição",
-    "statLevel": "Nível"
+    "statLevel": "Nível",
+    "infoSection1Title": "Classificações da Comunidade",
+    "infoSection1Point1": "**As classificações refletem contribuições reais, não apenas atividade.** O XP ganho em tarefas, governação e envolvimento comunitário determina a tua posição no ranking.",
+    "infoSection1Point2": "Os níveis desbloqueiam novas capacidades — níveis mais altos podem criar propostas, moderar conteúdo e aceder a missões exclusivas.",
+    "infoSection1Point3": "A tua classificação atualiza-se em tempo real à medida que tu e outros ganham XP. Cada ação conta.",
+    "infoSection2Title": "Diretório de Membros",
+    "infoSection2Point1": "**Navega pela lista completa de membros** para encontrar colaboradores, ver quem está ativo e explorar perfis individuais com histórico de contribuições.",
+    "infoSection2Point2": "Cada cartão de membro mostra o seu papel, nível, XP e atividade recente — um resumo rápido do seu envolvimento na DAO.",
+    "infoSection3Title": "Subir nas Classificações",
+    "infoSection3Point1": "**Completa tarefas** para os maiores ganhos de XP. Tarefas de desenvolvimento, conteúdo e design contribuem todas para a tua classificação.",
+    "infoSection3Point2": "**Participa na governação** — votar, comentar e propor ideias ganha XP e melhora a tua posição.",
+    "streakers": "{count} sequências ativas"
   },
   "NotFound": {
     "heading": "Perdido no jardim?",
@@ -3266,5 +3439,205 @@
     "promoteSuccess": "Publicacao promovida!",
     "promoteError": "Falha ao promover publicacao",
     "organicBonusRevoked": "Bonus organico removido por denuncias da comunidade"
+  },
+  "Harvest": {
+    "title": "Colheita Semanal",
+    "subtitle": "Um olhar curado sobre as melhores ideias da semana, principais contribuidores e impulso da comunidade.",
+    "backToIdeas": "Voltar às ideias",
+    "disabledTitle": "Incubadora de ideias desativada",
+    "disabledDescription": "Ativa a funcionalidade para aceder a esta página.",
+    "winnerTitle": "Ideia da Semana",
+    "unknownAuthor": "Membro desconhecido",
+    "noWinner": "Ainda não foram submetidas ideias esta semana. Sê o primeiro!",
+    "contributorsTitle": "Principais Contribuidores",
+    "noContributors": "Ainda não foi ganho XP esta semana.",
+    "statVotes": "Votos esta semana",
+    "statIdeas": "Novas ideias",
+    "statStreaks": "Sequências ativas",
+    "nextWeekTitle": "Desafio da próxima semana",
+    "nextWeekDescription": "Partilha uma ideia e obtém 3 votos positivos para ganhar o bónus da missão Voz da Comunidade. O principal contribuidor ganha um distintivo de destaque!",
+    "infoSection1Title": "A Colheita Semanal",
+    "infoSection1Point1": "**Todas as semanas, as melhores ideias são destacadas aqui.** A ideia vencedora, os principais contribuidores e as estatísticas da comunidade são reunidas numa única página.",
+    "infoSection1Point2": "É aqui que o impulso se torna visível — vê quem está a impulsionar a DAO e que conceitos estão a ganhar tração.",
+    "infoSection2Title": "Como Ser Destacado",
+    "infoSection2Point1": "**Submete ideias que ressoem.** As ideias com mais votos positivos e envolvimento sobem ao topo do destaque semanal.",
+    "infoSection2Point2": "**Mantém-te ativo.** Contribuidores consistentes que votam, comentam e propõem ideias ganham reconhecimento no destaque e XP bónus."
+  },
+  "Marketplace": {
+    "title": "Mercado de Envolvimento",
+    "description": "Impulsiona os teus tweets gastando pontos. Outros membros ganham pontos ao interagir com o teu conteúdo — gostos, retweets e comentários.",
+    "tabActive": "Impulsos Ativos",
+    "tabMyBoosts": "Os Meus Impulsos",
+    "createBoost": "Criar Impulso",
+    "createBoostTitle": "Criar um Impulso",
+    "tweetUrlLabel": "URL do Tweet",
+    "pointsLabel": "Pontos a Oferecer",
+    "pointsHint": "Os pontos ficam em custódia e são pagos aos participantes. Mín. 5, máx. 1000.",
+    "maxEngagementsLabel": "Máximo de Interações",
+    "points": "pts",
+    "viewTweet": "Ver Tweet",
+    "engage": "Interagir",
+    "cancel": "Cancelar",
+    "cancelAction": "Cancelar",
+    "creating": "A criar...",
+    "submitting": "A submeter...",
+    "submitProofTitle": "Submeter Prova de Interação",
+    "submitProof": "Submeter Prova",
+    "proofTypeLabel": "Tipo de Interação",
+    "proofType": {
+      "like": "Gosto",
+      "retweet": "Retweet",
+      "comment": "Comentário"
+    },
+    "proofUrlLabel": "URL da Prova (opcional)",
+    "proofUrlPlaceholder": "Link para a tua interação",
+    "proofUrlHint": "Opcional: link para o teu retweet ou comentário para verificação.",
+    "noActiveBoosts": "Não há impulsos ativos neste momento. Sê o primeiro a criar um!",
+    "noMyBoosts": "Ainda não criaste nenhum impulso.",
+    "disabledTitle": "Mercado Em Breve",
+    "disabledDesc": "O mercado de envolvimento ainda não está disponível. Volta mais tarde!",
+    "status": {
+      "pending": "Pendente",
+      "active": "Ativo",
+      "completed": "Concluído",
+      "expired": "Expirado",
+      "cancelled": "Cancelado"
+    }
+  },
+  "PageGuides": {
+    "Dashboard": {
+      "step1Title": "Bem-vindo ao Organic",
+      "step1Desc": "O painel é a tua base. Mostra a secção principal com uma visão geral rápida do que é o Organic — uma plataforma de coordenação onde o trabalho real da comunidade é público e verificável.",
+      "step2Title": "Pulso de Confiança",
+      "step2Desc": "Quatro cartões ao vivo mostram sinais chave de saúde da DAO: a contagem regressiva do sprint atual, fases das propostas, principais contribuidores no ranking e contagem de atividade recente.",
+      "step3Title": "Navegação Rápida",
+      "step3Desc": "Abaixo do pulso de confiança, cartões de navegação permitem-te saltar diretamente para Tarefas, Propostas, Sprints, Análises e mais. Cada cartão mostra uma breve descrição.",
+      "step4Title": "Estado do Membro",
+      "step4Desc": "Esta secção mostra a tua identidade dentro da DAO — se estás autenticado, se tens um ID Orgânico e o teu nível de acesso à governação. Liga uma carteira com $ORG para desbloquear todas as capacidades.",
+      "step5Title": "Estatísticas de Apoio",
+      "step5Desc": "Uma barra compacta no fundo resume métricas da plataforma: total de tarefas, sprints ativos, membros e propostas."
+    },
+    "Tasks": {
+      "step1Title": "Visão Geral do Quadro de Tarefas",
+      "step1Desc": "A página de tarefas é onde todo o trabalho da DAO vive. Navega pelas tarefas abertas, filtra por categoria ou sprint e encontra trabalho adequado às tuas competências.",
+      "step2Title": "Estados das Tarefas",
+      "step2Desc": "As tarefas passam por fases: Aberta → Reclamada → Em Revisão → Aprovada. Cada estado tem código de cores para veres o progresso rapidamente.",
+      "step3Title": "Reclamar uma Tarefa",
+      "step3Desc": "Encontraste algo em que queres trabalhar? Clica no cartão da tarefa para ver detalhes e depois carrega em Reclamar. Precisas de um ID Orgânico para reclamar tarefas.",
+      "step4Title": "Submeter Trabalho",
+      "step4Desc": "Quando terminares, submete o teu trabalho para revisão. Anexa provas (links, capturas de ecrã, descrições) para que os revisores possam verificar a tua contribuição.",
+      "step5Title": "Pontos e XP",
+      "step5Desc": "Cada tarefa tem um valor em pontos. Tarefas aprovadas ganham-te XP que constrói a tua reputação e desbloqueia trabalho de nível superior.",
+      "step6Title": "Filtros e Ordenação",
+      "step6Desc": "Usa a barra de filtros para limitar tarefas por categoria, contribuidor, sprint ou termo de pesquisa. Ordena por mais recente, data limite ou valor em pontos."
+    },
+    "Proposals": {
+      "step1Title": "Centro de Governação",
+      "step1Desc": "As propostas são como a DAO toma decisões. Qualquer pessoa com um ID Orgânico pode submeter uma proposta para a comunidade considerar.",
+      "step2Title": "Ciclo de Vida da Proposta",
+      "step2Desc": "As propostas passam por fases: Pública → Qualificada → Discussão → Votação → Finalizada. Cada fase tem requisitos específicos antes de avançar.",
+      "step3Title": "Submeter uma Proposta",
+      "step3Desc": "Clica em 'Nova Proposta' para começar. Fornece um título, descrição, categoria e o que estás a propor. A comunidade vai rever e discutir antes de votar.",
+      "step4Title": "Qualificação",
+      "step4Desc": "Novas propostas precisam de envolvimento da comunidade para se qualificarem para votação. Comentários, gostos e visualizações suficientes sinalizam que a comunidade quer votar.",
+      "step5Title": "Votação",
+      "step5Desc": "Propostas qualificadas entram numa janela de votação. Detentores de tokens votam com peso proporcional aos seus $ORG. Os resultados são vinculativos.",
+      "step6Title": "Filtragem e Descoberta",
+      "step6Desc": "Ordena propostas por Novas, Populares, Mais Discutidas ou Mais Votadas. Filtra por categoria para te focares na tua área de interesse."
+    },
+    "Sprints": {
+      "step1Title": "Visão Geral dos Sprints",
+      "step1Desc": "Sprints são ciclos de execução focados onde a DAO entrega trabalho. Agrupam tarefas em períodos com datas de início e fim claras.",
+      "step2Title": "Ciclo de Vida do Sprint",
+      "step2Desc": "Os sprints progridem por fases: Planeamento → Ativo → Revisão → Janela de Disputa → Liquidação. Cada fase tem regras específicas.",
+      "step3Title": "Visualizações",
+      "step3Desc": "Alterna entre vistas de Quadro, Lista e Cronologia. O Quadro mostra colunas estilo Kanban, a Lista é compacta e a Cronologia mostra datas.",
+      "step4Title": "Avanço de Fase",
+      "step4Desc": "Os administradores avançam os sprints pelas fases. Quando um sprint passa para Revisão, todo o trabalho submetido é avaliado.",
+      "step5Title": "Planeamento de Capacidade",
+      "step5Desc": "Cada sprint tem um limite de capacidade. A barra de progresso mostra quanto do orçamento de pontos está alocado."
+    },
+    "Rewards": {
+      "step1Title": "Visão Geral das Recompensas",
+      "step1Desc": "A página de recompensas acompanha como as contribuições se transformam em pagamentos. Vê os teus pontos ganhos, reclamações pendentes e histórico de pagamentos.",
+      "step2Title": "Sistema de Pontos",
+      "step2Desc": "Tarefas aprovadas ganham-te pontos. Os pontos acumulam e tornam-se reclamáveis quando atingem o limite definido pela DAO.",
+      "step3Title": "Reclamar Recompensas",
+      "step3Desc": "Quando tiveres pontos suficientes, submete uma reclamação. A tua reclamação passa por um processo de aprovação antes do pagamento.",
+      "step4Title": "Fluxo de Aprovação",
+      "step4Desc": "As reclamações são revistas pelos membros do conselho. Reclamações aprovadas entram na fila de pagamento.",
+      "step5Title": "Histórico de Pagamentos",
+      "step5Desc": "O separador Distribuições mostra todos os pagamentos concluídos. Acompanha quando os pagamentos foram feitos, montantes e estado das transações."
+    },
+    "Disputes": {
+      "step1Title": "Sistema de Disputas",
+      "step1Desc": "As disputas existem para manter a DAO justa. Se acreditas que uma revisão de tarefa foi incorreta ou uma decisão foi injusta, podes abrir uma disputa.",
+      "step2Title": "Quando Abrir",
+      "step2Desc": "Abre uma disputa durante a janela de disputa do sprint. Precisas de apostar XP — isto previne disputas frívolas.",
+      "step3Title": "Aposta de XP",
+      "step3Desc": "Abrir uma disputa requer apostar XP. Se a disputa for aceite, recuperas a aposta mais a resolução. Se negada, perdes a aposta.",
+      "step4Title": "Processo de Arbitragem",
+      "step4Desc": "Os membros do conselho reveem as disputas e votam no resultado. O processo é transparente — todas as partes podem ver o raciocínio.",
+      "step5Title": "Resolução",
+      "step5Desc": "Uma vez completa a arbitragem, a decisão é vinculativa. Revisões de tarefas podem ser revertidas, pontos ajustados e apostas de XP liquidadas."
+    },
+    "Quests": {
+      "step1Title": "Sistema de Missões",
+      "step1Desc": "As missões são desafios gamificados que recompensam participação consistente. Completa objetivos diários, semanais e de longo prazo para ganhar XP bónus.",
+      "step2Title": "Missões Diárias",
+      "step2Desc": "Pequenas ações diárias como iniciar sessão, comentar numa proposta ou rever uma submissão de tarefa. Reiniciam a cada 24 horas.",
+      "step3Title": "Missões Semanais",
+      "step3Desc": "Objetivos maiores que abrangem uma semana: completar uma tarefa, votar em propostas ou participar em discussões.",
+      "step4Title": "Missões de Longo Prazo",
+      "step4Desc": "Missões de conquista para contribuição sustentada: completar o primeiro sprint, alcançar um nível de reputação ou atingir um marco de sequência.",
+      "step5Title": "XP e Cadência",
+      "step5Desc": "O XP das missões soma-se à tua pontuação total de reputação. O sistema de cadência recompensa consistência — manter sequências multiplica as tuas recompensas."
+    },
+    "Analytics": {
+      "step1Title": "Visão Geral de Análises",
+      "step1Desc": "As análises fornecem uma visão baseada em dados da saúde da DAO. Acompanha tendências de atividade, crescimento de membros, velocidade de tarefas e participação na governação.",
+      "step2Title": "Tendências de Atividade",
+      "step2Desc": "O gráfico de atividade mostra o volume diário/semanal — conclusões de tarefas, submissões de propostas, votos e comentários.",
+      "step3Title": "Estatísticas Pessoais",
+      "step3Desc": "Muda para o separador Pessoal para ver as tuas métricas de contribuição: tarefas concluídas, propostas votadas, XP ganho e sequência de atividade.",
+      "step4Title": "Saúde da Governação",
+      "step4Desc": "O separador Governação acompanha resultados de propostas, taxas de participação de votantes e qualidade das decisões.",
+      "step5Title": "Cartões de KPI",
+      "step5Desc": "Indicadores chave de desempenho no topo dão-te resumos instantâneos: total de membros, contribuidores ativos, tarefas neste sprint e taxa de participação na governação."
+    },
+    "Treasury": {
+      "step1Title": "Visão Geral da Tesouraria",
+      "step1Desc": "A página da tesouraria mostra como a DAO gere os seus fundos. A transparência é central no Organic — qualquer pessoa pode inspecionar saldos e princípios de alocação.",
+      "step2Title": "Saldo e Alocação",
+      "step2Desc": "Vê o saldo atual da tesouraria e como os fundos estão alocados: operações, recompensas, desenvolvimento e reservas.",
+      "step3Title": "Política de Emissão",
+      "step3Desc": "A política de emissão define como os tokens fluem da tesouraria para os contribuidores. Isto controla o ritmo de distribuição de recompensas.",
+      "step4Title": "Histórico de Transações",
+      "step4Desc": "Um registo de todos os movimentos da tesouraria — entradas, saídas, pagamentos de recompensas e despesas operacionais.",
+      "step5Title": "Transparência On-Chain",
+      "step5Desc": "As operações da tesouraria são verificáveis on-chain. A funcionalidade de premir e manter permite inspecionar detalhes sensíveis apenas quando escolheres."
+    },
+    "Community": {
+      "step1Title": "Centro da Comunidade",
+      "step1Desc": "A página da comunidade mostra as pessoas por trás da DAO. Vê quem está a contribuir, como se classificam e explora o diretório de membros.",
+      "step2Title": "Ranking",
+      "step2Desc": "As classificações baseiam-se em XP verificado ganho através de contribuições reais — não apenas tokens. O ranking atualiza em tempo real.",
+      "step3Title": "Diretório de Membros",
+      "step3Desc": "Navega por todos os membros, os seus papéis, histórico de contribuições e pontuações de reputação. Encontra colaboradores ou vê quem está ativo.",
+      "step4Title": "Sistema de Rankings",
+      "step4Desc": "Os membros são classificados pela consistência e qualidade das contribuições. O sistema recompensa participação sustentada em vez de rajadas de atividade."
+    },
+    "Ideas": {
+      "step1Title": "Incubadora de Ideias",
+      "step1Desc": "As ideias são discussões ligeiras pré-proposta. Partilha conceitos iniciais, obtém feedback da comunidade e refina antes de te comprometeres com uma proposta formal.",
+      "step2Title": "Submeter uma Ideia",
+      "step2Desc": "Publica uma ideia com título e descrição. Mantém informal — as ideias são exploratórias. A comunidade vai votar e comentar.",
+      "step3Title": "Votar em Ideias",
+      "step3Desc": "Vota positivamente nas ideias que achas que merecem atenção. A contagem de votos ajuda a destacar os conceitos mais promissores.",
+      "step4Title": "Tendências e Descoberta",
+      "step4Desc": "Ordena por Populares, Novas, Top da Semana ou Top de Sempre. O separador Tendências destaca ideias com impulso rápido.",
+      "step5Title": "Promoção a Proposta",
+      "step5Desc": "Quando uma ideia tem tração suficiente, o autor pode promovê-la a proposta formal. Isto transporta o contexto da discussão e sinais de apoio da comunidade."
+    }
   }
 }

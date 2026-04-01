@@ -10,8 +10,8 @@ export function PageGuideButton() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
-  // Strip locale prefix (e.g. /en/tasks → /tasks, /en → /)
-  const route = pathname.replace(/^\/[a-z]{2}(?=\/|$)/, '') || '/';
+  // Strip locale prefix (e.g. /en/tasks → /tasks, /pt-PT/ideas → /ideas, /zh-CN → /)
+  const route = pathname.replace(/^\/[a-z]{2}(-[A-Za-z]{2,})?(?=\/|$)/, '') || '/';
 
   const guide = getGuideForRoute(route);
   if (!guide) return null;
@@ -20,7 +20,7 @@ export function PageGuideButton() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-4 right-4 z-40 flex h-11 w-11 items-center justify-center rounded-full bg-foreground/70 backdrop-blur text-background shadow-lg hover:bg-foreground transition-colors"
+        className="fixed bottom-20 right-4 z-40 flex h-11 w-11 items-center justify-center rounded-full bg-foreground/70 backdrop-blur text-background shadow-lg hover:bg-foreground transition-colors"
         aria-label="Page guide"
       >
         <Info className="h-5 w-5" />

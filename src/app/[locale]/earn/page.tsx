@@ -6,6 +6,7 @@ import { useRouter } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
 import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
+import { PageHero } from '@/components/ui/page-hero';
 import { Sparkles, Gift, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import dynamic from 'next/dynamic';
@@ -86,15 +87,12 @@ export default function EarnPage() {
   return (
     <PageContainer layout="fluid">
       {/* Header */}
-      <div className="flex items-center gap-3 mb-6 opacity-0 animate-fade-up stagger-1">
-        <div className="flex items-center justify-center h-10 w-10 rounded-xl bg-organic-terracotta/10">
-          <Sparkles className="h-5 w-5 text-organic-terracotta" />
-        </div>
-        <div>
-          <h1 className="text-xl font-bold text-foreground">{t('title')}</h1>
-          <p className="text-sm text-muted-foreground">{t('subtitle')}</p>
-        </div>
-      </div>
+      <PageHero
+        icon={Sparkles}
+        title={t('title')}
+        description={t('subtitle')}
+        className="mb-6"
+      />
 
       {/* Main tab pills */}
       <div className="flex gap-1 p-1 rounded-lg bg-muted/50 w-fit mb-6">
@@ -121,47 +119,39 @@ export default function EarnPage() {
       {/* Rewards tab */}
       {activeTab === 'rewards' && (
         <div className="space-y-4" data-testid="earn-rewards-tab">
-          {/* TODO: Migrate to <PageHero> — has dynamic stat pills (claimable/pending/distributed) inside the hero that go beyond title+description+buttons */}
           {/* Rewards hero */}
-          <section className="rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 sm:p-8 text-white opacity-0 animate-fade-up stagger-1">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-              <div>
-                <div className="inline-flex items-center justify-center w-10 h-10 bg-white/10 rounded-xl mb-3">
-                  <Gift className="w-5 h-5 text-[#E8845C]" />
+          <PageHero
+            icon={Gift}
+            title={tRewards('title')}
+            description={tRewards('subtitle')}
+            stats={
+              rewards && (
+                <div className="flex flex-wrap gap-2">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-4 py-1.5 text-sm">
+                    <span className="font-semibold text-white">{rewards.claimable_points.toLocaleString()}</span>
+                    <span className="text-gray-400">{tRewards('overview.claimable')}</span>
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-4 py-1.5 text-sm">
+                    <span className="font-semibold text-white">{rewards.pending_claims}</span>
+                    <span className="text-gray-400">{tRewards('overview.pending')}</span>
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-4 py-1.5 text-sm">
+                    <span className="font-semibold text-white">{rewards.total_distributed.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+                    <span className="text-gray-400">{tRewards('overview.distributed')}</span>
+                  </span>
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">{tRewards('title')}</h2>
-                <p className="mt-2 text-sm sm:text-base text-gray-300 leading-relaxed max-w-2xl">{tRewards('subtitle')}</p>
-              </div>
-              <div className="flex shrink-0 items-center gap-2">
-                <button
-                  onClick={() => setClaimModalOpen(true)}
-                  disabled={!canClaim}
-                  className="flex items-center gap-2 whitespace-nowrap rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {tRewards('overview.claimButton')}
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </button>
-              </div>
-            </div>
-
-            {/* Stat pills */}
-            {rewards && (
-              <div className="mt-6 flex flex-wrap gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-4 py-1.5 text-sm">
-                  <span className="font-semibold text-white">{rewards.claimable_points.toLocaleString()}</span>
-                  <span className="text-gray-400">{tRewards('overview.claimable')}</span>
-                </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-4 py-1.5 text-sm">
-                  <span className="font-semibold text-white">{rewards.pending_claims}</span>
-                  <span className="text-gray-400">{tRewards('overview.pending')}</span>
-                </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-4 py-1.5 text-sm">
-                  <span className="font-semibold text-white">{rewards.total_distributed.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
-                  <span className="text-gray-400">{tRewards('overview.distributed')}</span>
-                </span>
-              </div>
-            )}
-          </section>
+              )
+            }
+          >
+            <button
+              onClick={() => setClaimModalOpen(true)}
+              disabled={!canClaim}
+              className="flex items-center gap-2 whitespace-nowrap rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {tRewards('overview.claimButton')}
+              <ArrowRight className="h-3.5 w-3.5" />
+            </button>
+          </PageHero>
 
           {/* Rewards sub-tabs */}
           <div className="flex flex-wrap items-center gap-1.5 border-b border-border pb-3">

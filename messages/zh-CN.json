@@ -188,7 +188,8 @@
     "ranks": "排行榜",
     "earn": "赚取",
     "resolve": "仲裁",
-    "forProjects": "合作入驻"
+    "forProjects": "合作入驻",
+    "marketplace": "推广"
   },
   "Wallet": {
     "toastConnected": "钱包已连接",
@@ -423,7 +424,23 @@
     "sidebarHotTopics": "热门话题",
     "emptySearchTitle": "未找到结果",
     "emptySearchDescription": "没有与 \"{search}\" 匹配的提案。请尝试其他搜索。",
-    "emptyTitle": "成为第一个发起讨论的人"
+    "emptyTitle": "成为第一个发起讨论的人",
+    "categoryShortFeature": "功能",
+    "categoryShortGovernance": "治理",
+    "categoryShortTreasury": "金库",
+    "categoryShortCommunity": "社区",
+    "categoryShortDevelopment": "开发",
+    "infoSection1Title": "提案运作方式",
+    "infoSection1Point1": "**提案是治理的核心。**任何拥有 Organic ID 的成员都可以提交提案，建议新功能、分配金库资金或确定 DAO 的发展方向。",
+    "infoSection1Point2": "每个提案经历多个阶段：**公开 → 达标 → 讨论 → 投票 → 完结。**社区在每个阶段的参与决定了哪些提案能够推进。",
+    "infoSection1Point3": "进入投票阶段的提案由全体社区决定。一人一票——透明且有据可查。",
+    "infoSection2Title": "你的角色",
+    "infoSection2Point1": "**为活跃提案投票**以塑造 DAO 的未来。每次投票都能获得 XP 并推进你的治理之路。",
+    "infoSection2Point2": "**参与讨论评论**以在投票前完善提案。建设性反馈将获得 XP 奖励。",
+    "infoSection2Point3": "**提交你自己的提案**——当你发现改进 DAO 的机会时。好的提案始于一个清晰的问题和一个具体的解决方案。",
+    "infoSection3Title": "使用技巧",
+    "infoSection3Point1": "使用**分类筛选器**聚焦你感兴趣的领域——金库、治理、社区、开发或功能提案。",
+    "infoSection3Point2": "**治理侧边栏**展示当前活动的脉搏——热门话题、阶段分布和社区参与趋势。"
   },
   "ProposalCreate": {
     "toastMustBeMember": "只有成员可以创建提案",
@@ -540,7 +557,11 @@
     "nextStep1": "1. 你的提案进入草稿状态，供你完善",
     "nextStep2": "2. 发布后等待理事会评估和社区反馈",
     "nextStep3": "3. 评估通过后，进入讨论和投票阶段",
-    "nextStep4": "4. 按代币权重投票决定结果"
+    "nextStep4": "4. 按代币权重投票决定结果",
+    "stepperLabelCategory": "分类",
+    "stepperLabelProblem": "问题",
+    "stepperLabelBudget": "预算",
+    "stepperLabelReview": "审核"
   },
   "ProposalDetail": {
     "toastLoadFailed": "加载提案失败",
@@ -636,7 +657,16 @@
     "stageCanceled": "已取消",
     "mobileVote": "投票",
     "mobileFollow": "关注",
-    "mobileEdit": "编辑"
+    "mobileEdit": "编辑",
+    "accordionGovernanceStatus": "治理状态",
+    "accordionGovernanceStatusCollapsed": "状态：{status}",
+    "accordionVersionProvenance": "版本历史",
+    "accordionVersionCollapsed": "版本 {version}",
+    "accordionDelegationCollapsed": "委托设置",
+    "accordionVoteDelegation": "投票委托",
+    "commentAuthorFormat": "{displayName} #{id}",
+    "railExecutionStatus": "执行状态",
+    "voteFabLabel": "为此提案投票"
   },
   "Sprints": {
     "title": "冲刺",
@@ -1531,7 +1561,12 @@
     "toastTwitterUnlinked": "Twitter/X 账号已取消关联",
     "toastFailedUnlinkTwitter": "取消关联 Twitter/X 账号失败",
     "twitterConnectHeading": "连接您的 X 账户",
-    "twitterConnectValueProp": "关联您的 X 账户以验证参与任务并建立您的链上声誉。"
+    "twitterConnectValueProp": "关联您的 X 账户以验证参与任务并建立您的链上声誉。",
+    "tabAccount": "账户",
+    "tabSocial": "社交网络",
+    "tabWallet": "钱包与安全",
+    "tabNotifications": "通知",
+    "save": "保存"
   },
   "Gamification": {
     "title": "成长进度",
@@ -1617,7 +1652,12 @@
         "title": "连胜大师",
         "description": "保持 30 天连续活跃。"
       }
-    }
+    },
+    "questTableName": "任务",
+    "questTableCadence": "周期",
+    "questTableProgress": "进度",
+    "questTableStatus": "状态",
+    "questTableAction": "操作"
   },
   "Voting": {
     "title": "代币加权投票",
@@ -1861,7 +1901,46 @@
     "infoSection3Point1": "**提案类别揭示您的 DAO 将注意力集中在哪里。**治理、财务和开发之间的健康分布意味着平衡的决策。",
     "infoSection3Point2": "**投票参与是质量信号。**提案数量多但投票率低意味着决策正在由一小群人做出——值得关注。",
     "infoSection3Point3": "**顶部的信任条显示 30 天吞吐量**、争议率和活跃贡献者数量——您的治理健康一目了然。",
-    "empty": "暂无可用数据"
+    "empty": "暂无可用数据",
+    "personal": {
+      "totalXp": "总 XP",
+      "xp": "总 XP",
+      "level": "等级",
+      "currentStreak": "连续天数",
+      "streak": "连续天数",
+      "claimablePoints": "积分",
+      "points": "积分",
+      "tasksCompleted": "已完成任务",
+      "tasks": "已完成任务",
+      "longestStreak": "最佳连续",
+      "achievements": "最佳连续",
+      "xpTrendTitle": "随时间获得的 XP",
+      "xpTrendDesc": "过去90天的每日 XP 收入",
+      "xpEarned": "获得的 XP",
+      "heatmapTitle": "活动热力图",
+      "heatmapDesc": "你过去一年的每日活动",
+      "engagementTitle": "互动详情",
+      "engagementDesc": "你的帖子、评论和点赞",
+      "posts": "帖子",
+      "comments": "评论",
+      "likesGiven": "点赞数",
+      "likesReceived": "收到的赞",
+      "noData": "暂无数据",
+      "less": "较少",
+      "more": "较多"
+    },
+    "aiSummary": {
+      "title": "AI 治理摘要",
+      "noSummary": "暂无治理摘要。摘要每日自动生成。",
+      "insights": "洞察",
+      "risks": "风险",
+      "generatedBy": "由 {model} 生成",
+      "sentiment": {
+        "healthy": "健康",
+        "caution": "谨慎",
+        "critical": "危急"
+      }
+    }
   },
   "Treasury": {
     "heroTitle": "DAO 财务",
@@ -1975,7 +2054,15 @@
     "website": "网站",
     "memberSince": "加入于 {date}",
     "totalPoints": "总积分",
-    "tasksCompleted": "已完成任务"
+    "tasksCompleted": "已完成任务",
+    "activityAchievement": "解锁成就",
+    "activityEmpty": "暂无近期活动",
+    "activityLevelUp": "升级到 {level} 级",
+    "activityTaskCompleted": "完成了一个任务",
+    "activityVoteCast": "投了一票",
+    "contributionActivity": "贡献活动",
+    "contributionsInYear": "过去一年 {total} 次贡献",
+    "heatmapTooltip": "{date} 有 {count} 次贡献"
   },
   "Settings": {
     "title": "设置",
@@ -2748,6 +2835,14 @@
       "memberQueueTitle": "你的争议工作区",
       "memberQueueSubtitle": "跟踪与你相关争议的截止时间与证据更新。",
       "createGuardrail": "提交前请确保证据具体、可核验，并与任务要求直接相关。"
+    },
+    "tabs": {
+      "commentedAgo": "{time}前",
+      "discussionPartyOnly": "讨论仅对相关方可见",
+      "filterHint": "按状态筛选",
+      "noResolutionYet": "暂无决议",
+      "openedAgo": "{time}前开启",
+      "triageLabel": "分类处理"
     }
   },
   "Referrals": {
@@ -2768,7 +2863,16 @@
     "statsStat": "统计",
     "earnStat": "收益",
     "loadingReferrals": "加载推荐数据...",
-    "shareMessage": "加入我们的DAO！使用我的推荐码获得奖励："
+    "shareMessage": "加入我们的DAO！使用我的推荐码获得奖励：",
+    "title": "邀请赚取",
+    "linkLabel": "推荐链接",
+    "codeLabel": "推荐码",
+    "copyFailed": "复制失败",
+    "xpEarnedStat": "获得的经验值",
+    "pointsEarnedStat": "获得的积分",
+    "xpLabel": "推荐获得的经验值",
+    "pointsLabel": "推荐获得的积分",
+    "completedOf": "{completed} / {total} 已完成"
   },
   "Quests": {
     "sectionLabel": "任务",
@@ -2797,7 +2901,21 @@
     "streak": "连续签到",
     "questXp": "+{xp} XP",
     "questPoints": "+{points} 积分",
-    "progressLabel": "{current} / {target}"
+    "progressLabel": "{current} / {target}",
+    "title": "任务",
+    "completed": "已完成",
+    "resetsLabel": "定期重置",
+    "streakLabel": "{days} 天连续",
+    "autoLevelHint": "升级是自动的——无需燃烧。",
+    "fromLevel": "从",
+    "toLevel": "到",
+    "burnCost": "燃烧花费",
+    "availablePoints": "可用积分",
+    "afterBurn": "燃烧后",
+    "cancel": "取消",
+    "confirmBurn": "燃烧并升级",
+    "burning": "燃烧中...",
+    "burnFailed": "积分燃烧失败"
   },
   "GamificationAdmin": {
     "questManagement": "任务管理",
@@ -2846,7 +2964,38 @@
     "referralPointSharePercent": "积分分成 %",
     "referralShareDurationDays": "分成持续天数",
     "savedSuccessfully": "保存成功",
-    "saveError": "保存失败"
+    "saveError": "保存失败",
+    "description": "配置任务、经验值设置、升级模式和推荐计划。",
+    "questManagementDescription": "创建、编辑和管理成员可用的任务。",
+    "addQuest": "添加任务",
+    "questMetric": "指标类型",
+    "questTarget": "目标",
+    "updateQuest": "更新",
+    "cancelAction": "取消",
+    "inactive": "未激活",
+    "questCreated": "任务已创建",
+    "questUpdated": "任务已更新",
+    "questDeleted": "任务已停用",
+    "questCreateFailed": "创建任务失败",
+    "questUpdateFailed": "更新任务失败",
+    "questDeleteFailed": "删除任务失败",
+    "configSaved": "游戏化配置已保存",
+    "xpPerTaskPointDescription": "每获得一个任务积分奖励的经验值",
+    "xpVoteCastDescription": "投票时奖励的经验值",
+    "xpProposalCreatedDescription": "创建提案时奖励的经验值",
+    "xpCommentCreatedDescription": "发表评论时奖励的经验值",
+    "levelingModeLabel": "模式",
+    "levelingModeDescription": "自动：随经验值升级。手动燃烧：成员消耗积分升级。",
+    "levelingAuto": "自动（默认）",
+    "levelingManualBurn": "手动燃烧",
+    "burnCostMultiplierDescription": "升级积分花费的倍数",
+    "referralEnabledDescription": "启用或禁用推荐系统",
+    "referralXpPerSignupDescription": "被推荐用户注册时推荐人获得的经验值",
+    "referralSharePercent": "积分分享百分比",
+    "referralSharePercentDescription": "被推荐用户积分与推荐人分享的百分比",
+    "referralDuration": "分享时长",
+    "referralDurationDescription": "积分分享有效的天数",
+    "days": "天"
   },
   "GlobalError": {
     "title": "出了点问题",
@@ -3021,7 +3170,19 @@
     "modRemove": "移除想法",
     "moderationSuccess": "管理操作已执行。",
     "moderationError": "管理操作执行失败",
-    "removedReason": "移除原因"
+    "removedReason": "移除原因",
+    "harvestCta": "每周精选",
+    "infoSection1Title": "什么是创意？",
+    "infoSection1Point1": "**创意是轻量级提案**——一个在正式提交治理提案之前抛出想法的空间。可以将其视为 DAO 的头脑风暴白板。",
+    "infoSection1Point2": "为你认可的创意投票。获得最多支持的创意将**晋升为正式提案**并进入治理流程。",
+    "infoSection1Point3": "有势头的创意为其作者赢得 XP 和成就进度。最佳创意会在**每周精选**摘要中被重点展示。",
+    "infoSection2Title": "如何参与",
+    "infoSection2Point1": "**提交创意**——任何主题皆可：功能、合作、活动、治理改进。没有任何想法小到不值得开启一场讨论。",
+    "infoSection2Point2": "**投票和评论**以帮助最佳创意脱颖而出。你在这里的参与直接塑造了 DAO 接下来的工作方向。",
+    "infoSection2Point3": "查看**趋势**标签了解当前热门内容，或浏览**已晋升**标签查看哪些创意已成为提案。",
+    "infoSection3Title": "获取奖励",
+    "infoSection3Point1": "创建创意、投票和评论可获得 **XP 和任务进度。**\"分享创意\"和\"为创意投票\"等每日任务奖励持续参与。",
+    "infoSection3Point2": "**创意冠军**任务奖励将创意晋升为提案——这是来自社区的最高认可。"
   },
   "Community": {
     "title": "社区",
@@ -3054,7 +3215,18 @@
     "statTotalPoints": "总积分",
     "statTasksCompleted": "已完成任务",
     "statRank": "排名",
-    "statLevel": "等级"
+    "statLevel": "等级",
+    "infoSection1Title": "社区排行",
+    "infoSection1Point1": "**排行反映真实贡献，而不仅仅是活跃度。**通过任务、治理和社区参与获得的 XP 决定你在排行榜上的位置。",
+    "infoSection1Point2": "等级解锁新能力——更高等级可以创建提案、审核内容和解锁专属任务。",
+    "infoSection1Point3": "你的排名会随着你和其他人获得 XP 而实时更新。每一个行动都很重要。",
+    "infoSection2Title": "成员目录",
+    "infoSection2Point1": "**浏览完整的成员列表**以寻找协作者，查看谁在活跃，以及探索包含贡献历史的个人档案。",
+    "infoSection2Point2": "每张成员卡片展示其角色、等级、XP 和近期活动——快速了解其在 DAO 中的参与情况。",
+    "infoSection3Title": "提升排名",
+    "infoSection3Point1": "**完成任务**以获得最多 XP。开发、内容和设计任务都计入你的排名。",
+    "infoSection3Point2": "**参与治理**——投票、评论和提出创意都能获得 XP 并提升你的排名。",
+    "streakers": "{count} 个活跃连续记录"
   },
   "NotFound": {
     "heading": "迷失在花园里？",
@@ -3267,5 +3439,205 @@
     "promoteSuccess": "帖子已推广！",
     "promoteError": "推广帖子失败",
     "organicBonusRevoked": "Organic奖励已被社区举报移除"
+  },
+  "Harvest": {
+    "title": "每周精选",
+    "subtitle": "精心策划的每周最佳创意、顶级贡献者和社区动力一览。",
+    "backToIdeas": "返回创意",
+    "disabledTitle": "创意孵化器已禁用",
+    "disabledDescription": "请启用该功能以访问此页面。",
+    "winnerTitle": "本周最佳创意",
+    "unknownAuthor": "未知成员",
+    "noWinner": "本周尚未提交任何创意。成为第一个！",
+    "contributorsTitle": "顶级贡献者",
+    "noContributors": "本周尚未获得 XP。",
+    "statVotes": "本周投票数",
+    "statIdeas": "新创意",
+    "statStreaks": "活跃连续",
+    "nextWeekTitle": "下周挑战",
+    "nextWeekDescription": "分享一个创意并获得3个赞同票，即可赢得社区之声任务奖励。顶级贡献者将获得聚光徽章！",
+    "infoSection1Title": "每周精选",
+    "infoSection1Point1": "**每周，最佳创意都会在此展示。**获胜创意、顶级贡献者和社区统计数据汇集在一个页面中。",
+    "infoSection1Point2": "这里是势头变得可见的地方——看看谁在推动 DAO 前进，哪些概念正在获得关注。",
+    "infoSection2Title": "如何被推荐",
+    "infoSection2Point1": "**提交能引起共鸣的创意。**获得最多赞同票和互动的创意将登上每周推荐榜首。",
+    "infoSection2Point2": "**保持活跃。**持续投票、评论和提出创意的贡献者将获得推荐认可和额外 XP。"
+  },
+  "Marketplace": {
+    "title": "互动市场",
+    "description": "花费积分推广你的推文。其他成员通过与你的内容互动来赚取积分——点赞、转发和评论。",
+    "tabActive": "活跃推广",
+    "tabMyBoosts": "我的推广",
+    "createBoost": "创建推广",
+    "createBoostTitle": "创建推广",
+    "tweetUrlLabel": "推文链接",
+    "pointsLabel": "提供积分",
+    "pointsHint": "积分将被托管并支付给参与者。最少5，最多1000。",
+    "maxEngagementsLabel": "最大互动数",
+    "points": "分",
+    "viewTweet": "查看推文",
+    "engage": "互动",
+    "cancel": "取消",
+    "cancelAction": "取消",
+    "creating": "创建中...",
+    "submitting": "提交中...",
+    "submitProofTitle": "提交互动证明",
+    "submitProof": "提交证明",
+    "proofTypeLabel": "互动类型",
+    "proofType": {
+      "like": "点赞",
+      "retweet": "转发",
+      "comment": "评论"
+    },
+    "proofUrlLabel": "证明链接（可选）",
+    "proofUrlPlaceholder": "你的互动链接",
+    "proofUrlHint": "可选：提供你的转发或评论链接以供验证。",
+    "noActiveBoosts": "目前没有活跃的推广。成为第一个创建者！",
+    "noMyBoosts": "你还没有创建任何推广。",
+    "disabledTitle": "市场即将上线",
+    "disabledDesc": "互动市场尚未开放，请稍后再来！",
+    "status": {
+      "pending": "待处理",
+      "active": "进行中",
+      "completed": "已完成",
+      "expired": "已过期",
+      "cancelled": "已取消"
+    }
+  },
+  "PageGuides": {
+    "Dashboard": {
+      "step1Title": "欢迎来到 Organic",
+      "step1Desc": "仪表盘是你的大本营。它展示了主要区域，快速概述 Organic 是什么——一个让社区真实工作公开透明且可验证的协作平台。",
+      "step2Title": "信任脉冲",
+      "step2Desc": "四张实时卡片展示 DAO 关键健康信号：当前冲刺倒计时、提案阶段、排行榜顶级贡献者和近期活动计数。",
+      "step3Title": "快捷导航",
+      "step3Desc": "信任脉冲下方的导航卡片可让你直接跳转到任务、提案、冲刺、分析等页面。每张卡片都有简短说明。",
+      "step4Title": "成员状态",
+      "step4Desc": "此区域展示你在 DAO 中的身份——是否已登录、是否拥有 Organic ID 以及治理访问级别。连接持有 $ORG 的钱包以解锁全部功能。",
+      "step5Title": "支撑数据",
+      "step5Desc": "底部的紧凑统计栏汇总平台指标：总任务数、活跃冲刺、成员数和提案数。"
+    },
+    "Tasks": {
+      "step1Title": "任务看板概览",
+      "step1Desc": "任务页面是 DAO 所有工作的集合地。浏览开放任务、按分类或冲刺筛选，找到适合你技能的工作。",
+      "step2Title": "任务状态",
+      "step2Desc": "任务经历多个阶段：开放 → 已认领 → 审核中 → 已批准。每个状态都有颜色编码，方便快速查看进度。",
+      "step3Title": "认领任务",
+      "step3Desc": "找到想要参与的工作？点击任务卡片查看详情，然后点击认领。认领任务需要 Organic ID。",
+      "step4Title": "提交工作",
+      "step4Desc": "完成后，将你的工作提交审核。附上证据（链接、截图、说明），以便审核者验证你的贡献。",
+      "step5Title": "积分与 XP",
+      "step5Desc": "每个任务都有积分价值。批准的任务为你赚取 XP，建立声誉并解锁更高级别的工作。",
+      "step6Title": "筛选与排序",
+      "step6Desc": "使用筛选栏按分类、贡献者、冲刺或搜索词限制任务。按最新、截止日期或积分价值排序。"
+    },
+    "Proposals": {
+      "step1Title": "治理中心",
+      "step1Desc": "提案是 DAO 做出决策的方式。任何拥有 Organic ID 的人都可以提交提案供社区审议。",
+      "step2Title": "提案生命周期",
+      "step2Desc": "提案经历多个阶段：公开 → 达标 → 讨论 → 投票 → 完结。每个阶段都有特定要求才能推进。",
+      "step3Title": "提交提案",
+      "step3Desc": "点击'新建提案'开始。提供标题、描述、分类和你的提议内容。社区将在投票前审阅和讨论。",
+      "step4Title": "达标条件",
+      "step4Desc": "新提案需要社区参与才能获得投票资格。足够的评论、点赞和浏览量表明社区希望对此投票。",
+      "step5Title": "投票",
+      "step5Desc": "达标的提案进入投票窗口。代币持有者按其 $ORG 持有量加权投票。结果具有约束力。",
+      "step6Title": "筛选与发现",
+      "step6Desc": "按最新、最热、最多讨论或最多投票排序提案。按分类筛选以聚焦你感兴趣的领域。"
+    },
+    "Sprints": {
+      "step1Title": "冲刺概览",
+      "step1Desc": "冲刺是 DAO 交付工作的集中执行周期。将任务分组到有明确开始和结束日期的时间段中。",
+      "step2Title": "冲刺生命周期",
+      "step2Desc": "冲刺按阶段推进：规划 → 进行中 → 审核 → 争议窗口 → 结算。每个阶段都有特定规则。",
+      "step3Title": "视图切换",
+      "step3Desc": "在看板、列表和时间线视图间切换。看板显示看板风格列，列表紧凑显示，时间线展示日期。",
+      "step4Title": "阶段推进",
+      "step4Desc": "管理员推进冲刺的各个阶段。当冲刺进入审核阶段时，所有已提交的工作将被评估。",
+      "step5Title": "容量规划",
+      "step5Desc": "每个冲刺都有容量上限。进度条显示已分配积分预算的使用情况。"
+    },
+    "Rewards": {
+      "step1Title": "奖励概览",
+      "step1Desc": "奖励页面跟踪贡献如何转化为收益。查看你已赚取的积分、待领取的奖励和支付历史。",
+      "step2Title": "积分系统",
+      "step2Desc": "批准的任务为你赚取积分。积分会累积，达到 DAO 设定的阈值后即可领取。",
+      "step3Title": "领取奖励",
+      "step3Desc": "当你有足够的积分时，提交领取申请。你的申请在支付前需要经过审批流程。",
+      "step4Title": "审批流程",
+      "step4Desc": "领取申请由委员会成员审核。批准的申请将进入支付队列。",
+      "step5Title": "支付历史",
+      "step5Desc": "分配标签页显示所有已完成的支付。跟踪支付时间、金额和交易状态。"
+    },
+    "Disputes": {
+      "step1Title": "争议系统",
+      "step1Desc": "争议机制确保 DAO 的公平性。如果你认为任务审核不正确或决策不公，可以发起争议。",
+      "step2Title": "何时发起",
+      "step2Desc": "在冲刺的争议窗口期间发起争议。你需要质押 XP——这可以防止轻率的争议。",
+      "step3Title": "XP 质押",
+      "step3Desc": "发起争议需要质押 XP。如果争议被接受，你将收回质押金加上解决方案。如果被拒绝，你将失去质押金。",
+      "step4Title": "仲裁流程",
+      "step4Desc": "委员会成员审查争议并对结果进行投票。整个过程透明——所有方都可以查看推理依据。",
+      "step5Title": "解决方案",
+      "step5Desc": "仲裁完成后，决定具有约束力。任务审核可被撤销、积分可被调整、XP 质押金将被结算。"
+    },
+    "Quests": {
+      "step1Title": "任务系统",
+      "step1Desc": "任务是奖励持续参与的游戏化挑战。完成每日、每周和长期目标以获得额外 XP。",
+      "step2Title": "每日任务",
+      "step2Desc": "小型每日操作，如登录、评论提案或审核任务提交。每24小时重置。",
+      "step3Title": "每周任务",
+      "step3Desc": "跨越一周的更大目标：完成一个任务、为提案投票或参与讨论。",
+      "step4Title": "长期任务",
+      "step4Desc": "持续贡献的成就任务：完成第一个冲刺、达到声誉等级或实现连续天数里程碑。",
+      "step5Title": "XP 与周期",
+      "step5Desc": "任务 XP 计入你的总声誉分数。周期系统奖励持续性——保持连续可以倍增你的奖励。"
+    },
+    "Analytics": {
+      "step1Title": "分析概览",
+      "step1Desc": "分析提供基于数据的 DAO 健康状况视图。跟踪活动趋势、成员增长、任务速度和治理参与度。",
+      "step2Title": "活动趋势",
+      "step2Desc": "活动图表显示每日/每周的活动量——任务完成、提案提交、投票和评论。",
+      "step3Title": "个人统计",
+      "step3Desc": "切换到个人标签页查看你的贡献指标：已完成任务、已投票提案、获得的 XP 和活动连续天数。",
+      "step4Title": "治理健康",
+      "step4Desc": "治理标签页跟踪提案结果、投票参与率和决策质量。",
+      "step5Title": "KPI 卡片",
+      "step5Desc": "顶部的关键绩效指标提供即时摘要：总成员数、活跃贡献者、本冲刺任务数和治理参与率。"
+    },
+    "Treasury": {
+      "step1Title": "金库概览",
+      "step1Desc": "金库页面展示 DAO 如何管理其资金。透明是 Organic 的核心——任何人都可以查看余额和分配原则。",
+      "step2Title": "余额与分配",
+      "step2Desc": "查看当前金库余额及资金分配方式：运营、奖励、开发和储备。",
+      "step3Title": "发行政策",
+      "step3Desc": "发行政策定义代币如何从金库流向贡献者，控制奖励分配的节奏。",
+      "step4Title": "交易历史",
+      "step4Desc": "所有金库变动的记录——收入、支出、奖励支付和运营费用。",
+      "step5Title": "链上透明",
+      "step5Desc": "金库操作可在链上验证。长按功能允许你在需要时检查敏感细节。"
+    },
+    "Community": {
+      "step1Title": "社区中心",
+      "step1Desc": "社区页面展示 DAO 背后的人。查看谁在贡献、他们的排名，以及浏览成员目录。",
+      "step2Title": "排行榜",
+      "step2Desc": "排名基于通过真实贡献获得的经验证 XP——不仅仅是代币。排行榜实时更新。",
+      "step3Title": "成员目录",
+      "step3Desc": "浏览所有成员、他们的角色、贡献历史和声誉分数。寻找协作者或查看谁在活跃。",
+      "step4Title": "排名体系",
+      "step4Desc": "成员按贡献的持续性和质量排名。系统奖励持续参与而非间歇性活跃。"
+    },
+    "Ideas": {
+      "step1Title": "创意孵化器",
+      "step1Desc": "创意是轻量级的提案前讨论。分享初步概念、获取社区反馈，在正式提交提案前进行完善。",
+      "step2Title": "提交创意",
+      "step2Desc": "发布一个带标题和描述的创意。保持非正式——创意是探索性的。社区会投票和评论。",
+      "step3Title": "为创意投票",
+      "step3Desc": "为你认为值得关注的创意投赞成票。投票数有助于突出最有前景的概念。",
+      "step4Title": "趋势与发现",
+      "step4Desc": "按热门、最新、本周最佳或历史最佳排序。趋势标签页突出显示快速增长的创意。",
+      "step5Title": "晋升为提案",
+      "step5Desc": "当一个创意获得足够的关注，作者可以将其晋升为正式提案。这会携带讨论上下文和社区支持信号。"
+    }
   }
 }

@@ -160,25 +160,13 @@ async function applyApiRateLimit(request: NextRequest): Promise<NextResponse | n
 }
 
 function getLocale(request: NextRequest): Locale {
-  const acceptLanguage = request.headers.get('accept-language') || '';
-  const browserLocales = acceptLanguage.split(',').map((l) => l.split(';')[0].trim());
-
-  // Check for exact match
-  for (const browserLocale of browserLocales) {
-    if ((locales as readonly string[]).includes(browserLocale)) {
-      return browserLocale as Locale;
-    }
+  // Check if user has explicitly chosen a locale (cookie set by language switcher)
+  const preferredLocale = request.cookies.get('NEXT_LOCALE')?.value;
+  if (preferredLocale && (locales as readonly string[]).includes(preferredLocale)) {
+    return preferredLocale as Locale;
   }
 
-  // Check for language match
-  for (const browserLocale of browserLocales) {
-    const baseLocale = browserLocale.split('-')[0];
-    const matchingLocale = (locales as readonly string[]).find((l) => l.startsWith(baseLocale));
-    if (matchingLocale) {
-      return matchingLocale as Locale;
-    }
-  }
-
+  // Default to English for all visitors — they can switch manually
   return defaultLocale;
 }
 

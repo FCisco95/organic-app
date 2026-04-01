@@ -12,6 +12,7 @@ interface PageHeroProps {
   badge?: React.ReactNode;
   variant?: HeroVariant;
   className?: string;
+  'data-testid'?: string;
 }
 
 const variantStyles: Record<HeroVariant, { wrapper: string; icon: string; title: string; desc: string }> = {
@@ -44,11 +45,13 @@ export function PageHero({
   badge,
   variant = 'dark',
   className,
+  'data-testid': dataTestId,
 }: PageHeroProps) {
   const styles = variantStyles[variant];
 
   return (
     <section
+      data-testid={dataTestId}
       className={cn(
         'rounded-2xl p-6 sm:p-8 opacity-0 animate-fade-up stagger-1',
         styles.wrapper,

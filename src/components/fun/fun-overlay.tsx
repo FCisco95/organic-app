@@ -19,7 +19,7 @@ export function FunOverlay() {
       {/* Toggle button — top-right of main content area, below the top bar */}
       <button
         onClick={() => setEnabled((v) => !v)}
-        className="fixed top-[4.25rem] right-6 z-30 bg-card border border-border rounded-full w-10 h-10 flex items-center justify-center text-base shadow-md hover:border-primary transition-colors"
+        className="fixed top-[4.25rem] right-6 z-[1002] bg-card border border-border rounded-full w-10 h-10 flex items-center justify-center text-base shadow-md hover:border-primary transition-colors"
         title={enabled ? 'Disable fun mode' : 'Enable fun mode'}
       >
         {enabled ? '🎮' : '🕹️'}

@@ -16,7 +16,6 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import { useAuth } from '@/features/auth/context';
-import { InfoButton } from '@/components/ui/info-button';
 import { LevelBadge } from '@/components/reputation/level-badge';
 import { formatXp, useLeaderboard, type LeaderboardEntry } from '@/features/reputation';
 import { cn } from '@/lib/utils';
@@ -312,21 +311,6 @@ export function RankingsTab() {
       row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     }
   }, [focusedIndex]);
-
-  const infoSections = [
-    {
-      title: t('infoSection1Title'),
-      points: [t('infoSection1Point1'), t('infoSection1Point2'), t('infoSection1Point3')],
-    },
-    {
-      title: t('infoSection2Title'),
-      points: [t('infoSection2Point1'), t('infoSection2Point2'), t('infoSection2Point3')],
-    },
-    {
-      title: t('infoSection3Title'),
-      points: [t('infoSection3Point1'), t('infoSection3Point2')],
-    },
-  ];
 
   const sortableHeaderClass =
     'cursor-pointer select-none hover:bg-muted/80 transition-colors rounded px-1 -mx-1 inline-flex items-center';
@@ -794,7 +778,6 @@ export function RankingsTab() {
         </ul>
       </div>
 
-      <InfoButton sections={infoSections} />
     </div>
   );
 }

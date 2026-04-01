@@ -3,6 +3,8 @@
 import { useTranslations } from 'next-intl';
 import { Rocket, Check, Mail } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { PageContainer } from '@/components/layout';
+import { PageHero } from '@/components/ui/page-hero';
 
 const TIERS = [
   { id: 'seed', emoji: '🌱', features: 6, visible: 2 },
@@ -14,26 +16,23 @@ export default function ForProjectsPage() {
   const t = useTranslations('ForProjects');
 
   return (
-    <div className="min-h-screen bg-background">
+    <PageContainer layout="fluid">
       {/* Hero */}
-      <section className="relative overflow-hidden border-b border-border">
-        <div className="absolute inset-0 bg-gradient-to-b from-organic-terracotta/5 via-transparent to-transparent" />
-        <div className="relative max-w-5xl mx-auto px-6 py-20 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-organic-terracotta/10 text-organic-terracotta text-xs font-medium mb-6">
+      <PageHero
+        icon={Rocket}
+        title={t('heroTitle')}
+        description={t('heroSubtitle')}
+        variant="dark"
+        badge={
+          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-[#E8845C] text-xs font-medium">
             <Rocket className="h-3.5 w-3.5" />
             {t('badge')}
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground tracking-tight mb-4">
-            {t('heroTitle')}
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
-            {t('heroSubtitle')}
-          </p>
-          <p className="text-sm text-muted-foreground/70">
-            {t('socialProof')}
-          </p>
-        </div>
-      </section>
+          </span>
+        }
+        stats={
+          <p className="text-sm text-gray-400">{t('socialProof')}</p>
+        }
+      />
 
       {/* Tiers */}
       <section className="max-w-5xl mx-auto px-6 py-16">
@@ -125,6 +124,6 @@ export default function ForProjectsPage() {
           </p>
         </div>
       </section>
-    </div>
+    </PageContainer>
   );
 }

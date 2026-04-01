@@ -15,10 +15,12 @@ import {
   Hash,
   Award,
   Trophy,
+  User,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
+import { PageHero } from '@/components/ui/page-hero';
 import { TwoColumnLayout } from '@/components/layout/two-column-layout';
 import { ReputationSummary } from '@/components/reputation/reputation-summary';
 import { TrophyShowcase } from '@/components/reputation/trophy-showcase';
@@ -284,81 +286,38 @@ export default function ProfilePage() {
     <PageContainer>
       <div data-testid="profile-page">
         {/* ===== HERO STRIP ===== */}
-        <div className="rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-4 sm:p-6 mb-4 text-white opacity-0 animate-fade-up stagger-1">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-            {/* Avatar + Identity */}
-            <div className="flex items-center gap-3 min-w-0 flex-1">
-              <div className="relative flex-shrink-0">
-                <div className="w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-organic-terracotta to-yellow-400 flex items-center justify-center">
-                  {profile.avatar_url ? (
-                    <Image
-                      src={profile.avatar_url}
-                      alt={profile.name || 'Profile'}
-                      width={64}
-                      height={64}
-                      className="w-full h-full object-cover"
-                      unoptimized
-                    />
-                  ) : (
-                    <span className="text-xl font-bold text-white">
-                      {(profile.name || profile.email).charAt(0).toUpperCase()}
-                    </span>
-                  )}
-                </div>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleAvatarUpload}
-                  className="hidden"
-                />
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={uploading}
-                  className="absolute -bottom-0.5 -right-0.5 p-1.5 bg-cta hover:bg-cta-hover text-cta-fg rounded-full shadow-lg transition-colors disabled:opacity-50"
-                  title={t('changeProfilePicture')}
-                  aria-label={t('changeProfilePicture')}
-                >
-                  {uploading ? (
-                    <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  ) : (
-                    <Upload className="w-3 h-3" />
-                  )}
-                </button>
-              </div>
-
-              <div className="min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white truncate">
-                    {profile.name || t('anonymousUser')}
-                  </h1>
-                  <span
-                    className={cn(
-                      'inline-flex px-2 py-0.5 rounded-md text-[11px] font-medium capitalize',
-                      profile.role === 'admin'
-                        ? 'bg-purple-100 text-purple-700'
-                        : profile.role === 'council'
-                          ? 'bg-blue-100 text-blue-700'
-                          : profile.role === 'member'
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-gray-100 text-gray-700'
-                    )}
-                  >
-                    {profile.role || t('guest')}
-                  </span>
-                  {profile.organic_id && (
-                    <span className="inline-flex items-center gap-1 text-xs font-mono text-organic-terracotta">
-                      <Hash className="w-3 h-3" />
-                      {profile.organic_id}
-                    </span>
-                  )}
-                </div>
-                <p className="text-xs text-gray-300 truncate">{profile.email}</p>
-              </div>
+        <PageHero
+          icon={User}
+          title={profile.name || t('anonymousUser')}
+          description={profile.email}
+          variant="dark"
+          className="mb-4"
+          badge={
+            <div className="flex items-center gap-2">
+              <span
+                className={cn(
+                  'inline-flex px-2 py-0.5 rounded-md text-[11px] font-medium capitalize',
+                  profile.role === 'admin'
+                    ? 'bg-purple-100 text-purple-700'
+                    : profile.role === 'council'
+                      ? 'bg-blue-100 text-blue-700'
+                      : profile.role === 'member'
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-gray-100 text-gray-700'
+                )}
+              >
+                {profile.role || t('guest')}
+              </span>
+              {profile.organic_id && (
+                <span className="inline-flex items-center gap-1 text-xs font-mono text-organic-terracotta">
+                  <Hash className="w-3 h-3" />
+                  {profile.organic_id}
+                </span>
+              )}
             </div>
-
-            {/* Stat counters — dense horizontal strip */}
-            <div className="flex items-center gap-1 flex-shrink-0">
+          }
+          stats={
+            <div className="flex items-center gap-1">
               {[
                 { label: t('totalSubmissionsLabel'), value: stats.totalSubmissions },
                 { label: t('approvedSubmissionsLabel'), value: stats.approvedSubmissions },
@@ -381,47 +340,85 @@ export default function ProfilePage() {
                 </div>
               ))}
             </div>
-
-            {/* Actions */}
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <Link
-                href="/profile/progression?from=profile"
-                data-testid="profile-progression-link"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-white/20"
-              >
-                <Award className="w-3.5 h-3.5" />
-                {t('viewProgression')}
-              </Link>
-              {!isEditing ? (
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-cta px-3 py-1.5 text-xs font-medium text-cta-fg transition-colors hover:bg-cta-hover"
-                >
-                  <Edit2 className="w-3.5 h-3.5" />
-                  {t('editProfile')}
-                </button>
+          }
+        >
+          {/* Avatar */}
+          <div className="relative flex-shrink-0">
+            <div className="w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-organic-terracotta to-yellow-400 flex items-center justify-center">
+              {profile.avatar_url ? (
+                <Image
+                  src={profile.avatar_url}
+                  alt={profile.name || 'Profile'}
+                  width={64}
+                  height={64}
+                  className="w-full h-full object-cover"
+                  unoptimized
+                />
               ) : (
-                <div className="flex gap-1.5">
-                  <button
-                    onClick={handleCancelEdit}
-                    className="inline-flex items-center gap-1 rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-medium text-white hover:bg-white/20"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                    {t('cancel')}
-                  </button>
-                  <button
-                    onClick={handleSaveProfile}
-                    disabled={saving}
-                    className="inline-flex items-center gap-1 rounded-lg bg-cta px-3 py-1.5 text-xs font-medium text-cta-fg hover:bg-cta-hover disabled:opacity-50"
-                  >
-                    <Save className="w-3.5 h-3.5" />
-                    {saving ? t('saving') : t('saveChanges')}
-                  </button>
-                </div>
+                <span className="text-xl font-bold text-white">
+                  {(profile.name || profile.email).charAt(0).toUpperCase()}
+                </span>
               )}
             </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarUpload}
+              className="hidden"
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="absolute -bottom-0.5 -right-0.5 p-1.5 bg-cta hover:bg-cta-hover text-cta-fg rounded-full shadow-lg transition-colors disabled:opacity-50"
+              title={t('changeProfilePicture')}
+              aria-label={t('changeProfilePicture')}
+            >
+              {uploading ? (
+                <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Upload className="w-3 h-3" />
+              )}
+            </button>
           </div>
-        </div>
+
+          {/* Actions */}
+          <Link
+            href="/profile/progression?from=profile"
+            data-testid="profile-progression-link"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-white/20"
+          >
+            <Award className="w-3.5 h-3.5" />
+            {t('viewProgression')}
+          </Link>
+          {!isEditing ? (
+            <button
+              onClick={() => setIsEditing(true)}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-cta px-3 py-1.5 text-xs font-medium text-cta-fg transition-colors hover:bg-cta-hover"
+            >
+              <Edit2 className="w-3.5 h-3.5" />
+              {t('editProfile')}
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={handleCancelEdit}
+                className="inline-flex items-center gap-1 rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-medium text-white hover:bg-white/20"
+              >
+                <X className="w-3.5 h-3.5" />
+                {t('cancel')}
+              </button>
+              <button
+                onClick={handleSaveProfile}
+                disabled={saving}
+                className="inline-flex items-center gap-1 rounded-lg bg-cta px-3 py-1.5 text-xs font-medium text-cta-fg hover:bg-cta-hover disabled:opacity-50"
+              >
+                <Save className="w-3.5 h-3.5" />
+                {saving ? t('saving') : t('saveChanges')}
+              </button>
+            </>
+          )}
+        </PageHero>
 
         {/* ===== MAIN LAYOUT: Tabs + Sidebar ===== */}
         <TwoColumnLayout

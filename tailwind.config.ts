@@ -44,6 +44,11 @@ const config: Config = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
+        cta: {
+          DEFAULT: 'hsl(var(--cta))',
+          hover: 'hsl(var(--cta-hover))',
+          fg: 'hsl(var(--cta-fg))',
+        },
         organic: {
           terracotta: {
             DEFAULT: '#D95D39',
