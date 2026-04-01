@@ -58,6 +58,7 @@ function EngagementTypesVisual() {
 
 export const guide: PageGuide = {
   title: 'Engagement Marketplace',
+  i18nSection: 'Marketplace',
   steps: [
     {
       title: 'Boost Your Tweets',

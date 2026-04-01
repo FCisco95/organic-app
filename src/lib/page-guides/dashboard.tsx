@@ -183,6 +183,7 @@ function StatsBarVisual() {
 /* ------------------------------------------------------------------ */
 export const guide: PageGuide = {
   title: 'Dashboard',
+  i18nSection: 'Dashboard',
   steps: [
     {
       title: 'Welcome to Organic',

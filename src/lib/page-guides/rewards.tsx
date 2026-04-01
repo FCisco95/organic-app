@@ -178,6 +178,7 @@ function PayoutHistoryVisual() {
 /* ------------------------------------------------------------------ */
 export const guide: PageGuide = {
   title: 'Rewards',
+  i18nSection: 'Rewards',
   steps: [
     {
       title: 'Rewards Overview',

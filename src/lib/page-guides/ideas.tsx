@@ -176,6 +176,7 @@ function PromotionVisual() {
 /* ------------------------------------------------------------------ */
 export const guide: PageGuide = {
   title: 'Ideas',
+  i18nSection: 'Ideas',
   steps: [
     {
       title: 'Ideas Incubator',

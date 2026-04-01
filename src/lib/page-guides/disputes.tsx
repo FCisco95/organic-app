@@ -185,6 +185,7 @@ function ResolutionVisual() {
 /* ------------------------------------------------------------------ */
 export const guide: PageGuide = {
   title: 'Disputes',
+  i18nSection: 'Disputes',
   steps: [
     {
       title: 'Dispute System',

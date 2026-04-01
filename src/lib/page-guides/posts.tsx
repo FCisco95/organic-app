@@ -166,6 +166,7 @@ function TipsVisual() {
 
 export const guide: PageGuide = {
   title: 'Posts & Points Economy',
+  i18nSection: 'Posts',
   steps: [
     {
       title: 'Points & XP — Two Currencies',

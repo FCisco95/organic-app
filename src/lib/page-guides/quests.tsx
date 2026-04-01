@@ -231,6 +231,7 @@ function XpCadenceVisual() {
 /* ------------------------------------------------------------------ */
 export const guide: PageGuide = {
   title: 'Quests',
+  i18nSection: 'Quests',
   steps: [
     {
       title: 'Quest System',

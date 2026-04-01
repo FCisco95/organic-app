@@ -171,6 +171,7 @@ function OnChainVisual() {
 /* ------------------------------------------------------------------ */
 export const guide: PageGuide = {
   title: 'Treasury',
+  i18nSection: 'Treasury',
   steps: [
     {
       title: 'Treasury Overview',
