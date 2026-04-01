@@ -46,6 +46,20 @@ All in `docs/plans/2026-03-30-*.md`: easter-egg-hunt, sprint-badge-system, dashb
 - Email: `qa-test-easter@organic-dao.dev`, Password: `QaTest2026!`
 - Email confirmed, role: admin, organic_id: 998
 
+### QA Fixes Shipped (same session, 5 commits on branch)
+
+1. `fix: reduce egg-check API call frequency` — 10s debounce, 6/min rate limit, silent fail
+2. `fix: debounce egg hunt rate sliders` — local state during drag, save on pointer release
+3. `fix: golden egg click handler` — z-index 9999, pointer-events-none on children
+4. `fix: egg claim handler` — stale closure via refs, show overlay even on API failure
+5. `fix: campaigns API` — graceful errors, actually reads egg_hunt_config.campaign_revealed
+
+### Branch Status
+
+- Branch: `phase/easter-genesis-hatch` (6 commits ahead of main)
+- Vercel Preview: active and deploying
+- Next: QA on preview → fix remaining issues → merge to main
+
 ---
 
 ## 2026-03-30 (Session: Launch Readiness — Full 2-Day Sprint)
