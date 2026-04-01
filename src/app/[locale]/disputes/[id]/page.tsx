@@ -55,7 +55,7 @@ export default function DisputeDetailPage() {
       <PageContainer layout="structured">
         <div data-testid="dispute-detail-page" className="py-20 text-center">
           <p className="text-sm text-red-600">{(error as Error)?.message || td('loadFailed')}</p>
-          <Link href="/disputes" className="mt-2 inline-block text-orange-600 hover:underline">
+          <Link href="/disputes" className="mt-2 inline-block text-organic-terracotta hover:underline">
             {td('backToDisputes')}
           </Link>
         </div>
@@ -68,7 +68,7 @@ export default function DisputeDetailPage() {
       <PageContainer layout="structured">
         <div data-testid="dispute-detail-page" className="py-20 text-center">
           <p className="text-gray-500">{td('notFound')}</p>
-          <Link href="/disputes" className="mt-2 inline-block text-orange-600 hover:underline">
+          <Link href="/disputes" className="mt-2 inline-block text-organic-terracotta hover:underline">
             {td('backToDisputes')}
           </Link>
         </div>

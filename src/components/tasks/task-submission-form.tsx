@@ -37,7 +37,7 @@ export function TaskSubmissionForm({
 
   return (
     <div
-      className={cn('bg-white rounded-lg border border-gray-200 p-6', className)}
+      className={cn('bg-white rounded-lg border border-border p-6', className)}
       data-testid="task-submission-form"
     >
       <h3 className="text-lg font-semibold text-gray-900 mb-4">

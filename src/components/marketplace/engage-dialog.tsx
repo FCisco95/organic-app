@@ -63,7 +63,7 @@ export function EngageDialog({ open, boostId, onClose }: EngageDialogProps) {
                   className={cn(
                     'flex flex-col items-center gap-1.5 rounded-lg border p-3 transition-colors',
                     proofType === type
-                      ? 'border-orange-500 bg-orange-50 dark:bg-orange-500/10'
+                      ? 'border-organic-terracotta bg-organic-terracotta-lightest dark:bg-organic-terracotta-lightest0/10'
                       : 'border-border hover:bg-muted'
                   )}
                 >
@@ -84,7 +84,7 @@ export function EngageDialog({ open, boostId, onClose }: EngageDialogProps) {
               value={proofUrl}
               onChange={(e) => setProofUrl(e.target.value)}
               placeholder={t('proofUrlPlaceholder')}
-              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/50"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-organic-terracotta/50"
             />
             <p className="text-[11px] text-muted-foreground mt-1">{t('proofUrlHint')}</p>
           </div>
@@ -104,7 +104,7 @@ export function EngageDialog({ open, boostId, onClose }: EngageDialogProps) {
             <button
               type="submit"
               disabled={isPending}
-              className="flex-1 rounded-lg bg-orange-500 text-white py-2 text-sm font-medium hover:bg-orange-600 disabled:opacity-50 transition-colors"
+              className="flex-1 rounded-lg bg-cta text-cta-fg py-2 text-sm font-medium hover:bg-cta-hover disabled:opacity-50 transition-colors"
             >
               {isPending ? t('submitting') : t('submitProof')}
             </button>

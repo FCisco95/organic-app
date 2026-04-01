@@ -38,9 +38,9 @@ export function WeeklyHarvest({ data, isLoading }: WeeklyHarvestProps) {
   return (
     <div className="space-y-6">
       {/* ── Winner Spotlight ─────────────────────────────────── */}
-      <section className="rounded-2xl bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 border border-orange-200/60 p-6">
+      <section className="rounded-2xl bg-gradient-to-br from-organic-terracotta-lightest via-amber-50 to-yellow-50 border border-organic-terracotta-light/60 p-6">
         <div className="flex items-center gap-2 mb-4">
-          <Crown className="h-5 w-5 text-orange-500" />
+          <Crown className="h-5 w-5 text-organic-terracotta" />
           <h2 className="text-lg font-bold text-foreground">{t('winnerTitle')}</h2>
         </div>
 
@@ -48,7 +48,7 @@ export function WeeklyHarvest({ data, isLoading }: WeeklyHarvestProps) {
           <div className="space-y-3">
             <Link
               href={`/ideas/${winner.id}`}
-              className="block text-xl font-bold text-foreground hover:text-orange-600 transition-colors"
+              className="block text-xl font-bold text-foreground hover:text-organic-terracotta transition-colors"
             >
               {winner.title}
             </Link>
@@ -58,7 +58,7 @@ export function WeeklyHarvest({ data, isLoading }: WeeklyHarvestProps) {
             <div className="flex items-center gap-4 pt-2">
               <div className="flex items-center gap-2">
                 <Avatar className="h-7 w-7">
-                  <AvatarFallback className="bg-orange-100 text-[10px] font-semibold text-orange-700">
+                  <AvatarFallback className="bg-organic-terracotta-light/30 text-[10px] font-semibold text-organic-terracotta-hover">
                     {getInitials(winner.author?.name, winner.author?.email)}
                   </AvatarFallback>
                 </Avatar>
@@ -81,8 +81,8 @@ export function WeeklyHarvest({ data, isLoading }: WeeklyHarvestProps) {
             </div>
           </div>
         ) : (
-          <div className="rounded-xl border border-dashed border-orange-200 p-8 text-center">
-            <Lightbulb className="mx-auto h-8 w-8 text-orange-300" />
+          <div className="rounded-xl border border-dashed border-organic-terracotta-light p-8 text-center">
+            <Lightbulb className="mx-auto h-8 w-8 text-[#E8845C]" />
             <p className="mt-2 text-sm text-muted-foreground">{t('noWinner')}</p>
           </div>
         )}
@@ -139,7 +139,7 @@ export function WeeklyHarvest({ data, isLoading }: WeeklyHarvestProps) {
           <p className="text-xs text-muted-foreground">{t('statVotes')}</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4 text-center">
-          <Lightbulb className="mx-auto h-5 w-5 text-orange-500" />
+          <Lightbulb className="mx-auto h-5 w-5 text-organic-terracotta" />
           <p className="mt-2 font-mono text-2xl font-bold text-foreground">{stats?.new_ideas ?? 0}</p>
           <p className="text-xs text-muted-foreground">{t('statIdeas')}</p>
         </div>

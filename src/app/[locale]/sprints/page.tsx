@@ -40,6 +40,7 @@ import { SprintStartDialog } from '@/components/sprints/sprint-start-dialog';
 import { SprintCompleteDialog } from '@/components/sprints/sprint-complete-dialog';
 import { PageContainer } from '@/components/layout';
 import { FetchErrorBanner } from '@/components/ui/fetch-error-banner';
+import { PageHero } from '@/components/ui/page-hero';
 
 export default function SprintsPage() {
   const { profile } = useAuth();
@@ -621,19 +622,12 @@ export default function SprintsPage() {
       {sprintsFetchError && <FetchErrorBanner onRetry={() => refetchSprints()} />}
 
       {/* Dark hero */}
-      <section
-        className="rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 sm:p-8 text-white opacity-0 animate-fade-up stagger-1"
-        data-testid="sprints-command-header"
+      <PageHero
+        icon={Milestone}
+        title={t('title')}
+        description={t('subtitle')}
       >
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <div className="inline-flex items-center justify-center w-10 h-10 bg-white/10 rounded-xl mb-3">
-              <Milestone className="w-5 h-5 text-orange-400" />
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{t('title')}</h1>
-            <p className="mt-2 text-sm sm:text-base text-gray-300 leading-relaxed max-w-2xl">{t('subtitle')}</p>
-          </div>
-        <div className="flex flex-wrap items-center gap-2 sm:shrink-0">
+        <div className="flex flex-wrap items-center gap-2">
           {showStartButton && (
             <button
               onClick={() => setShowStartDialog(true)}
@@ -680,15 +674,14 @@ export default function SprintsPage() {
             </button>
           )}
         </div>
-        </div>
-      </section>
+      </PageHero>
 
       {/* GitHub-style horizontal phase progress bar */}
       <div
-        className="rounded-md border border-gray-200 bg-white"
+        className="rounded-md border border-border bg-white"
         data-testid="sprints-command-deck"
       >
-        <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3">
+        <div className="flex items-center justify-between border-b border-border px-4 py-3">
           <div className="flex items-center gap-2">
             <p className="text-sm font-medium text-gray-700">{t('phaseRailTitle')}</p>
             {referenceSprint && (
@@ -718,9 +711,9 @@ export default function SprintsPage() {
                     index < SPRINT_PHASE_SEQUENCE.length - 1 ? 'mr-0.5' : ''
                   } ${
                     isComplete
-                      ? 'bg-orange-400'
+                      ? 'bg-organic-terracotta'
                       : isCurrent
-                        ? 'animate-pulse bg-orange-500'
+                        ? 'animate-pulse bg-organic-terracotta-lightest0'
                         : 'bg-gray-200'
                   }`}
                   title={t(`status.${phase}`)}
@@ -737,9 +730,9 @@ export default function SprintsPage() {
                   key={phase}
                   className={`text-[10px] font-medium ${
                     isCurrent
-                      ? 'text-orange-600'
+                      ? 'text-organic-terracotta'
                       : isComplete
-                        ? 'text-orange-600'
+                        ? 'text-organic-terracotta'
                         : 'text-gray-400'
                   }`}
                 >
@@ -784,7 +777,7 @@ export default function SprintsPage() {
           <p className="mt-4 text-sm text-gray-500">{t('loading')}</p>
         </div>
       ) : sprints.length === 0 ? (
-        <div className="rounded-md border border-gray-200 bg-white py-16 text-center">
+        <div className="rounded-md border border-border bg-white py-16 text-center">
           <Milestone className="mx-auto mb-3 h-12 w-12 text-gray-300" />
           <h3 className="text-base font-medium text-gray-900">{t('emptyTitle')}</h3>
           <p className="mt-1 text-sm text-gray-500">
@@ -793,7 +786,7 @@ export default function SprintsPage() {
           {canCreateSprint && (
             <button
               onClick={() => setShowCreateModal(true)}
-              className="mt-4 inline-flex items-center gap-1.5 rounded-md border border-organic-orange bg-organic-orange px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-600"
+              className="mt-4 inline-flex items-center gap-1.5 rounded-md border border-cta bg-cta px-4 py-2 text-sm font-medium text-cta-fg transition-colors hover:bg-cta-hover"
             >
               <Plus className="h-4 w-4" />
               {t('createFirstSprint')}
@@ -803,7 +796,7 @@ export default function SprintsPage() {
       ) : (
         <>
           {/* GitHub-style underline tabs */}
-          <div className="border-b border-gray-200" data-testid="sprints-view-tabs">
+          <div className="border-b border-border" data-testid="sprints-view-tabs">
             <nav className="-mb-px flex gap-6">
               {(['board', 'list', 'timeline'] as const).map((view) => (
                 <button
@@ -811,7 +804,7 @@ export default function SprintsPage() {
                   onClick={() => setActiveView(view)}
                   className={`whitespace-nowrap border-b-2 px-1 pb-2.5 pt-1 text-sm font-medium transition-colors ${
                     activeView === view
-                      ? 'border-orange-500 text-gray-900'
+                      ? 'border-organic-terracotta text-gray-900'
                       : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                   }`}
                 >

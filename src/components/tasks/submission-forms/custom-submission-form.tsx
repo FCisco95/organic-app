@@ -62,7 +62,7 @@ export function CustomSubmissionForm({ task, onSuccess, onCancel }: SubmissionFo
             {...register('custom_fields.link')}
             type="url"
             placeholder={t('workLinkPlaceholder')}
-            className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
+            className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent"
           />
         </div>
       </div>
@@ -75,7 +75,7 @@ export function CustomSubmissionForm({ task, onSuccess, onCancel }: SubmissionFo
           {...register('description')}
           rows={4}
           placeholder={t('descriptionGenericPlaceholder')}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent resize-none"
         />
       </div>
 

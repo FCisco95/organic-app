@@ -58,16 +58,16 @@ export function StageStepper({ currentStatus }: StageStepperProps) {
             {index > 0 && (
               <div
                 className={`w-6 h-0.5 mx-0.5 ${
-                  isPast ? 'bg-organic-orange' : 'bg-gray-200'
+                  isPast ? 'bg-cta' : 'bg-gray-200'
                 }`}
               />
             )}
             <div
               className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
                 isCurrent
-                  ? 'bg-organic-orange text-white'
+                  ? 'bg-cta text-cta-fg'
                   : isPast
-                    ? 'bg-orange-100 text-orange-700'
+                    ? 'bg-organic-terracotta-light/30 text-organic-terracotta-hover'
                     : 'bg-gray-100 text-gray-400'
               }`}
             >

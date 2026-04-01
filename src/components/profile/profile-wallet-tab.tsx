@@ -263,7 +263,7 @@ export function ProfileWalletTab({ profile, userId, refreshProfile }: ProfileWal
               {tokenBalance !== null && connected && publicKey && !walletMismatch && (
                 <div className="flex items-center">
                   <span className="text-[10px] uppercase tracking-wider text-muted-foreground mr-2">{t('orgBalance')}</span>
-                  <span className="text-sm font-bold font-mono text-organic-orange">
+                  <span className="text-sm font-bold font-mono text-organic-terracotta">
                     {tokenBalance.toFixed(2)}
                   </span>
                 </div>
@@ -276,7 +276,7 @@ export function ProfileWalletTab({ profile, userId, refreshProfile }: ProfileWal
           <button
             onClick={handleLinkWallet}
             disabled={linkingWallet}
-            className="w-full bg-organic-orange hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+            className="w-full bg-cta hover:bg-cta-hover text-cta-fg font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
           >
             {linkingWallet ? t('linkingWallet') : t('linkWalletToProfile')}
           </button>
@@ -285,7 +285,7 @@ export function ProfileWalletTab({ profile, userId, refreshProfile }: ProfileWal
 
       {/* Organic ID assignment */}
       {profile.wallet_pubkey && !profile.organic_id && (
-        <div className="rounded-xl border border-organic-orange/30 bg-organic-orange/5 p-5">
+        <div className="rounded-xl border border-organic-terracotta/30 bg-organic-terracotta/5 p-5">
           <h2 className="text-sm font-semibold text-foreground mb-1">{t('getYourOrganicId')}</h2>
           <p className="text-xs text-muted-foreground mb-3">{t('holdTokensDescription')}</p>
 
@@ -304,7 +304,7 @@ export function ProfileWalletTab({ profile, userId, refreshProfile }: ProfileWal
           <button
             onClick={handleGetOrganicId}
             disabled={gettingOrganicId}
-            className="bg-organic-orange hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+            className="bg-cta hover:bg-cta-hover text-cta-fg font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
           >
             {gettingOrganicId ? t('verifying') : t('getOrganicId')}
           </button>

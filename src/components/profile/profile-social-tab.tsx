@@ -207,7 +207,7 @@ export function ProfileSocialTab({
                   value={editForm.location}
                   onChange={(e) => setEditForm({ ...editForm, location: e.target.value })}
                   placeholder={t('locationPlaceholder')}
-                  className="w-full pl-10 pr-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent bg-background text-foreground"
+                  className="w-full pl-10 pr-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent bg-background text-foreground"
                   maxLength={100}
                 />
               </div>
@@ -223,7 +223,7 @@ export function ProfileSocialTab({
                   value={editForm.website}
                   onChange={(e) => setEditForm({ ...editForm, website: e.target.value })}
                   placeholder={t('websitePlaceholder')}
-                  className="w-full pl-10 pr-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent bg-background text-foreground"
+                  className="w-full pl-10 pr-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent bg-background text-foreground"
                   maxLength={200}
                 />
               </div>
@@ -239,7 +239,7 @@ export function ProfileSocialTab({
                   value={editForm.discord}
                   onChange={(e) => setEditForm({ ...editForm, discord: e.target.value })}
                   placeholder={t('discordPlaceholder')}
-                  className="w-full pl-10 pr-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent bg-background text-foreground"
+                  className="w-full pl-10 pr-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent bg-background text-foreground"
                   maxLength={50}
                 />
               </div>
@@ -280,7 +280,7 @@ export function ProfileSocialTab({
                   href={profile.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-organic-orange hover:underline"
+                  className="text-organic-terracotta hover:underline"
                 >
                   {profile.website.replace(/^https?:\/\//, '')}
                 </a>
@@ -293,7 +293,7 @@ export function ProfileSocialTab({
                   href={`https://x.com/${linkedTwitterHandle.replace('@', '')}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-organic-orange hover:underline"
+                  className="text-organic-terracotta hover:underline"
                 >
                   {linkedTwitterHandle}
                 </a>
@@ -344,7 +344,7 @@ export function ProfileSocialTab({
                     value={twitterHandleInput}
                     onChange={(e) => setTwitterHandleInput(e.target.value)}
                     placeholder={t('twitterHandlePlaceholder')}
-                    className="w-full pl-8 pr-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent bg-background text-foreground text-sm"
+                    className="w-full pl-8 pr-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent bg-background text-foreground text-sm"
                     maxLength={50}
                   />
                 </div>

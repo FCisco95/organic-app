@@ -43,7 +43,7 @@ export function TransactionTable({ transactions, loading }: TransactionTableProp
         <div className="overflow-x-auto -mx-5">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-100">
+              <tr className="border-b border-border">
                 <th className="px-5 pb-2 text-left text-xs font-medium text-gray-400">
                   {t('colSignature')}
                 </th>

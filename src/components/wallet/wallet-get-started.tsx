@@ -70,7 +70,7 @@ export function WalletGetStarted({ onBack }: WalletGetStartedProps) {
                 <span className="text-white font-medium text-sm block">{wallet.name}</span>
                 <span className="text-gray-500 text-xs">{t(wallet.descriptionKey)}</span>
               </div>
-              <ExternalLink className="w-4 h-4 text-gray-500 group-hover:text-organic-orange transition-colors" />
+              <ExternalLink className="w-4 h-4 text-gray-500 group-hover:text-organic-terracotta transition-colors" />
             </a>
           ))}
         </div>

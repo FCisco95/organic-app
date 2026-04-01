@@ -34,7 +34,7 @@ export function TaskAssignModal({
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <DialogContent className="max-w-md bg-white border-gray-200">
+      <DialogContent className="max-w-md bg-white border-border">
         <DialogHeader>
           <DialogTitle className="text-gray-900">{t('assignTitle')}</DialogTitle>
           <DialogDescription>{t('assignDescription')}</DialogDescription>
@@ -46,8 +46,8 @@ export function TaskAssignModal({
             disabled={isAssigning}
             className={`w-full text-left px-4 py-3 rounded-lg border-2 transition-colors ${
               !assigneeId
-                ? 'border-organic-orange bg-orange-50'
-                : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                ? 'border-organic-terracotta bg-organic-terracotta-lightest'
+                : 'border-border hover:border-gray-300 hover:bg-gray-50'
             } ${isAssigning ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             <div className="flex items-center gap-3">
@@ -68,12 +68,12 @@ export function TaskAssignModal({
               disabled={isAssigning}
               className={`w-full text-left px-4 py-3 rounded-lg border-2 transition-colors ${
                 assigneeId === member.id
-                  ? 'border-organic-orange bg-orange-50'
-                  : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                  ? 'border-organic-terracotta bg-organic-terracotta-lightest'
+                  : 'border-border hover:border-gray-300 hover:bg-gray-50'
               } ${isAssigning ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-organic-orange to-organic-yellow flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-organic-terracotta to-organic-yellow flex items-center justify-center">
                   <span className="text-white font-bold">
                     {getDisplayName(member)[0].toUpperCase()}
                   </span>

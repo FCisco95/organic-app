@@ -24,7 +24,7 @@ export function WizardProgress({ currentStep, steps }: WizardProgressProps) {
         <div
           className={cn(
             'h-full rounded-full transition-all duration-500 ease-out',
-            percent === 100 ? 'bg-green-500' : 'bg-organic-orange'
+            percent === 100 ? 'bg-green-500' : 'bg-cta'
           )}
           style={{ width: `${percent}%` }}
         />

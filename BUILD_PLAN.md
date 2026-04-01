@@ -23,13 +23,115 @@ The app is production-ready. Security hardened, seed content live, 2x XP launch 
 - [ ] OG image: Create `/public/og-image.png` (1200x630)
 - [ ] Sprint activation: Flip Genesis Sprint to `active`
 
-### Upcoming — Easter Campaign (week of 2026-04-05)
-Plan an Easter-themed promotional campaign:
-- Create Easter-themed tasks (e.g., design an Easter Organic logo, create promotional artwork)
-- Ideas for community to vote on: Easter egg hunt in the app, special Easter badge NFT
-- Social media content tasks: Easter launch thread on X
-- Consider a special Easter XP bonus or limited-time quest
-- Tie it to app promotion: "Share Organic on X with #OrganicEaster for bonus points"
+### Easter Campaign — "The Genesis Hatch" (Sprint 1, April 5-19)
+
+The Easter campaign is framed as the **Genesis Hatch** — the origin story of Organic's character universe. Easter is the theme; the narrative is bigger. Detailed plans in `docs/plans/2026-03-30-*.md`.
+
+**Must ship BEFORE Easter (April 5):**
+
+| Feature | Plan File | Status |
+|---------|-----------|--------|
+| 🥚 Golden Egg Hunt | `2026-03-30-easter-egg-hunt.md` | ✅ Built (2026-03-31) |
+| 🏅 Sprint Badge System | `2026-03-30-sprint-badge-system.md` | ✅ Built (2026-03-31) |
+| 📰 Dashboard Campaign Carousel | `2026-03-30-dashboard-campaign-carousel.md` | ✅ Built (2026-03-31) |
+| 📣 Genesis Hatch Narrative & Content | `2026-03-30-genesis-hatch-narrative.md` | ✅ Content ready in plan doc |
+
+**Ship during Sprint 1 (Week 1-2):**
+
+| Feature | Plan File | Status |
+|---------|-----------|--------|
+| ✅ Daily Engagement Tasks | `2026-03-30-daily-engagement-tasks.md` | ✅ Built (2026-03-31) |
+| 🥚 XP Egg-Opening Mini-Game | `2026-03-30-xp-egg-opening.md` | ✅ Built (2026-03-31) |
+
+**Sprint 1 Proposal (Day 3-4) → Build Sprint 2:**
+
+| Feature | Plan File | Status |
+|---------|-----------|--------|
+| 📚 Community Library | `2026-03-30-community-library-proposal.md` | ✅ Plan ready — create proposal in-app Day 3-4 |
+
+**Future (teased, not built):**
+
+- Egg → NFT hatch (each element maps to a persona/character family)
+- 10 Organic elemental personas (fire, water, grass, lightning, earth, wind, ice, shadow, light, cosmic)
+- Persona battle/game system with items and points
+- Multi-element character variations
+
+**Key decisions made:**
+- Eggs are NOT announced — true easter egg, revealed reactively when first user finds one
+- The entire egg hunt is a **stealth system** with admin controls: shimmer toggle, hunt toggle, probability override, campaign reveal toggle
+- Shimmer fake-outs start BEFORE eggs are enabled — seeds "did I see something?" paranoia days early
+- Rarity is real (0.1% base rate, shiny Pokémon inspired) — admin can temporarily boost to 0.5% to engineer first find
+- Profile egg collection is HIDDEN until user finds their first egg (or campaign is revealed)
+- Carousel egg hunt card is pre-built but hidden — appears only when admin flips `campaign_revealed`
+- One admin toggle (`campaign_revealed`) cascades: carousel card + luck teaser + profile collection all appear
+- "Buyer" badge uses wallet holding snapshots, NOT purchase tracking (legal safety)
+- Activity boosts luck — completing tasks, voting, posting increases egg probability
+- XP egg-opening game serves as XP sink to counter inflation
+- Library ships as a governance proposal to showcase real governance in action
+
+**Build status (2026-04-01): ALL BACKEND CODE COMPLETE. Branch pushed. Vercel Preview active. QA in progress.**
+
+All 5 features built (55 files, 5 migrations applied to prod Supabase). Lint + build clean.
+Branch `phase/easter-genesis-hatch` pushed to origin. Vercel Preview deploying.
+Several QA fixes already shipped: rate limiting, slider debounce, egg click handler, campaigns API.
+
+**Known QA issues found (2026-03-31 → 2026-04-01):**
+- ✅ FIXED: Egg hunt provider was spamming API calls → debounced to 10s intervals
+- ✅ FIXED: Admin sliders were firing API on every drag pixel → saves on pointer release only
+- ✅ FIXED: Golden egg click did nothing → z-index 9999, pointer-events-none on children, stale closure fix
+- ✅ FIXED: Campaigns API returned 500 → graceful error handling, returns empty array
+- ✅ FIXED: Campaign reveal visibility → now reads egg_hunt_config.campaign_revealed
+- ⚠️ NEEDS QA: Campaign carousel — create a campaign via admin and verify it shows on dashboard
+- ⚠️ NEEDS QA: Egg claim flow end-to-end — click egg → discovery overlay → share to X
+- ⚠️ NEEDS QA: All admin toggles — shimmer, hunt, override, reveal
+- ⚠️ NEEDS QA: Badge award API, daily tasks API, egg opening API
+
+**TODAY (April 1) — LAUNCH DAY FOCUS:**
+
+```
+PRIORITY 1 — Deploy & Verify (do this FIRST):
+1. QA the Vercel Preview — create a campaign, verify carousel shows
+2. Test egg claim flow end-to-end
+3. If QA passes → merge to main (production deploy)
+4. If QA has issues → fix and redeploy
+
+PRIORITY 2 — Post-Merge Setup:
+5. Create 3 campaigns via admin panel:
+   - "Launch Week — 2x XP" (visibility: always, active now)
+   - "Genesis Sprint" (visibility: always, active on sprint start)
+   - "🥚 The Golden Eggs Are Real" (visibility: egg_hunt_revealed — HIDDEN)
+6. ENABLE SHIMMERS in admin panel → users start seeing sparkles
+
+PRIORITY 3 — Launch Content:
+7. Post April 1 launch video + tweet (already drafted)
+8. Post dev account reply 15 min later
+
+TOMORROW (April 2-3) — STEALTH EGG ACTIVATION:
+9. SILENTLY ENABLE EGG SPAWNS via admin toggle (hunt_enabled = true)
+10. Monitor for first discovery
+11. If users are active but no finds → consider override boost
+
+APRIL 4 — PRE-EASTER PREP:
+12. Create Library proposal in-app
+13. Pre-write reactive tweets (content in genesis-hatch-narrative.md)
+14. Have tweet templates ready to fire
+
+APRIL 5 (EASTER) — THE REVEAL:
+15. Monitor egg_hunt stats in admin panel
+16. IF no egg found by 2PM → activate override boost (0.5%, 6hr expiry)
+17. WHEN first egg found → fire reactive tweets → set campaign_revealed = true
+18. Watch the magic happen
+
+WEEK 2 — INTEGRATION WORK (after Easter):
+- Wire daily task tracking hooks into existing like/comment/vote/post systems
+- Build profile egg collection UI component
+- Build daily tasks UI on quests page
+- Build XP egg-opening animation UI
+- Badge display on profile page
+- Create 10 egg visual assets (AI-generated or gradient placeholders)
+```
+
+**Test account:** `qa-test-easter@organic-dao.dev` / `QaTest2026!` (admin, organic_id: 998)
 
 ---
 

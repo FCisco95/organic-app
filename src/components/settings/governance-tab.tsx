@@ -243,7 +243,7 @@ export function GovernanceTab({ votingConfig, governancePolicy }: GovernanceTabP
             type="checkbox"
             checked={abstainQuorum}
             onChange={(e) => setAbstainQuorum(e.target.checked)}
-            className="w-4 h-4 rounded border-gray-300 text-organic-orange focus:ring-organic-orange"
+            className="w-4 h-4 rounded border-gray-300 text-organic-terracotta focus:ring-organic-terracotta"
           />
           <span className="text-sm text-gray-700">{t('governance.abstainQuorumLabel')}</span>
         </label>
@@ -309,7 +309,7 @@ export function GovernanceTab({ votingConfig, governancePolicy }: GovernanceTabP
             type="checkbox"
             checked={overrideRequiresCouncilReview}
             onChange={(e) => setOverrideRequiresCouncilReview(e.target.checked)}
-            className="w-4 h-4 rounded border-gray-300 text-organic-orange focus:ring-organic-orange"
+            className="w-4 h-4 rounded border-gray-300 text-organic-terracotta focus:ring-organic-terracotta"
           />
           <span className="text-sm text-gray-700">{t('governance.overrideCouncilReviewLabel')}</span>
         </label>

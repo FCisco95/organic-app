@@ -14,7 +14,7 @@ function GlassCard({ children, className = '' }: { children: React.ReactNode; cl
 function PulseHighlight({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative">
-      <div className="absolute -inset-1 rounded-lg bg-orange-400/20 animate-pulse" />
+      <div className="absolute -inset-1 rounded-lg bg-organic-terracotta/20 animate-pulse" />
       <div className="relative">{children}</div>
     </div>
   );
@@ -34,7 +34,7 @@ function OverviewVisual() {
             <p className="text-xs font-bold text-white">Analytics</p>
           </div>
           <p className="text-[10px] text-gray-400 mb-2">
-            Your data-driven view into <span className="text-orange-500">DAO health</span>.
+            Your data-driven view into <span className="text-organic-terracotta">DAO health</span>.
           </p>
           <div className="flex gap-1.5">
             <span className="rounded-full bg-white/10 border border-white/20 px-2 py-0.5 text-[9px] text-gray-300">Activity</span>
@@ -59,7 +59,7 @@ function ActivityTrendsVisual() {
             <div key={`${day}-${i}`} className="flex-1 flex flex-col items-center gap-1">
               <PulseHighlight>
                 <div
-                  className="w-full rounded-sm bg-orange-500/80"
+                  className="w-full rounded-sm bg-organic-terracotta-lightest0/80"
                   style={{ height: `${(heights[i] / 100) * 48}px` }}
                 />
               </PulseHighlight>
@@ -74,7 +74,7 @@ function ActivityTrendsVisual() {
 
 function PersonalStatsVisual() {
   const stats = [
-    { label: 'Tasks', value: '18', color: 'text-orange-500' },
+    { label: 'Tasks', value: '18', color: 'text-organic-terracotta' },
     { label: 'Voted', value: '12', color: 'text-blue-400' },
     { label: 'XP', value: '2.4k', color: 'text-emerald-400' },
     { label: 'Streak', value: '7d', color: 'text-amber-400' },
@@ -116,11 +116,11 @@ function GovernanceHealthVisual() {
           <div>
             <div className="flex justify-between mb-0.5">
               <span className="text-[9px] text-gray-300">Participation</span>
-              <span className="text-[9px] font-mono text-orange-500">82%</span>
+              <span className="text-[9px] font-mono text-organic-terracotta">82%</span>
             </div>
             <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
               <PulseHighlight>
-                <div className="h-1.5 rounded-full bg-orange-500" style={{ width: '82%' }} />
+                <div className="h-1.5 rounded-full bg-organic-terracotta-lightest0" style={{ width: '82%' }} />
               </PulseHighlight>
             </div>
           </div>
@@ -143,7 +143,7 @@ function KpiCardsVisual() {
   const kpis = [
     { label: 'Members', value: '128', color: 'text-blue-400' },
     { label: 'Active', value: '47', color: 'text-emerald-400' },
-    { label: 'Tasks', value: '23', color: 'text-orange-500' },
+    { label: 'Tasks', value: '23', color: 'text-organic-terracotta' },
     { label: 'Gov.', value: '82%', color: 'text-amber-400' },
   ];
   return (

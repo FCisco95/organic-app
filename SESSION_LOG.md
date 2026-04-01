@@ -2,6 +2,66 @@
 
 Add newest entries at the top.
 
+## 2026-03-31 (Session: Easter Genesis Hatch — Full Feature Build)
+
+### Summary
+
+Growth strategy roundtable with 5-persona panel (MAX: Growth, SARAH: X Strategy, RICO: CEO/Story, DEV: Builder, VAULT: Security/Tokenomics). Designed the entire Easter campaign as "The Genesis Hatch" — an ARG-style stealth egg hunt. Built ALL 5 planned features in one session.
+
+### Features Built (49+ new files, 5 DB migrations)
+
+1. **Campaign Carousel** — Admin CRUD, dashboard hero carousel, visibility conditions (egg_hunt_revealed), auto-advance, countdown timers. Replaces feature-carousel.
+2. **Easter Egg Hunt** — Stealth system: admin controls (shimmer/hunt/override/reveal toggles), server-side RNG with rate limiting, 10 elemental eggs with rarity modifiers, shimmer fake-out animations, golden egg discovery overlay, share-to-X templates. All invisible by default.
+3. **Sprint Badge System** — 13 badge definitions (8 permanent + 5 sprint), wallet snapshots table, admin award API, user collection hooks.
+4. **Daily Engagement Tasks** — 9 task definitions (7 daily + 2 weekly), progress tracking, login streak system, XP/points awards on completion.
+5. **XP Egg-Opening Game** — Gacha mini-game (bronze/silver/gold tiers), XP deduction, reward RNG with weighted probabilities, daily limits, history tracking.
+
+### Plans Created (7 detailed plan docs)
+
+All in `docs/plans/2026-03-30-*.md`: easter-egg-hunt, sprint-badge-system, dashboard-campaign-carousel, daily-engagement-tasks, xp-egg-opening, community-library-proposal, genesis-hatch-narrative.
+
+### DB Migrations Applied
+
+- `20260331000000_campaigns.sql` — campaigns table + RLS
+- `20260331000001_egg_hunt.sql` — egg_hunt_config + golden_eggs + egg_hunt_luck + RLS
+- `20260331000002_badges.sql` — user_badges + wallet_snapshots + RLS
+- `20260331000003_daily_tasks.sql` — daily_task_progress + login_streaks + RLS
+- `20260331000004_egg_opens.sql` — egg_opens + RLS
+
+### Marketing Content
+
+- Launch post text options drafted (4 variants + hybrid)
+- Dev account reply drafted
+- Teaser video workflow: ChatGPT images → CapCut auto beat sync → export
+- Pre-written tweet sequences for Easter reveal in narrative plan
+
+### QA Status
+
+- Lint: clean. Build: clean. Migrations: applied to production Supabase.
+- Local QA blocked by pre-existing issues (Sentry edge EvalError in dev, auth cookies in local prod).
+- **NEXT STEP:** Push to branch, deploy Vercel Preview, QA there.
+
+### Test Account Created
+
+- Email: `qa-test-easter@organic-dao.dev`, Password: `QaTest2026!`
+- Email confirmed, role: admin, organic_id: 998
+
+### QA Fixes Shipped (same session, 5 commits on branch)
+
+1. `fix: reduce egg-check API call frequency` — 10s debounce, 6/min rate limit, silent fail
+2. `fix: debounce egg hunt rate sliders` — local state during drag, save on pointer release
+3. `fix: golden egg click handler` — z-index 9999, pointer-events-none on children
+4. `fix: egg claim handler` — stale closure via refs, show overlay even on API failure
+5. `fix: campaigns API` — graceful errors, actually reads egg_hunt_config.campaign_revealed
+
+### Branch Status
+
+- Branch: `phase/easter-genesis-hatch` (6 commits ahead of main)
+- Vercel Preview: active and deploying
+- Next: QA on preview → fix remaining issues → merge to main
+
+---
+
 ## 2026-03-30 (Session: Launch Readiness — Full 2-Day Sprint)
 
 ### Summary

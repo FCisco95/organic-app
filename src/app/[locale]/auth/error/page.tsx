@@ -51,7 +51,7 @@ export default function AuthErrorPage() {
             <div className="mt-8 flex items-center justify-center gap-3">
               <Link
                 href="/login"
-                className="rounded-lg bg-organic-terracotta px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-organic-terracotta-hover"
+                className="rounded-lg bg-cta px-5 py-2.5 text-sm font-medium text-cta-fg transition-colors hover:bg-cta-hover"
               >
                 {t('backToLogin')}
               </Link>

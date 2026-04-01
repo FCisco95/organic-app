@@ -58,7 +58,7 @@ function timeAgo(dateStr: string): string {
 function AuthorAvatar({ author, size }: { author: PostListItem['author']; size: number }) {
   return (
     <div
-      className="rounded-full bg-gradient-to-br from-orange-400 to-yellow-300 flex items-center justify-center overflow-hidden shrink-0"
+      className="rounded-full bg-gradient-to-br from-organic-terracotta to-yellow-300 flex items-center justify-center overflow-hidden shrink-0"
       style={{ width: size, height: size }}
     >
       {author.avatar_url ? (
@@ -246,7 +246,7 @@ export function FeaturedPostCard({ post, onLike, onClick, onFlag, likeLoading, i
               e.stopPropagation();
               onFlag(post.id);
             }}
-            className="flex items-center gap-1 text-[11px] text-muted-foreground/60 hover:text-orange-500 transition-colors ml-auto"
+            className="flex items-center gap-1 text-[11px] text-muted-foreground/60 hover:text-organic-terracotta transition-colors ml-auto"
             title={t('flagButton')}
           >
             <Flag className="w-3 h-3" />
@@ -374,7 +374,7 @@ export function PostFeedCard({ post, onLike, onClick, onFlag, likeLoading }: Pos
               e.stopPropagation();
               onFlag(post.id);
             }}
-            className="flex items-center gap-1 text-[11px] text-muted-foreground/60 hover:text-orange-500 transition-colors ml-auto"
+            className="flex items-center gap-1 text-[11px] text-muted-foreground/60 hover:text-organic-terracotta transition-colors ml-auto"
             title={t('flagButton')}
           >
             <Flag className="w-3 h-3" />

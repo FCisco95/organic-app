@@ -16,7 +16,7 @@ export function RewardsSummaryCards({ summary }: RewardsSummaryCardsProps) {
 
   return (
     <div
-      className="flex flex-wrap items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm"
+      className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-gray-50 px-4 py-2.5 text-sm"
       data-testid="rewards-admin-summary-cards"
     >
       <span className="text-gray-600">

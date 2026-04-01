@@ -2071,7 +2071,8 @@
       "sprints": "Sprints",
       "members": "Members",
       "rewards": "Rewards",
-      "gamification": "Gamification"
+      "gamification": "Gamification",
+      "campaigns": "Campaigns"
     },
     "general": {
       "description": "Basic organization information",

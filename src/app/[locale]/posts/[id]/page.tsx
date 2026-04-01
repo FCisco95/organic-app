@@ -212,7 +212,7 @@ export default function PostDetailPage() {
               </span>
             )}
             {post.is_organic && post.organic_bonus_revoked && (
-              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-full">
+              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-organic-terracotta bg-organic-terracotta-lightest0/10 px-2 py-0.5 rounded-full">
                 <Flag className="w-3 h-3" />
                 {t('organicBonusRevoked')}
               </span>
@@ -230,7 +230,7 @@ export default function PostDetailPage() {
 
           {/* Author header */}
           <div className="flex items-center gap-2.5 mb-4">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-yellow-300 flex items-center justify-center overflow-hidden shrink-0">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-organic-terracotta to-yellow-300 flex items-center justify-center overflow-hidden shrink-0">
               {author.avatar_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={author.avatar_url} alt="" className="w-full h-full object-cover" />
@@ -325,7 +325,7 @@ export default function PostDetailPage() {
                 <button
                   onClick={handleFlag}
                   disabled={flagPost.isPending}
-                  className="flex items-center gap-1 text-[11px] text-muted-foreground/60 hover:text-orange-500 transition-colors"
+                  className="flex items-center gap-1 text-[11px] text-muted-foreground/60 hover:text-organic-terracotta transition-colors"
                   title={t('flagButton')}
                 >
                   <Flag className="w-3.5 h-3.5" />
@@ -383,10 +383,10 @@ export default function PostDetailPage() {
 
           {/* Admin flag review panel */}
           {isAdmin && post.is_organic && post.organic_bonus_revoked && (
-            <div className="mt-3 p-3 rounded-lg border border-orange-500/30 bg-orange-500/5">
+            <div className="mt-3 p-3 rounded-lg border border-organic-terracotta/30 bg-organic-terracotta-lightest0/5">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-medium text-orange-500">Organic bonus revoked ({post.flag_count} flags)</p>
+                  <p className="text-xs font-medium text-organic-terracotta">Organic bonus revoked ({post.flag_count} flags)</p>
                   <p className="text-[10px] text-muted-foreground mt-0.5">Review: restore bonus (penalizes flaggers -5 pts each) or leave revoked.</p>
                 </div>
                 <button
@@ -440,7 +440,7 @@ export default function PostDetailPage() {
                 const cAuthor = comment.user_profiles;
                 return (
                   <div key={comment.id} className="flex gap-2">
-                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-orange-400 to-yellow-300 flex items-center justify-center overflow-hidden shrink-0 mt-0.5">
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-organic-terracotta to-yellow-300 flex items-center justify-center overflow-hidden shrink-0 mt-0.5">
                       {cAuthor?.avatar_url ? (
                         /* eslint-disable-next-line @next/next/no-img-element */
                         <img src={cAuthor.avatar_url} alt="" className="w-full h-full object-cover" />

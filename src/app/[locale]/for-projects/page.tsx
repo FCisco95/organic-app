@@ -17,9 +17,9 @@ export default function ForProjectsPage() {
     <div className="min-h-screen bg-background">
       {/* Hero */}
       <section className="relative overflow-hidden border-b border-border">
-        <div className="absolute inset-0 bg-gradient-to-b from-organic-orange/5 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-organic-terracotta/5 via-transparent to-transparent" />
         <div className="relative max-w-5xl mx-auto px-6 py-20 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-organic-orange/10 text-organic-orange text-xs font-medium mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-organic-terracotta/10 text-organic-terracotta text-xs font-medium mb-6">
             <Rocket className="h-3.5 w-3.5" />
             {t('badge')}
           </div>
@@ -49,12 +49,12 @@ export default function ForProjectsPage() {
               className={cn(
                 'relative rounded-2xl border p-6 flex flex-col',
                 i === 1
-                  ? 'border-organic-orange/40 bg-organic-orange/5 ring-1 ring-organic-orange/20'
+                  ? 'border-organic-terracotta/40 bg-organic-terracotta/5 ring-1 ring-organic-terracotta/20'
                   : 'border-border bg-card'
               )}
             >
               {i === 1 && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-organic-orange text-white text-[10px] font-bold uppercase tracking-wider">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-organic-terracotta text-white text-[10px] font-bold uppercase tracking-wider">
                   {t('recommended')}
                 </span>
               )}
@@ -71,7 +71,7 @@ export default function ForProjectsPage() {
               <div className="space-y-2 mb-3">
                 {Array.from({ length: tier.visible }, (_, j) => (
                   <div key={j} className="flex items-center gap-2 text-sm text-foreground">
-                    <Check className="h-4 w-4 text-organic-orange shrink-0" />
+                    <Check className="h-4 w-4 text-organic-terracotta shrink-0" />
                     <span>{t(`tier_${tier.id}_feature_${j + 1}`)}</span>
                   </div>
                 ))}
@@ -114,8 +114,8 @@ export default function ForProjectsPage() {
           <h2 className="text-2xl font-bold text-foreground mb-2">{t('ctaTitle')}</h2>
           <p className="text-sm text-muted-foreground mb-6">{t('ctaSubtitle')}</p>
           <a
-            href="mailto:partnerships@organic-dao.dev?subject=Platform%20Beta%20Interest"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-organic-orange text-white font-medium hover:bg-orange-600 transition-colors"
+            href="mailto:organic_community+marketing@proton.me?subject=Platform%20Beta%20Interest"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-cta text-cta-fg font-medium hover:bg-cta-hover transition-colors"
           >
             <Mail className="h-4 w-4" />
             {t('ctaButton')}

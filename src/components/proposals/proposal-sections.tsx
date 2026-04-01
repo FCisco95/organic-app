@@ -41,7 +41,7 @@ export function ProposalSections({ proposal }: ProposalSectionsProps) {
 
   return (
     <div
-      className="bg-white rounded-xl border border-gray-200 divide-y divide-gray-100"
+      className="bg-white rounded-xl border border-border divide-y divide-border"
       data-testid="proposal-sections-structured"
     >
       {sections.map((section) => {

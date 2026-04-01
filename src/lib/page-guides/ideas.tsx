@@ -14,7 +14,7 @@ function GlassCard({ children, className = '' }: { children: React.ReactNode; cl
 function PulseHighlight({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative">
-      <div className="absolute -inset-1 rounded-lg bg-orange-400/20 animate-pulse" />
+      <div className="absolute -inset-1 rounded-lg bg-organic-terracotta/20 animate-pulse" />
       <div className="relative">{children}</div>
     </div>
   );
@@ -34,7 +34,7 @@ function IncubatorVisual() {
             <p className="text-xs font-bold text-white">Ideas Incubator</p>
           </div>
           <p className="text-[10px] text-gray-400 mb-2">
-            Where ideas become <span className="text-orange-500">proposals</span>.
+            Where ideas become <span className="text-organic-terracotta">proposals</span>.
           </p>
           <div className="flex gap-1.5">
             <span className="rounded-full bg-white/10 border border-white/20 px-2 py-0.5 text-[9px] text-gray-300">Discuss</span>
@@ -62,7 +62,7 @@ function SubmitIdeaVisual() {
             <span className="text-[10px] text-gray-400">Claim and update tasks from mobile...</span>
           </div>
           <div className="flex justify-end">
-            <div className="h-6 px-3 rounded-md bg-orange-500 text-white text-[10px] font-medium flex items-center">
+            <div className="h-6 px-3 rounded-md bg-organic-terracotta-lightest0 text-white text-[10px] font-medium flex items-center">
               Post
             </div>
           </div>
@@ -87,8 +87,8 @@ function VotingVisual() {
               {i === 0 ? (
                 <PulseHighlight>
                   <div className="flex flex-col items-center w-7">
-                    <span className="text-orange-500 text-xs leading-none">&#9650;</span>
-                    <span className="text-[10px] font-mono font-bold text-orange-500">{idea.votes}</span>
+                    <span className="text-organic-terracotta text-xs leading-none">&#9650;</span>
+                    <span className="text-[10px] font-mono font-bold text-organic-terracotta">{idea.votes}</span>
                   </div>
                 </PulseHighlight>
               ) : (
@@ -120,7 +120,7 @@ function DiscoveryVisual() {
             <div key={tab}>
               {i === 0 ? (
                 <PulseHighlight>
-                  <span className="rounded-full bg-orange-500/20 border border-orange-500/30 px-2 py-0.5 text-[9px] text-orange-500 font-medium">
+                  <span className="rounded-full bg-organic-terracotta-lightest0/20 border border-organic-terracotta/30 px-2 py-0.5 text-[9px] text-organic-terracotta font-medium">
                     {tab}
                   </span>
                 </PulseHighlight>
@@ -135,7 +135,7 @@ function DiscoveryVisual() {
         <div className="space-y-1">
           {previews.map((p) => (
             <div key={p.title} className="flex items-center gap-2 py-1 border-b border-white/5 last:border-0">
-              <span className="text-[10px] font-mono text-orange-500 w-5 text-center">{p.votes}</span>
+              <span className="text-[10px] font-mono text-organic-terracotta w-5 text-center">{p.votes}</span>
               <span className="text-[10px] text-gray-300 truncate">{p.title}</span>
             </div>
           ))}
@@ -150,18 +150,18 @@ function PromotionVisual() {
     <div className="w-full max-w-sm mx-auto">
       <GlassCard>
         <p className="text-[9px] uppercase tracking-wider text-gray-400 mb-2">Idea → Proposal</p>
-        <div className="rounded-lg border border-orange-500/30 bg-orange-500/10 p-2 mb-2">
+        <div className="rounded-lg border border-organic-terracotta/30 bg-organic-terracotta-lightest0/10 p-2 mb-2">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] font-medium text-white">Mobile app for tasks</span>
-            <span className="text-[8px] text-orange-500">24 votes</span>
+            <span className="text-[8px] text-organic-terracotta">24 votes</span>
           </div>
           <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
-            <div className="h-full rounded-full bg-orange-500 animate-pulse" style={{ width: '80%' }} />
+            <div className="h-full rounded-full bg-organic-terracotta-lightest0 animate-pulse" style={{ width: '80%' }} />
           </div>
         </div>
         <div className="flex justify-end">
           <PulseHighlight>
-            <div className="h-6 px-3 rounded-md bg-orange-500 text-white text-[10px] font-medium flex items-center">
+            <div className="h-6 px-3 rounded-md bg-organic-terracotta-lightest0 text-white text-[10px] font-medium flex items-center">
               Promote →
             </div>
           </PulseHighlight>

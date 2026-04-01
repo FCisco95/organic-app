@@ -14,7 +14,7 @@ function GlassCard({ children, className = '' }: { children: React.ReactNode; cl
 function PulseHighlight({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative">
-      <div className="absolute -inset-1 rounded-lg bg-orange-400/20 animate-pulse" />
+      <div className="absolute -inset-1 rounded-lg bg-organic-terracotta/20 animate-pulse" />
       <div className="relative">{children}</div>
     </div>
   );
@@ -28,14 +28,14 @@ function DashboardHeroVisual() {
   return (
     <div className="w-full max-w-xs mx-auto text-center">
       <div className="relative mx-auto w-20 h-20 mb-4">
-        <div className="absolute inset-0 rounded-2xl bg-orange-500/20 animate-pulse" />
+        <div className="absolute inset-0 rounded-2xl bg-organic-terracotta-lightest0/20 animate-pulse" />
         <div className="relative flex items-center justify-center w-full h-full rounded-2xl border border-white/20 bg-white/10 backdrop-blur">
           <span className="text-3xl">🏠</span>
         </div>
       </div>
       <div className="flex flex-wrap justify-center gap-1.5">
         {[
-          { label: 'Hero', color: 'bg-orange-500' },
+          { label: 'Hero', color: 'bg-organic-terracotta-lightest0' },
           { label: 'Trust Pulse', color: 'bg-amber-500' },
           { label: 'Navigation', color: 'bg-blue-500' },
           { label: 'Activity Feed', color: 'bg-emerald-500' },
@@ -83,7 +83,7 @@ function TrustPulseVisual() {
       </GlassCard>
       <GlassCard>
         <p className="text-[9px] uppercase tracking-wider text-gray-400 flex items-center gap-1">
-          <span className="text-orange-500">&#9679;</span> Leaderboard
+          <span className="text-organic-terracotta">&#9679;</span> Leaderboard
         </p>
         <div className="mt-1 space-y-0.5 text-[10px]">
           <p className="text-gray-200">#1 Alice — 4,200 XP</p>
@@ -111,7 +111,7 @@ function NavCardsVisual() {
   return (
     <div className="w-full max-w-sm mx-auto grid grid-cols-2 gap-2">
       {cards.map((c) => (
-        <GlassCard key={c.label} className="hover:border-orange-500/30 transition-colors cursor-pointer">
+        <GlassCard key={c.label} className="hover:border-organic-terracotta/30 transition-colors cursor-pointer">
           <span className="text-lg">{c.icon}</span>
           <p className="mt-1 text-xs font-semibold text-white">{c.label}</p>
           <p className="text-[10px] text-gray-400">{c.desc}</p>
@@ -131,7 +131,7 @@ function MemberStatusVisual() {
         </p>
         <div className="mt-3 flex flex-wrap gap-1.5">
           <PulseHighlight>
-            <span className="inline-flex rounded-full bg-orange-500/20 border border-orange-500/30 px-2 py-0.5 text-[10px] text-orange-400 font-medium">
+            <span className="inline-flex rounded-full bg-organic-terracotta-lightest0/20 border border-organic-terracotta/30 px-2 py-0.5 text-[10px] text-[#E8845C] font-medium">
               Verified member
             </span>
           </PulseHighlight>
@@ -160,7 +160,7 @@ function StatsBarVisual() {
         <p className="text-[9px] uppercase tracking-wider text-gray-400 mb-2">Community stats</p>
         <div className="space-y-2">
           {[
-            { label: 'Tasks', width: '75%', color: 'bg-orange-400' },
+            { label: 'Tasks', width: '75%', color: 'bg-organic-terracotta' },
             { label: 'Sprints', width: '60%', color: 'bg-amber-400' },
             { label: 'Members', width: '45%', color: 'bg-blue-400' },
             { label: 'Proposals', width: '55%', color: 'bg-emerald-400' },

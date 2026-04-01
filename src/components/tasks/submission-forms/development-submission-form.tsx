@@ -56,7 +56,7 @@ export function DevelopmentSubmissionForm({ task, onSuccess, onCancel }: Submiss
             type="url"
             placeholder={t('prLinkPlaceholder')}
             className={cn(
-              'w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent',
+              'w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent',
               errors.pr_link ? 'border-red-300' : 'border-gray-300'
             )}
           />
@@ -72,7 +72,7 @@ export function DevelopmentSubmissionForm({ task, onSuccess, onCancel }: Submiss
           {...register('description')}
           rows={3}
           placeholder={t('descriptionPlaceholder')}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent resize-none"
         />
       </div>
 
@@ -84,7 +84,7 @@ export function DevelopmentSubmissionForm({ task, onSuccess, onCancel }: Submiss
           {...register('testing_notes')}
           rows={2}
           placeholder={t('testingNotesPlaceholder')}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent resize-none"
         />
       </div>
 

@@ -114,7 +114,7 @@ export function MobileSidebar() {
                       <item.icon className="h-4 w-4 shrink-0" />
                       <span>{t(item.labelKey)}</span>
                       {item.id === 'disputes' && isAdminOrCouncil && pendingCount > 0 ? (
-                        <Badge className="ml-auto min-w-5 h-5 px-1.5 bg-orange-600 text-white text-[10px] leading-none flex items-center justify-center">
+                        <Badge className="ml-auto min-w-5 h-5 px-1.5 bg-organic-terracotta text-white text-[10px] leading-none flex items-center justify-center">
                           {pendingCount > 99 ? '99+' : pendingCount}
                         </Badge>
                       ) : null}
@@ -182,7 +182,7 @@ export function MobileSidebar() {
               <button
                 type="button"
                 onClick={() => setIsWalletDrawerOpen(true)}
-                className="flex w-full items-center gap-3 rounded-md bg-organic-orange px-3 py-2.5 text-sm font-medium text-white transition-colors hover:bg-orange-600"
+                className="flex w-full items-center gap-3 rounded-md bg-cta px-3 py-2.5 text-sm font-medium text-cta-fg transition-colors hover:bg-cta-hover"
               >
                 <Wallet className="h-4 w-4 shrink-0" />
                 <span>{tWallet('connectWalletAction')}</span>

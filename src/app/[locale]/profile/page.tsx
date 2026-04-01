@@ -19,6 +19,7 @@ import {
 import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
+import { TwoColumnLayout } from '@/components/layout/two-column-layout';
 import { ReputationSummary } from '@/components/reputation/reputation-summary';
 import { TrophyShowcase } from '@/components/reputation/trophy-showcase';
 import { useUpdatePrivacy } from '@/features/members';
@@ -259,7 +260,7 @@ export default function ProfilePage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="w-12 h-12 border-3 border-organic-orange border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <div className="w-12 h-12 border-3 border-organic-terracotta border-t-transparent rounded-full animate-spin mx-auto"></div>
           <p className="mt-4 text-sm text-gray-600">{t('loadingProfile')}</p>
         </div>
       </div>
@@ -270,7 +271,7 @@ export default function ProfilePage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 border-3 border-organic-orange border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <div className="w-12 h-12 border-3 border-organic-terracotta border-t-transparent rounded-full animate-spin mx-auto"></div>
           <p className="mt-4 text-sm text-muted-foreground">{t('redirecting')}</p>
         </div>
       </div>
@@ -283,12 +284,12 @@ export default function ProfilePage() {
     <PageContainer>
       <div data-testid="profile-page">
         {/* ===== HERO STRIP ===== */}
-        <div className="rounded-xl border border-border bg-card p-4 mb-4">
+        <div className="rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-4 sm:p-6 mb-4 text-white opacity-0 animate-fade-up stagger-1">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
             {/* Avatar + Identity */}
             <div className="flex items-center gap-3 min-w-0 flex-1">
               <div className="relative flex-shrink-0">
-                <div className="w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-organic-orange to-yellow-400 flex items-center justify-center">
+                <div className="w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-organic-terracotta to-yellow-400 flex items-center justify-center">
                   {profile.avatar_url ? (
                     <Image
                       src={profile.avatar_url}
@@ -314,7 +315,7 @@ export default function ProfilePage() {
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading}
-                  className="absolute -bottom-0.5 -right-0.5 p-1.5 bg-organic-orange hover:bg-orange-600 text-white rounded-full shadow-lg transition-colors disabled:opacity-50"
+                  className="absolute -bottom-0.5 -right-0.5 p-1.5 bg-cta hover:bg-cta-hover text-cta-fg rounded-full shadow-lg transition-colors disabled:opacity-50"
                   title={t('changeProfilePicture')}
                   aria-label={t('changeProfilePicture')}
                 >
@@ -328,7 +329,7 @@ export default function ProfilePage() {
 
               <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h1 className="text-lg font-bold text-foreground truncate font-display">
+                  <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white truncate">
                     {profile.name || t('anonymousUser')}
                   </h1>
                   <span
@@ -346,13 +347,13 @@ export default function ProfilePage() {
                     {profile.role || t('guest')}
                   </span>
                   {profile.organic_id && (
-                    <span className="inline-flex items-center gap-1 text-xs font-mono text-organic-orange">
+                    <span className="inline-flex items-center gap-1 text-xs font-mono text-organic-terracotta">
                       <Hash className="w-3 h-3" />
                       {profile.organic_id}
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-muted-foreground truncate">{profile.email}</p>
+                <p className="text-xs text-gray-300 truncate">{profile.email}</p>
               </div>
             </div>
 
@@ -368,13 +369,13 @@ export default function ProfilePage() {
                   key={stat.label}
                   className={cn(
                     'text-center px-3 py-2',
-                    i < 3 && 'border-r border-border'
+                    i < 3 && 'border-r border-white/20'
                   )}
                 >
-                  <p className="text-lg font-bold font-mono tabular-nums text-foreground leading-none">
+                  <p className="text-lg font-bold font-mono tabular-nums text-white leading-none">
                     {statsLoading ? '\u2014' : formatStat(stat.value)}
                   </p>
-                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground mt-1 whitespace-nowrap">
+                  <p className="text-[10px] uppercase tracking-wider text-gray-400 mt-1 whitespace-nowrap">
                     {stat.label}
                   </p>
                 </div>
@@ -386,7 +387,7 @@ export default function ProfilePage() {
               <Link
                 href="/profile/progression?from=profile"
                 data-testid="profile-progression-link"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-white/20"
               >
                 <Award className="w-3.5 h-3.5" />
                 {t('viewProgression')}
@@ -394,7 +395,7 @@ export default function ProfilePage() {
               {!isEditing ? (
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-organic-orange px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-orange-600"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-cta px-3 py-1.5 text-xs font-medium text-cta-fg transition-colors hover:bg-cta-hover"
                 >
                   <Edit2 className="w-3.5 h-3.5" />
                   {t('editProfile')}
@@ -403,7 +404,7 @@ export default function ProfilePage() {
                 <div className="flex gap-1.5">
                   <button
                     onClick={handleCancelEdit}
-                    className="inline-flex items-center gap-1 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted"
+                    className="inline-flex items-center gap-1 rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-medium text-white hover:bg-white/20"
                   >
                     <X className="w-3.5 h-3.5" />
                     {t('cancel')}
@@ -411,7 +412,7 @@ export default function ProfilePage() {
                   <button
                     onClick={handleSaveProfile}
                     disabled={saving}
-                    className="inline-flex items-center gap-1 rounded-lg bg-organic-orange px-3 py-1.5 text-xs font-medium text-white hover:bg-orange-600 disabled:opacity-50"
+                    className="inline-flex items-center gap-1 rounded-lg bg-cta px-3 py-1.5 text-xs font-medium text-cta-fg hover:bg-cta-hover disabled:opacity-50"
                   >
                     <Save className="w-3.5 h-3.5" />
                     {saving ? t('saving') : t('saveChanges')}
@@ -423,9 +424,50 @@ export default function ProfilePage() {
         </div>
 
         {/* ===== MAIN LAYOUT: Tabs + Sidebar ===== */}
-        <div className="flex flex-col lg:flex-row gap-4">
-          {/* LEFT: Tabbed content */}
-          <div className="flex-1 min-w-0">
+        <TwoColumnLayout
+          stickyTop="top-20"
+          sidebar={
+            <>
+              <div data-testid="profile-reputation-section">
+                <ReputationSummary />
+              </div>
+
+              {/* Trophy showcase */}
+              <div className="mt-4">
+                <TrophyShowcase />
+              </div>
+
+              {/* Activity stats card */}
+              <div data-testid="profile-activity-section" className="rounded-xl border border-border bg-card p-4 mt-4">
+                <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">{t('statsTitle')}</h2>
+                <div className="space-y-2">
+                  {[
+                    { label: t('totalSubmissionsLabel'), value: stats.totalSubmissions, help: t('totalSubmissionsHelp') },
+                    { label: t('approvedSubmissionsLabel'), value: stats.approvedSubmissions, help: t('approvedSubmissionsHelp') },
+                    { label: t('contributionsLabel'), value: stats.contributions, help: t('contributionsHelp') },
+                    { label: t('pointsEarnedLabel'), value: stats.pointsEarned, help: t('pointsEarnedHelp'), highlight: true },
+                  ].map((item) => (
+                    <div key={item.label} className="flex items-center justify-between py-1.5 border-b border-border/50 last:border-0">
+                      <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        {item.label}
+                        <button type="button" className="text-muted-foreground/50 hover:text-muted-foreground" title={item.help} aria-label={item.help}>
+                          <Info className="h-3 w-3" />
+                        </button>
+                      </span>
+                      <span className={cn(
+                        'text-sm font-bold font-mono tabular-nums',
+                        item.highlight ? 'text-organic-terracotta' : 'text-foreground'
+                      )}>
+                        {statsLoading ? '\u2014' : formatStat(item.value)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          }
+        >
+          <div className="min-w-0">
             <ProfileTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
             {activeTab === 'account' && (
@@ -462,49 +504,7 @@ export default function ProfilePage() {
               <ProfileNotificationsTab />
             )}
           </div>
-
-          {/* RIGHT: Reputation sidebar (desktop only, fixed-width) */}
-          <div className="w-full lg:w-72 flex-shrink-0">
-            <div className="lg:sticky lg:top-20">
-              <div data-testid="profile-reputation-section">
-                <ReputationSummary />
-              </div>
-
-              {/* Trophy showcase */}
-              <div className="mt-4">
-                <TrophyShowcase />
-              </div>
-
-              {/* Activity stats card */}
-              <div data-testid="profile-activity-section" className="rounded-xl border border-border bg-card p-4 mt-4">
-                <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">{t('statsTitle')}</h2>
-                <div className="space-y-2">
-                  {[
-                    { label: t('totalSubmissionsLabel'), value: stats.totalSubmissions, help: t('totalSubmissionsHelp') },
-                    { label: t('approvedSubmissionsLabel'), value: stats.approvedSubmissions, help: t('approvedSubmissionsHelp') },
-                    { label: t('contributionsLabel'), value: stats.contributions, help: t('contributionsHelp') },
-                    { label: t('pointsEarnedLabel'), value: stats.pointsEarned, help: t('pointsEarnedHelp'), highlight: true },
-                  ].map((item) => (
-                    <div key={item.label} className="flex items-center justify-between py-1.5 border-b border-border/50 last:border-0">
-                      <span className="text-xs text-muted-foreground flex items-center gap-1">
-                        {item.label}
-                        <button type="button" className="text-muted-foreground/50 hover:text-muted-foreground" title={item.help} aria-label={item.help}>
-                          <Info className="h-3 w-3" />
-                        </button>
-                      </span>
-                      <span className={cn(
-                        'text-sm font-bold font-mono tabular-nums',
-                        item.highlight ? 'text-organic-orange' : 'text-foreground'
-                      )}>
-                        {statsLoading ? '\u2014' : formatStat(item.value)}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        </TwoColumnLayout>
       </div>
     </PageContainer>
   );

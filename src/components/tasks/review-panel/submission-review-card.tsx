@@ -153,13 +153,13 @@ export function SubmissionReviewCard({
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+    <div className="bg-white rounded-lg border border-border overflow-hidden">
       {/* Header */}
-      <div className="p-4 bg-gray-50 border-b border-gray-200">
+      <div className="p-4 bg-gray-50 border-b border-border">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-organic-orange/10 rounded-full flex items-center justify-center">
-              <User aria-hidden="true" className="w-4 h-4 text-organic-orange" />
+            <div className="w-8 h-8 bg-organic-terracotta/10 rounded-full flex items-center justify-center">
+              <User aria-hidden="true" className="w-4 h-4 text-organic-terracotta" />
             </div>
             <div>
               <p className="font-medium text-gray-900">
@@ -185,7 +185,7 @@ export function SubmissionReviewCard({
         <SubmissionContent submission={submission} />
 
         {/* Quality Rating */}
-        <div className="pt-4 border-t border-gray-100">
+        <div className="pt-4 border-t border-border">
           <label className="block text-sm font-medium text-gray-700 mb-2">
             {t('qualityScoreLabel')}
           </label>
@@ -216,7 +216,7 @@ export function SubmissionReviewCard({
             onChange={(e) => setReviewerNotes(e.target.value)}
             rows={2}
             placeholder={t('reviewerNotesPlaceholder')}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent resize-none"
           />
         </div>
 

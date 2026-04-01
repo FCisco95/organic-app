@@ -27,7 +27,7 @@ const typeConfig: Record<TaskType, { icon: React.ElementType; color: string }> =
   },
   custom: {
     icon: Wrench,
-    color: 'bg-gray-100 text-gray-700 border-gray-200',
+    color: 'bg-gray-100 text-gray-700 border-border',
   },
   twitter: {
     icon: AtSign,
@@ -104,14 +104,14 @@ export function TaskTypeSelector({
             className={cn(
               'flex items-center gap-2 p-3 rounded-lg border-2 transition-all',
               isSelected
-                ? 'border-organic-orange bg-orange-50'
-                : 'border-gray-200 hover:border-gray-300 bg-white',
+                ? 'border-organic-terracotta bg-organic-terracotta-lightest'
+                : 'border-border hover:border-gray-300 bg-white',
               disabled && 'opacity-50 cursor-not-allowed'
             )}
           >
-            <Icon className={cn('w-5 h-5', isSelected ? 'text-organic-orange' : 'text-gray-500')} />
+            <Icon className={cn('w-5 h-5', isSelected ? 'text-organic-terracotta' : 'text-gray-500')} />
             <span
-              className={cn('font-medium', isSelected ? 'text-organic-orange' : 'text-gray-700')}
+              className={cn('font-medium', isSelected ? 'text-organic-terracotta' : 'text-gray-700')}
             >
               {t(type)}
             </span>

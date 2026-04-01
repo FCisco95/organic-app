@@ -55,7 +55,7 @@ export function HowItWorksCard() {
   ] as const;
 
   return (
-    <section className="rounded-xl border border-organic-orange/20 bg-organic-orange/5 p-5 sm:p-6">
+    <section className="rounded-xl border border-organic-terracotta/20 bg-organic-terracotta/5 p-5 sm:p-6">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         className="flex w-full items-center justify-between text-left"

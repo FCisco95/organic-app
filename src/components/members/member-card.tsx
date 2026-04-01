@@ -25,7 +25,7 @@ export function MemberCard({ member, rank, xpTotal }: MemberCardProps) {
 
   if (!member.profile_visible) {
     return (
-      <div className="bg-white rounded-xl border border-gray-200 p-5" data-testid="member-card-private">
+      <div className="bg-white rounded-xl border border-border p-5" data-testid="member-card-private">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
             <Lock aria-hidden="true" className="w-5 h-5 text-gray-400" />
@@ -53,10 +53,10 @@ export function MemberCard({ member, rank, xpTotal }: MemberCardProps) {
     <Link
       href={`/${locale}/community/${member.id}`}
       data-testid={`member-card-${member.id}`}
-      className="relative block bg-white rounded-xl border border-gray-200 p-5 hover:border-organic-orange/40 hover:shadow-sm transition-all"
+      className="relative block bg-white rounded-xl border border-border p-5 hover:border-organic-terracotta/40 hover:shadow-sm transition-all"
     >
       {rank != null && rank <= 100 && (
-        <span className="absolute top-2 right-2 bg-organic-orange text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+        <span className="absolute top-2 right-2 bg-organic-terracotta text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
           #{rank}
         </span>
       )}
@@ -67,10 +67,10 @@ export function MemberCard({ member, rank, xpTotal }: MemberCardProps) {
             alt={displayName}
             width={48}
             height={48}
-            className="rounded-full object-cover border-2 border-gray-100"
+            className="rounded-full object-cover border-2 border-border"
           />
         ) : (
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-organic-orange to-organic-yellow flex items-center justify-center border-2 border-gray-100">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-organic-terracotta to-organic-yellow flex items-center justify-center border-2 border-border">
             <span className="text-white font-bold text-lg">
               {displayName[0]?.toUpperCase() || '?'}
             </span>
@@ -99,14 +99,14 @@ export function MemberCard({ member, rank, xpTotal }: MemberCardProps) {
 
       <div className="mt-4 flex items-center gap-4 text-sm text-gray-500">
         <span className="flex items-center gap-1">
-          <Star aria-hidden="true" className="w-3.5 h-3.5 text-organic-orange" />
+          <Star aria-hidden="true" className="w-3.5 h-3.5 text-organic-terracotta" />
           {member.total_points} {t('points')}
         </span>
         <span>
           {member.tasks_completed} {t('tasks')}
         </span>
         {xpTotal != null && (
-          <span className="ml-auto font-mono tabular-nums text-xs text-organic-orange font-medium">
+          <span className="ml-auto font-mono tabular-nums text-xs text-organic-terracotta font-medium">
             {formatXp(xpTotal)} XP
           </span>
         )}

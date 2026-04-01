@@ -575,9 +575,9 @@ export default function TaskDetailPage() {
 
   const getStatusBadge = (status: string) => {
     const styles = {
-      backlog: 'bg-gray-100 text-gray-700 border-gray-200',
+      backlog: 'bg-gray-100 text-gray-700 border-border',
       todo: 'bg-blue-100 text-blue-700 border-blue-200',
-      in_progress: 'bg-orange-100 text-orange-700 border-orange-200',
+      in_progress: 'bg-organic-terracotta-light/30 text-organic-terracotta-hover border-organic-terracotta-light',
       review: 'bg-purple-100 text-purple-700 border-purple-200',
       done: 'bg-green-100 text-green-700 border-green-200',
     };
@@ -588,7 +588,7 @@ export default function TaskDetailPage() {
     const styles = {
       low: 'bg-green-100 text-green-600',
       medium: 'bg-yellow-100 text-yellow-700',
-      high: 'bg-orange-100 text-orange-700',
+      high: 'bg-organic-terracotta-light/30 text-organic-terracotta-hover',
       critical: 'bg-red-100 text-red-700',
     };
     return styles[priority as keyof typeof styles] || styles.medium;
@@ -615,7 +615,7 @@ export default function TaskDetailPage() {
     return (
       <PageContainer layout="fluid">
         <div className="text-center py-12">
-          <div className="w-8 h-8 border-3 border-organic-orange border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <div className="w-8 h-8 border-3 border-organic-terracotta border-t-transparent rounded-full animate-spin mx-auto"></div>
           <p className="mt-4 text-gray-500">{t('loading')}</p>
         </div>
       </PageContainer>
@@ -633,7 +633,7 @@ export default function TaskDetailPage() {
           {fetchError && (
             <p className="text-sm text-gray-500 mb-4">{t('errorLoadTaskDescription')}</p>
           )}
-          <Link href="/tasks" className="text-organic-orange hover:text-orange-600">
+          <Link href="/tasks" className="text-organic-terracotta hover:text-organic-terracotta">
             <ArrowLeft className="w-4 h-4 inline mr-2" />
             {t('backToTasks')}
           </Link>
@@ -686,7 +686,7 @@ export default function TaskDetailPage() {
         )}
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_380px]" data-testid="task-operator-layout">
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_var(--sidebar-width)]" data-testid="task-operator-layout">
         <div className="min-w-0 space-y-4">
           {/* Task Details */}
           <div className="rounded-xl border border-border bg-card p-4" data-testid="task-summary-surface">
@@ -894,7 +894,7 @@ export default function TaskDetailPage() {
                 {submitEligibility.canSubmit && !showSubmissionForm && (
                   <button
                     onClick={() => setShowSubmissionForm(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 bg-cta hover:bg-cta-hover text-cta-fg rounded-lg font-medium transition-colors"
                     data-testid="task-submit-work-cta"
                   >
                     <Send className="w-4 h-4" />

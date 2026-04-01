@@ -7,7 +7,11 @@ try {
 } catch {
   // @next/bundle-analyzer is optional — only needed for ANALYZE=true builds
 }
-const { withSentryConfig } = require('@sentry/nextjs');
+// Only load Sentry in production — importing it in dev triggers edge runtime EvalError
+const { withSentryConfig } =
+  process.env.NODE_ENV === 'production'
+    ? require('@sentry/nextjs')
+    : { withSentryConfig: (c) => c };
 
 // CSP is now set dynamically in middleware with per-request nonces.
 // See src/middleware.ts for the full Content-Security-Policy configuration.
@@ -38,7 +42,7 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '2mb',
     },
-    instrumentationHook: true,
+    instrumentationHook: process.env.NODE_ENV !== 'development',
   },
   images: {
     remotePatterns: [
@@ -76,4 +80,9 @@ const sentryBuildOptions = {
   },
 };
 
-module.exports = withSentryConfig(withBundleAnalyzer(withNextIntl(nextConfig)), sentryBuildOptions);
+const finalConfig = withBundleAnalyzer(withNextIntl(nextConfig));
+// Skip Sentry webpack wrapping in dev — edge runtime EvalError blocks all requests
+module.exports =
+  process.env.NODE_ENV === 'development'
+    ? finalConfig
+    : withSentryConfig(finalConfig, sentryBuildOptions);

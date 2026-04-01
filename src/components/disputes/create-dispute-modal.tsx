@@ -151,7 +151,7 @@ export function CreateDisputeModal({
   return (
     <Dialog open onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogContent
-        className="max-w-lg bg-white border-gray-200 max-h-[90vh] overflow-y-auto p-0"
+        className="max-w-lg bg-white border-border max-h-[90vh] overflow-y-auto p-0"
         data-testid="create-dispute-modal"
         onInteractOutside={(e) => e.preventDefault()}
       >
@@ -214,7 +214,7 @@ export function CreateDisputeModal({
             <select
               value={reason}
               onChange={(e) => setReason(e.target.value as DisputeReason)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-organic-terracotta focus:border-organic-terracotta"
               disabled={!isEligible}
             >
               <option value="">{tf('reasonPlaceholder')}</option>
@@ -237,7 +237,7 @@ export function CreateDisputeModal({
               placeholder={tf('evidencePlaceholder')}
               rows={5}
               maxLength={5000}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm resize-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm resize-none focus:ring-2 focus:ring-organic-terracotta focus:border-organic-terracotta"
               disabled={!isEligible}
             />
             <p className="text-xs text-gray-400 mt-1">
@@ -255,7 +255,7 @@ export function CreateDisputeModal({
                 value={newLink}
                 onChange={(e) => setNewLink(e.target.value)}
                 placeholder={tf('evidenceLinksPlaceholder')}
-                className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-organic-terracotta focus:border-organic-terracotta"
                 disabled={!isEligible}
               />
               <Button
@@ -355,7 +355,7 @@ export function CreateDisputeModal({
               type="checkbox"
               checked={requestMediation}
               onChange={(e) => setRequestMediation(e.target.checked)}
-              className="mt-0.5 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+              className="mt-0.5 rounded border-gray-300 text-organic-terracotta focus:ring-organic-terracotta"
               disabled={!isEligible}
             />
             <div>
@@ -377,7 +377,7 @@ export function CreateDisputeModal({
           <Button
             onClick={handleSubmit}
             disabled={!canSubmit}
-            className="bg-orange-600 hover:bg-orange-700 text-white"
+            className="bg-organic-terracotta hover:bg-organic-terracotta-hover text-white"
           >
             {createDispute.isPending ? (
               <Loader2 className="w-4 h-4 animate-spin mr-2" />

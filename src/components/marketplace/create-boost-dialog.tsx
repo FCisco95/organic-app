@@ -57,7 +57,7 @@ export function CreateBoostDialog({ open, onClose }: CreateBoostDialogProps) {
               onChange={(e) => setTweetUrl(e.target.value)}
               placeholder="https://x.com/user/status/..."
               required
-              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/50"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-organic-terracotta/50"
             />
           </div>
 
@@ -74,7 +74,7 @@ export function CreateBoostDialog({ open, onClose }: CreateBoostDialogProps) {
               value={pointsOffered}
               onChange={(e) => setPointsOffered(Number(e.target.value))}
               required
-              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/50"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-organic-terracotta/50"
             />
             <p className="text-[11px] text-muted-foreground mt-1">{t('pointsHint')}</p>
           </div>
@@ -92,7 +92,7 @@ export function CreateBoostDialog({ open, onClose }: CreateBoostDialogProps) {
               value={maxEngagements}
               onChange={(e) => setMaxEngagements(Number(e.target.value))}
               required
-              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/50"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-organic-terracotta/50"
             />
           </div>
 
@@ -111,7 +111,7 @@ export function CreateBoostDialog({ open, onClose }: CreateBoostDialogProps) {
             <button
               type="submit"
               disabled={isPending}
-              className="flex-1 rounded-lg bg-orange-500 text-white py-2 text-sm font-medium hover:bg-orange-600 disabled:opacity-50 transition-colors"
+              className="flex-1 rounded-lg bg-cta text-cta-fg py-2 text-sm font-medium hover:bg-cta-hover disabled:opacity-50 transition-colors"
             >
               {isPending ? t('creating') : t('createBoost')}
             </button>

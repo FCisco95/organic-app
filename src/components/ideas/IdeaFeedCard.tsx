@@ -113,8 +113,8 @@ export function IdeaFeedCard({ idea, onVote, onModerate, canModerate, isSpotligh
             className={cn(
               'rounded-lg p-1 transition-all duration-200 ease-out',
               vote === 1
-                ? 'bg-organic-terracotta text-white'
-                : 'text-muted-foreground hover:bg-organic-terracotta-lightest hover:text-organic-terracotta',
+                ? 'bg-cta text-cta-fg'
+                : 'text-muted-foreground hover:bg-cta/10 hover:text-cta',
               animating === 'up' && 'scale-110'
             )}
             aria-label={t('upvote')}

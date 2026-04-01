@@ -61,7 +61,7 @@ export function MemberFilters({
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder={t('searchPlaceholder')}
             data-testid="members-filter-search"
-            className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-organic-orange/30 focus:border-organic-orange"
+            className="w-full pl-10 pr-4 py-2 bg-white border border-border rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30 focus:border-organic-terracotta"
           />
         </div>
 
@@ -72,7 +72,7 @@ export function MemberFilters({
             <select
               value={sort}
               onChange={(e) => onSortChange(e.target.value as SortOption)}
-              className="appearance-none pl-10 pr-8 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-organic-orange/30 focus:border-organic-orange cursor-pointer"
+              className="appearance-none pl-10 pr-8 py-2 bg-white border border-border rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30 focus:border-organic-terracotta cursor-pointer"
               aria-label={t('sort.label')}
             >
               {SORT_OPTIONS.map((opt) => (
@@ -96,7 +96,7 @@ export function MemberFilters({
               className={cn(
                 'px-3 py-1.5 rounded-full text-sm font-medium transition-colors duration-150 ease-out',
                 role === opt.value
-                  ? 'bg-organic-orange text-white'
+                  ? 'bg-cta text-cta-fg'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               )}
             >

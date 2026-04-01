@@ -46,7 +46,7 @@ export function TokenChart() {
       {/* Header with provider tabs */}
       <div className="flex items-center justify-between border-b border-border px-5 py-3">
         <div className="flex items-center gap-2">
-          <TrendingUp className="h-4 w-4 text-orange-500" />
+          <TrendingUp className="h-4 w-4 text-organic-terracotta" />
           <h3 className="text-sm font-semibold text-foreground">{t('chartTitle')}</h3>
         </div>
         <div className="flex items-center gap-1 rounded-lg bg-muted/50 p-0.5">
@@ -81,7 +81,7 @@ export function TokenChart() {
             {!loaded[p.key] && provider === p.key && (
               <div className="absolute inset-0 flex items-center justify-center bg-card z-10">
                 <div className="flex flex-col items-center gap-3">
-                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-muted-foreground/20 border-t-orange-500" />
+                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-muted-foreground/20 border-t-organic-terracotta" />
                   <p className="text-xs text-muted-foreground">{t('chartLoading')}</p>
                 </div>
               </div>

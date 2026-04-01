@@ -48,7 +48,7 @@ const getRankStyle = (rank: number) => {
     case 2:
       return 'bg-gradient-to-r from-gray-50 to-slate-50 border-gray-300 dark:from-gray-500/10 dark:to-slate-500/10 dark:border-gray-500/30';
     case 3:
-      return 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-300 dark:from-amber-500/10 dark:to-orange-500/10 dark:border-amber-500/30';
+      return 'bg-gradient-to-r from-amber-50 to-organic-terracotta-lightest border-amber-300 dark:from-amber-500/10 dark:to-organic-terracotta/10 dark:border-amber-500/30';
     default:
       return 'bg-card border-border';
   }
@@ -171,9 +171,9 @@ function SortIndicator({
     );
   }
   return direction === 'asc' ? (
-    <ChevronUp className="w-3.5 h-3.5 text-organic-orange ml-1 inline-block" />
+    <ChevronUp className="w-3.5 h-3.5 text-organic-terracotta ml-1 inline-block" />
   ) : (
-    <ChevronDown className="w-3.5 h-3.5 text-organic-orange ml-1 inline-block" />
+    <ChevronDown className="w-3.5 h-3.5 text-organic-terracotta ml-1 inline-block" />
   );
 }
 
@@ -344,7 +344,7 @@ export function RankingsTab() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={tC('searchRankings')}
-          className="w-full pl-11 pr-16 py-3.5 bg-card border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground/50 placeholder:font-mono focus:outline-none focus:ring-2 focus:ring-organic-orange/30 focus:border-organic-orange transition-all duration-200"
+          className="w-full pl-11 pr-16 py-3.5 bg-card border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground/50 placeholder:font-mono focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30 focus:border-organic-terracotta transition-all duration-200"
         />
         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-mono text-muted-foreground/40 bg-muted px-2 py-1 rounded-md border border-border/50">
           {tC('searchShortcut')}
@@ -381,7 +381,7 @@ export function RankingsTab() {
                 )}
                 <Medal className="absolute -bottom-1 -right-1 w-5 h-5 text-gray-400" />
               </div>
-              <p className="mt-2 text-xs font-medium text-foreground truncate w-full text-center group-hover:text-organic-orange transition-colors" title={getDisplayName(podiumEntries[1])}>
+              <p className="mt-2 text-xs font-medium text-foreground truncate w-full text-center group-hover:text-organic-terracotta transition-colors" title={getDisplayName(podiumEntries[1])}>
                 {getDisplayName(podiumEntries[1])}
               </p>
               <p className="text-xs font-mono tabular-nums text-muted-foreground">
@@ -426,10 +426,10 @@ export function RankingsTab() {
                 )}
                 <Trophy className="absolute -bottom-1 -right-1 w-6 h-6 text-yellow-500" />
               </div>
-              <p className="mt-2 text-sm font-semibold text-foreground truncate w-full text-center group-hover:text-organic-orange transition-colors" title={getDisplayName(podiumEntries[0])}>
+              <p className="mt-2 text-sm font-semibold text-foreground truncate w-full text-center group-hover:text-organic-terracotta transition-colors" title={getDisplayName(podiumEntries[0])}>
                 {getDisplayName(podiumEntries[0])}
               </p>
-              <p className="text-xs font-mono tabular-nums text-orange-500 font-semibold">
+              <p className="text-xs font-mono tabular-nums text-organic-terracotta font-semibold">
                 {formatXp(podiumEntries[0].xp_total)} XP
               </p>
               {podiumEntries[0].level != null && podiumEntries[0].level > 0 && (
@@ -466,7 +466,7 @@ export function RankingsTab() {
                     className="rounded-full object-cover border-2 border-amber-400"
                   />
                 ) : (
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center border-2 border-amber-400">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-organic-terracotta flex items-center justify-center border-2 border-amber-400">
                     <span className="text-white font-bold">
                       {getDisplayName(podiumEntries[2])[0].toUpperCase()}
                     </span>
@@ -474,7 +474,7 @@ export function RankingsTab() {
                 )}
                 <Award className="absolute -bottom-1 -right-1 w-5 h-5 text-amber-600" />
               </div>
-              <p className="mt-2 text-xs font-medium text-foreground truncate w-full text-center group-hover:text-organic-orange transition-colors" title={getDisplayName(podiumEntries[2])}>
+              <p className="mt-2 text-xs font-medium text-foreground truncate w-full text-center group-hover:text-organic-terracotta transition-colors" title={getDisplayName(podiumEntries[2])}>
                 {getDisplayName(podiumEntries[2])}
               </p>
               <p className="text-xs font-mono tabular-nums text-muted-foreground">
@@ -502,10 +502,10 @@ export function RankingsTab() {
 
       {/* Current User Stats */}
       {!search.trim() && currentUserRank && (
-        <div className="bg-gradient-to-r from-orange-500/10 to-organic-orange/10 border border-orange-500/20 rounded-xl p-4 mb-6 opacity-0 animate-fade-up stagger-3 hover:scale-[1.01] transition-transform duration-200">
+        <div className="bg-gradient-to-r from-organic-terracotta/10 to-organic-terracotta/10 border border-organic-terracotta/20 rounded-xl p-4 mb-6 opacity-0 animate-fade-up stagger-3 hover:scale-[1.01] transition-transform duration-200">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 bg-organic-terracotta-lightest0 rounded-full flex items-center justify-center">
                 <Star className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -517,7 +517,7 @@ export function RankingsTab() {
             </div>
             <div className="text-right">
               <p className="text-sm text-muted-foreground">{t('yourXp')}</p>
-              <p className="font-bold text-orange-500 text-xl font-mono tabular-nums animate-count-up">
+              <p className="font-bold text-organic-terracotta text-xl font-mono tabular-nums animate-count-up">
                 {t('xpLabel', { xp: formatXp(currentUserRank.xp_total) })}
               </p>
               <p className="text-xs text-muted-foreground">
@@ -629,7 +629,7 @@ export function RankingsTab() {
                   data-row-index={idx}
                   className={cn(
                     'block opacity-0 animate-fade-up-in outline-none transition-all duration-150 ease-out',
-                    isFocused && 'ring-2 ring-organic-orange ring-offset-2 ring-offset-card z-10 relative'
+                    isFocused && 'ring-2 ring-organic-terracotta ring-offset-2 ring-offset-card z-10 relative'
                   )}
                   style={{ animationDelay: `${idx * 50}ms` }}
                   tabIndex={-1}
@@ -637,10 +637,10 @@ export function RankingsTab() {
                   {/* Mobile card */}
                   <div
                     className={cn(
-                      'sm:hidden px-4 py-3 transition-all duration-200 hover:bg-muted/50 border-l-2 border-l-transparent hover:border-l-organic-orange',
+                      'sm:hidden px-4 py-3 transition-all duration-200 hover:bg-muted/50 border-l-2 border-l-transparent hover:border-l-organic-terracotta',
                       getRankStyle(entry.rank),
-                      isCurrentUser && 'ring-2 ring-orange-500 ring-inset',
-                      isFocused && 'bg-muted/50 border-l-organic-orange'
+                      isCurrentUser && 'ring-2 ring-organic-terracotta ring-inset',
+                      isFocused && 'bg-muted/50 border-l-organic-terracotta'
                     )}
                   >
                     <div className="flex items-center gap-3">
@@ -654,7 +654,7 @@ export function RankingsTab() {
                           className="shrink-0 rounded-full object-cover border-2 border-border"
                         />
                       ) : (
-                        <div className="w-9 h-9 shrink-0 rounded-full bg-gradient-to-br from-orange-500 to-organic-orange flex items-center justify-center border-2 border-border">
+                        <div className="w-9 h-9 shrink-0 rounded-full bg-gradient-to-br from-organic-terracotta to-organic-terracotta flex items-center justify-center border-2 border-border">
                           <span className="text-white font-bold text-sm">
                             {getDisplayName(entry)[0].toUpperCase()}
                           </span>
@@ -666,7 +666,7 @@ export function RankingsTab() {
                             {getDisplayName(entry)}
                           </p>
                           {isCurrentUser && (
-                            <span className="shrink-0 text-xs bg-orange-500 text-white px-2 py-0.5 rounded-full">
+                            <span className="shrink-0 text-xs bg-organic-terracotta-lightest0 text-white px-2 py-0.5 rounded-full">
                               {t('youBadge')}
                             </span>
                           )}
@@ -689,7 +689,7 @@ export function RankingsTab() {
                         <p
                           className={cn(
                             'font-bold font-mono tabular-nums',
-                            entry.rank <= 3 ? 'text-orange-500' : 'text-foreground'
+                            entry.rank <= 3 ? 'text-organic-terracotta' : 'text-foreground'
                           )}
                         >
                           {formatXp(entry.xp_total)}
@@ -704,10 +704,10 @@ export function RankingsTab() {
                   {/* Desktop row */}
                   <div
                     className={cn(
-                      'hidden sm:grid grid-cols-12 gap-4 px-6 py-4 items-center transition-all duration-200 hover:scale-[1.005] hover:bg-muted/50 border-l-2 border-l-transparent hover:border-l-organic-orange',
+                      'hidden sm:grid grid-cols-12 gap-4 px-6 py-4 items-center transition-all duration-200 hover:scale-[1.005] hover:bg-muted/50 border-l-2 border-l-transparent hover:border-l-organic-terracotta',
                       getRankStyle(entry.rank),
-                      isCurrentUser && 'ring-2 ring-orange-500 ring-inset',
-                      isFocused && 'bg-muted/50 border-l-organic-orange'
+                      isCurrentUser && 'ring-2 ring-organic-terracotta ring-inset',
+                      isFocused && 'bg-muted/50 border-l-organic-terracotta'
                     )}
                   >
                     <div className="col-span-1 flex items-center">
@@ -724,7 +724,7 @@ export function RankingsTab() {
                           className="rounded-full object-cover border-2 border-border"
                         />
                       ) : (
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-organic-orange flex items-center justify-center border-2 border-border">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-organic-terracotta to-organic-terracotta flex items-center justify-center border-2 border-border">
                           <span className="text-white font-bold">
                             {getDisplayName(entry)[0].toUpperCase()}
                           </span>
@@ -734,7 +734,7 @@ export function RankingsTab() {
                         <p className="font-medium text-foreground">
                           {getDisplayName(entry)}
                           {isCurrentUser && (
-                            <span className="ml-2 text-xs bg-orange-500 text-white px-2 py-0.5 rounded-full">
+                            <span className="ml-2 text-xs bg-organic-terracotta-lightest0 text-white px-2 py-0.5 rounded-full">
                               {t('youBadge')}
                             </span>
                           )}
@@ -766,7 +766,7 @@ export function RankingsTab() {
                       <p
                         className={cn(
                           'font-bold text-lg font-mono tabular-nums',
-                          entry.rank <= 3 ? 'text-orange-500' : 'text-foreground'
+                          entry.rank <= 3 ? 'text-organic-terracotta' : 'text-foreground'
                         )}
                       >
                         {t('xpLabel', { xp: formatXp(entry.xp_total) })}

@@ -88,7 +88,7 @@ export function DelegationPanel({ className }: DelegationPanelProps) {
         </h3>
         <button
           onClick={() => setShowPicker(!showPicker)}
-          className="text-xs text-organic-orange hover:text-orange-600 font-medium"
+          className="text-xs text-organic-terracotta hover:text-organic-terracotta font-medium"
         >
           {showPicker ? t('cancel') : `+ ${t('delegate')}`}
         </button>
@@ -175,9 +175,9 @@ export function DelegationPanel({ className }: DelegationPanelProps) {
 
       {/* Delegation picker */}
       {showPicker && (
-        <div className="border border-gray-200 rounded-lg overflow-hidden">
+        <div className="border border-border rounded-lg overflow-hidden">
           {/* Category selector */}
-          <div className="p-2 border-b border-gray-200 bg-gray-50">
+          <div className="p-2 border-b border-border bg-gray-50">
             <label className="block text-xs font-medium text-gray-500 mb-1">{t('scope')}</label>
             <div className="flex gap-1 flex-wrap">
               <button
@@ -185,8 +185,8 @@ export function DelegationPanel({ className }: DelegationPanelProps) {
                 className={cn(
                   'px-2 py-1 text-xs rounded',
                   selectedCategory === null
-                    ? 'bg-organic-orange text-white'
-                    : 'bg-white text-gray-600 border border-gray-200 hover:border-gray-300'
+                    ? 'bg-cta text-cta-fg'
+                    : 'bg-white text-gray-600 border border-border hover:border-gray-300'
                 )}
               >
                 {t('global')}
@@ -198,8 +198,8 @@ export function DelegationPanel({ className }: DelegationPanelProps) {
                   className={cn(
                     'px-2 py-1 text-xs rounded',
                     selectedCategory === key
-                      ? 'bg-organic-orange text-white'
-                      : 'bg-white text-gray-600 border border-gray-200 hover:border-gray-300'
+                      ? 'bg-cta text-cta-fg'
+                      : 'bg-white text-gray-600 border border-border hover:border-gray-300'
                   )}
                 >
                   {label}
@@ -216,7 +216,7 @@ export function DelegationPanel({ className }: DelegationPanelProps) {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={t('searchMembers')}
-              className="w-full pl-9 pr-3 py-2 text-sm border-b border-gray-200 focus:outline-none focus:border-organic-orange"
+              className="w-full pl-9 pr-3 py-2 text-sm border-b border-border focus:outline-none focus:border-organic-terracotta"
               autoFocus
             />
           </div>
@@ -228,7 +228,7 @@ export function DelegationPanel({ className }: DelegationPanelProps) {
                 key={member.id}
                 onClick={() => handleDelegate(member.id)}
                 disabled={delegate.isPending}
-                className="w-full text-left px-3 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-2 border-b border-gray-100 last:border-b-0"
+                className="w-full text-left px-3 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-2 border-b border-border last:border-b-0"
               >
                 <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-medium text-gray-600 flex-shrink-0">
                   {(member.name || member.email)[0].toUpperCase()}
@@ -242,7 +242,7 @@ export function DelegationPanel({ className }: DelegationPanelProps) {
                   )}
                 </div>
                 {member.organic_id && (
-                  <span className="text-xs text-organic-orange">#{member.organic_id}</span>
+                  <span className="text-xs text-organic-terracotta">#{member.organic_id}</span>
                 )}
               </button>
             ))}

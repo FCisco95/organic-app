@@ -29,7 +29,7 @@ export function ProfileTabs({ activeTab, onTabChange }: ProfileTabsProps) {
           className={cn(
             'px-4 py-2.5 text-sm font-medium transition-colors -mb-px whitespace-nowrap',
             activeTab === tab.id
-              ? 'border-b-2 border-organic-orange text-organic-orange'
+              ? 'border-b-2 border-organic-terracotta text-organic-terracotta'
               : 'text-muted-foreground hover:text-foreground'
           )}
         >

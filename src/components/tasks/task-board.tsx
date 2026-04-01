@@ -36,7 +36,7 @@ export type TaskBoardTask = {
 const COLUMNS: { id: TaskStatus; color: string }[] = [
   { id: 'backlog', color: 'bg-gray-100 border-gray-300' },
   { id: 'todo', color: 'bg-blue-50 border-blue-300' },
-  { id: 'in_progress', color: 'bg-orange-50 border-orange-300' },
+  { id: 'in_progress', color: 'bg-organic-terracotta-lightest border-organic-terracotta-light' },
   { id: 'review', color: 'bg-purple-50 border-purple-300' },
   { id: 'done', color: 'bg-green-50 border-green-300' },
 ];
@@ -103,7 +103,7 @@ export function TaskBoard({
     return (
       <div className={`flex snap-x snap-mandatory overflow-x-auto gap-4 pb-2 md:grid ${gridClass}`}>
         {visibleColumns.map((col) => (
-          <div key={col.id} className="min-w-[280px] snap-start shrink-0 md:min-w-0 md:shrink bg-white rounded-lg border border-gray-200 p-4">
+          <div key={col.id} className="min-w-[280px] snap-start shrink-0 md:min-w-0 md:shrink bg-white rounded-lg border border-border p-4">
             <div className="h-6 bg-gray-200 rounded w-1/2 mb-4 animate-pulse"></div>
             <div className="space-y-3">
               {[1, 2].map((i) => (
@@ -125,7 +125,7 @@ export function TaskBoard({
           <div
             key={column.id}
             className={`min-w-[280px] snap-start shrink-0 md:min-w-0 md:shrink rounded-lg border-2 p-4 ${column.color} min-h-[500px] transition-all ${
-              isDropTarget ? 'ring-2 ring-organic-orange ring-offset-2 scale-[1.02]' : ''
+              isDropTarget ? 'ring-2 ring-organic-terracotta ring-offset-2 scale-[1.02]' : ''
             }`}
             onDragOver={handleDragOver}
             onDrop={(event) => handleDrop(column.id, event)}
@@ -187,7 +187,7 @@ function TaskCard({
       case 'critical':
         return 'bg-red-100 text-red-700 border-red-300';
       case 'high':
-        return 'bg-orange-100 text-orange-700 border-orange-300';
+        return 'bg-organic-terracotta-light/30 text-organic-terracotta-hover border-organic-terracotta-light';
       case 'medium':
         return 'bg-yellow-100 text-yellow-700 border-yellow-300';
       case 'low':
@@ -204,7 +204,7 @@ function TaskCard({
     <div
       draggable={canManage}
       onDragStart={(event) => onDragStart(task, event)}
-      className={`bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all group relative ${
+      className={`bg-white rounded-lg border border-border shadow-sm hover:shadow-md transition-all group relative ${
         isDragging ? 'opacity-50 scale-95' : ''
       } ${canManage ? 'cursor-move' : ''}`}
     >
@@ -221,7 +221,7 @@ function TaskCard({
         )}
 
         <div className="flex items-start justify-between gap-2 mb-2">
-          <h4 className="font-medium text-gray-900 text-sm line-clamp-2 flex-1 group-hover:text-organic-orange transition-colors">
+          <h4 className="font-medium text-gray-900 text-sm line-clamp-2 flex-1 group-hover:text-organic-terracotta transition-colors">
             {task.title}
           </h4>
         </div>
@@ -308,7 +308,7 @@ function TaskCard({
             <MoreVertical className="w-4 h-4" />
           </button>
           {showActions && (
-            <div className="absolute right-0 mt-1 w-40 bg-white rounded-lg shadow-lg border border-gray-200 py-1">
+            <div className="absolute right-0 mt-1 w-40 bg-white rounded-lg shadow-lg border border-border py-1">
               <button
                 onClick={(e) => {
                   e.preventDefault();
@@ -316,7 +316,7 @@ function TaskCard({
                   setShowActions(false);
                   router.push(`/tasks/${task.id}`);
                 }}
-                className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 border-b border-gray-100"
+                className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 border-b border-border"
               >
                 <Edit2 className="w-3.5 h-3.5" />
                 {t('editTask')}

@@ -13,7 +13,7 @@ interface PersonalStatsCardsProps {
 const STAT_CARDS = [
   { key: 'xp', icon: Zap, color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-500/10' },
   { key: 'level', icon: Star, color: 'text-indigo-500', bg: 'bg-indigo-50 dark:bg-indigo-500/10' },
-  { key: 'streak', icon: Flame, color: 'text-orange-500', bg: 'bg-orange-50 dark:bg-orange-500/10' },
+  { key: 'streak', icon: Flame, color: 'text-organic-terracotta', bg: 'bg-organic-terracotta-lightest dark:bg-organic-terracotta-lightest0/10' },
   { key: 'points', icon: Coins, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-500/10' },
   { key: 'tasks', icon: CheckCircle2, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-500/10' },
   { key: 'achievements', icon: Trophy, color: 'text-purple-500', bg: 'bg-purple-50 dark:bg-purple-500/10' },
@@ -56,7 +56,7 @@ export function PersonalStatsCards({ stats, loading }: PersonalStatsCardsProps) 
         return (
           <div
             key={card.key}
-            className="rounded-xl bg-white dark:bg-card ring-1 ring-gray-200/70 dark:ring-border p-4 flex flex-col items-center text-center gap-2"
+            className="rounded-xl bg-white dark:bg-card ring-1 ring-border p-4 flex flex-col items-center text-center gap-2"
           >
             <div className={cn('rounded-lg p-2', card.bg)}>
               <Icon className={cn('h-4 w-4', card.color)} />

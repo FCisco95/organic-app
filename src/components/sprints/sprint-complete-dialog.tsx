@@ -62,9 +62,9 @@ export function SprintCompleteDialog({
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
       data-testid="sprint-complete-dialog"
     >
-      <div className="w-full max-w-lg rounded-lg border border-gray-200 bg-white shadow-xl">
+      <div className="w-full max-w-lg rounded-lg border border-border bg-card shadow-xl">
         {/* Header */}
-        <div className="border-b border-gray-200 px-5 py-3">
+        <div className="border-b border-border px-5 py-3">
           <h2 className="text-base font-semibold text-gray-900">{t('completeSprintTitle')}</h2>
           <p className="mt-0.5 text-xs text-gray-500">
             {t('completeSprintSubtitle', { name: sprint.name })}
@@ -78,7 +78,7 @@ export function SprintCompleteDialog({
               <div>
                 <div className="relative h-4 w-full overflow-hidden rounded-full bg-gray-200">
                   <div
-                    className="h-full rounded-full bg-organic-orange transition-all"
+                    className="h-full rounded-full bg-cta transition-all"
                     style={{ width: `${stats.completionRate}%` }}
                   />
                   {stats.completionRate > 15 && (
@@ -125,7 +125,7 @@ export function SprintCompleteDialog({
                 {t('incompleteTasksCount', { count: stats.incompleteTasks })}
               </p>
 
-              <label className="flex items-start gap-3 rounded-md border border-gray-200 p-3 cursor-pointer transition-colors hover:bg-gray-50">
+              <label className="flex items-start gap-3 rounded-md border border-border p-3 cursor-pointer transition-colors hover:bg-gray-50">
                 <input
                   type="radio"
                   name="incomplete_action"
@@ -141,7 +141,7 @@ export function SprintCompleteDialog({
               </label>
 
               <label
-                className={`flex items-start gap-3 rounded-md border border-gray-200 p-3 cursor-pointer transition-colors hover:bg-gray-50 ${
+                className={`flex items-start gap-3 rounded-md border border-border p-3 cursor-pointer transition-colors hover:bg-gray-50 ${
                   planningSprints.length === 0 ? 'opacity-50 pointer-events-none' : ''
                 }`}
               >
@@ -180,7 +180,7 @@ export function SprintCompleteDialog({
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-end gap-2 border-t border-gray-200 px-5 py-3">
+        <div className="flex items-center justify-end gap-2 border-t border-border px-5 py-3">
           {step === 'incomplete' ? (
             <button
               type="button"
@@ -207,7 +207,7 @@ export function SprintCompleteDialog({
               loading ||
               (step === 'incomplete' && incompleteAction === 'next_sprint' && !nextSprintId)
             }
-            className="flex items-center gap-1.5 rounded-md border border-organic-orange bg-organic-orange px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-orange-600 disabled:opacity-50"
+            className="flex items-center gap-1.5 rounded-md border border-cta bg-cta px-3 py-1.5 text-sm font-medium text-cta-fg transition-colors hover:bg-cta-hover disabled:opacity-50"
           >
             {loading ? (
               <>

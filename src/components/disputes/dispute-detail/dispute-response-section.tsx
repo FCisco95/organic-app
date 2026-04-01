@@ -15,7 +15,7 @@ export function DisputeResponseSection({ dispute }: DisputeResponseSectionProps)
   const responseLinks = Array.isArray(dispute.response_links) ? dispute.response_links : [];
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-4">
+    <div className="rounded-xl border border-border bg-card p-4">
       <h3 className="mb-2 text-sm font-semibold text-gray-900">{td('reviewerResponse')}</h3>
       {dispute.response_text ? (
         <>

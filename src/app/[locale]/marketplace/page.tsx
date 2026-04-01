@@ -9,6 +9,7 @@ import { useActiveBoosts, useMyBoosts, useCancelBoost } from '@/features/marketp
 import { BoostCard } from '@/components/marketplace/boost-card';
 import { CreateBoostDialog } from '@/components/marketplace/create-boost-dialog';
 import { EngageDialog } from '@/components/marketplace/engage-dialog';
+import { PageHero } from '@/components/ui/page-hero';
 import { Megaphone, Plus, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -56,17 +57,7 @@ export default function MarketplacePage() {
     <PageContainer layout="fluid">
       <div className="space-y-6">
         {/* Hero */}
-        <div className="rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 sm:p-8 text-white opacity-0 animate-fade-up stagger-1">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="rounded-lg bg-white/10 p-2">
-              <Megaphone className="h-5 w-5 text-orange-400" />
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{t('title')}</h1>
-          </div>
-          <p className="text-sm sm:text-base text-gray-300 leading-relaxed max-w-2xl">
-            {t('description')}
-          </p>
-        </div>
+        <PageHero icon={Megaphone} title={t('title')} description={t('description')} />
 
         {/* Tab bar + create button */}
         <div className="flex items-center justify-between border-b border-border opacity-0 animate-fade-up stagger-2">
@@ -78,7 +69,7 @@ export default function MarketplacePage() {
                 className={cn(
                   'px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px',
                   activeTab === tab.key
-                    ? 'border-orange-500 text-orange-600 dark:text-orange-400 font-bold bg-orange-50 dark:bg-orange-500/5 rounded-t-lg'
+                    ? 'border-organic-terracotta text-organic-terracotta dark:text-[#E8845C] font-bold bg-organic-terracotta-lightest dark:bg-organic-terracotta-lightest0/5 rounded-t-lg'
                     : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
                 )}
               >
@@ -90,7 +81,7 @@ export default function MarketplacePage() {
           {isAuthenticated && (
             <button
               onClick={() => setShowCreateDialog(true)}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-orange-500 text-white text-sm font-medium px-3 py-2 hover:bg-orange-600 transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-cta text-cta-fg text-sm font-medium px-3 py-2 hover:bg-cta-hover transition-colors"
             >
               <Plus className="h-4 w-4" />
               {t('createBoost')}

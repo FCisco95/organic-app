@@ -80,7 +80,7 @@ export function IdeaTimeline({ idea }: IdeaTimelineProps) {
               className={cn(
                 'relative z-10 flex h-6 w-6 shrink-0 items-center justify-center rounded-full',
                 event.isComplete
-                  ? 'bg-organic-terracotta text-white'
+                  ? 'bg-cta text-cta-fg'
                   : 'border-2 border-border bg-card text-muted-foreground'
               )}
             >

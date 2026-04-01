@@ -88,6 +88,7 @@ export function TreasuryHero({ walletAddress, trust }: TreasuryHeroProps) {
     };
   }, []);
 
+  // TODO: Migrate to <PageHero> — has principle cards, wallet reveal interaction, emission policy, and settlement panels that go far beyond title+description+buttons
   return (
     <div className="rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 sm:p-8 text-white">
       <div className="max-w-5xl">
@@ -100,7 +101,7 @@ export function TreasuryHero({ walletAddress, trust }: TreasuryHeroProps) {
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="flex items-start gap-3">
             <div className="rounded-lg bg-white/10 p-2">
-              <Shield className="h-4 w-4 text-orange-400" />
+              <Shield className="h-4 w-4 text-[#E8845C]" />
             </div>
             <div>
               <p className="text-sm font-medium">{t('principleSecurityTitle')}</p>
@@ -147,10 +148,10 @@ export function TreasuryHero({ walletAddress, trust }: TreasuryHeroProps) {
                 <Lock
                   className={`h-6 w-6 text-gray-400 transition-colors duration-300 ${
                     holding
-                      ? 'animate-lock-shake text-orange-400'
+                      ? 'animate-lock-shake text-[#E8845C]'
                       : bursting
-                        ? 'animate-lock-burst text-orange-400'
-                        : 'group-hover:text-orange-400'
+                        ? 'animate-lock-burst text-[#E8845C]'
+                        : 'group-hover:text-[#E8845C]'
                   }`}
                 />
                 <span className="text-sm text-gray-400 group-hover:text-gray-200 transition-colors duration-300">
@@ -164,7 +165,7 @@ export function TreasuryHero({ walletAddress, trust }: TreasuryHeroProps) {
                   {SPARKLE_POSITIONS.map((pos, i) => (
                     <span
                       key={i}
-                      className="absolute left-6 top-3 h-1.5 w-1.5 rounded-full bg-orange-400"
+                      className="absolute left-6 top-3 h-1.5 w-1.5 rounded-full bg-organic-terracotta"
                       style={{
                         '--tx': pos.tx,
                         '--ty': pos.ty,
@@ -266,7 +267,7 @@ export function TreasuryHero({ walletAddress, trust }: TreasuryHeroProps) {
               {trust?.audit_log_link && (
                 <a
                   href={trust.audit_log_link}
-                  className="inline-flex items-center gap-1 text-orange-300 hover:text-orange-200"
+                  className="inline-flex items-center gap-1 text-[#E8845C] hover:text-organic-terracotta-light"
                   data-testid="treasury-audit-link"
                 >
                   {t('auditTrailLink')}

@@ -15,7 +15,7 @@ export function Step3Budget({ formData, errors, updateField, t }: StepProps) {
             {t('labelBudget')}
           </label>
           {isTreasury ? (
-            <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">
+            <span className="text-xs bg-organic-terracotta-light/30 text-organic-terracotta-hover px-2 py-0.5 rounded-full">
               {t('budgetRecommended')}
             </span>
           ) : (
@@ -29,7 +29,7 @@ export function Step3Budget({ formData, errors, updateField, t }: StepProps) {
           placeholder={t('placeholderBudget')}
           rows={5}
           className={cn(
-            'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none',
+            'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent resize-none',
             errors.budget ? 'border-red-300' : 'border-gray-300'
           )}
         />
@@ -51,7 +51,7 @@ export function Step3Budget({ formData, errors, updateField, t }: StepProps) {
           placeholder={t('placeholderTimeline')}
           rows={5}
           className={cn(
-            'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none',
+            'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent resize-none',
             errors.timeline ? 'border-red-300' : 'border-gray-300'
           )}
         />

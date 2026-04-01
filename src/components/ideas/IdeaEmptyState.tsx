@@ -21,7 +21,8 @@ export function IdeaEmptyState({ onCreateClick }: IdeaEmptyStateProps) {
       {onCreateClick && (
         <Button
           onClick={onCreateClick}
-          className="mt-5 bg-organic-terracotta text-white hover:bg-organic-terracotta-hover"
+          className="mt-5"
+          variant="cta"
         >
           {t('emptyCta')}
         </Button>

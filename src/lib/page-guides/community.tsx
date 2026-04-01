@@ -14,7 +14,7 @@ function GlassCard({ children, className = '' }: { children: React.ReactNode; cl
 function PulseHighlight({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative">
-      <div className="absolute -inset-1 rounded-lg bg-orange-400/20 animate-pulse" />
+      <div className="absolute -inset-1 rounded-lg bg-organic-terracotta/20 animate-pulse" />
       <div className="relative">{children}</div>
     </div>
   );
@@ -34,7 +34,7 @@ function HubVisual() {
             <p className="text-xs font-bold text-white">Community</p>
           </div>
           <p className="text-[10px] text-gray-400 mb-2">
-            The people behind the <span className="text-orange-500">DAO</span>.
+            The people behind the <span className="text-organic-terracotta">DAO</span>.
           </p>
           <div className="flex gap-1.5">
             <span className="rounded-full bg-white/10 border border-white/20 px-2 py-0.5 text-[9px] text-gray-300">Leaderboard</span>
@@ -51,7 +51,7 @@ function LeaderboardVisual() {
   const leaders = [
     { rank: 1, name: 'Alice', xp: '4,200', badge: 'bg-amber-400' },
     { rank: 2, name: 'Bob', xp: '3,800', badge: 'bg-gray-400' },
-    { rank: 3, name: 'Carol', xp: '3,450', badge: 'bg-orange-400' },
+    { rank: 3, name: 'Carol', xp: '3,450', badge: 'bg-organic-terracotta' },
   ];
   return (
     <div className="w-full max-w-sm mx-auto">
@@ -67,7 +67,7 @@ function LeaderboardVisual() {
                       {l.rank}
                     </span>
                     <span className="text-[10px] font-medium text-white flex-1">{l.name}</span>
-                    <span className="text-[10px] font-mono text-orange-500 font-medium">{l.xp} XP</span>
+                    <span className="text-[10px] font-mono text-organic-terracotta font-medium">{l.xp} XP</span>
                   </div>
                 </PulseHighlight>
               ) : (
@@ -89,7 +89,7 @@ function LeaderboardVisual() {
 
 function DirectoryVisual() {
   const members = [
-    { name: 'Alice', role: 'Core', color: 'bg-orange-500' },
+    { name: 'Alice', role: 'Core', color: 'bg-organic-terracotta-lightest0' },
     { name: 'Bob', role: 'Contributor', color: 'bg-blue-400' },
     { name: 'Carol', role: 'Reviewer', color: 'bg-emerald-400' },
   ];
@@ -125,8 +125,8 @@ function RankingsSystemVisual() {
     <div className="w-full max-w-sm mx-auto">
       <GlassCard>
         <PulseHighlight>
-          <div className="rounded-lg border border-orange-500/30 bg-orange-500/10 p-2 mb-2">
-            <p className="text-[10px] text-orange-500 font-medium">Consistency &gt; bursts</p>
+          <div className="rounded-lg border border-organic-terracotta/30 bg-organic-terracotta-lightest0/10 p-2 mb-2">
+            <p className="text-[10px] text-organic-terracotta font-medium">Consistency &gt; bursts</p>
             <p className="text-[8px] text-gray-400 mt-0.5">Sustained participation is weighted more heavily.</p>
           </div>
         </PulseHighlight>

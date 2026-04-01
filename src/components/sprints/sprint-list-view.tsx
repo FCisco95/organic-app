@@ -49,7 +49,7 @@ export function SprintListView({
       <div
         key={sprint.id}
         data-testid={`sprint-list-${sprint.status === 'completed' ? 'completed' : sprint.status === 'planning' ? 'planning' : 'active'}-${sprint.id}`}
-        className="border-b border-gray-200 last:border-b-0"
+        className="border-b border-border last:border-b-0"
       >
         <div className="px-5 py-4">
           {/* Title row */}
@@ -66,7 +66,7 @@ export function SprintListView({
                 <span
                   className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${
                     isOpen
-                      ? 'border-orange-300 bg-orange-50 text-orange-700'
+                      ? 'border-organic-terracotta-light bg-organic-terracotta-lightest text-organic-terracotta-hover'
                       : 'border-gray-300 bg-gray-50 text-gray-600'
                   }`}
                 >
@@ -89,7 +89,7 @@ export function SprintListView({
           <div className="mt-3 ml-6.5">
             <div className="relative h-3.5 w-full overflow-hidden rounded-full bg-gray-200">
               <div
-                className="h-full rounded-full bg-organic-orange transition-all"
+                className="h-full rounded-full bg-cta transition-all"
                 style={{ width: `${percent}%` }}
               />
               {percent > 20 && (
@@ -116,12 +116,12 @@ export function SprintListView({
   return (
     <div data-testid="sprints-list-view">
       {allSprints.length === 0 ? (
-        <div className="rounded-md border border-gray-200 bg-white py-16 text-center">
+        <div className="rounded-md border border-border bg-white py-16 text-center">
           <Milestone className="mx-auto mb-3 h-12 w-12 text-gray-300" />
           <p className="text-sm text-gray-500">{t('noActiveSprint')}</p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-md border border-gray-200 bg-white">
+        <div className="overflow-hidden rounded-md border border-border bg-white">
           {allSprints.map(renderMilestoneCard)}
         </div>
       )}

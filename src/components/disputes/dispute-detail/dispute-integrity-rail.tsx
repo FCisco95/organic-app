@@ -30,10 +30,10 @@ export function DisputeIntegrityRail({
       {/* Response deadline */}
       <div
         data-testid="dispute-response-deadline-panel"
-        className="rounded-lg border border-gray-200 bg-white p-3"
+        className="rounded-lg border border-border bg-card p-3"
       >
         <div className="mb-1.5 flex items-center gap-1.5">
-          <Clock className="h-3.5 w-3.5 text-orange-600" />
+          <Clock className="h-3.5 w-3.5 text-organic-terracotta" />
           <h3 className="text-xs font-semibold text-gray-900">{td('integrity.responseDeadlineTitle')}</h3>
         </div>
         <p className="text-xs text-gray-700">{responsePostureLabel}</p>
@@ -47,7 +47,7 @@ export function DisputeIntegrityRail({
       {/* Evidence summary */}
       <div
         data-testid="dispute-evidence-chronology-panel"
-        className="rounded-lg border border-gray-200 bg-white p-3"
+        className="rounded-lg border border-border bg-card p-3"
       >
         <div className="mb-1.5 flex items-center gap-1.5">
           <FileClock className="h-3.5 w-3.5 text-indigo-600" />
@@ -83,7 +83,7 @@ export function DisputeIntegrityRail({
       {/* Mediation path */}
       <div
         data-testid="dispute-mediation-path-panel"
-        className="rounded-lg border border-gray-200 bg-white p-3"
+        className="rounded-lg border border-border bg-card p-3"
       >
         <div className="mb-1.5 flex items-center gap-1.5">
           <ShieldAlert className="h-3.5 w-3.5 text-purple-600" />

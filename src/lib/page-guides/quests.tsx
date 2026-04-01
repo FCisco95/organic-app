@@ -14,7 +14,7 @@ function GlassCard({ children, className = '' }: { children: React.ReactNode; cl
 function PulseHighlight({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative">
-      <div className="absolute -inset-1 rounded-lg bg-orange-400/20 animate-pulse" />
+      <div className="absolute -inset-1 rounded-lg bg-organic-terracotta/20 animate-pulse" />
       <div className="relative">{children}</div>
     </div>
   );
@@ -91,14 +91,14 @@ function DailyQuestsVisual() {
                   {q.label}
                 </span>
               </div>
-              <span className="text-[10px] font-mono font-bold text-orange-500">+{q.xp}</span>
+              <span className="text-[10px] font-mono font-bold text-organic-terracotta">+{q.xp}</span>
             </div>
           ))}
         </div>
         <PulseHighlight>
           <div className="mt-2.5 flex items-center justify-between rounded-lg bg-white/5 border border-white/10 px-2.5 py-1.5">
             <span className="text-[10px] text-gray-300 font-medium">Progress</span>
-            <span className="text-[10px] font-mono text-orange-500">2 / 3</span>
+            <span className="text-[10px] font-mono text-organic-terracotta">2 / 3</span>
           </div>
         </PulseHighlight>
       </GlassCard>
@@ -126,7 +126,7 @@ function WeeklyQuestsVisual() {
                   <span className={`inline-block h-1.5 w-1.5 rounded-full ${q.done ? 'bg-emerald-400' : 'bg-amber-400'}`} />
                   <span className="text-[10px] text-gray-300">{q.label}</span>
                 </div>
-                <span className="text-[10px] font-mono font-bold text-orange-500">+{q.xp}</span>
+                <span className="text-[10px] font-mono font-bold text-organic-terracotta">+{q.xp}</span>
               </div>
               <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
                 <div
@@ -185,9 +185,9 @@ function XpCadenceVisual() {
       <GlassCard>
         <div className="flex items-center gap-3 mb-2.5">
           <PulseHighlight>
-            <div className="rounded-lg bg-orange-500/10 border border-orange-500/20 px-3 py-2 text-center">
-              <p className="text-lg font-bold font-mono text-orange-500">1.5x</p>
-              <p className="text-[9px] text-orange-400">Multiplier</p>
+            <div className="rounded-lg bg-organic-terracotta-lightest0/10 border border-organic-terracotta/20 px-3 py-2 text-center">
+              <p className="text-lg font-bold font-mono text-organic-terracotta">1.5x</p>
+              <p className="text-[9px] text-[#E8845C]">Multiplier</p>
             </div>
           </PulseHighlight>
           <div className="flex-1">
@@ -197,7 +197,7 @@ function XpCadenceVisual() {
                   key={d}
                   className={`flex-1 h-5 rounded-sm flex items-center justify-center text-[7px] font-mono ${
                     d <= 5
-                      ? 'bg-orange-500/70 text-white'
+                      ? 'bg-organic-terracotta-lightest0/70 text-white'
                       : 'bg-white/5 text-gray-600'
                   }`}
                 >
@@ -214,7 +214,7 @@ function XpCadenceVisual() {
             <span className="text-[10px] font-mono font-bold text-white">2,340 XP</span>
           </div>
           <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-orange-500 to-orange-400 rounded-full" style={{ width: '68%' }} />
+            <div className="h-full bg-gradient-to-r from-organic-terracotta to-organic-terracotta rounded-full" style={{ width: '68%' }} />
           </div>
           <div className="mt-1 flex justify-between text-[8px] text-gray-500">
             <span>Contributor</span>

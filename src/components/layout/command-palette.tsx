@@ -277,12 +277,12 @@ export function CommandPaletteTrigger({ onClick }: { onClick?: () => void }) {
     <button
       type="button"
       onClick={handleClick}
-      className="hidden sm:inline-flex items-center gap-2 rounded-lg border border-sidebar-border bg-sidebar-muted/50 px-3 py-1.5 text-xs text-sidebar-muted-foreground transition-colors hover:bg-sidebar-muted hover:text-sidebar-foreground"
+      className="hidden sm:inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
       aria-label={t('commandPaletteSearch')}
     >
       <Search className="h-3.5 w-3.5" />
       <span className="text-xs">{t('commandPaletteSearch')}</span>
-      <kbd className="ml-1 rounded border border-gray-700 bg-gray-800 px-1 py-0.5 text-[10px] font-mono text-gray-400">
+      <kbd className="ml-1 rounded border border-border bg-muted px-1 py-0.5 text-[10px] font-mono text-muted-foreground">
         K
       </kbd>
     </button>

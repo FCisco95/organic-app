@@ -164,19 +164,19 @@ export default function TrophiesPage() {
 
       {/* Overall stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="rounded-xl border border-gray-200 bg-white p-4 text-center">
+        <div className="rounded-xl border border-border bg-card p-4 text-center">
           <p className="text-2xl font-bold text-gray-900">{stats.unlocked}</p>
           <p className="text-xs text-gray-500">Unlocked</p>
         </div>
-        <div className="rounded-xl border border-gray-200 bg-white p-4 text-center">
+        <div className="rounded-xl border border-border bg-card p-4 text-center">
           <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
           <p className="text-xs text-gray-500">Total</p>
         </div>
-        <div className="rounded-xl border border-gray-200 bg-white p-4 text-center">
+        <div className="rounded-xl border border-border bg-card p-4 text-center">
           <p className="text-2xl font-bold text-indigo-600">{stats.platinums}</p>
           <p className="text-xs text-gray-500">Platinums</p>
         </div>
-        <div className="rounded-xl border border-gray-200 bg-white p-4 text-center">
+        <div className="rounded-xl border border-border bg-card p-4 text-center">
           <div className="relative w-12 h-12 mx-auto">
             <svg className="w-12 h-12 -rotate-90" viewBox="0 0 36 36">
               <circle cx="18" cy="18" r="15.9" fill="none" className="stroke-gray-200" strokeWidth="2" />

@@ -23,10 +23,10 @@ function getIntensity(count: number, max: number): number {
 
 const INTENSITY_CLASSES = [
   'bg-gray-100 dark:bg-gray-800',
-  'bg-orange-100 dark:bg-orange-900/40',
-  'bg-orange-200 dark:bg-orange-800/50',
-  'bg-orange-400 dark:bg-orange-600/60',
-  'bg-orange-600 dark:bg-orange-500',
+  'bg-organic-terracotta-light/30 dark:bg-organic-terracotta-hover/40',
+  'bg-organic-terracotta-light/30 dark:bg-organic-terracotta-hover/50',
+  'bg-organic-terracotta dark:bg-organic-terracotta/60',
+  'bg-organic-terracotta dark:bg-organic-terracotta-lightest0',
 ] as const;
 
 const MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];

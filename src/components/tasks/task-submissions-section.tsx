@@ -23,7 +23,7 @@ export function TaskSubmissionsSection({
 
   if (submissions.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6" data-testid="task-submissions-surface">
+      <div className="bg-white rounded-xl border border-border p-6 mb-6" data-testid="task-submissions-surface">
         <h2 className="text-lg font-semibold text-gray-900 mb-2">{t('submissions')}</h2>
         <p className="text-sm text-gray-500">{tTasks('noSubmissionsYet')}</p>
       </div>
@@ -31,7 +31,7 @@ export function TaskSubmissionsSection({
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6" data-testid="task-submissions-surface">
+    <div className="bg-white rounded-xl border border-border p-6 mb-6" data-testid="task-submissions-surface">
       <h2 className="text-lg font-semibold text-gray-900 mb-4">
         {t('submissions')} ({submissions.length})
       </h2>
@@ -110,7 +110,7 @@ function SubmissionCard({
               href={submission.pr_link}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-sm text-organic-orange hover:underline"
+              className="inline-flex items-center gap-1 text-sm text-organic-terracotta hover:underline"
             >
               <ExternalLink className="w-3 h-3" />
               {t('viewPullRequest')}
@@ -122,7 +122,7 @@ function SubmissionCard({
               href={submission.content_link}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-sm text-organic-orange hover:underline ml-2"
+              className="inline-flex items-center gap-1 text-sm text-organic-terracotta hover:underline ml-2"
             >
               <ExternalLink className="w-3 h-3" />
               {t('viewContent')}
@@ -137,7 +137,7 @@ function SubmissionCard({
                   href={url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-sm text-organic-orange hover:underline"
+                  className="inline-flex items-center gap-1 text-sm text-organic-terracotta hover:underline"
                 >
                   <ExternalLink className="w-3 h-3" />
                   {t('file')} {idx + 1}
@@ -147,14 +147,14 @@ function SubmissionCard({
           )}
 
           {submission.reviewer_notes && (
-            <div className="mt-3 pt-3 border-t border-gray-200">
+            <div className="mt-3 pt-3 border-t border-border">
               <p className="text-sm font-medium text-gray-700">{t('reviewerNotes')}:</p>
               <p className="text-sm text-gray-600 mt-1">{submission.reviewer_notes}</p>
             </div>
           )}
 
           {submission.rejection_reason && (
-            <div className="mt-3 pt-3 border-t border-gray-200">
+            <div className="mt-3 pt-3 border-t border-border">
               <p className="text-sm font-medium text-red-700">{t('rejectionReason')}:</p>
               <p className="text-sm text-red-600 mt-1">{submission.rejection_reason}</p>
             </div>

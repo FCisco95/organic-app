@@ -25,6 +25,7 @@ import { cn } from '@/lib/utils';
 import { useActivityFeed } from '@/features/activity';
 import { GovernanceSummaryCard } from '@/components/analytics/governance-summary-card';
 import { HowItWorksCard } from '@/components/dashboard/how-it-works-card';
+import { CampaignCarousel } from '@/components/home/campaign-carousel';
 
 function formatCountdown(target: string | null | undefined): string {
   if (!target) return '';
@@ -108,9 +109,10 @@ export default function Home() {
         </span>
       </header>
 
+      {/* TODO: Migrate to <PageHero> — custom grid layout with contract address panel, blur effects, and landing page structure doesn't fit current PageHero props */}
       {/* -- Hero -- */}
       <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 sm:p-8 lg:p-10 mb-8 shadow-sm opacity-0 animate-fade-up stagger-2 text-white">
-        <div className="absolute -right-16 -top-20 h-48 w-48 rounded-full bg-orange-500/10 blur-3xl" />
+        <div className="absolute -right-16 -top-20 h-48 w-48 rounded-full bg-organic-terracotta-lightest0/10 blur-3xl" />
         <div className="absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-white/5 blur-3xl" />
 
         <div className="relative grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
@@ -120,7 +122,7 @@ export default function Home() {
             </p>
             <h1 className="mt-3 text-3xl sm:text-4xl lg:text-[42px] font-bold leading-[1.1] text-white tracking-tight">
               {t('heroTitle')}{' '}
-              <span className="text-orange-500 animate-organic-grow inline-block">Organic</span>
+              <span className="text-[#E8845C] animate-organic-grow inline-block">Organic</span>
             </h1>
             <p className="mt-4 text-base text-gray-300 leading-relaxed max-w-xl">
               {t('heroSubtitle')}
@@ -183,9 +185,14 @@ export default function Home() {
         </div>
       </section>
 
+      {/* -- Campaign Carousel -- */}
+      <section className="mb-8 opacity-0 animate-fade-up stagger-3">
+        <CampaignCarousel />
+      </section>
+
       {/* -- Trust Pulse -- */}
       <section
-        className="rounded-xl border border-border bg-card p-5 sm:p-6 mb-8 opacity-0 animate-fade-up stagger-3"
+        className="rounded-xl border border-border bg-card p-5 sm:p-6 mb-8 opacity-0 animate-fade-up stagger-4"
         data-testid="home-trust-strip"
       >
         <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
@@ -239,11 +246,11 @@ export default function Home() {
           {/* Leaderboard snapshot */}
           <Link href="/community" className="block">
           <article
-            className="rounded-lg border border-border bg-orange-500/5 p-4 hover:border-orange-500/30 transition-colors"
+            className="rounded-lg border border-border bg-organic-terracotta-lightest0/5 p-4 hover:border-organic-terracotta/30 transition-colors"
             data-testid="trust-card-leaderboard"
           >
             <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
-              <Trophy className="h-3.5 w-3.5 text-orange-500" />
+              <Trophy className="h-3.5 w-3.5 text-organic-terracotta" />
               <span>{t('trustLeaderboardTitle')}</span>
             </div>
             <div className="mt-2 space-y-1 text-sm">
@@ -295,17 +302,17 @@ export default function Home() {
       </section>
 
       {/* -- How It Works -- */}
-      <section className="mb-8 opacity-0 animate-fade-up stagger-4">
+      <section className="mb-8 opacity-0 animate-fade-up stagger-5">
         <HowItWorksCard />
       </section>
 
       {/* -- AI Governance Summary -- */}
-      <section className="mb-8 opacity-0 animate-fade-up stagger-5">
+      <section className="mb-8 opacity-0 animate-fade-up stagger-6">
         <GovernanceSummaryCard variant="compact" />
       </section>
 
       {/* -- Contribution Layout (nav cards + activity feed) -- */}
-      <section className="mb-8 opacity-0 animate-fade-up stagger-6">
+      <section className="mb-8 opacity-0 animate-fade-up stagger-7">
         <ContributionLayout
           proposalCount={proposalStageCounts.public + proposalStageCounts.qualified + proposalStageCounts.discussion + proposalStageCounts.voting}
           sprintActive={!!inFlightSprint}
@@ -314,7 +321,7 @@ export default function Home() {
       </section>
 
       {/* -- Member Status -- */}
-      <section className="rounded-xl border border-border bg-card p-6 sm:p-8 mb-8 opacity-0 animate-fade-up stagger-7">
+      <section className="rounded-xl border border-border bg-card p-6 sm:p-8 mb-8 opacity-0 animate-fade-up stagger-8">
         <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
           <div className="flex-1">
             <h2 className="text-lg font-semibold text-foreground">
@@ -413,7 +420,7 @@ export default function Home() {
       </section>
 
       {/* -- Supporting Stats -- */}
-      <section className="border border-border rounded-lg bg-muted/30 px-5 py-4 mb-6 opacity-0 animate-fade-up stagger-8">
+      <section className="border border-border rounded-lg bg-muted/30 px-5 py-4 mb-6 opacity-0 animate-fade-up stagger-9">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             {t('supportingStats')}
@@ -426,7 +433,7 @@ export default function Home() {
       </section>
 
       {/* -- Footer -- */}
-      <footer className="border-t border-border pt-5 pb-2 opacity-0 animate-fade-up stagger-9">
+      <footer className="border-t border-border pt-5 pb-2 opacity-0 animate-fade-up stagger-10">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs text-muted-foreground/70">
           <span>{t('poweredByOrgDescription')}</span>
           <code className="font-mono text-[11px] text-muted-foreground/70">

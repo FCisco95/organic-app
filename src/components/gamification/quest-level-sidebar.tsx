@@ -43,7 +43,7 @@ export function QuestLevelSidebar() {
               percent={xpPercent}
               size={64}
               strokeWidth={5}
-              color="hsl(var(--organic-orange, 24.6 95% 53.1%))"
+              color="hsl(var(--organic-terracotta, 24.6 95% 53.1%))"
             >
               <span className="text-lg font-bold text-foreground">{overview.level}</span>
             </QuestProgressRing>
@@ -72,7 +72,7 @@ export function QuestLevelSidebar() {
           {overview.current_streak > 0 && (
             <div className="flex items-center justify-center gap-1.5 text-sm text-muted-foreground mb-4">
               <Flame className={cn(
-                'h-5 w-5 text-orange-500',
+                'h-5 w-5 text-organic-terracotta',
                 overview.current_streak > 0 && 'animate-pulse'
               )} />
               <span>
@@ -85,7 +85,7 @@ export function QuestLevelSidebar() {
           {burnCost?.can_burn ? (
             <button
               onClick={() => setBurnDialogOpen(true)}
-              className="w-full py-2.5 px-4 rounded-lg bg-organic-orange text-white text-sm font-semibold transition-colors hover:bg-orange-600"
+              className="w-full py-2.5 px-4 rounded-lg bg-cta text-cta-fg text-sm font-semibold transition-colors hover:bg-cta-hover"
             >
               {t('burnButton')}
             </button>

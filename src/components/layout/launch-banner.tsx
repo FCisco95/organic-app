@@ -16,7 +16,7 @@ export function LaunchBanner() {
   if (dismissed) return null;
 
   return (
-    <div className="relative bg-gradient-to-r from-orange-500 via-amber-500 to-orange-500 text-white px-4 py-2 text-center text-sm font-medium">
+    <div className="relative bg-gradient-to-r from-organic-terracotta via-amber-500 to-organic-terracotta text-white px-4 py-2 text-center text-sm font-medium">
       <div className="flex items-center justify-center gap-2">
         <Zap className="h-4 w-4 animate-pulse" />
         <span>{t('message')}</span>

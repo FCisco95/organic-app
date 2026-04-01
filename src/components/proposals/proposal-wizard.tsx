@@ -182,7 +182,7 @@ export function ProposalWizard({ initialData, proposalId, onSuccess }: ProposalW
           {/* Form Card with category left stripe */}
           <div
             className={cn(
-              'rounded-xl border border-gray-200 bg-card p-6 border-l-4 transition-colors',
+              'rounded-xl border border-border bg-card p-6 border-l-4 transition-colors',
               categoryBorderColor
             )}
           >
@@ -199,7 +199,7 @@ export function ProposalWizard({ initialData, proposalId, onSuccess }: ProposalW
           </div>
 
           {/* Sticky Submit Footer */}
-          <div className="sticky bottom-0 bg-background/95 backdrop-blur-sm border-t border-gray-200 py-3 mt-6 -mx-1 px-1">
+          <div className="sticky bottom-0 bg-background/95 backdrop-blur-sm border-t border-border py-3 mt-6 -mx-1 px-1">
             <div className="flex justify-between">
               <button
                 type="button"
@@ -231,7 +231,7 @@ export function ProposalWizard({ initialData, proposalId, onSuccess }: ProposalW
                       onClick={() => handleSubmit('public')}
                       disabled={isSubmitting}
                       data-testid="proposal-wizard-submit"
-                      className="flex items-center gap-2 px-6 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+                      className="flex items-center gap-2 px-6 py-2 bg-cta hover:bg-cta-hover text-cta-fg rounded-lg font-medium transition-colors disabled:opacity-50"
                     >
                       <Send className="w-4 h-4" />
                       {isSubmitting ? t('submitting') : t('submitProposal')}
@@ -242,7 +242,7 @@ export function ProposalWizard({ initialData, proposalId, onSuccess }: ProposalW
                     type="button"
                     onClick={goNext}
                     data-testid="proposal-wizard-next"
-                    className="flex items-center gap-2 px-6 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
+                    className="flex items-center gap-2 px-6 py-2 bg-cta hover:bg-cta-hover text-cta-fg rounded-lg font-medium transition-colors"
                   >
                     {t('next')}
                   </button>
@@ -265,7 +265,7 @@ export function ProposalWizard({ initialData, proposalId, onSuccess }: ProposalW
         <button
           type="button"
           onClick={() => setPreviewOpen(true)}
-          className="fixed bottom-20 right-6 z-40 flex items-center gap-2 rounded-full bg-organic-orange px-4 py-3 text-sm font-semibold text-white shadow-lg hover:bg-orange-600 transition-colors"
+          className="fixed bottom-20 right-6 z-40 flex items-center gap-2 rounded-full bg-cta px-4 py-3 text-sm font-semibold text-cta-fg shadow-lg hover:bg-cta-hover transition-colors"
         >
           <Eye className="h-4 w-4" />
           {t('previewButton')}

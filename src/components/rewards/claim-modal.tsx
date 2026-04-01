@@ -51,14 +51,14 @@ export function ClaimModal({ rewards, open, onClose }: ClaimModalProps) {
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogContent
-        className="max-w-md bg-white border-gray-200"
+        className="max-w-md bg-white border-border"
         data-testid="rewards-claim-modal"
         onInteractOutside={(e) => e.preventDefault()}
       >
         <DialogHeader>
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-organic-orange/10 rounded-lg flex items-center justify-center">
-              <Coins className="w-4 h-4 text-organic-orange" />
+            <div className="w-8 h-8 bg-organic-terracotta/10 rounded-lg flex items-center justify-center">
+              <Coins className="w-4 h-4 text-organic-terracotta" />
             </div>
             <DialogTitle className="text-gray-900">{t('claimModal.title')}</DialogTitle>
           </div>
@@ -80,11 +80,11 @@ export function ClaimModal({ rewards, open, onClose }: ClaimModalProps) {
               placeholder={t('claimModal.pointsPlaceholder')}
               min={rewards.min_threshold}
               max={rewards.claimable_points}
-              className="w-full px-3 py-2 pr-16 bg-white border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-organic-orange/30 focus:border-organic-orange"
+              className="w-full px-3 py-2 pr-16 bg-white border border-border rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30 focus:border-organic-terracotta"
             />
             <button
               onClick={handleMaxClick}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-xs font-medium text-organic-orange hover:text-organic-orange/80 px-2 py-1"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-xs font-medium text-organic-terracotta hover:text-organic-terracotta/80 px-2 py-1"
             >
               {t('claimModal.max')}
             </button>
@@ -105,7 +105,7 @@ export function ClaimModal({ rewards, open, onClose }: ClaimModalProps) {
 
         {/* Token Preview */}
         {points > 0 && (
-          <div className="bg-gray-50 border border-gray-100 rounded-lg p-4 mb-4">
+          <div className="bg-gray-50 border border-border rounded-lg p-4 mb-4">
             <div className="flex items-center justify-between text-sm">
               <span className="text-gray-600">{t('claimModal.youWillReceive')}</span>
               <span className="font-semibold text-gray-900">
@@ -157,7 +157,7 @@ export function ClaimModal({ rewards, open, onClose }: ClaimModalProps) {
           <button
             onClick={handleSubmit}
             disabled={!isValid || submitClaim.isPending}
-            className="flex-1 py-2.5 px-4 text-sm font-medium text-white bg-organic-orange hover:bg-organic-orange/90 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 py-2.5 px-4 text-sm font-medium text-cta-fg bg-cta hover:bg-cta-hover rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {submitClaim.isPending ? t('claimModal.submitting') : t('claimModal.submit')}
           </button>

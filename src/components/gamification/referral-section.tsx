@@ -61,7 +61,7 @@ export function ReferralSection() {
     <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-organic-orange mb-1">
+          <p className="text-xs font-semibold uppercase tracking-wider text-organic-terracotta mb-1">
             {t('sectionLabel')}
           </p>
           <h2 className="text-xl font-bold text-foreground">{t('title')}</h2>
@@ -195,7 +195,7 @@ export function ReferralSection() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
             <span className="text-xs font-medium text-muted-foreground uppercase">{t('xpEarnedStat')}</span>
           </div>
-          <p className="text-2xl font-mono font-bold text-organic-orange tabular-nums">
+          <p className="text-2xl font-mono font-bold text-organic-terracotta tabular-nums">
             {stats.total_xp_earned.toLocaleString()}
           </p>
           <p className="text-xs text-muted-foreground mt-0.5">{t('xpLabel')}</p>

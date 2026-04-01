@@ -87,7 +87,8 @@ export type SettingsTab =
   | 'sprints'
   | 'members'
   | 'rewards'
-  | 'gamification';
+  | 'gamification'
+  | 'campaigns';
 
 export const SETTINGS_TABS: { key: SettingsTab; labelKey: string; icon: string }[] = [
   { key: 'general', labelKey: 'Settings.tabs.general', icon: 'Settings' },
@@ -98,4 +99,5 @@ export const SETTINGS_TABS: { key: SettingsTab; labelKey: string; icon: string }
   { key: 'members', labelKey: 'Settings.tabs.members', icon: 'Users' },
   { key: 'rewards', labelKey: 'Settings.tabs.rewards', icon: 'Gift' },
   { key: 'gamification', labelKey: 'Settings.tabs.gamification', icon: 'Sparkles' },
+  { key: 'campaigns', labelKey: 'Settings.tabs.campaigns', icon: 'Megaphone' },
 ];

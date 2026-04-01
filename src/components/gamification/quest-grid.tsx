@@ -75,7 +75,7 @@ export function QuestGrid() {
             onClick={() => setActiveTab(tab.key)}
             className={`rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${
               activeTab === tab.key
-                ? 'bg-organic-orange text-white border-organic-orange'
+                ? 'bg-cta text-cta-fg border-cta'
                 : 'bg-card text-muted-foreground border-border hover:bg-muted'
             }`}
           >

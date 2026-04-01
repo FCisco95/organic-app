@@ -28,7 +28,7 @@ export function FormActions({
         type="submit"
         disabled={isSubmitting}
         data-testid="task-submission-submit"
-        className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+        className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-cta hover:bg-cta-hover text-cta-fg rounded-lg font-medium transition-colors disabled:opacity-50"
       >
         {isSubmitting ? (
           <Loader2 className="w-4 h-4 animate-spin" />

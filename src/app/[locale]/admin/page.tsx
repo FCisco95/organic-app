@@ -135,7 +135,7 @@ export default function AdminDashboardPage() {
             <div className="flex flex-col gap-2 sm:flex-row sm:justify-center">
               <Link
                 href="/"
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-organic-terracotta px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-organic-terracotta-hover"
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-cta px-5 py-2.5 text-sm font-medium text-cta-fg transition-colors hover:bg-cta-hover"
               >
                 <Home className="h-4 w-4" />
                 {t('goHome')}
@@ -166,15 +166,15 @@ export default function AdminDashboardPage() {
       <div className="space-y-6" data-testid="admin-dashboard-page">
         {/* Header */}
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-organic-orange/10">
-            <LayoutDashboard className="h-5 w-5 text-organic-orange" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-organic-terracotta/10">
+            <LayoutDashboard className="h-5 w-5 text-organic-terracotta" />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-2xl font-bold tracking-tight text-foreground">
                 {t('title')}
               </h1>
-              <span className="inline-flex items-center rounded-full bg-organic-orange/10 px-2 py-0.5 text-xs font-medium text-organic-orange">
+              <span className="inline-flex items-center rounded-full bg-organic-terracotta/10 px-2 py-0.5 text-xs font-medium text-organic-terracotta">
                 {profile?.role}
               </span>
             </div>

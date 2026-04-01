@@ -41,7 +41,7 @@ export function DisputeHeader({ dispute, responseSlaUrgency }: DisputeHeaderProp
         ? 'border-amber-200 bg-amber-100 text-amber-700'
         : responseSlaUrgency === 'on_track'
           ? 'border-emerald-200 bg-emerald-100 text-emerald-700'
-          : 'border-gray-200 bg-gray-100 text-gray-600'
+          : 'border-border bg-gray-100 text-gray-600'
   );
   const slaLabel =
     responseSlaUrgency === 'overdue'
@@ -53,7 +53,7 @@ export function DisputeHeader({ dispute, responseSlaUrgency }: DisputeHeaderProp
           : t('triage.noDeadline');
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4">
+    <div className="rounded-lg border border-border bg-card p-4">
       {/* Title */}
       <h1 className="text-xl font-bold text-gray-900">
         {dispute.task?.title || td('task')}

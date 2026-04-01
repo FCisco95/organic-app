@@ -146,7 +146,7 @@ export default function IdeaDetailPage() {
           <ChevronRight className="h-3 w-3" />
           <Skeleton className="h-4 w-40" />
         </div>
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_var(--sidebar-width)]">
           <div className="space-y-4">
             <Skeleton className="h-8 w-3/4" />
             <Skeleton className="h-4 w-full" />
@@ -166,7 +166,7 @@ export default function IdeaDetailPage() {
         <p className="mt-2 text-muted-foreground">{t('notFoundDescription')}</p>
         <Link
           href="/ideas"
-          className="mt-5 inline-block rounded-lg bg-organic-terracotta px-4 py-2 text-white hover:bg-organic-terracotta-hover"
+          className="mt-5 inline-block rounded-lg bg-cta px-4 py-2 text-cta-fg hover:bg-cta-hover"
         >
           {t('backToIdeas')}
         </Link>
@@ -203,7 +203,7 @@ export default function IdeaDetailPage() {
         <span className="truncate font-medium text-foreground">{idea.title}</span>
       </nav>
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_var(--sidebar-width)]">
         {/* ── Main content ──────────────────────────────────── */}
         <main className="space-y-6">
           {/* Title + status + metadata */}
@@ -310,7 +310,8 @@ export default function IdeaDetailPage() {
               <Button
                 onClick={onPromote}
                 disabled={promoteIdea.isPending}
-                className="mt-3 bg-organic-terracotta text-white hover:bg-organic-terracotta-hover disabled:opacity-60"
+                className="mt-3 disabled:opacity-60"
+                variant="cta"
                 size="sm"
               >
                 <TrendingUp className="h-4 w-4" />
@@ -384,7 +385,8 @@ export default function IdeaDetailPage() {
                 <Button
                   type="submit"
                   disabled={commentMutation.isPending || comment.trim().length === 0}
-                  className="bg-organic-terracotta text-white hover:bg-organic-terracotta-hover disabled:opacity-60"
+                  className="disabled:opacity-60"
+                  variant="cta"
                   size="sm"
                 >
                   {commentMutation.isPending ? t('commentPosting') : t('commentSubmit')}

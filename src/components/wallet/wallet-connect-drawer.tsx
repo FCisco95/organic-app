@@ -386,7 +386,7 @@ export function WalletConnectDrawer({ isOpen, onClose }: WalletConnectDrawerProp
             <button
               type="button"
               onClick={() => setView('get-started')}
-              className="w-full text-center text-sm text-gray-400 hover:text-organic-orange transition-colors py-2"
+              className="w-full text-center text-sm text-gray-400 hover:text-organic-terracotta transition-colors py-2"
             >
               {t('noWalletCta')}
             </button>
@@ -397,7 +397,7 @@ export function WalletConnectDrawer({ isOpen, onClose }: WalletConnectDrawerProp
         {isActionDisabled && (
           <div className="absolute inset-0 bg-gray-900/80 flex items-center justify-center">
             <div className="text-center">
-              <div className="w-10 h-10 border-3 border-organic-orange border-t-transparent rounded-full animate-spin mx-auto" />
+              <div className="w-10 h-10 border-3 border-organic-terracotta border-t-transparent rounded-full animate-spin mx-auto" />
               <p className="text-white text-sm mt-4">{t('connectingLabel')}</p>
             </div>
           </div>

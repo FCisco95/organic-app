@@ -23,7 +23,7 @@ function PasswordStrengthBar({ password }: { password: string }) {
     if (/[^a-zA-Z0-9]/.test(password)) score++;
 
     if (score <= 2) return { score: 1, label: t('strengthWeak'), color: 'bg-red-500' };
-    if (score <= 3) return { score: 2, label: t('strengthFair'), color: 'bg-orange-400' };
+    if (score <= 3) return { score: 2, label: t('strengthFair'), color: 'bg-organic-terracotta' };
     if (score === 4) return { score: 3, label: t('strengthGood'), color: 'bg-yellow-400' };
     return { score: 4, label: t('strengthStrong'), color: 'bg-green-500' };
   }, [password, t]);
@@ -283,7 +283,7 @@ export default function SignUpPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-organic-terracotta hover:bg-organic-terracotta-hover text-white font-medium py-2.5 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm flex items-center justify-center gap-2"
+                  className="w-full bg-cta hover:bg-cta-hover text-cta-fg font-medium py-2.5 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm flex items-center justify-center gap-2"
                 >
                   {loading ? (
                     <>

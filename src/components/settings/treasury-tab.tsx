@@ -89,7 +89,7 @@ export function TreasuryTab({ org }: TreasuryTabProps) {
           </div>
           <button
             onClick={addAllocation}
-            className="inline-flex items-center gap-1 text-sm text-organic-orange hover:text-organic-orange/80"
+            className="inline-flex items-center gap-1 text-sm text-organic-terracotta hover:text-organic-terracotta/80"
           >
             <Plus className="w-4 h-4" /> {t('treasury.addCategory')}
           </button>
@@ -102,7 +102,7 @@ export function TreasuryTab({ org }: TreasuryTabProps) {
                 type="color"
                 value={alloc.color}
                 onChange={(e) => handleAllocationChange(i, 'color', e.target.value)}
-                className="w-8 h-8 rounded border border-gray-200 cursor-pointer"
+                className="w-8 h-8 rounded border border-border cursor-pointer"
               />
               <SettingsInput
                 value={alloc.key}

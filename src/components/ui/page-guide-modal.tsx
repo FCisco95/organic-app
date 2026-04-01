@@ -74,7 +74,7 @@ export function PageGuideModal({ open, onOpenChange, steps, pageTitle }: PageGui
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-4xl w-[95vw] h-[85vh] sm:h-[80vh] max-h-[700px] p-0 bg-white border-gray-200 rounded-2xl overflow-hidden flex flex-col"
+        className="max-w-4xl w-[95vw] h-[85vh] sm:h-[80vh] max-h-[700px] p-0 bg-white border-border rounded-2xl overflow-hidden flex flex-col"
         aria-describedby="page-guide-description"
       >
         <DialogTitle className="sr-only">{pageTitle} Guide</DialogTitle>
@@ -83,7 +83,7 @@ export function PageGuideModal({ open, onOpenChange, steps, pageTitle }: PageGui
         </p>
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <span className="text-sm font-medium text-gray-500 font-sans">
             Step {current + 1} of {steps.length}
           </span>
@@ -136,12 +136,12 @@ export function PageGuideModal({ open, onOpenChange, steps, pageTitle }: PageGui
         </div>
 
         {/* Footer: arrows + dots */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-border">
           {/* Prev arrow */}
           <button
             onClick={prev}
             disabled={current === 0}
-            className="flex items-center justify-center h-9 w-9 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center justify-center h-9 w-9 rounded-full border border-border text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             aria-label="Previous step"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -156,7 +156,7 @@ export function PageGuideModal({ open, onOpenChange, steps, pageTitle }: PageGui
                 className={cn(
                   'h-2 rounded-full transition-all duration-200',
                   current === i
-                    ? 'w-5 bg-orange-500'
+                    ? 'w-5 bg-organic-terracotta-lightest0'
                     : 'w-2 bg-gray-300 hover:bg-gray-400'
                 )}
                 aria-label={`Go to step ${i + 1}`}
@@ -170,8 +170,8 @@ export function PageGuideModal({ open, onOpenChange, steps, pageTitle }: PageGui
             className={cn(
               'flex items-center justify-center h-9 rounded-full border transition-colors',
               current === steps.length - 1
-                ? 'px-4 bg-orange-500 border-orange-500 text-white hover:bg-orange-600 font-sans text-sm font-medium'
-                : 'w-9 border-gray-200 text-gray-600 hover:bg-gray-100'
+                ? 'px-4 bg-cta border-cta text-cta-fg hover:bg-cta-hover font-sans text-sm font-medium'
+                : 'w-9 border-border text-gray-600 hover:bg-gray-100'
             )}
             aria-label={current === steps.length - 1 ? 'Close guide' : 'Next step'}
           >

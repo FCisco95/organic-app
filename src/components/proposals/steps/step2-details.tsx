@@ -18,7 +18,7 @@ export function Step2Details({ formData, errors, updateField, t }: StepProps) {
           placeholder={t('placeholderMotivation')}
           rows={6}
           className={cn(
-            'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none',
+            'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent resize-none',
             errors.motivation ? 'border-red-300' : 'border-gray-300'
           )}
         />
@@ -46,7 +46,7 @@ export function Step2Details({ formData, errors, updateField, t }: StepProps) {
           placeholder={t('placeholderSolution')}
           rows={6}
           className={cn(
-            'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none',
+            'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent resize-none',
             errors.solution ? 'border-red-300' : 'border-gray-300'
           )}
         />

@@ -574,6 +574,7 @@ export default function TasksPage() {
   return (
     <PageContainer layout="fluid" className="space-y-4">
       <div data-testid="tasks-page" className="space-y-4">
+        {/* TODO: Migrate to <PageHero> — sprint context banner between description and buttons doesn't fit current PageHero props */}
         {/* Dark hero */}
         <section
           data-testid="tasks-execution-cockpit"
@@ -582,7 +583,7 @@ export default function TasksPage() {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <div className="inline-flex items-center justify-center w-10 h-10 bg-white/10 rounded-xl mb-3">
-                <ClipboardList className="w-5 h-5 text-orange-400" />
+                <ClipboardList className="w-5 h-5 text-[#E8845C]" />
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{t('title')}</h1>
               <p className="mt-2 text-sm sm:text-base text-gray-300 leading-relaxed max-w-2xl">{t('subtitle')}</p>

@@ -108,7 +108,7 @@ export function RewardsTab({ org }: RewardsTabProps) {
         <button
           onClick={() => setEnabled(!enabled)}
           className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-            enabled ? 'bg-organic-orange' : 'bg-gray-300'
+            enabled ? 'bg-cta' : 'bg-gray-300'
           }`}
         >
           <span
@@ -172,7 +172,7 @@ export function RewardsTab({ org }: RewardsTabProps) {
         <button
           onClick={() => setRequireWallet(!requireWallet)}
           className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-            requireWallet ? 'bg-organic-orange' : 'bg-gray-300'
+            requireWallet ? 'bg-cta' : 'bg-gray-300'
           }`}
         >
           <span

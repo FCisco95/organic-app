@@ -53,7 +53,7 @@ function StatCard({
 }) {
   return (
     <div className="bg-card rounded-xl border border-border/50 p-5 text-center relative overflow-hidden group hover:border-border transition-colors duration-200">
-      <div className="absolute inset-0 rounded-xl bg-gradient-to-b from-organic-orange/5 to-transparent pointer-events-none" />
+      <div className="absolute inset-0 rounded-xl bg-gradient-to-b from-organic-terracotta/5 to-transparent pointer-events-none" />
       <div className="relative">
         <div className="text-muted-foreground/40 mx-auto mb-3 flex justify-center">{icon}</div>
         <p className="text-3xl font-bold font-mono tabular-nums text-foreground">{value}</p>
@@ -112,7 +112,7 @@ function XpSparkline({ xpTotal }: { xpTotal: number }) {
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="text-organic-orange"
+        className="text-organic-terracotta"
         style={{
           strokeDasharray: 200,
           strokeDashoffset: 200,
@@ -224,10 +224,10 @@ function ContributionHeatmap({
 
   const getIntensityClass = useCallback((count: number) => {
     if (count === 0) return 'bg-muted';
-    if (count === 1) return 'bg-organic-orange/20';
-    if (count === 2) return 'bg-organic-orange/40';
-    if (count === 3) return 'bg-organic-orange/60';
-    return 'bg-organic-orange';
+    if (count === 1) return 'bg-organic-terracotta/20';
+    if (count === 2) return 'bg-organic-terracotta/40';
+    if (count === 3) return 'bg-organic-terracotta/60';
+    return 'bg-organic-terracotta';
   }, []);
 
   const handleMouseEnter = useCallback(
@@ -398,7 +398,7 @@ function ActivityFeed({
     if (reputation && reputation.level > 1) {
       result.push({
         id: 'level-up',
-        icon: <ArrowUpCircle className="w-4 h-4 text-organic-orange" />,
+        icon: <ArrowUpCircle className="w-4 h-4 text-organic-terracotta" />,
         description: t('activityLevelUp', { level: reputation.level }),
         timestamp: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000),
       });
@@ -644,7 +644,7 @@ export default function CommunityProfilePage() {
                 className="rounded-full object-cover border-2 border-border"
               />
             ) : (
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-organic-orange to-organic-yellow flex items-center justify-center border-2 border-border">
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-organic-terracotta to-organic-yellow flex items-center justify-center border-2 border-border">
                 <span className="text-white font-bold text-3xl">
                   {displayName[0]?.toUpperCase() || '?'}
                 </span>
@@ -690,7 +690,7 @@ export default function CommunityProfilePage() {
                 href={member.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 hover:text-organic-orange"
+                className="flex items-center gap-1 hover:text-organic-terracotta"
               >
                 <Globe aria-hidden="true" className="w-3.5 h-3.5" /> {t('website')}
                 <ExternalLink aria-hidden="true" className="w-3 h-3" />
@@ -701,7 +701,7 @@ export default function CommunityProfilePage() {
                 href={`https://x.com/${member.twitter}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1.5 hover:text-organic-orange"
+                className="flex items-center gap-1.5 hover:text-organic-terracotta"
               >
                 <TwitterIcon /> @{member.twitter}
               </a>
@@ -787,7 +787,7 @@ export default function CommunityProfilePage() {
                 <div className="flex items-center gap-4 mb-4">
                   <LevelBadge level={reputation.level} size="lg" />
                   <div className="flex items-center gap-1.5">
-                    <Flame className="w-5 h-5 text-orange-400" />
+                    <Flame className="w-5 h-5 text-[#E8845C]" />
                     <StreakDisplay streak={reputation.current_streak} />
                   </div>
                 </div>

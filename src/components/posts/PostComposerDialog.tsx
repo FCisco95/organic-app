@@ -36,7 +36,7 @@ export function InlineComposeBar({ onExpand }: { onExpand: () => void }) {
     >
       <div className="flex items-center gap-3">
         {/* Avatar */}
-        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-yellow-300 flex items-center justify-center overflow-hidden shrink-0">
+        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-organic-terracotta to-yellow-300 flex items-center justify-center overflow-hidden shrink-0">
           {profile.avatar_url ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />

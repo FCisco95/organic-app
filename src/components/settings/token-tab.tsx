@@ -122,7 +122,7 @@ export function TokenTab({ org }: TokenTabProps) {
       </SettingsField>
 
       {/* Analytics Configuration */}
-      <div className="mt-8 mb-4 border-t border-gray-200 pt-6">
+      <div className="mt-8 mb-4 border-t border-border pt-6">
         <h3 className="text-sm font-semibold text-gray-900 mb-1">{t('token.analyticsTitle')}</h3>
         <p className="text-xs text-gray-500 mb-4">{t('token.analyticsDescription')}</p>
       </div>

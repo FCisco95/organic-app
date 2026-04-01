@@ -64,7 +64,7 @@ export function VotingPanel({ proposal }: VotingPanelProps) {
 
   if (resultsLoading || userVoteLoading) {
     return (
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="bg-white rounded-lg border border-border p-6">
         <div className="flex items-center justify-center py-8">
           <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
         </div>
@@ -73,7 +73,7 @@ export function VotingPanel({ proposal }: VotingPanelProps) {
   }
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
+    <div className="bg-white rounded-lg border border-border p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-gray-900">{t('title')}</h3>
@@ -213,7 +213,7 @@ export function VotingPanel({ proposal }: VotingPanelProps) {
           </div>
 
           {/* Stats */}
-          <div className="pt-4 border-t border-gray-200 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2 sm:gap-4">
+          <div className="pt-4 border-t border-border grid grid-cols-1 gap-3 text-sm sm:grid-cols-2 sm:gap-4">
             <div>
               <span className="text-gray-500">{t('stats.participation')}</span>
               <p className="font-semibold text-gray-900">

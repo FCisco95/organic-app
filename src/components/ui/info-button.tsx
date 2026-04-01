@@ -116,7 +116,7 @@ export function InfoButton({ sections }: InfoButtonProps) {
                 key={i}
                 className="min-w-full snap-center px-4 py-4 flex-shrink-0"
               >
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-orange-500 mb-2">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-organic-terracotta mb-2">
                   {section.title}
                 </h4>
                 <ul className="space-y-1.5">
@@ -125,7 +125,7 @@ export function InfoButton({ sections }: InfoButtonProps) {
                       key={j}
                       className="text-sm text-muted-foreground leading-relaxed flex gap-2"
                     >
-                      <span className="text-orange-500 shrink-0 mt-0.5">&#8226;</span>
+                      <span className="text-organic-terracotta shrink-0 mt-0.5">&#8226;</span>
                       <span>{renderRichText(point)}</span>
                     </li>
                   ))}
@@ -144,7 +144,7 @@ export function InfoButton({ sections }: InfoButtonProps) {
                   className={cn(
                     'h-1.5 rounded-full transition-all duration-200',
                     activeSection === i
-                      ? 'w-4 bg-orange-500'
+                      ? 'w-4 bg-organic-terracotta-lightest0'
                       : 'w-1.5 bg-border hover:bg-muted-foreground/30'
                   )}
                   aria-label={`Go to section ${i + 1}`}

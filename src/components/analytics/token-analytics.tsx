@@ -97,8 +97,8 @@ export function TokenAnalytics() {
   return (
     <div className="space-y-4">
       {/* Market Data Strip */}
-      <div className="rounded-2xl bg-gradient-to-r from-orange-500/5 via-transparent to-orange-500/5 border border-orange-500/10">
-        <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 divide-x divide-orange-500/10">
+      <div className="rounded-2xl bg-gradient-to-r from-organic-terracotta/5 via-transparent to-organic-terracotta/5 border border-organic-terracotta/10">
+        <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 divide-x divide-organic-terracotta/10">
           {/* Price */}
           <div className="px-4 py-3.5">
             {isLoading ? (
@@ -258,7 +258,7 @@ export function TokenAnalytics() {
           {/* Concentration Analysis */}
           <div className="rounded-xl border border-border bg-card p-5">
             <div className="flex items-center gap-2 mb-4">
-              <PieChart className="h-4 w-4 text-orange-500" />
+              <PieChart className="h-4 w-4 text-organic-terracotta" />
               <h3 className="text-sm font-semibold text-foreground">{t('holders.concentration')}</h3>
             </div>
 
@@ -266,7 +266,7 @@ export function TokenAnalytics() {
               <ConcentrationBar
                 label={t('holders.top10')}
                 value={holders.top10Concentration}
-                color="bg-orange-500"
+                color="bg-organic-terracotta-lightest0"
                 highlight={holders.top10Concentration < 50}
               />
               <ConcentrationBar

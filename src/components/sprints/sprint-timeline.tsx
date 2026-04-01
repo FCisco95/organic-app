@@ -23,7 +23,7 @@ export function SprintTimeline() {
 
   if (!sprints || sprints.length === 0) {
     return (
-      <div className="rounded-md border border-gray-200 bg-white py-16 text-center" data-testid="sprints-timeline-view">
+      <div className="rounded-md border border-border bg-white py-16 text-center" data-testid="sprints-timeline-view">
         <Milestone className="mx-auto mb-3 h-12 w-12 text-gray-300" />
         <h3 className="text-base font-medium text-gray-900">{t('timelineAllEmpty')}</h3>
         <p className="mt-1 text-sm text-gray-500">{t('timelineAllEmptyDesc')}</p>
@@ -51,8 +51,8 @@ export function SprintTimeline() {
               {/* Timeline dot — status-colored, active gets pulse */}
               <div className="absolute left-0 top-5">
                 {isCompleted ? (
-                  <div className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-orange-100">
-                    <CheckCircle2 className="h-4 w-4 text-orange-600" />
+                  <div className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-organic-terracotta-light/30">
+                    <CheckCircle2 className="h-4 w-4 text-organic-terracotta" />
                   </div>
                 ) : isActive ? (
                   <div className="relative flex h-[30px] w-[30px] items-center justify-center">
@@ -70,10 +70,10 @@ export function SprintTimeline() {
               <div
                 className={`rounded-md border bg-white ${
                   isActive
-                    ? 'border-l-2 border-l-blue-500 border-gray-200'
+                    ? 'border-l-2 border-l-blue-500 border-border'
                     : isCompleted
-                      ? 'border-l-2 border-l-orange-500 border-gray-200'
-                      : 'border-gray-200'
+                      ? 'border-l-2 border-l-organic-terracotta border-border'
+                      : 'border-border'
                 }`}
               >
                 <div className="px-4 py-3">
@@ -105,7 +105,7 @@ export function SprintTimeline() {
                         isCompleted
                           ? 'bg-gray-100 text-gray-600'
                           : isActive
-                            ? 'bg-orange-100 text-orange-700'
+                            ? 'bg-organic-terracotta-light/30 text-organic-terracotta-hover'
                             : 'bg-blue-100 text-blue-700'
                       }`}
                     >
@@ -123,7 +123,7 @@ export function SprintTimeline() {
                       <div className="flex items-center gap-2">
                         <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-100">
                           <div
-                            className="h-full rounded-full bg-organic-orange transition-all"
+                            className="h-full rounded-full bg-cta transition-all"
                             style={{ width: `${pct}%` }}
                           />
                         </div>

@@ -197,7 +197,7 @@ export function ProgressionShell({ sourceContext = null }: { sourceContext?: Sou
 
       {sourceContext && (
         <div
-          className="rounded-lg border border-organic-orange/30 bg-organic-orange/5 px-3 py-2"
+          className="rounded-lg border border-organic-terracotta/30 bg-organic-terracotta/5 px-3 py-2"
           data-testid="progression-source-context"
         >
           <div className="flex flex-wrap items-center justify-between gap-2">
@@ -206,7 +206,7 @@ export function ProgressionShell({ sourceContext = null }: { sourceContext?: Sou
             </p>
             <Link
               href={SOURCE_CONTEXT_HREF[sourceContext]}
-              className="inline-flex items-center gap-1 text-xs font-medium text-organic-orange hover:text-orange-600"
+              className="inline-flex items-center gap-1 text-xs font-medium text-organic-terracotta hover:text-organic-terracotta"
             >
               {t('questSourceCta', { source: t(`questSourceNames.${sourceContext}`) })}
               <ArrowRight className="h-3 w-3" />
@@ -255,7 +255,7 @@ export function ProgressionShell({ sourceContext = null }: { sourceContext?: Sou
       {/* ===== XP PROGRESS ===== */}
       <section className="rounded-xl border border-border bg-card p-4">
         <div className="flex items-center gap-2 mb-2">
-          <Target className="h-4 w-4 text-organic-orange" />
+          <Target className="h-4 w-4 text-organic-terracotta" />
           <h2 className="text-sm font-semibold text-foreground">{t('nextLevelTitle')}</h2>
         </div>
         <p className="text-xs text-muted-foreground mb-2">
@@ -265,8 +265,8 @@ export function ProgressionShell({ sourceContext = null }: { sourceContext?: Sou
         </p>
         <XpProgressBar xpTotal={data.xp_total} level={data.level} />
         {!data.level_progress.is_max_level && (
-          <div className="mt-2 flex items-start gap-2 rounded-lg bg-organic-orange/5 border border-organic-orange/20 px-3 py-2">
-            <Sparkles className="h-3.5 w-3.5 text-organic-orange mt-0.5 flex-shrink-0" />
+          <div className="mt-2 flex items-start gap-2 rounded-lg bg-organic-terracotta/5 border border-organic-terracotta/20 px-3 py-2">
+            <Sparkles className="h-3.5 w-3.5 text-organic-terracotta mt-0.5 flex-shrink-0" />
             <p className="text-xs text-foreground">
               <span className="font-semibold">{t('nextUnlockLabel', { level: data.level + 1, name: getLevelInfo(data.level + 1).name })}:</span>{' '}
               <span className="text-muted-foreground">{getLevelInfo(data.level + 1).perks}</span>
@@ -350,7 +350,7 @@ export function ProgressionShell({ sourceContext = null }: { sourceContext?: Sou
                             <div
                               className={cn(
                                 'h-1.5 rounded-full transition-all',
-                                quest.completed ? 'bg-emerald-500' : 'bg-organic-orange'
+                                quest.completed ? 'bg-emerald-500' : 'bg-cta'
                               )}
                               style={{ width: `${quest.progress_percent}%` }}
                             />
@@ -380,7 +380,7 @@ export function ProgressionShell({ sourceContext = null }: { sourceContext?: Sou
                         {cta && (
                           <Link
                             href={cta.href}
-                            className="inline-flex items-center gap-0.5 text-xs font-medium text-organic-orange hover:text-orange-600"
+                            className="inline-flex items-center gap-0.5 text-xs font-medium text-organic-terracotta hover:text-organic-terracotta"
                           >
                             {t(cta.labelKey)}
                             <ArrowRight className="h-3 w-3" />
@@ -413,7 +413,7 @@ export function ProgressionShell({ sourceContext = null }: { sourceContext?: Sou
           </div>
           <Link
             href="/earn?tab=rewards"
-            className="inline-flex items-center gap-1 text-xs font-medium text-organic-orange hover:text-orange-600"
+            className="inline-flex items-center gap-1 text-xs font-medium text-organic-terracotta hover:text-organic-terracotta"
           >
             {t('openRewards')}
             <ArrowRight className="h-3 w-3" />

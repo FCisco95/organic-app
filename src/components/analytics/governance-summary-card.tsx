@@ -45,7 +45,7 @@ export function GovernanceSummaryCard({ variant = 'compact' }: GovernanceSummary
 
   if (isLoading) {
     return (
-      <div className="rounded-2xl bg-white dark:bg-card ring-1 ring-gray-200/70 dark:ring-border p-5 animate-pulse">
+      <div className="rounded-2xl bg-white dark:bg-card ring-1 ring-border p-5 animate-pulse">
         <div className="h-5 w-48 bg-muted rounded mb-3" />
         <div className="h-4 w-full bg-muted rounded mb-2" />
         <div className="h-4 w-3/4 bg-muted rounded" />
@@ -55,7 +55,7 @@ export function GovernanceSummaryCard({ variant = 'compact' }: GovernanceSummary
 
   if (!summary) {
     return (
-      <div className="rounded-2xl bg-white dark:bg-card ring-1 ring-gray-200/70 dark:ring-border p-5 text-center">
+      <div className="rounded-2xl bg-white dark:bg-card ring-1 ring-border p-5 text-center">
         <Brain className="h-8 w-8 text-muted-foreground/30 mx-auto mb-2" />
         <p className="text-sm text-muted-foreground">{t('noSummary')}</p>
       </div>
@@ -68,7 +68,7 @@ export function GovernanceSummaryCard({ variant = 'compact' }: GovernanceSummary
 
   return (
     <div className={cn(
-      'rounded-2xl bg-white dark:bg-card ring-1 ring-gray-200/70 dark:ring-border p-5',
+      'rounded-2xl bg-white dark:bg-card ring-1 ring-border p-5',
       variant === 'full' && 'space-y-4'
     )}>
       {/* Header */}
@@ -107,7 +107,7 @@ export function GovernanceSummaryCard({ variant = 'compact' }: GovernanceSummary
           <ul className="space-y-1.5">
             {content.insights.map((insight, i) => (
               <li key={i} className="text-sm text-foreground flex items-start gap-2">
-                <span className="text-orange-500 mt-1">&#x2022;</span>
+                <span className="text-organic-terracotta mt-1">&#x2022;</span>
                 {insight}
               </li>
             ))}

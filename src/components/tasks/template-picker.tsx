@@ -43,17 +43,17 @@ export function TemplatePicker({ sprintId, onTaskCreated, className }: TemplateP
   if (isLoading) {
     return (
       <div
-        className={cn('rounded-2xl border border-gray-200 bg-white/80 shadow-sm', className)}
+        className={cn('rounded-2xl border border-border bg-white/80 shadow-sm', className)}
         data-testid="task-template-picker"
       >
-        <div className="border-b border-gray-100 bg-gradient-to-r from-organic-orange/10 via-white to-organic-yellow/10 px-5 py-4 rounded-t-2xl">
+        <div className="border-b border-border bg-gradient-to-r from-organic-terracotta/10 via-white to-organic-yellow/10 px-5 py-4 rounded-t-2xl">
           <h3 className="text-lg font-semibold text-gray-900">{t('fromTemplate')}</h3>
         </div>
         <div className="px-5 py-5 space-y-3">
           {[0, 1, 2].map((item) => (
             <div
               key={item}
-              className="h-20 rounded-xl border border-gray-200 bg-gradient-to-r from-gray-50 to-white animate-pulse"
+              className="h-20 rounded-xl border border-border bg-gradient-to-r from-gray-50 to-white animate-pulse"
             />
           ))}
         </div>
@@ -64,10 +64,10 @@ export function TemplatePicker({ sprintId, onTaskCreated, className }: TemplateP
   if (!templates || templates.length === 0) {
     return (
       <div
-        className={cn('rounded-2xl border border-gray-200 bg-white/80 shadow-sm', className)}
+        className={cn('rounded-2xl border border-border bg-white/80 shadow-sm', className)}
         data-testid="task-template-picker"
       >
-        <div className="border-b border-gray-100 bg-gradient-to-r from-organic-orange/10 via-white to-organic-yellow/10 px-5 py-4 rounded-t-2xl">
+        <div className="border-b border-border bg-gradient-to-r from-organic-terracotta/10 via-white to-organic-yellow/10 px-5 py-4 rounded-t-2xl">
           <h3 className="text-lg font-semibold text-gray-900">{t('fromTemplate')}</h3>
         </div>
         <div className="text-center py-10 text-gray-400">
@@ -81,10 +81,10 @@ export function TemplatePicker({ sprintId, onTaskCreated, className }: TemplateP
 
   return (
     <div
-      className={cn('rounded-2xl border border-gray-200 bg-white/80 shadow-sm', className)}
+      className={cn('rounded-2xl border border-border bg-white/80 shadow-sm', className)}
       data-testid="task-template-picker"
     >
-      <div className="border-b border-gray-100 bg-gradient-to-r from-organic-orange/10 via-white to-organic-yellow/10 px-5 py-4 rounded-t-2xl">
+      <div className="border-b border-border bg-gradient-to-r from-organic-terracotta/10 via-white to-organic-yellow/10 px-5 py-4 rounded-t-2xl">
         <h3 className="text-lg font-semibold text-gray-900">{t('fromTemplate')}</h3>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 px-5 py-5" data-testid="task-template-picker-list">
@@ -95,22 +95,22 @@ export function TemplatePicker({ sprintId, onTaskCreated, className }: TemplateP
             disabled={createFromTemplate.isPending}
             data-testid={`task-template-pick-${template.id}`}
             className={cn(
-              'text-left p-4 rounded-xl border border-gray-200 bg-white hover:border-organic-orange/40',
+              'text-left p-4 rounded-xl border border-border bg-card hover:border-organic-terracotta/40',
               'hover:shadow-sm transition-all group',
               'disabled:opacity-50 disabled:cursor-not-allowed'
             )}
           >
             <div className="flex items-start justify-between mb-2 gap-2">
               <div className="flex items-center gap-2 min-w-0">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-organic-orange/10 text-organic-orange">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-organic-terracotta/10 text-organic-terracotta">
                   <Tag className="w-4 h-4" />
                 </div>
-                <h4 className="text-sm font-medium text-gray-900 group-hover:text-organic-orange truncate">
+                <h4 className="text-sm font-medium text-gray-900 group-hover:text-organic-terracotta truncate">
                   {template.name}
                 </h4>
               </div>
               {selectedId === template.id && (
-                <Loader2 className="w-4 h-4 animate-spin text-organic-orange flex-shrink-0" />
+                <Loader2 className="w-4 h-4 animate-spin text-organic-terracotta flex-shrink-0" />
               )}
             </div>
 

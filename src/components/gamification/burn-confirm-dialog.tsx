@@ -49,8 +49,8 @@ export function BurnConfirmDialog({ open, onOpenChange }: BurnConfirmDialogProps
         </button>
 
         <div className="text-center mb-5">
-          <div className="w-12 h-12 rounded-full bg-orange-500/10 flex items-center justify-center mx-auto mb-3">
-            <Flame className="h-6 w-6 text-organic-orange" />
+          <div className="w-12 h-12 rounded-full bg-organic-terracotta-lightest0/10 flex items-center justify-center mx-auto mb-3">
+            <Flame className="h-6 w-6 text-organic-terracotta" />
           </div>
           <h3 className="text-lg font-bold text-foreground">{t('burnDialogTitle')}</h3>
           <p className="text-sm text-muted-foreground mt-1">{t('burnDialogDescription')}</p>
@@ -120,7 +120,7 @@ export function BurnConfirmDialog({ open, onOpenChange }: BurnConfirmDialogProps
           <button
             onClick={handleBurn}
             disabled={burnMutation.isPending || !burnCost.can_burn}
-            className="flex-1 py-2.5 px-4 rounded-lg bg-organic-orange text-white text-sm font-semibold hover:bg-orange-600 transition-colors disabled:opacity-50"
+            className="flex-1 py-2.5 px-4 rounded-lg bg-cta text-cta-fg text-sm font-semibold hover:bg-cta-hover transition-colors disabled:opacity-50"
           >
             {burnMutation.isPending ? t('burning') : t('confirmBurn')}
           </button>

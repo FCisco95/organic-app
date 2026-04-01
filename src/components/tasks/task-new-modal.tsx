@@ -157,7 +157,7 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
   return (
     <Dialog open onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogContent
-        className="max-w-2xl bg-white border-gray-200 max-h-[calc(100dvh-2rem)] overflow-y-auto"
+        className="max-w-2xl bg-white border-border max-h-[calc(100dvh-2rem)] overflow-y-auto"
         onInteractOutside={(e) => e.preventDefault()}
       >
         <DialogHeader>
@@ -174,7 +174,7 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent"
               placeholder={t('placeholderTitle')}
               required
             />
@@ -188,7 +188,7 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent resize-none"
               placeholder={t('placeholderDescription')}
             />
           </div>
@@ -201,7 +201,7 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
               <select
                 value={taskType}
                 onChange={(e) => setTaskType(e.target.value as TaskType)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent"
               >
                 <option value="custom">{t('taskTypes.custom')}</option>
                 <option value="development">{t('taskTypes.development')}</option>
@@ -218,7 +218,7 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
               <select
                 value={priority}
                 onChange={(e) => setPriority(e.target.value as TaskPriority)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent"
               >
                 <option value="low">{t('priority.low')}</option>
                 <option value="medium">{t('priority.medium')}</option>
@@ -240,7 +240,7 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
                     onChange={(e) =>
                       setTwitterEngagementType(e.target.value as 'like' | 'retweet' | 'comment')
                     }
-                    className="w-full px-3 py-2 border border-sky-200 bg-white rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
+                    className="w-full px-3 py-2 border border-sky-200 bg-white rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent"
                   >
                     <option value="like">{t('twitterEngagementTypes.like')}</option>
                     <option value="retweet">{t('twitterEngagementTypes.retweet')}</option>
@@ -256,7 +256,7 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
                     type="url"
                     value={twitterTargetTweetUrl}
                     onChange={(e) => setTwitterTargetTweetUrl(e.target.value)}
-                    className="w-full px-3 py-2 border border-sky-200 bg-white rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
+                    className="w-full px-3 py-2 border border-sky-200 bg-white rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent"
                     placeholder="https://x.com/username/status/1234567890"
                   />
                 </div>
@@ -270,7 +270,7 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
                   value={twitterInstructions}
                   onChange={(e) => setTwitterInstructions(e.target.value)}
                   rows={2}
-                  className="w-full px-3 py-2 border border-sky-200 bg-white rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none"
+                  className="w-full px-3 py-2 border border-sky-200 bg-white rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent resize-none"
                   placeholder={t('twitterInstructionsPlaceholder')}
                 />
               </div>
@@ -287,7 +287,7 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
                         setTwitterAutoApprove(false);
                       }
                     }}
-                    className="rounded border-sky-300 text-organic-orange focus:ring-organic-orange"
+                    className="rounded border-sky-300 text-organic-terracotta focus:ring-organic-terracotta"
                   />
                   {t('twitterAutoVerifyLabel')}
                 </label>
@@ -297,7 +297,7 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
                     checked={twitterAutoApprove}
                     disabled={!twitterAutoVerify || twitterEngagementType === 'comment'}
                     onChange={(e) => setTwitterAutoApprove(e.target.checked)}
-                    className="rounded border-sky-300 text-organic-orange focus:ring-organic-orange disabled:opacity-50"
+                    className="rounded border-sky-300 text-organic-terracotta focus:ring-organic-terracotta disabled:opacity-50"
                   />
                   {t('twitterAutoApproveLabel')}
                 </label>
@@ -314,7 +314,7 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
                 type="number"
                 value={points}
                 onChange={(e) => setPoints(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent"
                 placeholder={t('pointsPlaceholder')}
                 min="0"
               />
@@ -329,7 +329,7 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
               <select
                 value={assigneeId}
                 onChange={(e) => setAssigneeId(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent"
                 disabled={loadingAssignees}
               >
                 <option value="">{t('unassigned')}</option>
@@ -350,7 +350,7 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
               <select
                 value={sprintId}
                 onChange={(e) => setSprintId(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent"
               >
                 <option value="">{t('epochNone')}</option>
                 {sprints.map((sprint) => (
@@ -370,7 +370,7 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
               type="date"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent"
             />
           </div>
 
@@ -388,8 +388,8 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
                     onClick={() => handleToggleLabel(key)}
                     className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium border transition-colors ${
                       labels.includes(key)
-                        ? 'border-organic-orange bg-orange-50 text-organic-orange'
-                        : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                        ? 'border-organic-terracotta bg-organic-terracotta-lightest text-organic-terracotta'
+                        : 'border-border text-gray-600 hover:bg-gray-50'
                     }`}
                   >
                     {Icon && <Icon className="w-3.5 h-3.5" />}
@@ -409,7 +409,7 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
                     handleAddLabel();
                   }
                 }}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent"
                 placeholder={t('labelPlaceholder')}
               />
               <button
@@ -452,7 +452,7 @@ export function TaskNewModal({ onClose, onSuccess, sprints, userId }: TaskNewMod
             <button
               type="submit"
               disabled={submitting}
-              className="flex-1 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+              className="flex-1 px-4 py-2 bg-cta hover:bg-cta-hover text-cta-fg rounded-lg font-medium transition-colors disabled:opacity-50"
             >
               {submitting ? t('creating') : t('createTask')}
             </button>

@@ -66,7 +66,7 @@ export function SubtaskList({ parentTaskId, className }: SubtaskListProps) {
             setIsAdding(true);
             setIsExpanded(true);
           }}
-          className="flex items-center gap-1 text-xs text-organic-orange hover:text-orange-600 font-medium"
+          className="flex items-center gap-1 text-xs text-organic-terracotta hover:text-organic-terracotta font-medium"
         >
           <Plus className="w-3.5 h-3.5" />
           {t('add')}
@@ -113,13 +113,13 @@ export function SubtaskList({ parentTaskId, className }: SubtaskListProps) {
                   }
                 }}
                 placeholder={t('placeholder')}
-                className="flex-1 text-sm bg-transparent border-b border-gray-300 focus:border-organic-orange outline-none py-1"
+                className="flex-1 text-sm bg-transparent border-b border-gray-300 focus:border-organic-terracotta outline-none py-1"
                 autoFocus
               />
               <button
                 onClick={handleAdd}
                 disabled={createSubtask.isPending || !newTitle.trim()}
-                className="text-xs text-organic-orange hover:text-orange-600 font-medium disabled:opacity-50"
+                className="text-xs text-organic-terracotta hover:text-organic-terracotta font-medium disabled:opacity-50"
               >
                 {createSubtask.isPending ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />

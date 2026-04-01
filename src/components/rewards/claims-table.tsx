@@ -62,7 +62,7 @@ export function ClaimsTable({
     <div data-testid="rewards-claims-table">
       {/* Mobile cards */}
       {useCardsOnMobile ? (
-        <div className="md:hidden divide-y divide-gray-100">
+        <div className="md:hidden divide-y divide-border">
           {claims.map((claim) => {
             const ageHours = claim.age_hours ?? getQueueAgeHours(claim.created_at);
             const risk = getQueueRisk(claim);
@@ -104,7 +104,7 @@ export function ClaimsTable({
                 </button>
 
                 {isExpanded && (
-                  <div className="space-y-3 border-t border-gray-100 pt-3">
+                  <div className="space-y-3 border-t border-border pt-3">
                     <div className="grid grid-cols-2 gap-2 text-sm">
                       <div className="rounded-lg bg-gray-50 px-3 py-2">
                         <p className="text-[11px] uppercase tracking-wide text-gray-500">
@@ -184,7 +184,7 @@ export function ClaimsTable({
       <div className={useCardsOnMobile ? 'hidden md:block overflow-x-auto' : 'overflow-x-auto'}>
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-gray-200">
+            <tr className="border-b border-border">
               {showUser && (
                 <th className="px-4 py-3 text-left font-medium text-gray-500">{t('claims.user')}</th>
               )}
@@ -201,7 +201,7 @@ export function ClaimsTable({
               )}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border">
             {claims.map((claim) => {
               const ageHours = claim.age_hours ?? getQueueAgeHours(claim.created_at);
               const risk = getQueueRisk(claim);

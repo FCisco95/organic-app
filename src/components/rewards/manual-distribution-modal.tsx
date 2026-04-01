@@ -77,7 +77,7 @@ export function ManualDistributionModal({ open, onClose }: ManualDistributionMod
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogContent
-        className="max-w-2xl bg-white border-gray-200 max-h-[80vh] overflow-y-auto"
+        className="max-w-2xl bg-white border-border max-h-[80vh] overflow-y-auto"
         data-testid="rewards-manual-distribution-modal"
         onInteractOutside={(e) => e.preventDefault()}
       >
@@ -111,7 +111,7 @@ export function ManualDistributionModal({ open, onClose }: ManualDistributionMod
                   value={row.user_id}
                   onChange={(e) => updateRow(index, 'user_id', e.target.value)}
                   placeholder={t('manualModal.userIdPlaceholder')}
-                  className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-organic-orange/30 focus:border-organic-orange font-mono"
+                  className="px-3 py-2 bg-white border border-border rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30 focus:border-organic-terracotta font-mono"
                 />
                 <input
                   type="number"
@@ -120,7 +120,7 @@ export function ManualDistributionModal({ open, onClose }: ManualDistributionMod
                   placeholder={t('manualModal.tokenAmountPlaceholder')}
                   min="0"
                   step="0.001"
-                  className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-organic-orange/30 focus:border-organic-orange"
+                  className="px-3 py-2 bg-white border border-border rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30 focus:border-organic-terracotta"
                 />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -129,7 +129,7 @@ export function ManualDistributionModal({ open, onClose }: ManualDistributionMod
                   onChange={(e) =>
                     updateRow(index, 'category', e.target.value)
                   }
-                  className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-organic-orange/30 focus:border-organic-orange"
+                  className="px-3 py-2 bg-white border border-border rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30 focus:border-organic-terracotta"
                 >
                   <option value="bonus">{t('distributionCategory.bonus')}</option>
                   <option value="bounty">{t('distributionCategory.bounty')}</option>
@@ -140,7 +140,7 @@ export function ManualDistributionModal({ open, onClose }: ManualDistributionMod
                   value={row.reason}
                   onChange={(e) => updateRow(index, 'reason', e.target.value)}
                   placeholder={t('manualModal.reasonPlaceholder')}
-                  className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-organic-orange/30 focus:border-organic-orange"
+                  className="px-3 py-2 bg-white border border-border rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30 focus:border-organic-terracotta"
                 />
               </div>
             </div>
@@ -150,7 +150,7 @@ export function ManualDistributionModal({ open, onClose }: ManualDistributionMod
         {/* Add Row */}
         <button
           onClick={addRow}
-          className="flex items-center gap-2 text-sm font-medium text-organic-orange hover:text-organic-orange/80 mb-4"
+          className="flex items-center gap-2 text-sm font-medium text-organic-terracotta hover:text-organic-terracotta/80 mb-4"
         >
           <Plus className="w-4 h-4" />
           {t('manualModal.addRecipient')}
@@ -182,7 +182,7 @@ export function ManualDistributionModal({ open, onClose }: ManualDistributionMod
           <button
             onClick={handleSubmit}
             disabled={!isValid || manualDist.isPending}
-            className="flex-1 py-2.5 px-4 text-sm font-medium text-white bg-organic-orange hover:bg-organic-orange/90 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 py-2.5 px-4 text-sm font-medium text-cta-fg bg-cta hover:bg-cta-hover rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {manualDist.isPending ? t('manualModal.sending') : t('manualModal.submit')}
           </button>

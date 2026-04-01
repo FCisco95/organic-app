@@ -26,7 +26,7 @@ const STATUS_ICON_COLORS: Record<string, string> = {
   open: 'bg-emerald-500',
   awaiting_response: 'bg-amber-500',
   mediation: 'bg-amber-400',
-  under_review: 'bg-orange-500',
+  under_review: 'bg-organic-terracotta-lightest0',
   resolved: 'bg-blue-500',
   dismissed: 'bg-gray-400',
   appealed: 'bg-red-500',
@@ -60,7 +60,7 @@ export function DisputeCard({ dispute }: DisputeCardProps) {
     overdue: 'bg-red-100 text-red-700 border-red-200',
     at_risk: 'bg-amber-100 text-amber-700 border-amber-200',
     on_track: 'bg-emerald-100 text-emerald-700 border-emerald-200',
-    no_deadline: 'bg-gray-100 text-gray-500 border-gray-200',
+    no_deadline: 'bg-gray-100 text-gray-500 border-border',
   };
   const slaLabel =
     slaUrgency === 'overdue'
@@ -81,7 +81,7 @@ export function DisputeCard({ dispute }: DisputeCardProps) {
     <Link
       href={`/disputes/${dispute.id}`}
       data-testid={`dispute-card-${dispute.id}`}
-      className="group flex items-start gap-3 border-b border-gray-100 bg-white px-4 py-3 transition-colors hover:bg-gray-50 last:border-b-0"
+      className="group flex items-start gap-3 border-b border-border bg-white px-4 py-3 transition-colors hover:bg-gray-50 last:border-b-0"
     >
       {/* Status dot */}
       <div className="mt-1.5 flex shrink-0">
@@ -96,7 +96,7 @@ export function DisputeCard({ dispute }: DisputeCardProps) {
       {/* Content */}
       <div className="min-w-0 flex-1">
         {/* Title row */}
-        <h3 className="text-sm font-semibold text-gray-900 group-hover:text-orange-700">
+        <h3 className="text-sm font-semibold text-gray-900 group-hover:text-organic-terracotta-hover">
           {taskTitle}
         </h3>
 
@@ -105,7 +105,7 @@ export function DisputeCard({ dispute }: DisputeCardProps) {
           <span
             className={cn(
               'inline-flex rounded-full border px-2 py-0.5 text-[11px] font-medium leading-none',
-              tierChipClass[dispute.tier] || 'bg-gray-100 text-gray-600 border-gray-200'
+              tierChipClass[dispute.tier] || 'bg-gray-100 text-gray-600 border-border'
             )}
           >
             {t(`tier.${dispute.tier}`)}
@@ -119,7 +119,7 @@ export function DisputeCard({ dispute }: DisputeCardProps) {
           >
             {slaLabel}
           </span>
-          <span className="inline-flex rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-[11px] font-medium leading-none text-gray-600">
+          <span className="inline-flex rounded-full border border-border bg-gray-50 px-2 py-0.5 text-[11px] font-medium leading-none text-gray-600">
             {reasonLabel}
           </span>
         </div>

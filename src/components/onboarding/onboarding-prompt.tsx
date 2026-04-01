@@ -29,7 +29,7 @@ export function OnboardingPrompt({ onboardingState, onContinue, onDismiss }: Onb
 
       <div className="space-y-3">
         <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-organic-orange" />
+          <Sparkles className="w-4 h-4 text-organic-terracotta" />
           <div>
             <p className="text-sm font-semibold text-foreground">{t('promptTitle')}</p>
             <p className="text-xs text-muted-foreground mt-0.5">
@@ -44,7 +44,7 @@ export function OnboardingPrompt({ onboardingState, onContinue, onDismiss }: Onb
         {/* Progress bar */}
         <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
           <div
-            className="h-full bg-organic-orange rounded-full transition-all duration-500"
+            className="h-full bg-cta rounded-full transition-all duration-500"
             style={{ width: `${percent}%` }}
           />
         </div>
@@ -52,7 +52,7 @@ export function OnboardingPrompt({ onboardingState, onContinue, onDismiss }: Onb
         <button
           type="button"
           onClick={onContinue}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium bg-organic-orange hover:bg-orange-600 text-white rounded-lg transition-colors"
+          className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium bg-cta hover:bg-cta-hover text-cta-fg rounded-lg transition-colors"
         >
           {t('promptContinue')}
           <ArrowRight className="w-4 h-4" />

@@ -49,7 +49,7 @@ export function StepVerifyToken({ completed, onComplete }: StepVerifyTokenProps)
               {t('steps.verify_token.organicId', { id: profile.organic_id })}
             </p>
           )}
-          <span className="inline-block text-xs font-mono text-organic-orange bg-organic-orange/10 px-2 py-0.5 rounded">
+          <span className="inline-block text-xs font-mono text-organic-terracotta bg-organic-terracotta/10 px-2 py-0.5 rounded">
             {t('xpEarned')}
           </span>
         </div>
@@ -60,7 +60,7 @@ export function StepVerifyToken({ completed, onComplete }: StepVerifyTokenProps)
   return (
     <div className="flex flex-col items-center gap-6 py-8 w-full">
       <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
-        <ShieldCheck className="w-6 h-6 text-organic-orange" />
+        <ShieldCheck className="w-6 h-6 text-organic-terracotta" />
       </div>
       <div className="text-center space-y-2">
         <h3 className="text-xl font-semibold text-foreground">{t('steps.verify_token.title')}</h3>
