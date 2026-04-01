@@ -15,9 +15,9 @@ export function SubmissionHistoryCard({
   const t = useTranslations('Tasks.review');
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+    <div className="bg-white rounded-lg border border-border overflow-hidden">
       {/* Header */}
-      <div className="p-4 bg-gray-50 border-b border-gray-200">
+      <div className="p-4 bg-gray-50 border-b border-border">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
@@ -48,7 +48,7 @@ export function SubmissionHistoryCard({
 
         {/* Review Details */}
         {submission.quality_score && (
-          <div className="flex items-center gap-4 pt-3 border-t border-gray-100">
+          <div className="flex items-center gap-4 pt-3 border-t border-border">
             <QualityRating value={submission.quality_score} readonly size="sm" showLabel />
             {submission.earned_points !== null && (
               <span className="text-sm font-medium text-green-600">

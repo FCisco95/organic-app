@@ -42,7 +42,7 @@ export function ClaimPayModal({ claim, open, onClose }: ClaimPayModalProps) {
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogContent
-        className="max-w-md bg-white border-gray-200"
+        className="max-w-md bg-white border-border"
         data-testid="rewards-claim-pay-modal"
         onInteractOutside={(e) => e.preventDefault()}
       >
@@ -86,7 +86,7 @@ export function ClaimPayModal({ claim, open, onClose }: ClaimPayModalProps) {
             value={txSignature}
             onChange={(e) => setTxSignature(e.target.value)}
             placeholder={t('payModal.txPlaceholder')}
-            className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-mono text-gray-900 focus:outline-none focus:ring-2 focus:ring-organic-orange/30 focus:border-organic-orange"
+            className="w-full px-3 py-2 bg-white border border-border rounded-lg text-sm font-mono text-gray-900 focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30 focus:border-organic-terracotta"
           />
         </div>
 

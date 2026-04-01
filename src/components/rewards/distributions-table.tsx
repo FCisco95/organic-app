@@ -32,7 +32,7 @@ export function DistributionsTable({
   return (
     <div data-testid="rewards-distributions-table">
       {useCardsOnMobile ? (
-        <div className="md:hidden divide-y divide-gray-100">
+        <div className="md:hidden divide-y divide-border">
           {distributions.map((dist) => {
             const settlementRisk =
               dist.reward_settlement_status === 'held' ||
@@ -123,7 +123,7 @@ export function DistributionsTable({
       <div className={useCardsOnMobile ? 'hidden md:block overflow-x-auto' : 'overflow-x-auto'}>
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-gray-200">
+            <tr className="border-b border-border">
               {showUser && (
                 <th className="px-4 py-3 text-left font-medium text-gray-500">
                   {t('distributions.user')}
@@ -152,7 +152,7 @@ export function DistributionsTable({
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border">
             {distributions.map((dist) => {
               const settlementRisk =
                 dist.reward_settlement_status === 'held' ||

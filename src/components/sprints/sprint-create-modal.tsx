@@ -35,11 +35,11 @@ export function SprintCreateModal({
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogContent
-        className="max-w-lg bg-white border-gray-200 p-0"
+        className="max-w-lg bg-white border-border p-0"
         onInteractOutside={(e) => e.preventDefault()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-200 px-5 py-3">
+        <div className="flex items-center justify-between border-b border-border px-5 py-3">
           <DialogHeader className="space-y-0">
             <DialogTitle className="text-base font-semibold text-gray-900">{t('modalTitle')}</DialogTitle>
             <DialogDescription className="sr-only">{t('modalTitle')}</DialogDescription>
@@ -153,7 +153,7 @@ export function SprintCreateModal({
             <button
               type="submit"
               disabled={submitting}
-              className="flex items-center gap-1.5 rounded-md border border-organic-orange bg-organic-orange px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-orange-600 disabled:opacity-50"
+              className="flex items-center gap-1.5 rounded-md border border-cta bg-cta px-3 py-1.5 text-sm font-medium text-cta-fg transition-colors hover:bg-cta-hover disabled:opacity-50"
             >
               {submitting ? (
                 <>

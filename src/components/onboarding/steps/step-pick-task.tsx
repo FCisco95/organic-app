@@ -94,7 +94,7 @@ export function StepPickTask({ completed, onComplete }: StepPickTaskProps) {
         </div>
         <div className="text-center space-y-1.5">
           <p className="text-base font-medium text-green-400">{t('steps.pick_task.completed')}</p>
-          <span className="inline-block text-xs font-mono text-organic-orange bg-organic-orange/10 px-2 py-0.5 rounded">
+          <span className="inline-block text-xs font-mono text-organic-terracotta bg-organic-terracotta/10 px-2 py-0.5 rounded">
             {t('xpEarned')}
           </span>
         </div>
@@ -105,7 +105,7 @@ export function StepPickTask({ completed, onComplete }: StepPickTaskProps) {
   return (
     <div className="flex flex-col items-center gap-6 py-4 w-full">
       <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
-        <ClipboardList className="w-6 h-6 text-organic-orange" />
+        <ClipboardList className="w-6 h-6 text-organic-terracotta" />
       </div>
       <div className="text-center space-y-2">
         <h3 className="text-xl font-semibold text-foreground">{t('steps.pick_task.title')}</h3>
@@ -131,7 +131,7 @@ export function StepPickTask({ completed, onComplete }: StepPickTaskProps) {
           <p className="text-xs text-muted-foreground text-center">{t('steps.pick_task.noTasksHint')}</p>
           <Link
             href="/tasks"
-            className="inline-flex items-center gap-1.5 text-sm text-organic-orange hover:text-orange-400 transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm text-organic-terracotta hover:text-[#E8845C] transition-colors"
           >
             {t('noTasksCta')}
             <ArrowRight className="w-3.5 h-3.5" />
@@ -162,7 +162,7 @@ export function StepPickTask({ completed, onComplete }: StepPickTaskProps) {
                 type="button"
                 onClick={() => handleJoinTask(task.id)}
                 disabled={joiningTaskId !== null}
-                className="flex-shrink-0 px-3 py-1.5 text-xs font-medium rounded-md bg-organic-orange hover:bg-orange-600 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="flex-shrink-0 px-3 py-1.5 text-xs font-medium rounded-md bg-cta hover:bg-cta-hover text-cta-fg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {joiningTaskId === task.id ? (
                   <Loader2 className="w-3 h-3 animate-spin" />

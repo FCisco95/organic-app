@@ -30,7 +30,7 @@ export function TaskCommentsSection({
   const t = useTranslations('TaskDetail');
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6">
+    <div className="bg-white rounded-xl border border-border p-6">
       <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
         <MessageSquare className="w-5 h-5" />
         {t('commentsTitle', { count: comments.length })}
@@ -43,14 +43,14 @@ export function TaskCommentsSection({
           placeholder={t('commentPlaceholder')}
           rows={3}
           maxLength={1000}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange mb-2"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-organic-terracotta mb-2"
         />
         <div className="flex items-center justify-between">
           <span className="text-xs text-muted-foreground">{newComment.length}/1000</span>
           <button
             type="submit"
             disabled={isSubmitting || !newComment.trim()}
-            className="flex items-center gap-2 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 bg-cta hover:bg-cta-hover text-cta-fg rounded-lg transition-colors disabled:opacity-50"
           >
             <Send className="w-4 h-4" />
             {isSubmitting ? t('posting') : t('postComment')}
@@ -61,7 +61,7 @@ export function TaskCommentsSection({
       <div className="space-y-4">
         {loading ? (
           [1, 2, 3].map((i) => (
-            <div key={i} className="flex items-start gap-3 border-l-2 border-gray-200 pl-4 py-2">
+            <div key={i} className="flex items-start gap-3 border-l-2 border-border pl-4 py-2">
               <Skeleton className="h-8 w-8 rounded-full shrink-0" />
               <div className="flex-1 space-y-2">
                 <div className="flex items-center gap-2">
@@ -77,7 +77,7 @@ export function TaskCommentsSection({
           <p className="text-gray-500 text-center py-4">{t('noComments')}</p>
         ) : (
           comments.map((comment) => (
-            <div key={comment.id} className="border-l-2 border-gray-200 pl-4 py-2">
+            <div key={comment.id} className="border-l-2 border-border pl-4 py-2">
               <div className="flex items-start gap-3">
                 {comment.user.avatar_url ? (
                   <Image
@@ -88,7 +88,7 @@ export function TaskCommentsSection({
                     className="rounded-full"
                   />
                 ) : (
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-organic-orange to-organic-yellow flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-organic-terracotta to-organic-yellow flex items-center justify-center">
                     <span className="text-white text-sm font-bold">
                       {getDisplayName(comment.user)[0].toUpperCase()}
                     </span>

@@ -118,7 +118,7 @@ export function LanguageSelector({
                    shadow-sm px-4 py-2 text-sm font-medium
                    text-gray-700 dark:text-gray-200
                    hover:bg-gray-50 dark:hover:bg-gray-700
-                   focus:outline-none focus:ring-2 focus:ring-organic-orange focus:ring-offset-2 focus:ring-offset-gray-100 dark:focus:ring-offset-gray-800
+                   focus:outline-none focus:ring-2 focus:ring-organic-terracotta focus:ring-offset-2 focus:ring-offset-gray-100 dark:focus:ring-offset-gray-800
                    transition-all duration-200 ease-in-out"
         id="language-menu-button"
         aria-expanded={isOpen}
@@ -166,7 +166,7 @@ export function LanguageSelector({
                 onClick={() => handleSelect(lang.code)}
                 className={`${
                   lang.code === currentLanguageCode
-                    ? 'bg-organic-orange/10 dark:bg-organic-orange/20 text-organic-orange'
+                    ? 'bg-organic-terracotta/10 dark:bg-organic-terracotta/20 text-organic-terracotta'
                     : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'
                 } group flex items-center w-full px-4 py-2 text-sm
                    transition-colors duration-150 ease-in-out`}

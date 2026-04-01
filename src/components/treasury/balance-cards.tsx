@@ -53,8 +53,8 @@ export function BalanceCards({ balances, loading }: BalanceCardsProps) {
         <div
           key={card.label}
           className={cn(
-            'rounded-2xl bg-white shadow-sm ring-1 ring-gray-200/70 px-5 py-5',
-            card.accent && 'ring-orange-200/70 bg-orange-50/30'
+            'rounded-2xl bg-white shadow-sm ring-1 ring-border px-5 py-5',
+            card.accent && 'ring-organic-terracotta-light/70 bg-organic-terracotta-lightest/30'
           )}
         >
           {loading ? (

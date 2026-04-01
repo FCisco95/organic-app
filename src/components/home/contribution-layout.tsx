@@ -110,12 +110,12 @@ export function ContributionLayout({
                 className="flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-3 transition-colors hover:bg-muted opacity-0 animate-fade-up"
                 style={{ animationDelay: `${200 + i * 60}ms` }}
               >
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-orange-500/10 text-orange-500">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-organic-terracotta-lightest0/10 text-organic-terracotta">
                   <Icon className="h-4.5 w-4.5" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium text-foreground group-hover:text-orange-500 transition-colors truncate">
+                    <p className="text-sm font-medium text-foreground group-hover:text-organic-terracotta transition-colors truncate">
                       {t(card.titleKey)}
                     </p>
                     <span className="shrink-0 rounded-full bg-muted border border-border px-2 py-0.5 text-[10px] font-medium text-muted-foreground tabular-nums">
@@ -126,7 +126,7 @@ export function ContributionLayout({
                     {t(card.descKey)}
                   </p>
                 </div>
-                <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/50 shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:text-orange-500" />
+                <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/50 shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:text-organic-terracotta" />
               </div>
             </Link>
           );

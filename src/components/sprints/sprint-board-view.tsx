@@ -65,13 +65,13 @@ export function SprintBoardView({
 
   if (!selectedSprint) {
     return (
-      <div className="rounded-md border border-gray-200 bg-white py-16 text-center" data-testid="sprints-board-view">
+      <div className="rounded-md border border-border bg-white py-16 text-center" data-testid="sprints-board-view">
         <GitBranch className="mx-auto mb-3 h-12 w-12 text-gray-300" />
         <p className="text-sm text-gray-500">{t('noActiveOrUpcoming')}</p>
         {canCreateSprint && (
           <button
             onClick={onOpenCreate}
-            className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-organic-orange bg-organic-orange px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-orange-600"
+            className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-cta bg-cta px-3 py-1.5 text-sm font-medium text-cta-fg transition-colors hover:bg-cta-hover"
           >
             <Plus className="h-3.5 w-3.5" />
             {t('createSprint')}
@@ -92,10 +92,10 @@ export function SprintBoardView({
     <div className="space-y-4" data-testid="sprints-board-view">
       {/* GitHub-style repo header: branch selector + sprint info */}
       <div
-        className="rounded-md border border-gray-200 bg-white"
+        className="rounded-md border border-border bg-white"
         data-testid="sprints-board-context"
       >
-        <div className="flex flex-col gap-3 border-b border-gray-200 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 border-b border-border px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
           {/* Branch-style sprint selector */}
           <div className="flex items-center gap-3">
             <div className="relative">
@@ -132,7 +132,7 @@ export function SprintBoardView({
                 selectedSprint.status === 'planning'
                   ? 'bg-blue-100 text-blue-700'
                   : selectedSprint.status === 'active'
-                    ? 'bg-orange-100 text-orange-700'
+                    ? 'bg-organic-terracotta-light/30 text-organic-terracotta-hover'
                     : 'bg-gray-100 text-gray-700'
               }`}
             >
@@ -176,7 +176,7 @@ export function SprintBoardView({
             {selectedSprint.capacity_points != null && (
               <div className="h-1.5 w-24 overflow-hidden rounded-full bg-gray-200">
                 <div
-                  className="h-full rounded-full bg-organic-orange transition-all"
+                  className="h-full rounded-full bg-cta transition-all"
                   style={{
                     width: `${Math.min(getCapacityPercent(currentSprintPoints, selectedSprint.capacity_points), 100)}%`,
                   }}
@@ -233,7 +233,7 @@ export function SprintBoardView({
       {/* Backlog — GitHub-style collapsible section */}
       <details
         open
-        className="group rounded-md border border-gray-200 bg-white"
+        className="group rounded-md border border-border bg-white"
         data-testid="sprints-backlog-surface"
         onDragOver={(event) => {
           if (!canAssignToSprint) return;
@@ -271,7 +271,7 @@ export function SprintBoardView({
         </summary>
 
         {canAssignToSprint && (
-          <p className="border-t border-gray-100 px-4 pt-2 text-xs text-gray-500">{t('planningBacklogHint')}</p>
+          <p className="border-t border-border px-4 pt-2 text-xs text-gray-500">{t('planningBacklogHint')}</p>
         )}
 
         {tasksLoading ? (
@@ -281,10 +281,10 @@ export function SprintBoardView({
             ))}
           </div>
         ) : backlogTasks.length === 0 ? (
-          <div className="border-t border-gray-100 px-4 py-8 text-center text-sm text-gray-500">{tTasks('noTasksInView')}</div>
+          <div className="border-t border-border px-4 py-8 text-center text-sm text-gray-500">{tTasks('noTasksInView')}</div>
         ) : (
           <div
-            className="divide-y divide-gray-100 border-t border-gray-100"
+            className="divide-y divide-border border-t border-border"
             onDragOver={(event) => {
               if (!canAssignToSprint) return;
               event.preventDefault();
@@ -342,7 +342,7 @@ export function SprintBoardView({
                             task.priority === 'high'
                               ? 'bg-red-100 text-red-700'
                               : task.priority === 'medium'
-                                ? 'bg-orange-100 text-orange-700'
+                                ? 'bg-organic-terracotta-light/30 text-organic-terracotta-hover'
                                 : 'bg-gray-100 text-gray-600'
                           }`}>
                             {tTasks(`priority.${task.priority}`)}

@@ -48,9 +48,9 @@ export function WizardTabs({ currentStep, onTabClick, labels }: WizardTabsProps)
                   className={cn(
                     'w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all',
                     isCompleted
-                      ? 'bg-organic-terracotta text-white'
+                      ? 'bg-cta text-cta-fg'
                       : isActive
-                        ? 'bg-organic-terracotta text-white ring-4 ring-organic-terracotta-lightest'
+                        ? 'bg-cta text-cta-fg ring-4 ring-cta/20'
                         : 'bg-gray-100 text-gray-400 group-hover:bg-gray-200'
                   )}
                 >
@@ -80,7 +80,7 @@ export function WizardTabs({ currentStep, onTabClick, labels }: WizardTabsProps)
                 <div
                   className={cn(
                     'flex-1 h-0.5 mx-2 sm:mx-3 transition-colors',
-                    isCompleted ? 'bg-organic-terracotta' : 'bg-gray-200'
+                    isCompleted ? 'bg-cta' : 'bg-gray-200'
                   )}
                 />
               )}

@@ -162,7 +162,7 @@ export function AdminVotingControls({
             flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50
             ${
               canFinalize
-                ? 'bg-orange-600 hover:bg-orange-700 text-white'
+                ? 'bg-organic-terracotta hover:bg-organic-terracotta-hover text-white'
                 : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
             }
           `}
@@ -194,7 +194,7 @@ export function AdminVotingControls({
               <AlertDialogAction
                 onClick={() => handleFinalizeVoting(!canFinalize)}
                 disabled={finalizeVotingMutation.isPending}
-                className="bg-orange-600 hover:bg-orange-700 text-white"
+                className="bg-organic-terracotta hover:bg-organic-terracotta-hover text-white"
               >
                 {finalizeVotingMutation.isPending ? (
                   <Loader2 className="w-4 h-4 animate-spin inline mr-2" />

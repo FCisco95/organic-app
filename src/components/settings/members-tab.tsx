@@ -30,21 +30,21 @@ export function MembersTab() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={t('members.searchPlaceholder')}
-          className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-organic-orange/30 focus:border-organic-orange"
+          className="w-full pl-10 pr-4 py-2 bg-white border border-border rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30 focus:border-organic-terracotta"
         />
       </div>
 
       {/* Members table */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-xl border border-border overflow-hidden">
         {isLoading ? (
           <div className="p-8 text-center">
-            <div className="w-6 h-6 border-2 border-organic-orange border-t-transparent rounded-full animate-spin mx-auto" />
+            <div className="w-6 h-6 border-2 border-organic-terracotta border-t-transparent rounded-full animate-spin mx-auto" />
           </div>
         ) : !data?.members.length ? (
           <div className="p-8 text-center text-gray-500">{t('members.noMembers')}</div>
         ) : (
           <>
-            <div className="md:hidden divide-y divide-gray-100">
+            <div className="md:hidden divide-y divide-border">
               {data.members.map((member) => {
                 const displayName =
                   member.name ||
@@ -61,7 +61,7 @@ export function MembersTab() {
                           className="rounded-full object-cover"
                         />
                       ) : (
-                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-organic-orange to-organic-yellow flex items-center justify-center">
+                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-organic-terracotta to-organic-yellow flex items-center justify-center">
                           <span className="text-white text-xs font-bold">
                             {displayName[0]?.toUpperCase() || '?'}
                           </span>
@@ -80,7 +80,7 @@ export function MembersTab() {
                         value={member.role ?? 'guest'}
                         onChange={(e) => handleRoleChange(member.id, e.target.value as UserRole)}
                         disabled={updateRole.isPending}
-                        className={`w-full text-xs px-2 py-1.5 rounded-full border cursor-pointer focus:outline-none focus:ring-2 focus:ring-organic-orange/30 ${
+                        className={`w-full text-xs px-2 py-1.5 rounded-full border cursor-pointer focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30 ${
                           ROLE_COLORS[(member.role as UserRole) ?? 'guest']
                         }`}
                       >
@@ -97,13 +97,13 @@ export function MembersTab() {
             </div>
 
             <div className="hidden md:block">
-              <div className="grid grid-cols-12 gap-4 px-4 py-3 bg-gray-50 border-b border-gray-200 text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <div className="grid grid-cols-12 gap-4 px-4 py-3 bg-gray-50 border-b border-border text-xs font-medium text-gray-500 uppercase tracking-wider">
                 <div className="col-span-5">{t('members.member')}</div>
                 <div className="col-span-3">{t('members.organicId')}</div>
                 <div className="col-span-4">{t('members.role')}</div>
               </div>
 
-              <div className="divide-y divide-gray-100">
+              <div className="divide-y divide-border">
                 {data.members.map((member) => {
                   const displayName =
                     member.name ||
@@ -120,7 +120,7 @@ export function MembersTab() {
                             className="rounded-full object-cover"
                           />
                         ) : (
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-organic-orange to-organic-yellow flex items-center justify-center">
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-organic-terracotta to-organic-yellow flex items-center justify-center">
                             <span className="text-white text-xs font-bold">
                               {displayName[0]?.toUpperCase() || '?'}
                             </span>
@@ -139,7 +139,7 @@ export function MembersTab() {
                           value={member.role ?? 'guest'}
                           onChange={(e) => handleRoleChange(member.id, e.target.value as UserRole)}
                           disabled={updateRole.isPending}
-                          className={`text-xs px-2 py-1 rounded-full border cursor-pointer focus:outline-none focus:ring-2 focus:ring-organic-orange/30 ${
+                          className={`text-xs px-2 py-1 rounded-full border cursor-pointer focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30 ${
                             ROLE_COLORS[(member.role as UserRole) ?? 'guest']
                           }`}
                         >

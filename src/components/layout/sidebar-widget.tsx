@@ -23,14 +23,14 @@ export function SidebarWidget({ collapsed = false }: SidebarWidgetProps) {
     return (
       <Link href="/earn" className="flex flex-col items-center gap-1 py-2 px-1">
         {streak > 0 && (
-          <div className="flex items-center gap-0.5 text-[10px] font-bold text-orange-400">
+          <div className="flex items-center gap-0.5 text-[10px] font-bold text-[#E8845C]">
             <Flame className="h-3 w-3" />
             {streak}
           </div>
         )}
         <div className="w-8 h-1 rounded-full bg-sidebar-border overflow-hidden">
           <div
-            className="h-full rounded-full bg-organic-orange transition-all"
+            className="h-full rounded-full bg-cta transition-all"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -44,7 +44,7 @@ export function SidebarWidget({ collapsed = false }: SidebarWidgetProps) {
       className="mx-3 my-2 flex items-center gap-3 rounded-lg bg-sidebar-accent/50 px-3 py-2.5 transition-colors hover:bg-sidebar-accent"
     >
       {streak > 0 && (
-        <div className="flex items-center gap-1 text-xs font-bold text-orange-400 shrink-0">
+        <div className="flex items-center gap-1 text-xs font-bold text-[#E8845C] shrink-0">
           <Flame className="h-3.5 w-3.5" />
           <span>{streak}d</span>
         </div>
@@ -56,7 +56,7 @@ export function SidebarWidget({ collapsed = false }: SidebarWidgetProps) {
         </div>
         <div className="h-1 rounded-full bg-sidebar-border overflow-hidden">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-organic-orange to-yellow-500 transition-all"
+            className="h-full rounded-full bg-gradient-to-r from-organic-terracotta to-yellow-500 transition-all"
             style={{ width: `${progress}%` }}
           />
         </div>

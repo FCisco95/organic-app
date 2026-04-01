@@ -167,7 +167,7 @@ export function OnboardingWizard({ open, onOpenChange, onboardingState, onRefres
                   <p className="text-sm text-muted-foreground">
                     {t('completionSubtitle')}
                   </p>
-                  <p className="text-2xl font-mono font-bold text-organic-orange">
+                  <p className="text-2xl font-mono font-bold text-organic-terracotta">
                     {t('completionXp', { xp: totalXp })}
                   </p>
                 </div>
@@ -175,7 +175,7 @@ export function OnboardingWizard({ open, onOpenChange, onboardingState, onRefres
                   <Link
                     href="/tasks"
                     onClick={() => onOpenChange(false)}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium bg-organic-orange hover:bg-orange-600 text-white rounded-lg transition-colors"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium bg-cta hover:bg-cta-hover text-cta-fg rounded-lg transition-colors"
                   >
                     <ClipboardList className="w-4 h-4" />
                     {t('exploreTasks')}
@@ -228,7 +228,7 @@ export function OnboardingWizard({ open, onOpenChange, onboardingState, onRefres
                   <button
                     type="button"
                     onClick={handleNext}
-                    className="flex items-center gap-1 px-5 py-2 text-sm font-medium bg-organic-orange hover:bg-orange-600 text-white rounded-lg transition-colors"
+                    className="flex items-center gap-1 px-5 py-2 text-sm font-medium bg-cta hover:bg-cta-hover text-cta-fg rounded-lg transition-colors"
                   >
                     {isLastStep ? t('finish') : t('next')}
                     <ChevronRight className="w-4 h-4" />

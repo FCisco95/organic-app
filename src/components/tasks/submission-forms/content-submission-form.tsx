@@ -63,7 +63,7 @@ export function ContentSubmissionForm({ task, onSuccess, onCancel }: SubmissionF
             {...register('content_link')}
             type="url"
             placeholder={t('contentLinkPlaceholder')}
-            className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
+            className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent"
           />
         </div>
       </div>
@@ -76,7 +76,7 @@ export function ContentSubmissionForm({ task, onSuccess, onCancel }: SubmissionF
           {...register('content_text')}
           rows={4}
           placeholder={t('contentTextPlaceholder')}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent resize-none"
         />
       </div>
 
@@ -92,7 +92,7 @@ export function ContentSubmissionForm({ task, onSuccess, onCancel }: SubmissionF
           {...register('description')}
           rows={2}
           placeholder={t('descriptionPlaceholder')}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent resize-none"
         />
       </div>
 
@@ -108,7 +108,7 @@ export function ContentSubmissionForm({ task, onSuccess, onCancel }: SubmissionF
               type="number"
               min="0"
               placeholder="0"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent"
             />
           </div>
           <div>
@@ -118,7 +118,7 @@ export function ContentSubmissionForm({ task, onSuccess, onCancel }: SubmissionF
               type="number"
               min="0"
               placeholder="0"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent"
             />
           </div>
           <div>
@@ -128,7 +128,7 @@ export function ContentSubmissionForm({ task, onSuccess, onCancel }: SubmissionF
               type="number"
               min="0"
               placeholder="0"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent"
             />
           </div>
         </div>

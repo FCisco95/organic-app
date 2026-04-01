@@ -138,7 +138,7 @@ export default function AdminSettingsPage() {
         {/* Header */}
         <div className="mb-6">
           <div className="flex items-center gap-3 mb-1">
-            <Settings aria-hidden="true" className="w-6 h-6 text-organic-orange" />
+            <Settings aria-hidden="true" className="w-6 h-6 text-organic-terracotta" />
             <h1 className="text-2xl font-bold tracking-tight text-foreground">{t('title')}</h1>
           </div>
           <p className="text-sm text-muted-foreground">{t('description')}</p>
@@ -166,7 +166,7 @@ export default function AdminSettingsPage() {
                       onClick={() => setActiveTab(key)}
                       className={`flex items-center gap-2.5 w-full px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left ${
                         isActive
-                          ? 'bg-organic-orange/10 text-organic-orange border-l-[3px] border-organic-orange'
+                          ? 'bg-cta/10 text-cta border-l-[3px] border-cta'
                           : 'text-muted-foreground hover:bg-muted hover:text-foreground border-l-[3px] border-transparent'
                       }`}
                     >
@@ -189,7 +189,7 @@ export default function AdminSettingsPage() {
                   onClick={() => setActiveTab(key)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
                     isActive
-                      ? 'bg-organic-orange text-white'
+                      ? 'bg-cta text-cta-fg'
                       : 'bg-muted text-muted-foreground hover:bg-muted/80'
                   }`}
                 >

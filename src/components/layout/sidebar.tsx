@@ -180,14 +180,14 @@ function NavLink({
     >
       {/* Active indicator bar */}
       {active && !collapsed && (
-        <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-organic-orange" />
+        <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-organic-terracotta" />
       )}
-      <Icon className={cn('h-[18px] w-[18px] shrink-0', active && 'text-organic-orange')} />
+      <Icon className={cn('h-[18px] w-[18px] shrink-0', active && 'text-organic-terracotta')} />
       {!collapsed && (
         <>
           <span className="flex-1">{label}</span>
           {badgeCount && badgeCount > 0 ? (
-            <Badge className="ml-auto min-w-5 h-5 px-1.5 bg-orange-600 text-white text-[10px] leading-none flex items-center justify-center">
+            <Badge className="ml-auto min-w-5 h-5 px-1.5 bg-organic-terracotta text-white text-[10px] leading-none flex items-center justify-center">
               {badgeCount > 99 ? '99+' : badgeCount}
             </Badge>
           ) : shortcutHint ? (
@@ -198,7 +198,7 @@ function NavLink({
         </>
       )}
       {collapsed && badgeCount && badgeCount > 0 ? (
-        <span className="absolute -top-1 -right-1 min-w-4 h-4 rounded-full bg-orange-600 text-[10px] text-white flex items-center justify-center px-1">
+        <span className="absolute -top-1 -right-1 min-w-4 h-4 rounded-full bg-organic-terracotta text-[10px] text-white flex items-center justify-center px-1">
           {badgeCount > 9 ? '9+' : badgeCount}
         </span>
       ) : null}

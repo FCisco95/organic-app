@@ -62,7 +62,7 @@ export function TaskEditForm({
           type="text"
           value={editForm.title}
           onChange={(e) => onChange({ ...editForm, title: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-organic-terracotta"
         />
       </div>
 
@@ -74,7 +74,7 @@ export function TaskEditForm({
           value={editForm.description}
           onChange={(e) => onChange({ ...editForm, description: e.target.value })}
           rows={4}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-organic-terracotta"
         />
       </div>
 
@@ -91,7 +91,7 @@ export function TaskEditForm({
                 sprint_id: nextStatus === 'backlog' ? '' : editForm.sprint_id,
               });
             }}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-organic-terracotta"
           >
             <option value="backlog">{t('status.backlog')}</option>
             <option value="todo">{t('status.todo')}</option>
@@ -110,7 +110,7 @@ export function TaskEditForm({
             onChange={(e) =>
               onChange({ ...editForm, priority: e.target.value as Task['priority'] })
             }
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-organic-terracotta"
           >
             <option value="low">{t('priority.low')}</option>
             <option value="medium">{t('priority.medium')}</option>
@@ -128,7 +128,7 @@ export function TaskEditForm({
             min="0"
             value={editForm.points}
             onChange={(e) => onChange({ ...editForm, points: parseInt(e.target.value, 10) || 0 })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-organic-terracotta"
           />
         </div>
 
@@ -139,7 +139,7 @@ export function TaskEditForm({
           <select
             value={editForm.assignee_id}
             onChange={(e) => onChange({ ...editForm, assignee_id: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-organic-terracotta"
           >
             <option value="">{t('unassigned')}</option>
             {members.map((member) => (
@@ -164,7 +164,7 @@ export function TaskEditForm({
             });
           }}
           disabled={editForm.status === 'backlog'}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-organic-terracotta"
         >
           <option value="">{t('noSprint')}</option>
           {sprints.map((sprint) => (
@@ -185,8 +185,8 @@ export function TaskEditForm({
               onClick={() => onToggleLabel(label)}
               className={`px-2 py-1 rounded-md text-xs font-medium border transition-colors ${
                 editForm.labels.includes(label)
-                  ? 'border-organic-orange bg-orange-50 text-organic-orange'
-                  : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                  ? 'border-organic-terracotta bg-organic-terracotta-lightest text-organic-terracotta'
+                  : 'border-border text-gray-600 hover:bg-gray-50'
               }`}
             >
               {getLabelDisplay(label, t)}
@@ -204,7 +204,7 @@ export function TaskEditForm({
                 onAddLabel();
               }
             }}
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-organic-orange"
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-organic-terracotta"
             placeholder={t('labelPlaceholder')}
           />
           <button
@@ -248,7 +248,7 @@ export function TaskEditForm({
         <button
           onClick={onSave}
           disabled={isSaving}
-          className="flex-1 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg transition-colors disabled:opacity-50"
+          className="flex-1 px-4 py-2 bg-cta hover:bg-cta-hover text-cta-fg rounded-lg transition-colors disabled:opacity-50"
         >
           <Save className="w-4 h-4 inline mr-2" />
           {isSaving ? t('saving') : t('saveChanges')}

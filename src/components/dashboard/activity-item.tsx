@@ -31,7 +31,7 @@ const EVENT_ICON_BG: Record<string, string> = {
   task_created: 'bg-blue-500/10',
   submission_created: 'bg-violet-500/10',
   dispute_escalated: 'bg-red-500/10',
-  member_joined: 'bg-orange-500/10',
+  member_joined: 'bg-organic-terracotta-lightest0/10',
 };
 
 const EVENT_ICON_TEXT: Record<string, string> = {
@@ -41,7 +41,7 @@ const EVENT_ICON_TEXT: Record<string, string> = {
   task_created: 'text-blue-500',
   submission_created: 'text-violet-500',
   dispute_escalated: 'text-red-500',
-  member_joined: 'text-orange-500',
+  member_joined: 'text-organic-terracotta',
 };
 
 function formatTimeAgo(dateStr: string): string {

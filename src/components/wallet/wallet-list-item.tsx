@@ -33,9 +33,9 @@ export function WalletListItem({
       className={cn(
         'w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200',
         'bg-gray-800/50 hover:bg-gray-700/70 border border-gray-700/50',
-        'focus:outline-none focus:ring-2 focus:ring-organic-orange/50 focus:border-organic-orange/50',
+        'focus:outline-none focus:ring-2 focus:ring-organic-terracotta/50 focus:border-organic-terracotta/50',
         'disabled:opacity-50 disabled:cursor-not-allowed',
-        isFocused && 'ring-2 ring-organic-orange/50 border-organic-orange/50 bg-gray-700/70'
+        isFocused && 'ring-2 ring-organic-terracotta/50 border-organic-terracotta/50 bg-gray-700/70'
       )}
     >
       {/* Wallet Icon */}
@@ -50,7 +50,7 @@ export function WalletListItem({
             unoptimized
           />
         ) : (
-          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-organic-orange to-organic-yellow" />
+          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-organic-terracotta to-organic-yellow" />
         )}
       </div>
 
@@ -60,7 +60,7 @@ export function WalletListItem({
       {/* Badges */}
       <div className="flex items-center gap-2">
         {isRecent && (
-          <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-organic-orange/20 text-organic-orange">
+          <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-organic-terracotta/20 text-organic-terracotta">
             {t('recentLabel')}
           </span>
         )}

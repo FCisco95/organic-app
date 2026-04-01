@@ -76,7 +76,7 @@ export function WizardPreview({ formData }: WizardPreviewProps) {
       {/* Mini proposal card preview */}
       <div
         className={cn(
-          'rounded-xl border border-slate-200 bg-white overflow-hidden',
+          'rounded-xl border border-border bg-card overflow-hidden',
           'border-l-4',
           borderColor
         )}
@@ -119,7 +119,7 @@ export function WizardPreview({ formData }: WizardPreviewProps) {
       </div>
 
       {/* Expandable section previews */}
-      <div className="rounded-xl border border-slate-200 bg-white p-3 divide-y divide-gray-100">
+      <div className="rounded-xl border border-border bg-card p-3 divide-y divide-border">
         <PreviewSection
           label={t('labelMotivation')}
           content={formData.motivation}

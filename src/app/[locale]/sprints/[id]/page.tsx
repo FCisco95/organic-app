@@ -273,9 +273,9 @@ export default function SprintDetailPage() {
   const getTaskStatusIcon = (status: string) => {
     switch (status) {
       case 'done':
-        return <CheckCircle2 className="h-4 w-4 text-orange-500" />;
+        return <CheckCircle2 className="h-4 w-4 text-organic-terracotta" />;
       case 'in_progress':
-        return <div className="h-4 w-4 rounded-full border-2 border-orange-400 bg-orange-100" />;
+        return <div className="h-4 w-4 rounded-full border-2 border-organic-terracotta bg-organic-terracotta-light/30" />;
       default:
         return <Circle className="h-4 w-4 text-gray-300" />;
     }
@@ -444,8 +444,8 @@ export default function SprintDetailPage() {
       </Link>
 
       {/* GitHub-style issue header */}
-      <div className="rounded-md border border-gray-200 bg-white" data-testid="sprint-detail-header">
-        <div className="border-b border-gray-200 px-5 py-4">
+      <div className="rounded-md border border-border bg-white" data-testid="sprint-detail-header">
+        <div className="border-b border-border px-5 py-4">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
               <div className="flex items-center gap-2.5">
@@ -461,7 +461,7 @@ export default function SprintDetailPage() {
                   className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${
                     sprint.status === 'completed'
                       ? 'border-gray-300 bg-gray-50 text-gray-600'
-                      : 'border-orange-300 bg-orange-50 text-orange-700'
+                      : 'border-organic-terracotta-light bg-organic-terracotta-lightest text-organic-terracotta-hover'
                   }`}
                 >
                   {t(`status.${sprint.status ?? 'planning'}`)}
@@ -493,7 +493,7 @@ export default function SprintDetailPage() {
               {canManageSprint && sprint.status === 'planning' && (
                 <button
                   onClick={() => setShowStartDialog(true)}
-                  className="flex items-center gap-1 rounded-md border border-organic-orange bg-organic-orange px-2.5 py-1 text-xs font-medium text-white transition-colors hover:bg-orange-600"
+                  className="flex items-center gap-1 rounded-md border border-cta bg-cta px-2.5 py-1 text-xs font-medium text-cta-fg transition-colors hover:bg-cta-hover"
                   title={t('startSprint')}
                 >
                   <Play className="h-3 w-3" />
@@ -545,7 +545,7 @@ export default function SprintDetailPage() {
         <div className="px-5 py-3">
           <div className="relative h-4 w-full overflow-hidden rounded-full bg-gray-200">
             <div
-              className="h-full rounded-full bg-organic-orange transition-all"
+              className="h-full rounded-full bg-cta transition-all"
               style={{ width: `${progressPercentage}%` }}
             />
             {progressPercentage > 15 && (
@@ -557,13 +557,13 @@ export default function SprintDetailPage() {
         </div>
 
         {/* Stats bar */}
-        <div className="flex divide-x divide-gray-200 border-t border-gray-200 text-center text-xs">
+        <div className="flex divide-x divide-border border-t border-border text-center text-xs">
           <div className="flex-1 py-2">
             <span className="font-semibold text-gray-900">{totalTasks}</span>
             <span className="ml-1 text-gray-500">{t('totalTasks')}</span>
           </div>
           <div className="flex-1 py-2">
-            <span className="font-semibold text-orange-600">{completedTasks}</span>
+            <span className="font-semibold text-organic-terracotta">{completedTasks}</span>
             <span className="ml-1 text-gray-500">{t('completed')}</span>
           </div>
           <div className="flex-1 py-2">
@@ -584,7 +584,7 @@ export default function SprintDetailPage() {
       </div>
 
       <div
-        className="grid grid-cols-1 gap-5 xl:grid-cols-[2.05fr_1fr]"
+        className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_var(--sidebar-width)]"
         data-testid="sprint-detail-operator-grid"
       >
         <div className="space-y-5">
@@ -592,7 +592,7 @@ export default function SprintDetailPage() {
           {sprint.status === 'completed' && snapshot && <SprintSnapshotCard snapshot={snapshot} />}
 
           {/* Burndown Chart — tight padding, gridlines with y-axis labels, dashed ideal */}
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="bg-white rounded-lg border border-border p-4">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-500">{t('burndownTitle')}</h2>
               <div className="flex items-center gap-3 text-[10px] text-gray-400">
@@ -601,7 +601,7 @@ export default function SprintDetailPage() {
                   {t('burndownIdeal')}
                 </span>
                 <span className="inline-flex items-center gap-1">
-                  <span className="w-3 h-px bg-orange-500 block" />
+                  <span className="w-3 h-px bg-organic-terracotta-lightest0 block" />
                   {t('burndownActual')}
                 </span>
               </div>
@@ -658,8 +658,8 @@ export default function SprintDetailPage() {
           </div>
 
           {/* Tasks List — GitHub issue list style */}
-          <div className="rounded-md border border-gray-200 bg-white">
-            <div className="border-b border-gray-200 px-4 py-3">
+          <div className="rounded-md border border-border bg-white">
+            <div className="border-b border-border px-4 py-3">
               <h2 className="text-sm font-semibold text-gray-900">{t('sprintTasks')}</h2>
             </div>
 
@@ -670,7 +670,7 @@ export default function SprintDetailPage() {
                 <p className="mt-0.5 text-xs text-gray-500">{t('noTasksDescription')}</p>
               </div>
             ) : (
-              <div className="divide-y divide-gray-100">
+              <div className="divide-y divide-border">
                 {tasks.map((task) => (
                   <Link
                     key={task.id}
@@ -693,7 +693,7 @@ export default function SprintDetailPage() {
                         task.priority === 'high'
                           ? 'bg-red-100 text-red-700'
                           : task.priority === 'medium'
-                            ? 'bg-orange-100 text-orange-700'
+                            ? 'bg-organic-terracotta-light/30 text-organic-terracotta-hover'
                             : 'bg-gray-100 text-gray-600'
                       }`}
                     >
@@ -734,7 +734,7 @@ export default function SprintDetailPage() {
         <aside className="space-y-4">
           {/* Phase Stepper (vertical) — borrowed from Proto A */}
           <section
-            className="rounded-md border border-gray-200 bg-white p-4"
+            className="rounded-md border border-border bg-white p-4"
             data-testid="sprint-detail-phase-timeline"
           >
             <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500 mb-3">
@@ -757,12 +757,12 @@ export default function SprintDetailPage() {
                         {isComplete ? (
                           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
                         ) : isCurrent ? (
-                          <div className="w-3.5 h-3.5 rounded-full bg-orange-500 ring-2 ring-orange-200 ring-offset-1" />
+                          <div className="w-3.5 h-3.5 rounded-full bg-organic-terracotta-lightest0 ring-2 ring-organic-terracotta-light ring-offset-1" />
                         ) : (
                           <Circle className="w-3.5 h-3.5 text-gray-300" />
                         )}
                       </div>
-                      <span className={`text-xs ${isCurrent ? 'font-semibold text-orange-700' : isComplete ? 'text-emerald-600' : 'text-gray-400'}`}>
+                      <span className={`text-xs ${isCurrent ? 'font-semibold text-organic-terracotta-hover' : isComplete ? 'text-emerald-600' : 'text-gray-400'}`}>
                         {t(`status.${phase}`)}
                       </span>
                     </div>
@@ -774,10 +774,10 @@ export default function SprintDetailPage() {
 
           {/* Health panel — merged settlement + readiness as GitHub Checks */}
           <section
-            className="rounded-md border border-gray-200 bg-white"
+            className="rounded-md border border-border bg-white"
             data-testid="sprint-detail-blockers-panel"
           >
-            <div className="flex items-center gap-1.5 border-b border-gray-200 px-4 py-2.5">
+            <div className="flex items-center gap-1.5 border-b border-border px-4 py-2.5">
               {settlementBlocked ? (
                 <ShieldAlert className="h-3.5 w-3.5 text-red-500" />
               ) : (
@@ -788,7 +788,7 @@ export default function SprintDetailPage() {
 
             {/* Settlement status */}
             <div
-              className={`flex items-center gap-2 border-b border-gray-100 px-4 py-2 text-xs ${
+              className={`flex items-center gap-2 border-b border-border px-4 py-2 text-xs ${
                 settlementBlocked ? 'text-red-600' : 'text-gray-500'
               }`}
             >
@@ -828,8 +828,8 @@ export default function SprintDetailPage() {
       {/* Edit Sprint Modal */}
       {showEditModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-lg rounded-lg border border-gray-200 bg-white shadow-xl">
-            <div className="flex items-center justify-between border-b border-gray-200 px-5 py-3">
+          <div className="w-full max-w-lg rounded-lg border border-border bg-card shadow-xl">
+            <div className="flex items-center justify-between border-b border-border px-5 py-3">
               <h3 className="text-base font-semibold text-gray-900">{t('editSprintTitle')}</h3>
               <button
                 onClick={() => setShowEditModal(false)}
@@ -907,7 +907,7 @@ export default function SprintDetailPage() {
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2 border-t border-gray-200 px-5 py-3">
+            <div className="flex items-center justify-end gap-2 border-t border-border px-5 py-3">
               <button
                 onClick={() => setShowEditModal(false)}
                 disabled={isSaving}
@@ -918,7 +918,7 @@ export default function SprintDetailPage() {
               <button
                 onClick={handleEditSprint}
                 disabled={isSaving || !editForm.name || !editForm.start_at || !editForm.end_at}
-                className="flex items-center gap-1.5 rounded-md border border-organic-orange bg-organic-orange px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-orange-600 disabled:opacity-50"
+                className="flex items-center gap-1.5 rounded-md border border-cta bg-cta px-3 py-1.5 text-sm font-medium text-cta-fg transition-colors hover:bg-cta-hover disabled:opacity-50"
               >
                 <Save className="h-3.5 w-3.5" />
                 {isSaving ? t('saving') : t('saveChanges')}
@@ -931,7 +931,7 @@ export default function SprintDetailPage() {
       {/* Delete Confirmation */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-5 shadow-xl">
+          <div className="w-full max-w-md rounded-lg border border-border bg-card p-5 shadow-xl">
             <h3 className="text-base font-semibold text-gray-900">{t('deleteTitle')}</h3>
             <p className="mt-2 text-sm text-gray-600">{t('deleteDescription')}</p>
             <div className="mt-4 flex items-center justify-end gap-2">

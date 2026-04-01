@@ -108,15 +108,15 @@ export function TemplateManager({ className }: TemplateManagerProps) {
   return (
     <div
       className={cn(
-        'rounded-2xl border border-gray-200 bg-white/80 shadow-sm backdrop-blur',
+        'rounded-2xl border border-border bg-white/80 shadow-sm backdrop-blur',
         className
       )}
       data-testid="task-template-manager"
     >
-      <div className="flex items-center justify-between gap-3 border-b border-gray-100 bg-gradient-to-r from-organic-orange/10 via-white to-organic-yellow/10 px-5 py-4 rounded-t-2xl">
+      <div className="flex items-center justify-between gap-3 border-b border-border bg-gradient-to-r from-organic-terracotta/10 via-white to-organic-yellow/10 px-5 py-4 rounded-t-2xl">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white shadow-sm border border-gray-100">
-            <FileText className="w-5 h-5 text-organic-orange" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white shadow-sm border border-border">
+            <FileText className="w-5 h-5 text-organic-terracotta" />
           </div>
           <div>
             <h3 className="text-lg font-semibold text-gray-900">{t('title')}</h3>
@@ -128,7 +128,7 @@ export function TemplateManager({ className }: TemplateManagerProps) {
         {!showForm && (
           <button
             onClick={() => setShowForm(true)}
-            className="flex items-center gap-1.5 px-4 py-2 text-sm rounded-lg bg-organic-orange text-white hover:bg-orange-600 shadow-sm"
+            className="flex items-center gap-1.5 px-4 py-2 text-sm rounded-lg bg-cta text-cta-fg hover:bg-cta-hover shadow-sm"
           >
             <Plus className="w-4 h-4" />
             {t('newTemplate')}
@@ -139,7 +139,7 @@ export function TemplateManager({ className }: TemplateManagerProps) {
       {/* Form */}
       {showForm && (
         <div
-          className="mx-5 mt-5 border border-gray-200 rounded-xl p-4 space-y-4 bg-white"
+          className="mx-5 mt-5 border border-border rounded-xl p-4 space-y-4 bg-white"
           data-testid="task-template-form"
         >
           <div className="flex items-center justify-between">
@@ -159,7 +159,7 @@ export function TemplateManager({ className }: TemplateManagerProps) {
                 type="text"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white/70 focus:outline-none focus:border-organic-orange focus:ring-2 focus:ring-organic-orange/20"
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white/70 focus:outline-none focus:border-organic-terracotta focus:ring-2 focus:ring-organic-terracotta/20"
               />
             </div>
 
@@ -169,7 +169,7 @@ export function TemplateManager({ className }: TemplateManagerProps) {
                 value={form.description || ''}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
                 rows={2}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white/70 focus:outline-none focus:border-organic-orange focus:ring-2 focus:ring-organic-orange/20 resize-none"
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white/70 focus:outline-none focus:border-organic-terracotta focus:ring-2 focus:ring-organic-terracotta/20 resize-none"
               />
             </div>
 
@@ -183,7 +183,7 @@ export function TemplateManager({ className }: TemplateManagerProps) {
                     task_type: e.target.value as CreateTemplateInput['task_type'],
                   })
                 }
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white/70 focus:outline-none focus:border-organic-orange focus:ring-2 focus:ring-organic-orange/20"
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white/70 focus:outline-none focus:border-organic-terracotta focus:ring-2 focus:ring-organic-terracotta/20"
               >
                 {(['development', 'content', 'design', 'custom'] as TaskType[]).map((value) => (
                   <option key={value} value={value}>
@@ -203,7 +203,7 @@ export function TemplateManager({ className }: TemplateManagerProps) {
                     priority: e.target.value as CreateTemplateInput['priority'],
                   })
                 }
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white/70 focus:outline-none focus:border-organic-orange focus:ring-2 focus:ring-organic-orange/20"
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white/70 focus:outline-none focus:border-organic-terracotta focus:ring-2 focus:ring-organic-terracotta/20"
               >
                 <option value="low">{tTasks('priorities.low')}</option>
                 <option value="medium">{tTasks('priorities.medium')}</option>
@@ -220,7 +220,7 @@ export function TemplateManager({ className }: TemplateManagerProps) {
                 onChange={(e) => setForm({ ...form, base_points: Number(e.target.value) })}
                 min={0}
                 max={10000}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white/70 focus:outline-none focus:border-organic-orange focus:ring-2 focus:ring-organic-orange/20"
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white/70 focus:outline-none focus:border-organic-terracotta focus:ring-2 focus:ring-organic-terracotta/20"
               />
             </div>
 
@@ -236,7 +236,7 @@ export function TemplateManager({ className }: TemplateManagerProps) {
                       recurrence_rule: e.target.checked ? 'sprint_start' : null,
                     })
                   }
-                  className="rounded border-gray-300 text-organic-orange focus:ring-organic-orange"
+                  className="rounded border-gray-300 text-organic-terracotta focus:ring-organic-terracotta"
                 />
                 {t('recurring')}
               </label>
@@ -253,7 +253,7 @@ export function TemplateManager({ className }: TemplateManagerProps) {
                     recurrence_rule: e.target.value as CreateTemplateInput['recurrence_rule'],
                   })
                 }
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white/70 focus:outline-none focus:border-organic-orange focus:ring-2 focus:ring-organic-orange/20"
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white/70 focus:outline-none focus:border-organic-terracotta focus:ring-2 focus:ring-organic-terracotta/20"
               >
                 {(['sprint_start', 'daily', 'weekly', 'biweekly', 'monthly'] as RecurrenceRule[]).map((value) => (
                   <option key={value} value={value}>
@@ -275,7 +275,7 @@ export function TemplateManager({ className }: TemplateManagerProps) {
             <button
               onClick={handleSave}
               disabled={createTemplate.isPending || updateTemplate.isPending}
-              className="flex items-center gap-1.5 px-4 py-2 text-sm rounded-lg bg-organic-orange text-white hover:bg-orange-600 shadow-sm disabled:opacity-50"
+              className="flex items-center gap-1.5 px-4 py-2 text-sm rounded-lg bg-cta text-cta-fg hover:bg-cta-hover shadow-sm disabled:opacity-50"
             >
               {(createTemplate.isPending || updateTemplate.isPending) && (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -293,7 +293,7 @@ export function TemplateManager({ className }: TemplateManagerProps) {
             {[0, 1, 2].map((item) => (
               <div
                 key={item}
-                className="h-16 rounded-xl border border-gray-200 bg-gradient-to-r from-gray-50 to-white animate-pulse"
+                className="h-16 rounded-xl border border-border bg-gradient-to-r from-gray-50 to-white animate-pulse"
               />
             ))}
           </div>
@@ -303,9 +303,9 @@ export function TemplateManager({ className }: TemplateManagerProps) {
               <div
                 key={template.id}
                 data-testid={`task-template-row-${template.id}`}
-                className="group flex items-center gap-3 p-3 rounded-xl border border-gray-200 bg-white hover:border-organic-orange/40 hover:shadow-sm transition-all"
+                className="group flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:border-organic-terracotta/40 hover:shadow-sm transition-all"
               >
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-organic-orange/10 text-organic-orange">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-organic-terracotta/10 text-organic-terracotta">
                   <FileText className="w-4 h-4" />
                 </div>
                 <div className="flex-1 min-w-0">

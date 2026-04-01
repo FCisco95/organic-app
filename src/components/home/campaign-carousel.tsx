@@ -55,8 +55,8 @@ function CampaignCard({ campaign }: { campaign: Campaign }) {
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         </div>
       ) : (
-        <div className="relative h-24 sm:h-28 overflow-hidden bg-gradient-to-br from-orange-500/20 via-transparent to-purple-500/10">
-          <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-orange-500/10 blur-2xl" />
+        <div className="relative h-24 sm:h-28 overflow-hidden bg-gradient-to-br from-organic-terracotta/20 via-transparent to-purple-500/10">
+          <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-organic-terracotta-lightest0/10 blur-2xl" />
           {campaign.icon && (
             <div className="absolute inset-0 flex items-center justify-center">
               <span className="text-4xl sm:text-5xl">{campaign.icon}</span>
@@ -78,7 +78,7 @@ function CampaignCard({ campaign }: { campaign: Campaign }) {
           {/* Countdown */}
           {countdown && (
             <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-              <Clock className="h-3.5 w-3.5 text-orange-500" />
+              <Clock className="h-3.5 w-3.5 text-organic-terracotta" />
               <span>Ends in {countdown}</span>
             </div>
           )}
@@ -91,7 +91,7 @@ function CampaignCard({ campaign }: { campaign: Campaign }) {
 
           {/* CTA */}
           {hasLink && (
-            <span className="inline-flex items-center gap-1.5 text-sm font-medium text-orange-500 group-hover:text-orange-400 transition-colors">
+            <span className="inline-flex items-center gap-1.5 text-sm font-medium text-organic-terracotta group-hover:text-[#E8845C] transition-colors">
               {campaign.cta_text || 'Learn more'}
               <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
             </span>
@@ -227,7 +227,7 @@ export function CampaignCarousel() {
               key={i}
               className={cn(
                 'h-2 rounded-full transition-all duration-200',
-                activeIndex === i ? 'w-5 bg-orange-500' : 'w-2 bg-border'
+                activeIndex === i ? 'w-5 bg-organic-terracotta-lightest0' : 'w-2 bg-border'
               )}
               onClick={() => scrollTo(i)}
               aria-label={`Go to campaign ${i + 1}`}

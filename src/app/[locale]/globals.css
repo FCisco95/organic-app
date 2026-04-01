@@ -38,25 +38,25 @@
     --font-display: 'Fraunces';
     --font-mono: 'JetBrains Mono';
 
-    --background: 220 14% 96%;
+    --background: 220 10% 91%;
     --foreground: 224 10% 15%;
     --card: 0 0% 100%;
     --card-foreground: 224 10% 15%;
     --popover: 0 0% 100%;
     --popover-foreground: 224 10% 15%;
-    --primary: 28 100% 50%;
+    --primary: 14 66% 53%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 220 13% 91%;
+    --secondary: 220 10% 87%;
     --secondary-foreground: 224 10% 15%;
-    --muted: 220 13% 91%;
+    --muted: 220 10% 87%;
     --muted-foreground: 220 9% 46%;
-    --accent: 28 100% 50%;
+    --accent: 14 66% 53%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 13% 87%;
-    --input: 220 13% 87%;
-    --ring: 28 100% 50%;
+    --border: 220 10% 83%;
+    --input: 220 10% 83%;
+    --ring: 14 66% 53%;
     --radius: 0.5rem;
 
     /* Sidebar */
@@ -64,7 +64,7 @@
     --sidebar-foreground: 210 40% 93%;
     --sidebar-border: 217 33% 17%;
     --sidebar-accent: 215 28% 17%;
-    --sidebar-accent-foreground: 28 100% 60%;
+    --sidebar-accent-foreground: 14 66% 60%;
     --sidebar-muted: 217 33% 15%;
     --sidebar-muted-foreground: 215 15% 50%;
 
@@ -74,9 +74,9 @@
     --chart-tooltip-border: #e5e7eb;
 
     /* Extended palette (non-HSL, used by fun components) */
-    --orange: #ff6b2c;
-    --orange-glow: #ff6b2c55;
-    --orange-dim: #ff6b2c15;
+    --orange: #D95D39;
+    --orange-glow: #D95D3955;
+    --orange-dim: #D95D3915;
     --yellow: #ffb800;
     --green: #00e676;
     --red: #ff4444;
@@ -95,19 +95,19 @@
     --card-foreground: 0 0% 95%;
     --popover: 224 10% 10%;
     --popover-foreground: 0 0% 95%;
-    --primary: 28 100% 50%;
+    --primary: 14 66% 53%;
     --primary-foreground: 0 0% 100%;
     --secondary: 220 6% 16%;
     --secondary-foreground: 0 0% 95%;
     --muted: 220 6% 16%;
     --muted-foreground: 220 5% 55%;
-    --accent: 28 100% 50%;
+    --accent: 14 66% 53%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 62% 30%;
     --destructive-foreground: 0 0% 95%;
     --border: 220 6% 18%;
     --input: 220 6% 18%;
-    --ring: 28 100% 50%;
+    --ring: 14 66% 53%;
 
     --chart-grid: #374151;
     --chart-axis: #6b7280;
@@ -116,8 +116,8 @@
     --sidebar: 224 10% 5%;
     --sidebar-foreground: 0 0% 95%;
     --sidebar-border: 220 6% 14%;
-    --sidebar-accent: 28 100% 12%;
-    --sidebar-accent-foreground: 28 100% 60%;
+    --sidebar-accent: 14 50% 12%;
+    --sidebar-accent-foreground: 14 66% 60%;
     --sidebar-muted: 220 6% 14%;
     --sidebar-muted-foreground: 220 5% 55%;
   }

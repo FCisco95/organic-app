@@ -185,20 +185,20 @@ export function FeatureCarousel() {
                   )}
                 >
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-orange-500/10 text-orange-500">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-organic-terracotta-lightest0/10 text-organic-terracotta">
                       <Icon className="h-6 w-6" />
                     </div>
-                    <h3 className="text-lg sm:text-xl font-semibold text-foreground group-hover:text-orange-500 transition-colors">
+                    <h3 className="text-lg sm:text-xl font-semibold text-foreground group-hover:text-organic-terracotta transition-colors">
                       {t(card.titleKey)}
                     </h3>
                   </div>
                   <p className="text-sm sm:text-base text-muted-foreground leading-relaxed flex-1">
                     {t(card.descKey)}
                   </p>
-                  <p className="mt-4 text-xs font-semibold text-orange-500 uppercase tracking-wider">
+                  <p className="mt-4 text-xs font-semibold text-organic-terracotta uppercase tracking-wider">
                     {t(card.fomoKey)}
                   </p>
-                  <div className="mt-4 flex items-center gap-2 text-sm font-medium text-foreground group-hover:text-orange-500 transition-colors">
+                  <div className="mt-4 flex items-center gap-2 text-sm font-medium text-foreground group-hover:text-organic-terracotta transition-colors">
                     {t(card.ctaKey)}
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                   </div>
@@ -216,7 +216,7 @@ export function FeatureCarousel() {
             key={i}
             className={cn(
               'h-2 rounded-full transition-all duration-200',
-              activeIndex === i ? 'w-5 bg-orange-500' : 'w-2 bg-border'
+              activeIndex === i ? 'w-5 bg-organic-terracotta-lightest0' : 'w-2 bg-border'
             )}
             onClick={() => scrollTo(i)}
             aria-label={`Go to card ${i + 1}`}

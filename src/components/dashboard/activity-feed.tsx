@@ -54,7 +54,7 @@ export function ActivityFeed({ maxItems = 5 }: ActivityFeedProps) {
         <div className="pt-3 border-t border-border/50">
           <Link
             href="/pulse"
-            className="flex items-center justify-center gap-1.5 text-sm font-medium text-organic-orange hover:text-organic-orange/80 transition-colors py-1"
+            className="flex items-center justify-center gap-1.5 text-sm font-medium text-organic-terracotta hover:text-organic-terracotta/80 transition-colors py-1"
           >
             {t('viewAll')}
           </Link>

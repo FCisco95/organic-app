@@ -109,9 +109,10 @@ export default function Home() {
         </span>
       </header>
 
+      {/* TODO: Migrate to <PageHero> — custom grid layout with contract address panel, blur effects, and landing page structure doesn't fit current PageHero props */}
       {/* -- Hero -- */}
       <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 sm:p-8 lg:p-10 mb-8 shadow-sm opacity-0 animate-fade-up stagger-2 text-white">
-        <div className="absolute -right-16 -top-20 h-48 w-48 rounded-full bg-orange-500/10 blur-3xl" />
+        <div className="absolute -right-16 -top-20 h-48 w-48 rounded-full bg-organic-terracotta-lightest0/10 blur-3xl" />
         <div className="absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-white/5 blur-3xl" />
 
         <div className="relative grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
@@ -121,7 +122,7 @@ export default function Home() {
             </p>
             <h1 className="mt-3 text-3xl sm:text-4xl lg:text-[42px] font-bold leading-[1.1] text-white tracking-tight">
               {t('heroTitle')}{' '}
-              <span className="text-orange-500 animate-organic-grow inline-block">Organic</span>
+              <span className="text-[#E8845C] animate-organic-grow inline-block">Organic</span>
             </h1>
             <p className="mt-4 text-base text-gray-300 leading-relaxed max-w-xl">
               {t('heroSubtitle')}
@@ -245,11 +246,11 @@ export default function Home() {
           {/* Leaderboard snapshot */}
           <Link href="/community" className="block">
           <article
-            className="rounded-lg border border-border bg-orange-500/5 p-4 hover:border-orange-500/30 transition-colors"
+            className="rounded-lg border border-border bg-organic-terracotta-lightest0/5 p-4 hover:border-organic-terracotta/30 transition-colors"
             data-testid="trust-card-leaderboard"
           >
             <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
-              <Trophy className="h-3.5 w-3.5 text-orange-500" />
+              <Trophy className="h-3.5 w-3.5 text-organic-terracotta" />
               <span>{t('trustLeaderboardTitle')}</span>
             </div>
             <div className="mt-2 space-y-1 text-sm">

@@ -132,9 +132,9 @@ export function TopBar() {
                 </DropdownMenuItem>
                 {isIncomplete && onboardingState && (
                   <DropdownMenuItem onClick={openWizard} className="flex items-center gap-2">
-                    <Rocket className="h-4 w-4 text-organic-orange" />
+                    <Rocket className="h-4 w-4 text-organic-terracotta" />
                     <span className="flex-1">{t('onboarding')}</span>
-                    <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-organic-orange/20 text-organic-orange">
+                    <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-organic-terracotta/20 text-organic-terracotta">
                       {onboardingState.completed_count}/{onboardingState.total_steps}
                     </span>
                   </DropdownMenuItem>

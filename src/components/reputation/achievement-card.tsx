@@ -36,7 +36,7 @@ export function AchievementCard({ achievement, className, compact }: Achievement
           'flex items-center gap-2 rounded-lg border p-2 transition-all',
           achievement.unlocked
             ? `${colors.bg} ${colors.border} shadow-sm ${colors.glow}`
-            : 'bg-gray-50 border-gray-100 opacity-60',
+            : 'bg-gray-50 border-border opacity-60',
           className
         )}
       >
@@ -61,7 +61,7 @@ export function AchievementCard({ achievement, className, compact }: Achievement
         'relative rounded-xl border p-4 transition-all',
         achievement.unlocked
           ? `${colors.bg} ${colors.border} shadow-sm ${colors.glow}`
-          : 'bg-gray-50 border-gray-100 opacity-60',
+          : 'bg-gray-50 border-border opacity-60',
         className
       )}
     >

@@ -44,7 +44,7 @@ export function RespondPanel({ disputeId, onSuccess }: RespondPanelProps) {
   };
 
   return (
-    <div data-testid="dispute-respond-panel" className="space-y-4 rounded-xl border border-gray-200 bg-white p-5">
+    <div data-testid="dispute-respond-panel" className="space-y-4 rounded-xl border border-border bg-card p-5">
       <h3 className="text-sm font-semibold text-gray-900">{tf('response')}</h3>
       <p className="text-xs text-gray-500">{tf('responseGuardrail')}</p>
 
@@ -54,7 +54,7 @@ export function RespondPanel({ disputeId, onSuccess }: RespondPanelProps) {
         placeholder={tf('responsePlaceholder')}
         rows={4}
         maxLength={5000}
-        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm resize-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm resize-none focus:ring-2 focus:ring-organic-terracotta focus:border-organic-terracotta"
       />
       <p className="text-xs text-gray-400">{responseText.length}/5000</p>
 
@@ -67,7 +67,7 @@ export function RespondPanel({ disputeId, onSuccess }: RespondPanelProps) {
             value={newLink}
             onChange={(e) => setNewLink(e.target.value)}
             placeholder="https://..."
-            className="flex-1 rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            className="flex-1 rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:ring-2 focus:ring-organic-terracotta focus:border-organic-terracotta"
           />
           <Button variant="outline" size="sm" onClick={handleAddLink} disabled={!newLink.trim()}>
             <Plus className="w-4 h-4" />
@@ -94,7 +94,7 @@ export function RespondPanel({ disputeId, onSuccess }: RespondPanelProps) {
         type="button"
         onClick={handleSubmit}
         disabled={responseText.length < 20 || respond.isPending}
-        className="bg-orange-600 hover:bg-orange-700 text-white"
+        className="bg-organic-terracotta hover:bg-organic-terracotta-hover text-white"
       >
         {respond.isPending && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
         {tf('submitResponse')}

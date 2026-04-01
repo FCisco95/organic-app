@@ -67,7 +67,7 @@ export function RewardsOverview({ rewards, onClaim }: RewardsOverviewProps) {
   return (
     <div className="grid gap-4 lg:grid-cols-2" data-testid="rewards-overview-card">
       {/* Claimability checklist */}
-      <div className="rounded-xl border border-gray-200 bg-white p-4">
+      <div className="rounded-xl border border-border bg-card p-4">
         <h3 className="text-sm font-semibold text-gray-900">
           {t('overview.claimabilityTitle')}
         </h3>
@@ -77,7 +77,7 @@ export function RewardsOverview({ rewards, onClaim }: RewardsOverviewProps) {
           {claimabilityChecks.map((check) => (
             <div
               key={check.id}
-              className="flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50 px-3 py-2"
+              className="flex items-center justify-between rounded-lg border border-border bg-gray-50 px-3 py-2"
             >
               <div className="flex items-center gap-2">
                 <check.Icon className="h-3.5 w-3.5 text-gray-500" />
@@ -100,7 +100,7 @@ export function RewardsOverview({ rewards, onClaim }: RewardsOverviewProps) {
         <button
           onClick={onClaim}
           disabled={!canClaim}
-          className="mt-4 w-full rounded-lg bg-organic-orange px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-organic-orange/90 disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-4 w-full rounded-lg bg-cta px-4 py-2.5 text-sm font-medium text-cta-fg transition-colors hover:bg-cta-hover disabled:cursor-not-allowed disabled:opacity-50"
         >
           {!rewards.rewards_enabled
             ? t('overview.rewardsDisabled')
@@ -113,7 +113,7 @@ export function RewardsOverview({ rewards, onClaim }: RewardsOverviewProps) {
       </div>
 
       {/* Settlement status */}
-      <div className="rounded-xl border border-gray-200 bg-white p-4">
+      <div className="rounded-xl border border-border bg-card p-4">
         <h3 className="text-sm font-semibold text-gray-900">
           {t('overview.settlementIntegrity')}
         </h3>
@@ -179,10 +179,10 @@ export function RewardsOverview({ rewards, onClaim }: RewardsOverviewProps) {
 
         {/* Conversion info */}
         <div className="mt-3 space-y-2">
-          <div className="flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50 px-3 py-2">
+          <div className="flex items-center justify-between rounded-lg border border-border bg-gray-50 px-3 py-2">
             <span className="text-xs text-gray-600">{t('overview.conversionRate', { rate: rewards.conversion_rate })}</span>
           </div>
-          <div className="flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50 px-3 py-2">
+          <div className="flex items-center justify-between rounded-lg border border-border bg-gray-50 px-3 py-2">
             <span className="text-xs text-gray-600">{t('overview.minThreshold', { min: rewards.min_threshold.toLocaleString() })}</span>
           </div>
         </div>

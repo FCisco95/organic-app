@@ -14,7 +14,7 @@ function GlassCard({ children, className = '' }: { children: React.ReactNode; cl
 function PulseHighlight({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative">
-      <div className="absolute -inset-1 rounded-lg bg-orange-400/20 animate-pulse" />
+      <div className="absolute -inset-1 rounded-lg bg-organic-terracotta/20 animate-pulse" />
       <div className="relative">{children}</div>
     </div>
   );
@@ -35,13 +35,13 @@ function SprintOverviewVisual() {
               <p className="mt-1 text-sm font-bold text-white">Sprint #7 — UI Polish</p>
             </div>
             <div className="text-right">
-              <p className="text-lg font-bold font-mono text-orange-500">3d 8h</p>
+              <p className="text-lg font-bold font-mono text-organic-terracotta">3d 8h</p>
               <p className="text-[10px] text-gray-400">remaining</p>
             </div>
           </div>
           <div className="mt-2 flex gap-3 text-[10px] text-gray-400">
             <span className="flex items-center gap-1">
-              <span className="inline-block h-2 w-2 rounded-full bg-orange-400" />
+              <span className="inline-block h-2 w-2 rounded-full bg-organic-terracotta" />
               12 tasks
             </span>
             <span className="flex items-center gap-1">
@@ -62,7 +62,7 @@ function SprintOverviewVisual() {
 function LifecycleVisual() {
   const phases = [
     { label: 'Planning', color: 'bg-blue-400', active: false },
-    { label: 'Active', color: 'bg-orange-500', active: true },
+    { label: 'Active', color: 'bg-organic-terracotta-lightest0', active: true },
     { label: 'Review', color: 'bg-amber-400', active: false },
     { label: 'Dispute', color: 'bg-red-400', active: false },
     { label: 'Settlement', color: 'bg-emerald-500', active: false },
@@ -86,7 +86,7 @@ function LifecycleVisual() {
                     <span className="text-gray-400 text-[9px] font-bold">{i + 1}</span>
                   </div>
                 )}
-                <p className={`mt-1 text-[8px] ${p.active ? 'text-orange-500 font-semibold' : 'text-gray-500'}`}>
+                <p className={`mt-1 text-[8px] ${p.active ? 'text-organic-terracotta font-semibold' : 'text-gray-500'}`}>
                   {p.label}
                 </p>
               </div>
@@ -116,7 +116,7 @@ function ViewsToggleVisual() {
               key={v.label}
               className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-medium ${
                 v.active
-                  ? 'bg-orange-500 text-white'
+                  ? 'bg-organic-terracotta-lightest0 text-white'
                   : 'bg-white/10 text-gray-400'
               }`}
             >
@@ -153,7 +153,7 @@ function PhaseAdvancementVisual() {
             Active
           </div>
           <PulseHighlight>
-            <div className="rounded-md bg-orange-500 px-3 py-1 text-[10px] text-white font-medium flex items-center gap-1">
+            <div className="rounded-md bg-organic-terracotta-lightest0 px-3 py-1 text-[10px] text-white font-medium flex items-center gap-1">
               Advance to Review <span className="text-[9px]">&rarr;</span>
             </div>
           </PulseHighlight>
@@ -174,13 +174,13 @@ function CapacityPlanningVisual() {
         <div className="flex items-center justify-between mb-2">
           <p className="text-[9px] uppercase tracking-wider text-gray-400">Capacity</p>
           <p className="text-[10px] font-mono text-gray-300">
-            <span className="text-orange-500 font-bold">36</span> / 48 pts
+            <span className="text-organic-terracotta font-bold">36</span> / 48 pts
           </p>
         </div>
         <PulseHighlight>
           <div className="h-3 bg-white/10 rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-orange-400 to-orange-500 rounded-full"
+              className="h-full bg-gradient-to-r from-organic-terracotta to-organic-terracotta rounded-full"
               style={{ width: '75%' }}
             />
           </div>
@@ -191,7 +191,7 @@ function CapacityPlanningVisual() {
             <p className="text-[9px] text-gray-400">Assigned</p>
           </div>
           <div>
-            <p className="text-sm font-bold font-mono text-orange-500">24</p>
+            <p className="text-sm font-bold font-mono text-organic-terracotta">24</p>
             <p className="text-[9px] text-gray-400">In progress</p>
           </div>
           <div>

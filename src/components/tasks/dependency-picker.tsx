@@ -84,7 +84,7 @@ export function DependencyPicker({ taskId, className }: DependencyPickerProps) {
         <button
           onClick={() => setIsAdding(!isAdding)}
           data-testid="task-dependency-toggle"
-          className="text-xs text-organic-orange hover:text-orange-600 font-medium"
+          className="text-xs text-organic-terracotta hover:text-organic-terracotta font-medium"
         >
           {isAdding ? t('done') : `+ ${t('addBlocker')}`}
         </button>
@@ -138,7 +138,7 @@ export function DependencyPicker({ taskId, className }: DependencyPickerProps) {
 
       {/* Add dependency picker */}
       {isAdding && (
-        <div className="border border-gray-200 rounded-lg overflow-hidden">
+        <div className="border border-border rounded-lg overflow-hidden">
           <div className="relative">
             <Search className="absolute left-2.5 top-2.5 w-4 h-4 text-gray-400" />
             <input
@@ -147,7 +147,7 @@ export function DependencyPicker({ taskId, className }: DependencyPickerProps) {
               onChange={(e) => setSearch(e.target.value)}
               placeholder={t('searchTasks')}
               data-testid="task-dependency-search"
-              className="w-full pl-9 pr-3 py-2 text-sm border-b border-gray-200 focus:outline-none focus:border-organic-orange"
+              className="w-full pl-9 pr-3 py-2 text-sm border-b border-border focus:outline-none focus:border-organic-terracotta"
               autoFocus
             />
           </div>
@@ -157,7 +157,7 @@ export function DependencyPicker({ taskId, className }: DependencyPickerProps) {
                 key={task.id}
                 onClick={() => handleAdd(task.id)}
                 disabled={addDep.isPending}
-                className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 flex items-center gap-2 border-b border-gray-100 last:border-b-0"
+                className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 flex items-center gap-2 border-b border-border last:border-b-0"
               >
                 <span
                   className={cn(

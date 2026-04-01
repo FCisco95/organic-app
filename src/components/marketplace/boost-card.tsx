@@ -35,7 +35,7 @@ export function BoostCard({ boost, isOwner, onEngage, onCancel }: BoostCardProps
     : 0;
 
   return (
-    <div className="rounded-xl bg-white dark:bg-card ring-1 ring-gray-200/70 dark:ring-border p-4 space-y-3">
+    <div className="rounded-xl bg-white dark:bg-card ring-1 ring-border p-4 space-y-3">
       {/* Header */}
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
@@ -58,7 +58,7 @@ export function BoostCard({ boost, isOwner, onEngage, onCancel }: BoostCardProps
             href={boost.tweet_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm text-foreground hover:text-orange-600 dark:hover:text-orange-400 inline-flex items-center gap-1.5 font-medium"
+            className="text-sm text-foreground hover:text-organic-terracotta dark:hover:text-[#E8845C] inline-flex items-center gap-1.5 font-medium"
           >
             {t('viewTweet')}
             <ExternalLink className="h-3.5 w-3.5" />
@@ -85,7 +85,7 @@ export function BoostCard({ boost, isOwner, onEngage, onCancel }: BoostCardProps
       {/* Progress bar */}
       <div className="h-1.5 rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden">
         <div
-          className="h-full rounded-full bg-orange-500 transition-all"
+          className="h-full rounded-full bg-organic-terracotta-lightest0 transition-all"
           style={{ width: `${Math.min(progress, 100)}%` }}
         />
       </div>
@@ -95,7 +95,7 @@ export function BoostCard({ boost, isOwner, onEngage, onCancel }: BoostCardProps
         {boost.status === 'active' && !isOwner && onEngage && (
           <button
             onClick={() => onEngage(boost.id)}
-            className="flex-1 rounded-lg bg-orange-500 text-white text-sm font-medium py-2 hover:bg-orange-600 transition-colors"
+            className="flex-1 rounded-lg bg-cta text-cta-fg text-sm font-medium py-2 hover:bg-cta-hover transition-colors"
           >
             {t('engage')}
           </button>

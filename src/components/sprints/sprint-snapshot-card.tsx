@@ -15,7 +15,7 @@ export function SprintSnapshotCard({ snapshot, compact = false }: SprintSnapshot
   if (compact) {
     return (
       <div className="flex items-center gap-3 text-xs text-gray-500" data-testid="sprint-snapshot-compact">
-        <span className="flex items-center gap-1 text-orange-600">
+        <span className="flex items-center gap-1 text-organic-terracotta">
           <CheckCircle2 className="h-3 w-3" />
           {snapshot.completed_tasks}/{snapshot.total_tasks}
         </span>
@@ -32,8 +32,8 @@ export function SprintSnapshotCard({ snapshot, compact = false }: SprintSnapshot
   const closedCount = snapshot.completed_tasks ?? 0;
 
   return (
-    <div className="rounded-md border border-gray-200 bg-white" data-testid="sprint-snapshot-card">
-      <div className="border-b border-gray-200 px-4 py-3">
+    <div className="rounded-md border border-border bg-white" data-testid="sprint-snapshot-card">
+      <div className="border-b border-border px-4 py-3">
         <h3 className="text-sm font-semibold text-gray-900">{t('snapshotTitle')}</h3>
       </div>
 
@@ -42,7 +42,7 @@ export function SprintSnapshotCard({ snapshot, compact = false }: SprintSnapshot
         <div>
           <div className="relative h-3.5 w-full overflow-hidden rounded-full bg-gray-200">
             <div
-              className="h-full rounded-full bg-organic-orange transition-all"
+              className="h-full rounded-full bg-cta transition-all"
               style={{ width: `${snapshot.completion_rate}%` }}
             />
             {(snapshot.completion_rate ?? 0) > 20 && (

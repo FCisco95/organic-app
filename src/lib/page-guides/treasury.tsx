@@ -14,7 +14,7 @@ function GlassCard({ children, className = '' }: { children: React.ReactNode; cl
 function PulseHighlight({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative">
-      <div className="absolute -inset-1 rounded-lg bg-orange-400/20 animate-pulse" />
+      <div className="absolute -inset-1 rounded-lg bg-organic-terracotta/20 animate-pulse" />
       <div className="relative">{children}</div>
     </div>
   );
@@ -34,7 +34,7 @@ function OverviewVisual() {
             <p className="text-xs font-bold text-white">Treasury</p>
           </div>
           <p className="text-[10px] text-gray-400 mb-2">
-            Every token flow is tracked and <span className="text-orange-500">verifiable</span>.
+            Every token flow is tracked and <span className="text-organic-terracotta">verifiable</span>.
           </p>
           <div className="flex gap-1.5">
             <span className="rounded-full bg-white/10 border border-white/20 px-2 py-0.5 text-[9px] text-gray-300">Balances</span>
@@ -49,7 +49,7 @@ function OverviewVisual() {
 
 function BalanceAllocationVisual() {
   const categories = [
-    { label: 'Ops', color: 'bg-orange-500', width: '35%' },
+    { label: 'Ops', color: 'bg-organic-terracotta-lightest0', width: '35%' },
     { label: 'Rewards', color: 'bg-emerald-400', width: '25%' },
     { label: 'Dev', color: 'bg-blue-400', width: '25%' },
     { label: 'Reserve', color: 'bg-amber-400', width: '15%' },
@@ -58,7 +58,7 @@ function BalanceAllocationVisual() {
     <div className="w-full max-w-sm mx-auto">
       <GlassCard>
         <PulseHighlight>
-          <p className="text-lg font-bold font-mono text-white">1,245,000 <span className="text-sm text-orange-500">$ORG</span></p>
+          <p className="text-lg font-bold font-mono text-white">1,245,000 <span className="text-sm text-organic-terracotta">$ORG</span></p>
         </PulseHighlight>
         <p className="text-[9px] text-gray-400 mt-1 mb-2">Total balance</p>
         <div className="flex h-2 rounded-full overflow-hidden gap-0.5">
@@ -86,18 +86,18 @@ function EmissionPolicyVisual() {
         <p className="text-[9px] uppercase tracking-wider text-gray-400 mb-2">Emission Policy</p>
         <div className="flex items-center gap-3">
           <PulseHighlight>
-            <div className="w-10 h-10 rounded-full border border-orange-500/50 flex items-center justify-center">
-              <span className="text-xs font-bold font-mono text-orange-500">2.5%</span>
+            <div className="w-10 h-10 rounded-full border border-organic-terracotta/50 flex items-center justify-center">
+              <span className="text-xs font-bold font-mono text-organic-terracotta">2.5%</span>
             </div>
           </PulseHighlight>
           <div className="flex-1">
             <div className="flex items-center gap-2 text-[10px]">
               <span className="text-gray-300">Treasury</span>
-              <span className="text-orange-500">→</span>
+              <span className="text-organic-terracotta">→</span>
               <span className="text-gray-300">Contributors</span>
             </div>
             <div className="mt-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
-              <div className="h-full rounded-full bg-gradient-to-r from-orange-500 to-orange-400" style={{ width: '60%' }} />
+              <div className="h-full rounded-full bg-gradient-to-r from-organic-terracotta to-organic-terracotta" style={{ width: '60%' }} />
             </div>
             <p className="text-[8px] text-gray-400 mt-0.5">per sprint</p>
           </div>
@@ -160,7 +160,7 @@ function OnChainVisual() {
             <span className="text-[9px] font-mono text-gray-300">2 min ago</span>
           </div>
         </div>
-        <p className="mt-1.5 text-[9px] text-orange-500 cursor-pointer">View on explorer →</p>
+        <p className="mt-1.5 text-[9px] text-organic-terracotta cursor-pointer">View on explorer →</p>
       </GlassCard>
     </div>
   );

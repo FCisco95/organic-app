@@ -20,7 +20,7 @@ function PointsXpBasicsVisual() {
     <div className="w-full max-w-sm mx-auto space-y-2">
       <GlassCard>
         <div className="flex items-center gap-2 mb-2">
-          <div className="w-6 h-6 rounded-full bg-orange-500/20 flex items-center justify-center">
+          <div className="w-6 h-6 rounded-full bg-organic-terracotta-lightest0/20 flex items-center justify-center">
             <span className="text-xs">🪙</span>
           </div>
           <div>
@@ -31,7 +31,7 @@ function PointsXpBasicsVisual() {
         <div className="flex gap-1 text-[9px]">
           <span className="px-1.5 py-0.5 rounded bg-green-500/20 text-green-300">Earn from tasks</span>
           <span className="px-1.5 py-0.5 rounded bg-green-500/20 text-green-300">Earn from posts</span>
-          <span className="px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-300">Claim for ORG</span>
+          <span className="px-1.5 py-0.5 rounded bg-organic-terracotta-lightest0/20 text-[#E8845C]">Claim for ORG</span>
         </div>
       </GlassCard>
       <GlassCard>
@@ -97,7 +97,7 @@ function SpendingPointsVisual() {
           ].map(({ action, cost }) => (
             <div key={action} className="flex items-center justify-between rounded-lg bg-white/5 border border-white/10 px-2.5 py-1.5">
               <span className="text-[10px] text-white">{action}</span>
-              <span className="text-[10px] font-bold font-mono text-orange-400">{cost}</span>
+              <span className="text-[10px] font-bold font-mono text-[#E8845C]">{cost}</span>
             </div>
           ))}
         </div>
@@ -128,8 +128,8 @@ function OrganicPostsVisual() {
           </div>
         </div>
       </GlassCard>
-      <GlassCard className="bg-orange-500/5 border-orange-500/20">
-        <p className="text-[10px] text-orange-300">
+      <GlassCard className="bg-organic-terracotta-lightest0/5 border-organic-terracotta/20">
+        <p className="text-[10px] text-[#E8845C]">
           ⚠️ Community can flag posts that are incorrectly tagged as organic. 3 flags removes the bonus.
         </p>
       </GlassCard>

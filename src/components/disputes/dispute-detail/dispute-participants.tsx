@@ -61,7 +61,7 @@ export function DisputeParticipants({ dispute, isParty = true }: DisputeParticip
   const arbitratorHasId = isParty ? Boolean(dispute.arbitrator_id) : Boolean(dispute.arbitrator);
 
   return (
-    <div className="space-y-3 rounded-lg border border-gray-200 bg-white p-4">
+    <div className="space-y-3 rounded-lg border border-border bg-card p-4">
       <UserRow label={td('disputant')} user={dispute.disputant} hasId={disputantHasId} unassignedLabel={td('unassigned')} restrictedLabel={td('restricted')} />
       <UserRow label={td('reviewer')} user={dispute.reviewer} hasId={reviewerHasId} unassignedLabel={td('unassigned')} restrictedLabel={td('restricted')} />
       <UserRow label={td('arbitrator')} user={dispute.arbitrator} hasId={arbitratorHasId} unassignedLabel={td('unassigned')} restrictedLabel={td('restricted')} />
@@ -71,7 +71,7 @@ export function DisputeParticipants({ dispute, isParty = true }: DisputeParticip
           <span className="w-20 text-xs text-gray-500">{td('task')}</span>
           <Link
             href={`/tasks/${dispute.task.id}`}
-            className="flex items-center gap-1 text-sm text-orange-600 hover:underline"
+            className="flex items-center gap-1 text-sm text-organic-terracotta hover:underline"
           >
             {dispute.task.title}
             <ExternalLink className="h-3 w-3" />

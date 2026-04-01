@@ -14,7 +14,7 @@ function GlassCard({ children, className = '' }: { children: React.ReactNode; cl
 function PulseHighlight({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative">
-      <div className="absolute -inset-1 rounded-lg bg-orange-400/20 animate-pulse" />
+      <div className="absolute -inset-1 rounded-lg bg-organic-terracotta/20 animate-pulse" />
       <div className="relative">{children}</div>
     </div>
   );
@@ -36,7 +36,7 @@ function RewardsOverviewVisual() {
               <p className="text-[9px] text-gray-400">Tasks done</p>
             </div>
             <div className="rounded-lg bg-white/5 border border-white/10 p-2">
-              <p className="text-sm font-bold font-mono text-orange-500">820</p>
+              <p className="text-sm font-bold font-mono text-organic-terracotta">820</p>
               <p className="text-[9px] text-gray-400">Points earned</p>
             </div>
             <div className="rounded-lg bg-white/5 border border-white/10 p-2">
@@ -65,7 +65,7 @@ function PointsSystemVisual() {
                 <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
                 <span className="text-[10px] text-gray-300">{t.task}</span>
               </div>
-              <span className="text-[10px] font-mono font-bold text-orange-500">+{t.pts} pts</span>
+              <span className="text-[10px] font-mono font-bold text-organic-terracotta">+{t.pts} pts</span>
             </div>
           ))}
         </div>
@@ -74,7 +74,7 @@ function PointsSystemVisual() {
           <PulseHighlight>
             <div className="flex items-center gap-2">
               <div className="h-2 w-20 bg-white/10 rounded-full overflow-hidden">
-                <div className="h-full bg-orange-400 rounded-full" style={{ width: '65%' }} />
+                <div className="h-full bg-organic-terracotta rounded-full" style={{ width: '65%' }} />
               </div>
               <span className="text-[10px] font-mono text-gray-400">650/1k</span>
             </div>
@@ -96,7 +96,7 @@ function ClaimingVisual() {
             <p className="text-[9px] text-emerald-400/70">Claimable</p>
           </div>
           <PulseHighlight>
-            <div className="rounded-md bg-orange-500 px-4 py-2 text-[10px] text-white font-medium cursor-pointer">
+            <div className="rounded-md bg-organic-terracotta-lightest0 px-4 py-2 text-[10px] text-white font-medium cursor-pointer">
               Submit claim
             </div>
           </PulseHighlight>
@@ -127,18 +127,18 @@ function ApprovalFlowVisual() {
                 <div
                   className={`h-7 w-7 rounded-full flex items-center justify-center text-[9px] font-bold ${
                     s.done
-                      ? 'bg-orange-500 text-white'
+                      ? 'bg-organic-terracotta-lightest0 text-white'
                       : 'bg-white/10 text-gray-500'
                   }`}
                 >
                   {s.done ? '\u2713' : i + 1}
                 </div>
-                <p className={`mt-1 text-[8px] ${s.done ? 'text-orange-500 font-medium' : 'text-gray-500'}`}>
+                <p className={`mt-1 text-[8px] ${s.done ? 'text-organic-terracotta font-medium' : 'text-gray-500'}`}>
                   {s.label}
                 </p>
               </div>
               {i < steps.length - 1 && (
-                <div className={`h-0.5 w-3 ${s.done ? 'bg-orange-400/40' : 'bg-white/10'} -mt-3`} />
+                <div className={`h-0.5 w-3 ${s.done ? 'bg-organic-terracotta/40' : 'bg-white/10'} -mt-3`} />
               )}
             </div>
           ))}

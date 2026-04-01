@@ -62,7 +62,7 @@ export default function AdminRewardsPage() {
             <div className="flex flex-col gap-2 sm:flex-row sm:justify-center">
               <Link
                 href="/"
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-organic-terracotta px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-organic-terracotta-hover"
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-cta px-5 py-2.5 text-sm font-medium text-cta-fg transition-colors hover:bg-cta-hover"
               >
                 <Home className="h-4 w-4" />
                 {t('admin.goHome')}
@@ -114,8 +114,8 @@ export default function AdminRewardsPage() {
         >
           <div className="mb-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-organic-orange/10">
-                <Gift className="h-5 w-5 text-organic-orange" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-organic-terracotta/10">
+                <Gift className="h-5 w-5 text-organic-terracotta" />
               </div>
               <div className="min-w-0">
                 <h1 className="text-2xl font-bold tracking-tight text-foreground">{t('admin.title')}</h1>
@@ -127,7 +127,7 @@ export default function AdminRewardsPage() {
               {isAdmin && (
                 <button
                   onClick={() => setManualOpen(true)}
-                  className="rounded-lg bg-organic-orange px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-organic-orange/90"
+                  className="rounded-lg bg-cta px-4 py-2 text-sm font-medium text-cta-fg transition-colors hover:bg-cta-hover"
                   data-testid="rewards-admin-manual-action"
                 >
                   {t('admin.manualDistribute')}
@@ -192,7 +192,7 @@ export default function AdminRewardsPage() {
                 onClick={() => setActiveTab(tab.key)}
                 className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                   activeTab === tab.key
-                    ? 'bg-organic-orange text-white'
+                    ? 'bg-cta text-cta-fg'
                     : 'bg-muted text-muted-foreground hover:bg-muted/80'
                 }`}
                 data-testid={`rewards-admin-tab-${tab.key}`}
@@ -232,7 +232,7 @@ export default function AdminRewardsPage() {
                 {isAdmin && (
                   <button
                     onClick={() => setManualOpen(true)}
-                    className="rounded-lg bg-organic-orange px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-organic-orange/90"
+                    className="rounded-lg bg-cta px-6 py-2.5 text-sm font-medium text-cta-fg transition-colors hover:bg-cta-hover"
                   >
                     {t('admin.manualDistribute')}
                   </button>

@@ -79,13 +79,13 @@ export function Step4Review({ formData, goToStep, t }: Step4ReviewProps) {
       </div>
 
       {groups.map((group) => (
-        <div key={group.titleKey} className="rounded-lg border border-gray-100 bg-gray-50/50 p-4">
+        <div key={group.titleKey} className="rounded-lg border border-border bg-gray-50/50 p-4">
           <div className="flex items-center justify-between mb-3">
             <h4 className="text-sm font-semibold text-gray-700">{t(group.titleKey)}</h4>
             <button
               type="button"
               onClick={() => goToStep(group.step)}
-              className="flex items-center gap-1 text-xs text-organic-orange hover:text-orange-600 font-medium"
+              className="flex items-center gap-1 text-xs text-organic-terracotta hover:text-organic-terracotta font-medium"
             >
               <Edit2 className="w-3 h-3" />
               {t('reviewEdit')}
@@ -109,7 +109,7 @@ export function Step4Review({ formData, goToStep, t }: Step4ReviewProps) {
       ))}
 
       {/* What happens next — shown only on Review tab */}
-      <div className="rounded-lg border border-orange-200 bg-gradient-to-r from-orange-50 to-amber-50 p-4">
+      <div className="rounded-lg border border-organic-terracotta-light bg-gradient-to-r from-organic-terracotta-lightest to-amber-50 p-4">
         <h4 className="font-semibold text-gray-900 mb-2 text-sm">{t('nextTitle')}</h4>
         <ul className="text-xs text-gray-700 space-y-1.5">
           <li>{t('nextStep1')}</li>

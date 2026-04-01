@@ -66,9 +66,9 @@ export function GovernanceSidebar({
   return (
     <aside className="space-y-4">
       {/* Governance Pulse */}
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
         <div className="mb-3 flex items-center gap-2">
-          <TrendingUp className="h-4 w-4 text-orange-500" />
+          <TrendingUp className="h-4 w-4 text-organic-terracotta" />
           <h2 className="text-sm font-bold text-slate-800">{t('sidebarGovernancePulse')}</h2>
         </div>
         <div className="grid grid-cols-2 gap-2">
@@ -76,7 +76,7 @@ export function GovernanceSidebar({
           <KpiTile
             value={stageCounts.voting}
             label={t('metricVotingNow')}
-            accent="text-orange-600"
+            accent="text-organic-terracotta"
             highlight={stageCounts.voting > 0}
           />
           <KpiTile value={stageCounts.discussion} label={t('statusDiscussion')} accent="text-amber-700" />
@@ -85,7 +85,7 @@ export function GovernanceSidebar({
       </div>
 
       {/* Quick Filters */}
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
         <div className="mb-3 flex items-center gap-2">
           <Vote className="h-4 w-4 text-slate-500" />
           <h2 className="text-sm font-bold text-slate-800">{t('sidebarBrowseByStage')}</h2>
@@ -99,13 +99,13 @@ export function GovernanceSidebar({
               className={cn(
                 'flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                 activeStatus === key
-                  ? 'bg-orange-50 text-orange-700'
+                  ? 'bg-organic-terracotta-lightest text-organic-terracotta-hover'
                   : 'text-slate-600 hover:bg-slate-50'
               )}
             >
               <span>{t(labelKey)}</span>
               {activeStatus === key && (
-                <ChevronRight className="h-3.5 w-3.5 text-orange-500" />
+                <ChevronRight className="h-3.5 w-3.5 text-organic-terracotta" />
               )}
             </button>
           ))}
@@ -114,9 +114,9 @@ export function GovernanceSidebar({
 
       {/* Hot Topics */}
       {hotTopics.length > 0 && (
-        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
           <div className="mb-3 flex items-center gap-2">
-            <Flame className="h-4 w-4 text-orange-500" />
+            <Flame className="h-4 w-4 text-organic-terracotta" />
             <h2 className="text-sm font-bold text-slate-800">{t('sidebarHotTopics')}</h2>
           </div>
           <div className="space-y-3">
@@ -133,7 +133,7 @@ export function GovernanceSidebar({
                   )}
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="line-clamp-2 text-xs font-semibold text-slate-700 group-hover:text-orange-700 transition-colors">
+                    <p className="line-clamp-2 text-xs font-semibold text-slate-700 group-hover:text-organic-terracotta-hover transition-colors">
                       {proposal.title}
                     </p>
                     <div className="mt-1 flex items-center gap-1.5 text-[11px] text-slate-400">
@@ -156,15 +156,15 @@ export function GovernanceSidebar({
 
       {/* CTA for unauthenticated */}
       {!user && (
-        <div className="rounded-xl border border-orange-200 bg-gradient-to-br from-orange-50 to-amber-50 p-4">
+        <div className="rounded-xl border border-organic-terracotta-light bg-gradient-to-br from-organic-terracotta-lightest to-amber-50 p-4">
           <div className="mb-2 flex items-center gap-2">
-            <Users className="h-4 w-4 text-orange-500" />
-            <h2 className="text-sm font-bold text-orange-800">{t('ctaTitle')}</h2>
+            <Users className="h-4 w-4 text-organic-terracotta" />
+            <h2 className="text-sm font-bold text-organic-terracotta-hover">{t('ctaTitle')}</h2>
           </div>
-          <p className="mb-3 text-xs text-orange-700 leading-relaxed">{t('ctaDescription')}</p>
+          <p className="mb-3 text-xs text-organic-terracotta-hover leading-relaxed">{t('ctaDescription')}</p>
           <Link
             href="/login"
-            className="inline-flex items-center gap-1.5 rounded-lg bg-orange-600 px-3 py-2 text-xs font-bold text-white transition-colors hover:bg-orange-700"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-organic-terracotta px-3 py-2 text-xs font-bold text-white transition-colors hover:bg-organic-terracotta-hover"
           >
             {t('signIn')}
             <ArrowRight className="h-3 w-3" />
@@ -190,7 +190,7 @@ function KpiTile({
     <div
       className={cn(
         'rounded-lg border px-3 py-2.5',
-        highlight ? 'border-orange-200 bg-orange-50' : 'border-slate-100 bg-slate-50'
+        highlight ? 'border-organic-terracotta-light bg-organic-terracotta-lightest' : 'border-slate-100 bg-slate-50'
       )}
     >
       <p className={cn('font-mono text-xl font-black tabular-nums', accent)}>{value}</p>

@@ -55,7 +55,7 @@ export function IdeaComposerDialog() {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button className="bg-organic-terracotta text-white hover:bg-organic-terracotta-hover">
+          <Button variant="cta">
             <Plus className="h-4 w-4" />
             {t('composerTitle')}
           </Button>
@@ -68,7 +68,7 @@ export function IdeaComposerDialog() {
           <div className="flex justify-center">
             <Link
               href="/login"
-              className="inline-flex items-center rounded-lg bg-organic-terracotta px-4 py-2 text-sm font-semibold text-white hover:bg-organic-terracotta-hover"
+              className="inline-flex items-center rounded-lg bg-cta px-4 py-2 text-sm font-semibold text-cta-fg hover:bg-cta-hover"
             >
               {t('signIn')}
             </Link>
@@ -81,7 +81,7 @@ export function IdeaComposerDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-organic-terracotta text-white hover:bg-organic-terracotta-hover">
+        <Button variant="cta">
           <Plus className="h-4 w-4" />
           {t('composerTitle')}
         </Button>
@@ -128,7 +128,8 @@ export function IdeaComposerDialog() {
             <Button
               type="submit"
               disabled={createIdea.isPending || title.trim().length < 5 || body.trim().length < 20}
-              className="w-full bg-organic-terracotta text-white hover:bg-organic-terracotta-hover disabled:opacity-60"
+              className="w-full disabled:opacity-60"
+              variant="cta"
             >
               <Plus className="h-4 w-4" />
               {createIdea.isPending ? t('publishing') : t('publish')}
@@ -173,7 +174,7 @@ export function IdeaComposerFab() {
       <DialogTrigger asChild>
         <button
           type="button"
-          className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-organic-terracotta text-white shadow-lg transition-transform duration-200 hover:scale-105 hover:bg-organic-terracotta-hover md:hidden"
+          className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-cta text-cta-fg shadow-lg transition-transform duration-200 hover:scale-105 hover:bg-cta-hover md:hidden"
           aria-label={t('composerTitle')}
         >
           <Plus className="h-6 w-6" />
@@ -228,7 +229,8 @@ export function IdeaComposerFab() {
             <Button
               type="submit"
               disabled={createIdea.isPending || title.trim().length < 5 || body.trim().length < 20}
-              className="w-full bg-organic-terracotta text-white hover:bg-organic-terracotta-hover disabled:opacity-60"
+              className="w-full disabled:opacity-60"
+              variant="cta"
             >
               <Plus className="h-4 w-4" />
               {createIdea.isPending ? t('publishing') : t('publish')}

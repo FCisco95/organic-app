@@ -12,7 +12,9 @@ import {
 import { Plus, Search, X, ArrowUpDown, Tag, Scale, Wallet, Users, Code, Vote } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
+import { TwoColumnLayout } from '@/components/layout/two-column-layout';
 import { FetchErrorBanner } from '@/components/ui/fetch-error-banner';
+import { PageHero } from '@/components/ui/page-hero';
 import { ProposalCard } from '@/components/proposals';
 import { LiveVoteBanner } from '@/components/proposals/live-vote-banner';
 import { GovernanceSidebar } from '@/components/proposals/governance-sidebar';
@@ -133,47 +135,48 @@ export default function ProposalsPage() {
   return (
     <PageContainer layout="fluid">
       {/* Dark hero */}
-      <section
-        data-testid="proposals-governance-strip"
-        className="rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 sm:p-8 text-white mb-6 opacity-0 animate-fade-up stagger-1"
+      <PageHero
+        icon={Vote}
+        title={t('title')}
+        description={t('subtitle')}
+        className="mb-6"
       >
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <div className="inline-flex items-center justify-center w-10 h-10 bg-white/10 rounded-xl mb-3">
-              <Vote className="w-5 h-5 text-orange-400" />
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{t('title')}</h1>
-            <p className="mt-2 text-sm sm:text-base text-gray-300 leading-relaxed max-w-2xl">{t('subtitle')}</p>
-          </div>
-          <div className="flex shrink-0 items-center gap-2">
-            {canCreateProposal && (
-              <Link
-                href="/proposals/new"
-                data-testid="proposals-cta-primary"
-                className="inline-flex items-center gap-2 rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-              >
-                <Plus className="h-4 w-4" />
-                {t('newProposal')}
-              </Link>
-            )}
-            {isAdmin && (
-              <button
-                type="button"
-                data-testid="proposals-cta-secondary"
-                onClick={() => setStatusFilter('discussion')}
-                className="inline-flex items-center rounded-lg border border-white/20 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-white/10"
-              >
-                {t('reviewDiscussionCta')}
-              </button>
-            )}
-          </div>
-        </div>
-      </section>
+        {canCreateProposal && (
+          <Link
+            href="/proposals/new"
+            data-testid="proposals-cta-primary"
+            className="inline-flex items-center gap-2 rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+          >
+            <Plus className="h-4 w-4" />
+            {t('newProposal')}
+          </Link>
+        )}
+        {isAdmin && (
+          <button
+            type="button"
+            data-testid="proposals-cta-secondary"
+            onClick={() => setStatusFilter('discussion')}
+            className="inline-flex items-center rounded-lg border border-white/20 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-white/10"
+          >
+            {t('reviewDiscussionCta')}
+          </button>
+        )}
+      </PageHero>
 
       {/* Two-column layout */}
-      <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[1fr_300px] lg:items-start xl:grid-cols-[1fr_320px]">
-        {/* Main content column */}
-        <div className="min-w-0">
+      <TwoColumnLayout
+        sidebar={
+          <GovernanceSidebar
+            proposals={rawProposals ?? []}
+            stageCounts={stageCounts}
+            totalComments={totalComments}
+            activeStatus={statusFilter}
+            onStatusFilter={setStatusFilter}
+            user={user}
+          />
+        }
+      >
+        <div>
           {/* Search + Sort bar */}
           <div data-testid="proposals-filters" className="mb-4 space-y-3">
             <div className="flex gap-2">
@@ -185,7 +188,7 @@ export default function ProposalsPage() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder={t('searchPlaceholder')}
                   data-testid="proposals-search"
-                  className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-10 text-sm focus:border-transparent focus:ring-2 focus:ring-orange-400"
+                  className="w-full rounded-xl border border-border bg-card py-2.5 pl-10 pr-10 text-sm focus:border-transparent focus:ring-2 focus:ring-organic-terracotta"
                 />
                 {searchTerm && (
                   <button
@@ -312,7 +315,7 @@ export default function ProposalsPage() {
                     onClick={() => setSort(opt.key)}
                     className={`rounded-md px-2.5 py-1 text-xs font-semibold transition-colors ${
                       sort === opt.key
-                        ? 'bg-orange-100 text-orange-700'
+                        ? 'bg-organic-terracotta-light/30 text-organic-terracotta-hover'
                         : 'text-slate-500 hover:bg-slate-100'
                     }`}
                   >
@@ -343,7 +346,7 @@ export default function ProposalsPage() {
               {[1, 2, 3, 4, 5].map((i) => (
                 <div
                   key={i}
-                  className="flex animate-pulse gap-0 overflow-hidden rounded-xl border border-slate-200"
+                  className="flex animate-pulse gap-0 overflow-hidden rounded-xl border border-border"
                 >
                   <div className="w-1 flex-shrink-0 bg-slate-200" />
                   <div className="flex-1 p-4">
@@ -360,7 +363,7 @@ export default function ProposalsPage() {
               ))}
             </div>
           ) : regularProposals.length === 0 && votingProposals.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 py-16 text-center">
+            <div className="rounded-xl border border-dashed border-border bg-slate-50 py-16 text-center">
               <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -388,7 +391,7 @@ export default function ProposalsPage() {
               {canCreateProposal && (
                 <Link
                   href="/proposals/new"
-                  className="inline-flex items-center gap-2 rounded-xl bg-orange-600 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-orange-700"
+                  className="inline-flex items-center gap-2 rounded-xl bg-organic-terracotta px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-organic-terracotta-hover"
                 >
                   <Plus className="h-4 w-4" />
                   {t('createFirstProposal')}
@@ -409,7 +412,7 @@ export default function ProposalsPage() {
               <button
                 type="button"
                 onClick={() => setVisibleCount((prev) => prev + PAGE_SIZE)}
-                className="rounded-xl border border-slate-200 bg-white px-6 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                className="rounded-xl border border-border bg-card px-6 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
               >
                 {t('loadMore', { remaining: regularProposals.length - visibleCount })}
               </button>
@@ -418,12 +421,12 @@ export default function ProposalsPage() {
 
           {/* Unauthenticated CTA — mobile only */}
           {!user && (
-            <div className="mt-8 rounded-xl border border-orange-200 bg-gradient-to-r from-orange-50 to-yellow-50 p-5 lg:hidden">
+            <div className="mt-8 rounded-xl border border-organic-terracotta-light bg-gradient-to-r from-organic-terracotta-lightest to-yellow-50 p-5 lg:hidden">
               <h3 className="mb-1 font-semibold text-slate-900">{t('ctaTitle')}</h3>
               <p className="mb-3 text-sm text-slate-700">{t('ctaDescription')}</p>
               <Link
                 href="/login"
-                className="inline-block rounded-lg bg-orange-600 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-orange-700"
+                className="inline-block rounded-lg bg-organic-terracotta px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-organic-terracotta-hover"
               >
                 {t('signIn')}
               </Link>
@@ -431,18 +434,7 @@ export default function ProposalsPage() {
           )}
         </div>
 
-        {/* Sidebar column — desktop */}
-        <div className="hidden lg:block lg:sticky lg:top-6">
-          <GovernanceSidebar
-            proposals={rawProposals ?? []}
-            stageCounts={stageCounts}
-            totalComments={totalComments}
-            activeStatus={statusFilter}
-            onStatusFilter={setStatusFilter}
-            user={user}
-          />
-        </div>
-      </div>
+      </TwoColumnLayout>
 
       {/* Mobile sidebar */}
       <div className="mt-6 lg:hidden">

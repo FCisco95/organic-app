@@ -108,7 +108,7 @@ function CampaignForm({
             value={form.title}
             onChange={(e) => set('title', e.target.value)}
             maxLength={60}
-            className="mt-1 w-full px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/30"
+            className="mt-1 w-full px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30"
             placeholder="Launch Week — 2x XP"
           />
         </div>
@@ -118,7 +118,7 @@ function CampaignForm({
             value={form.icon}
             onChange={(e) => set('icon', e.target.value)}
             maxLength={10}
-            className="mt-1 w-full px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/30"
+            className="mt-1 w-full px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30"
             placeholder="🚀"
           />
         </div>
@@ -131,7 +131,7 @@ function CampaignForm({
           onChange={(e) => set('description', e.target.value)}
           maxLength={300}
           rows={2}
-          className="mt-1 w-full px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/30 resize-none"
+          className="mt-1 w-full px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30 resize-none"
           placeholder="2x XP on all activities during launch week!"
         />
       </div>
@@ -142,7 +142,7 @@ function CampaignForm({
           <input
             value={form.banner_url}
             onChange={(e) => set('banner_url', e.target.value)}
-            className="mt-1 w-full px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/30"
+            className="mt-1 w-full px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30"
             placeholder="https://..."
           />
         </div>
@@ -151,7 +151,7 @@ function CampaignForm({
           <input
             value={form.cta_link}
             onChange={(e) => set('cta_link', e.target.value)}
-            className="mt-1 w-full px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/30"
+            className="mt-1 w-full px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30"
             placeholder="/quests or https://..."
           />
         </div>
@@ -164,7 +164,7 @@ function CampaignForm({
             value={form.cta_text}
             onChange={(e) => set('cta_text', e.target.value)}
             maxLength={40}
-            className="mt-1 w-full px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/30"
+            className="mt-1 w-full px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30"
             placeholder="Learn more"
           />
         </div>
@@ -176,7 +176,7 @@ function CampaignForm({
             onChange={(e) => set('priority', parseInt(e.target.value) || 0)}
             min={0}
             max={100}
-            className="mt-1 w-full px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/30"
+            className="mt-1 w-full px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30"
           />
         </div>
         <div>
@@ -184,7 +184,7 @@ function CampaignForm({
           <select
             value={form.target_audience}
             onChange={(e) => set('target_audience', e.target.value as CampaignFormData['target_audience'])}
-            className="mt-1 w-full px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/30"
+            className="mt-1 w-full px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30"
           >
             <option value="all">All users</option>
             <option value="members">Members only</option>
@@ -201,7 +201,7 @@ function CampaignForm({
             type="datetime-local"
             value={form.starts_at}
             onChange={(e) => set('starts_at', e.target.value)}
-            className="mt-1 w-full px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/30"
+            className="mt-1 w-full px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30"
           />
         </div>
         <div>
@@ -210,7 +210,7 @@ function CampaignForm({
             type="datetime-local"
             value={form.ends_at}
             onChange={(e) => set('ends_at', e.target.value)}
-            className="mt-1 w-full px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/30"
+            className="mt-1 w-full px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30"
           />
           <p className="mt-0.5 text-[10px] text-muted-foreground">Leave empty for no end date</p>
         </div>
@@ -219,7 +219,7 @@ function CampaignForm({
           <select
             value={form.visibility_condition}
             onChange={(e) => set('visibility_condition', e.target.value as CampaignFormData['visibility_condition'])}
-            className="mt-1 w-full px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/30"
+            className="mt-1 w-full px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30"
           >
             <option value="always">Always visible</option>
             <option value="egg_hunt_revealed">Hidden until egg hunt reveal</option>
@@ -242,7 +242,7 @@ function CampaignForm({
         <button
           onClick={onSubmit}
           disabled={saving || !form.title.trim() || !form.description.trim()}
-          className="px-4 py-2 text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 rounded-lg disabled:opacity-50 transition-colors"
+          className="px-4 py-2 text-sm font-medium text-cta-fg bg-cta hover:bg-cta-hover rounded-lg disabled:opacity-50 transition-colors"
         >
           {saving ? 'Saving...' : isEdit ? 'Update' : 'Create'}
         </button>
@@ -347,11 +347,11 @@ function EggHuntControls() {
   }
 
   return (
-    <div className="rounded-xl border border-dashed border-orange-500/30 bg-orange-500/5 p-5 space-y-5">
+    <div className="rounded-xl border border-dashed border-organic-terracotta/30 bg-organic-terracotta-lightest0/5 p-5 space-y-5">
       <div className="flex items-center gap-2">
-        <Egg className="h-5 w-5 text-orange-500" />
+        <Egg className="h-5 w-5 text-organic-terracotta" />
         <h3 className="text-base font-semibold text-foreground">Easter Egg Hunt Controls</h3>
-        <span className="text-[10px] uppercase tracking-wider font-semibold text-orange-500 bg-orange-500/10 px-1.5 py-0.5 rounded">
+        <span className="text-[10px] uppercase tracking-wider font-semibold text-organic-terracotta bg-organic-terracotta-lightest0/10 px-1.5 py-0.5 rounded">
           Stealth
         </span>
       </div>
@@ -368,7 +368,7 @@ function EggHuntControls() {
             <button
               onClick={() => toggle('shimmer_enabled', !config.shimmer_enabled)}
               className={`relative h-6 w-11 rounded-full transition-colors ${
-                config.shimmer_enabled ? 'bg-orange-500' : 'bg-muted'
+                config.shimmer_enabled ? 'bg-organic-terracotta-lightest0' : 'bg-muted'
               }`}
             >
               <div className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
@@ -376,7 +376,7 @@ function EggHuntControls() {
               }`} />
             </button>
           </div>
-          <RateSlider label="Rate" field="shimmer_rate" value={Number(config.shimmer_rate)} min={10} max={100} divisor={1000} decimals={1} accent="accent-orange-500" onSave={saveRate} />
+          <RateSlider label="Rate" field="shimmer_rate" value={Number(config.shimmer_rate)} min={10} max={100} divisor={1000} decimals={1} accent="accent-organic-terracotta" onSave={saveRate} />
         </div>
 
         {/* Egg Hunt */}
@@ -553,7 +553,7 @@ export function CampaignsTab() {
         {!showForm && (
           <button
             onClick={handleCreate}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 rounded-lg transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-cta-fg bg-cta hover:bg-cta-hover rounded-lg transition-colors"
           >
             <Plus className="h-4 w-4" />
             New Campaign

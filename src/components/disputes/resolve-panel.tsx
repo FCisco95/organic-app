@@ -123,11 +123,11 @@ export function ResolvePanel({
     !resolve.isPending;
 
   return (
-    <div data-testid="dispute-resolve-panel" className="space-y-4 rounded-xl border-2 border-orange-200 bg-orange-50/40 p-5">
-      <h3 className="text-sm font-semibold text-orange-900">
+    <div data-testid="dispute-resolve-panel" className="space-y-4 rounded-xl border-2 border-organic-terracotta-light bg-organic-terracotta-lightest/40 p-5">
+      <h3 className="text-sm font-semibold text-organic-terracotta-hover">
         {t('resolve')}
       </h3>
-      <p className="text-xs text-orange-800">{tf('resolutionGuardrail')}</p>
+      <p className="text-xs text-organic-terracotta-hover">{tf('resolutionGuardrail')}</p>
 
       {/* Resolution outcome */}
       <div>
@@ -143,8 +143,8 @@ export function ResolvePanel({
               data-testid={`dispute-resolve-option-${r}`}
               className={`px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
                 resolution === r
-                  ? 'border-orange-500 bg-orange-100 text-orange-700'
-                  : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
+                  ? 'border-organic-terracotta bg-organic-terracotta-light/30 text-organic-terracotta-hover'
+                  : 'border-border bg-white text-gray-600 hover:border-gray-300'
               }`}
             >
               {t(`resolution.${r}`)}
@@ -168,8 +168,8 @@ export function ResolvePanel({
                 onClick={() => setQualityScore(score)}
                 className={`w-10 h-10 rounded-lg border text-sm font-bold transition-colors ${
                   qualityScore === score
-                    ? 'border-orange-500 bg-orange-100 text-orange-700'
-                    : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
+                    ? 'border-organic-terracotta bg-organic-terracotta-light/30 text-organic-terracotta-hover'
+                    : 'border-border bg-white text-gray-600 hover:border-gray-300'
                 }`}
               >
                 {score}
@@ -191,7 +191,7 @@ export function ResolvePanel({
           rows={3}
           maxLength={3000}
           data-testid="dispute-resolve-notes"
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm resize-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm resize-none focus:ring-2 focus:ring-organic-terracotta focus:border-organic-terracotta"
         />
         <p className="text-xs text-gray-400 mt-1">{notes.length}/3000</p>
       </div>
@@ -201,7 +201,7 @@ export function ResolvePanel({
         onClick={handleSubmit}
         disabled={!canSubmit}
         data-testid="dispute-resolve-submit"
-        className="bg-orange-600 hover:bg-orange-700 text-white"
+        className="bg-organic-terracotta hover:bg-organic-terracotta-hover text-white"
       >
         {resolve.isPending && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
         {t('resolve')}

@@ -125,7 +125,7 @@ export function DisputeTimeline({
                   step.completed
                     ? 'bg-green-500 border-green-500'
                     : step.active
-                      ? 'bg-orange-500 border-orange-500'
+                      ? 'bg-organic-terracotta-lightest0 border-organic-terracotta'
                       : 'bg-gray-200 border-gray-300'
                 )}
               />
@@ -188,7 +188,7 @@ export function DisputeTimeline({
         {lateEvidenceCount > 0 && (
           <span
             data-testid="dispute-late-evidence-chip"
-            className="rounded-full bg-orange-100 px-2 py-1 text-[11px] font-medium text-orange-700"
+            className="rounded-full bg-organic-terracotta-light/30 px-2 py-1 text-[11px] font-medium text-organic-terracotta-hover"
           >
             {t('lateEvidenceCount', { count: lateEvidenceCount })}
           </span>

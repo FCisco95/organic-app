@@ -14,7 +14,7 @@ function GlassCard({ children, className = '' }: { children: React.ReactNode; cl
 function PulseHighlight({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative">
-      <div className="absolute -inset-1 rounded-lg bg-orange-400/20 animate-pulse" />
+      <div className="absolute -inset-1 rounded-lg bg-organic-terracotta/20 animate-pulse" />
       <div className="relative">{children}</div>
     </div>
   );
@@ -40,7 +40,7 @@ function DisputeSystemVisual() {
           </div>
           <div className="mt-2.5 grid grid-cols-2 gap-2">
             <div className="rounded-lg bg-white/5 border border-white/10 p-2 text-center">
-              <p className="text-sm font-bold font-mono text-orange-500">3</p>
+              <p className="text-sm font-bold font-mono text-organic-terracotta">3</p>
               <p className="text-[9px] text-gray-400">Active</p>
             </div>
             <div className="rounded-lg bg-white/5 border border-white/10 p-2 text-center">
@@ -76,8 +76,8 @@ function WhenToFileVisual() {
             </div>
           ))}
         </div>
-        <div className="rounded-lg bg-orange-500/10 border border-orange-500/20 p-2">
-          <p className="text-[10px] text-orange-400 font-medium">Window: 48 hours</p>
+        <div className="rounded-lg bg-organic-terracotta-lightest0/10 border border-organic-terracotta/20 p-2">
+          <p className="text-[10px] text-[#E8845C] font-medium">Window: 48 hours</p>
         </div>
       </GlassCard>
     </div>
@@ -89,9 +89,9 @@ function XpStakeVisual() {
     <div className="w-full max-w-sm mx-auto">
       <GlassCard>
         <PulseHighlight>
-          <div className="flex items-center justify-between rounded-lg bg-orange-500/10 border border-orange-500/20 px-3 py-2">
-            <span className="text-[10px] text-orange-400 font-medium">Stake to file</span>
-            <span className="text-sm font-bold font-mono text-orange-500">50 XP</span>
+          <div className="flex items-center justify-between rounded-lg bg-organic-terracotta-lightest0/10 border border-organic-terracotta/20 px-3 py-2">
+            <span className="text-[10px] text-[#E8845C] font-medium">Stake to file</span>
+            <span className="text-sm font-bold font-mono text-organic-terracotta">50 XP</span>
           </div>
         </PulseHighlight>
         <div className="mt-2.5 grid grid-cols-2 gap-2">
@@ -141,7 +141,7 @@ function ArbitrationVisual() {
         <PulseHighlight>
           <div className="mt-2.5 rounded-lg bg-white/5 p-2 text-center">
             <p className="text-[10px] text-gray-400">
-              Majority: <span className="font-mono font-bold text-orange-500">3 of 5</span>
+              Majority: <span className="font-mono font-bold text-organic-terracotta">3 of 5</span>
             </p>
           </div>
         </PulseHighlight>
@@ -171,7 +171,7 @@ function ResolutionVisual() {
             </div>
             <div className="flex items-center justify-between rounded-lg bg-white/5 px-2.5 py-1.5">
               <span className="text-[10px] text-gray-400">Points adjusted</span>
-              <span className="text-[10px] font-mono font-bold text-orange-500">+8 pts</span>
+              <span className="text-[10px] font-mono font-bold text-organic-terracotta">+8 pts</span>
             </div>
           </div>
         </PulseHighlight>

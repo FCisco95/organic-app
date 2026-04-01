@@ -34,6 +34,7 @@ import { useTranslations } from 'next-intl';
 import type { ProposalWithVoting } from '@/features/voting';
 import { FollowButton } from '@/components/notifications/follow-button';
 import { PageContainer } from '@/components/layout';
+import { TwoColumnLayout } from '@/components/layout/two-column-layout';
 import { StatusBadge, CategoryBadge, ProposalSections, StageStepper } from '@/components/proposals';
 import {
   Dialog,
@@ -102,7 +103,7 @@ function AccordionCard({
   const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-gray-50/50 overflow-hidden">
+    <div className="rounded-xl border border-border bg-gray-50/50 overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen(!open)}
@@ -333,7 +334,7 @@ export default function ProposalDetailPage() {
         <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('notFoundTitle')}</h1>
         <Link
           href="/proposals"
-          className="inline-block bg-organic-orange hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+          className="inline-block bg-cta hover:bg-cta-hover text-cta-fg px-6 py-3 rounded-lg font-medium transition-colors"
         >
           {t('backToProposals')}
         </Link>
@@ -358,11 +359,115 @@ export default function ProposalDetailPage() {
         {t('backToProposals')}
       </Link>
 
-      <div
-        className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]"
-        data-testid="proposal-showcase"
+      <TwoColumnLayout
+        sidebar={
+          <div className="space-y-4" data-testid="proposal-decision-rail">
+            <div
+              className="rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50 to-white p-5"
+              data-testid="proposal-vote-window"
+            >
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-700">
+                {t('decisionRailLabel')}
+              </p>
+              <h3 className="mt-1 text-lg font-bold text-slate-900">{t('decisionRailTitle')}</h3>
+              <p className="mt-1 text-sm text-slate-600">{t('decisionRailSubtitle')}</p>
+              <div className="mt-4 space-y-3 rounded-xl border border-white/70 bg-white/80 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-xs uppercase tracking-wide text-slate-500">{t('railStatus')}</span>
+                  <StatusBadge status={proposal.status as ProposalStatus} showIcon={false} />
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-xs uppercase tracking-wide text-slate-500">{t('railCurrentState')}</span>
+                  <span className="text-sm font-semibold text-slate-800">
+                    {statusLabelMap[proposal.status as ProposalStatus]}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-xs uppercase tracking-wide text-slate-500">{t('railComments')}</span>
+                  <span className="text-sm font-semibold text-slate-800">
+                    {t('commentsCount', { count: comments.length })}
+                  </span>
+                </div>
+                {proposal.execution_status && (
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-xs uppercase tracking-wide text-slate-500">
+                      {t('railExecutionStatus')}
+                    </span>
+                    <span
+                      className={`text-sm font-semibold ${
+                        proposal.execution_status === 'expired'
+                          ? 'text-red-600'
+                          : 'text-slate-800'
+                      }`}
+                    >
+                      {t(
+                        `executionStatus${
+                          proposal.execution_status === 'pending_execution'
+                            ? 'Pending'
+                            : proposal.execution_status === 'executed'
+                              ? 'Executed'
+                              : 'Expired'
+                        }`
+                      )}
+                    </span>
+                  </div>
+                )}
+                {lifecycleStatus === 'finalized' && proposal.execution_deadline && (
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-xs uppercase tracking-wide text-slate-500">
+                      {t('executionDeadline')}
+                    </span>
+                    <span
+                      className={`text-sm font-semibold ${
+                        new Date(proposal.execution_deadline) < new Date()
+                          ? 'text-red-600'
+                          : 'text-slate-800'
+                      }`}
+                    >
+                      {new Date(proposal.execution_deadline) > new Date()
+                        ? t('executionDeadlineCountdown', {
+                            days: Math.ceil(
+                              (new Date(proposal.execution_deadline).getTime() - Date.now()) /
+                                (1000 * 60 * 60 * 24)
+                            ),
+                          })
+                        : t('executionDeadlineExpired')}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-border bg-card p-5" data-testid="proposal-version-context">
+              <h3 className="text-sm font-semibold text-slate-900">{t('versionContextTitle')}</h3>
+              <p className="mt-1 text-sm text-slate-600">
+                {t('versionContextDescription', { version: currentVersionNumber })}
+              </p>
+              {hasOutdatedComments && (
+                <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                  {t('updatedSinceComment', { version: currentVersionNumber })}
+                </p>
+              )}
+            </div>
+
+            <div className="rounded-2xl border border-border bg-slate-950 p-5 text-slate-100" data-testid="proposal-provenance-callout">
+              <p className="text-xs uppercase tracking-[0.16em] text-slate-300">{t('governanceSource')}</p>
+              <h3 className="mt-1 text-base font-semibold text-white">{t('immutableProposalReference')}</h3>
+              <p className="mt-2 text-sm text-slate-300">
+                {t('taskProvenanceHelp', { version: currentVersionNumber })}
+              </p>
+            </div>
+
+            {showDelegation && (
+              <div className="rounded-2xl border border-border bg-card p-4">
+                <DelegationPanel />
+              </div>
+            )}
+          </div>
+        }
+        stickyTop="top-24"
       >
-        <div className="min-w-0 space-y-6">
+        <div className="space-y-6">
           {/* Proposal Header + Content */}
           <div className="bg-white rounded-2xl overflow-hidden" data-testid="proposal-header">
             {/* Header */}
@@ -401,7 +506,7 @@ export default function ProposalDetailPage() {
                       <>
                         <Link
                           href={`/proposals/new?edit=${proposal.id}`}
-                          className="flex items-center gap-1 px-3 py-1.5 text-sm bg-white/80 hover:bg-white text-gray-700 rounded-lg transition-colors ring-1 ring-gray-200"
+                          className="flex items-center gap-1 px-3 py-1.5 text-sm bg-white/80 hover:bg-white text-gray-700 rounded-lg transition-colors ring-1 ring-border"
                         >
                           <Edit2 className="w-4 h-4" />
                           {t('edit')}
@@ -542,7 +647,7 @@ export default function ProposalDetailPage() {
                   </p>
                   <button
                     onClick={createTaskFromProposal}
-                    className="flex items-center gap-2 px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 bg-cta hover:bg-cta-hover text-cta-fg rounded-lg font-medium transition-colors"
                   >
                     <ListTodo className="w-4 h-4" />
                     {t('createTask')}
@@ -556,7 +661,7 @@ export default function ProposalDetailPage() {
 
               {(isLoadingExecutionTasks || executionTasks.length > 0) && (
                 <div
-                  className="mt-8 rounded-xl border border-gray-200 p-6 bg-white"
+                  className="mt-8 rounded-xl border border-border p-6 bg-white"
                   data-testid="proposal-task-list"
                 >
                   <div className="flex items-center gap-2 mb-3">
@@ -570,11 +675,11 @@ export default function ProposalDetailPage() {
                       {executionTasks.map((task) => (
                         <div
                           key={task.id}
-                          className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gray-200 px-3 py-2"
+                          className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border px-3 py-2"
                         >
                           <Link
                             href={`/tasks/${task.id}`}
-                            className="text-sm font-medium text-organic-orange hover:text-orange-600"
+                            className="text-sm font-medium text-organic-terracotta hover:text-organic-terracotta"
                           >
                             {task.title}
                           </Link>
@@ -674,7 +779,7 @@ export default function ProposalDetailPage() {
               collapsedSummary={t('accordionVersionCollapsed', { version: currentVersionNumber })}
             >
               <div className="space-y-3">
-                <div className="rounded-xl border border-slate-200 bg-white p-4">
+                <div className="rounded-xl border border-border bg-card p-4">
                   <h3 className="text-sm font-semibold text-slate-900">{t('versionContextTitle')}</h3>
                   <p className="mt-1 text-sm text-slate-600">
                     {t('versionContextDescription', { version: currentVersionNumber })}
@@ -685,7 +790,7 @@ export default function ProposalDetailPage() {
                     </p>
                   )}
                 </div>
-                <div className="rounded-xl border border-slate-200 bg-slate-950 p-4 text-slate-100">
+                <div className="rounded-xl border border-border bg-slate-950 p-4 text-slate-100">
                   <p className="text-xs uppercase tracking-[0.16em] text-slate-300">{t('governanceSource')}</p>
                   <h3 className="mt-1 text-base font-semibold text-white">{t('immutableProposalReference')}</h3>
                   <p className="mt-2 text-sm text-slate-300">
@@ -708,7 +813,7 @@ export default function ProposalDetailPage() {
 
           {/* Comments Section */}
           <div
-            className="bg-white rounded-2xl shadow-sm ring-1 ring-gray-200/60 p-4 sm:p-8"
+            className="bg-white rounded-2xl shadow-sm ring-1 ring-border p-4 sm:p-8"
             data-testid="proposal-comments"
           >
             <h2 className="text-xl font-semibold text-gray-900 mb-6">
@@ -723,22 +828,22 @@ export default function ProposalDetailPage() {
                   onChange={(e) => setCommentText(e.target.value)}
                   placeholder={t('commentPlaceholder')}
                   rows={3}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none mb-3 bg-gray-50/50"
+                  className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-organic-terracotta focus:border-transparent resize-none mb-3 bg-gray-50/50"
                 />
                 <button
                   type="submit"
                   disabled={addComment.isPending || !commentText.trim()}
-                  className="px-4 py-2 bg-organic-orange hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 bg-cta hover:bg-cta-hover text-cta-fg rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {addComment.isPending ? t('posting') : t('postComment')}
                 </button>
               </form>
             ) : (
-              <div className="mb-6 bg-gray-50 border border-gray-200 rounded-xl p-4 text-center">
+              <div className="mb-6 bg-gray-50 border border-border rounded-xl p-4 text-center">
                 <p className="text-gray-600 mb-3">{t('signInToJoin')}</p>
                 <Link
                   href="/login"
-                  className="inline-block bg-organic-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                  className="inline-block bg-cta hover:bg-cta-hover text-cta-fg px-4 py-2 rounded-lg font-medium transition-colors"
                 >
                   {t('signIn')}
                 </Link>
@@ -773,7 +878,7 @@ export default function ProposalDetailPage() {
                   return (
                     <div key={comment.id} className="bg-gray-50 rounded-xl p-4">
                       <div className="flex items-center gap-2 mb-2 flex-wrap">
-                        <div className="w-7 h-7 rounded-full bg-organic-orange/15 flex items-center justify-center text-xs font-semibold text-organic-orange shrink-0">
+                        <div className="w-7 h-7 rounded-full bg-organic-terracotta/15 flex items-center justify-center text-xs font-semibold text-organic-terracotta shrink-0">
                           {(displayName ?? comment.user_profiles.email ?? '?')[0].toUpperCase()}
                         </div>
                         <span className="font-medium text-gray-900 text-sm">
@@ -800,126 +905,13 @@ export default function ProposalDetailPage() {
           </div>
         </div>
 
-        {/* ── DESKTOP SIDEBAR (hidden on mobile, replaced by inline accordions) ── */}
-        <aside
-          className="hidden lg:block space-y-4 lg:sticky lg:top-24 self-start"
-          data-testid="proposal-decision-rail"
-        >
-          <div
-            className="rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50 to-white p-5"
-            data-testid="proposal-vote-window"
-          >
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-700">
-              {t('decisionRailLabel')}
-            </p>
-            <h3 className="mt-1 text-lg font-bold text-slate-900">{t('decisionRailTitle')}</h3>
-            <p className="mt-1 text-sm text-slate-600">{t('decisionRailSubtitle')}</p>
-            <div className="mt-4 space-y-3 rounded-xl border border-white/70 bg-white/80 p-4">
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-xs uppercase tracking-wide text-slate-500">{t('railStatus')}</span>
-                <StatusBadge status={proposal.status as ProposalStatus} showIcon={false} />
-              </div>
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-xs uppercase tracking-wide text-slate-500">{t('railCurrentState')}</span>
-                <span className="text-sm font-semibold text-slate-800">
-                  {statusLabelMap[proposal.status as ProposalStatus]}
-                </span>
-              </div>
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-xs uppercase tracking-wide text-slate-500">{t('railComments')}</span>
-                <span className="text-sm font-semibold text-slate-800">
-                  {t('commentsCount', { count: comments.length })}
-                </span>
-              </div>
-              {proposal.execution_status && (
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-xs uppercase tracking-wide text-slate-500">
-                    {t('railExecutionStatus')}
-                  </span>
-                  <span
-                    className={`text-sm font-semibold ${
-                      proposal.execution_status === 'expired'
-                        ? 'text-red-600'
-                        : 'text-slate-800'
-                    }`}
-                  >
-                    {t(
-                      `executionStatus${
-                        proposal.execution_status === 'pending_execution'
-                          ? 'Pending'
-                          : proposal.execution_status === 'executed'
-                            ? 'Executed'
-                            : 'Expired'
-                      }`
-                    )}
-                  </span>
-                </div>
-              )}
-              {lifecycleStatus === 'finalized' && proposal.execution_deadline && (
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-xs uppercase tracking-wide text-slate-500">
-                    {t('executionDeadline')}
-                  </span>
-                  <span
-                    className={`text-sm font-semibold ${
-                      new Date(proposal.execution_deadline) < new Date()
-                        ? 'text-red-600'
-                        : 'text-slate-800'
-                    }`}
-                  >
-                    {new Date(proposal.execution_deadline) > new Date()
-                      ? t('executionDeadlineCountdown', {
-                          days: Math.ceil(
-                            (new Date(proposal.execution_deadline).getTime() - Date.now()) /
-                              (1000 * 60 * 60 * 24)
-                          ),
-                        })
-                      : t('executionDeadlineExpired')}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div
-            className="rounded-2xl border border-slate-200 bg-white p-5"
-            data-testid="proposal-version-context"
-          >
-            <h3 className="text-sm font-semibold text-slate-900">{t('versionContextTitle')}</h3>
-            <p className="mt-1 text-sm text-slate-600">
-              {t('versionContextDescription', { version: currentVersionNumber })}
-            </p>
-            {hasOutdatedComments && (
-              <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
-                {t('updatedSinceComment', { version: currentVersionNumber })}
-              </p>
-            )}
-          </div>
-
-          <div
-            className="rounded-2xl border border-slate-200 bg-slate-950 p-5 text-slate-100"
-            data-testid="proposal-provenance-callout"
-          >
-            <p className="text-xs uppercase tracking-[0.16em] text-slate-300">{t('governanceSource')}</p>
-            <h3 className="mt-1 text-base font-semibold text-white">{t('immutableProposalReference')}</h3>
-            <p className="mt-2 text-sm text-slate-300">
-              {t('taskProvenanceHelp', { version: currentVersionNumber })}
-            </p>
-          </div>
-
-          {showDelegation && (
-            <div className="rounded-2xl border border-gray-200 bg-white p-4">
-              <DelegationPanel />
-            </div>
-          )}
-        </aside>
-      </div>
+      </TwoColumnLayout>
 
       {/* ── FLOATING VOTE FAB (mobile only, replaces sticky bar) ── */}
       {isVotingActive && proposal.voting_ends_at && new Date(proposal.voting_ends_at) > new Date() && (
         <a
           href="#voting-panel"
-          className="fixed bottom-6 right-6 z-40 lg:hidden flex items-center justify-center w-14 h-14 rounded-full bg-organic-terracotta text-white shadow-lg hover:bg-organic-terracotta-hover transition-colors"
+          className="fixed bottom-6 right-6 z-40 lg:hidden flex items-center justify-center w-14 h-14 rounded-full bg-cta text-cta-fg shadow-lg hover:bg-cta-hover transition-colors"
           aria-label={t('voteFabLabel')}
         >
           <Vote className="w-6 h-6" />

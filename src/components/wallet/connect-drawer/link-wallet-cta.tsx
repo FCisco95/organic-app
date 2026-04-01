@@ -9,7 +9,7 @@ export function LinkWalletCta({ onClose }: LinkWalletCtaProps) {
   const t = useTranslations('Wallet');
 
   return (
-    <div className="mb-6 rounded-xl border border-organic-orange/30 bg-organic-orange/10 p-4">
+    <div className="mb-6 rounded-xl border border-organic-terracotta/30 bg-organic-terracotta/10 p-4">
       <p className="text-sm font-medium text-white mb-1">{t('linkWalletTitle')}</p>
       <p className="text-xs text-gray-300 mb-3">{t('linkWalletDescription')}</p>
       <button
@@ -18,7 +18,7 @@ export function LinkWalletCta({ onClose }: LinkWalletCtaProps) {
           onClose();
           router.push('/profile');
         }}
-        className="text-sm font-semibold text-organic-orange hover:text-orange-400 transition-colors"
+        className="text-sm font-semibold text-organic-terracotta hover:text-[#E8845C] transition-colors"
       >
         {t('linkWalletAction')}
       </button>

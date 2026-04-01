@@ -31,14 +31,14 @@ export default function NewProposalPage() {
   if (!user) {
     return (
       <PageContainer width="narrow" className="text-center py-16">
-        <div className="mx-auto w-12 h-12 rounded-2xl bg-orange-100 flex items-center justify-center mb-4">
-          <FileText className="w-6 h-6 text-orange-600" />
+        <div className="mx-auto w-12 h-12 rounded-2xl bg-organic-terracotta-light/30 flex items-center justify-center mb-4">
+          <FileText className="w-6 h-6 text-organic-terracotta" />
         </div>
         <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('signInTitle')}</h1>
         <p className="text-gray-600 mb-6 max-w-md mx-auto">{t('signInDescription')}</p>
         <Link
           href="/login"
-          className="inline-block bg-organic-orange hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+          className="inline-block bg-cta hover:bg-cta-hover text-cta-fg px-6 py-3 rounded-lg font-medium transition-colors"
         >
           {t('signInCta')}
         </Link>
@@ -56,7 +56,7 @@ export default function NewProposalPage() {
         <p className="text-gray-600 mb-6 max-w-md mx-auto">{t('memberOnlyDescription')}</p>
         <Link
           href="/profile"
-          className="inline-block bg-organic-orange hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+          className="inline-block bg-cta hover:bg-cta-hover text-cta-fg px-6 py-3 rounded-lg font-medium transition-colors"
         >
           {t('goToProfile')}
         </Link>
@@ -99,7 +99,7 @@ export default function NewProposalPage() {
         <p className="text-gray-600 mb-6 max-w-md mx-auto">{message}</p>
         <Link
           href="/proposals"
-          className="inline-block bg-organic-orange hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+          className="inline-block bg-cta hover:bg-cta-hover text-cta-fg px-6 py-3 rounded-lg font-medium transition-colors"
         >
           {t('backToProposals')}
         </Link>

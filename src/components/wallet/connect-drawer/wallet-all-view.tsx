@@ -30,7 +30,7 @@ export function WalletAllView({
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder={t('searchWalletsPlaceholder')}
-          className="w-full pl-10 pr-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-organic-orange/50 focus:border-organic-orange/50"
+          className="w-full pl-10 pr-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-organic-terracotta/50 focus:border-organic-terracotta/50"
         />
       </div>
 

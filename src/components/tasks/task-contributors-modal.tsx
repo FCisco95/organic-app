@@ -34,7 +34,7 @@ export function TaskContributorsModal({
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <DialogContent className="max-w-md bg-white border-gray-200">
+      <DialogContent className="max-w-md bg-white border-border">
         <DialogHeader>
           <DialogTitle className="text-gray-900">{t('contributorsModalTitle')}</DialogTitle>
           <DialogDescription>

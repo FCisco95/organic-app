@@ -106,6 +106,7 @@ export default function IdeasPage() {
   return (
     <PageContainer layout="fluid">
       <div className="space-y-6">
+        {/* TODO: Migrate to <PageHero> — has 3 principle cards inside the hero that go beyond title+description+buttons */}
         {/* ── Dark Hero (matching Analytics/Treasury style) ─────── */}
         <div className="rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 sm:p-8 text-white opacity-0 animate-fade-up stagger-1">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
@@ -140,7 +141,7 @@ export default function IdeasPage() {
           <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="flex items-start gap-3">
               <div className="rounded-lg bg-white/10 p-2">
-                <Lightbulb className="h-4 w-4 text-orange-400" />
+                <Lightbulb className="h-4 w-4 text-[#E8845C]" />
               </div>
               <div>
                 <p className="text-sm font-medium">{t('heroProposeTitle')}</p>
@@ -215,11 +216,11 @@ export default function IdeasPage() {
                 className={cn(
                   'inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px',
                   isActive
-                    ? 'border-orange-500 text-orange-600 dark:text-orange-400 font-bold bg-orange-50 dark:bg-orange-500/5 rounded-t-lg'
+                    ? 'border-organic-terracotta text-organic-terracotta dark:text-[#E8845C] font-bold bg-organic-terracotta-lightest dark:bg-organic-terracotta-lightest0/5 rounded-t-lg'
                     : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
                 )}
               >
-                <Icon className={cn('h-4 w-4', isActive && 'text-orange-500')} />
+                <Icon className={cn('h-4 w-4', isActive && 'text-organic-terracotta')} />
                 {t(`tab_${tab.key}` as 'tab_all' | 'tab_trending' | 'tab_promoted')}
               </button>
             );
@@ -234,13 +235,13 @@ export default function IdeasPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={t('searchPlaceholder')}
-              className="w-full rounded-lg border border-border bg-card py-2 pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-orange-500/30 sm:w-72"
+              className="w-full rounded-lg border border-border bg-card py-2 pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30 sm:w-72"
             />
           </div>
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as IdeaSort)}
-            className="rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-orange-500/30"
+            className="rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30"
           >
             {SORTS.map((s) => (
               <option key={s} value={s}>

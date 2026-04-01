@@ -52,7 +52,7 @@ const config: Config = {
             light: '#F6C1B4',
             lightest: '#FDF0EC',
           },
-          orange: '#FF7A00',
+          orange: '#D95D39',
           golden: '#F0A202',
           yellow: '#FFE500',
           black: '#000000',

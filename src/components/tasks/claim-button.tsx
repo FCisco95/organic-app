@@ -117,7 +117,7 @@ export function ClaimButton({ task, onSuccess, className }: ClaimButtonProps) {
       className={cn(
         'flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors',
         canClaim
-          ? 'bg-organic-orange hover:bg-orange-600 text-white'
+          ? 'bg-cta hover:bg-cta-hover text-cta-fg'
           : 'bg-gray-100 text-gray-400 cursor-not-allowed',
         'disabled:opacity-50',
         className

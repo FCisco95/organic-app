@@ -58,7 +58,7 @@ function TokenMarketStrip({
       label: t('kpi.orgPrice', { symbol: TOKEN_CONFIG.symbol }),
       value: priceAvailable ? formatPrice(kpis!.org_price!) : null,
       icon: Coins,
-      iconColor: 'text-orange-500',
+      iconColor: 'text-organic-terracotta',
       mono: true,
     },
     {
@@ -85,7 +85,7 @@ function TokenMarketStrip({
   ];
 
   return (
-    <div className="rounded-2xl bg-gradient-to-r from-orange-500/5 via-transparent to-orange-500/5 border border-orange-500/10 p-1">
+    <div className="rounded-2xl bg-gradient-to-r from-organic-terracotta/5 via-transparent to-organic-terracotta/5 border border-organic-terracotta/10 p-1">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-px">
         {items.map((item) => {
           const Icon = item.icon;
@@ -169,7 +169,7 @@ function GovernanceKPIs({
       label: t('trustPanel.voteParticipation'),
       value: trust ? `${trust.vote_participation_30d.participation_rate.toFixed(1)}%` : '\u2014',
       icon: Gauge,
-      iconColor: 'text-orange-500',
+      iconColor: 'text-organic-terracotta',
     },
   ];
 
@@ -259,7 +259,7 @@ function TrustPanel({
           </p>
           <div className="mt-1 flex flex-wrap gap-1.5">
             <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
-              <ArrowUpRight className="h-3 w-3 text-orange-500" />
+              <ArrowUpRight className="h-3 w-3 text-organic-terracotta" />
               {trust?.active_contributor_signals_30d.active_members ?? 0}
             </span>
             <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">

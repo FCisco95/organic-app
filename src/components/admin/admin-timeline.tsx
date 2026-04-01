@@ -27,8 +27,8 @@ const SCOPE_DOT_COLORS: Record<string, string> = {
   rewards_config: 'bg-emerald-500',
   token: 'bg-violet-500',
   treasury: 'bg-cyan-500',
-  sprints: 'bg-orange-500',
-  sprint_policy: 'bg-orange-500',
+  sprints: 'bg-organic-terracotta-lightest0',
+  sprint_policy: 'bg-organic-terracotta-lightest0',
   members: 'bg-indigo-500',
   gamification: 'bg-pink-500',
 };

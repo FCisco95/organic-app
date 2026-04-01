@@ -47,8 +47,8 @@ export function Step1Category({ formData, errors, updateField, t }: StepProps) {
                 className={cn(
                   'flex items-start gap-3 p-4 rounded-lg border-2 text-left transition-all',
                   isSelected
-                    ? 'border-organic-orange bg-orange-50 shadow-sm'
-                    : 'border-gray-200 hover:border-gray-300 bg-white'
+                    ? 'border-organic-terracotta bg-organic-terracotta-lightest shadow-sm'
+                    : 'border-border hover:border-gray-300 bg-white'
                 )}
               >
                 <div className={cn('p-2 rounded-lg', colorClass)}>
@@ -76,7 +76,7 @@ export function Step1Category({ formData, errors, updateField, t }: StepProps) {
           onChange={(e) => updateField('title', e.target.value)}
           placeholder={t('placeholderTitle')}
           className={cn(
-            'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent',
+            'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent',
             errors.title ? 'border-red-300' : 'border-gray-300'
           )}
           maxLength={200}
@@ -101,7 +101,7 @@ export function Step1Category({ formData, errors, updateField, t }: StepProps) {
           placeholder={t('placeholderSummary')}
           rows={3}
           className={cn(
-            'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-organic-orange focus:border-transparent resize-none',
+            'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-organic-terracotta focus:border-transparent resize-none',
             errors.summary ? 'border-red-300' : 'border-gray-300'
           )}
           maxLength={300}

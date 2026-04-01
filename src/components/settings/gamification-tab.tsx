@@ -275,7 +275,7 @@ export function GamificationTab({ org }: GamificationTabProps) {
       <p className="text-sm text-gray-500 mb-6">{tAdmin('description')}</p>
 
       {/* 1. Quest Management */}
-      <div className="border-b border-gray-100">
+      <div className="border-b border-border">
         <SectionHeader title={tAdmin('questManagement')} open={questsOpen} onToggle={() => setQuestsOpen(!questsOpen)} />
         {questsOpen && (
           <div className="pb-4">
@@ -287,7 +287,7 @@ export function GamificationTab({ org }: GamificationTabProps) {
                   setEditingQuest(null);
                   setShowQuestForm(!showQuestForm);
                 }}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-organic-orange border border-orange-200 rounded-lg hover:bg-orange-50"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-organic-terracotta border border-organic-terracotta-light rounded-lg hover:bg-organic-terracotta-lightest"
               >
                 <Plus className="h-3.5 w-3.5" />
                 {tAdmin('addQuest')}
@@ -296,7 +296,7 @@ export function GamificationTab({ org }: GamificationTabProps) {
 
             {/* Quest Form */}
             {showQuestForm && (
-              <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 mb-4 space-y-3">
+              <div className="rounded-lg border border-border bg-gray-50 p-4 mb-4 space-y-3">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="text-xs font-medium text-gray-600">{tAdmin('questTitle')}</label>
@@ -317,7 +317,7 @@ export function GamificationTab({ org }: GamificationTabProps) {
                     <select
                       value={questForm.cadence}
                       onChange={(e) => setQuestForm({ ...questForm, cadence: e.target.value as 'daily' })}
-                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm"
+                      className="w-full px-3 py-2 bg-white border border-border rounded-lg text-sm"
                     >
                       <option value="daily">Daily</option>
                       <option value="weekly">Weekly</option>
@@ -352,7 +352,7 @@ export function GamificationTab({ org }: GamificationTabProps) {
                   <button
                     onClick={editingQuest ? handleUpdateQuest : handleCreateQuest}
                     disabled={!questForm.title || createQuestMutation.isPending || updateQuestMutation.isPending}
-                    className="px-4 py-2 text-sm font-medium text-white bg-organic-orange hover:bg-orange-600 rounded-lg disabled:opacity-50"
+                    className="px-4 py-2 text-sm font-medium text-cta-fg bg-cta hover:bg-cta-hover rounded-lg disabled:opacity-50"
                   >
                     {editingQuest ? tAdmin('updateQuest') : tAdmin('createQuest')}
                   </button>
@@ -379,7 +379,7 @@ export function GamificationTab({ org }: GamificationTabProps) {
                   <div
                     key={quest.id}
                     className={`flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg border text-sm ${
-                      quest.is_active ? 'border-gray-200 bg-white' : 'border-gray-100 bg-gray-50 opacity-60'
+                      quest.is_active ? 'border-border bg-white' : 'border-border bg-gray-50 opacity-60'
                     }`}
                   >
                     <div className="flex items-center gap-2 min-w-0">
@@ -416,7 +416,7 @@ export function GamificationTab({ org }: GamificationTabProps) {
       </div>
 
       {/* 2. XP Configuration */}
-      <div className="border-b border-gray-100">
+      <div className="border-b border-border">
         <SectionHeader title={tAdmin('xpConfiguration')} open={xpOpen} onToggle={() => setXpOpen(!xpOpen)} />
         {xpOpen && (
           <div className="pb-4">
@@ -437,7 +437,7 @@ export function GamificationTab({ org }: GamificationTabProps) {
       </div>
 
       {/* 3. Leveling Mode */}
-      <div className="border-b border-gray-100">
+      <div className="border-b border-border">
         <SectionHeader title={tAdmin('levelingMode')} open={levelingOpen} onToggle={() => setLevelingOpen(!levelingOpen)} />
         {levelingOpen && (
           <div className="pb-4">
@@ -445,7 +445,7 @@ export function GamificationTab({ org }: GamificationTabProps) {
               <select
                 value={levelingMode}
                 onChange={(e) => setLevelingMode(e.target.value as 'auto' | 'manual_burn')}
-                className="w-48 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-organic-orange/30"
+                className="w-48 px-3 py-2 bg-white border border-border rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30"
               >
                 <option value="auto">{tAdmin('levelingAuto')}</option>
                 <option value="manual_burn">{tAdmin('levelingManualBurn')}</option>
@@ -469,7 +469,7 @@ export function GamificationTab({ org }: GamificationTabProps) {
               <button
                 onClick={() => setReferralEnabled(!referralEnabled)}
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  referralEnabled ? 'bg-organic-orange' : 'bg-gray-300'
+                  referralEnabled ? 'bg-cta' : 'bg-gray-300'
                 }`}
               >
                 <span

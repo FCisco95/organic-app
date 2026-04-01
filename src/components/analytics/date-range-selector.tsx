@@ -20,7 +20,7 @@ export function DateRangeSelector({ value, onChange }: DateRangeSelectorProps) {
           className={cn(
             'rounded-md px-3 py-1.5 text-xs font-medium transition-colors',
             value === preset
-              ? 'bg-orange-500 text-white shadow-sm'
+              ? 'bg-organic-terracotta-lightest0 text-white shadow-sm'
               : 'text-muted-foreground hover:text-foreground hover:bg-muted'
           )}
         >

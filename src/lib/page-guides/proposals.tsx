@@ -14,7 +14,7 @@ function GlassCard({ children, className = '' }: { children: React.ReactNode; cl
 function PulseHighlight({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative">
-      <div className="absolute -inset-1 rounded-lg bg-orange-400/20 animate-pulse" />
+      <div className="absolute -inset-1 rounded-lg bg-organic-terracotta/20 animate-pulse" />
       <div className="relative">{children}</div>
     </div>
   );
@@ -30,7 +30,7 @@ function GovernanceHubVisual() {
       <GlassCard className="flex flex-col items-center text-center">
         <span className="text-3xl mb-2">🗳️</span>
         <p className="text-sm font-bold text-white">
-          Shape the future of <span className="text-orange-500">Organic</span>
+          Shape the future of <span className="text-organic-terracotta">Organic</span>
         </p>
         <p className="mt-1 text-[10px] text-gray-400">
           Community-driven governance for every token holder
@@ -56,7 +56,7 @@ function LifecycleVisual() {
     { label: 'Public', color: 'bg-gray-400' },
     { label: 'Qualified', color: 'bg-blue-400' },
     { label: 'Discussion', color: 'bg-amber-400' },
-    { label: 'Voting', color: 'bg-orange-500' },
+    { label: 'Voting', color: 'bg-organic-terracotta-lightest0' },
     { label: 'Finalized', color: 'bg-emerald-500' },
   ];
   return (
@@ -98,7 +98,7 @@ function SubmitProposalVisual() {
                 key={cat}
                 className={`rounded-full px-2 py-0.5 text-[9px] border ${
                   cat === 'Treasury'
-                    ? 'bg-orange-500/20 border-orange-400/30 text-orange-400 font-medium'
+                    ? 'bg-organic-terracotta-lightest0/20 border-organic-terracotta/30 text-[#E8845C] font-medium'
                     : 'bg-white/5 border-white/15 text-gray-400'
                 }`}
               >
@@ -107,7 +107,7 @@ function SubmitProposalVisual() {
             ))}
           </div>
           <PulseHighlight>
-            <button className="w-full rounded-md bg-orange-500 text-white text-[10px] font-medium py-1.5">
+            <button className="w-full rounded-md bg-organic-terracotta-lightest0 text-white text-[10px] font-medium py-1.5">
               Submit Proposal
             </button>
           </PulseHighlight>
@@ -119,7 +119,7 @@ function SubmitProposalVisual() {
 
 function QualificationVisual() {
   const thresholds = [
-    { label: 'Endorsements', value: '12 / 10', pct: '100%', color: 'bg-orange-500' },
+    { label: 'Endorsements', value: '12 / 10', pct: '100%', color: 'bg-organic-terracotta-lightest0' },
     { label: 'Replies', value: '7 / 5', pct: '100%', color: 'bg-blue-400' },
     { label: 'Participants', value: '3 / 5', pct: '60%', color: 'bg-gray-400' },
   ];
@@ -192,7 +192,7 @@ function FilterDiscoveryVisual() {
               key={cat}
               className={`rounded-full px-2 py-0.5 text-[9px] border ${
                 cat === 'All'
-                  ? 'bg-orange-500 border-orange-500 text-white font-medium'
+                  ? 'bg-organic-terracotta-lightest0 border-organic-terracotta text-white font-medium'
                   : 'bg-white/5 border-white/15 text-gray-400'
               }`}
             >
@@ -219,7 +219,7 @@ function FilterDiscoveryVisual() {
         </GlassCard>
         <GlassCard className="!p-2">
           <div className="flex items-center gap-1 mb-1">
-            <span className="rounded-full bg-orange-500/20 border border-orange-400/30 px-1.5 py-0.5 text-[8px] text-orange-400">
+            <span className="rounded-full bg-organic-terracotta-lightest0/20 border border-organic-terracotta/30 px-1.5 py-0.5 text-[8px] text-[#E8845C]">
               Voting
             </span>
           </div>

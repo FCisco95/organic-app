@@ -20,7 +20,7 @@ export function DisputeStats() {
   return (
     <div
       data-testid="disputes-arbitration-stats"
-      className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm"
+      className="rounded-2xl border border-border bg-white p-5 shadow-sm"
     >
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-sm font-semibold text-gray-900">{t('title')}</h2>
@@ -73,7 +73,7 @@ function StatCard({
   return (
     <div
       data-testid={testId}
-      className="rounded-lg border border-gray-100 bg-gray-50 px-4 py-3"
+      className="rounded-lg border border-border bg-gray-50 px-4 py-3"
     >
       <p className="text-xs text-gray-500">{label}</p>
       <p className="text-xl font-semibold text-gray-900 mt-1">{value}</p>

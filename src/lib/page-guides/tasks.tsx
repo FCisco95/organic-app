@@ -14,7 +14,7 @@ function GlassCard({ children, className = '' }: { children: React.ReactNode; cl
 function PulseHighlight({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative">
-      <div className="absolute -inset-1 rounded-lg bg-orange-400/20 animate-pulse" />
+      <div className="absolute -inset-1 rounded-lg bg-organic-terracotta/20 animate-pulse" />
       <div className="relative">{children}</div>
     </div>
   );
@@ -53,7 +53,7 @@ function BoardOverviewVisual() {
               <div className="flex items-center justify-between gap-2">
                 <p className="text-[10px] font-semibold text-white truncate">{t.title}</p>
                 <div className="flex items-center gap-1.5 shrink-0">
-                  <span className="font-mono text-[10px] font-bold text-orange-500">{t.pts} pts</span>
+                  <span className="font-mono text-[10px] font-bold text-organic-terracotta">{t.pts} pts</span>
                   <span
                     className={`rounded-full px-1.5 py-0.5 text-[8px] font-medium border ${
                       t.status === 'Open'
@@ -78,7 +78,7 @@ function StatusFlowVisual() {
     { label: 'Open', color: 'bg-emerald-500' },
     { label: 'Claimed', color: 'bg-blue-500' },
     { label: 'Review', color: 'bg-amber-500' },
-    { label: 'Approved', color: 'bg-orange-500' },
+    { label: 'Approved', color: 'bg-organic-terracotta-lightest0' },
   ];
   return (
     <div className="w-full max-w-sm mx-auto">
@@ -113,7 +113,7 @@ function ClaimTaskVisual() {
             <p className="text-[11px] font-semibold text-white">Build notification system</p>
             <p className="text-[9px] text-gray-400 mt-0.5">Sprint 12 · Backend</p>
           </div>
-          <span className="font-mono text-[10px] font-bold text-orange-500">300 pts</span>
+          <span className="font-mono text-[10px] font-bold text-organic-terracotta">300 pts</span>
         </div>
         <div className="mt-2 flex items-center gap-1.5">
           <span className="rounded-full bg-emerald-500/20 border border-emerald-400/30 px-1.5 py-0.5 text-[8px] text-emerald-400 font-medium">
@@ -123,7 +123,7 @@ function ClaimTaskVisual() {
         </div>
         <div className="mt-3 border-t border-white/10 pt-3">
           <PulseHighlight>
-            <button className="w-full rounded-md bg-orange-500 text-white text-[10px] font-medium py-1.5 px-3">
+            <button className="w-full rounded-md bg-organic-terracotta-lightest0 text-white text-[10px] font-medium py-1.5 px-3">
               Claim Task →
             </button>
           </PulseHighlight>
@@ -142,7 +142,7 @@ function SubmitWorkVisual() {
           PR link or description…
         </div>
         <PulseHighlight>
-          <button className="w-full rounded-md bg-orange-500 text-white text-[10px] font-medium py-1.5">
+          <button className="w-full rounded-md bg-organic-terracotta-lightest0 text-white text-[10px] font-medium py-1.5">
             Submit for Review
           </button>
         </PulseHighlight>
@@ -157,7 +157,7 @@ function PointsXPVisual() {
       <div className="flex gap-2">
         <PulseHighlight>
           <GlassCard className="flex-1 flex flex-col items-center !py-2.5">
-            <span className="font-mono text-lg font-bold text-orange-500">300</span>
+            <span className="font-mono text-lg font-bold text-organic-terracotta">300</span>
             <span className="text-[9px] text-gray-400 font-medium">Points</span>
           </GlassCard>
         </PulseHighlight>
@@ -170,7 +170,7 @@ function PointsXPVisual() {
         <div className="flex items-center gap-2">
           <span className="text-[9px] font-mono text-gray-400">Lv 4</span>
           <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
-            <div className="h-full rounded-full bg-orange-500" style={{ width: '65%' }} />
+            <div className="h-full rounded-full bg-organic-terracotta-lightest0" style={{ width: '65%' }} />
           </div>
           <span className="text-[9px] font-mono text-gray-400">Lv 5</span>
         </div>
@@ -186,21 +186,21 @@ function FiltersAndSortingVisual() {
         <p className="text-[9px] uppercase tracking-wider text-gray-500 mb-1.5">Filters</p>
         <div className="flex items-center gap-1.5">
           <PulseHighlight>
-            <span className="rounded-full bg-orange-500/20 border border-orange-400/30 px-2 py-0.5 text-[9px] text-orange-400 font-medium">
+            <span className="rounded-full bg-organic-terracotta-lightest0/20 border border-organic-terracotta/30 px-2 py-0.5 text-[9px] text-[#E8845C] font-medium">
               Frontend ✕
             </span>
           </PulseHighlight>
           <span className="rounded-full bg-white/10 border border-white/15 px-2 py-0.5 text-[9px] text-gray-400">
             Sprint 12 ✕
           </span>
-          <span className="text-[9px] text-orange-500">Clear all</span>
+          <span className="text-[9px] text-organic-terracotta">Clear all</span>
         </div>
       </GlassCard>
       <GlassCard className="!p-2">
         <p className="text-[9px] uppercase tracking-wider text-gray-500 mb-1.5">Sort by</p>
         <div className="flex items-center gap-1">
           <PulseHighlight>
-            <span className="rounded-md bg-orange-500 text-white px-2 py-0.5 text-[9px] font-medium">
+            <span className="rounded-md bg-organic-terracotta-lightest0 text-white px-2 py-0.5 text-[9px] font-medium">
               Newest
             </span>
           </PulseHighlight>

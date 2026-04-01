@@ -82,7 +82,7 @@ export function DisputeEvidenceSection({
       className="space-y-4"
     >
       {/* Evidence text */}
-      <div className="rounded-lg border border-gray-200 bg-white p-4">
+      <div className="rounded-lg border border-border bg-card p-4">
         <h3 className="mb-2 text-sm font-semibold text-gray-900">{td('evidence')}</h3>
         <p className="whitespace-pre-wrap text-sm text-gray-700">{dispute.evidence_text ?? '\u2014'}</p>
 
@@ -107,7 +107,7 @@ export function DisputeEvidenceSection({
 
       {/* Uploaded files — cleaned filenames */}
       {evidenceFileUrls.length > 0 && (
-        <div className="rounded-lg border border-gray-200 bg-white p-4">
+        <div className="rounded-lg border border-border bg-card p-4">
           <p className="mb-2 text-xs font-medium uppercase tracking-wider text-gray-500">
             {td('evidenceFiles')}
           </p>
@@ -137,7 +137,7 @@ export function DisputeEvidenceSection({
 
       {/* Evidence timeline */}
       {evidenceEvents.length > 0 && (
-        <div className="rounded-lg border border-gray-200 bg-white p-4">
+        <div className="rounded-lg border border-border bg-card p-4">
           <p className="mb-2 text-xs font-medium uppercase tracking-wider text-gray-500">
             {td('evidenceTimeline')}
           </p>
@@ -149,7 +149,7 @@ export function DisputeEvidenceSection({
                 <li
                   key={event.id}
                   data-testid={`dispute-evidence-event-${event.id}`}
-                  className="flex items-start gap-2 rounded-md border border-gray-100 bg-gray-50/50 px-3 py-2 text-xs"
+                  className="flex items-start gap-2 rounded-md border border-border bg-gray-50/50 px-3 py-2 text-xs"
                 >
                   <Paperclip className="mt-0.5 h-3 w-3 shrink-0 text-gray-400" />
                   <div className="min-w-0 flex-1">
@@ -170,7 +170,7 @@ export function DisputeEvidenceSection({
                       {event.is_late && (
                         <span
                           data-testid="dispute-late-evidence-tag"
-                          className="shrink-0 rounded-full bg-orange-100 px-1.5 py-0.5 text-[10px] font-semibold text-orange-700"
+                          className="shrink-0 rounded-full bg-organic-terracotta-light/30 px-1.5 py-0.5 text-[10px] font-semibold text-organic-terracotta-hover"
                         >
                           {td('lateEvidenceTag')}
                         </span>

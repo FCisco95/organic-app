@@ -47,7 +47,7 @@ export function SettingsTabs({ activeTab, onTabChange }: SettingsTabsProps) {
               onClick={() => onTabChange(key)}
               className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left ${
                 isActive
-                  ? 'bg-organic-orange/10 text-organic-orange'
+                  ? 'bg-cta/10 text-cta'
                   : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
               }`}
             >
@@ -69,7 +69,7 @@ export function SettingsTabs({ activeTab, onTabChange }: SettingsTabsProps) {
               onClick={() => onTabChange(key)}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
                 isActive
-                  ? 'bg-organic-orange text-white'
+                  ? 'bg-cta text-cta-fg'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >

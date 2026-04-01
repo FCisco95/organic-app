@@ -30,9 +30,9 @@ export function SprintStartDialog({
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
       data-testid="sprint-start-dialog"
     >
-      <div className="w-full max-w-md rounded-lg border border-gray-200 bg-white shadow-xl">
+      <div className="w-full max-w-md rounded-lg border border-border bg-card shadow-xl">
         {/* Header */}
-        <div className="border-b border-gray-200 px-5 py-3">
+        <div className="border-b border-border px-5 py-3">
           <h2 className="text-base font-semibold text-gray-900">{t('startSprintTitle')}</h2>
         </div>
 
@@ -77,7 +77,7 @@ export function SprintStartDialog({
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-end gap-2 border-t border-gray-200 px-5 py-3">
+        <div className="flex items-center justify-end gap-2 border-t border-border px-5 py-3">
           <button
             type="button"
             onClick={onClose}
@@ -90,7 +90,7 @@ export function SprintStartDialog({
             type="button"
             onClick={onConfirm}
             disabled={loading}
-            className="flex items-center gap-1.5 rounded-md border border-organic-orange bg-organic-orange px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-orange-600 disabled:opacity-50"
+            className="flex items-center gap-1.5 rounded-md border border-cta bg-cta px-3 py-1.5 text-sm font-medium text-cta-fg transition-colors hover:bg-cta-hover disabled:opacity-50"
           >
             {loading ? (
               <>

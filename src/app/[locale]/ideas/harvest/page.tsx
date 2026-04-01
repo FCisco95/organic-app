@@ -39,6 +39,7 @@ export default function HarvestPage() {
             {t('backToIdeas')}
           </Link>
 
+          {/* TODO: Migrate to <PageHero> — has dynamic weekLabel and custom icon+title layout that doesn't fit current PageHero structure */}
           <div className="rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 sm:p-8 text-white">
             <div className="flex items-center gap-3">
               <div className="rounded-lg bg-white/10 p-2">
