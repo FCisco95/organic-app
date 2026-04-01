@@ -24,9 +24,6 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       .select(
         `
         *,
-        proposal_versions!comments_proposal_version_id_fkey(
-          version_number
-        ),
         user_profiles!comments_user_id_fkey(
           organic_id,
           name,
@@ -118,9 +115,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       .select(
         `
         *,
-        proposal_versions!comments_proposal_version_id_fkey(
-          version_number
-        ),
         user_profiles!comments_user_id_fkey(
           organic_id,
           name,
