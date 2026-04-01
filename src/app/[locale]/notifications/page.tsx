@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { Settings, Bell, CheckCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PageContainer } from '@/components/layout';
+import { PageHero } from '@/components/ui/page-hero';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
@@ -94,46 +95,41 @@ export default function NotificationsPage() {
   return (
     <PageContainer width="narrow">
       <div data-testid="notifications-page">
-        {/* Header — clean, minimal */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight text-foreground">
-                {t('activityTitle')}
-              </h1>
-              <p className="text-sm text-muted-foreground mt-1">{t('activitySubtitle')}</p>
-            </div>
-            <div className="flex items-center gap-2">
-              {unreadCount > 0 && (
-                <Badge variant="secondary" className="font-mono text-xs tabular-nums">
-                  {unreadCount}
-                </Badge>
-              )}
-              {unreadCount > 0 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => markAllRead.mutate()}
-                  disabled={markAllRead.isPending}
-                  className="gap-1.5 text-xs text-muted-foreground"
-                >
-                  <CheckCheck className="h-3.5 w-3.5" />
-                  {t('markAllRead')}
-                </Button>
-              )}
+        <PageHero
+          icon={Bell}
+          title={t('activityTitle')}
+          description={t('activitySubtitle')}
+        >
+          <div className="flex items-center gap-2">
+            {unreadCount > 0 && (
+              <Badge variant="secondary" className="font-mono text-xs tabular-nums">
+                {unreadCount}
+              </Badge>
+            )}
+            {unreadCount > 0 && (
               <Button
                 variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => setShowPrefs(true)}
-                aria-label={t('preferences.title')}
-                data-testid="notifications-preferences-toggle"
+                size="sm"
+                onClick={() => markAllRead.mutate()}
+                disabled={markAllRead.isPending}
+                className="gap-1.5 text-xs text-muted-foreground"
               >
-                <Settings aria-hidden="true" className="h-4 w-4" />
+                <CheckCheck className="h-3.5 w-3.5" />
+                {t('markAllRead')}
               </Button>
-            </div>
+            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => setShowPrefs(true)}
+              aria-label={t('preferences.title')}
+              data-testid="notifications-preferences-toggle"
+            >
+              <Settings aria-hidden="true" className="h-4 w-4" />
+              </Button>
           </div>
-        </div>
+        </PageHero>
 
         {/* Segmented control filter */}
         <div

@@ -14,7 +14,7 @@ interface SectionCardProps {
 const variantStyles: Record<SectionCardVariant, string> = {
   default: 'rounded-xl border border-border bg-card',
   sunken: 'rounded-xl bg-surface-sunken',
-  raised: 'rounded-xl border border-border bg-card shadow-md hover:shadow-lg transition-shadow',
+  raised: 'rounded-xl border border-border bg-card hover:shadow-lg transition-shadow',
   highlighted: 'rounded-xl border border-border bg-card ring-1 ring-cta/20 border-l-2 border-l-cta',
 };
 

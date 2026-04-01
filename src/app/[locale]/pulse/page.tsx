@@ -11,8 +11,9 @@ import { DateRangeSelector } from '@/components/analytics/date-range-selector';
 import { KPICards } from '@/components/analytics/kpi-cards';
 import { TokenChart } from '@/components/analytics/token-chart';
 import { TokenAnalytics } from '@/components/analytics/token-analytics';
-import { Activity, BarChart3, CheckCircle2, Landmark, User, Lock } from 'lucide-react';
+import { BarChart3, Landmark, User, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { PageHero } from '@/components/ui/page-hero';
 import { usePersonalAnalytics } from '@/features/analytics/personal-hooks';
 
 const GovernanceSummaryCard = dynamic(
@@ -84,44 +85,12 @@ export default function AnalyticsPage() {
   return (
     <PageContainer layout="fluid">
       <div className="space-y-6">
-        {/* TODO: Migrate to <PageHero> — has 3 principle cards inside the hero that go beyond title+description+buttons */}
-        {/* Dark Hero */}
-        <div className="rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 sm:p-8 text-white opacity-0 animate-fade-up stagger-1">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{t('title')}</h1>
-          <p className="mt-2 text-sm sm:text-base text-gray-300 leading-relaxed max-w-2xl">
-            {t('description')}
-          </p>
-
-          <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="flex items-start gap-3">
-              <div className="rounded-lg bg-white/10 p-2">
-                <BarChart3 className="h-4 w-4 text-[#E8845C]" />
-              </div>
-              <div>
-                <p className="text-sm font-medium">{t('heroMetricsTitle')}</p>
-                <p className="text-xs text-gray-400">{t('heroMetricsDesc')}</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="rounded-lg bg-white/10 p-2">
-                <CheckCircle2 className="h-4 w-4 text-green-400" />
-              </div>
-              <div>
-                <p className="text-sm font-medium">{t('heroTasksTitle')}</p>
-                <p className="text-xs text-gray-400">{t('heroTasksDesc')}</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="rounded-lg bg-white/10 p-2">
-                <Landmark className="h-4 w-4 text-blue-400" />
-              </div>
-              <div>
-                <p className="text-sm font-medium">{t('heroGovernanceTitle')}</p>
-                <p className="text-xs text-gray-400">{t('heroGovernanceDesc')}</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <PageHero
+          icon={BarChart3}
+          title={t('title')}
+          description={t('description')}
+          variant="dark"
+        />
 
         {/* Token Market Analytics (price, volume, holder distribution) */}
         <div className="opacity-0 animate-fade-up stagger-2">

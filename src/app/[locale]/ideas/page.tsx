@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { CalendarDays, Flame, Lightbulb, MessageCircle, Search, Sparkles, TrendingUp } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { PageContainer } from '@/components/layout';
+import { PageHero } from '@/components/ui/page-hero';
 import { useAuth } from '@/features/auth/context';
 import {
   type IdeaSort,
@@ -106,68 +107,60 @@ export default function IdeasPage() {
   return (
     <PageContainer layout="fluid">
       <div className="space-y-6">
-        {/* TODO: Migrate to <PageHero> — has 3 principle cards inside the hero that go beyond title+description+buttons */}
-        {/* ── Dark Hero (matching Analytics/Treasury style) ─────── */}
-        <div className="rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 sm:p-8 text-white opacity-0 animate-fade-up stagger-1">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{t('title')}</h1>
-              <p className="mt-2 text-sm sm:text-base text-gray-300 leading-relaxed max-w-2xl">
-                {t('subtitle')}
-              </p>
-            </div>
-            <div className="flex items-center gap-3 shrink-0">
-              <Link
-                href="/ideas/harvest"
-                className="inline-flex items-center gap-2 rounded-lg border border-white/20 px-4 py-2.5 text-sm font-semibold text-white/80 transition-colors hover:border-white/40 hover:text-white"
-              >
-                <CalendarDays className="h-4 w-4" />
-                {t('harvestCta')}
-              </Link>
-              <Link
-                href="/proposals"
-                className="inline-flex items-center gap-2 rounded-lg border border-white/20 px-4 py-2.5 text-sm font-semibold text-white/80 transition-colors hover:border-white/40 hover:text-white"
-              >
-                <TrendingUp className="h-4 w-4" />
-                {t('governanceCta')}
-              </Link>
-              <div className="hidden md:block">
-                <IdeaComposerDialog />
+        <PageHero
+          icon={Lightbulb}
+          title={t('title')}
+          description={t('subtitle')}
+          stats={
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="flex items-start gap-3">
+                <div className="rounded-lg bg-white/10 p-2">
+                  <Lightbulb className="h-4 w-4 text-[#E8845C]" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium">{t('heroProposeTitle')}</p>
+                  <p className="text-xs text-gray-400">{t('heroProposeDesc')}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="rounded-lg bg-white/10 p-2">
+                  <MessageCircle className="h-4 w-4 text-green-400" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium">{t('heroDiscussTitle')}</p>
+                  <p className="text-xs text-gray-400">{t('heroDiscussDesc')}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="rounded-lg bg-white/10 p-2">
+                  <Sparkles className="h-4 w-4 text-blue-400" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium">{t('heroPromoteTitle')}</p>
+                  <p className="text-xs text-gray-400">{t('heroPromoteDesc')}</p>
+                </div>
               </div>
             </div>
+          }
+        >
+          <Link
+            href="/ideas/harvest"
+            className="inline-flex items-center gap-2 rounded-lg border border-white/20 px-4 py-2.5 text-sm font-semibold text-white/80 transition-colors hover:border-white/40 hover:text-white"
+          >
+            <CalendarDays className="h-4 w-4" />
+            {t('harvestCta')}
+          </Link>
+          <Link
+            href="/proposals"
+            className="inline-flex items-center gap-2 rounded-lg border border-white/20 px-4 py-2.5 text-sm font-semibold text-white/80 transition-colors hover:border-white/40 hover:text-white"
+          >
+            <TrendingUp className="h-4 w-4" />
+            {t('governanceCta')}
+          </Link>
+          <div className="hidden md:block">
+            <IdeaComposerDialog />
           </div>
-
-          {/* 3 principle cards (matching Analytics hero) */}
-          <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="flex items-start gap-3">
-              <div className="rounded-lg bg-white/10 p-2">
-                <Lightbulb className="h-4 w-4 text-[#E8845C]" />
-              </div>
-              <div>
-                <p className="text-sm font-medium">{t('heroProposeTitle')}</p>
-                <p className="text-xs text-gray-400">{t('heroProposeDesc')}</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="rounded-lg bg-white/10 p-2">
-                <MessageCircle className="h-4 w-4 text-green-400" />
-              </div>
-              <div>
-                <p className="text-sm font-medium">{t('heroDiscussTitle')}</p>
-                <p className="text-xs text-gray-400">{t('heroDiscussDesc')}</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="rounded-lg bg-white/10 p-2">
-                <Sparkles className="h-4 w-4 text-blue-400" />
-              </div>
-              <div>
-                <p className="text-sm font-medium">{t('heroPromoteTitle')}</p>
-                <p className="text-xs text-gray-400">{t('heroPromoteDesc')}</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        </PageHero>
 
         {/* ── KPI Cards ───────────────────────────────────────── */}
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4 opacity-0 animate-fade-up stagger-2">

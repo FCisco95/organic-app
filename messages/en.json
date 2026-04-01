@@ -661,7 +661,12 @@
     "stageCanceled": "Canceled",
     "mobileVote": "Vote",
     "mobileFollow": "Follow",
-    "mobileEdit": "Edit"
+    "mobileEdit": "Edit",
+    "accordionDelegationCollapsed": "Delegation settings",
+    "accordionVoteDelegation": "Vote Delegation",
+    "commentAuthorFormat": "{displayName} #{id}",
+    "railExecutionStatus": "Execution Status",
+    "voteFabLabel": "Vote on this proposal"
   },
   "Sprints": {
     "title": "Sprints",
@@ -1560,7 +1565,8 @@
     "tabWallet": "Wallet & Security",
     "tabNotifications": "Notifications",
     "twitterConnectHeading": "Connect your X account",
-    "twitterConnectValueProp": "Link your X account to verify engagement tasks and build your on-chain reputation."
+    "twitterConnectValueProp": "Link your X account to verify engagement tasks and build your on-chain reputation.",
+    "save": "Save"
   },
   "Gamification": {
     "title": "Progression",
@@ -2048,7 +2054,15 @@
     "website": "Website",
     "memberSince": "Joined {date}",
     "totalPoints": "Total Points",
-    "tasksCompleted": "Tasks Completed"
+    "tasksCompleted": "Tasks Completed",
+    "activityAchievement": "Unlocked achievement",
+    "activityEmpty": "No recent activity",
+    "activityLevelUp": "Leveled up to {level}",
+    "activityTaskCompleted": "Completed a task",
+    "activityVoteCast": "Cast a vote",
+    "contributionActivity": "Contribution Activity",
+    "contributionsInYear": "{total} contributions in the last year",
+    "heatmapTooltip": "{count} contributions on {date}"
   },
   "Settings": {
     "title": "Settings",
@@ -2821,6 +2835,14 @@
       "memberQueueTitle": "Your dispute workspace",
       "memberQueueSubtitle": "Track deadlines and evidence updates for disputes involving you.",
       "createGuardrail": "Before filing, ensure your evidence is specific, verifiable, and tied to task requirements."
+    },
+    "tabs": {
+      "commentedAgo": "{time} ago",
+      "discussionPartyOnly": "Discussion visible to parties only",
+      "filterHint": "Filter by status",
+      "noResolutionYet": "No resolution yet",
+      "openedAgo": "Opened {time} ago",
+      "triageLabel": "Triage"
     }
   },
   "GlobalError": {
@@ -2842,7 +2864,20 @@
     "pointsEarnedStat": "Points Earned",
     "xpLabel": "XP from referrals",
     "pointsLabel": "Points from referrals",
-    "completedOf": "{completed} of {total} completed"
+    "completedOf": "{completed} of {total} completed",
+    "earnStat": "Earned",
+    "loadingReferrals": "Loading referrals...",
+    "shareMessage": "Join me on Organic! Use my referral link to sign up and we both earn rewards.",
+    "statPointsEarned": "Points Earned",
+    "statReferrals": "Referrals",
+    "statXpEarned": "XP Earned",
+    "statsStat": "Stats",
+    "tierBronze": "Bronze",
+    "tierGold": "Gold",
+    "tierLabel": "Tier",
+    "tierSilver": "Silver",
+    "yourReferralCode": "Your Referral Code",
+    "yourReferralLink": "Your Referral Link"
   },
   "Quests": {
     "sectionLabel": "QUESTS",
@@ -2869,7 +2904,23 @@
     "confirmBurn": "Burn & Level Up",
     "burning": "Burning...",
     "burnSuccess": "Leveled up to Level {level}!",
-    "burnFailed": "Failed to burn points"
+    "burnFailed": "Failed to burn points",
+    "alreadyMaxLevel": "You are already at max level",
+    "burnDialogAvailable": "Available",
+    "burnDialogCancel": "Cancel",
+    "burnDialogConfirm": "Burn & Level Up",
+    "burnDialogCost": "Cost",
+    "burnDialogFrom": "From",
+    "burnDialogPoints": "points",
+    "burnDialogTo": "To",
+    "burnError": "Failed to burn points",
+    "insufficientPoints": "Not enough points to level up",
+    "levelSidebarTitle": "Level Up",
+    "progressLabel": "Progress",
+    "questPoints": "pts",
+    "questXp": "XP",
+    "streak": "{days} day streak",
+    "xpProgress": "{current} / {target} XP"
   },
   "GamificationAdmin": {
     "description": "Configure quests, XP settings, leveling mode, and referral program.",
@@ -2923,7 +2974,33 @@
     "referralSharePercentDescription": "Percentage of referred user's points shared with referrer",
     "referralDuration": "Share Duration",
     "referralDurationDescription": "Number of days the point sharing is active",
-    "days": "days"
+    "days": "days",
+    "burnCostMultiplierDesc": "Multiplier applied to the point cost of leveling up",
+    "cadenceDaily": "Daily",
+    "cadenceEvent": "Event",
+    "cadenceLongTerm": "Long-term",
+    "cadenceWeekly": "Weekly",
+    "confirmDeleteQuest": "Are you sure you want to deactivate this quest?",
+    "levelingModeAuto": "Auto",
+    "levelingModeAutoDesc": "Members level up automatically as they earn XP",
+    "levelingModeDesc": "Controls how members level up",
+    "levelingModeManualBurn": "Manual Burn",
+    "levelingModeManualBurnDesc": "Members spend points to level up manually",
+    "noQuests": "No quests configured yet",
+    "questEndDate": "End Date",
+    "questIsActive": "Active",
+    "questManagementDesc": "Create and manage quests for members",
+    "questMetricType": "Metric Type",
+    "questStartDate": "Start Date",
+    "questTargetValue": "Target Value",
+    "questUnit": "Unit",
+    "referralPointSharePercent": "Point Share %",
+    "referralSettingsDesc": "Configure referral rewards and sharing",
+    "referralShareDurationDays": "Share Duration (days)",
+    "saveError": "Failed to save configuration",
+    "saveQuest": "Save Quest",
+    "savedSuccessfully": "Configuration saved",
+    "xpConfigurationDesc": "Set XP rewards for different actions"
   },
   "Onboarding": {
     "wizardTitle": "Let's get you set up",
@@ -3043,7 +3120,8 @@
     "modUnlock": "Unlock idea",
     "modRemove": "Remove idea",
     "moderationSuccess": "Moderation action applied.",
-    "moderationError": "Failed to apply moderation action"
+    "moderationError": "Failed to apply moderation action",
+    "harvestCta": "Weekly Harvest"
   },
   "IdeaDetail": {
     "disabledTitle": "Ideas incubator is disabled",
@@ -3170,7 +3248,8 @@
     "infoSection2Point2": "Each member card shows their role, level, XP, and recent activity — a quick snapshot of their DAO involvement.",
     "infoSection3Title": "Climbing the Ranks",
     "infoSection3Point1": "**Complete tasks** for the biggest XP gains. Development, content, and design tasks all contribute to your rank.",
-    "infoSection3Point2": "**Participate in governance** — voting, commenting, and proposing ideas all earn XP and boost your standing."
+    "infoSection3Point2": "**Participate in governance** — voting, commenting, and proposing ideas all earn XP and boost your standing.",
+    "streakers": "{count} active streakers"
   },
   "Posts": {
     "title": "Community Posts",

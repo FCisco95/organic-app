@@ -54,10 +54,16 @@
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 10% 83%;
+    --border: 220 10% 87%;
     --input: 220 10% 83%;
     --ring: 14 66% 53%;
     --radius: 0.5rem;
+    --card-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.04), 0 4px 14px -2px rgb(0 0 0 / 0.05);
+
+    /* CTA button — terracotta brand */
+    --cta: 14 66% 53%;
+    --cta-hover: 14 62% 46%;
+    --cta-fg: 0 0% 100%;
 
     /* Sidebar */
     --sidebar: 222 47% 11%;
@@ -105,9 +111,14 @@
     --accent-foreground: 0 0% 100%;
     --destructive: 0 62% 30%;
     --destructive-foreground: 0 0% 95%;
-    --border: 220 6% 18%;
+    --border: 220 6% 20%;
     --input: 220 6% 18%;
     --ring: 14 66% 53%;
+    --card-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.2), 0 4px 14px -2px rgb(0 0 0 / 0.25);
+
+    --cta: 14 66% 56%;
+    --cta-hover: 14 66% 48%;
+    --cta-fg: 0 0% 100%;
 
     --chart-grid: #374151;
     --chart-axis: #6b7280;
@@ -120,6 +131,13 @@
     --sidebar-accent-foreground: 14 66% 60%;
     --sidebar-muted: 220 6% 14%;
     --sidebar-muted-foreground: 220 5% 55%;
+  }
+}
+
+@layer components {
+  /* Levitating card — all card surfaces float above the background */
+  .bg-card {
+    box-shadow: var(--card-shadow);
   }
 }
 

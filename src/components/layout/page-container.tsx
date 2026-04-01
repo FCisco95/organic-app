@@ -17,8 +17,8 @@ import { cn } from '@/lib/utils';
 const layouts = {
   /** Operator surfaces: tasks list, disputes list, members, treasury, analytics */
   fluid: 'max-w-[1600px] px-4 sm:px-6 lg:px-8 xl:px-12',
-  /** Detail pages: task detail, dispute detail, proposal detail, forms */
-  structured: 'max-w-[1400px] px-4 sm:px-6 lg:px-8',
+  /** Detail pages: same max-width for consistency across all pages */
+  structured: 'max-w-[1600px] px-4 sm:px-6 lg:px-8 xl:px-12',
 } as const;
 
 /* ── Legacy width aliases → mapped to layout variants ────────────── */

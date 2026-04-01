@@ -12,8 +12,7 @@ const prototypes = [
 
 type PrototypeId = (typeof prototypes)[number]['id'];
 
-// TODO: restore dev-only gate after QA: process.env.NODE_ENV === 'development'
-const isDev = true;
+const isDev = process.env.NODE_ENV === 'development';
 
 export function PrototypeSwitcher() {
   const [active, setActive] = useState<PrototypeId | null>(null);
