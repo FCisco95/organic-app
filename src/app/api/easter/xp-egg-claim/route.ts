@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { applyUserRateLimit } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
 import { xpEggClaimSchema } from '@/features/easter/schemas';
@@ -84,7 +84,8 @@ export async function POST(request: Request) {
         const egg = eggRaw as any;
 
         if (egg) {
-          await awardXp(supabase as any, {
+          const service = createServiceClient();
+    await awardXp(service as any, {
             userId: user.id,
             eventType: 'egg_found',
             xpAmount: 100,
@@ -119,7 +120,8 @@ export async function POST(request: Request) {
     }
 
     // Regular XP egg — award XP
-    await awardXp(supabase as any, {
+    const service = createServiceClient();
+    await awardXp(service as any, {
       userId: user.id,
       eventType: 'xp_egg_found',
       xpAmount: xpAmount,

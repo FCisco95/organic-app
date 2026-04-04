@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { logger } from '@/lib/logger';
 import { eggClaimSchema } from '@/features/easter/schemas';
 import { getEggElement } from '@/features/easter/elements';
@@ -100,8 +100,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Failed to claim egg' }, { status: 500 });
     }
 
-    // Award XP (100 per egg)
-    await awardXp(supabase as any, {
+    // Award XP (100 per egg) — use service client to bypass RLS on xp_events
+    const service = createServiceClient();
+    await awardXp(service as any, {
       userId: user.id,
       eventType: 'egg_found',
       xpAmount: 100,

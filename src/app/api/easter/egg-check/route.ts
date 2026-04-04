@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { applyUserRateLimit } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
 import { EGG_ELEMENTS } from '@/features/easter/elements';
@@ -234,8 +234,9 @@ export async function GET() {
           xpAmount = 10;
         }
 
-        // Insert pending claim token
-        const { data: pendingRaw } = await supabase
+        // Insert pending claim token (service client — RLS blocks authenticated INSERT)
+        const serviceClient = createServiceClient();
+        const { data: pendingRaw } = await serviceClient
           .from('xp_egg_pending' as any)
           .insert({
             user_id: user.id,
