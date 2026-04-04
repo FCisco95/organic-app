@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { getEggElement } from '@/features/easter/elements';
 
 interface GoldenEggProps {
@@ -14,7 +15,6 @@ export function GoldenEgg({ eggNumber, onClaim }: GoldenEggProps) {
   const element = getEggElement(eggNumber);
 
   useEffect(() => {
-    // Random position within safe content area
     const x = 15 + Math.random() * 65; // 15-80%
     const y = 25 + Math.random() * 45; // 25-70%
     setPosition({ x, y });
@@ -23,7 +23,7 @@ export function GoldenEgg({ eggNumber, onClaim }: GoldenEggProps) {
 
   if (!mounted || !element) return null;
 
-  // Skip on mobile
+  // Skip on mobile — handled by toast in EggHuntProvider
   if (typeof window !== 'undefined' && window.innerWidth < 768) return null;
 
   return (
@@ -46,7 +46,7 @@ export function GoldenEgg({ eggNumber, onClaim }: GoldenEggProps) {
     >
       {/* Large invisible click target */}
       <div className="relative" style={{ width: 64, height: 72 }}>
-        {/* Outer glow — no pointer events */}
+        {/* Outer glow */}
         <div
           className="absolute -inset-6 rounded-full blur-xl opacity-50 animate-pulse pointer-events-none"
           style={{
@@ -54,28 +54,19 @@ export function GoldenEgg({ eggNumber, onClaim }: GoldenEggProps) {
           }}
         />
 
-        {/* Egg body */}
-        <div
-          className="absolute inset-0 flex items-center justify-center"
-          style={{ top: 4 }}
-        >
-          <div
-            className="h-14 w-11 rounded-[50%_50%_50%_50%/60%_60%_40%_40%] shadow-2xl animate-egg-float hover:scale-125 transition-transform duration-200"
-            style={{
-              background: `linear-gradient(135deg, ${element.colorFrom}, ${element.colorTo})`,
-              boxShadow: `0 0 20px ${element.colorAccent}40, 0 0 40px ${element.colorFrom}20`,
-            }}
-          >
-            {/* Shine effect */}
-            <div className="absolute top-2 left-2 h-3 w-2 rounded-full bg-white/30 blur-sm pointer-events-none" />
-            {/* Element emoji */}
-            <div className="flex items-center justify-center h-full text-xl pointer-events-none">
-              {element.emoji}
-            </div>
-          </div>
+        {/* Egg image */}
+        <div className="absolute inset-0 animate-egg-float hover:scale-125 transition-transform duration-200">
+          <Image
+            src={element.image}
+            alt={`${element.element} egg`}
+            width={64}
+            height={72}
+            className="drop-shadow-2xl pointer-events-none"
+            priority
+          />
         </div>
 
-        {/* Sparkle particles — no pointer events */}
+        {/* Sparkle particles */}
         <div
           className="absolute -top-2 -right-1 h-1.5 w-1.5 rounded-full animate-egg-sparkle-1 pointer-events-none"
           style={{ backgroundColor: element.colorAccent }}

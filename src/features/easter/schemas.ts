@@ -27,6 +27,8 @@ export const updateEggHuntConfigSchema = z.object({
   override_expires_at: z.string().nullable().optional(),
   campaign_revealed: z.boolean().optional(),
   hunt_ends_at: z.string().nullable().optional(),
+  xp_egg_enabled: z.boolean().optional(),
+  xp_egg_spawn_rate: z.number().min(0.01).max(0.1).optional(),
 });
 
 export const goldenEggSchema = z.object({
@@ -42,6 +44,14 @@ export const goldenEggSchema = z.object({
 
 export type GoldenEgg = z.infer<typeof goldenEggSchema>;
 
+export const xpEggSpawnSchema = z.object({
+  token: z.string().uuid(),
+  xp_amount: z.number(),
+  is_shiny: z.boolean(),
+});
+
+export type XpEggSpawn = z.infer<typeof xpEggSpawnSchema>;
+
 export const eggCheckResponseSchema = z.object({
   spawn: z.boolean(),
   shimmer: z.boolean(),
@@ -49,9 +59,14 @@ export const eggCheckResponseSchema = z.object({
     number: z.number(),
     element: z.string(),
   }).nullable(),
+  xp_egg: xpEggSpawnSchema.nullable(),
 });
 
 export type EggCheckResponse = z.infer<typeof eggCheckResponseSchema>;
+
+export const xpEggClaimSchema = z.object({
+  token: z.string().uuid(),
+});
 
 export const eggClaimSchema = z.object({
   egg_number: z.number().int().min(1).max(10),

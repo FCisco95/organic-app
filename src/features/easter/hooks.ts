@@ -7,7 +7,7 @@ import type { EggCheckResponse, EggHuntConfig, GoldenEgg, EggHuntStats } from '.
 
 async function fetchEggCheck(): Promise<EggCheckResponse> {
   const res = await fetch('/api/easter/egg-check');
-  if (!res.ok) return { spawn: false, shimmer: false, egg: null };
+  if (!res.ok) return { spawn: false, shimmer: false, egg: null, xp_egg: null };
   return res.json();
 }
 

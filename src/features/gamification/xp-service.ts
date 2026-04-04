@@ -38,6 +38,7 @@ const DAILY_CAPS: Record<string, number> = {
   donation_verified: 5,
   holding_reward: 1,          // 1 holding reward sync/day
   streak_milestone: 1,        // 1 milestone claim/day
+  xp_egg_found: 20,           // 20 XP egg claims/day
 };
 
 /** After this many awards in a day, XP starts diminishing (50% per extra). */
