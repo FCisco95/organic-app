@@ -121,23 +121,10 @@ export async function POST(request: Request) {
       });
 
     // Build share tweet template
-    const isRare = element.rarityModifier <= 0.5;
-    const eggCount = await supabase
-      .from('golden_eggs' as any)
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', user.id);
-
-    const totalFound = (eggCount.count ?? 1);
     const elementName = element.element.charAt(0).toUpperCase() + element.element.slice(1);
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://organic-app.vercel.app';
 
-    let tweetText: string;
-    if (totalFound === 1) {
-      tweetText = `🥚 I just discovered something hidden in @OrganicDAO...\n\nWhat is this?? #OrganicEaster`;
-    } else if (isRare) {
-      tweetText = `🌌 NO WAY. I just found a ${elementName} Egg in @OrganicDAO — one of the rarest in the game.\n\nHow many people will ever find this?\n\n#OrganicEaster #GoldenEggs #GenesisHatch`;
-    } else {
-      tweetText = `Found another Golden Egg in @OrganicDAO! That's ${totalFound}/10 🥚\n\n${element.emoji} ${elementName} Egg secured. These are RARE.\n\n#OrganicEaster #GoldenEggs`;
-    }
+    const tweetText = `${element.emoji} I just found a rare ${elementName} Egg in @OrganicDAO!\n\nOnly 10 exist. Each one is unique. Each one holds a secret.\n\nCan you find them all?\n\n${appUrl}\n\n#OrganicEaster #GoldenEggs`;
 
     const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
 
