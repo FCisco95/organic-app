@@ -4,6 +4,16 @@ import { applyUserRateLimit } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
 import { EGG_ELEMENTS } from '@/features/easter/elements';
 
+// ─── Config cache (avoid hitting Supabase on every page load) ──────────
+let cachedConfig: any = null;
+let cachedConfigAt = 0;
+const CONFIG_CACHE_TTL = 60_000; // 60 seconds
+
+// ─── Globally claimed eggs cache ──────────────────────────────────────
+let cachedClaimedEggs: number[] = [];
+let cachedClaimedAt = 0;
+const CLAIMED_CACHE_TTL = 10_000; // 10 seconds
+
 // XP egg tier probabilities (must sum to 1.0)
 const XP_EGG_TIERS = [
   { xp: 1, probability: 0.60 },
@@ -48,14 +58,19 @@ export async function GET() {
       return NextResponse.json(EMPTY);
     }
 
-    // Read config
-    const { data: configRaw } = await supabase
-      .from('egg_hunt_config' as any)
-      .select('*')
-      .limit(1)
-      .single();
+    // Read config (cached for 60s to reduce DB hits)
+    const now = Date.now();
+    if (!cachedConfig || now - cachedConfigAt > CONFIG_CACHE_TTL) {
+      const { data: configRaw } = await supabase
+        .from('egg_hunt_config' as any)
+        .select('*')
+        .limit(1)
+        .single();
+      cachedConfig = configRaw;
+      cachedConfigAt = now;
+    }
 
-    const config = configRaw as any;
+    const config = cachedConfig as any;
     if (!config) {
       return NextResponse.json(EMPTY);
     }
@@ -103,12 +118,17 @@ export async function GET() {
       return NextResponse.json(EMPTY);
     }
 
-    // Get ALL globally claimed eggs (each egg can only have 1 owner)
-    const { data: allClaimedRaw } = await supabase
-      .from('golden_eggs' as any)
-      .select('egg_number, user_id') as { data: any[] | null };
+    // Get ALL globally claimed eggs (cached for 10s — refreshes quickly after a claim)
+    const nowMs = Date.now();
+    if (nowMs - cachedClaimedAt > CLAIMED_CACHE_TTL) {
+      const { data: allClaimedRaw } = await supabase
+        .from('golden_eggs' as any)
+        .select('egg_number, user_id') as { data: any[] | null };
+      cachedClaimedEggs = allClaimedRaw ?? [];
+      cachedClaimedAt = nowMs;
+    }
 
-    const allClaimed = allClaimedRaw ?? [];
+    const allClaimed = cachedClaimedEggs as any[];
     const globallyClaimedNumbers = new Set(allClaimed.map((e: any) => e.egg_number as number));
     const userOwnedNumbers = new Set(
       allClaimed.filter((e: any) => e.user_id === user.id).map((e: any) => e.egg_number as number)

@@ -15,8 +15,8 @@ function isMobile() {
   return typeof window !== 'undefined' && window.innerWidth < 768;
 }
 
-// Minimum 10 seconds between API calls to avoid rate limiting
-const MIN_CHECK_INTERVAL = 10_000;
+// Minimum 30 seconds between API calls to reduce server load
+const MIN_CHECK_INTERVAL = 30_000;
 
 export function EggHuntProvider() {
   const { user } = useAuth();
