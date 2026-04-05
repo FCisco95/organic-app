@@ -5,7 +5,7 @@
  *   set -a; source .env.local; set +a
  *   npx tsx scripts/seed-easter-campaigns.ts
  *
- * Safe to re-run — uses upsert on title to avoid duplicates.
+ * Safe to re-run — skips campaigns that already exist (matched by title).
  */
 
 import { createClient } from '@supabase/supabase-js';
@@ -68,10 +68,31 @@ const CAMPAIGNS = [
 ];
 
 async function main() {
+  // Resolve a created_by user — pick the first auth user
+  const { data: authData } = await supabase.auth.admin.listUsers({ perPage: 1 });
+  const createdBy = authData?.users?.[0]?.id;
+  if (!createdBy) {
+    console.error('No auth users found — cannot set created_by');
+    process.exit(1);
+  }
+  console.log(`Using created_by: ${createdBy}`);
+
   for (const campaign of CAMPAIGNS) {
+    // Check if campaign already exists by title
+    const { data: existing } = await supabase
+      .from('campaigns')
+      .select('id')
+      .eq('title', campaign.title)
+      .limit(1);
+
+    if (existing && existing.length > 0) {
+      console.log(`Already exists: ${campaign.title}`);
+      continue;
+    }
+
     const { error } = await supabase
       .from('campaigns')
-      .upsert(campaign, { onConflict: 'title' });
+      .insert({ ...campaign, created_by: createdBy });
 
     if (error) {
       console.error(`Failed to seed "${campaign.title}":`, error.message);

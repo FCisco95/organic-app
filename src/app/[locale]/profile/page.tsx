@@ -24,6 +24,9 @@ import { PageHero } from '@/components/ui/page-hero';
 import { TwoColumnLayout } from '@/components/layout/two-column-layout';
 import { ReputationSummary } from '@/components/reputation/reputation-summary';
 import { TrophyShowcase } from '@/components/reputation/trophy-showcase';
+import { EggCollection } from '@/components/easter/egg-collection';
+import { useMyEggs } from '@/features/easter/hooks';
+import { EGG_ELEMENTS } from '@/features/easter/elements';
 import { useUpdatePrivacy } from '@/features/members';
 import { cn } from '@/lib/utils';
 import {
@@ -53,6 +56,7 @@ export default function ProfilePage() {
     pointsEarned: 0,
   });
   const updatePrivacyMutation = useUpdatePrivacy();
+  const { data: myEggs } = useMyEggs();
 
   // Edit form states
   const [editForm, setEditForm] = useState({
@@ -293,26 +297,52 @@ export default function ProfilePage() {
           variant="dark"
           className="mb-4"
           badge={
-            <div className="flex items-center gap-2">
-              <span
-                className={cn(
-                  'inline-flex px-2 py-0.5 rounded-md text-[11px] font-medium capitalize',
-                  profile.role === 'admin'
-                    ? 'bg-purple-100 text-purple-700'
-                    : profile.role === 'council'
-                      ? 'bg-blue-100 text-blue-700'
-                      : profile.role === 'member'
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-gray-100 text-gray-700'
-                )}
-              >
-                {profile.role || t('guest')}
-              </span>
-              {profile.organic_id && (
-                <span className="inline-flex items-center gap-1 text-xs font-mono text-organic-terracotta">
-                  <Hash className="w-3 h-3" />
-                  {profile.organic_id}
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-center gap-2">
+                <span
+                  className={cn(
+                    'inline-flex px-2 py-0.5 rounded-md text-[11px] font-medium capitalize',
+                    profile.role === 'admin'
+                      ? 'bg-purple-100 text-purple-700'
+                      : profile.role === 'council'
+                        ? 'bg-blue-100 text-blue-700'
+                        : profile.role === 'member'
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-gray-100 text-gray-700'
+                  )}
+                >
+                  {profile.role || t('guest')}
                 </span>
+                {profile.organic_id && (
+                  <span className="inline-flex items-center gap-1 text-xs font-mono text-organic-terracotta">
+                    <Hash className="w-3 h-3" />
+                    {profile.organic_id}
+                  </span>
+                )}
+              </div>
+              {myEggs && myEggs.length > 0 && (
+                <div className="flex items-center gap-1">
+                  {EGG_ELEMENTS.map((element) => {
+                    const found = myEggs.some((e) => e.egg_number === element.number);
+                    return found ? (
+                      <Image
+                        key={element.number}
+                        src={element.image}
+                        alt={element.element}
+                        width={20}
+                        height={20}
+                        className="rounded-full"
+                        title={element.element}
+                      />
+                    ) : (
+                      <div
+                        key={element.number}
+                        className="w-5 h-5 rounded-full bg-white/20 opacity-30"
+                        title="Undiscovered"
+                      />
+                    );
+                  })}
+                </div>
               )}
             </div>
           }
@@ -432,6 +462,11 @@ export default function ProfilePage() {
               {/* Trophy showcase */}
               <div className="mt-4">
                 <TrophyShowcase />
+              </div>
+
+              {/* Egg collection */}
+              <div className="mt-4">
+                <EggCollection />
               </div>
 
               {/* Activity stats card */}

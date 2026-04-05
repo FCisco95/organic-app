@@ -83,7 +83,8 @@ export type EventIconName =
   | 'Reply'
   | 'ArrowUp'
   | 'Undo2'
-  | 'Settings';
+  | 'Settings'
+  | 'Egg';
 
 export const EVENT_ICON_NAMES: Record<ActivityEventType, EventIconName> = {
   task_created: 'ClipboardList',
@@ -105,6 +106,7 @@ export const EVENT_ICON_NAMES: Record<ActivityEventType, EventIconName> = {
   dispute_escalated: 'ArrowUp',
   dispute_resolved: 'CheckCircle2',
   dispute_withdrawn: 'Undo2',
+  egg_found: 'Egg',
 };
 
 /** Category colors for timeline dots */
@@ -156,4 +158,5 @@ export const EVENT_ICONS: Record<ActivityEventType, string> = {
   dispute_escalated: '⬆️',
   dispute_resolved: '✅',
   dispute_withdrawn: '↩️',
+  egg_found: '🥚',
 };

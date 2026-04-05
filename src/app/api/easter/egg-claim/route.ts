@@ -111,6 +111,16 @@ export async function POST(request: Request) {
       metadata: { egg_number, element: element.element },
     });
 
+    // Log egg discovery to activity feed (fire-and-forget)
+    const elementName = element.element.charAt(0).toUpperCase() + element.element.slice(1);
+    service.from('activity_log').insert({
+      event_type: 'egg_found' as any,
+      actor_id: user.id,
+      subject_type: 'golden_egg',
+      subject_id: egg.id as string,
+      metadata: { egg_number, element: element.element, element_name: elementName },
+    }).then(() => {});
+
     // Reset page loads since last find
     await supabase
       .from('egg_hunt_luck' as any)
@@ -121,10 +131,9 @@ export async function POST(request: Request) {
       });
 
     // Build share tweet template
-    const elementName = element.element.charAt(0).toUpperCase() + element.element.slice(1);
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://organichub.fun';
 
-    const tweetText = `${element.emoji} I just found a rare ${elementName} Egg in @organic_bonk!\n\nOnly 10 exist. Each one is unique. Each one holds a secret.\n\nCan you find them all?\n\n${appUrl}\n\n#OrganicEaster #GoldenEggs`;
+    const tweetText = `${element.emoji} I just found a rare ${elementName} Egg in @organic_bonk!\n\nOnly 10 exist. Each one is unique. Each one holds a secret.\n\nCan you find them all?\n\n${appUrl}/en/share/egg/${egg_number}\n\n#OrganicEaster #GoldenEggs`;
 
     const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
 
