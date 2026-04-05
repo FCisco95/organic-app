@@ -15,19 +15,23 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://organichub.fun';
 export const metadata: Metadata = {
   title: 'Organic App',
   description: 'DAO governance and task management platform for Organic DAO. Propose ideas, vote on decisions, earn XP, and shape the future.',
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
   openGraph: {
     title: 'Organic — Govern. Build. Earn.',
     description: 'A community-governed platform where ideas become proposals, proposals become tasks, and contributors earn XP. Join the DAO.',
-    url: APP_URL,
+    url: 'https://organichub.fun',
     siteName: 'Organic',
     type: 'website',
-    images: [{ url: `${APP_URL}/og-image.png`, width: 1200, height: 630, alt: 'Organic DAO' }],
+    images: [{ url: 'https://organichub.fun/og-image.png', width: 1200, height: 630, alt: 'Organic' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Organic — Govern. Build. Earn.',
     description: 'A community-governed platform where ideas become proposals, proposals become tasks, and contributors earn XP.',
-    images: [`${APP_URL}/og-image.png`],
+    images: ['https://organichub.fun/og-image.png'],
   },
 };
 
