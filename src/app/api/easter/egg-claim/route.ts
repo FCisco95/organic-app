@@ -130,10 +130,10 @@ export async function POST(request: Request) {
         last_calculated_at: new Date().toISOString(),
       });
 
-    // Build share tweet template
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://organichub.fun';
+    // Build share tweet template — always use production domain for tweets
+    const shareBase = 'https://organichub.fun';
 
-    const tweetText = `${element.emoji} I just found a rare ${elementName} Egg in @organic_bonk!\n\nOnly 10 exist. Each one is unique. Each one holds a secret.\n\nCan you find them all?\n\n${appUrl}/en/share/egg/${egg_number}\n\n#OrganicEaster #GoldenEggs`;
+    const tweetText = `${element.emoji} I just found a rare ${elementName} Egg in @organic_bonk!\n\nOnly 10 exist. Each one is unique. Each one holds a secret.\n\nCan you find them all?\n\n${shareBase}/en/share/egg/${egg_number}\n\n#OrganicEaster #GoldenEggs`;
 
     const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
 

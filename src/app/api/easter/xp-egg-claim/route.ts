@@ -115,8 +115,8 @@ export async function POST(request: Request) {
         }
 
         const elementName = element.element.charAt(0).toUpperCase() + element.element.slice(1);
-        const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://organichub.fun';
-        const tweetText = `${element.emoji} I just found a rare ${elementName} Egg in @organic_bonk!\n\nOnly 10 exist. Each one is unique. Each one holds a secret.\n\nCan you find them all?\n\n${appUrl}/en/share/egg/${eggNumber}\n\n#OrganicEaster #GoldenEggs`;
+        const shareBase = 'https://organichub.fun';
+        const tweetText = `${element.emoji} I just found a rare ${elementName} Egg in @organic_bonk!\n\nOnly 10 exist. Each one is unique. Each one holds a secret.\n\nCan you find them all?\n\n${shareBase}/en/share/egg/${eggNumber}\n\n#OrganicEaster #GoldenEggs`;
         const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
 
         return NextResponse.json({

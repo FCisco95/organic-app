@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { getEggElement } from '@/features/easter/elements';
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://organichub.fun';
+// Always use production domain for OG images — Twitter crawls these URLs
+const APP_URL = 'https://organichub.fun';
 
 interface ShareEggPageProps {
   params: Promise<{ locale: string; number: string }>;
