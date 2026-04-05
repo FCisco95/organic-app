@@ -25,13 +25,13 @@ export const metadata: Metadata = {
     url: 'https://organichub.fun',
     siteName: 'Organic',
     type: 'website',
-    images: [{ url: 'https://organichub.fun/og-image.png', width: 1200, height: 630, alt: 'Organic' }],
+    images: [{ url: 'https://organichub.fun/og/og-image.png', width: 1200, height: 630, alt: 'Organic' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Organic — Govern. Build. Earn.',
     description: 'A community-governed platform where ideas become proposals, proposals become tasks, and contributors earn XP.',
-    images: ['https://organichub.fun/og-image.png'],
+    images: ['https://organichub.fun/og/og-image.png'],
   },
 };
 
