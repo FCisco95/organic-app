@@ -20,6 +20,7 @@ import {
   ArrowUp,
   Undo2,
   Settings,
+  Egg,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { EventIconName } from '@/features/notifications/types';
@@ -40,6 +41,7 @@ const ICON_MAP: Record<EventIconName, LucideIcon> = {
   ArrowUp,
   Undo2,
   Settings,
+  Egg,
 };
 
 function getRelativeTime(dateStr: string): string {

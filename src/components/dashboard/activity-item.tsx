@@ -12,6 +12,7 @@ import {
   UserPlus,
   Activity,
   Zap,
+  Egg,
 } from 'lucide-react';
 
 const EVENT_ICON: Record<string, React.ElementType> = {
@@ -22,6 +23,7 @@ const EVENT_ICON: Record<string, React.ElementType> = {
   submission_created: Zap,
   dispute_escalated: Shield,
   member_joined: UserPlus,
+  egg_found: Egg,
 };
 
 const EVENT_ICON_BG: Record<string, string> = {
@@ -32,6 +34,7 @@ const EVENT_ICON_BG: Record<string, string> = {
   submission_created: 'bg-violet-500/10',
   dispute_escalated: 'bg-red-500/10',
   member_joined: 'bg-organic-terracotta-lightest0/10',
+  egg_found: 'bg-amber-500/10',
 };
 
 const EVENT_ICON_TEXT: Record<string, string> = {
@@ -42,6 +45,7 @@ const EVENT_ICON_TEXT: Record<string, string> = {
   submission_created: 'text-violet-500',
   dispute_escalated: 'text-red-500',
   member_joined: 'text-organic-terracotta',
+  egg_found: 'text-amber-500',
 };
 
 function formatTimeAgo(dateStr: string): string {

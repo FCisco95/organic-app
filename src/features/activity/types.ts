@@ -17,7 +17,8 @@ export type ActivityEventType =
   | 'dispute_response_submitted'
   | 'dispute_escalated'
   | 'dispute_resolved'
-  | 'dispute_withdrawn';
+  | 'dispute_withdrawn'
+  | 'egg_found';
 
 export interface ActivityEvent {
   id: string;

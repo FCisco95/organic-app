@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { X, ExternalLink } from 'lucide-react';
 import { getEggElement, getRarityLabel } from '@/features/easter/elements';
 
@@ -12,6 +13,16 @@ interface DiscoveryOverlayProps {
   onClose: () => void;
 }
 
+function playSound(src: string) {
+  try {
+    const audio = new Audio(src);
+    audio.volume = 0.5;
+    audio.play().catch(() => {});
+  } catch {
+    // Audio not supported — fail silently
+  }
+}
+
 export function DiscoveryOverlay({
   eggNumber,
   shareUrl,
@@ -21,10 +32,19 @@ export function DiscoveryOverlay({
 }: DiscoveryOverlayProps) {
   const [phase, setPhase] = useState<'crack' | 'reveal'>('crack');
   const element = getEggElement(eggNumber);
+  const soundPlayed = useRef(false);
 
   useEffect(() => {
+    // Play crack sound
+    if (!soundPlayed.current) {
+      soundPlayed.current = true;
+      playSound('/sounds/egg-crack.m4a');
+    }
     // Crack animation for 1.5s, then reveal
-    const timer = setTimeout(() => setPhase('reveal'), 1500);
+    const timer = setTimeout(() => {
+      setPhase('reveal');
+      playSound('/sounds/xp-chime.m4a');
+    }, 1500);
     return () => clearTimeout(timer);
   }, []);
 
@@ -50,18 +70,19 @@ export function DiscoveryOverlay({
 
       {phase === 'crack' ? (
         // Cracking animation
-        <div className="text-center">
-          <div
-            className="relative mx-auto h-32 w-28 rounded-[50%_50%_50%_50%/60%_60%_40%_40%] animate-egg-crack"
-            style={{
-              background: `linear-gradient(135deg, ${element.colorFrom}, ${element.colorTo})`,
-              boxShadow: `0 0 60px ${element.colorAccent}60, 0 0 120px ${element.colorFrom}30`,
-            }}
-          >
-            <div className="absolute top-5 left-5 h-8 w-5 rounded-full bg-white/20 blur-sm" />
-            <div className="absolute inset-0 flex items-center justify-center text-4xl">
-              {element.emoji}
-            </div>
+        <div className="text-center relative">
+          <div className="animate-egg-crack">
+            <Image
+              src={element.image}
+              alt={`${element.element} egg cracking`}
+              width={128}
+              height={144}
+              className="mx-auto"
+              style={{
+                filter: `drop-shadow(0 0 60px ${element.colorAccent}60) drop-shadow(0 0 120px ${element.colorFrom}30)`,
+              }}
+              priority
+            />
           </div>
           {/* Particle burst */}
           {Array.from({ length: 8 }).map((_, i) => (
@@ -81,15 +102,18 @@ export function DiscoveryOverlay({
       ) : (
         // Reveal
         <div className="text-center max-w-sm mx-auto px-6 animate-fade-up">
-          {/* Egg icon */}
-          <div
-            className="mx-auto mb-6 h-24 w-20 rounded-[50%_50%_50%_50%/60%_60%_40%_40%] flex items-center justify-center text-5xl"
-            style={{
-              background: `linear-gradient(135deg, ${element.colorFrom}, ${element.colorTo})`,
-              boxShadow: `0 0 40px ${element.colorAccent}40, 0 0 80px ${element.colorFrom}20`,
-            }}
-          >
-            {element.emoji}
+          {/* Egg image */}
+          <div className="mx-auto mb-6">
+            <Image
+              src={element.image}
+              alt={`${element.element} egg`}
+              width={96}
+              height={108}
+              className="mx-auto"
+              style={{
+                filter: `drop-shadow(0 0 40px ${element.colorAccent}40) drop-shadow(0 0 80px ${element.colorFrom}20)`,
+              }}
+            />
           </div>
 
           {/* Title */}
@@ -111,20 +135,25 @@ export function DiscoveryOverlay({
             +{xpAwarded} XP earned
           </p>
 
-          {/* Mystery teaser */}
-          <p className="mt-4 text-sm text-white/50 italic">
+          {/* Uniqueness + mystery teaser */}
+          <p className="mt-3 text-sm text-amber-400/80 font-medium">
+            You are the only owner. No one else can claim this egg.
+          </p>
+          <p className="mt-2 text-sm text-white/50 italic">
             This egg holds a secret. It may hatch into something... someday.
           </p>
 
           {/* Actions */}
           <div className="mt-6 flex flex-col gap-3">
-            <button
-              onClick={handleShare}
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white text-gray-900 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
-            >
-              Share on X
-              <ExternalLink className="h-4 w-4" />
-            </button>
+            {shareUrl && (
+              <button
+                onClick={handleShare}
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white text-gray-900 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
+              >
+                Share on X
+                <ExternalLink className="h-4 w-4" />
+              </button>
+            )}
             <button
               onClick={onClose}
               className="text-sm text-white/60 hover:text-white transition-colors"

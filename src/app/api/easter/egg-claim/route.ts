@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { logger } from '@/lib/logger';
 import { eggClaimSchema } from '@/features/easter/schemas';
 import { getEggElement } from '@/features/easter/elements';
@@ -70,16 +70,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Egg hunt is not active' }, { status: 403 });
     }
 
-    // Check user doesn't already have this egg
+    // Check nobody has claimed this egg yet (1 owner per egg globally)
     const { data: existing } = await supabase
       .from('golden_eggs' as any)
-      .select('id')
-      .eq('user_id', user.id)
+      .select('id, user_id')
       .eq('egg_number', egg_number)
       .maybeSingle();
 
     if (existing) {
-      return NextResponse.json({ error: 'You already found this egg' }, { status: 409 });
+      const isOwn = (existing as any).user_id === user.id;
+      return NextResponse.json(
+        { error: isOwn ? 'You already found this egg' : 'This egg has already been claimed by someone else' },
+        { status: 409 }
+      );
     }
 
     // Insert the egg
@@ -100,8 +103,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Failed to claim egg' }, { status: 500 });
     }
 
-    // Award XP (100 per egg)
-    await awardXp(supabase as any, {
+    // Award XP (100 per egg) — use service client to bypass RLS on xp_events
+    const service = createServiceClient();
+    await awardXp(service as any, {
       userId: user.id,
       eventType: 'egg_found',
       xpAmount: 100,
@@ -109,6 +113,16 @@ export async function POST(request: Request) {
       sourceId: egg.id as string,
       metadata: { egg_number, element: element.element },
     });
+
+    // Log egg discovery to activity feed (fire-and-forget)
+    const elementName = element.element.charAt(0).toUpperCase() + element.element.slice(1);
+    service.from('activity_log').insert({
+      event_type: 'egg_found' as any,
+      actor_id: user.id,
+      subject_type: 'golden_egg',
+      subject_id: egg.id as string,
+      metadata: { egg_number, element: element.element, element_name: elementName },
+    }).then(() => {});
 
     // Reset page loads since last find
     await supabase
@@ -119,24 +133,10 @@ export async function POST(request: Request) {
         last_calculated_at: new Date().toISOString(),
       });
 
-    // Build share tweet template
-    const isRare = element.rarityModifier <= 0.5;
-    const eggCount = await supabase
-      .from('golden_eggs' as any)
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', user.id);
+    // Build share tweet template — always use production domain for tweets
+    const shareBase = 'https://organichub.fun';
 
-    const totalFound = (eggCount.count ?? 1);
-    const elementName = element.element.charAt(0).toUpperCase() + element.element.slice(1);
-
-    let tweetText: string;
-    if (totalFound === 1) {
-      tweetText = `🥚 I just discovered something hidden in @OrganicDAO...\n\nWhat is this?? #OrganicEaster`;
-    } else if (isRare) {
-      tweetText = `🌌 NO WAY. I just found a ${elementName} Egg in @OrganicDAO — one of the rarest in the game.\n\nHow many people will ever find this?\n\n#OrganicEaster #GoldenEggs #GenesisHatch`;
-    } else {
-      tweetText = `Found another Golden Egg in @OrganicDAO! That's ${totalFound}/10 🥚\n\n${element.emoji} ${elementName} Egg secured. These are RARE.\n\n#OrganicEaster #GoldenEggs`;
-    }
+    const tweetText = `${element.emoji} I just found a rare ${elementName} Egg in @organic_bonk!\n\nOnly 10 exist. Each one is unique. Each one holds a secret.\n\nCan you find them all?\n\n${shareBase}/en/share/egg/${egg_number}\n\n#OrganicEaster #GoldenEggs`;
 
     const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
 

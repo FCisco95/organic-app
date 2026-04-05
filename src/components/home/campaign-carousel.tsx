@@ -45,7 +45,7 @@ function CampaignCard({ campaign }: { campaign: Campaign }) {
     >
       {/* Banner image or gradient with icon */}
       {campaign.banner_url ? (
-        <div className="relative h-32 sm:h-40 overflow-hidden">
+        <div className="relative overflow-hidden" style={{ aspectRatio: '3 / 2' }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={campaign.banner_url}

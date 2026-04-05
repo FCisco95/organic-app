@@ -1,11 +1,32 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { applyUserRateLimit } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
 import { EGG_ELEMENTS } from '@/features/easter/elements';
 
+// XP egg tier probabilities (must sum to 1.0)
+const XP_EGG_TIERS = [
+  { xp: 1, probability: 0.60 },
+  { xp: 2, probability: 0.20 },
+  { xp: 5, probability: 0.10 },
+  { xp: 10, probability: 0.099 },
+  { xp: 0, probability: 0.001 }, // 0 = shiny (golden egg)
+];
+
+function rollXpTier(): { xp: number; isShiny: boolean } {
+  const roll = Math.random();
+  let cumulative = 0;
+  for (const tier of XP_EGG_TIERS) {
+    cumulative += tier.probability;
+    if (roll < cumulative) {
+      return { xp: tier.xp, isShiny: tier.xp === 0 };
+    }
+  }
+  return { xp: 1, isShiny: false };
+}
+
 export async function GET() {
-  const EMPTY = { spawn: false, shimmer: false, egg: null };
+  const EMPTY = { spawn: false, shimmer: false, egg: null, xp_egg: null };
 
   try {
     const supabase = await createClient();
@@ -53,7 +74,7 @@ export async function GET() {
       // Hunt ended — still show shimmers if enabled
       if (shimmerEnabled) {
         const shimmerRoll = Math.random();
-        return NextResponse.json({ spawn: false, shimmer: shimmerRoll < shimmerRate, egg: null });
+        return NextResponse.json({ spawn: false, shimmer: shimmerRoll < shimmerRate, egg: null, xp_egg: null });
       }
       return NextResponse.json(EMPTY);
     }
@@ -61,7 +82,7 @@ export async function GET() {
     // If hunt not enabled, only do shimmer
     if (!huntEnabled) {
       const shimmerRoll = Math.random();
-      return NextResponse.json({ spawn: false, shimmer: shimmerRoll < shimmerRate, egg: null });
+      return NextResponse.json({ spawn: false, shimmer: shimmerRoll < shimmerRate, egg: null, xp_egg: null });
     }
 
     // -- Hunt is enabled: run the RNG engine --
@@ -77,24 +98,27 @@ export async function GET() {
       // Shimmer only for non-qualified users
       if (shimmerEnabled) {
         const shimmerRoll = Math.random();
-        return NextResponse.json({ spawn: false, shimmer: shimmerRoll < shimmerRate, egg: null });
+        return NextResponse.json({ spawn: false, shimmer: shimmerRoll < shimmerRate, egg: null, xp_egg: null });
       }
       return NextResponse.json(EMPTY);
     }
 
-    // Get user's existing eggs
-    const { data: existingEggsRaw } = await supabase
+    // Get ALL globally claimed eggs (each egg can only have 1 owner)
+    const { data: allClaimedRaw } = await supabase
       .from('golden_eggs' as any)
-      .select('egg_number')
-      .eq('user_id', user.id) as { data: any[] | null };
+      .select('egg_number, user_id') as { data: any[] | null };
 
-    const foundEggNumbers = new Set((existingEggsRaw ?? []).map((e: any) => e.egg_number as number));
+    const allClaimed = allClaimedRaw ?? [];
+    const globallyClaimedNumbers = new Set(allClaimed.map((e: any) => e.egg_number as number));
+    const userOwnedNumbers = new Set(
+      allClaimed.filter((e: any) => e.user_id === user.id).map((e: any) => e.egg_number as number)
+    );
 
-    // If user has all 10, no more spawns
-    if (foundEggNumbers.size >= 10) {
+    // If all 10 eggs are claimed globally, no more golden egg spawns for anyone
+    if (globallyClaimedNumbers.size >= 10) {
       if (shimmerEnabled) {
         const shimmerRoll = Math.random();
-        return NextResponse.json({ spawn: false, shimmer: shimmerRoll < shimmerRate, egg: null });
+        return NextResponse.json({ spawn: false, shimmer: shimmerRoll < shimmerRate, egg: null, xp_egg: null });
       }
       return NextResponse.json(EMPTY);
     }
@@ -146,8 +170,8 @@ export async function GET() {
 
     const totalRate = effectiveRate + luckBoost + progressiveBonus;
 
-    // Roll for each unfound egg type
-    const unfoundElements = EGG_ELEMENTS.filter((e) => !foundEggNumbers.has(e.number));
+    // Roll for each globally unclaimed egg type (1 owner per egg)
+    const unfoundElements = EGG_ELEMENTS.filter((e) => !globallyClaimedNumbers.has(e.number));
     let spawnedEgg: { number: number; element: string } | null = null;
 
     for (const element of unfoundElements) {
@@ -182,16 +206,73 @@ export async function GET() {
     }
 
     if (spawnedEgg) {
-      return NextResponse.json({ spawn: true, shimmer: false, egg: spawnedEgg });
+      // Golden egg takes priority — no XP egg on this check
+      return NextResponse.json({ spawn: true, shimmer: false, egg: spawnedEgg, xp_egg: null });
     }
 
-    // No egg — roll shimmer
+    // -- XP Egg roll (only if no golden egg spawned) --
+    const xpEggEnabled = config.xp_egg_enabled as boolean;
+    const xpEggSpawnRate = Number(config.xp_egg_spawn_rate) || 0.04;
+    let xpEggResult: { token: string; xp_amount: number; is_shiny: boolean } | null = null;
+
+    if (xpEggEnabled) {
+      const xpRoll = Math.random();
+      if (xpRoll < xpEggSpawnRate) {
+        const tier = rollXpTier();
+
+        let xpAmount = tier.xp;
+        let isShiny = tier.isShiny;
+        let eggNumber: number | null = null;
+        let element: string | null = null;
+
+        if (isShiny && unfoundElements.length > 0) {
+          // Shiny = random unfound golden egg
+          const shinyElement = unfoundElements[Math.floor(Math.random() * unfoundElements.length)];
+          eggNumber = shinyElement.number;
+          element = shinyElement.element;
+          xpAmount = 0;
+        } else if (isShiny) {
+          // User has all 10 — re-roll as 10 XP instead
+          isShiny = false;
+          xpAmount = 10;
+        }
+
+        // Insert pending claim token (service client — RLS blocks authenticated INSERT)
+        const serviceClient = createServiceClient();
+        const { data: pendingRaw } = await serviceClient
+          .from('xp_egg_pending' as any)
+          .insert({
+            user_id: user.id,
+            xp_amount: xpAmount,
+            is_shiny: isShiny,
+            egg_number: eggNumber,
+            element,
+          })
+          .select('id')
+          .single();
+
+        if (pendingRaw) {
+          xpEggResult = {
+            token: (pendingRaw as any).id as string,
+            xp_amount: isShiny ? 0 : xpAmount,
+            is_shiny: isShiny,
+          };
+        }
+      }
+    }
+
+    // No golden egg — roll shimmer, include XP egg if rolled
     if (shimmerEnabled) {
       const shimmerRoll = Math.random();
-      return NextResponse.json({ spawn: false, shimmer: shimmerRoll < shimmerRate, egg: null });
+      return NextResponse.json({
+        spawn: false,
+        shimmer: shimmerRoll < shimmerRate,
+        egg: null,
+        xp_egg: xpEggResult,
+      });
     }
 
-    return NextResponse.json(EMPTY);
+    return NextResponse.json({ ...EMPTY, xp_egg: xpEggResult });
   } catch (error) {
     logger.error('Egg check error:', error);
     return NextResponse.json(EMPTY);

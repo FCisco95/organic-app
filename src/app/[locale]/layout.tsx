@@ -10,7 +10,7 @@ import { LaunchBanner } from '@/components/layout/launch-banner';
 
 import type { Viewport } from 'next';
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://organic-app.vercel.app';
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://organichub.fun';
 
 export const metadata: Metadata = {
   title: 'Organic App',
