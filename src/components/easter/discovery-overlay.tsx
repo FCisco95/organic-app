@@ -135,8 +135,11 @@ export function DiscoveryOverlay({
             +{xpAwarded} XP earned
           </p>
 
-          {/* Mystery teaser */}
-          <p className="mt-4 text-sm text-white/50 italic">
+          {/* Uniqueness + mystery teaser */}
+          <p className="mt-3 text-sm text-amber-400/80 font-medium">
+            You are the only owner. No one else can claim this egg.
+          </p>
+          <p className="mt-2 text-sm text-white/50 italic">
             This egg holds a secret. It may hatch into something... someday.
           </p>
 

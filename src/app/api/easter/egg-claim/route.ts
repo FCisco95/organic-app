@@ -70,16 +70,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Egg hunt is not active' }, { status: 403 });
     }
 
-    // Check user doesn't already have this egg
+    // Check nobody has claimed this egg yet (1 owner per egg globally)
     const { data: existing } = await supabase
       .from('golden_eggs' as any)
-      .select('id')
-      .eq('user_id', user.id)
+      .select('id, user_id')
       .eq('egg_number', egg_number)
       .maybeSingle();
 
     if (existing) {
-      return NextResponse.json({ error: 'You already found this egg' }, { status: 409 });
+      const isOwn = (existing as any).user_id === user.id;
+      return NextResponse.json(
+        { error: isOwn ? 'You already found this egg' : 'This egg has already been claimed by someone else' },
+        { status: 409 }
+      );
     }
 
     // Insert the egg

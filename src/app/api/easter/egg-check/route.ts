@@ -103,16 +103,19 @@ export async function GET() {
       return NextResponse.json(EMPTY);
     }
 
-    // Get user's existing eggs
-    const { data: existingEggsRaw } = await supabase
+    // Get ALL globally claimed eggs (each egg can only have 1 owner)
+    const { data: allClaimedRaw } = await supabase
       .from('golden_eggs' as any)
-      .select('egg_number')
-      .eq('user_id', user.id) as { data: any[] | null };
+      .select('egg_number, user_id') as { data: any[] | null };
 
-    const foundEggNumbers = new Set((existingEggsRaw ?? []).map((e: any) => e.egg_number as number));
+    const allClaimed = allClaimedRaw ?? [];
+    const globallyClaimedNumbers = new Set(allClaimed.map((e: any) => e.egg_number as number));
+    const userOwnedNumbers = new Set(
+      allClaimed.filter((e: any) => e.user_id === user.id).map((e: any) => e.egg_number as number)
+    );
 
-    // If user has all 10, no more spawns
-    if (foundEggNumbers.size >= 10) {
+    // If all 10 eggs are claimed globally, no more golden egg spawns for anyone
+    if (globallyClaimedNumbers.size >= 10) {
       if (shimmerEnabled) {
         const shimmerRoll = Math.random();
         return NextResponse.json({ spawn: false, shimmer: shimmerRoll < shimmerRate, egg: null, xp_egg: null });
@@ -167,8 +170,8 @@ export async function GET() {
 
     const totalRate = effectiveRate + luckBoost + progressiveBonus;
 
-    // Roll for each unfound egg type
-    const unfoundElements = EGG_ELEMENTS.filter((e) => !foundEggNumbers.has(e.number));
+    // Roll for each globally unclaimed egg type (1 owner per egg)
+    const unfoundElements = EGG_ELEMENTS.filter((e) => !globallyClaimedNumbers.has(e.number));
     let spawnedEgg: { number: number; element: string } | null = null;
 
     for (const element of unfoundElements) {
