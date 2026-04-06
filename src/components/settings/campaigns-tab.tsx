@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, Eye, EyeOff, ExternalLink, Egg, Sparkles, Zap } from 'lucide-react';
+import { useState } from 'react';
+import { Plus, Pencil, Trash2, Eye, EyeOff, ExternalLink, Egg } from 'lucide-react';
 import {
   useAdminCampaigns,
   useCreateCampaign,
@@ -9,8 +9,7 @@ import {
   useDeleteCampaign,
 } from '@/features/campaigns';
 import type { Campaign } from '@/features/campaigns';
-import { useEggHuntConfig, useUpdateEggHuntConfig, useEggHuntStats } from '@/features/easter';
-import type { EggHuntConfig, EggHuntStats } from '@/features/easter';
+import { useEggHuntStats } from '@/features/easter';
 import toast from 'react-hot-toast';
 
 type CampaignFormData = {
@@ -258,192 +257,19 @@ function CampaignForm({
   );
 }
 
-function RateSlider({
-  label,
-  field,
-  value,
-  min,
-  max,
-  divisor,
-  decimals,
-  accent,
-  onSave,
-}: {
-  label: string;
-  field: string;
-  value: number;
-  min: number;
-  max: number;
-  divisor: number;
-  decimals: number;
-  accent: string;
-  onSave: (field: string, value: number) => void;
-}) {
-  const [local, setLocal] = useState(Math.round(value * divisor));
-  const [dragging, setDragging] = useState(false);
-
-  // Sync with server value when not dragging
-  useEffect(() => {
-    if (!dragging) setLocal(Math.round(value * divisor));
-  }, [value, divisor, dragging]);
-
-  return (
-    <div className="flex items-center gap-2">
-      <span className="text-xs text-muted-foreground">{label}:</span>
-      <input
-        type="range"
-        min={min}
-        max={max}
-        value={local}
-        onChange={(e) => setLocal(parseInt(e.target.value))}
-        onPointerDown={() => setDragging(true)}
-        onPointerUp={() => {
-          setDragging(false);
-          onSave(field, local / divisor);
-        }}
-        onTouchEnd={() => {
-          setDragging(false);
-          onSave(field, local / divisor);
-        }}
-        className={`flex-1 h-1.5 ${accent}`}
-      />
-      <span className="text-xs font-mono text-muted-foreground w-10 text-right">
-        {((local / divisor) * 100).toFixed(decimals)}%
-      </span>
-    </div>
-  );
-}
-
-function EggHuntControls() {
-  const { data: config, isLoading } = useEggHuntConfig();
+function EggHuntArchive() {
   const { data: stats } = useEggHuntStats();
-  const updateConfig = useUpdateEggHuntConfig();
-
-  const toggle = async (field: keyof EggHuntConfig, value: boolean) => {
-    try {
-      await updateConfig.mutateAsync({ [field]: value });
-      toast.success(`${String(field).replace(/_/g, ' ')} ${value ? 'enabled' : 'disabled'}`);
-    } catch (err: any) {
-      toast.error(err.message ?? 'Failed to update');
-    }
-  };
-
-  const saveRate = async (field: string, value: number) => {
-    try {
-      await updateConfig.mutateAsync({ [field]: value });
-      toast.success('Rate updated');
-    } catch (err: any) {
-      toast.error(err.message ?? 'Failed to update');
-    }
-  };
-
-  if (isLoading || !config) {
-    return (
-      <div className="animate-pulse rounded-xl border border-border p-5 space-y-3">
-        <div className="h-6 bg-muted rounded w-1/3" />
-        <div className="h-16 bg-muted rounded" />
-      </div>
-    );
-  }
 
   return (
-    <div className="rounded-xl border border-dashed border-organic-terracotta/30 bg-organic-terracotta-lightest0/5 p-5 space-y-5">
+    <div className="rounded-xl border border-border bg-muted/20 p-5 space-y-4">
       <div className="flex items-center gap-2">
-        <Egg className="h-5 w-5 text-organic-terracotta" />
-        <h3 className="text-base font-semibold text-foreground">Easter Egg Hunt Controls</h3>
-        <span className="text-[10px] uppercase tracking-wider font-semibold text-organic-terracotta bg-organic-terracotta-lightest0/10 px-1.5 py-0.5 rounded">
-          Stealth
+        <Egg className="h-5 w-5 text-muted-foreground" />
+        <h3 className="text-base font-semibold text-foreground">Easter Egg Hunt</h3>
+        <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+          Ended
         </span>
       </div>
 
-      {/* Toggle grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {/* Shimmer */}
-        <div className="rounded-lg border border-border bg-card p-3 space-y-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-yellow-500" />
-              <span className="text-sm font-medium text-foreground">Shimmer</span>
-            </div>
-            <button
-              onClick={() => toggle('shimmer_enabled', !config.shimmer_enabled)}
-              className={`relative h-6 w-11 rounded-full transition-colors ${
-                config.shimmer_enabled ? 'bg-organic-terracotta-lightest0' : 'bg-muted'
-              }`}
-            >
-              <div className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
-                config.shimmer_enabled ? 'translate-x-5' : ''
-              }`} />
-            </button>
-          </div>
-          <RateSlider label="Rate" field="shimmer_rate" value={Number(config.shimmer_rate)} min={10} max={100} divisor={1000} decimals={1} accent="accent-organic-terracotta" onSave={saveRate} />
-        </div>
-
-        {/* Egg Hunt */}
-        <div className="rounded-lg border border-border bg-card p-3 space-y-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Egg className="h-4 w-4 text-emerald-500" />
-              <span className="text-sm font-medium text-foreground">Egg Hunt</span>
-            </div>
-            <button
-              onClick={() => toggle('hunt_enabled', !config.hunt_enabled)}
-              className={`relative h-6 w-11 rounded-full transition-colors ${
-                config.hunt_enabled ? 'bg-emerald-500' : 'bg-muted'
-              }`}
-            >
-              <div className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
-                config.hunt_enabled ? 'translate-x-5' : ''
-              }`} />
-            </button>
-          </div>
-          <RateSlider label="Base rate" field="base_spawn_rate" value={Number(config.base_spawn_rate)} min={1} max={100} divisor={10000} decimals={2} accent="accent-emerald-500" onSave={saveRate} />
-        </div>
-
-        {/* Probability Override */}
-        <div className="rounded-lg border border-border bg-card p-3 space-y-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Zap className="h-4 w-4 text-amber-500" />
-              <span className="text-sm font-medium text-foreground">Override Boost</span>
-            </div>
-            <button
-              onClick={() => toggle('probability_override', !config.probability_override)}
-              className={`relative h-6 w-11 rounded-full transition-colors ${
-                config.probability_override ? 'bg-amber-500' : 'bg-muted'
-              }`}
-            >
-              <div className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
-                config.probability_override ? 'translate-x-5' : ''
-              }`} />
-            </button>
-          </div>
-          <RateSlider label="Override rate" field="override_rate" value={Number(config.override_rate)} min={10} max={500} divisor={10000} decimals={2} accent="accent-amber-500" onSave={saveRate} />
-        </div>
-
-        {/* Campaign Reveal */}
-        <div className="rounded-lg border border-border bg-card p-3 space-y-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Eye className="h-4 w-4 text-purple-500" />
-              <span className="text-sm font-medium text-foreground">Campaign Reveal</span>
-            </div>
-            <button
-              onClick={() => toggle('campaign_revealed', !config.campaign_revealed)}
-              className={`relative h-6 w-11 rounded-full transition-colors ${
-                config.campaign_revealed ? 'bg-purple-500' : 'bg-muted'
-              }`}
-            >
-              <div className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
-                config.campaign_revealed ? 'translate-x-5' : ''
-              }`} />
-            </button>
-          </div>
-          <p className="text-[10px] text-muted-foreground">Shows egg hunt carousel card, luck teaser, and profile collection.</p>
-        </div>
-      </div>
-
-      {/* Stats */}
       {stats && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div className="rounded-lg bg-card border border-border p-3 text-center">
@@ -572,8 +398,8 @@ export function CampaignsTab() {
         />
       )}
 
-      {/* Easter Egg Hunt Controls */}
-      <EggHuntControls />
+      {/* Easter Egg Hunt — archived */}
+      <EggHuntArchive />
 
       {/* Campaign list */}
       <div className="space-y-3">
