@@ -245,6 +245,20 @@ export async function middleware(request: NextRequest) {
   response.headers.set('Content-Security-Policy', cspHeader);
   response.headers.set('x-nonce', nonce);
 
+  // Strip locale prefix to get the bare route for protection checks
+  const localeMatch = pathname.match(/^\/[a-z]{2}(-[a-zA-Z]{2,})?(\/.*)?$/);
+  const barePathname = localeMatch?.[2] || '/';
+
+  const isProtected = PROTECTED_ROUTE_PREFIXES.some(
+    (prefix) => barePathname === prefix || barePathname.startsWith(`${prefix}/`)
+  );
+
+  // Skip the Supabase auth roundtrip entirely for public routes — most page
+  // navigations don't need an auth check, and getUser() does a network call.
+  if (!isProtected) {
+    return response;
+  }
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -265,15 +279,7 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Strip locale prefix to get the bare route for protection checks
-  const localeMatch = pathname.match(/^\/[a-z]{2}(-[a-zA-Z]{2,})?(\/.*)?$/);
-  const barePathname = localeMatch?.[2] || '/';
-
-  const isProtected = PROTECTED_ROUTE_PREFIXES.some(
-    (prefix) => barePathname === prefix || barePathname.startsWith(`${prefix}/`)
-  );
-
-  if (isProtected && !user) {
+  if (!user) {
     const locale = pathname.match(/^\/([a-z]{2}(-[a-zA-Z]{2,})?)/)?.[1] || defaultLocale;
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = `/${locale}/login`;

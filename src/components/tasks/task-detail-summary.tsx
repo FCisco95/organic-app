@@ -86,6 +86,7 @@ export function TaskDetailSummary({
                   width={24}
                   height={24}
                   className="rounded-full object-cover"
+                  unoptimized
                 />
               ) : (
                 <div className="flex h-6 w-6 items-center justify-center rounded-full bg-muted text-muted-foreground">

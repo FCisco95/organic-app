@@ -642,6 +642,7 @@ export default function CommunityProfilePage() {
                 width={80}
                 height={80}
                 className="rounded-full object-cover border-2 border-border"
+                unoptimized
               />
             ) : (
               <div className="w-20 h-20 rounded-full bg-gradient-to-br from-organic-terracotta to-organic-yellow flex items-center justify-center border-2 border-border">

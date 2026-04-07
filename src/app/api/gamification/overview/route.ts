@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
+import { unstable_cache } from 'next/cache';
 import { z } from 'zod';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { logger } from '@/lib/logger';
 import { DEFAULT_REWARDS_CONFIG, type RewardsConfig } from '@/features/rewards';
 import { gamificationOverviewSchema, gamificationAchievementSchema } from '@/features/gamification/schemas';
@@ -46,6 +47,39 @@ function parseRewardsConfig(value: unknown): RewardsConfig {
 
 type AchievementShape = z.infer<typeof gamificationAchievementSchema>;
 
+// Achievements are global static data — fetch once and cache for 5 minutes
+// across all users instead of re-querying on every overview call.
+const getCachedAchievementDefs = unstable_cache(
+  async () => {
+    const service = createServiceClient();
+    const { data, error } = await service
+      .from('achievements')
+      .select('*')
+      .order('category', { ascending: true })
+      .order('condition_threshold', { ascending: true });
+    if (error) throw error;
+    return data ?? [];
+  },
+  ['gamification-achievement-defs'],
+  { revalidate: 300, tags: ['gamification-achievements'] },
+);
+
+// Org rewards config rarely changes — cache globally for 5 minutes.
+const getCachedRewardsConfig = unstable_cache(
+  async () => {
+    const service = createServiceClient();
+    const { data } = await service
+      .from('orgs')
+      .select('rewards_config')
+      .order('created_at', { ascending: true })
+      .limit(1)
+      .maybeSingle();
+    return data?.rewards_config ?? null;
+  },
+  ['gamification-rewards-config'],
+  { revalidate: 300, tags: ['rewards-config'] },
+);
+
 export async function GET() {
   try {
     const supabase = await createClient();
@@ -59,23 +93,15 @@ export async function GET() {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
-    // Best-effort refresh so threshold achievements are not stale.
-    const { error: achievementSyncError } = await supabase.rpc('check_achievements', {
-      p_user_id: user.id,
-    });
-    if (achievementSyncError) {
-      logger.warn('Gamification overview achievement sync failed', {
-        code: achievementSyncError.code,
-        message: achievementSyncError.message,
-      });
-    }
+    // NOTE: removed per-request `check_achievements` RPC. Achievements are now
+    // synced via write-path triggers / event handlers, not on every read.
 
     const [
       profileResult,
       xpEventsResult,
-      achievementDefsResult,
+      achievementDefs,
       userAchievementsResult,
-      orgResult,
+      rewardsConfigRaw,
       pendingClaimsResult,
       questProgressResult,
     ] = await Promise.all([
@@ -86,21 +112,15 @@ export async function GET() {
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(20),
-      supabase
-        .from('achievements')
-        .select('*')
-        .order('category', { ascending: true })
-        .order('condition_threshold', { ascending: true }),
+      getCachedAchievementDefs().catch((error) => {
+        logger.warn('Gamification overview achievement defs fallback', error);
+        return [];
+      }),
       supabase
         .from('user_achievements')
         .select('achievement_id, unlocked_at')
         .eq('user_id', user.id),
-      supabase
-        .from('orgs')
-        .select('rewards_config')
-        .order('created_at', { ascending: true })
-        .limit(1)
-        .maybeSingle(),
+      getCachedRewardsConfig().catch(() => null),
       supabase
         .from('reward_claims')
         .select('*', { count: 'exact', head: true })
@@ -126,7 +146,7 @@ export async function GET() {
       (userAchievementsResult.data ?? []).map((entry) => [entry.achievement_id, entry.unlocked_at])
     );
 
-    const achievements: AchievementShape[] = (achievementDefsResult.data ?? []).map((achievement) => {
+    const achievements: AchievementShape[] = achievementDefs.map((achievement) => {
       const row = achievement as Record<string, unknown>;
       return {
         ...achievement,
@@ -152,7 +172,7 @@ export async function GET() {
     const xpForNextLevel = level >= 11 ? 0 : getLevelInfo(level + 1).xpRequired - levelInfo.xpRequired;
     const xpInLevel = Math.max(0, xpTotal - levelInfo.xpRequired);
 
-    const rewardsConfig = parseRewardsConfig(orgResult.data?.rewards_config);
+    const rewardsConfig = parseRewardsConfig(rewardsConfigRaw);
 
     const overview = gamificationOverviewSchema.parse({
       xp_total: xpTotal,

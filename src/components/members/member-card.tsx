@@ -68,6 +68,7 @@ export function MemberCard({ member, rank, xpTotal }: MemberCardProps) {
             width={48}
             height={48}
             className="rounded-full object-cover border-2 border-border"
+            unoptimized
           />
         ) : (
           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-organic-terracotta to-organic-yellow flex items-center justify-center border-2 border-border">

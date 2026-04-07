@@ -715,6 +715,7 @@ export default function SprintDetailPage() {
                             width={20}
                             height={20}
                             className="rounded-full"
+                            unoptimized
                           />
                         ) : (
                           <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-300 text-[10px] font-bold text-white">

@@ -355,6 +355,7 @@ export function RankingsTab() {
                     width={56}
                     height={56}
                     className="rounded-full object-cover border-2 border-gray-300"
+                    unoptimized
                   />
                 ) : (
                   <div className="w-14 h-14 rounded-full bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center border-2 border-gray-300">
@@ -400,6 +401,7 @@ export function RankingsTab() {
                     height={72}
                     className="rounded-full object-cover border-3 border-yellow-400"
                     priority
+                    unoptimized
                   />
                 ) : (
                   <div className="w-[72px] h-[72px] rounded-full bg-gradient-to-br from-yellow-400 to-amber-500 flex items-center justify-center border-3 border-yellow-400">
@@ -448,6 +450,7 @@ export function RankingsTab() {
                     width={48}
                     height={48}
                     className="rounded-full object-cover border-2 border-amber-400"
+                    unoptimized
                   />
                 ) : (
                   <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-organic-terracotta flex items-center justify-center border-2 border-amber-400">
@@ -636,6 +639,7 @@ export function RankingsTab() {
                           width={36}
                           height={36}
                           className="shrink-0 rounded-full object-cover border-2 border-border"
+                          unoptimized
                         />
                       ) : (
                         <div className="w-9 h-9 shrink-0 rounded-full bg-gradient-to-br from-organic-terracotta to-organic-terracotta flex items-center justify-center border-2 border-border">
@@ -706,6 +710,7 @@ export function RankingsTab() {
                           width={40}
                           height={40}
                           className="rounded-full object-cover border-2 border-border"
+                          unoptimized
                         />
                       ) : (
                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-organic-terracotta to-organic-terracotta flex items-center justify-center border-2 border-border">

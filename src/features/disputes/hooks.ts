@@ -105,7 +105,7 @@ export function usePendingDisputeCount(enabled = true) {
     enabled,
     staleTime: 120 * 1000, // 2 minutes
     refetchInterval: 120 * 1000,
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
   });
 }
 

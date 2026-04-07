@@ -40,7 +40,10 @@ export function useGamificationOverview(options?: { enabled?: boolean }) {
 }
 
 export function useQuestProgress(options?: { enabled?: boolean; live?: boolean }) {
-  const live = options?.live ?? true;
+  // Default to non-live to avoid burning serverless CPU on every page that
+  // mounts a quest component. Pass `live: true` explicitly on the dedicated
+  // quests page if real-time refresh is needed.
+  const live = options?.live ?? false;
 
   return useQuery({
     queryKey: gamificationKeys.quests(),

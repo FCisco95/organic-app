@@ -86,6 +86,7 @@ export function TaskCommentsSection({
                     width={32}
                     height={32}
                     className="rounded-full"
+                    unoptimized
                   />
                 ) : (
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-organic-terracotta to-organic-yellow flex items-center justify-center">
