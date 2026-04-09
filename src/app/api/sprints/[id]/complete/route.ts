@@ -267,7 +267,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     // 20260408000000_sprint_proportional_points_payout.sql). Runs before
     // the token reward settlement so we fail fast on point issues before
     // touching treasury numbers.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: pointsData, error: pointsError } = await (supabase as any).rpc(
       'settle_sprint_task_points',
       { p_sprint_id: id }
