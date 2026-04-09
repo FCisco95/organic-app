@@ -4,17 +4,15 @@ import { parseJsonBody } from '@/lib/parse-json-body';
 import { z } from 'zod';
 import { logger } from '@/lib/logger';
 
-const QUALITY_MULTIPLIERS: Record<number, number> = {
-  1: 0.2,
-  2: 0.4,
-  3: 0.6,
-  4: 0.8,
-  5: 1.0,
-};
+// Points are no longer computed at review time. Final payout is a
+// proportional split of each task's pool at sprint close — see
+// migration 20260408000000_sprint_proportional_points_payout.sql and
+// the settle_sprint_task_points() RPC.
 
 const reviewSchema = z
   .object({
-    quality_score: z.number().int().min(1).max(5),
+    // 0 = spam (valid alongside reject); 1–5 = graded quality.
+    quality_score: z.number().int().min(0).max(5),
     reviewer_notes: z.string().max(2000).optional(),
     action: z.enum(['approve', 'reject']),
     rejection_reason: z.string().max(1000).optional(),
@@ -88,18 +86,16 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       );
     }
 
-    // Get task details for points calculation
+    // Fetch task (used below to decide whether to mark solo tasks done).
     const { data: task } = await supabase
       .from('tasks')
-      .select('id, is_team_task, base_points, points')
+      .select('id, is_team_task')
       .eq('id', submission.task_id)
       .single();
 
-    const basePoints = task?.base_points || task?.points || 0;
-    const multiplier = QUALITY_MULTIPLIERS[quality_score] ?? 0;
-    const earnedPoints = Math.floor(basePoints * multiplier);
-
-    // Update submission with review
+    // Update submission with review. earned_points is deliberately left
+    // null here — it will be set by settle_sprint_task_points() at sprint
+    // close, when the task pool is split proportionally.
     const { data: updatedSubmission, error: updateError } = await supabase
       .from('task_submissions')
       .update({
@@ -108,7 +104,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         reviewer_notes: reviewer_notes || null,
         review_status: action === 'approve' ? 'approved' : 'rejected',
         rejection_reason: action === 'reject' ? rejection_reason : null,
-        earned_points: action === 'approve' ? earnedPoints : null,
+        earned_points: null,
         reviewed_at: new Date().toISOString(),
       })
       .eq('id', submissionId)
@@ -155,7 +151,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         subject_id: submission.task_id,
         metadata: {
           submission_id: submissionId,
-          points: earnedPoints,
           quality_score,
           reviewer_id: user.id,
         },

@@ -1,6 +1,6 @@
 'use client';
 
-import { Star } from 'lucide-react';
+import { Star, Ban } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
 
@@ -31,13 +31,17 @@ export function QualityRating({
 
   const handleClick = (rating: number) => {
     if (!readonly && onChange) {
-      onChange(rating);
+      // Clicking the same star again toggles to 0
+      onChange(rating === value ? 0 : rating);
     }
   };
 
   return (
     <div className={cn('flex items-center gap-2', className)}>
       <div className="flex items-center gap-0.5">
+        {value === 0 && !readonly && (
+          <Ban className={cn(sizeClasses[size], 'text-red-400 mr-1')} />
+        )}
         {[1, 2, 3, 4, 5].map((star) => (
           <button
             key={star}
@@ -59,8 +63,10 @@ export function QualityRating({
           </button>
         ))}
       </div>
-      {showLabel && value > 0 && (
-        <span className="text-sm text-gray-600">{t(String(value))}</span>
+      {showLabel && (
+        <span className={cn('text-sm', value === 0 ? 'text-red-500 font-medium' : 'text-gray-600')}>
+          {t(String(value))}
+        </span>
       )}
     </div>
   );

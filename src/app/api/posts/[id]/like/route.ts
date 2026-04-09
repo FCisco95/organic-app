@@ -3,7 +3,7 @@ import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { logger } from '@/lib/logger';
 import { applyUserRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { awardXp } from '@/features/gamification/xp-service';
-import { awardPoints, getPromotionMultiplier, type PromotionTier } from '@/features/gamification/points-service';
+import { getPromotionMultiplier, type PromotionTier } from '@/features/gamification/points-service';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -110,20 +110,9 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         })
       );
 
-      // Author points: 1 pt for organic post likes (with promotion multiplier)
-      if (isOrganicActive) {
-        const authorPts = Math.round(1 * promoMultiplier);
-        rewards.push(
-          awardPoints(
-            service,
-            post.author_id,
-            authorPts,
-            'Like received on organic post',
-            'engagement',
-            `like:${postId}:${user.id}`
-          )
-        );
-      }
+      // Engagement no longer awards points. Points are only earned from
+      // sprint task completion (settled at sprint close, weighted by score).
+      // XP continues to reward engagement.
 
       await Promise.allSettled(rewards);
     }

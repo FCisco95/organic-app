@@ -261,6 +261,30 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
     let rewardSettlement: RewardSettlementResult | null = null;
     let epochDistributions = 0;
+    let pointsSettlement: Record<string, unknown> | null = null;
+
+    // Proportional task-pool points payout (see migration
+    // 20260408000000_sprint_proportional_points_payout.sql). Runs before
+    // the token reward settlement so we fail fast on point issues before
+    // touching treasury numbers.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: pointsData, error: pointsError } = await (supabase as any).rpc(
+      'settle_sprint_task_points',
+      { p_sprint_id: id }
+    );
+
+    if (pointsError) {
+      logger.error('Error settling sprint task points:', pointsError);
+      return NextResponse.json(
+        { error: 'Failed to settle sprint task points' },
+        { status: 500 }
+      );
+    }
+
+    pointsSettlement =
+      pointsData && typeof pointsData === 'object'
+        ? (pointsData as Record<string, unknown>)
+        : null;
 
     const { data: settlementData, error: settlementError } = await supabase.rpc(
       'commit_sprint_reward_settlement',
@@ -448,6 +472,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       snapshot,
       recurring_tasks_cloned: recurringTasksCloned,
       epoch_distributions: epochDistributions,
+      points_settlement: pointsSettlement,
       reward_settlement: rewardSettlement,
       disputes_escalated: disputesEscalated,
       settlement_blockers: settlementBlockers,

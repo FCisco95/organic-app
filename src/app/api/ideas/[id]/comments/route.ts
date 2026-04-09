@@ -87,7 +87,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const rateLimited = await applyUserRateLimit(user.id, 'ideas:comment', RATE_LIMITS.write);
+    const rateLimited = await applyUserRateLimit(user.id, 'ideas:comment', RATE_LIMITS.comment);
     if (rateLimited) return rateLimited;
 
     const { data: profile } = await supabase

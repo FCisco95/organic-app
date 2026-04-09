@@ -6,6 +6,7 @@ const TERMINAL_DISPUTE_STATUSES = ['resolved', 'dismissed', 'withdrawn', 'mediat
 export type SettlementBlockers = {
   blocked: boolean;
   unresolved_disputes: number;
+  pending_submissions: number;
   integrity_flag_count: number;
   integrity_flags: Json[];
   reasons: string[];
@@ -36,6 +37,7 @@ export function parseSettlementBlockers(data: unknown): SettlementBlockers {
   return {
     blocked: Boolean(raw.blocked),
     unresolved_disputes: Number(raw.unresolved_disputes ?? 0),
+    pending_submissions: Number(raw.pending_submissions ?? 0),
     integrity_flag_count: Number(raw.integrity_flag_count ?? integrityFlags.length),
     integrity_flags: integrityFlags,
     reasons,
@@ -75,12 +77,25 @@ export async function resolveSettlementBlockers(
   }
 
   // Fallback if RPC is not available yet in a partially migrated environment.
-  const [{ count: unresolvedCount }, { data: sprint }] = await Promise.all([
+  const { data: sprintTasks } = await supabase
+    .from('tasks')
+    .select('id')
+    .eq('sprint_id', sprintId);
+  const sprintTaskIds = (sprintTasks ?? []).map((t: { id: string }) => t.id);
+
+  const [{ count: unresolvedCount }, { count: pendingCount }, { data: sprint }] = await Promise.all([
     supabase
       .from('disputes')
       .select('id', { count: 'exact', head: true })
       .eq('sprint_id', sprintId)
       .not('status', 'in', `("${TERMINAL_DISPUTE_STATUSES.join('","')}")`),
+    sprintTaskIds.length > 0
+      ? supabase
+          .from('task_submissions')
+          .select('id', { count: 'exact', head: true })
+          .in('task_id', sprintTaskIds)
+          .eq('review_status', 'pending')
+      : Promise.resolve({ count: 0 } as { count: number }),
     supabase
       .from('sprints')
       .select('settlement_integrity_flags')
@@ -92,10 +107,14 @@ export async function resolveSettlementBlockers(
     ? (sprint.settlement_integrity_flags as Json[])
     : [];
   const unresolvedDisputes = unresolvedCount ?? 0;
+  const pendingSubmissions = pendingCount ?? 0;
   const reasons: string[] = [];
 
   if (unresolvedDisputes > 0) {
     reasons.push(`${unresolvedDisputes} unresolved dispute(s)`);
+  }
+  if (pendingSubmissions > 0) {
+    reasons.push(`${pendingSubmissions} submission(s) still pending review`);
   }
   if (integrityFlags.length > 0) {
     reasons.push('unresolved integrity flags are present');
@@ -104,6 +123,7 @@ export async function resolveSettlementBlockers(
   return {
     blocked: reasons.length > 0,
     unresolved_disputes: unresolvedDisputes,
+    pending_submissions: pendingSubmissions,
     integrity_flag_count: integrityFlags.length,
     integrity_flags: integrityFlags,
     reasons,

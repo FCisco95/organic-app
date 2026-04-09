@@ -1069,6 +1069,8 @@
       "estimatedPoints": "Estimated points",
       "estimatedXp": "Estimated XP",
       "base": "base",
+      "noReward": "Score 0 — no points awarded",
+      "settledAtSprintClose": "Points settled at sprint close",
       "whatChangedTitle": "What changed",
       "whatChangedPoints": "+{points} points awarded to the contributor.",
       "whatChangedXp": "~+{xp} XP awarded from this review outcome.",
@@ -1251,6 +1253,7 @@
       "critical": "Critical"
     },
     "qualityScores": {
+      "0": "Spam / Reject",
       "1": "Poor",
       "2": "Below Average",
       "3": "Average",

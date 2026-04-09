@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { addCommentSchema } from '@/features/proposals/schemas';
 import { parseJsonBody } from '@/lib/parse-json-body';
+import { applyUserRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
 
 type RouteParams = { params: Promise<{ id: string }> };
@@ -77,6 +78,13 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    const rateLimited = await applyUserRateLimit(
+      user.id,
+      'proposals:comment',
+      RATE_LIMITS.comment
+    );
+    if (rateLimited) return rateLimited;
 
     // Parse and validate
     const { data: rawBody, error: jsonError } = await parseJsonBody(request);

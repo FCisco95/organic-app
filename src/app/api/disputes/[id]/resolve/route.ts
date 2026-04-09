@@ -138,15 +138,13 @@ export async function POST(
         .eq('id', dispute.task_id)
         .single();
 
-      const basePoints = task?.base_points ?? 0;
-      const earnedPoints = basePoints;
-
+      // Points are settled at sprint close; earned_points left null here.
       const { error: subError } = await supabase
         .from('task_submissions')
         .update({
           review_status: 'approved',
           quality_score: 5,
-          earned_points: earnedPoints,
+          earned_points: null,
           reviewed_at: now,
         })
         .eq('id', dispute.submission_id);
@@ -170,24 +168,13 @@ export async function POST(
         .eq('id', dispute.task_id)
         .single();
 
-      const basePoints = task?.base_points ?? 0;
-      const multipliers: Record<number, number> = {
-        1: 0.2,
-        2: 0.4,
-        3: 0.6,
-        4: 0.8,
-        5: 1.0,
-      };
-      const earnedPoints = Math.round(
-        basePoints * (multipliers[input.new_quality_score] ?? 0.6)
-      );
-
+      // Points are settled at sprint close; earned_points left null here.
       const { error: subError } = await supabase
         .from('task_submissions')
         .update({
           review_status: 'approved',
           quality_score: input.new_quality_score,
-          earned_points: earnedPoints,
+          earned_points: null,
           reviewed_at: now,
         })
         .eq('id', dispute.submission_id);

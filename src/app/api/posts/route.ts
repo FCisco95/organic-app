@@ -289,12 +289,9 @@ export async function POST(request: NextRequest) {
       }),
     ];
 
-    // Organic creation bonus: 3 points
-    if (isOrganic) {
-      rewards.push(
-        awardPoints(service, user.id, 3, 'Organic post creation bonus', 'engagement', postId)
-      );
-    }
+    // Engagement no longer awards points. Points are only earned from
+    // sprint task completion (settled at sprint close, weighted by score).
+    // XP continues to reward engagement.
 
     await Promise.allSettled(rewards);
 

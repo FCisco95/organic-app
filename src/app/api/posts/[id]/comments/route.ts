@@ -5,7 +5,7 @@ import { logger } from '@/lib/logger';
 import { applyUserRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { addPostCommentSchema } from '@/features/posts/schemas';
 import { awardXp } from '@/features/gamification/xp-service';
-import { awardPoints, getPromotionMultiplier, type PromotionTier } from '@/features/gamification/points-service';
+import { getPromotionMultiplier, type PromotionTier } from '@/features/gamification/points-service';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const rateLimited = await applyUserRateLimit(user.id, 'posts:comment', RATE_LIMITS.write);
+    const rateLimited = await applyUserRateLimit(user.id, 'posts:comment', RATE_LIMITS.comment);
     if (rateLimited) return rateLimited;
 
     const { data: profile } = await supabase
@@ -190,20 +190,9 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         })
       );
 
-      // Author points: 2 pts for comments on organic posts (with promotion multiplier)
-      if (isOrganicActive) {
-        const authorPts = Math.round(2 * promoMultiplier);
-        rewards.push(
-          awardPoints(
-            service,
-            post.author_id,
-            authorPts,
-            'Comment received on organic post',
-            'engagement',
-            `comment:${postId}:${comment.id}`
-          )
-        );
-      }
+      // Engagement no longer awards points. Points are only earned from
+      // sprint task completion (settled at sprint close, weighted by score).
+      // XP continues to reward engagement.
     }
 
     await Promise.allSettled(rewards);
