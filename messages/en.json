@@ -156,6 +156,7 @@
     "disconnectWallet": "Disconnect Wallet",
     "rewards": "Rewards",
     "adminRewards": "Manage Rewards",
+    "userManagement": "User Management",
     "submissions": "Submissions",
     "refAndQuests": "Ref & Quests",
     "onboarding": "Setup Progress",
@@ -1069,6 +1070,8 @@
       "estimatedPoints": "Estimated points",
       "estimatedXp": "Estimated XP",
       "base": "base",
+      "noReward": "Score 0 — no points awarded",
+      "settledAtSprintClose": "Points settled at sprint close",
       "whatChangedTitle": "What changed",
       "whatChangedPoints": "+{points} points awarded to the contributor.",
       "whatChangedXp": "~+{xp} XP awarded from this review outcome.",
@@ -1251,6 +1254,7 @@
       "critical": "Critical"
     },
     "qualityScores": {
+      "0": "Spam / Reject",
       "1": "Poor",
       "2": "Below Average",
       "3": "Average",
@@ -3398,8 +3402,8 @@
     "actions": {
       "reviewSubmissions": "Review Submissions",
       "processRewards": "Process Rewards",
-      "editGovernance": "Edit Governance",
-      "viewMembers": "View Members"
+      "manageUsers": "Manage Users",
+      "editGovernance": "Edit Governance"
     },
     "timeline": {
       "updated": "updated",

@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { parseJsonBody } from '@/lib/parse-json-body';
 import { disputeCommentSchema } from '@/features/disputes/schemas';
 import { logger } from '@/lib/logger';
+import { checkUserRestriction } from '@/lib/moderation';
 
 export const dynamic = 'force-dynamic';
 
@@ -132,6 +133,9 @@ export async function POST(
         { status: 403 }
       );
     }
+
+    const restricted = await checkUserRestriction(supabase, user.id);
+    if (restricted) return restricted;
 
     // Cannot comment on terminal disputes
     const terminalStatuses = ['resolved', 'dismissed', 'withdrawn', 'mediated'];

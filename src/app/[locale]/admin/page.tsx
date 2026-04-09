@@ -158,8 +158,8 @@ export default function AdminDashboardPage() {
   const quickActions = [
     { label: t('actions.reviewSubmissions'), href: '/admin/submissions', icon: ClipboardCheck },
     { label: t('actions.processRewards'), href: '/admin/rewards', icon: Gift },
+    { label: t('actions.manageUsers'), href: '/admin/users', icon: Shield },
     { label: t('actions.editGovernance'), href: '/admin/settings', icon: Settings },
-    { label: t('actions.viewMembers'), href: '/community', icon: Users },
   ];
 
   return (

@@ -161,7 +161,7 @@ export function ResolvePanel({
           </label>
           <p className="text-xs text-gray-500 mb-2">{tf('newQualityScoreHint')}</p>
           <div className="flex gap-2">
-            {[1, 2, 3, 4, 5].map((score) => (
+            {[0, 1, 2, 3, 4, 5].map((score) => (
               <button
                 key={score}
                 type="button"

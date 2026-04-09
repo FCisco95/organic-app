@@ -6,6 +6,7 @@ import { addIdeaCommentSchema } from '@/features/ideas/schemas';
 import { applyUserRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { isIdeasIncubatorEnabled } from '@/config/feature-flags';
 import { awardXp } from '@/features/gamification/xp-service';
+import { checkUserRestriction } from '@/lib/moderation';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -87,8 +88,11 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const rateLimited = await applyUserRateLimit(user.id, 'ideas:comment', RATE_LIMITS.write);
+    const rateLimited = await applyUserRateLimit(user.id, 'ideas:comment', RATE_LIMITS.comment);
     if (rateLimited) return rateLimited;
+
+    const restricted = await checkUserRestriction(supabase, user.id);
+    if (restricted) return restricted;
 
     const { data: profile } = await supabase
       .from('user_profiles')

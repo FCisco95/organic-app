@@ -7,6 +7,7 @@ import { getMessages, setRequestLocale } from 'next-intl/server';
 import { LayoutClient } from '@/components/layout-client';
 import { QueryProvider } from '@/components/query-provider';
 import { LaunchBanner } from '@/components/layout/launch-banner';
+import { RestrictionBanner } from '@/components/layout/restriction-banner';
 
 import type { Viewport } from 'next';
 
@@ -60,6 +61,7 @@ export default async function RootLayout({
             <AuthProvider>
               <SolanaWalletProvider>
                 <LaunchBanner />
+                <RestrictionBanner />
                 <LayoutClient>{children}</LayoutClient>
               </SolanaWalletProvider>
             </AuthProvider>

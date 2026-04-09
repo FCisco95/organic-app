@@ -3,12 +3,7 @@
 import { useState } from 'react';
 import { Check, X, Loader2, User, Clock } from 'lucide-react';
 import type { TaskSubmissionWithReviewer } from '@/features/tasks';
-import {
-  useReviewSubmission,
-  calculateEarnedPoints,
-  getQualityMultiplierPercent,
-  estimateXpFromPoints,
-} from '@/features/tasks';
+import { useReviewSubmission } from '@/features/tasks';
 import { QualityRating } from '../quality-rating';
 import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
@@ -43,9 +38,6 @@ export function SubmissionReviewCard({
   const [rejectionReason, setRejectionReason] = useState('');
   const [isRejecting, setIsRejecting] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const estimatedPoints = calculateEarnedPoints(basePoints, qualityScore);
-  const estimatedXp = estimateXpFromPoints(estimatedPoints);
 
   const maybeResolveAchievementName = (achievementId: string, fallback: string) => {
     try {
@@ -98,7 +90,7 @@ export function SubmissionReviewCard({
       await reviewSubmission.mutateAsync({
         submissionId: submission.id,
         review: {
-          quality_score: qualityScore as 1 | 2 | 3 | 4 | 5,
+          quality_score: qualityScore,
           reviewer_notes: reviewerNotes || undefined,
           action: 'approve',
         },
@@ -107,8 +99,6 @@ export function SubmissionReviewCard({
       onImpact?.({
         tone: 'positive',
         lines: [
-          t('whatChangedPoints', { points: estimatedPoints.toLocaleString() }),
-          t('whatChangedXp', { xp: estimatedXp.toLocaleString() }),
           t('whatChangedQuestHint'),
         ],
       });
@@ -132,7 +122,7 @@ export function SubmissionReviewCard({
       await reviewSubmission.mutateAsync({
         submissionId: submission.id,
         review: {
-          quality_score: qualityScore as 1 | 2 | 3 | 4 | 5,
+          quality_score: qualityScore,
           reviewer_notes: reviewerNotes || undefined,
           action: 'reject',
           rejection_reason: rejectionReason,
@@ -191,18 +181,9 @@ export function SubmissionReviewCard({
           </label>
           <div className="flex items-center gap-4">
             <QualityRating value={qualityScore} onChange={setQualityScore} size="lg" showLabel />
-            <span className="text-sm text-gray-500">
-              ({t('multiplier', { percent: getQualityMultiplierPercent(qualityScore) })})
-            </span>
           </div>
-          <p
-            className="mt-2 text-sm text-gray-600"
-            data-testid={`task-review-impact-estimate-${submission.id}`}
-          >
-            {t('estimatedPoints')}: <strong>{estimatedPoints}</strong> ({t('base')}: {basePoints})
-          </p>
-          <p className="mt-1 text-sm text-gray-600">
-            {t('estimatedXp')}: <strong>{estimatedXp}</strong>
+          <p className="mt-2 text-xs text-gray-500">
+            {t('base')}: {basePoints} pts — {qualityScore === 0 ? t('noReward') : t('settledAtSprintClose')}
           </p>
         </div>
 

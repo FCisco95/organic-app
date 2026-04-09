@@ -2818,6 +2818,7 @@ export type Database = {
           current_streak: number
           discord: string | null
           email: string
+          flagged: boolean
           id: string
           last_active_date: string | null
           level: number
@@ -2827,6 +2828,10 @@ export type Database = {
           onboarding_completed_at: string | null
           organic_id: number | null
           profile_visible: boolean
+          restricted_at: string | null
+          restricted_by: string | null
+          restriction_reason: string | null
+          restriction_status: string
           role: Database["public"]["Enums"]["user_role"] | null
           tasks_completed: number
           total_points: number
@@ -2845,6 +2850,7 @@ export type Database = {
           current_streak?: number
           discord?: string | null
           email: string
+          flagged?: boolean
           id: string
           last_active_date?: string | null
           level?: number
@@ -2854,6 +2860,10 @@ export type Database = {
           onboarding_completed_at?: string | null
           organic_id?: number | null
           profile_visible?: boolean
+          restricted_at?: string | null
+          restricted_by?: string | null
+          restriction_reason?: string | null
+          restriction_status?: string
           role?: Database["public"]["Enums"]["user_role"] | null
           tasks_completed?: number
           total_points?: number
@@ -2872,6 +2882,7 @@ export type Database = {
           current_streak?: number
           discord?: string | null
           email?: string
+          flagged?: boolean
           id?: string
           last_active_date?: string | null
           level?: number
@@ -2881,6 +2892,10 @@ export type Database = {
           onboarding_completed_at?: string | null
           organic_id?: number | null
           profile_visible?: boolean
+          restricted_at?: string | null
+          restricted_by?: string | null
+          restriction_reason?: string | null
+          restriction_status?: string
           role?: Database["public"]["Enums"]["user_role"] | null
           tasks_completed?: number
           total_points?: number

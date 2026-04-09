@@ -388,6 +388,8 @@ export const RATE_LIMITS = {
   write: { limit: 20, windowMs: 60_000 },
   /** Sensitive endpoints: 5 req/min per user/IP */
   sensitive: { limit: 5, windowMs: 60_000 },
+  /** Comment creation: 3 req/min per user (anti-spam) */
+  comment: { limit: 3, windowMs: 60_000 },
 
   // Legacy aliases kept for compatibility with existing route imports.
   /** Proposal creation: 20 req/min per user */

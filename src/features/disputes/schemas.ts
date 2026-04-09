@@ -104,7 +104,7 @@ export const resolveDisputeSchema = z
     new_quality_score: z
       .number()
       .int()
-      .min(1)
+      .min(0)
       .max(5)
       .nullable()
       .default(null),

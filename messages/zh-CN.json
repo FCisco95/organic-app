@@ -1069,6 +1069,8 @@
       "estimatedPoints": "预计积分",
       "estimatedXp": "预计 XP",
       "base": "基础",
+      "noReward": "评分 0 — 不获得积分",
+      "settledAtSprintClose": "积分在冲刺结束时结算",
       "whatChangedTitle": "变更摘要",
       "whatChangedPoints": "为贡献者增加 +{points} 积分。",
       "whatChangedXp": "本次审核结果预计带来 ~+{xp} XP。",
@@ -1251,6 +1253,7 @@
       "critical": "紧急"
     },
     "qualityScores": {
+      "0": "垃圾 / 拒绝",
       "1": "差",
       "2": "低于平均",
       "3": "一般",

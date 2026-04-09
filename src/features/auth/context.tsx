@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 import type { AuthContextType, UserProfile } from './types';
 
 const USER_PROFILE_COLUMNS =
-  'id, email, name, role, organic_id, wallet_pubkey, avatar_url, bio, location, website, twitter, twitter_verified, discord, profile_visible, xp_total, level, current_streak, longest_streak, last_active_date, total_points, claimable_points, tasks_completed, onboarding_completed_at, created_at, updated_at';
+  'id, email, name, role, organic_id, wallet_pubkey, avatar_url, bio, location, website, twitter, twitter_verified, discord, profile_visible, xp_total, level, current_streak, longest_streak, last_active_date, total_points, claimable_points, tasks_completed, onboarding_completed_at, restriction_status, restriction_reason, restricted_at, restricted_by, flagged, created_at, updated_at';
 
 const AuthContext = createContext<AuthContextType>({
   user: null,

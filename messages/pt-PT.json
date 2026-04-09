@@ -1069,6 +1069,8 @@
       "estimatedPoints": "Pontos estimados",
       "estimatedXp": "XP estimado",
       "base": "base",
+      "noReward": "Pontuação 0 — sem pontos atribuídos",
+      "settledAtSprintClose": "Pontos calculados ao fechar o sprint",
       "whatChangedTitle": "O que mudou",
       "whatChangedPoints": "+{points} pontos atribuídos ao colaborador.",
       "whatChangedXp": "~+{xp} XP atribuídos com este resultado da revisão.",
@@ -1251,6 +1253,7 @@
       "critical": "Crítica"
     },
     "qualityScores": {
+      "0": "Spam / Rejeitar",
       "1": "Fraco",
       "2": "Abaixo da Média",
       "3": "Médio",

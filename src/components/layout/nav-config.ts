@@ -12,6 +12,7 @@ import {
   Rocket,
   Scale,
   Settings,
+  ShieldAlert,
   Sparkles,
   Trophy,
   User,
@@ -201,6 +202,7 @@ export function getSidebarNavSections(context: NavContext): NavSections {
       icon: ClipboardCheck,
     },
     { id: 'adminRewards', href: '/admin/rewards', labelKey: 'adminRewards', icon: Gift },
+    { id: 'userManagement', href: '/admin/users', labelKey: 'userManagement', icon: ShieldAlert },
     { id: 'settings', href: '/admin/settings', labelKey: 'settings', icon: Settings },
   ].filter((item) => {
     if (item.id === 'settings') return isAdmin;
@@ -264,5 +266,6 @@ export const routeLabelMap: Record<string, string> = {
   admin: 'sectionAdmin',
   profile: 'profile',
   submissions: 'submissions',
+  users: 'userManagement',
   settings: 'settings',
 };

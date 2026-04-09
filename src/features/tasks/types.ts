@@ -225,6 +225,7 @@ export interface ReviewData {
 
 // Quality score labels
 export const QUALITY_SCORE_LABELS: Record<number, string> = {
+  0: 'Spam / Reject',
   1: 'Poor',
   2: 'Below Average',
   3: 'Average',
@@ -232,8 +233,11 @@ export const QUALITY_SCORE_LABELS: Record<number, string> = {
   5: 'Excellent',
 };
 
-// Quality multipliers (match database function)
+// Quality multipliers — kept for display/estimation only. Actual points
+// are computed at sprint close via settle_sprint_task_points() using
+// proportional pool splits (score / sum_scores).
 export const QUALITY_MULTIPLIERS: Record<number, number> = {
+  0: 0,   //  0%
   1: 0.2, // 20%
   2: 0.4, // 40%
   3: 0.6, // 60%
