@@ -4,6 +4,7 @@ import { logger } from '@/lib/logger';
 import { applyUserRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { awardXp } from '@/features/gamification/xp-service';
 import { getPromotionMultiplier, type PromotionTier } from '@/features/gamification/points-service';
+import { checkUserRestriction } from '@/lib/moderation';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -23,6 +24,9 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     const rateLimited = await applyUserRateLimit(user.id, 'posts:like', RATE_LIMITS.write);
     if (rateLimited) return rateLimited;
+
+    const restricted = await checkUserRestriction(supabase, user.id);
+    if (restricted) return restricted;
 
     // Check post exists and is published — include organic/promotion fields
     const { data: post } = await (supabase as any)

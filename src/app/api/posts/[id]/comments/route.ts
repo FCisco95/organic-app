@@ -6,6 +6,7 @@ import { applyUserRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { addPostCommentSchema } from '@/features/posts/schemas';
 import { awardXp } from '@/features/gamification/xp-service';
 import { getPromotionMultiplier, type PromotionTier } from '@/features/gamification/points-service';
+import { checkUserRestriction } from '@/lib/moderation';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -82,6 +83,9 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     const rateLimited = await applyUserRateLimit(user.id, 'posts:comment', RATE_LIMITS.comment);
     if (rateLimited) return rateLimited;
+
+    const restricted = await checkUserRestriction(supabase, user.id);
+    if (restricted) return restricted;
 
     const { data: profile } = await supabase
       .from('user_profiles')

@@ -156,6 +156,7 @@
     "disconnectWallet": "Disconnect Wallet",
     "rewards": "Rewards",
     "adminRewards": "Manage Rewards",
+    "userManagement": "User Management",
     "submissions": "Submissions",
     "refAndQuests": "Ref & Quests",
     "onboarding": "Setup Progress",
@@ -3401,8 +3402,8 @@
     "actions": {
       "reviewSubmissions": "Review Submissions",
       "processRewards": "Process Rewards",
-      "editGovernance": "Edit Governance",
-      "viewMembers": "View Members"
+      "manageUsers": "Manage Users",
+      "editGovernance": "Edit Governance"
     },
     "timeline": {
       "updated": "updated",

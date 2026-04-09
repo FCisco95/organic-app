@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { parseJsonBody } from '@/lib/parse-json-body';
 import { logger } from '@/lib/logger';
 import { createCommentSchema } from '@/features/tasks/schemas';
+import { checkUserRestriction } from '@/lib/moderation';
 
 // GET - Fetch comments for a task with cursor pagination
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -81,6 +82,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     if (authError || !user) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
+
+    const restricted = await checkUserRestriction(supabase, user.id);
+    if (restricted) return restricted;
 
     const { data: body, error: jsonError } = await parseJsonBody(request);
     if (jsonError) {

@@ -13,6 +13,7 @@ import {
   getWeeklyOrganicPostCount,
   type PostType,
 } from '@/features/gamification/points-service';
+import { checkUserRestriction } from '@/lib/moderation';
 
 const POST_SELECT =
   '*, author:user_profiles!posts_author_id_fkey(id,name,email,organic_id,avatar_url)';
@@ -140,6 +141,9 @@ export async function POST(request: NextRequest) {
 
     const rateLimited = await applyUserRateLimit(user.id, 'posts:create', RATE_LIMITS.write);
     if (rateLimited) return rateLimited;
+
+    const restricted = await checkUserRestriction(supabase, user.id);
+    if (restricted) return restricted;
 
     const { data: profile } = await supabase
       .from('user_profiles')
