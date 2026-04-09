@@ -38,11 +38,12 @@ type LeaderboardRow = {
   xp_total: number | null;
   level: number | null;
   current_streak: number | null;
+  restriction_status: string | null;
 };
 const RESPONSE_CACHE_CONTROL = 'public, s-maxage=300, stale-while-revalidate=600';
 // No email or wallet — PII must not appear in public leaderboard
 const LEADERBOARD_COLUMNS =
-  'id, name, organic_id, avatar_url, total_points, tasks_completed, role, rank, dense_rank, xp_total, level, current_streak';
+  'id, name, organic_id, avatar_url, total_points, tasks_completed, role, rank, dense_rank, xp_total, level, current_streak, restriction_status';
 
 type NormalizedLeaderboardEntry = Omit<LeaderboardEntry, 'rank'>;
 
@@ -122,7 +123,9 @@ async function fetchLeaderboardRows(forceLiveView = false): Promise<LeaderboardR
 
 async function fetchLeaderboardPayload(forceLiveView = false): Promise<{ leaderboard: LeaderboardEntry[] }> {
   const rows = await fetchLeaderboardRows(forceLiveView);
+  const hiddenStatuses = new Set(['restricted', 'banned']);
   const normalized = rows
+    .filter((row) => !hiddenStatuses.has(row.restriction_status ?? ''))
     .map(normalizeLeaderboardRow)
     .filter((row): row is NormalizedLeaderboardEntry => row !== null);
 

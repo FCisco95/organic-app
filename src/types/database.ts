@@ -3136,6 +3136,7 @@ export type Database = {
           name: string | null
           organic_id: number | null
           rank: number | null
+          restriction_status: string | null
           role: Database["public"]["Enums"]["user_role"] | null
           tasks_completed: number | null
           total_points: number | null
@@ -3155,6 +3156,7 @@ export type Database = {
           name: string | null
           organic_id: number | null
           rank: number | null
+          restriction_status: string | null
           role: Database["public"]["Enums"]["user_role"] | null
           tasks_completed: number | null
           total_points: number | null
