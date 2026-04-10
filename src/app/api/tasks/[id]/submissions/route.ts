@@ -167,32 +167,16 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
-    // Get the task
-    const { data: task, error: taskError } = await supabase
+    // Get the task using service client to avoid transient RLS read failures
+    // blocking authenticated submissions. The caller is already authenticated
+    // above and eligibility is enforced by subsequent organic-id/sprint checks.
+    const { data: task, error: taskError } = await serviceClient
       .from('tasks')
       .select('id, task_type, status, base_points, points, sprint_id')
       .eq('id', taskId)
       .single();
 
-    let resolvedTask = task;
-    let taskClient = supabase;
-
     if (taskError || !task) {
-      const { data: serviceTask } = await serviceClient
-        .from('tasks')
-        .select('id, task_type, status, base_points, points, sprint_id')
-        .eq('id', taskId)
-        .single();
-
-      if (!serviceTask) {
-        return NextResponse.json({ error: 'Task not found' }, { status: 404 });
-      }
-
-      resolvedTask = serviceTask;
-      taskClient = serviceClient;
-    }
-
-    if (!resolvedTask) {
       return NextResponse.json({ error: 'Task not found' }, { status: 404 });
     }
 
@@ -210,17 +194,17 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: 'Organic ID required to submit work' }, { status: 403 });
     }
 
-    if (!resolvedTask.sprint_id) {
+    if (!task.sprint_id) {
       return NextResponse.json(
         { error: 'Task must be in an active sprint to submit work' },
         { status: 400 }
       );
     }
 
-    const { data: sprint, error: sprintError } = await taskClient
+    const { data: sprint, error: sprintError } = await supabase
       .from('sprints')
       .select('status')
-      .eq('id', resolvedTask.sprint_id)
+      .eq('id', task.sprint_id)
       .single();
 
     if (sprintError) {
@@ -260,7 +244,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       }
     }
 
-    const taskType = resolvedTask.task_type ?? 'custom';
+    const taskType = task.task_type ?? 'custom';
 
     // Verify submission type matches task type
     if (submissionData.submission_type !== taskType) {
@@ -284,7 +268,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     let submissionInsertPayload: Record<string, unknown> = submissionData;
 
     if (submissionData.submission_type === 'twitter') {
-      const { data: twitterTaskConfig, error: twitterTaskError } = await taskClient
+      const { data: twitterTaskConfig, error: twitterTaskError } = await supabase
         .from('twitter_engagement_tasks')
         .select(
           'engagement_type, target_tweet_id, auto_verify, auto_approve, requires_ai_review, verification_window_hours'
@@ -299,7 +283,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         );
       }
 
-      const { data: twitterAccount, error: twitterAccountError } = await taskClient
+      const { data: twitterAccount, error: twitterAccountError } = await supabase
         .from('twitter_accounts')
         .select('id')
         .eq('user_id', user.id)
@@ -414,7 +398,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     }
 
     // Update task status to review unless already done
-    if (resolvedTask.status !== 'done') {
+    if (task.status !== 'done') {
       await supabase.from('tasks').update({ status: 'review' }).eq('id', taskId);
     }
 

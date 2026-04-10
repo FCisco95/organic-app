@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { memberFiltersSchema } from '@/features/members/schemas';
 import { logger } from '@/lib/logger';
+import { escapePostgrestValue } from '@/lib/security';
 
 export async function GET(request: NextRequest) {
   try {
@@ -28,6 +29,7 @@ export async function GET(request: NextRequest) {
         'id, name, email, avatar_url, organic_id, role, total_points, tasks_completed, profile_visible, created_at, level',
         { count: 'exact' }
       )
+      .eq('profile_visible', true)
       .order('total_points', { ascending: false });
 
     if (role !== 'all') {
@@ -35,7 +37,8 @@ export async function GET(request: NextRequest) {
     }
 
     if (search) {
-      query = query.or(`name.ilike.%${search}%,email.ilike.%${search}%`);
+      const safeSearch = escapePostgrestValue(search);
+      query = query.or(`name.ilike.%${safeSearch}%,email.ilike.%${safeSearch}%`);
     }
 
     query = query.range(offset, offset + limit - 1);
@@ -56,6 +59,7 @@ export async function GET(request: NextRequest) {
     const roleCountQuery = await supabase
       .from('user_profiles')
       .select('role')
+      .eq('profile_visible', true)
       .not('role', 'is', null);
 
     const allProfiles = roleCountQuery.data ?? [];

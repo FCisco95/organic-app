@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { parseJsonBody } from '@/lib/parse-json-body';
 import { logger } from '@/lib/logger';
+import { escapePostgrestValue } from '@/lib/security';
 import { applyUserRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { createIdeaSchema, listIdeasQuerySchema } from '@/features/ideas/schemas';
 import { isIdeasIncubatorEnabled } from '@/config/feature-flags';
@@ -63,7 +64,8 @@ export async function GET(request: NextRequest) {
       .limit(limit);
 
     if (search) {
-      query = query.or(`title.ilike.%${search}%,body.ilike.%${search}%`);
+      const safeSearch = escapePostgrestValue(search);
+      query = query.or(`title.ilike.%${safeSearch}%,body.ilike.%${safeSearch}%`);
     }
 
     const weekStart = new Date();

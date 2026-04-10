@@ -3661,5 +3661,14 @@
     "ctaSubtitle": "Limited beta spots available. Get your platform set up with white-glove onboarding.",
     "ctaButton": "Request Early Access",
     "ctaFootnote": "We'll respond within 48 hours. No commitment required."
+  },
+  "Error": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred. You can try again or go back to the home page.",
+    "retry": "Try again",
+    "goHome": "Go home",
+    "proposalTitle": "Couldn't load this proposal",
+    "proposalDescription": "There was an error loading the proposal. It may have been removed or you may not have access.",
+    "backToProposals": "Back to proposals"
   }
 }

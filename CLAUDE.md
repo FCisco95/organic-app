@@ -155,6 +155,18 @@ For each task:
 7. Validate with repo scripts before handoff when change impact warrants it.
 8. Report exactly what changed and where.
 
+## Testing (non-negotiable)
+
+Every code change must have corresponding tests. Do not skip testing even if not explicitly asked.
+
+- **Security changes** (auth, input validation, RLS, privacy): always add or update tests in `tests/security/`
+- **Utility functions**: unit test inputs, edge cases, and attack vectors
+- **API routes**: test that auth enforcement, error codes, and data filtering work correctly
+- **Bug fixes**: write a regression test that would have caught the bug
+- Run `npx vitest run tests/security/` after security changes
+- Run `npm run test` after feature module changes
+- All tests must pass before marking work complete
+
 ## Validation matrix
 
 Run checks proportional to risk.
@@ -163,6 +175,7 @@ General code changes:
 
 - `npm run lint`
 - `npm run build` for important or cross-cutting changes
+- `npx vitest run` for any changed modules with test coverage
 
 UI/i18n changes:
 

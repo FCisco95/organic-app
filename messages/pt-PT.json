@@ -3660,5 +3660,14 @@
       "step2Title": "Ganhar ao Interagir",
       "step2Desc": "Navega pelos impulsos ativos e interage com tweets para ganhar pontos. Submete prova do teu envolvimento (gosto, retweet ou comentário) e recebe pontos após verificação."
     }
+  },
+  "Error": {
+    "title": "Algo correu mal",
+    "description": "Ocorreu um erro inesperado. Podes tentar novamente ou voltar à página inicial.",
+    "retry": "Tentar novamente",
+    "goHome": "Ir para o início",
+    "proposalTitle": "Não foi possível carregar esta proposta",
+    "proposalDescription": "Houve um erro ao carregar a proposta. Pode ter sido removida ou poderás não ter acesso.",
+    "backToProposals": "Voltar às propostas"
   }
 }

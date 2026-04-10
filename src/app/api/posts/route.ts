@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { parseJsonBody } from '@/lib/parse-json-body';
 import { logger } from '@/lib/logger';
+import { escapePostgrestValue } from '@/lib/security';
 import { applyUserRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { createPostSchema, listPostsQuerySchema } from '@/features/posts/schemas';
 import { awardXp } from '@/features/gamification/xp-service';
@@ -48,7 +49,8 @@ export async function GET(request: NextRequest) {
       .limit(limit);
 
     if (search) {
-      query = query.or(`title.ilike.%${search}%,body.ilike.%${search}%`);
+      const safeSearch = escapePostgrestValue(search);
+      query = query.or(`title.ilike.%${safeSearch}%,body.ilike.%${safeSearch}%`);
     }
 
     if (type) {
@@ -82,7 +84,7 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       logger.error('Posts feed query failed', { message: error.message, code: error.code, details: error.details });
-      return NextResponse.json({ items: [], error: 'Failed to fetch posts' }, { status: 200 });
+      return NextResponse.json({ items: [], error: 'Failed to fetch posts' }, { status: 500 });
     }
 
     // Check user likes
@@ -123,7 +125,7 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     logger.error('Posts GET route error', error);
-    return NextResponse.json({ items: [], error: 'Internal server error' }, { status: 200 });
+    return NextResponse.json({ items: [], error: 'Internal server error' }, { status: 500 });
   }
 }
 

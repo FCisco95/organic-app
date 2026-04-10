@@ -3660,5 +3660,14 @@
       "step2Title": "通过互动赚取",
       "step2Desc": "浏览活跃的推广并与推文互动以赚取积分。提交你的互动证明（点赞、转推或评论），验证后即可获得积分。"
     }
+  },
+  "Error": {
+    "title": "出了点问题",
+    "description": "发生了意外错误。你可以重试或返回首页。",
+    "retry": "重试",
+    "goHome": "返回首页",
+    "proposalTitle": "无法加载此提案",
+    "proposalDescription": "加载提案时出错。它可能已被删除或你可能没有访问权限。",
+    "backToProposals": "返回提案列表"
   }
 }
