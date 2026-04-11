@@ -103,6 +103,10 @@ export function useVoteResults(proposalId: string) {
       return fetchJson<VoteResults>(`/api/proposals/${proposalId}/results`);
     },
     enabled: !!proposalId,
+    // Treat as fresh for a short window so VotingPanel and VoteResults,
+    // which mount on the same detail page via separate dynamic imports,
+    // share one fetch instead of each triggering their own on mount.
+    staleTime: 5_000,
     refetchInterval: (query) => (query.state.data?.is_voting_open ? 30_000 : false),
   });
 }

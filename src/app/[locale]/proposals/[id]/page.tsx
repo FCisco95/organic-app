@@ -209,9 +209,15 @@ export default function ProposalDetailPage() {
     }
   }, [proposalId]);
 
-  // Fetch stage transition history
+  // Fetch stage transition history. Gated on auth because
+  // proposal_stage_events RLS rejects anonymous reads — the query 400s
+  // for signed-out visitors and produces console noise on every load.
   const fetchStageEvents = useCallback(async () => {
     if (!proposalId) return;
+    if (!user) {
+      setStageEvents([]);
+      return;
+    }
     try {
       const supabase = createClient();
       const { data, error } = await supabase
@@ -226,7 +232,7 @@ export default function ProposalDetailPage() {
     } catch {
       setStageEvents([]);
     }
-  }, [proposalId]);
+  }, [proposalId, user]);
 
   useEffect(() => {
     void fetchExecutionTasks();
