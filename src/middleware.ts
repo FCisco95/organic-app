@@ -192,6 +192,21 @@ function buildCspHeader(nonce: string): string {
   ].join('; ');
 }
 
+// Detect Next.js App Router RSC prefetch / data-only requests.
+//
+// Next.js Edge Runtime strips the obvious signals (the `RSC` and
+// `Next-Router-Prefetch` headers, the `_rsc` query param) before middleware
+// runs, so none of those are observable here. The reliable signal that
+// survives is `Sec-Fetch-Dest`: real browser navigations send
+// `Sec-Fetch-Dest: document`, while Next's router prefetch (a `fetch()`
+// call) sends `Sec-Fetch-Dest: empty`. curl, bots, and link unfurlers don't
+// set the header at all, so absence is treated as "not a prefetch" and they
+// get the normal CSP + auth-redirect path.
+function isRscPrefetch(request: NextRequest): boolean {
+  const dest = request.headers.get('sec-fetch-dest');
+  return dest !== null && dest !== 'document';
+}
+
 export async function middleware(request: NextRequest) {
   // CVE-2025-29927: Strip internal header to prevent middleware bypass
   request.headers.delete('x-middleware-subrequest');
@@ -215,12 +230,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Generate a per-request nonce for CSP (Edge-compatible crypto)
-  const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
-
-  // Pass nonce to server components via request headers
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set('x-nonce', nonce);
+  const rscPrefetch = isRscPrefetch(request);
 
   // Skip if URL already has a locale prefix
   const pathnameHasLocale = locales.some(
@@ -234,16 +244,27 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  let response = NextResponse.next({
-    request: {
-      headers: requestHeaders,
-    },
-  });
+  // RSC prefetches don't contain inline scripts, so they don't need a CSP
+  // nonce. Skipping nonce generation here avoids unnecessary per-request work
+  // and prevents the router from seeing a fresh Content-Security-Policy
+  // header on every prefetch response (which was churning Next's internal
+  // cache behavior).
+  const requestHeaders = new Headers(request.headers);
+  let response: NextResponse;
 
-  // Set CSP with per-request nonce on all page responses
-  const cspHeader = buildCspHeader(nonce);
-  response.headers.set('Content-Security-Policy', cspHeader);
-  response.headers.set('x-nonce', nonce);
+  if (rscPrefetch) {
+    response = NextResponse.next({ request: { headers: requestHeaders } });
+  } else {
+    // Generate a per-request nonce for CSP (Edge-compatible crypto)
+    const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
+    requestHeaders.set('x-nonce', nonce);
+
+    response = NextResponse.next({ request: { headers: requestHeaders } });
+
+    // Set CSP with per-request nonce on all real page responses
+    response.headers.set('Content-Security-Policy', buildCspHeader(nonce));
+    response.headers.set('x-nonce', nonce);
+  }
 
   // Strip locale prefix to get the bare route for protection checks
   const localeMatch = pathname.match(/^\/[a-z]{2}(-[a-zA-Z]{2,})?(\/.*)?$/);
@@ -259,6 +280,32 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
+  // Build the login URL once so both the no-cookie and stale-cookie branches
+  // below can redirect to the same target for real navigations.
+  const locale = pathname.match(/^\/([a-z]{2}(-[a-zA-Z]{2,})?)/)?.[1] || defaultLocale;
+  const loginUrl = request.nextUrl.clone();
+  loginUrl.pathname = `/${locale}/login`;
+  loginUrl.searchParams.set('returnTo', barePathname);
+
+  // Cheap shortcut: if there is no Supabase auth cookie at all, the user is
+  // definitely unauthenticated and we can skip the getUser() network roundtrip.
+  // On a real navigation we redirect to login; on an RSC prefetch we return 204
+  // (see long comment below about why prefetches can't follow redirects).
+  const hasAuthCookie = request.cookies
+    .getAll()
+    .some((c) => c.name.startsWith('sb-') && c.name.endsWith('-auth-token'));
+
+  if (!hasAuthCookie) {
+    return rscPrefetch
+      ? new NextResponse(null, { status: 204 })
+      : NextResponse.redirect(loginUrl);
+  }
+
+  // Cookie present — do the real validation. We *must* run this for prefetches
+  // too: previously we short-circuited every prefetch of a protected route
+  // with a 204, which meant authenticated users got no prefetching on any
+  // protected link and every click triggered a full server roundtrip instead
+  // of a soft transition.
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -279,15 +326,18 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) {
-    const locale = pathname.match(/^\/([a-z]{2}(-[a-zA-Z]{2,})?)/)?.[1] || defaultLocale;
-    const loginUrl = request.nextUrl.clone();
-    loginUrl.pathname = `/${locale}/login`;
-    loginUrl.searchParams.set('returnTo', barePathname);
-    return NextResponse.redirect(loginUrl);
+  if (user) {
+    // Authenticated: prefetches and real navigations both get the normal
+    // RSC response (with CSP on real nav, without CSP on prefetch).
+    return response;
   }
 
-  return response;
+  // Cookie present but invalid (expired session, tampered token, etc.).
+  // Same fallback as the no-cookie branch: 204 for prefetches so Next's
+  // router falls back to a normal navigation on click, redirect for real nav.
+  return rscPrefetch
+    ? new NextResponse(null, { status: 204 })
+    : NextResponse.redirect(loginUrl);
 }
 
 export const config = {
