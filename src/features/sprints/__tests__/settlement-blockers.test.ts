@@ -12,6 +12,7 @@ test('parseSettlementBlockers returns defaults for null input', () => {
   assert.deepEqual(result, {
     blocked: false,
     unresolved_disputes: 0,
+    pending_submissions: 0,
     integrity_flag_count: 0,
     integrity_flags: [],
     reasons: [],
