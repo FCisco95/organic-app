@@ -197,12 +197,14 @@ function buildCspHeader(nonce: string): string {
 // Next.js Edge Runtime strips the obvious signals (the `RSC` and
 // `Next-Router-Prefetch` headers, the `_rsc` query param) before middleware
 // runs, so none of those are observable here. The reliable signal that
-// still reaches us is the Accept header: full page navigations request
-// `text/html,...`, while Next's router fetches RSC payloads with `* / *`
-// (without spaces).
+// survives is `Sec-Fetch-Dest`: real browser navigations send
+// `Sec-Fetch-Dest: document`, while Next's router prefetch (a `fetch()`
+// call) sends `Sec-Fetch-Dest: empty`. curl, bots, and link unfurlers don't
+// set the header at all, so absence is treated as "not a prefetch" and they
+// get the normal CSP + auth-redirect path.
 function isRscPrefetch(request: NextRequest): boolean {
-  const accept = request.headers.get('accept') ?? '';
-  return accept.length > 0 && !accept.includes('text/html');
+  const dest = request.headers.get('sec-fetch-dest');
+  return dest !== null && dest !== 'document';
 }
 
 export async function middleware(request: NextRequest) {
@@ -278,18 +280,32 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
-  // On an RSC prefetch of a protected route, responding with a 302 to /login
-  // breaks Next's router: it can't follow a redirect on a prefetch response
-  // and the fetch() rejects with "TypeError: Failed to fetch", after which
-  // every subsequent click to that link does a full browser navigation
-  // instead of a soft client transition. Returning 204 tells the router
-  // "prefetch unavailable, fall back to normal navigation on click", which
-  // then hits the middleware as a real request and redirects to login
-  // properly.
-  if (rscPrefetch) {
-    return new NextResponse(null, { status: 204 });
+  // Build the login URL once so both the no-cookie and stale-cookie branches
+  // below can redirect to the same target for real navigations.
+  const locale = pathname.match(/^\/([a-z]{2}(-[a-zA-Z]{2,})?)/)?.[1] || defaultLocale;
+  const loginUrl = request.nextUrl.clone();
+  loginUrl.pathname = `/${locale}/login`;
+  loginUrl.searchParams.set('returnTo', barePathname);
+
+  // Cheap shortcut: if there is no Supabase auth cookie at all, the user is
+  // definitely unauthenticated and we can skip the getUser() network roundtrip.
+  // On a real navigation we redirect to login; on an RSC prefetch we return 204
+  // (see long comment below about why prefetches can't follow redirects).
+  const hasAuthCookie = request.cookies
+    .getAll()
+    .some((c) => c.name.startsWith('sb-') && c.name.endsWith('-auth-token'));
+
+  if (!hasAuthCookie) {
+    return rscPrefetch
+      ? new NextResponse(null, { status: 204 })
+      : NextResponse.redirect(loginUrl);
   }
 
+  // Cookie present — do the real validation. We *must* run this for prefetches
+  // too: previously we short-circuited every prefetch of a protected route
+  // with a 204, which meant authenticated users got no prefetching on any
+  // protected link and every click triggered a full server roundtrip instead
+  // of a soft transition.
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -310,15 +326,18 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) {
-    const locale = pathname.match(/^\/([a-z]{2}(-[a-zA-Z]{2,})?)/)?.[1] || defaultLocale;
-    const loginUrl = request.nextUrl.clone();
-    loginUrl.pathname = `/${locale}/login`;
-    loginUrl.searchParams.set('returnTo', barePathname);
-    return NextResponse.redirect(loginUrl);
+  if (user) {
+    // Authenticated: prefetches and real navigations both get the normal
+    // RSC response (with CSP on real nav, without CSP on prefetch).
+    return response;
   }
 
-  return response;
+  // Cookie present but invalid (expired session, tampered token, etc.).
+  // Same fallback as the no-cookie branch: 204 for prefetches so Next's
+  // router falls back to a normal navigation on click, redirect for real nav.
+  return rscPrefetch
+    ? new NextResponse(null, { status: 204 })
+    : NextResponse.redirect(loginUrl);
 }
 
 export const config = {
