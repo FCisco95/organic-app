@@ -130,7 +130,23 @@ export default function ProposalsPage() {
     }
   }
 
-  const votingProposals = (rawProposals ?? []).filter((p) => p.status === 'voting');
+  // Stable reference so LiveVoteBanner's memoized derivations (endsAtMs,
+  // countdown effect) don't re-run on every parent render — that thrash
+  // is what caused the navigation freeze.
+  const votingProposals = useMemo(
+    () =>
+      (rawProposals ?? [])
+        .filter((p) => p.status === 'voting')
+        .sort((a, b) => {
+          if (!a.voting_ends_at) return 1;
+          if (!b.voting_ends_at) return -1;
+          return (
+            new Date(a.voting_ends_at).getTime() -
+            new Date(b.voting_ends_at).getTime()
+          );
+        }),
+    [rawProposals]
+  );
   const regularProposals =
     statusFilter === 'all' && votingProposals.length > 0
       ? (proposals ?? []).filter((p) => p.status !== 'voting')

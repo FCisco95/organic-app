@@ -38,15 +38,8 @@ function sameTimeLeft(a: TimeLeft | null, b: TimeLeft | null): boolean {
   );
 }
 
-/**
- * Countdown hook that takes a stable epoch-ms target (number, not Date).
- *
- * Critical: do NOT pass a freshly constructed Date here. A new Date()
- * on every parent render makes the effect dependency unstable, which
- * tears down + recreates the interval on every render and keeps React's
- * transition lane warm — that starves router.push and manifests as the
- * page "freezing" on link clicks. See docs/plans/proposals-freeze-diagnosis.md.
- */
+// targetMs must be a stable primitive (not a Date), otherwise the effect
+// dep churns every render and starves React's router transition lane.
 function useCountdown(targetMs: number | null): TimeLeft | null {
   const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(() =>
     targetMs !== null ? calcTimeLeft(targetMs) : null
@@ -61,8 +54,6 @@ function useCountdown(targetMs: number | null): TimeLeft | null {
     const update = () => {
       setTimeLeft((prev) => {
         const next = calcTimeLeft(targetMs);
-        // Bail out when the visible value hasn't changed so React can
-        // skip re-render and free the transition lane.
         return sameTimeLeft(prev, next) ? prev : next;
       });
     };
@@ -93,25 +84,11 @@ function Separator() {
 export function LiveVoteBanner({ proposals }: LiveVoteBannerProps) {
   const t = useTranslations('Proposals');
 
-  const votingProposals = useMemo(
-    () =>
-      proposals
-        .filter((p) => p.status === 'voting')
-        .sort((a, b) => {
-          if (!a.voting_ends_at) return 1;
-          if (!b.voting_ends_at) return -1;
-          return (
-            new Date(a.voting_ends_at).getTime() -
-            new Date(b.voting_ends_at).getTime()
-          );
-        }),
-    [proposals]
-  );
-
-  const primary = votingProposals[0] ?? null;
-  // Memoize to an epoch-ms primitive so useCountdown's effect dependency
-  // stays Object.is-stable across renders. Passing `new Date(...)` here
-  // would recreate the identity every render and starve router transitions.
+  // proposals is expected to already be filtered to status === 'voting'
+  // and sorted by voting_ends_at ascending (see ProposalsPage).
+  const primary = proposals[0] ?? null;
+  // Epoch-ms primitive keeps useCountdown's effect dependency stable so
+  // the interval isn't torn down and rebuilt on every parent render.
   const endsAtMs = useMemo(
     () => (primary?.voting_ends_at ? new Date(primary.voting_ends_at).getTime() : null),
     [primary?.voting_ends_at]
@@ -137,9 +114,9 @@ export function LiveVoteBanner({ proposals }: LiveVoteBannerProps) {
             <span className={`flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest ${isExpired ? 'text-slate-200' : 'text-organic-terracotta-light'}`}>
               <Zap className="h-3 w-3" />
               {isExpired ? t('awaitingFinalization') : t('liveVoting')}
-              {votingProposals.length > 1 && (
+              {proposals.length > 1 && (
                 <span className="ml-1 rounded-full bg-white/20 px-1.5 py-0.5 text-[10px] font-semibold text-white">
-                  +{votingProposals.length - 1}
+                  +{proposals.length - 1}
                 </span>
               )}
             </span>
@@ -153,7 +130,11 @@ export function LiveVoteBanner({ proposals }: LiveVoteBannerProps) {
         </div>
 
         <div className="flex flex-shrink-0 flex-col items-start gap-3 sm:items-end">
-          <VoteCountdown endsAtMs={endsAtMs} timeLeft={timeLeft} t={t} />
+          {endsAtMs === null ? (
+            <p className="text-xs font-semibold text-organic-terracotta-light">{t('votingOpen')}</p>
+          ) : (
+            <VoteCountdown timeLeft={timeLeft} t={t} />
+          )}
           <Link
             href={`/proposals/${primary.id}`}
             className={`inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-bold shadow-sm transition-colors ${isExpired ? 'bg-white/90 text-slate-700 hover:bg-white' : 'bg-white text-organic-terracotta hover:bg-organic-terracotta-lightest'}`}
@@ -167,13 +148,7 @@ export function LiveVoteBanner({ proposals }: LiveVoteBannerProps) {
   );
 }
 
-function VoteCountdown({ endsAtMs, timeLeft, t }: { endsAtMs: number | null; timeLeft: TimeLeft | null; t: ReturnType<typeof useTranslations<'Proposals'>> }) {
-  if (endsAtMs === null) {
-    return (
-      <p className="text-xs font-semibold text-organic-terracotta-light">{t('votingOpen')}</p>
-    );
-  }
-
+function VoteCountdown({ timeLeft, t }: { timeLeft: TimeLeft | null; t: ReturnType<typeof useTranslations<'Proposals'>> }) {
   if (!timeLeft) {
     return (
       <p className="text-xs font-semibold text-slate-200">{t('votingClosed')}</p>
