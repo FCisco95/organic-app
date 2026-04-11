@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
 import { fetchJson } from '@/lib/fetch-json';
 import { buildQueryString } from '@/lib/query-string';
+import { useAuth } from '@/features/auth/context';
 import type { TaskWithRelations, TaskDependency, SubtaskSummary } from '../types';
 import type { AddDependencyInput, CreateSubtaskInput } from '../schemas';
 import { taskKeys } from './keys';
@@ -11,9 +12,11 @@ import { taskKeys } from './keys';
 // ─── Dependencies ────────────────────────────────────────────────────────
 
 /**
- * Fetch dependencies for a task (tasks that block this task)
+ * Fetch dependencies for a task (tasks that block this task).
+ * Gated on auth because the API returns 401 for anonymous visitors.
  */
 export function useTaskDependencies(taskId: string) {
+  const { user } = useAuth();
   return useQuery({
     queryKey: taskKeys.dependencies(taskId),
     queryFn: async () => {
@@ -26,7 +29,7 @@ export function useTaskDependencies(taskId: string) {
         blocked_by_this: (result.blocked_by_this ?? []) as TaskDependency[],
       };
     },
-    enabled: !!taskId,
+    enabled: !!taskId && !!user,
   });
 }
 

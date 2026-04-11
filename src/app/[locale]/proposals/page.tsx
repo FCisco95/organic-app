@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useDeferredValue } from 'react';
+import { useState, useEffect, useDeferredValue, useMemo } from 'react';
 import { Link } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
 import {
@@ -95,16 +95,20 @@ export default function ProposalsPage() {
     setVisibleCount(PAGE_SIZE);
   }, [statusFilter, categoryFilter, deferredSearch, sort]);
 
-  const filters: ProposalFilters = {};
-  if (statusFilter !== 'all') {
-    filters.status = statusFilter as ProposalFilters['status'];
-  }
-  if (categoryFilter !== 'all') {
-    filters.category = categoryFilter as ProposalFilters['category'];
-  }
-  if (deferredSearch.trim()) {
-    filters.search = deferredSearch.trim();
-  }
+  const filters = useMemo<ProposalFilters>(() => {
+    const next: ProposalFilters = {};
+    if (statusFilter !== 'all') {
+      next.status = statusFilter as ProposalFilters['status'];
+    }
+    if (categoryFilter !== 'all') {
+      next.category = categoryFilter as ProposalFilters['category'];
+    }
+    const trimmedSearch = deferredSearch.trim();
+    if (trimmedSearch) {
+      next.search = trimmedSearch;
+    }
+    return next;
+  }, [statusFilter, categoryFilter, deferredSearch]);
 
   const { data: rawProposals, isLoading, isError, refetch } = useProposals(filters);
   const proposals = rawProposals ? sortProposals(rawProposals, sort) : rawProposals;
@@ -126,7 +130,23 @@ export default function ProposalsPage() {
     }
   }
 
-  const votingProposals = (rawProposals ?? []).filter((p) => p.status === 'voting');
+  // Stable reference so LiveVoteBanner's memoized derivations (endsAtMs,
+  // countdown effect) don't re-run on every parent render — that thrash
+  // is what caused the navigation freeze.
+  const votingProposals = useMemo(
+    () =>
+      (rawProposals ?? [])
+        .filter((p) => p.status === 'voting')
+        .sort((a, b) => {
+          if (!a.voting_ends_at) return 1;
+          if (!b.voting_ends_at) return -1;
+          return (
+            new Date(a.voting_ends_at).getTime() -
+            new Date(b.voting_ends_at).getTime()
+          );
+        }),
+    [rawProposals]
+  );
   const regularProposals =
     statusFilter === 'all' && votingProposals.length > 0
       ? (proposals ?? []).filter((p) => p.status !== 'voting')
