@@ -192,6 +192,19 @@ function buildCspHeader(nonce: string): string {
   ].join('; ');
 }
 
+// Detect Next.js App Router RSC prefetch / data-only requests.
+//
+// Next.js Edge Runtime strips the obvious signals (the `RSC` and
+// `Next-Router-Prefetch` headers, the `_rsc` query param) before middleware
+// runs, so none of those are observable here. The reliable signal that
+// still reaches us is the Accept header: full page navigations request
+// `text/html,...`, while Next's router fetches RSC payloads with `* / *`
+// (without spaces).
+function isRscPrefetch(request: NextRequest): boolean {
+  const accept = request.headers.get('accept') ?? '';
+  return accept.length > 0 && !accept.includes('text/html');
+}
+
 export async function middleware(request: NextRequest) {
   // CVE-2025-29927: Strip internal header to prevent middleware bypass
   request.headers.delete('x-middleware-subrequest');
@@ -215,12 +228,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Generate a per-request nonce for CSP (Edge-compatible crypto)
-  const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
-
-  // Pass nonce to server components via request headers
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set('x-nonce', nonce);
+  const rscPrefetch = isRscPrefetch(request);
 
   // Skip if URL already has a locale prefix
   const pathnameHasLocale = locales.some(
@@ -234,16 +242,27 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  let response = NextResponse.next({
-    request: {
-      headers: requestHeaders,
-    },
-  });
+  // RSC prefetches don't contain inline scripts, so they don't need a CSP
+  // nonce. Skipping nonce generation here avoids unnecessary per-request work
+  // and prevents the router from seeing a fresh Content-Security-Policy
+  // header on every prefetch response (which was churning Next's internal
+  // cache behavior).
+  const requestHeaders = new Headers(request.headers);
+  let response: NextResponse;
 
-  // Set CSP with per-request nonce on all page responses
-  const cspHeader = buildCspHeader(nonce);
-  response.headers.set('Content-Security-Policy', cspHeader);
-  response.headers.set('x-nonce', nonce);
+  if (rscPrefetch) {
+    response = NextResponse.next({ request: { headers: requestHeaders } });
+  } else {
+    // Generate a per-request nonce for CSP (Edge-compatible crypto)
+    const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
+    requestHeaders.set('x-nonce', nonce);
+
+    response = NextResponse.next({ request: { headers: requestHeaders } });
+
+    // Set CSP with per-request nonce on all real page responses
+    response.headers.set('Content-Security-Policy', buildCspHeader(nonce));
+    response.headers.set('x-nonce', nonce);
+  }
 
   // Strip locale prefix to get the bare route for protection checks
   const localeMatch = pathname.match(/^\/[a-z]{2}(-[a-zA-Z]{2,})?(\/.*)?$/);
@@ -257,6 +276,18 @@ export async function middleware(request: NextRequest) {
   // navigations don't need an auth check, and getUser() does a network call.
   if (!isProtected) {
     return response;
+  }
+
+  // On an RSC prefetch of a protected route, responding with a 302 to /login
+  // breaks Next's router: it can't follow a redirect on a prefetch response
+  // and the fetch() rejects with "TypeError: Failed to fetch", after which
+  // every subsequent click to that link does a full browser navigation
+  // instead of a soft client transition. Returning 204 tells the router
+  // "prefetch unavailable, fall back to normal navigation on click", which
+  // then hits the middleware as a real request and redirects to login
+  // properly.
+  if (rscPrefetch) {
+    return new NextResponse(null, { status: 204 });
   }
 
   const supabase = createServerClient(
