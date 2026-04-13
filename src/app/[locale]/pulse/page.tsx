@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
@@ -67,6 +67,12 @@ type AnalyticsTab = 'overview' | 'personal' | 'governance';
 export default function AnalyticsPage() {
   const t = useTranslations('Analytics');
   const { user } = useAuth();
+
+  useEffect(() => {
+    document.title = 'Pulse — Organic';
+    return () => { document.title = 'Organic'; };
+  }, []);
+
   const [preset, setPreset] = useState<AnalyticsPreset>('30d');
   const { data, isLoading } = useAnalytics(preset);
   const [activeTab, setActiveTab] = useState<AnalyticsTab>('overview');

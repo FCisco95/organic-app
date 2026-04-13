@@ -48,6 +48,11 @@ export default function SprintsPage() {
   const tTasks = useTranslations('Tasks');
   const searchParams = useSearchParams();
 
+  useEffect(() => {
+    document.title = 'Sprints — Organic';
+    return () => { document.title = 'Organic'; };
+  }, []);
+
   // Use React Query for sprints
   const { data: sprintsData, isLoading: sprintsLoading, isError: sprintsFetchError, refetch: refetchSprints } = useSprints();
   const sprints = useMemo(() => sprintsData ?? [], [sprintsData]);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Link, useRouter } from '@/i18n/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { useSearchParams } from 'next/navigation';
@@ -50,6 +50,11 @@ function PasswordStrengthBar({ password }: { password: string }) {
 export default function SignUpPage() {
   const t = useTranslations('Signup');
   const searchParams = useSearchParams();
+
+  useEffect(() => {
+    document.title = 'Create Account — Organic';
+    return () => { document.title = 'Organic'; };
+  }, []);
   const referralCode = searchParams.get('ref') ?? undefined;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

@@ -100,6 +100,11 @@ function ProposalsPageInner() {
   const deferredSearch = useDeferredValue(searchTerm);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
+  useEffect(() => {
+    document.title = 'Proposals — Organic';
+    return () => { document.title = 'Organic'; };
+  }, []);
+
   const isAdmin = profile?.role && ['admin', 'council'].includes(profile.role);
 
   useEffect(() => {

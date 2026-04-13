@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, Suspense } from 'react';
+import { useMemo, useState, useEffect, Suspense } from 'react';
 import { useUrlFilters } from '@/hooks/use-url-filters';
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
@@ -48,6 +48,11 @@ function IdeasPageInner() {
   const { filters: urlFilters, setFilter } = useUrlFilters(FILTER_DEFAULTS);
   const sort = urlFilters.sort as IdeaSort;
   const search = urlFilters.q;
+
+  useEffect(() => {
+    document.title = 'Ideas — Organic';
+    return () => { document.title = 'Organic'; };
+  }, []);
   const activeTab = urlFilters.tab as FeedTab;
 
   const enabled = isIdeasIncubatorEnabled();

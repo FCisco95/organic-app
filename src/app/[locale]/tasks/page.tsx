@@ -36,6 +36,11 @@ export default function TasksPage() {
   const { user, profile } = useAuth();
   const t = useTranslations('Tasks');
   const standardLabelKeys = [...STANDARD_LABEL_KEYS] as string[];
+
+  useEffect(() => {
+    document.title = 'Tasks — Organic';
+    return () => { document.title = 'Organic'; };
+  }, []);
   const [tasks, setTasks] = useState<TaskListItem[]>([]);
   const [sprints, setSprints] = useState<Sprint[]>([]);
   const [activeView, setActiveView] = useState<TaskTab>('all');

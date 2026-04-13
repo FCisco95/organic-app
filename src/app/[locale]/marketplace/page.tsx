@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
 import { useAuth } from '@/features/auth/context';
@@ -20,6 +20,11 @@ export default function MarketplacePage() {
   const { user } = useAuth();
   const isAuthenticated = !!user;
   const enabled = isMarketplaceEnabled();
+
+  useEffect(() => {
+    document.title = 'Boost — Organic';
+    return () => { document.title = 'Organic'; };
+  }, []);
 
   const [activeTab, setActiveTab] = useState<MarketplaceTab>('active');
   const [showCreateDialog, setShowCreateDialog] = useState(false);

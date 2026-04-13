@@ -99,6 +99,11 @@ function PostsPageInner() {
   const [composerOpen, setComposerOpen] = useState(false);
   const [viewMode, setViewMode] = useViewMode();
 
+  useEffect(() => {
+    document.title = 'Posts — Organic';
+    return () => { document.title = 'Organic'; };
+  }, []);
+
   const postsQuery = usePosts({ sort, search, type: typeFilter, organic: organicFilter ? 'true' : undefined });
   const likePost = useLikePost();
   const flagPost = useFlagPost();
@@ -236,7 +241,7 @@ function PostsPageInner() {
               key={opt.labelKey}
               onClick={() => setFilter('type', opt.value ?? '')}
               className={cn(
-                'text-[10px] font-medium px-2 py-1 rounded-full whitespace-nowrap transition-colors',
+                'text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap transition-colors',
                 typeFilter === opt.value && !organicFilter
                   ? 'bg-primary text-primary-foreground'
                   : 'bg-muted text-muted-foreground hover:bg-muted/80',
@@ -249,7 +254,7 @@ function PostsPageInner() {
           <button
             onClick={() => setFilter('organic', organicFilter ? '' : 'true')}
             className={cn(
-              'inline-flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded-full whitespace-nowrap transition-colors',
+              'inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap transition-colors',
               organicFilter
                 ? 'bg-green-500 text-white'
                 : 'bg-muted text-muted-foreground hover:bg-muted/80',
