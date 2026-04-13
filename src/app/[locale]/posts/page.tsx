@@ -187,13 +187,13 @@ function PostsPageInner() {
 
           {/* Sort + View toggle */}
           <div className="flex items-center gap-2">
-            <div className="flex gap-1.5">
+            <div className="flex gap-1.5 overflow-x-auto scrollbar-none min-w-0 flex-1">
               {SORT_KEYS.map((opt) => (
                 <button
                   key={opt.value}
                   onClick={() => setFilter('sort', opt.value)}
                   className={cn(
-                    'text-xs font-medium px-3 py-2.5 rounded-full whitespace-nowrap transition-colors min-h-[44px] inline-flex items-center',
+                    'text-xs font-medium px-3 py-2.5 rounded-full whitespace-nowrap transition-colors min-h-[44px] inline-flex items-center shrink-0',
                     sort === opt.value
                       ? 'bg-primary text-primary-foreground'
                       : 'bg-muted text-muted-foreground hover:bg-muted/80',
@@ -205,7 +205,7 @@ function PostsPageInner() {
             </div>
 
             {/* View mode toggle */}
-            <div className="flex rounded-lg border border-border overflow-hidden ml-1">
+            <div className="flex rounded-lg border border-border overflow-hidden shrink-0">
               <button
                 onClick={() => setViewMode('cards')}
                 className={cn(

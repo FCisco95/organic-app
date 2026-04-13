@@ -668,7 +668,8 @@ export default function TasksPage() {
 
         {/* Segmented pill tabs */}
         <div data-testid="tasks-status-lanes">
-          <div className="overflow-x-auto pb-0.5">
+          <div className="relative">
+          <div className="overflow-x-auto pb-0.5 scrollbar-hide">
           <div data-testid="tasks-tab-bar" className="inline-flex whitespace-nowrap rounded-lg border border-border bg-muted/50 p-1">
             {visibleTabs.map((tab) => (
               <button
@@ -689,6 +690,8 @@ export default function TasksPage() {
               </button>
             ))}
           </div>
+          </div>
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0.5 w-8 bg-gradient-to-l from-background to-transparent lg:hidden" />
           </div>
         </div>
 

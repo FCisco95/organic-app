@@ -22,7 +22,7 @@ export function Breadcrumbs() {
   const currentPage = crumbs[crumbs.length - 1];
 
   return (
-    <nav aria-label="Breadcrumb" className="min-w-0 mx-4">
+    <nav aria-label="Breadcrumb" className="min-w-0 mx-4 shrink overflow-hidden">
       {/* Desktop breadcrumbs */}
       <ol className="hidden md:flex items-center gap-1 text-sm">
         {crumbs.map((crumb, i) => {

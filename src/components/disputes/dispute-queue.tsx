@@ -132,9 +132,10 @@ export function DisputeQueue({ myDisputes = false, showTriageControls = false }:
       )}
 
       {/* Status tabs — GitHub-style underline tabs with counts */}
+      <div className="relative">
       <div
         data-testid="disputes-status-filter-tabs"
-        className="flex gap-0.5 overflow-x-auto border-b border-border"
+        className="flex gap-0.5 overflow-x-auto border-b border-border scrollbar-hide"
       >
         {STATUS_TABS.map((tab) => {
           const count = statusCounts[tab.key] || 0;
@@ -167,6 +168,8 @@ export function DisputeQueue({ myDisputes = false, showTriageControls = false }:
             </button>
           );
         })}
+      </div>
+      <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-background to-transparent lg:hidden" />
       </div>
 
       {/* Dispute list — GitHub issue list style */}

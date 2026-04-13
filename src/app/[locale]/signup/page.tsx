@@ -303,11 +303,11 @@ export default function SignUpPage() {
             </form>
 
             {/* Terms */}
-            <p className="mt-6 text-xs text-muted-foreground text-center animate-auth-fade-in auth-stagger-6 flex items-center justify-center flex-wrap gap-x-1">
+            <p className="mt-6 text-xs text-muted-foreground text-center animate-auth-fade-in auth-stagger-6">
               {t('termsPrefix')}{' '}
               <Link
                 href="/terms"
-                className="inline-flex items-center min-h-[44px] py-2 text-organic-terracotta hover:text-organic-terracotta-hover transition-colors"
+                className="inline text-organic-terracotta hover:text-organic-terracotta-hover transition-colors underline-offset-2 hover:underline"
               >
                 {t('termsLink')}
               </Link>

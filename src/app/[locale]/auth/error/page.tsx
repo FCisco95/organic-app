@@ -48,16 +48,16 @@ export default function AuthErrorPage() {
             <h1 className="text-2xl font-light text-foreground">{t('title')}</h1>
             <p className="mt-3 text-sm text-muted-foreground">{t('description')}</p>
 
-            <div className="mt-8 flex items-center justify-center gap-3">
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
                 href="/login"
-                className="rounded-lg bg-cta px-5 py-3 text-sm font-medium text-cta-fg transition-colors hover:bg-cta-hover"
+                className="w-full sm:w-auto rounded-lg bg-cta px-5 py-3 text-sm font-medium text-cta-fg transition-colors hover:bg-cta-hover text-center"
               >
                 {t('backToLogin')}
               </Link>
               <Link
                 href="/"
-                className="rounded-lg border border-border px-5 py-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted"
+                className="w-full sm:w-auto rounded-lg border border-border px-5 py-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted text-center"
               >
                 {t('goHome')}
               </Link>
