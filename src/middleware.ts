@@ -26,6 +26,7 @@ const PROTECTED_ROUTE_PREFIXES = [
   '/disputes',
   '/sprints',
   '/admin',
+  '/tasks',
 ];
 
 type ApiRateLimitPolicy = {
