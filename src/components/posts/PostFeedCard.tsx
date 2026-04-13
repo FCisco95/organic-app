@@ -6,6 +6,7 @@ import type { PostListItem } from '@/features/posts';
 import type { PostType } from '@/features/posts/types';
 import { useTranslations } from 'next-intl';
 import { LinkPreviewCard } from '@/components/posts/LinkPreviewCard';
+import { usePostTranslation } from '@/features/translation/hooks';
 
 /* ─── Shared types ─────────────────────────────────────────────────────── */
 
@@ -108,6 +109,16 @@ export function FeaturedPostCard({ post, onLike, onClick, onFlag, likeLoading, i
   const author = post.author;
   const isAnnouncement = post.post_type === 'announcement';
   const isPromotedActive = post.is_promoted && post.promotion_expires_at && new Date(post.promotion_expires_at) > new Date();
+  const {
+    translation,
+    isTranslated,
+    isLoading: translateLoading,
+    translate,
+    showOriginal,
+    shouldShowButton: showTranslate,
+  } = usePostTranslation(post.id, post.detected_language);
+  const displayTitle = isTranslated && translation ? translation.title : post.title;
+  const displayBody = isTranslated && translation ? translation.body : post.body;
 
   return (
     <div
@@ -163,12 +174,30 @@ export function FeaturedPostCard({ post, onLike, onClick, onFlag, likeLoading, i
 
       {/* Title — large */}
       <h3 className="text-lg font-bold text-foreground mb-2 line-clamp-2 font-display leading-snug">
-        {post.title}
+        {displayTitle}
       </h3>
 
       {/* Body — extended preview */}
       {post.body && (
-        <p className="text-sm text-muted-foreground line-clamp-6 mb-4 leading-relaxed">{post.body}</p>
+        <p className="text-sm text-muted-foreground line-clamp-6 mb-3 leading-relaxed">{displayBody}</p>
+      )}
+
+      {/* Translate button */}
+      {showTranslate && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            isTranslated ? showOriginal() : translate();
+          }}
+          disabled={translateLoading}
+          className="text-xs text-muted-foreground hover:text-foreground transition-colors mb-3 flex items-center gap-1"
+        >
+          {translateLoading
+            ? t('translateLoading')
+            : isTranslated
+              ? t('translateShowOriginal')
+              : t('translateButton')}
+        </button>
       )}
 
       {/* Link preview */}
@@ -264,6 +293,16 @@ export function PostFeedCard({ post, onLike, onClick, onFlag, likeLoading }: Pos
   const TypeIcon = POST_TYPE_ICONS[post.post_type] ?? AlignLeft;
   const author = post.author;
   const isPromotedActive = post.is_promoted && post.promotion_expires_at && new Date(post.promotion_expires_at) > new Date();
+  const {
+    translation,
+    isTranslated,
+    isLoading: translateLoading,
+    translate,
+    showOriginal,
+    shouldShowButton: showTranslate,
+  } = usePostTranslation(post.id, post.detected_language);
+  const displayTitle = isTranslated && translation ? translation.title : post.title;
+  const displayBody = isTranslated && translation ? translation.body : post.body;
 
   return (
     <div
@@ -309,11 +348,29 @@ export function PostFeedCard({ post, onLike, onClick, onFlag, likeLoading }: Pos
       </div>
 
       {/* Title */}
-      <h3 className="text-sm font-semibold text-foreground mb-1 line-clamp-2">{post.title}</h3>
+      <h3 className="text-sm font-semibold text-foreground mb-1 line-clamp-2">{displayTitle}</h3>
 
       {/* Body preview */}
       {post.body && (
-        <p className="text-[13px] text-muted-foreground line-clamp-3 mb-2">{post.body}</p>
+        <p className="text-[13px] text-muted-foreground line-clamp-3 mb-1">{displayBody}</p>
+      )}
+
+      {/* Translate button */}
+      {showTranslate && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            isTranslated ? showOriginal() : translate();
+          }}
+          disabled={translateLoading}
+          className="text-xs text-muted-foreground hover:text-foreground transition-colors mb-2 flex items-center gap-1"
+        >
+          {translateLoading
+            ? t('translateLoading')
+            : isTranslated
+              ? t('translateShowOriginal')
+              : t('translateButton')}
+        </button>
       )}
 
       {/* Link preview */}
