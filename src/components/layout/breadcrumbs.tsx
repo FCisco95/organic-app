@@ -78,6 +78,9 @@ function buildCrumbs(
 
   // Build path crumbs
   let currentPath = '';
+  // If the first segment isn't a known route, this is likely a 404
+  const isUnknownRoute = segments.length > 0 && !routeLabelMap[segments[0]] && !routeSectionMap[segments[0]];
+
   for (let i = 0; i < segments.length; i++) {
     const seg = segments[i];
     currentPath += `/${seg}`;
@@ -89,6 +92,9 @@ function buildCrumbs(
         label: t(labelKey),
         href: isLast ? undefined : currentPath,
       });
+    } else if (isUnknownRoute && i === 0) {
+      // Unknown top-level route — show "Not Found" instead of "Detail"
+      crumbs.push({ label: t('breadcrumbNotFound') });
     } else {
       // Dynamic segment (ID) — show as "Detail"
       const isLast = i === segments.length - 1;
