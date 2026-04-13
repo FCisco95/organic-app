@@ -86,12 +86,13 @@ export default function PostsPage() {
   );
 }
 
+const POSTS_FILTER_DEFAULTS: Record<string, string> = { sort: 'new', q: '', type: '', organic: '' };
+
 function PostsPageInner() {
   const router = useRouter();
   const t = useTranslations('Posts');
   const { profile } = useAuth();
-  const FILTER_DEFAULTS: Record<string, string> = { sort: 'new', q: '', type: '', organic: '' };
-  const { filters: urlFilters, setFilter } = useUrlFilters(FILTER_DEFAULTS);
+  const { filters: urlFilters, setFilter } = useUrlFilters(POSTS_FILTER_DEFAULTS);
   const sort = urlFilters.sort as PostSort;
   const search = urlFilters.q;
   const typeFilter = urlFilters.type || undefined;

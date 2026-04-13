@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { ArrowLeft } from 'lucide-react';
@@ -14,9 +13,8 @@ export default function ProposalError({
 }) {
   const t = useTranslations('Error');
 
-  useEffect(() => {
-    console.error('Proposal error boundary caught:', error);
-  }, [error]);
+  // Next.js reports error boundary errors automatically — no manual logging needed.
+  void error;
 
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center">

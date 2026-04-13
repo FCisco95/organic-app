@@ -41,11 +41,12 @@ export default function IdeasPage() {
   );
 }
 
+const IDEAS_FILTER_DEFAULTS: Record<string, string> = { tab: 'all', sort: 'hot', q: '' };
+
 function IdeasPageInner() {
   const t = useTranslations('Ideas');
   const { profile } = useAuth();
-  const FILTER_DEFAULTS: Record<string, string> = { tab: 'all', sort: 'hot', q: '' };
-  const { filters: urlFilters, setFilter } = useUrlFilters(FILTER_DEFAULTS);
+  const { filters: urlFilters, setFilter } = useUrlFilters(IDEAS_FILTER_DEFAULTS);
   const sort = urlFilters.sort as IdeaSort;
   const search = urlFilters.q;
 

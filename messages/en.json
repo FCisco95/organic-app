@@ -69,6 +69,7 @@
     "trustProposalVoting": "Voting: {count}",
     "trustLeaderboardTitle": "Leaderboard snapshot",
     "trustLeaderboardEmpty": "No ranked contributors yet.",
+    "trustLeaderboardError": "Rankings temporarily unavailable.",
     "trustActivityTitle": "Recent activity",
     "trustActivityRecent": "{count} governance/task events in feed.",
     "trustActivityEmpty": "No recent activity events.",
@@ -3215,6 +3216,7 @@
   "Community": {
     "title": "Community",
     "subtitle": "Meet the people building the Organic DAO — explore rankings and the member directory.",
+    "leaderboardError": "Unable to load rankings. The leaderboard data is temporarily unavailable.",
     "tabRankings": "Rankings",
     "tabDirectory": "Directory",
     "searchRankings": "Search rankings by name or ID...",

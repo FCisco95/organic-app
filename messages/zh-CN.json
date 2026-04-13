@@ -69,6 +69,7 @@
     "trustProposalVoting": "投票中：{count}",
     "trustLeaderboardTitle": "排行榜快照",
     "trustLeaderboardEmpty": "暂无已排名贡献者。",
+    "trustLeaderboardError": "排名暂时不可用。",
     "trustActivityTitle": "近期活动",
     "trustActivityRecent": "动态中有 {count} 条治理/任务事件。",
     "trustActivityEmpty": "暂无近期活动事件。",
@@ -3191,6 +3192,7 @@
   "Community": {
     "title": "社区",
     "subtitle": "认识构建 Organic DAO 的成员 — 浏览排行榜和成员目录。",
+    "leaderboardError": "无法加载排名。排行榜数据暂时不可用。",
     "tabRankings": "排行榜",
     "tabDirectory": "成员目录",
     "searchRankings": "按名称或 ID 搜索排名...",

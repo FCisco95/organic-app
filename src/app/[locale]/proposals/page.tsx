@@ -88,11 +88,12 @@ export default function ProposalsPage() {
   );
 }
 
+const PROPOSAL_FILTER_DEFAULTS: Record<string, string> = { status: 'all', category: 'all', q: '', sort: 'new' };
+
 function ProposalsPageInner() {
   const { user, profile } = useAuth();
   const t = useTranslations('Proposals');
-  const FILTER_DEFAULTS: Record<string, string> = { status: 'all', category: 'all', q: '', sort: 'new' };
-  const { filters: urlFilters, setFilter } = useUrlFilters(FILTER_DEFAULTS);
+  const { filters: urlFilters, setFilter } = useUrlFilters(PROPOSAL_FILTER_DEFAULTS);
   const statusFilter = urlFilters.status;
   const categoryFilter = urlFilters.category;
   const searchTerm = urlFilters.q;

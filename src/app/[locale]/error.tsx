@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 
@@ -13,9 +12,8 @@ export default function RootError({
 }) {
   const t = useTranslations('Error');
 
-  useEffect(() => {
-    console.error('Root error boundary caught:', error);
-  }, [error]);
+  // Next.js reports error boundary errors automatically — no manual logging needed.
+  void error;
 
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center">

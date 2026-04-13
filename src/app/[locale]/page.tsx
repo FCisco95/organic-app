@@ -255,7 +255,7 @@ export default function Home() {
             </div>
             <div className="mt-2 space-y-1 text-sm">
               {leaderboardError ? (
-                <p className="text-sm text-destructive">Rankings temporarily unavailable</p>
+                <p className="text-sm text-destructive">{t('trustLeaderboardError')}</p>
               ) : leaderboardTop.length === 0 ? (
                 <p className="text-muted-foreground">{t('trustLeaderboardEmpty')}</p>
               ) : (
