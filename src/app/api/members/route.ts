@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     let query = supabase
       .from('user_profiles')
       .select(
-        'id, name, email, avatar_url, organic_id, role, total_points, tasks_completed, profile_visible, created_at, level',
+        'id, name, avatar_url, organic_id, role, total_points, tasks_completed, profile_visible, created_at, level',
         { count: 'exact' }
       )
       .eq('profile_visible', true)
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
 
     if (search) {
       const safeSearch = escapePostgrestValue(search);
-      query = query.or(`name.ilike.%${safeSearch}%,email.ilike.%${safeSearch}%`);
+      query = query.or(`name.ilike.%${safeSearch}%`);
     }
 
     query = query.range(offset, offset + limit - 1);
