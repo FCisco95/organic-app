@@ -55,7 +55,7 @@ export default function Home() {
   const t = useTranslations('Home');
   const { data: sprints = [] } = useSprints();
   const { data: proposals = [] } = useProposals();
-  const { data: leaderboard = [] } = useLeaderboard();
+  const { data: leaderboard = [], isError: leaderboardError } = useLeaderboard();
   const { data: activity = [] } = useActivityFeed();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -254,7 +254,9 @@ export default function Home() {
               <span>{t('trustLeaderboardTitle')}</span>
             </div>
             <div className="mt-2 space-y-1 text-sm">
-              {leaderboardTop.length === 0 ? (
+              {leaderboardError ? (
+                <p className="text-sm text-destructive">Rankings temporarily unavailable</p>
+              ) : leaderboardTop.length === 0 ? (
                 <p className="text-muted-foreground">{t('trustLeaderboardEmpty')}</p>
               ) : (
                 leaderboardTop.map((entry, index) => (
