@@ -30,6 +30,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { LinkPreviewCard } from '@/components/posts/LinkPreviewCard';
 import { PROMOTION_CONFIG, type PromotionTier } from '@/features/gamification/points-service';
 import { fetchJson } from '@/lib/fetch-json';
+import { usePostTranslation } from '@/features/translation/hooks';
 
 function timeAgo(dateStr: string): string {
   const now = Date.now();
@@ -84,6 +85,15 @@ export default function PostDetailPage() {
   const isAuthor = post && profile && post.author_id === profile.id;
   const isAdmin = profile?.role === 'admin';
   const isPromotedActive = post?.is_promoted && post?.promotion_expires_at && new Date(post.promotion_expires_at) > new Date();
+
+  const {
+    translation,
+    isTranslated,
+    isLoading: translateLoading,
+    translate,
+    showOriginal,
+    shouldShowButton: showTranslate,
+  } = usePostTranslation(postId, post?.detected_language ?? null);
 
   async function handleLike() {
     if (!profile) {
@@ -166,6 +176,11 @@ export default function PostDetailPage() {
   }
 
   const author = post.author;
+  const displayTitle = isTranslated && translation ? translation.title : post.title;
+  const displayBody = isTranslated && translation ? translation.body : post.body;
+  const displayThreadParts = isTranslated && translation?.threadParts
+    ? translation.threadParts
+    : post.thread_parts;
   const isAnnouncement = post.post_type === 'announcement';
 
   return (
@@ -255,8 +270,23 @@ export default function PostDetailPage() {
           </div>
 
           {/* Title + body */}
-          <h1 className="text-xl font-bold text-foreground mb-3 font-display leading-snug">{post.title}</h1>
-          <div className="text-sm text-foreground/80 whitespace-pre-wrap mb-4 leading-relaxed">{post.body}</div>
+          <h1 className="text-xl font-bold text-foreground mb-3 font-display leading-snug">{displayTitle}</h1>
+          <div className="text-sm text-foreground/80 whitespace-pre-wrap mb-2 leading-relaxed">{displayBody}</div>
+
+          {/* Translate button */}
+          {showTranslate && (
+            <button
+              onClick={isTranslated ? showOriginal : translate}
+              disabled={translateLoading}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors mb-3 flex items-center gap-1.5"
+            >
+              {translateLoading
+                ? t('translateLoading')
+                : isTranslated
+                  ? t('translateShowOriginal')
+                  : t('translateButton')}
+            </button>
+          )}
 
           {/* Link preview */}
           {post.twitter_url && (
@@ -271,10 +301,10 @@ export default function PostDetailPage() {
           )}
 
           {/* Thread parts */}
-          {post.thread_parts && post.thread_parts.length > 0 && (
+          {displayThreadParts && displayThreadParts.length > 0 && (
             <div className="space-y-3 mb-4 pl-3 border-l-2 border-primary/30">
-              {post.thread_parts.map((part) => (
-                <div key={part.id} className="text-sm text-foreground/80 whitespace-pre-wrap">
+              {displayThreadParts.map((part) => (
+                <div key={part.part_order} className="text-sm text-foreground/80 whitespace-pre-wrap">
                   <span className="text-[10px] text-muted-foreground font-medium">
                     {t('detailThreadPart')} {part.part_order + 1}
                   </span>
