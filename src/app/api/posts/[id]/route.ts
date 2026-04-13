@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { parseJsonBody } from '@/lib/parse-json-body';
 import { logger } from '@/lib/logger';
 import { applyUserRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
@@ -161,6 +161,16 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     if (updateError || !updated) {
       logger.error('Post update failed', updateError);
       return NextResponse.json({ error: 'Failed to update post' }, { status: 500 });
+    }
+
+    // Invalidate cached translations if title or body changed
+    if (updateData.title || updateData.body) {
+      const serviceClient = createServiceClient();
+      await (serviceClient as any)
+        .from('content_translations')
+        .delete()
+        .eq('content_type', 'post')
+        .eq('content_id', postId);
     }
 
     return NextResponse.json(updated);
