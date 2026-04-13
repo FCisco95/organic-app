@@ -41,6 +41,7 @@ export interface Post {
   removed_reason: string | null;
   created_at: string;
   updated_at: string;
+  detected_language: string | null;
 }
 
 export interface PostListItem extends Post {
