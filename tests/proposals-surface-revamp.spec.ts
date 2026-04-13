@@ -137,3 +137,19 @@ test.describe('Proposals surface revamp', () => {
     await expect(page.getByTestId('proposal-provenance-callout')).toBeVisible();
   });
 });
+
+test.describe('Proposals mobile search placeholder (S2 regression)', () => {
+  // Regression: placeholder was too long ("Search proposals by title or content...")
+  // causing visual overflow on 390px viewports. Shortened to "Search proposals..."
+  test('search input placeholder fits mobile viewport', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(`${BASE_URL}/en/proposals`, { waitUntil: 'domcontentloaded' });
+    const searchInput = page.getByTestId('proposals-search');
+    if (await searchInput.isVisible({ timeout: 10_000 }).catch(() => false)) {
+      const placeholder = await searchInput.getAttribute('placeholder');
+      expect(placeholder).toBeTruthy();
+      // Placeholder must be short enough to fit in a 390px input (< 30 chars is safe)
+      expect((placeholder ?? '').length).toBeLessThan(30);
+    }
+  });
+});

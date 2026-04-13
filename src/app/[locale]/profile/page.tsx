@@ -347,7 +347,7 @@ export default function ProfilePage() {
             </div>
           }
           stats={
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 overflow-x-auto">
               {[
                 { label: t('totalSubmissionsLabel'), value: stats.totalSubmissions },
                 { label: t('approvedSubmissionsLabel'), value: stats.approvedSubmissions },
@@ -357,7 +357,7 @@ export default function ProfilePage() {
                 <div
                   key={stat.label}
                   className={cn(
-                    'text-center px-3 py-2',
+                    'text-center px-3 py-2 flex-shrink-0',
                     i < 3 && 'border-r border-white/20'
                   )}
                 >
@@ -400,7 +400,7 @@ export default function ProfilePage() {
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
-              className="absolute -bottom-0.5 -right-0.5 p-1.5 bg-cta hover:bg-cta-hover text-cta-fg rounded-full shadow-lg transition-colors disabled:opacity-50"
+              className="absolute -bottom-1 -right-1 p-2.5 bg-cta hover:bg-cta-hover text-cta-fg rounded-full shadow-lg transition-colors disabled:opacity-50"
               title={t('changeProfilePicture')}
               aria-label={t('changeProfilePicture')}
             >

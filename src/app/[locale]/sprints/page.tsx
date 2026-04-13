@@ -726,20 +726,21 @@ export default function SprintsPage() {
               );
             })}
           </div>
-          <div className="mt-2 flex justify-between">
+          <div className="mt-2 flex justify-between gap-x-0.5">
             {SPRINT_PHASE_SEQUENCE.map((phase, index) => {
               const isCurrent = referencePhaseIndex === index;
               const isComplete = referencePhaseIndex > -1 && index < referencePhaseIndex;
               return (
                 <span
                   key={phase}
-                  className={`text-[10px] font-medium ${
+                  className={`min-w-0 max-w-[58px] truncate text-[10px] font-medium ${
                     isCurrent
                       ? 'text-organic-terracotta'
                       : isComplete
                         ? 'text-organic-terracotta'
                         : 'text-gray-400'
                   }`}
+                  title={t(`status.${phase}`)}
                 >
                   {t(`status.${phase}`)}
                 </span>

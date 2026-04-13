@@ -7,9 +7,16 @@ try {
 } catch {
   // @next/bundle-analyzer is optional — only needed for ANALYZE=true builds
 }
-// Only load Sentry in production — importing it in dev triggers edge runtime EvalError
+
+// isProductionBuild: true only during `next build` (NEXT_PHASE = 'phase-production-build').
+// During `next dev` NEXT_PHASE = 'phase-development-server' (or may be unset on first eval).
+// We never want Sentry's instrumentationHook or edge bundle in dev — it uses eval() which
+// is blocked by the edge runtime. Only enable for actual production builds.
+const isProductionBuild = process.env.NEXT_PHASE === 'phase-production-build';
+
+// Only load Sentry in production — importing it in dev triggers webpack issues
 const { withSentryConfig } =
-  process.env.NODE_ENV === 'production'
+  isProductionBuild
     ? require('@sentry/nextjs')
     : { withSentryConfig: (c) => c };
 
@@ -42,7 +49,8 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '2mb',
     },
-    instrumentationHook: process.env.NODE_ENV !== 'development',
+    // Only enable in production builds — avoids Sentry edge-instrumentation EvalError in dev
+    instrumentationHook: isProductionBuild,
   },
   images: {
     remotePatterns: [
@@ -81,8 +89,6 @@ const sentryBuildOptions = {
 };
 
 const finalConfig = withBundleAnalyzer(withNextIntl(nextConfig));
-// Skip Sentry webpack wrapping in dev — edge runtime EvalError blocks all requests
-module.exports =
-  process.env.NODE_ENV === 'development'
-    ? finalConfig
-    : withSentryConfig(finalConfig, sentryBuildOptions);
+module.exports = isProductionBuild
+  ? withSentryConfig(finalConfig, sentryBuildOptions)
+  : finalConfig;

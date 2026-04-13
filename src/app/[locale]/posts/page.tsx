@@ -193,7 +193,7 @@ function PostsPageInner() {
                   key={opt.value}
                   onClick={() => setFilter('sort', opt.value)}
                   className={cn(
-                    'text-xs font-medium px-3 py-1.5 rounded-full whitespace-nowrap transition-colors',
+                    'text-xs font-medium px-3 py-2.5 rounded-full whitespace-nowrap transition-colors min-h-[44px] inline-flex items-center',
                     sort === opt.value
                       ? 'bg-primary text-primary-foreground'
                       : 'bg-muted text-muted-foreground hover:bg-muted/80',
@@ -209,7 +209,7 @@ function PostsPageInner() {
               <button
                 onClick={() => setViewMode('cards')}
                 className={cn(
-                  'p-1.5 transition-colors',
+                  'min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors',
                   viewMode === 'cards'
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-background text-muted-foreground hover:bg-muted',
@@ -221,7 +221,7 @@ function PostsPageInner() {
               <button
                 onClick={() => setViewMode('compact')}
                 className={cn(
-                  'p-1.5 transition-colors',
+                  'min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors',
                   viewMode === 'compact'
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-background text-muted-foreground hover:bg-muted',
@@ -235,35 +235,39 @@ function PostsPageInner() {
         </div>
 
         {/* Type filters */}
-        <div className="flex gap-1.5 mb-5 overflow-x-auto opacity-0 animate-fade-up stagger-4">
-          <SlidersHorizontal className="w-3.5 h-3.5 text-muted-foreground self-center shrink-0" />
-          {TYPE_FILTER_KEYS.map((opt) => (
+        <div className="relative mb-5 opacity-0 animate-fade-up stagger-4">
+          <div className="flex gap-1.5 overflow-x-auto pr-8 scrollbar-none">
+            <SlidersHorizontal className="w-3.5 h-3.5 text-muted-foreground self-center shrink-0" />
+            {TYPE_FILTER_KEYS.map((opt) => (
+              <button
+                key={opt.labelKey}
+                onClick={() => setFilter('type', opt.value ?? '')}
+                className={cn(
+                  'text-xs font-medium px-2 py-2 rounded-full whitespace-nowrap transition-colors min-h-[44px] inline-flex items-center',
+                  typeFilter === opt.value && !organicFilter
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80',
+                )}
+              >
+                {t(opt.labelKey)}
+              </button>
+            ))}
+            <span className="w-px bg-border self-stretch shrink-0" />
             <button
-              key={opt.labelKey}
-              onClick={() => setFilter('type', opt.value ?? '')}
+              onClick={() => setFilter('organic', organicFilter ? '' : 'true')}
               className={cn(
-                'text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap transition-colors',
-                typeFilter === opt.value && !organicFilter
-                  ? 'bg-primary text-primary-foreground'
+                'inline-flex items-center gap-1 text-xs font-medium px-2 py-2 rounded-full whitespace-nowrap transition-colors min-h-[44px]',
+                organicFilter
+                  ? 'bg-green-500 text-white'
                   : 'bg-muted text-muted-foreground hover:bg-muted/80',
               )}
             >
-              {t(opt.labelKey)}
+              <Leaf className="w-2.5 h-2.5" />
+              {t('filterOrganic')}
             </button>
-          ))}
-          <span className="w-px bg-border self-stretch shrink-0" />
-          <button
-            onClick={() => setFilter('organic', organicFilter ? '' : 'true')}
-            className={cn(
-              'inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap transition-colors',
-              organicFilter
-                ? 'bg-green-500 text-white'
-                : 'bg-muted text-muted-foreground hover:bg-muted/80',
-            )}
-          >
-            <Leaf className="w-2.5 h-2.5" />
-            {t('filterOrganic')}
-          </button>
+          </div>
+          {/* Scroll affordance — gradient fade on right edge */}
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-background to-transparent" />
         </div>
 
         {/* Feed */}

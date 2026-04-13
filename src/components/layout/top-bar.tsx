@@ -47,7 +47,7 @@ export function TopBar() {
         <Button
           variant="ghost"
           size="icon"
-          className="md:hidden h-10 w-10"
+          className="md:hidden h-11 w-11"
           onClick={() => setMobileOpen(true)}
         >
           <Menu className="h-4 w-4" />

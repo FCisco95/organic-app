@@ -65,14 +65,14 @@ export default function MarketplacePage() {
         <PageHero icon={Megaphone} title={t('title')} description={t('description')} />
 
         {/* Tab bar + create button */}
-        <div className="flex items-center justify-between border-b border-border opacity-0 animate-fade-up stagger-2">
-          <div className="flex items-center gap-1">
+        <div className="flex items-center justify-between border-b border-border opacity-0 animate-fade-up stagger-2 overflow-x-auto">
+          <div className="flex items-center gap-1 flex-shrink-0">
             {tabs.map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
                 className={cn(
-                  'px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px',
+                  'px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px whitespace-nowrap min-h-[44px]',
                   activeTab === tab.key
                     ? 'border-organic-terracotta text-organic-terracotta dark:text-[#E8845C] font-bold bg-organic-terracotta-lightest dark:bg-organic-terracotta-lightest0/5 rounded-t-lg'
                     : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'

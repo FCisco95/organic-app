@@ -27,7 +27,7 @@ export function LaunchBanner() {
           setDismissed(true);
           localStorage.setItem(BANNER_DISMISSED_KEY, '1');
         }}
-        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1 hover:bg-white/20 transition-colors"
+        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-white/20 transition-colors"
         aria-label={t('dismiss')}
       >
         <X className="h-3.5 w-3.5" />

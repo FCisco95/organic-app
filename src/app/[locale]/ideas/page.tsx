@@ -224,7 +224,7 @@ function IdeasPageInner() {
                 type="button"
                 onClick={() => setFilter('tab', tab.key)}
                 className={cn(
-                  'inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px',
+                  'inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px min-h-[44px]',
                   isActive
                     ? 'border-organic-terracotta text-organic-terracotta dark:text-[#E8845C] font-bold bg-organic-terracotta-lightest dark:bg-organic-terracotta-lightest0/5 rounded-t-lg'
                     : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'

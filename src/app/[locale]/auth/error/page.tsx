@@ -51,13 +51,13 @@ export default function AuthErrorPage() {
             <div className="mt-8 flex items-center justify-center gap-3">
               <Link
                 href="/login"
-                className="rounded-lg bg-cta px-5 py-2.5 text-sm font-medium text-cta-fg transition-colors hover:bg-cta-hover"
+                className="rounded-lg bg-cta px-5 py-3 text-sm font-medium text-cta-fg transition-colors hover:bg-cta-hover"
               >
                 {t('backToLogin')}
               </Link>
               <Link
                 href="/"
-                className="rounded-lg border border-border px-5 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted"
+                className="rounded-lg border border-border px-5 py-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted"
               >
                 {t('goHome')}
               </Link>

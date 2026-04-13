@@ -134,7 +134,7 @@ export default function LoginPage() {
                     if (errors.email) setErrors({ ...errors, email: undefined });
                     if (loginError) setLoginError(null);
                   }}
-                  className={`w-full px-4 py-2.5 bg-background border ${
+                  className={`w-full px-4 py-3 bg-background border ${
                     errors.email ? 'border-red-500' : 'border-input'
                   } rounded-lg text-foreground text-sm focus:border-organic-terracotta focus:ring-2 focus:ring-organic-terracotta/20 focus:outline-none placeholder-muted-foreground transition-colors`}
                   placeholder={t('emailPlaceholder')}
@@ -155,7 +155,7 @@ export default function LoginPage() {
                   </label>
                   <Link
                     href="/forgot-password"
-                    className="text-xs text-organic-terracotta hover:text-organic-terracotta-hover transition-colors"
+                    className="inline-flex items-center min-h-[44px] py-2 text-xs text-organic-terracotta hover:text-organic-terracotta-hover transition-colors"
                   >
                     {t('forgotPassword')}
                   </Link>
@@ -170,7 +170,7 @@ export default function LoginPage() {
                       if (errors.password) setErrors({ ...errors, password: undefined });
                       if (loginError) setLoginError(null);
                     }}
-                    className={`w-full px-4 py-2.5 pr-11 bg-background border ${
+                    className={`w-full px-4 py-3 pr-12 bg-background border ${
                       errors.password ? 'border-red-500' : 'border-input'
                     } rounded-lg text-foreground text-sm focus:border-organic-terracotta focus:ring-2 focus:ring-organic-terracotta/20 focus:outline-none placeholder-muted-foreground transition-colors`}
                     placeholder={t('passwordPlaceholder')}
@@ -178,7 +178,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 flex h-[44px] w-[44px] items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
                     aria-label={showPassword ? t('hidePassword') : t('showPassword')}
                   >
                     {showPassword ? (
@@ -200,7 +200,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-cta hover:bg-cta-hover text-cta-fg font-medium py-2.5 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm flex items-center justify-center gap-2"
+                  className="w-full bg-cta hover:bg-cta-hover text-cta-fg font-medium py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm flex items-center justify-center gap-2"
                 >
                   {loading ? (
                     <>
@@ -218,11 +218,11 @@ export default function LoginPage() {
 
         {/* Navigation link outside card */}
         <div className="mt-4 w-full max-w-[400px] text-center border border-border rounded-lg p-4 bg-card animate-auth-fade-in auth-stagger-4">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground flex items-center justify-center flex-wrap gap-x-1">
             {t('newToOrganic')}{' '}
             <Link
               href="/signup"
-              className="text-organic-terracotta hover:text-organic-terracotta-hover font-medium transition-colors"
+              className="inline-flex items-center min-h-[44px] py-2 text-organic-terracotta hover:text-organic-terracotta-hover font-medium transition-colors"
             >
               {t('createAccount')}
             </Link>

@@ -668,7 +668,8 @@ export default function TasksPage() {
 
         {/* Segmented pill tabs */}
         <div data-testid="tasks-status-lanes">
-          <div data-testid="tasks-tab-bar" className="inline-flex rounded-lg border border-border bg-muted/50 p-1">
+          <div className="overflow-x-auto pb-0.5">
+          <div data-testid="tasks-tab-bar" className="inline-flex whitespace-nowrap rounded-lg border border-border bg-muted/50 p-1">
             {visibleTabs.map((tab) => (
               <button
                 key={tab}
@@ -687,6 +688,7 @@ export default function TasksPage() {
                 </span>
               </button>
             ))}
+          </div>
           </div>
         </div>
 

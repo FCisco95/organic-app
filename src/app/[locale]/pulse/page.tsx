@@ -114,7 +114,7 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Tabs with date selector inline */}
-        <div className="flex items-center justify-between border-b border-border opacity-0 animate-fade-up stagger-5">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-border opacity-0 animate-fade-up stagger-5">
           <div className="flex items-center gap-1">
             {tabs.map((tab) => {
               const Icon = tab.icon;
@@ -136,7 +136,9 @@ export default function AnalyticsPage() {
               );
             })}
           </div>
-          <DateRangeSelector value={preset} onChange={setPreset} />
+          <div className="pb-2 sm:pb-0">
+            <DateRangeSelector value={preset} onChange={setPreset} />
+          </div>
         </div>
 
         {/* Tab content */}

@@ -294,7 +294,7 @@ export default function AdminUsersPage() {
                   onClick={() =>
                     openRestrictionDialog(action, Array.from(selectedIds))
                   }
-                  className={`rounded-md px-3 py-1.5 text-xs font-medium text-white transition-colors ${actionLabels[action].color}`}
+                  className={`rounded-md px-3 py-2 text-xs font-medium text-white transition-colors ${actionLabels[action].color}`}
                 >
                   {actionLabels[action].label}
                 </button>
@@ -433,20 +433,20 @@ export default function AdminUsersPage() {
                               {user.restriction_status === 'active' && (
                                 <button
                                   onClick={() => openRestrictionDialog('warn', [user.id])}
-                                  className="rounded px-2 py-1 text-xs font-medium text-yellow-400 hover:bg-yellow-400/10"
+                                  className="inline-flex items-center min-h-[44px] rounded px-2 py-2 text-xs font-medium text-yellow-400 hover:bg-yellow-400/10"
                                 >
                                   Warn
                                 </button>
                               )}
                               <button
                                 onClick={() => openRestrictionDialog('restrict', [user.id])}
-                                className="rounded px-2 py-1 text-xs font-medium text-orange-400 hover:bg-orange-400/10"
+                                className="inline-flex items-center min-h-[44px] rounded px-2 py-2 text-xs font-medium text-orange-400 hover:bg-orange-400/10"
                               >
                                 Restrict
                               </button>
                               <button
                                 onClick={() => openRestrictionDialog('ban', [user.id])}
-                                className="rounded px-2 py-1 text-xs font-medium text-red-400 hover:bg-red-400/10"
+                                className="inline-flex items-center min-h-[44px] rounded px-2 py-2 text-xs font-medium text-red-400 hover:bg-red-400/10"
                               >
                                 Ban
                               </button>
@@ -454,7 +454,7 @@ export default function AdminUsersPage() {
                           ) : (
                             <button
                               onClick={() => openRestrictionDialog('unrestrict', [user.id])}
-                              className="rounded px-2 py-1 text-xs font-medium text-emerald-400 hover:bg-emerald-400/10"
+                              className="inline-flex items-center min-h-[44px] rounded px-2 py-2 text-xs font-medium text-emerald-400 hover:bg-emerald-400/10"
                             >
                               Unrestrict
                             </button>

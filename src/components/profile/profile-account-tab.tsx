@@ -160,7 +160,7 @@ export function ProfileAccountTab({
             data-testid="profile-privacy-toggle"
             onClick={handleToggleProfileVisibility}
             disabled={updatePrivacyMutation.isPending}
-            className="inline-flex items-center justify-center rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted disabled:opacity-50"
+            className="inline-flex items-center justify-center rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted disabled:opacity-50 min-h-[44px]"
           >
             {updatePrivacyMutation.isPending
               ? t('updatingPrivacy')

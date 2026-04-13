@@ -132,14 +132,14 @@ export default function Home() {
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 <Link
                   href="/login"
-                  className="group inline-flex items-center gap-2 bg-white hover:bg-gray-100 text-gray-900 px-5 py-2.5 rounded-lg text-sm font-medium transition-colors"
+                  className="group inline-flex items-center gap-2 bg-white hover:bg-gray-100 text-gray-900 px-5 py-2.5 min-h-[44px] rounded-lg text-sm font-medium transition-colors"
                 >
                   {t('getStarted')}
                   <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                 </Link>
                 <Link
                   href="/proposals"
-                  className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
+                  className="inline-flex items-center min-h-[44px] text-sm font-medium text-gray-300 hover:text-white transition-colors"
                 >
                   {t('viewProposals')} &rarr;
                 </Link>
@@ -235,7 +235,7 @@ export default function Home() {
               <ListChecks className="h-3.5 w-3.5 text-blue-500" />
               <span>{t('trustProposalTitle')}</span>
             </div>
-            <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-sm">
+            <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-1 text-sm">
               <span className="text-muted-foreground">{t('trustProposalPublic', { count: proposalStageCounts.public })}</span>
               <span className="text-muted-foreground">{t('trustProposalQualified', { count: proposalStageCounts.qualified })}</span>
               <span className="text-muted-foreground">{t('trustProposalDiscussion', { count: proposalStageCounts.discussion })}</span>

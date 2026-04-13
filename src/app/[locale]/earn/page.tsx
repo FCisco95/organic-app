@@ -102,7 +102,7 @@ export default function EarnPage() {
             type="button"
             onClick={() => handleTabChange(tab)}
             className={cn(
-              'px-4 py-2 rounded-md text-sm font-medium transition-colors',
+              'px-4 py-2 rounded-md text-sm font-medium transition-colors min-h-[44px]',
               activeTab === tab
                 ? 'bg-background text-foreground shadow-sm'
                 : 'text-muted-foreground hover:text-foreground'
@@ -146,7 +146,7 @@ export default function EarnPage() {
             <button
               onClick={() => setClaimModalOpen(true)}
               disabled={!canClaim}
-              className="flex items-center gap-2 whitespace-nowrap rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex items-center gap-2 whitespace-nowrap rounded-lg bg-primary px-3 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50 min-h-[44px]"
             >
               {tRewards('overview.claimButton')}
               <ArrowRight className="h-3.5 w-3.5" />
@@ -160,7 +160,7 @@ export default function EarnPage() {
                 key={tab.key}
                 onClick={() => setRewardsSubTab(tab.key)}
                 className={cn(
-                  'rounded-lg px-3.5 py-1.5 text-sm font-medium transition-colors',
+                  'rounded-lg px-3.5 py-2.5 text-sm font-medium transition-colors min-h-[44px]',
                   rewardsSubTab === tab.key
                     ? 'bg-cta text-cta-fg'
                     : 'bg-muted text-muted-foreground hover:bg-muted/80'

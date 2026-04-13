@@ -109,8 +109,8 @@ export function DisputeQueue({ myDisputes = false, showTriageControls = false }:
             {t('triage.totalActive', { count: rawDisputes.length })}
           </span>
 
-          {/* Tier chips */}
-          <div className="ml-auto flex items-center gap-1.5">
+          {/* Tier chips — ml-auto in flex-wrap pushes to right of current row or new wrapped row */}
+          <div className="flex flex-wrap items-center gap-1.5 sm:ml-auto">
             {TIER_TABS.map((tab) => (
               <button
                 key={tab.key}

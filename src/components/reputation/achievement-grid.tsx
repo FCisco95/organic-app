@@ -123,7 +123,7 @@ export function AchievementGrid({ achievements, sets, className, defaultView = '
             <button
               onClick={() => setViewMode('category')}
               className={cn(
-                'text-xs font-medium px-3 py-1.5 rounded-md transition-colors',
+                'text-xs font-medium px-3 py-1.5 rounded-md transition-colors min-h-[44px]',
                 viewMode === 'category' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
               )}
             >
@@ -132,7 +132,7 @@ export function AchievementGrid({ achievements, sets, className, defaultView = '
             <button
               onClick={() => setViewMode('sets')}
               className={cn(
-                'text-xs font-medium px-3 py-1.5 rounded-md transition-colors',
+                'text-xs font-medium px-3 py-1.5 rounded-md transition-colors min-h-[44px]',
                 viewMode === 'sets' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
               )}
             >
@@ -148,7 +148,7 @@ export function AchievementGrid({ achievements, sets, className, defaultView = '
             <button
               onClick={() => setActiveCategory('all')}
               className={cn(
-                'text-xs font-medium px-3 py-1.5 rounded-full whitespace-nowrap transition-colors',
+                'text-xs font-medium px-3 py-1.5 rounded-full whitespace-nowrap transition-colors min-h-[44px]',
                 activeCategory === 'all'
                   ? 'bg-gray-900 text-white'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -161,7 +161,7 @@ export function AchievementGrid({ achievements, sets, className, defaultView = '
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
                 className={cn(
-                  'text-xs font-medium px-3 py-1.5 rounded-full whitespace-nowrap transition-colors',
+                  'text-xs font-medium px-3 py-1.5 rounded-full whitespace-nowrap transition-colors min-h-[44px]',
                   activeCategory === cat
                     ? 'bg-gray-900 text-white'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -179,7 +179,7 @@ export function AchievementGrid({ achievements, sets, className, defaultView = '
           <button
             onClick={() => setActiveRarity('all')}
             className={cn(
-              'text-[10px] font-medium px-2 py-1 rounded-full whitespace-nowrap transition-colors',
+              'text-[10px] font-medium px-2.5 py-2 rounded-full whitespace-nowrap transition-colors min-h-[44px]',
               activeRarity === 'all'
                 ? 'bg-gray-900 text-white'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -194,7 +194,7 @@ export function AchievementGrid({ achievements, sets, className, defaultView = '
                 key={rarity}
                 onClick={() => setActiveRarity(rarity)}
                 className={cn(
-                  'text-[10px] font-medium px-2 py-1 rounded-full whitespace-nowrap transition-colors',
+                  'text-[10px] font-medium px-2.5 py-2 rounded-full whitespace-nowrap transition-colors min-h-[44px]',
                   activeRarity === rarity
                     ? `${colors.bg} ${colors.text} ${colors.border} border`
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'

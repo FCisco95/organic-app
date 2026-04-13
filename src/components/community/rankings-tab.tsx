@@ -181,7 +181,7 @@ export function RankingsTab() {
   const router = useRouter();
   const t = useTranslations('Leaderboard');
   const tC = useTranslations('Community');
-  const { data: leaderboard = [], isLoading: loading } = useLeaderboard();
+  const { data: leaderboard = [], isLoading: loading, isError: leaderboardError } = useLeaderboard();
   const [search, setSearch] = useState('');
   const [sortColumn, setSortColumn] = useState<SortColumn>('rank');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
@@ -520,6 +520,14 @@ export function RankingsTab() {
         <div>
           {/* Search bar skeleton */}
           <SkeletonLoading />
+        </div>
+      )}
+
+      {/* Error state */}
+      {!loading && leaderboardError && (
+        <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-8 text-center">
+          <TrendingUp className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+          <p className="text-sm font-medium text-destructive">{tC('leaderboardError')}</p>
         </div>
       )}
 

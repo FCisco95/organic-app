@@ -29,7 +29,7 @@ export function ProfileTabs({ activeTab, onTabChange }: ProfileTabsProps) {
   ];
 
   return (
-    <div className="flex border-b border-border mb-4 overflow-x-auto">
+    <div className="flex border-b border-border mb-4 overflow-x-auto scrollbar-none">
       {tabs.map((tab) => {
         const Icon = TAB_ICONS[tab.id];
         return (
@@ -37,7 +37,7 @@ export function ProfileTabs({ activeTab, onTabChange }: ProfileTabsProps) {
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
             className={cn(
-              'inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium transition-colors -mb-px whitespace-nowrap',
+              'inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium transition-colors -mb-px whitespace-nowrap flex-shrink-0 min-h-[44px]',
               activeTab === tab.id
                 ? 'border-b-2 border-organic-terracotta text-organic-terracotta'
                 : 'text-muted-foreground hover:text-foreground'
