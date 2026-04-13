@@ -25,18 +25,18 @@ export function MemberCard({ member, rank, xpTotal }: MemberCardProps) {
 
   if (!member.profile_visible) {
     return (
-      <div className="bg-white rounded-xl border border-border p-5" data-testid="member-card-private">
+      <div className="bg-card rounded-xl border border-border p-5" data-testid="member-card-private">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
             <Lock aria-hidden="true" className="w-5 h-5 text-gray-400" />
           </div>
           <div className="min-w-0">
-            <p className="font-medium text-gray-700">{t('privateMember')}</p>
+            <p className="font-medium text-foreground">{t('privateMember')}</p>
             {member.organic_id && <p className="text-sm text-gray-400">ORG-{member.organic_id}</p>}
-            <p className="text-xs text-gray-500 mt-1">{t('privateMemberDescription')}</p>
+            <p className="text-xs text-muted-foreground mt-1">{t('privateMemberDescription')}</p>
           </div>
         </div>
-        <div className="mt-4 flex items-center gap-4 text-sm text-gray-500">
+        <div className="mt-4 flex items-center gap-4 text-sm text-muted-foreground">
           <span className="flex items-center gap-1">
             <Star aria-hidden="true" className="w-3.5 h-3.5 text-gray-400" />
             {member.total_points} {t('points')}
@@ -53,7 +53,7 @@ export function MemberCard({ member, rank, xpTotal }: MemberCardProps) {
     <Link
       href={`/${locale}/community/${member.id}`}
       data-testid={`member-card-${member.id}`}
-      className="relative block bg-white rounded-xl border border-border p-5 hover:border-organic-terracotta/40 hover:shadow-sm transition-all"
+      className="relative block bg-card rounded-xl border border-border p-5 hover:border-organic-terracotta/40 hover:shadow-sm transition-all"
     >
       {rank != null && rank <= 100 && (
         <span className="absolute top-2 right-2 bg-organic-terracotta text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
@@ -79,7 +79,7 @@ export function MemberCard({ member, rank, xpTotal }: MemberCardProps) {
         )}
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <p className="font-medium text-gray-900 truncate">{displayName}</p>
+            <p className="font-medium text-foreground truncate">{displayName}</p>
             {member.role && member.role !== 'guest' && (
               <span
                 data-testid="member-role-badge"
@@ -94,11 +94,11 @@ export function MemberCard({ member, rank, xpTotal }: MemberCardProps) {
               </span>
             )}
           </div>
-          {member.organic_id && <p className="text-sm text-gray-500">ORG-{member.organic_id}</p>}
+          {member.organic_id && <p className="text-sm text-muted-foreground">ORG-{member.organic_id}</p>}
         </div>
       </div>
 
-      <div className="mt-4 flex items-center gap-4 text-sm text-gray-500">
+      <div className="mt-4 flex items-center gap-4 text-sm text-muted-foreground">
         <span className="flex items-center gap-1">
           <Star aria-hidden="true" className="w-3.5 h-3.5 text-organic-terracotta" />
           {member.total_points} {t('points')}

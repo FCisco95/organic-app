@@ -53,27 +53,27 @@ export function BalanceCards({ balances, loading }: BalanceCardsProps) {
         <div
           key={card.label}
           className={cn(
-            'rounded-2xl bg-white shadow-sm ring-1 ring-border px-5 py-5',
+            'rounded-2xl bg-card shadow-sm ring-1 ring-border px-5 py-5',
             card.accent && 'ring-organic-terracotta-light/70 bg-organic-terracotta-lightest/30'
           )}
         >
           {loading ? (
             <>
-              <div className="h-7 w-24 rounded-md bg-gray-100 animate-pulse" />
-              <div className="mt-2 h-3 w-16 rounded bg-gray-50 animate-pulse" />
+              <div className="h-7 w-24 rounded-md bg-muted animate-pulse" />
+              <div className="mt-2 h-3 w-16 rounded bg-muted/50 animate-pulse" />
             </>
           ) : (
             <>
               <p
                 className={cn(
-                  'text-2xl font-bold text-gray-900 leading-none',
+                  'text-2xl font-bold text-foreground leading-none',
                   card.mono && 'font-mono tabular-nums text-xl'
                 )}
               >
                 {card.value}
               </p>
               <div className="mt-1.5 flex items-baseline gap-2">
-                <p className="text-xs text-gray-400 leading-tight">{card.label}</p>
+                <p className="text-xs text-muted-foreground leading-tight">{card.label}</p>
                 {card.sub && (
                   <p className="text-xs font-mono text-gray-400 tabular-nums">{card.sub}</p>
                 )}

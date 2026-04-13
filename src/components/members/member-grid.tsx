@@ -31,17 +31,17 @@ export function MemberGrid({
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="bg-white rounded-xl border border-border p-5 animate-pulse">
+          <div key={i} className="bg-card rounded-xl border border-border p-5 animate-pulse">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-gray-200" />
+              <div className="w-12 h-12 rounded-full bg-muted" />
               <div className="flex-1">
-                <div className="h-4 bg-gray-200 rounded w-2/3 mb-2" />
-                <div className="h-3 bg-gray-200 rounded w-1/3" />
+                <div className="h-4 bg-muted rounded w-2/3 mb-2" />
+                <div className="h-3 bg-muted rounded w-1/3" />
               </div>
             </div>
             <div className="mt-4 flex gap-4">
-              <div className="h-3 bg-gray-200 rounded w-16" />
-              <div className="h-3 bg-gray-200 rounded w-12" />
+              <div className="h-3 bg-muted rounded w-16" />
+              <div className="h-3 bg-muted rounded w-12" />
             </div>
           </div>
         ))}
@@ -52,9 +52,9 @@ export function MemberGrid({
   if (members.length === 0) {
     return (
       <div className="text-center py-12">
-        <Users className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-        <h3 className="text-lg font-medium text-gray-900 mb-2">{t('emptyTitle')}</h3>
-        <p className="text-gray-500">{t('emptyDescription')}</p>
+        <Users className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
+        <h3 className="text-lg font-medium text-foreground mb-2">{t('emptyTitle')}</h3>
+        <p className="text-muted-foreground">{t('emptyDescription')}</p>
       </div>
     );
   }
@@ -81,15 +81,15 @@ export function MemberGrid({
           <button
             onClick={() => onPageChange(page - 1)}
             disabled={page <= 1}
-            className="px-3 py-1.5 rounded-lg text-sm font-medium border border-border text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="px-3 py-1.5 rounded-lg text-sm font-medium border border-border text-foreground hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {t('prev')}
           </button>
-          <span className="text-sm text-gray-500">{t('pageOf', { page, total: totalPages })}</span>
+          <span className="text-sm text-muted-foreground">{t('pageOf', { page, total: totalPages })}</span>
           <button
             onClick={() => onPageChange(page + 1)}
             disabled={page >= totalPages}
-            className="px-3 py-1.5 rounded-lg text-sm font-medium border border-border text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="px-3 py-1.5 rounded-lg text-sm font-medium border border-border text-foreground hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {t('next')}
           </button>

@@ -61,7 +61,7 @@ export function MemberFilters({
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder={t('searchPlaceholder')}
             data-testid="members-filter-search"
-            className="w-full pl-10 pr-4 py-2 bg-white border border-border rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30 focus:border-organic-terracotta"
+            className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30 focus:border-organic-terracotta"
           />
         </div>
 
@@ -72,7 +72,7 @@ export function MemberFilters({
             <select
               value={sort}
               onChange={(e) => onSortChange(e.target.value as SortOption)}
-              className="appearance-none pl-10 pr-8 py-2 bg-white border border-border rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30 focus:border-organic-terracotta cursor-pointer"
+              className="appearance-none pl-10 pr-8 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30 focus:border-organic-terracotta cursor-pointer"
               aria-label={t('sort.label')}
             >
               {SORT_OPTIONS.map((opt) => (
