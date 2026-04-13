@@ -22,7 +22,7 @@ export default function CommunityPage() {
       document.title = 'Organic';
     };
   }, []);
-  const { data: leaderboard = [] } = useLeaderboard();
+  const { data: leaderboard = [], isError: leaderboardError } = useLeaderboard();
   const { user } = useAuth();
 
   const { totalMembers, activeThisSprint, streakCount } = useMemo(() => {
@@ -40,6 +40,11 @@ export default function CommunityPage() {
 
   return (
     <PageContainer width="default">
+      {leaderboardError && (
+        <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 mb-4">
+          <p className="text-sm text-destructive">Unable to load rankings. The leaderboard data is temporarily unavailable.</p>
+        </div>
+      )}
       <CommunityHero
         totalMembers={totalMembers}
         activeThisSprint={activeThisSprint}
