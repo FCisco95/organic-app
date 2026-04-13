@@ -47,7 +47,7 @@ export default function MarketplacePage() {
 
   const tabs: { key: MarketplaceTab; label: string }[] = [
     { key: 'active', label: t('tabActive') },
-    { key: 'my-boosts', label: t('tabMyBoosts') },
+    ...(isAuthenticated ? [{ key: 'my-boosts' as const, label: t('tabMyBoosts') }] : []),
   ];
 
   const currentBoosts = activeTab === 'active' ? activeBoosts : myBoosts;
