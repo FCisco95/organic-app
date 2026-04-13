@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useUrlFilters } from '@/hooks/use-url-filters';
 import { useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import {
@@ -78,16 +79,26 @@ function useViewMode(): [ViewMode, (v: ViewMode) => void] {
 }
 
 export default function PostsPage() {
+  return (
+    <Suspense fallback={null}>
+      <PostsPageInner />
+    </Suspense>
+  );
+}
+
+function PostsPageInner() {
   const router = useRouter();
   const t = useTranslations('Posts');
   const { profile } = useAuth();
-  const [sort, setSort] = useState<PostSort>('new');
-  const [search, setSearch] = useState('');
-  const [typeFilter, setTypeFilter] = useState<string | undefined>();
+  const FILTER_DEFAULTS: Record<string, string> = { sort: 'new', q: '', type: '', organic: '' };
+  const { filters: urlFilters, setFilter } = useUrlFilters(FILTER_DEFAULTS);
+  const sort = urlFilters.sort as PostSort;
+  const search = urlFilters.q;
+  const typeFilter = urlFilters.type || undefined;
+  const organicFilter = urlFilters.organic === 'true';
   const [composerOpen, setComposerOpen] = useState(false);
   const [viewMode, setViewMode] = useViewMode();
 
-  const [organicFilter, setOrganicFilter] = useState(false);
   const postsQuery = usePosts({ sort, search, type: typeFilter, organic: organicFilter ? 'true' : undefined });
   const likePost = useLikePost();
   const flagPost = useFlagPost();
@@ -163,7 +174,7 @@ export default function PostsPage() {
               type="text"
               placeholder={t('searchPlaceholder')}
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => setFilter('q', e.target.value)}
               className="w-full text-xs pl-8 pr-3 py-2 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
             />
           </div>
@@ -174,7 +185,7 @@ export default function PostsPage() {
               {SORT_KEYS.map((opt) => (
                 <button
                   key={opt.value}
-                  onClick={() => setSort(opt.value)}
+                  onClick={() => setFilter('sort', opt.value)}
                   className={cn(
                     'text-xs font-medium px-3 py-1.5 rounded-full whitespace-nowrap transition-colors',
                     sort === opt.value
@@ -223,7 +234,7 @@ export default function PostsPage() {
           {TYPE_FILTER_KEYS.map((opt) => (
             <button
               key={opt.labelKey}
-              onClick={() => setTypeFilter(opt.value)}
+              onClick={() => setFilter('type', opt.value ?? '')}
               className={cn(
                 'text-[10px] font-medium px-2 py-1 rounded-full whitespace-nowrap transition-colors',
                 typeFilter === opt.value && !organicFilter
@@ -236,7 +247,7 @@ export default function PostsPage() {
           ))}
           <span className="w-px bg-border self-stretch shrink-0" />
           <button
-            onClick={() => setOrganicFilter(!organicFilter)}
+            onClick={() => setFilter('organic', organicFilter ? '' : 'true')}
             className={cn(
               'inline-flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded-full whitespace-nowrap transition-colors',
               organicFilter
