@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useUrlFilters } from '@/hooks/use-url-filters';
 import { useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import {
@@ -78,16 +79,32 @@ function useViewMode(): [ViewMode, (v: ViewMode) => void] {
 }
 
 export default function PostsPage() {
+  return (
+    <Suspense fallback={null}>
+      <PostsPageInner />
+    </Suspense>
+  );
+}
+
+const POSTS_FILTER_DEFAULTS: Record<string, string> = { sort: 'new', q: '', type: '', organic: '' };
+
+function PostsPageInner() {
   const router = useRouter();
   const t = useTranslations('Posts');
   const { profile } = useAuth();
-  const [sort, setSort] = useState<PostSort>('new');
-  const [search, setSearch] = useState('');
-  const [typeFilter, setTypeFilter] = useState<string | undefined>();
+  const { filters: urlFilters, setFilter } = useUrlFilters(POSTS_FILTER_DEFAULTS);
+  const sort = urlFilters.sort as PostSort;
+  const search = urlFilters.q;
+  const typeFilter = urlFilters.type || undefined;
+  const organicFilter = urlFilters.organic === 'true';
   const [composerOpen, setComposerOpen] = useState(false);
   const [viewMode, setViewMode] = useViewMode();
 
-  const [organicFilter, setOrganicFilter] = useState(false);
+  useEffect(() => {
+    document.title = 'Posts — Organic';
+    return () => { document.title = 'Organic'; };
+  }, []);
+
   const postsQuery = usePosts({ sort, search, type: typeFilter, organic: organicFilter ? 'true' : undefined });
   const likePost = useLikePost();
   const flagPost = useFlagPost();
@@ -163,20 +180,20 @@ export default function PostsPage() {
               type="text"
               placeholder={t('searchPlaceholder')}
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => setFilter('q', e.target.value)}
               className="w-full text-xs pl-8 pr-3 py-2 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
             />
           </div>
 
           {/* Sort + View toggle */}
           <div className="flex items-center gap-2">
-            <div className="flex gap-1.5">
+            <div className="flex gap-1.5 overflow-x-auto scrollbar-none min-w-0 flex-1">
               {SORT_KEYS.map((opt) => (
                 <button
                   key={opt.value}
-                  onClick={() => setSort(opt.value)}
+                  onClick={() => setFilter('sort', opt.value)}
                   className={cn(
-                    'text-xs font-medium px-3 py-1.5 rounded-full whitespace-nowrap transition-colors',
+                    'text-xs font-medium px-3 py-2.5 rounded-full whitespace-nowrap transition-colors min-h-[44px] inline-flex items-center shrink-0',
                     sort === opt.value
                       ? 'bg-primary text-primary-foreground'
                       : 'bg-muted text-muted-foreground hover:bg-muted/80',
@@ -188,11 +205,11 @@ export default function PostsPage() {
             </div>
 
             {/* View mode toggle */}
-            <div className="flex rounded-lg border border-border overflow-hidden ml-1">
+            <div className="flex rounded-lg border border-border overflow-hidden shrink-0">
               <button
                 onClick={() => setViewMode('cards')}
                 className={cn(
-                  'p-1.5 transition-colors',
+                  'min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors',
                   viewMode === 'cards'
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-background text-muted-foreground hover:bg-muted',
@@ -204,7 +221,7 @@ export default function PostsPage() {
               <button
                 onClick={() => setViewMode('compact')}
                 className={cn(
-                  'p-1.5 transition-colors',
+                  'min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors',
                   viewMode === 'compact'
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-background text-muted-foreground hover:bg-muted',
@@ -218,35 +235,39 @@ export default function PostsPage() {
         </div>
 
         {/* Type filters */}
-        <div className="flex gap-1.5 mb-5 overflow-x-auto opacity-0 animate-fade-up stagger-4">
-          <SlidersHorizontal className="w-3.5 h-3.5 text-muted-foreground self-center shrink-0" />
-          {TYPE_FILTER_KEYS.map((opt) => (
+        <div className="relative mb-5 opacity-0 animate-fade-up stagger-4">
+          <div className="flex gap-1.5 overflow-x-auto pr-8 scrollbar-none">
+            <SlidersHorizontal className="w-3.5 h-3.5 text-muted-foreground self-center shrink-0" />
+            {TYPE_FILTER_KEYS.map((opt) => (
+              <button
+                key={opt.labelKey}
+                onClick={() => setFilter('type', opt.value ?? '')}
+                className={cn(
+                  'text-xs font-medium px-2 py-2 rounded-full whitespace-nowrap transition-colors min-h-[44px] inline-flex items-center',
+                  typeFilter === opt.value && !organicFilter
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80',
+                )}
+              >
+                {t(opt.labelKey)}
+              </button>
+            ))}
+            <span className="w-px bg-border self-stretch shrink-0" />
             <button
-              key={opt.labelKey}
-              onClick={() => setTypeFilter(opt.value)}
+              onClick={() => setFilter('organic', organicFilter ? '' : 'true')}
               className={cn(
-                'text-[10px] font-medium px-2 py-1 rounded-full whitespace-nowrap transition-colors',
-                typeFilter === opt.value && !organicFilter
-                  ? 'bg-primary text-primary-foreground'
+                'inline-flex items-center gap-1 text-xs font-medium px-2 py-2 rounded-full whitespace-nowrap transition-colors min-h-[44px]',
+                organicFilter
+                  ? 'bg-green-500 text-white'
                   : 'bg-muted text-muted-foreground hover:bg-muted/80',
               )}
             >
-              {t(opt.labelKey)}
+              <Leaf className="w-2.5 h-2.5" />
+              {t('filterOrganic')}
             </button>
-          ))}
-          <span className="w-px bg-border self-stretch shrink-0" />
-          <button
-            onClick={() => setOrganicFilter(!organicFilter)}
-            className={cn(
-              'inline-flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded-full whitespace-nowrap transition-colors',
-              organicFilter
-                ? 'bg-green-500 text-white'
-                : 'bg-muted text-muted-foreground hover:bg-muted/80',
-            )}
-          >
-            <Leaf className="w-2.5 h-2.5" />
-            {t('filterOrganic')}
-          </button>
+          </div>
+          {/* Scroll affordance — gradient fade on right edge */}
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-background to-transparent" />
         </div>
 
         {/* Feed */}

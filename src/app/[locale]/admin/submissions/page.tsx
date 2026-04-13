@@ -59,7 +59,7 @@ export default function SubmissionReviewQueuePage() {
   if (!canReview) {
     return (
       <PageContainer width="narrow">
-        <div className="bg-white border border-border rounded-xl p-6 text-center">
+        <div className="bg-card border border-border rounded-xl p-6 text-center">
           <h1 className="text-2xl font-semibold text-gray-900">{t('accessDeniedTitle')}</h1>
           <p className="text-gray-600 mt-2">{t('accessDeniedDescription')}</p>
           <Link
@@ -90,7 +90,7 @@ export default function SubmissionReviewQueuePage() {
       )}
 
       {groupList.length === 0 ? (
-        <div className="bg-white border border-border rounded-xl p-8 text-center">
+        <div className="bg-card border border-border rounded-xl p-8 text-center">
           <h2 className="text-xl font-semibold text-gray-900">{t('emptyTitle')}</h2>
           <p className="text-gray-600 mt-2">{t('emptyDescription')}</p>
         </div>
@@ -100,7 +100,7 @@ export default function SubmissionReviewQueuePage() {
             const taskType = group.task.task_type ?? 'custom';
             const basePoints = group.task.base_points ?? 0;
             return (
-              <section key={group.task.id} className="bg-white rounded-xl border border-border">
+              <section key={group.task.id} className="bg-card rounded-xl border border-border">
                 <div className="px-6 py-5 border-b border-border">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>

@@ -34,7 +34,7 @@ export default function HarvestPage() {
         <div className="opacity-0 animate-fade-up stagger-1">
           <Link
             href="/ideas"
-            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
+            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4 min-h-[44px] py-3"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             {t('backToIdeas')}

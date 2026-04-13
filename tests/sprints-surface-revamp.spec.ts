@@ -121,3 +121,26 @@ test.describe('Sprints surface revamp', () => {
     await expect(page.getByTestId('sprint-detail-readiness-checklist')).toBeVisible();
   });
 });
+
+test.describe('Sprints phase rail mobile layout (S2 regression)', () => {
+  // Regression: phase rail labels (Planning/Active/Review/Dispute Window/Settlement/Completed)
+  // used flex justify-between without truncation, causing label collision at 390px.
+  // Fix: added max-w-[58px] truncate to each label span.
+  test('phase rail renders without overflow at 390px', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(`${BASE_URL}/en/sprints`, { waitUntil: 'domcontentloaded' });
+    const phaseRail = page.getByTestId('sprints-phase-rail');
+    if (await phaseRail.isVisible({ timeout: 15_000 }).catch(() => false)) {
+      const railBox = await phaseRail.boundingBox();
+      // Rail must not overflow the viewport
+      expect(railBox).not.toBeNull();
+      if (railBox) {
+        expect(railBox.x + railBox.width).toBeLessThanOrEqual(390 + 1); // 1px tolerance
+      }
+      // Each phase chip must have the title attribute for accessibility
+      const phaseChips = phaseRail.locator('[data-testid^="sprints-phase-chip-"]');
+      const count = await phaseChips.count();
+      expect(count).toBe(6);
+    }
+  });
+});

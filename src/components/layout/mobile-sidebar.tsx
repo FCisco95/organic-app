@@ -54,7 +54,7 @@ export function MobileSidebar() {
   };
 
   return (
-    <Sheet open={mobileOpen} onOpenChange={setMobileOpen} modal={false}>
+    <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
       <SheetContent
         side="left"
         className="w-72 h-dvh p-0 bg-sidebar flex flex-col overflow-hidden"
@@ -62,6 +62,8 @@ export function MobileSidebar() {
           const target = event.target as HTMLElement | null;
           if (target?.closest('[data-wallet-drawer-root="true"]')) {
             event.preventDefault();
+          } else {
+            setMobileOpen(false);
           }
         }}
       >

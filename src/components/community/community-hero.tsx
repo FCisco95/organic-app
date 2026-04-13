@@ -48,7 +48,7 @@ export function CommunityHero({
           ) : currentUserProfileHref ? (
             <Link
               href={currentUserProfileHref}
-              className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 transition-colors rounded-full px-4 py-1.5 text-sm"
+              className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 transition-colors rounded-full px-4 py-2.5 text-sm min-h-[44px]"
             >
               <Flame className="w-4 h-4 text-[#E8845C]" />
               {t('buildYourStreak')}

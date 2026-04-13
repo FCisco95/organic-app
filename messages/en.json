@@ -69,6 +69,7 @@
     "trustProposalVoting": "Voting: {count}",
     "trustLeaderboardTitle": "Leaderboard snapshot",
     "trustLeaderboardEmpty": "No ranked contributors yet.",
+    "trustLeaderboardError": "Rankings temporarily unavailable.",
     "trustActivityTitle": "Recent activity",
     "trustActivityRecent": "{count} governance/task events in feed.",
     "trustActivityEmpty": "No recent activity events.",
@@ -177,6 +178,7 @@
     "actionNewIdea": "New Idea",
     "sectionAdmin": "Admin",
     "breadcrumbDetail": "Detail",
+    "breadcrumbNotFound": "Not Found",
     "breadcrumbHome": "Home",
     "adminDashboard": "Dashboard",
     "sectionNavigate": "Navigate",
@@ -416,7 +418,7 @@
     "categoryShortTreasury": "Treasury",
     "categoryShortCommunity": "Community",
     "categoryShortDevelopment": "Development",
-    "searchPlaceholder": "Search proposals by title or content...",
+    "searchPlaceholder": "Search proposals...",
     "loadMore": "Show {remaining} more proposals",
     "ctaTitle": "Want to participate?",
     "ctaDescription": "Sign in and link your wallet to create proposals and vote on decisions.",
@@ -1293,8 +1295,7 @@
     "earnCtaTitle": "Start earning with the DAO",
     "earnCtaDescription": "Claim tasks, submit work, and earn $ORG tokens. Every contribution counts.",
     "earnCtaButton": "Create account",
-    "earnCtaInline": "Want to earn $ORG tokens? {link} to claim tasks and start contributing.",
-    "earnCtaInlineLink": "Create an account",
+    "earnCtaInline": "Want to earn $ORG tokens? <link>Create an account</link> to claim tasks and start contributing.",
     "filtersButton": "Filters",
     "filterActiveCount": "{count} active"
   },
@@ -2012,7 +2013,8 @@
     "infoSection3Title": "Transparency",
     "infoSection3Point1": "**Fund allocation targets are set by community vote.** The DAO decides how much goes to development, operations, and contributor rewards each epoch.",
     "infoSection3Point2": "**Audit trails are available for every settlement.** When tokens move, there's a record of why, who approved it, and which sprint it belongs to.",
-    "disclaimer": "Balances and transactions are fetched live from the Solana blockchain. Allocation percentages are targets and may differ from actual holdings."
+    "disclaimer": "Balances and transactions are fetched live from the Solana blockchain. Allocation percentages are targets and may differ from actual holdings.",
+    "loadError": "Unable to load treasury data. Please try again later."
   },
   "Members": {
     "title": "Members",
@@ -3214,6 +3216,7 @@
   "Community": {
     "title": "Community",
     "subtitle": "Meet the people building the Organic DAO — explore rankings and the member directory.",
+    "leaderboardError": "Unable to load rankings. The leaderboard data is temporarily unavailable.",
     "tabRankings": "Rankings",
     "tabDirectory": "Directory",
     "searchRankings": "Search rankings by name or ID...",
@@ -3661,5 +3664,14 @@
     "ctaSubtitle": "Limited beta spots available. Get your platform set up with white-glove onboarding.",
     "ctaButton": "Request Early Access",
     "ctaFootnote": "We'll respond within 48 hours. No commitment required."
+  },
+  "Error": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred. You can try again or go back to the home page.",
+    "retry": "Try again",
+    "goHome": "Go home",
+    "proposalTitle": "Couldn't load this proposal",
+    "proposalDescription": "There was an error loading the proposal. It may have been removed or you may not have access.",
+    "backToProposals": "Back to proposals"
   }
 }

@@ -30,7 +30,7 @@ export function TopBar() {
   const { onboardingState, openWizard, isIncomplete } = useOnboarding();
 
   return (
-    <header className="sticky top-0 z-40 flex h-14 items-center border-b border-border bg-card/80 backdrop-blur-sm px-4">
+    <header className="sticky top-0 z-40 flex h-14 items-center border-b border-border bg-card/80 backdrop-blur-sm px-4 overflow-hidden">
       {/* Left: sidebar toggles */}
       <div className="flex items-center gap-2">
         {/* Desktop toggle */}
@@ -47,7 +47,7 @@ export function TopBar() {
         <Button
           variant="ghost"
           size="icon"
-          className="md:hidden h-10 w-10"
+          className="md:hidden h-11 w-11"
           onClick={() => setMobileOpen(true)}
         >
           <Menu className="h-4 w-4" />

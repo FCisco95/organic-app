@@ -341,3 +341,32 @@ test.describe('Disputes surface revamp', () => {
     });
   });
 });
+
+test.describe('Disputes triage tier chips mobile alignment (S2 regression)', () => {
+  // Regression: tier chips used ml-auto inside flex-wrap container, pushing chips
+  // to right edge of wrapped row on narrow screens. Fix: ml-auto removed below sm breakpoint.
+  test('triage tier chips do not overflow viewport at 390px', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(`${BASE_URL}/en/disputes`, { waitUntil: 'domcontentloaded' });
+    const triageDeck = page.getByTestId('disputes-triage-deck');
+    if (await triageDeck.isVisible({ timeout: 15_000 }).catch(() => false)) {
+      const deckBox = await triageDeck.boundingBox();
+      expect(deckBox).not.toBeNull();
+      if (deckBox) {
+        // Triage deck must not overflow the 390px viewport
+        expect(deckBox.x + deckBox.width).toBeLessThanOrEqual(390 + 1);
+      }
+      // Tier filter buttons must be present and accessible
+      const tierAll = page.getByTestId('disputes-tier-filter-all');
+      if (await tierAll.isVisible().catch(() => false)) {
+        const tierBox = await tierAll.boundingBox();
+        expect(tierBox).not.toBeNull();
+        if (tierBox) {
+          // Button must be within viewport bounds
+          expect(tierBox.x).toBeGreaterThanOrEqual(0);
+          expect(tierBox.x + tierBox.width).toBeLessThanOrEqual(390 + 1);
+        }
+      }
+    }
+  });
+});

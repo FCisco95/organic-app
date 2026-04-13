@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
@@ -67,6 +67,12 @@ type AnalyticsTab = 'overview' | 'personal' | 'governance';
 export default function AnalyticsPage() {
   const t = useTranslations('Analytics');
   const { user } = useAuth();
+
+  useEffect(() => {
+    document.title = 'Pulse — Organic';
+    return () => { document.title = 'Organic'; };
+  }, []);
+
   const [preset, setPreset] = useState<AnalyticsPreset>('30d');
   const { data, isLoading } = useAnalytics(preset);
   const [activeTab, setActiveTab] = useState<AnalyticsTab>('overview');
@@ -108,7 +114,7 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Tabs with date selector inline */}
-        <div className="flex items-center justify-between border-b border-border opacity-0 animate-fade-up stagger-5">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-border opacity-0 animate-fade-up stagger-5">
           <div className="flex items-center gap-1">
             {tabs.map((tab) => {
               const Icon = tab.icon;
@@ -130,7 +136,9 @@ export default function AnalyticsPage() {
               );
             })}
           </div>
-          <DateRangeSelector value={preset} onChange={setPreset} />
+          <div className="pb-2 sm:pb-0">
+            <DateRangeSelector value={preset} onChange={setPreset} />
+          </div>
         </div>
 
         {/* Tab content */}

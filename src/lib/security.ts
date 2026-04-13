@@ -26,6 +26,17 @@ export function sanitizeHref(url: string | null | undefined): string | undefined
  * Sanitize a returnTo / redirect path to prevent open-redirect attacks.
  * Only relative paths starting with '/' are allowed.
  */
+/**
+ * Escape a user-supplied string for safe interpolation inside PostgREST
+ * filter expressions (.or(), .filter(), etc.).
+ * Strips only the characters that can break out of a filter value:
+ *   , — OR separator   ( ) — grouping operators
+ * Dots, backslashes, and percent signs are safe inside ilike patterns.
+ */
+export function escapePostgrestValue(value: string): string {
+  return value.replace(/[,()]/g, '');
+}
+
 export function sanitizeReturnTo(returnTo: string | null): string {
   if (!returnTo) return '/';
   if (

@@ -32,7 +32,7 @@ export function CommunityTabs({
           key={tab.id}
           onClick={() => onTabChange(tab.id)}
           className={cn(
-            'px-4 py-2.5 text-sm font-medium transition-colors -mb-px',
+            'inline-flex items-center px-4 py-2.5 text-sm font-medium transition-colors -mb-px min-h-[44px]',
             activeTab === tab.id
               ? 'border-b-2 border-organic-terracotta text-organic-terracotta'
               : 'text-muted-foreground hover:text-foreground'

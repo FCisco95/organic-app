@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { logger } from '@/lib/logger';
+import { escapePostgrestValue } from '@/lib/security';
 
 async function requireAdminOrCouncil(supabase: Awaited<ReturnType<typeof createClient>>) {
   const {
@@ -53,8 +54,9 @@ export async function GET(request: NextRequest) {
       .range(offset, offset + limit - 1);
 
     if (search) {
+      const safeSearch = escapePostgrestValue(search);
       query = query.or(
-        `name.ilike.%${search}%,email.ilike.%${search}%,organic_id.eq.${Number(search) || 0}`
+        `name.ilike.%${safeSearch}%,email.ilike.%${safeSearch}%,organic_id.eq.${Number(search) || 0}`
       );
     }
 

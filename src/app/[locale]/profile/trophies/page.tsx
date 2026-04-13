@@ -139,7 +139,8 @@ export default function TrophiesPage() {
         <div className="flex items-center gap-3">
           <Link
             href="/profile"
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="inline-flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors min-w-[44px] min-h-[44px]"
+            aria-label="Back to profile"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>

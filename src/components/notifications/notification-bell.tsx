@@ -92,7 +92,7 @@ export function NotificationBell() {
       <Button
         variant="ghost"
         size="icon"
-        className="relative h-8 w-8"
+        className="relative h-11 w-11"
         onClick={() => setOpen(true)}
         aria-label={t('bell')}
       >

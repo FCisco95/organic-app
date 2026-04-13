@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { defaultLocale, locales } from '@/i18n/navigation';
+import { sanitizeReturnTo } from '@/lib/security';
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
@@ -25,7 +26,6 @@ export async function GET(request: Request) {
   }
 
   // Redirect to home (or returnTo destination) after email confirmation
-  const returnTo = requestUrl.searchParams.get('returnTo');
-  const destination = returnTo ?? '/';
-  return NextResponse.redirect(new URL(`${basePath}${destination}`, requestUrl.origin));
+  const returnTo = sanitizeReturnTo(requestUrl.searchParams.get('returnTo'));
+  return NextResponse.redirect(new URL(`${basePath}${returnTo}`, requestUrl.origin));
 }

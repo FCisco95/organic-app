@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect, useDeferredValue, useMemo } from 'react';
+import { useState, useEffect, useDeferredValue, useMemo, Suspense } from 'react';
+import { useUrlFilters } from '@/hooks/use-url-filters';
 import { Link } from '@/i18n/navigation';
 import { useAuth } from '@/features/auth/context';
 import {
@@ -80,14 +81,30 @@ function sortProposals(proposals: ProposalListItem[], sort: SortKey): ProposalLi
 }
 
 export default function ProposalsPage() {
+  return (
+    <Suspense fallback={null}>
+      <ProposalsPageInner />
+    </Suspense>
+  );
+}
+
+const PROPOSAL_FILTER_DEFAULTS: Record<string, string> = { status: 'all', category: 'all', q: '', sort: 'new' };
+
+function ProposalsPageInner() {
   const { user, profile } = useAuth();
   const t = useTranslations('Proposals');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [categoryFilter, setCategoryFilter] = useState<string>('all');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sort, setSort] = useState<SortKey>('new');
+  const { filters: urlFilters, setFilter } = useUrlFilters(PROPOSAL_FILTER_DEFAULTS);
+  const statusFilter = urlFilters.status;
+  const categoryFilter = urlFilters.category;
+  const searchTerm = urlFilters.q;
+  const sort = urlFilters.sort as SortKey;
   const deferredSearch = useDeferredValue(searchTerm);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+
+  useEffect(() => {
+    document.title = 'Proposals — Organic';
+    return () => { document.title = 'Organic'; };
+  }, []);
 
   const isAdmin = profile?.role && ['admin', 'council'].includes(profile.role);
 
@@ -175,7 +192,7 @@ export default function ProposalsPage() {
           <button
             type="button"
             data-testid="proposals-cta-secondary"
-            onClick={() => setStatusFilter('discussion')}
+            onClick={() => setFilter('status', 'discussion')}
             className="inline-flex items-center rounded-lg border border-white/20 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-white/10"
           >
             {t('reviewDiscussionCta')}
@@ -191,7 +208,7 @@ export default function ProposalsPage() {
             stageCounts={stageCounts}
             totalComments={totalComments}
             activeStatus={statusFilter}
-            onStatusFilter={setStatusFilter}
+            onStatusFilter={(s: string) => setFilter('status', s)}
             user={user}
           />
         }
@@ -205,7 +222,7 @@ export default function ProposalsPage() {
                 <input
                   type="text"
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e) => setFilter('q', e.target.value)}
                   placeholder={t('searchPlaceholder')}
                   data-testid="proposals-search"
                   className="w-full rounded-xl border border-border bg-card py-2.5 pl-10 pr-10 text-sm focus:border-transparent focus:ring-2 focus:ring-organic-terracotta"
@@ -213,7 +230,7 @@ export default function ProposalsPage() {
                 {searchTerm && (
                   <button
                     type="button"
-                    onClick={() => setSearchTerm('')}
+                    onClick={() => setFilter('q', '')}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                   >
                     <X className="h-4 w-4" />
@@ -228,7 +245,7 @@ export default function ProposalsPage() {
               <button
                 type="button"
                 data-testid="proposals-stage-chip-all"
-                onClick={() => setStatusFilter('all')}
+                onClick={() => setFilter('status', 'all')}
                 className={`flex-shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
                   statusFilter === 'all'
                     ? 'bg-slate-900 text-white'
@@ -242,7 +259,7 @@ export default function ProposalsPage() {
                   key={status}
                   type="button"
                   data-testid={`proposals-stage-chip-${status}`}
-                  onClick={() => setStatusFilter(status)}
+                  onClick={() => setFilter('status', status)}
                   className={`flex-shrink-0 inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
                     statusFilter === status
                       ? 'bg-slate-900 text-white'
@@ -276,7 +293,7 @@ export default function ProposalsPage() {
             <div data-testid="proposals-category-filters" className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
               <button
                 type="button"
-                onClick={() => setCategoryFilter('all')}
+                onClick={() => setFilter('category', 'all')}
                 data-testid="proposals-category-all"
                 className={`flex-shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
                   categoryFilter === 'all'
@@ -300,7 +317,7 @@ export default function ProposalsPage() {
                   <button
                     key={cat}
                     type="button"
-                    onClick={() => setCategoryFilter(cat)}
+                    onClick={() => setFilter('category', cat)}
                     data-testid={`proposals-category-${cat}`}
                     className={`flex-shrink-0 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium whitespace-nowrap transition-colors ${
                       categoryFilter === cat
@@ -332,7 +349,7 @@ export default function ProposalsPage() {
                   <button
                     key={opt.key}
                     type="button"
-                    onClick={() => setSort(opt.key)}
+                    onClick={() => setFilter('sort', opt.key)}
                     className={`rounded-md px-2.5 py-1 text-xs font-semibold transition-colors ${
                       sort === opt.key
                         ? 'bg-organic-terracotta-light/30 text-organic-terracotta-hover'
@@ -463,7 +480,7 @@ export default function ProposalsPage() {
           stageCounts={stageCounts}
           totalComments={totalComments}
           activeStatus={statusFilter}
-          onStatusFilter={setStatusFilter}
+          onStatusFilter={(s: string) => setFilter('status', s)}
           user={user}
         />
       </div>

@@ -64,7 +64,7 @@ export function ConnectWalletButton({
           onClick={() => setShowDropdown(!showDropdown)}
           aria-label={t('changeWalletAction')}
           className={cn(
-            'flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200',
+            'flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 min-h-[44px]',
             'bg-cta hover:bg-cta-hover text-cta-fg',
             mobileIconOnly && 'px-2.5 sm:px-4',
             className
@@ -154,7 +154,7 @@ export function ConnectWalletButton({
         onClick={() => setIsDrawerOpen(true)}
         aria-label={t('connectWalletAction')}
         className={cn(
-          'flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200',
+          'flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 min-h-[44px]',
           'bg-cta hover:bg-cta-hover text-cta-fg',
           variant === 'compact' && 'px-3 py-1.5',
           mobileIconOnly && 'px-2.5 sm:px-3',

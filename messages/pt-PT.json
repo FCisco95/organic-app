@@ -69,6 +69,7 @@
     "trustProposalVoting": "Votação: {count}",
     "trustLeaderboardTitle": "Snapshot do ranking",
     "trustLeaderboardEmpty": "Ainda não há contribuidores ranqueados.",
+    "trustLeaderboardError": "Rankings temporariamente indisponíveis.",
     "trustActivityTitle": "Atividade recente",
     "trustActivityRecent": "{count} eventos de governança/tarefas no feed.",
     "trustActivityEmpty": "Sem eventos recentes de atividade.",
@@ -176,6 +177,7 @@
     "actionNewIdea": "Nova Ideia",
     "sectionAdmin": "Administração",
     "breadcrumbDetail": "Detalhe",
+    "breadcrumbNotFound": "Não Encontrado",
     "breadcrumbHome": "Início",
     "adminDashboard": "Painel",
     "sectionNavigate": "Navegar",
@@ -410,7 +412,7 @@
     "categoryTreasury": "Tesouraria / Orçamento",
     "categoryCommunity": "Comunidade / Parceria",
     "categoryDevelopment": "Ideias de Desenvolvimento",
-    "searchPlaceholder": "Pesquisar propostas por título ou conteúdo...",
+    "searchPlaceholder": "Pesquisar propostas...",
     "loadMore": "Mostrar mais {remaining} propostas",
     "ctaTitle": "Quer participar?",
     "ctaDescription": "Entre e conecte sua carteira para criar propostas e votar nas decisões.",
@@ -1292,8 +1294,7 @@
     "earnCtaTitle": "Comece a ganhar com o DAO",
     "earnCtaDescription": "Reclame tarefas, submeta trabalho e ganhe tokens $ORG. Cada contribuição conta.",
     "earnCtaButton": "Criar conta",
-    "earnCtaInline": "Quer ganhar tokens $ORG? {link} para reclamar tarefas e comecar a contribuir.",
-    "earnCtaInlineLink": "Crie uma conta",
+    "earnCtaInline": "Quer ganhar tokens $ORG? <link>Crie uma conta</link> para reclamar tarefas e comecar a contribuir.",
     "filtersButton": "Filtros",
     "filterActiveCount": "{count} ativo(s)"
   },
@@ -2011,7 +2012,8 @@
     "infoSection3Title": "Transparência",
     "infoSection3Point1": "**As metas de alocação de fundos são definidas por voto da comunidade.** A DAO decide quanto vai para desenvolvimento, operações e recompensas de contribuidores em cada época.",
     "infoSection3Point2": "**Trilhas de auditoria estão disponíveis para cada liquidação.** Quando os tokens se movem, existe um registo do porquê, quem aprovou e a que sprint pertence.",
-    "disclaimer": "Saldos e transações são obtidos em tempo real da blockchain Solana. As percentagens de alocação são metas e podem diferir dos valores reais."
+    "disclaimer": "Saldos e transações são obtidos em tempo real da blockchain Solana. As percentagens de alocação são metas e podem diferir dos valores reais.",
+    "loadError": "Não foi possível carregar os dados do tesouro. Tente novamente mais tarde."
   },
   "Members": {
     "title": "Membros",
@@ -3190,6 +3192,7 @@
   "Community": {
     "title": "Comunidade",
     "subtitle": "Conhece as pessoas que constroem a Organic DAO — explora rankings e o diretório de membros.",
+    "leaderboardError": "Não foi possível carregar os rankings. Os dados do ranking estão temporariamente indisponíveis.",
     "tabRankings": "Rankings",
     "tabDirectory": "Diretório",
     "searchRankings": "Pesquisar rankings por nome ou ID...",
@@ -3660,5 +3663,14 @@
       "step2Title": "Ganhar ao Interagir",
       "step2Desc": "Navega pelos impulsos ativos e interage com tweets para ganhar pontos. Submete prova do teu envolvimento (gosto, retweet ou comentário) e recebe pontos após verificação."
     }
+  },
+  "Error": {
+    "title": "Algo correu mal",
+    "description": "Ocorreu um erro inesperado. Podes tentar novamente ou voltar à página inicial.",
+    "retry": "Tentar novamente",
+    "goHome": "Ir para o início",
+    "proposalTitle": "Não foi possível carregar esta proposta",
+    "proposalDescription": "Houve um erro ao carregar a proposta. Pode ter sido removida ou poderás não ter acesso.",
+    "backToProposals": "Voltar às propostas"
   }
 }

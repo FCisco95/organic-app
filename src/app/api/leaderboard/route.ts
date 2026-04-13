@@ -94,11 +94,37 @@ async function queryLeaderboardView() {
     .limit(100);
 }
 
+async function directUserProfilesFallback(): Promise<LeaderboardRow[]> {
+  const supabase = createCacheSafeAnonClient();
+  const { data, error } = await supabase
+    .from('user_profiles')
+    .select('id, name, organic_id, avatar_url, total_points, tasks_completed, role, xp_total, level, current_streak, restriction_status')
+    .not('organic_id', 'is', null)
+    .order('xp_total', { ascending: false })
+    .order('total_points', { ascending: false })
+    .limit(100);
+
+  if (error) {
+    throw new Error(`Direct user_profiles fallback also failed: ${error.message}`);
+  }
+
+  return (data ?? []).map((row, i) => ({
+    ...row,
+    rank: i + 1,
+    dense_rank: i + 1,
+    restriction_status: row.restriction_status ?? null,
+  }));
+}
+
 async function fetchLeaderboardRows(forceLiveView = false): Promise<LeaderboardRow[]> {
   if (forceLiveView) {
     const viewResult = await queryLeaderboardView();
     if (viewResult.error) {
-      throw new Error('Failed to fetch leaderboard');
+      logger.warn('Leaderboard view query failed, trying direct user_profiles fallback', {
+        code: viewResult.error.code,
+        message: viewResult.error.message,
+      });
+      return directUserProfilesFallback();
     }
     return viewResult.data ?? [];
   }
@@ -114,11 +140,15 @@ async function fetchLeaderboardRows(forceLiveView = false): Promise<LeaderboardR
   });
 
   const viewResult = await queryLeaderboardView();
-  if (viewResult.error) {
-    throw new Error('Failed to fetch leaderboard');
+  if (!viewResult.error) {
+    return viewResult.data ?? [];
   }
 
-  return viewResult.data ?? [];
+  logger.warn('Leaderboard view also failed, falling back to direct user_profiles query', {
+    code: viewResult.error.code,
+    message: viewResult.error.message,
+  });
+  return directUserProfilesFallback();
 }
 
 async function fetchLeaderboardPayload(forceLiveView = false): Promise<{ leaderboard: LeaderboardEntry[] }> {

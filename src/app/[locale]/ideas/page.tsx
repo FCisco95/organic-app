@@ -1,6 +1,7 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect, Suspense } from 'react';
+import { useUrlFilters } from '@/hooks/use-url-filters';
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { CalendarDays, Flame, Lightbulb, MessageCircle, Search, Sparkles, TrendingUp } from 'lucide-react';
@@ -33,11 +34,27 @@ const TAB_CONFIG: { key: FeedTab; icon: typeof Flame }[] = [
 ];
 
 export default function IdeasPage() {
+  return (
+    <Suspense fallback={null}>
+      <IdeasPageInner />
+    </Suspense>
+  );
+}
+
+const IDEAS_FILTER_DEFAULTS: Record<string, string> = { tab: 'all', sort: 'hot', q: '' };
+
+function IdeasPageInner() {
   const t = useTranslations('Ideas');
   const { profile } = useAuth();
-  const [sort, setSort] = useState<IdeaSort>('hot');
-  const [search, setSearch] = useState('');
-  const [activeTab, setActiveTab] = useState<FeedTab>('all');
+  const { filters: urlFilters, setFilter } = useUrlFilters(IDEAS_FILTER_DEFAULTS);
+  const sort = urlFilters.sort as IdeaSort;
+  const search = urlFilters.q;
+
+  useEffect(() => {
+    document.title = 'Ideas — Organic';
+    return () => { document.title = 'Organic'; };
+  }, []);
+  const activeTab = urlFilters.tab as FeedTab;
 
   const enabled = isIdeasIncubatorEnabled();
 
@@ -205,9 +222,9 @@ export default function IdeasPage() {
               <button
                 key={tab.key}
                 type="button"
-                onClick={() => setActiveTab(tab.key)}
+                onClick={() => setFilter('tab', tab.key)}
                 className={cn(
-                  'inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px',
+                  'inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px min-h-[44px]',
                   isActive
                     ? 'border-organic-terracotta text-organic-terracotta dark:text-[#E8845C] font-bold bg-organic-terracotta-lightest dark:bg-organic-terracotta-lightest0/5 rounded-t-lg'
                     : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
@@ -226,14 +243,14 @@ export default function IdeasPage() {
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => setFilter('q', e.target.value)}
               placeholder={t('searchPlaceholder')}
               className="w-full rounded-lg border border-border bg-card py-2 pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30 sm:w-72"
             />
           </div>
           <select
             value={sort}
-            onChange={(e) => setSort(e.target.value as IdeaSort)}
+            onChange={(e) => setFilter('sort', e.target.value)}
             className="rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-organic-terracotta/30"
           >
             {SORTS.map((s) => (

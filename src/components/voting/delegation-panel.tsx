@@ -13,6 +13,7 @@ import {
 } from '@/features/voting';
 import { useAuth } from '@/features/auth/context';
 import { createClient } from '@/lib/supabase/client';
+import { escapePostgrestValue } from '@/lib/security';
 import { useQuery } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 
@@ -44,7 +45,8 @@ export function DelegationPanel({ className }: DelegationPanelProps) {
         .limit(20);
 
       if (search) {
-        query = query.or(`name.ilike.%${search}%,email.ilike.%${search}%`);
+        const safeSearch = escapePostgrestValue(search);
+        query = query.or(`name.ilike.%${safeSearch}%,email.ilike.%${safeSearch}%`);
       }
 
       const { data, error } = await query;

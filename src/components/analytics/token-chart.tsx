@@ -55,7 +55,7 @@ export function TokenChart() {
               key={p.key}
               onClick={() => setProvider(p.key)}
               className={cn(
-                'px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors',
+                'px-2.5 min-h-[44px] text-[11px] font-medium rounded-md transition-colors',
                 provider === p.key
                   ? 'bg-background text-foreground shadow-sm'
                   : 'text-muted-foreground hover:text-foreground'

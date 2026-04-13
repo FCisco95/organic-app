@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
 import { useAuth } from '@/features/auth/context';
@@ -20,6 +20,11 @@ export default function MarketplacePage() {
   const { user } = useAuth();
   const isAuthenticated = !!user;
   const enabled = isMarketplaceEnabled();
+
+  useEffect(() => {
+    document.title = 'Boost — Organic';
+    return () => { document.title = 'Organic'; };
+  }, []);
 
   const [activeTab, setActiveTab] = useState<MarketplaceTab>('active');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
@@ -47,7 +52,7 @@ export default function MarketplacePage() {
 
   const tabs: { key: MarketplaceTab; label: string }[] = [
     { key: 'active', label: t('tabActive') },
-    { key: 'my-boosts', label: t('tabMyBoosts') },
+    ...(isAuthenticated ? [{ key: 'my-boosts' as const, label: t('tabMyBoosts') }] : []),
   ];
 
   const currentBoosts = activeTab === 'active' ? activeBoosts : myBoosts;
@@ -60,14 +65,14 @@ export default function MarketplacePage() {
         <PageHero icon={Megaphone} title={t('title')} description={t('description')} />
 
         {/* Tab bar + create button */}
-        <div className="flex items-center justify-between border-b border-border opacity-0 animate-fade-up stagger-2">
-          <div className="flex items-center gap-1">
+        <div className="flex items-center justify-between border-b border-border opacity-0 animate-fade-up stagger-2 overflow-x-auto">
+          <div className="flex items-center gap-1 flex-shrink-0">
             {tabs.map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
                 className={cn(
-                  'px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px',
+                  'px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px whitespace-nowrap min-h-[44px]',
                   activeTab === tab.key
                     ? 'border-organic-terracotta text-organic-terracotta dark:text-[#E8845C] font-bold bg-organic-terracotta-lightest dark:bg-organic-terracotta-lightest0/5 rounded-t-lg'
                     : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'

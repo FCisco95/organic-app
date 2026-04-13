@@ -215,7 +215,8 @@ export function SprintBoardView({
       </div>
 
       {/* Board columns with horizontal scroll on mobile */}
-      <div className="overflow-x-auto pb-2 snap-x snap-mandatory md:overflow-x-visible">
+      <div className="relative">
+        <div className="overflow-x-auto pb-2 snap-x snap-mandatory md:overflow-x-visible">
         <div className="min-w-[840px] md:min-w-0">
           <TaskBoard
             tasks={boardTasks}
@@ -228,6 +229,9 @@ export function SprintBoardView({
             excludeStatuses={['backlog']}
           />
         </div>
+        </div>
+        {/* Gradient fade — hints at horizontal scroll on mobile */}
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-background to-transparent md:hidden" aria-hidden="true" />
       </div>
 
       {/* Backlog — GitHub-style collapsible section */}

@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
@@ -20,7 +21,12 @@ const TransactionTable = dynamic(
 
 export default function TreasuryPage() {
   const t = useTranslations('Treasury');
-  const { data, isLoading } = useTreasury();
+  const { data, isLoading, isError } = useTreasury();
+
+  useEffect(() => {
+    document.title = 'Vault — Organic';
+    return () => { document.title = 'Organic'; };
+  }, []);
   const trust = data?.trust;
   const updatedAtLabel = trust?.updated_at
     ? new Date(trust.updated_at).toLocaleString()
@@ -29,6 +35,13 @@ export default function TreasuryPage() {
   return (
     <PageContainer layout="fluid">
       <div className="space-y-5">
+        {/* Error banner when treasury data fails to load */}
+        {isError && (
+          <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3">
+            <p className="text-sm text-destructive">{t('loadError')}</p>
+          </div>
+        )}
+
         {/* Hero explainer with press-and-hold lock reveal */}
         <div className="opacity-0 animate-fade-up stagger-1">
           <TreasuryHero walletAddress={TOKEN_CONFIG.treasuryWallet} trust={trust} />

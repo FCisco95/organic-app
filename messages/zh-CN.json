@@ -69,6 +69,7 @@
     "trustProposalVoting": "投票中：{count}",
     "trustLeaderboardTitle": "排行榜快照",
     "trustLeaderboardEmpty": "暂无已排名贡献者。",
+    "trustLeaderboardError": "排名暂时不可用。",
     "trustActivityTitle": "近期活动",
     "trustActivityRecent": "动态中有 {count} 条治理/任务事件。",
     "trustActivityEmpty": "暂无近期活动事件。",
@@ -176,6 +177,7 @@
     "actionNewIdea": "新建想法",
     "sectionAdmin": "管理",
     "breadcrumbDetail": "详情",
+    "breadcrumbNotFound": "未找到",
     "breadcrumbHome": "首页",
     "adminDashboard": "仪表盘",
     "sectionNavigate": "导航",
@@ -410,7 +412,7 @@
     "categoryTreasury": "财务 / 预算",
     "categoryCommunity": "社区 / 合作",
     "categoryDevelopment": "开发创意",
-    "searchPlaceholder": "按标题或内容搜索提案...",
+    "searchPlaceholder": "搜索提案...",
     "loadMore": "显示更多 {remaining} 个提案",
     "ctaTitle": "想参与吗？",
     "ctaDescription": "登录并连接钱包以创建提案并参与投票。",
@@ -1292,8 +1294,7 @@
     "earnCtaTitle": "开始在DAO中赚取",
     "earnCtaDescription": "认领任务，提交工作，赚取$ORG代币。每一份贡献都很重要。",
     "earnCtaButton": "创建账户",
-    "earnCtaInline": "想赚取 $ORG 代币吗？{link}来认领任务并开始贡献。",
-    "earnCtaInlineLink": "创建账户",
+    "earnCtaInline": "想赚取 $ORG 代币吗？<link>创建账户</link>来认领任务并开始贡献。",
     "filtersButton": "筛选",
     "filterActiveCount": "{count} 个有效"
   },
@@ -2011,7 +2012,8 @@
     "infoSection3Title": "透明度",
     "infoSection3Point1": "**资金分配目标由社区投票设定。**DAO 决定每个纪元多少用于开发、运营和贡献者奖励。",
     "infoSection3Point2": "**每次结算都有审计轨迹。**当代币转移时，有记录说明原因、谁批准了以及属于哪个冲刺。",
-    "disclaimer": "余额和交易数据实时从 Solana 区块链获取。分配百分比为目标值，可能与实际持有量不同。"
+    "disclaimer": "余额和交易数据实时从 Solana 区块链获取。分配百分比为目标值，可能与实际持有量不同。",
+    "loadError": "无法加载国库数据。请稍后再试。"
   },
   "Members": {
     "title": "成员",
@@ -3190,6 +3192,7 @@
   "Community": {
     "title": "社区",
     "subtitle": "认识构建 Organic DAO 的成员 — 浏览排行榜和成员目录。",
+    "leaderboardError": "无法加载排名。排行榜数据暂时不可用。",
     "tabRankings": "排行榜",
     "tabDirectory": "成员目录",
     "searchRankings": "按名称或 ID 搜索排名...",
@@ -3660,5 +3663,14 @@
       "step2Title": "通过互动赚取",
       "step2Desc": "浏览活跃的推广并与推文互动以赚取积分。提交你的互动证明（点赞、转推或评论），验证后即可获得积分。"
     }
+  },
+  "Error": {
+    "title": "出了点问题",
+    "description": "发生了意外错误。你可以重试或返回首页。",
+    "retry": "重试",
+    "goHome": "返回首页",
+    "proposalTitle": "无法加载此提案",
+    "proposalDescription": "加载提案时出错。它可能已被删除或你可能没有访问权限。",
+    "backToProposals": "返回提案列表"
   }
 }

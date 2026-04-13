@@ -380,7 +380,7 @@ export function ProgressionShell({ sourceContext = null }: { sourceContext?: Sou
                         {cta && (
                           <Link
                             href={cta.href}
-                            className="inline-flex items-center gap-0.5 text-xs font-medium text-organic-terracotta hover:text-organic-terracotta"
+                            className="inline-flex items-center gap-0.5 text-xs font-medium text-organic-terracotta hover:text-organic-terracotta min-h-[44px] py-2"
                           >
                             {t(cta.labelKey)}
                             <ArrowRight className="h-3 w-3" />

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
 import {
   CommunityHero,
@@ -13,6 +14,7 @@ import { useLeaderboard } from '@/features/reputation';
 import { useAuth } from '@/features/auth/context';
 
 export default function CommunityPage() {
+  const t = useTranslations('Community');
   const [activeTab, setActiveTab] = useState<CommunityTab>('rankings');
 
   // Dynamic page title
@@ -22,7 +24,7 @@ export default function CommunityPage() {
       document.title = 'Organic';
     };
   }, []);
-  const { data: leaderboard = [] } = useLeaderboard();
+  const { data: leaderboard = [], isError: leaderboardError } = useLeaderboard();
   const { user } = useAuth();
 
   const { totalMembers, activeThisSprint, streakCount } = useMemo(() => {
@@ -40,6 +42,11 @@ export default function CommunityPage() {
 
   return (
     <PageContainer width="default">
+      {leaderboardError && (
+        <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 mb-4">
+          <p className="text-sm text-destructive">{t('leaderboardError')}</p>
+        </div>
+      )}
       <CommunityHero
         totalMembers={totalMembers}
         activeThisSprint={activeThisSprint}

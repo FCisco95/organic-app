@@ -50,7 +50,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     // Redact sensitive PII for non-self views
     const sanitized = {
       ...data,
-      email: isSelf ? data.email : data.email.split('@')[0] + '@***',
+      email: isSelf ? data.email : (data.email ?? '').split('@')[0] + '@***',
       wallet_pubkey: isSelf ? data.wallet_pubkey : null,
     };
 

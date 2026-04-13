@@ -144,7 +144,7 @@ export function TaskFiltersBar({
           value={sortBy}
           onChange={(event) => onSortChange(event.target.value as TaskSortOption)}
           data-testid={`${dataTestIdPrefix}-sort`}
-          className={`${inputClassName} w-40 shrink-0`}
+          className={`${inputClassName} w-32 shrink-0 sm:w-40`}
         >
           <option value="newest">{t('sort.newest')}</option>
           <option value="oldest">{t('sort.oldest')}</option>

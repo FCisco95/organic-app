@@ -147,7 +147,7 @@ export function ReferralSection() {
             />
             <button
               onClick={() => handleCopy(stats.referral_link, 'link')}
-              className="shrink-0 p-2 rounded-lg border border-border hover:bg-muted transition-colors"
+              className="shrink-0 p-2 rounded-lg border border-border hover:bg-muted transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
               title={t('copyLink')}
             >
               {copiedLink ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4 text-muted-foreground" />}
@@ -167,7 +167,7 @@ export function ReferralSection() {
             />
             <button
               onClick={() => handleCopy(stats.code, 'code')}
-              className="shrink-0 p-2 rounded-lg border border-border hover:bg-muted transition-colors"
+              className="shrink-0 p-2 rounded-lg border border-border hover:bg-muted transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
               title={t('copyCode')}
             >
               {copiedCode ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4 text-muted-foreground" />}
