@@ -3444,7 +3444,13 @@
     "promoteCost": "{cost} pts",
     "promoteSuccess": "Publicacao promovida!",
     "promoteError": "Falha ao promover publicacao",
-    "organicBonusRevoked": "Bonus organico removido por denuncias da comunidade"
+    "organicBonusRevoked": "Bonus organico removido por denuncias da comunidade",
+    "translateButton": "Traduzir publicação",
+    "translateLoading": "A traduzir...",
+    "translateShowOriginal": "Mostrar original",
+    "translateError": "Tradução indisponível",
+    "translateCommentButton": "Traduzir",
+    "translateCommentShowOriginal": "Original"
   },
   "Harvest": {
     "title": "Colheita Semanal",
