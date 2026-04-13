@@ -31,6 +31,7 @@ import { LinkPreviewCard } from '@/components/posts/LinkPreviewCard';
 import { PROMOTION_CONFIG, type PromotionTier } from '@/features/gamification/points-service';
 import { fetchJson } from '@/lib/fetch-json';
 import { usePostTranslation } from '@/features/translation/hooks';
+import { useCommentTranslation } from '@/features/translation/comment-hooks';
 
 function timeAgo(dateStr: string): string {
   const now = Date.now();
@@ -59,6 +60,51 @@ function XLikeButton({ twitterUrl }: { twitterUrl: string | null }) {
       </span>
       <span>Like on X</span>
     </button>
+  );
+}
+
+function CommentItem({ comment, postId }: { comment: { id: string; body: string; created_at: string; user_profiles: { id: string; name: string | null; email: string; organic_id: number | null; avatar_url: string | null } | null }; postId: string }) {
+  const t = useTranslations('Posts');
+  const { translation, isTranslated, isLoading, translate, showOriginal } =
+    useCommentTranslation(postId, comment.id);
+  const displayBody = isTranslated && translation ? translation : comment.body;
+  const cAuthor = comment.user_profiles;
+
+  return (
+    <div className="flex gap-2">
+      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-organic-terracotta to-yellow-300 flex items-center justify-center overflow-hidden shrink-0 mt-0.5">
+        {cAuthor?.avatar_url ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img src={cAuthor.avatar_url} alt="" className="w-full h-full object-cover" />
+        ) : (
+          <span className="text-[8px] font-bold text-white">
+            {(cAuthor?.name || cAuthor?.email || '?').charAt(0).toUpperCase()}
+          </span>
+        )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1.5">
+          <span className="text-xs font-medium text-foreground">
+            {cAuthor?.name || 'Anonymous'}
+          </span>
+          <span className="text-[10px] text-muted-foreground">
+            {timeAgo(comment.created_at)}
+          </span>
+        </div>
+        <p className="text-xs text-foreground/80 mt-0.5">{displayBody}</p>
+        <button
+          onClick={isTranslated ? showOriginal : translate}
+          disabled={isLoading}
+          className="text-[10px] text-muted-foreground hover:text-foreground transition-colors mt-0.5"
+        >
+          {isLoading
+            ? t('translateLoading')
+            : isTranslated
+              ? t('translateCommentShowOriginal')
+              : t('translateCommentButton')}
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -466,34 +512,9 @@ export default function PostDetailPage() {
             <p className="text-xs text-muted-foreground text-center py-6">{t('detailNoComments')}</p>
           ) : (
             <div className="space-y-3">
-              {comments.map((comment) => {
-                const cAuthor = comment.user_profiles;
-                return (
-                  <div key={comment.id} className="flex gap-2">
-                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-organic-terracotta to-yellow-300 flex items-center justify-center overflow-hidden shrink-0 mt-0.5">
-                      {cAuthor?.avatar_url ? (
-                        /* eslint-disable-next-line @next/next/no-img-element */
-                        <img src={cAuthor.avatar_url} alt="" className="w-full h-full object-cover" />
-                      ) : (
-                        <span className="text-[8px] font-bold text-white">
-                          {(cAuthor?.name || cAuthor?.email || '?').charAt(0).toUpperCase()}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-medium text-foreground">
-                          {cAuthor?.name || 'Anonymous'}
-                        </span>
-                        <span className="text-[10px] text-muted-foreground">
-                          {timeAgo(comment.created_at)}
-                        </span>
-                      </div>
-                      <p className="text-xs text-foreground/80 mt-0.5">{comment.body}</p>
-                    </div>
-                  </div>
-                );
-              })}
+              {comments.map((comment) => (
+                <CommentItem key={comment.id} comment={comment} postId={postId} />
+              ))}
             </div>
           )}
         </div>
