@@ -2011,7 +2011,8 @@
     "infoSection3Title": "Transparency",
     "infoSection3Point1": "**Fund allocation targets are set by community vote.** The DAO decides how much goes to development, operations, and contributor rewards each epoch.",
     "infoSection3Point2": "**Audit trails are available for every settlement.** When tokens move, there's a record of why, who approved it, and which sprint it belongs to.",
-    "disclaimer": "Balances and transactions are fetched live from the Solana blockchain. Allocation percentages are targets and may differ from actual holdings."
+    "disclaimer": "Balances and transactions are fetched live from the Solana blockchain. Allocation percentages are targets and may differ from actual holdings.",
+    "loadError": "Unable to load treasury data. Please try again later."
   },
   "Members": {
     "title": "Members",

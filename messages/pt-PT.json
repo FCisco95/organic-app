@@ -2010,7 +2010,8 @@
     "infoSection3Title": "Transparência",
     "infoSection3Point1": "**As metas de alocação de fundos são definidas por voto da comunidade.** A DAO decide quanto vai para desenvolvimento, operações e recompensas de contribuidores em cada época.",
     "infoSection3Point2": "**Trilhas de auditoria estão disponíveis para cada liquidação.** Quando os tokens se movem, existe um registo do porquê, quem aprovou e a que sprint pertence.",
-    "disclaimer": "Saldos e transações são obtidos em tempo real da blockchain Solana. As percentagens de alocação são metas e podem diferir dos valores reais."
+    "disclaimer": "Saldos e transações são obtidos em tempo real da blockchain Solana. As percentagens de alocação são metas e podem diferir dos valores reais.",
+    "loadError": "Não foi possível carregar os dados do tesouro. Tente novamente mais tarde."
   },
   "Members": {
     "title": "Membros",
