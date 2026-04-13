@@ -1293,8 +1293,7 @@
     "earnCtaTitle": "Start earning with the DAO",
     "earnCtaDescription": "Claim tasks, submit work, and earn $ORG tokens. Every contribution counts.",
     "earnCtaButton": "Create account",
-    "earnCtaInline": "Want to earn $ORG tokens? {link} to claim tasks and start contributing.",
-    "earnCtaInlineLink": "Create an account",
+    "earnCtaInline": "Want to earn $ORG tokens? <link>Create an account</link> to claim tasks and start contributing.",
     "filtersButton": "Filters",
     "filterActiveCount": "{count} active"
   },

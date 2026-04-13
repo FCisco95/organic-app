@@ -1292,8 +1292,7 @@
     "earnCtaTitle": "开始在DAO中赚取",
     "earnCtaDescription": "认领任务，提交工作，赚取$ORG代币。每一份贡献都很重要。",
     "earnCtaButton": "创建账户",
-    "earnCtaInline": "想赚取 $ORG 代币吗？{link}来认领任务并开始贡献。",
-    "earnCtaInlineLink": "创建账户",
+    "earnCtaInline": "想赚取 $ORG 代币吗？<link>创建账户</link>来认领任务并开始贡献。",
     "filtersButton": "筛选",
     "filterActiveCount": "{count} 个有效"
   },

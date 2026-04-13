@@ -1292,8 +1292,7 @@
     "earnCtaTitle": "Comece a ganhar com o DAO",
     "earnCtaDescription": "Reclame tarefas, submeta trabalho e ganhe tokens $ORG. Cada contribuição conta.",
     "earnCtaButton": "Criar conta",
-    "earnCtaInline": "Quer ganhar tokens $ORG? {link} para reclamar tarefas e comecar a contribuir.",
-    "earnCtaInlineLink": "Crie uma conta",
+    "earnCtaInline": "Quer ganhar tokens $ORG? <link>Crie uma conta</link> para reclamar tarefas e comecar a contribuir.",
     "filtersButton": "Filtros",
     "filterActiveCount": "{count} ativo(s)"
   },
