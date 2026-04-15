@@ -30,6 +30,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { LinkPreviewCard } from '@/components/posts/LinkPreviewCard';
 import { PROMOTION_CONFIG, type PromotionTier } from '@/features/gamification/points-service';
 import { fetchJson } from '@/lib/fetch-json';
+import { usePostTranslation } from '@/features/translation/hooks';
+import { useCommentTranslation } from '@/features/translation/comment-hooks';
 
 function timeAgo(dateStr: string): string {
   const now = Date.now();
@@ -61,6 +63,51 @@ function XLikeButton({ twitterUrl }: { twitterUrl: string | null }) {
   );
 }
 
+function CommentItem({ comment, postId }: { comment: { id: string; body: string; created_at: string; user_profiles: { id: string; name: string | null; email: string; organic_id: number | null; avatar_url: string | null } | null }; postId: string }) {
+  const t = useTranslations('Posts');
+  const { translation, isTranslated, isLoading, translate, showOriginal } =
+    useCommentTranslation(postId, comment.id);
+  const displayBody = isTranslated && translation ? translation : comment.body;
+  const cAuthor = comment.user_profiles;
+
+  return (
+    <div className="flex gap-2">
+      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-organic-terracotta to-yellow-300 flex items-center justify-center overflow-hidden shrink-0 mt-0.5">
+        {cAuthor?.avatar_url ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img src={cAuthor.avatar_url} alt="" className="w-full h-full object-cover" />
+        ) : (
+          <span className="text-[8px] font-bold text-white">
+            {(cAuthor?.name || cAuthor?.email || '?').charAt(0).toUpperCase()}
+          </span>
+        )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1.5">
+          <span className="text-xs font-medium text-foreground">
+            {cAuthor?.name || 'Anonymous'}
+          </span>
+          <span className="text-[10px] text-muted-foreground">
+            {timeAgo(comment.created_at)}
+          </span>
+        </div>
+        <p className="text-xs text-foreground/80 mt-0.5">{displayBody}</p>
+        <button
+          onClick={isTranslated ? showOriginal : translate}
+          disabled={isLoading}
+          className="text-[10px] text-muted-foreground hover:text-foreground transition-colors mt-0.5"
+        >
+          {isLoading
+            ? t('translateLoading')
+            : isTranslated
+              ? t('translateCommentShowOriginal')
+              : t('translateCommentButton')}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function PostDetailPage() {
   const params = useParams();
   const postId = params.id as string;
@@ -84,6 +131,15 @@ export default function PostDetailPage() {
   const isAuthor = post && profile && post.author_id === profile.id;
   const isAdmin = profile?.role === 'admin';
   const isPromotedActive = post?.is_promoted && post?.promotion_expires_at && new Date(post.promotion_expires_at) > new Date();
+
+  const {
+    translation,
+    isTranslated,
+    isLoading: translateLoading,
+    translate,
+    showOriginal,
+    shouldShowButton: showTranslate,
+  } = usePostTranslation(postId, post?.detected_language ?? null);
 
   async function handleLike() {
     if (!profile) {
@@ -166,6 +222,11 @@ export default function PostDetailPage() {
   }
 
   const author = post.author;
+  const displayTitle = isTranslated && translation ? translation.title : post.title;
+  const displayBody = isTranslated && translation ? translation.body : post.body;
+  const displayThreadParts = isTranslated && translation?.threadParts
+    ? translation.threadParts
+    : post.thread_parts;
   const isAnnouncement = post.post_type === 'announcement';
 
   return (
@@ -255,8 +316,23 @@ export default function PostDetailPage() {
           </div>
 
           {/* Title + body */}
-          <h1 className="text-xl font-bold text-foreground mb-3 font-display leading-snug">{post.title}</h1>
-          <div className="text-sm text-foreground/80 whitespace-pre-wrap mb-4 leading-relaxed">{post.body}</div>
+          <h1 className="text-xl font-bold text-foreground mb-3 font-display leading-snug">{displayTitle}</h1>
+          <div className="text-sm text-foreground/80 whitespace-pre-wrap mb-2 leading-relaxed">{displayBody}</div>
+
+          {/* Translate button */}
+          {showTranslate && (
+            <button
+              onClick={isTranslated ? showOriginal : translate}
+              disabled={translateLoading}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors mb-3 flex items-center gap-1.5"
+            >
+              {translateLoading
+                ? t('translateLoading')
+                : isTranslated
+                  ? t('translateShowOriginal')
+                  : t('translateButton')}
+            </button>
+          )}
 
           {/* Link preview */}
           {post.twitter_url && (
@@ -271,10 +347,10 @@ export default function PostDetailPage() {
           )}
 
           {/* Thread parts */}
-          {post.thread_parts && post.thread_parts.length > 0 && (
+          {displayThreadParts && displayThreadParts.length > 0 && (
             <div className="space-y-3 mb-4 pl-3 border-l-2 border-primary/30">
-              {post.thread_parts.map((part) => (
-                <div key={part.id} className="text-sm text-foreground/80 whitespace-pre-wrap">
+              {displayThreadParts.map((part) => (
+                <div key={part.part_order} className="text-sm text-foreground/80 whitespace-pre-wrap">
                   <span className="text-[10px] text-muted-foreground font-medium">
                     {t('detailThreadPart')} {part.part_order + 1}
                   </span>
@@ -436,34 +512,9 @@ export default function PostDetailPage() {
             <p className="text-xs text-muted-foreground text-center py-6">{t('detailNoComments')}</p>
           ) : (
             <div className="space-y-3">
-              {comments.map((comment) => {
-                const cAuthor = comment.user_profiles;
-                return (
-                  <div key={comment.id} className="flex gap-2">
-                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-organic-terracotta to-yellow-300 flex items-center justify-center overflow-hidden shrink-0 mt-0.5">
-                      {cAuthor?.avatar_url ? (
-                        /* eslint-disable-next-line @next/next/no-img-element */
-                        <img src={cAuthor.avatar_url} alt="" className="w-full h-full object-cover" />
-                      ) : (
-                        <span className="text-[8px] font-bold text-white">
-                          {(cAuthor?.name || cAuthor?.email || '?').charAt(0).toUpperCase()}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-medium text-foreground">
-                          {cAuthor?.name || 'Anonymous'}
-                        </span>
-                        <span className="text-[10px] text-muted-foreground">
-                          {timeAgo(comment.created_at)}
-                        </span>
-                      </div>
-                      <p className="text-xs text-foreground/80 mt-0.5">{comment.body}</p>
-                    </div>
-                  </div>
-                );
-              })}
+              {comments.map((comment) => (
+                <CommentItem key={comment.id} comment={comment} postId={postId} />
+              ))}
             </div>
           )}
         </div>

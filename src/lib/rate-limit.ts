@@ -400,4 +400,6 @@ export const RATE_LIMITS = {
   rewardClaim: { limit: 5, windowMs: 60_000 },
   /** Task submissions: 20 req/min per user */
   taskSubmission: { limit: 20, windowMs: 60_000 },
+  /** Translation requests: 20 req/hour per user (API cost control) */
+  translate: { limit: 20, windowMs: 3_600_000 },
 } as const;

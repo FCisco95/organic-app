@@ -3444,7 +3444,13 @@
     "promoteCost": "{cost}积分",
     "promoteSuccess": "帖子已推广！",
     "promoteError": "推广帖子失败",
-    "organicBonusRevoked": "Organic奖励已被社区举报移除"
+    "organicBonusRevoked": "Organic奖励已被社区举报移除",
+    "translateButton": "翻译帖子",
+    "translateLoading": "翻译中...",
+    "translateShowOriginal": "显示原文",
+    "translateError": "翻译不可用",
+    "translateCommentButton": "翻译",
+    "translateCommentShowOriginal": "原文"
   },
   "Harvest": {
     "title": "每周精选",

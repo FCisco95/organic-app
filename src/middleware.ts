@@ -50,6 +50,7 @@ const SENSITIVE_RATE_LIMIT_PREFIXES = [
   '/api/rewards/distributions/manual',
   '/api/organic-id/assign',
 ];
+const TRANSLATE_RATE_LIMIT_PATH_PATTERN = /^\/api\/posts\/[^/]+\/(?:translate|comments\/[^/]+\/translate)$/;
 
 function isLocalHost(hostname: string): boolean {
   return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1';
@@ -79,6 +80,10 @@ function getApiRateLimitPolicy(pathname: string, method: string): ApiRateLimitPo
 
   if (SENSITIVE_RATE_LIMIT_PREFIXES.some((prefix) => pathname.startsWith(prefix))) {
     return { bucket: 'sensitive', config: RATE_LIMITS.sensitive, scope: 'user' };
+  }
+
+  if (method === 'POST' && TRANSLATE_RATE_LIMIT_PATH_PATTERN.test(pathname)) {
+    return { bucket: 'translate', config: RATE_LIMITS.translate, scope: 'user' };
   }
 
   if (method === 'GET' || method === 'HEAD') {

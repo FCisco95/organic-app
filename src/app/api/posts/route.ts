@@ -15,6 +15,7 @@ import {
   type PostType,
 } from '@/features/gamification/points-service';
 import { checkUserRestriction } from '@/lib/moderation';
+import { detectLanguage } from '@/lib/translation/detect-language';
 
 const POST_SELECT =
   '*, author:user_profiles!posts_author_id_fkey(id,name,email,organic_id,avatar_url)';
@@ -243,6 +244,7 @@ export async function POST(request: NextRequest) {
         og_image_url: ogData.og_image_url,
         is_organic: isOrganic,
         points_cost: pointCost,
+        detected_language: detectLanguage(`${title} ${body}`),
       })
       .select(POST_SELECT)
       .single();

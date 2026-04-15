@@ -3356,7 +3356,13 @@
     "promoteCost": "{cost} pts",
     "promoteSuccess": "Post promoted!",
     "promoteError": "Failed to promote post",
-    "organicBonusRevoked": "Organic bonus removed by community flags"
+    "organicBonusRevoked": "Organic bonus removed by community flags",
+    "translateButton": "Translate post",
+    "translateLoading": "Translating...",
+    "translateShowOriginal": "Show original",
+    "translateError": "Translation unavailable",
+    "translateCommentButton": "Translate",
+    "translateCommentShowOriginal": "Original"
   },
   "NotFound": {
     "heading": "Lost in the garden?",
