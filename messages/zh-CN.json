@@ -157,6 +157,7 @@
     "disconnectWallet": "断开钱包",
     "rewards": "奖励",
     "adminRewards": "管理奖励",
+    "userManagement": "用户管理",
     "submissions": "提交审核",
     "refAndQuests": "推荐 & 任务",
     "onboarding": "设置进度",
@@ -3281,6 +3282,7 @@
     "actions": {
       "reviewSubmissions": "审核提交",
       "processRewards": "处理奖励",
+      "manageUsers": "管理用户",
       "editGovernance": "编辑治理",
       "viewMembers": "查看成员"
     },

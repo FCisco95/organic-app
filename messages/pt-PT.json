@@ -157,6 +157,7 @@
     "disconnectWallet": "Desconectar Carteira",
     "rewards": "Recompensas",
     "adminRewards": "Gerir Recompensas",
+    "userManagement": "Gestão de Utilizadores",
     "submissions": "Submissões",
     "refAndQuests": "Ref & Quests",
     "onboarding": "Progresso de Configuração",
@@ -3281,6 +3282,7 @@
     "actions": {
       "reviewSubmissions": "Rever Submissões",
       "processRewards": "Processar Recompensas",
+      "manageUsers": "Gerir Utilizadores",
       "editGovernance": "Editar Governação",
       "viewMembers": "Ver Membros"
     },
