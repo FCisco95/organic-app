@@ -30,7 +30,7 @@ export function TopBar() {
   const { onboardingState, openWizard, isIncomplete } = useOnboarding();
 
   return (
-    <header className="sticky top-0 z-40 flex h-14 items-center border-b border-border bg-card/80 backdrop-blur-sm px-4 overflow-hidden">
+    <header className="sticky top-0 z-40 flex h-14 items-center border-b border-border bg-card/80 backdrop-blur-sm px-4">
       {/* Left: sidebar toggles */}
       <div className="flex items-center gap-2">
         {/* Desktop toggle */}
