@@ -55,7 +55,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     // Fetch comment
     const { data: comment, error: commentError } = await (supabase as any)
-      .from('post_comments')
+      .from('comments')
       .select('id, body')
       .eq('id', commentId)
       .single();
