@@ -23,6 +23,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Validate i18n keys across locales
+        run: node scripts/validate-i18n-keys.mjs
+
       - name: Lint
         run: npm run lint
 
@@ -139,6 +142,7 @@ jobs:
             tests/dispute-sla.spec.ts \
             tests/rewards-settlement-integrity.spec.ts \
             tests/admin-config-audit.spec.ts \
+            tests/ui-smoke.spec.ts \
             --workers=1
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.CI_NEXT_PUBLIC_SUPABASE_URL != '' && secrets.CI_NEXT_PUBLIC_SUPABASE_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
