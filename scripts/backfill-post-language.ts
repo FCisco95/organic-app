@@ -5,8 +5,11 @@
 //
 // Safe to re-run — only updates posts where detected_language IS NULL.
 
+import { config } from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 import { detectLanguage } from '../src/lib/translation/detect-language';
+
+config({ path: '.env.local' });
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
