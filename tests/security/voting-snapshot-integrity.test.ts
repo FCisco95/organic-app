@@ -42,11 +42,14 @@ describe('Voting Snapshot On-Chain Integrity', () => {
   it('start-voting route must not use client-provided snapshot_holders', () => {
     const source = readFileSync('src/app/api/proposals/[id]/start-voting/route.ts', 'utf-8');
 
-    // Must call getAllTokenHolders() unconditionally
-    expect(source).toContain('await getAllTokenHolders()');
+    // Must call getAllTokenHolders() via the SolanaRpc factory unconditionally.
+    // The factory (getSolanaRpc) returns LiveSolanaRpc in prod and
+    // FixtureSolanaRpc only when SOLANA_RPC_MODE=fixture is set (CI-only).
+    expect(source).toContain('await getSolanaRpc().getAllTokenHolders()');
 
     // Must NOT fall back from client-provided snapshot_holders
     expect(source).not.toContain('input.snapshot_holders ?? (await getAllTokenHolders())');
+    expect(source).not.toContain('input.snapshot_holders ?? (await getSolanaRpc()');
     expect(source).not.toContain('input.snapshot_holders ??');
   });
 

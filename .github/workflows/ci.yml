@@ -113,6 +113,7 @@ jobs:
             tests/rewards-settlement-integrity.spec.ts \
             tests/admin-config-audit.spec.ts \
             tests/ui-smoke.spec.ts \
+            tests/voting-integrity.spec.ts \
             --workers=1
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ steps.supabase.outputs.supabase_url }}
@@ -123,6 +124,7 @@ jobs:
           NEXT_PUBLIC_SOLANA_RPC_URL: https://api.mainnet-beta.solana.com
           NEXT_PUBLIC_SOLANA_NETWORK: mainnet-beta
           NEXT_PUBLIC_ORG_TOKEN_MINT: DuXugm4oTXrGDopgxgudyhboaf6uUg1GVbJ6jk6qbonk
+          SOLANA_RPC_MODE: fixture
 
       - name: Upload Playwright report (integrity gate)
         if: always()
@@ -166,6 +168,7 @@ jobs:
           set -o pipefail
           CI=true npx playwright test \
             tests/rewards-settlement-integrity.spec.ts \
+            tests/voting-integrity.spec.ts \
             --workers=1 --reporter=list | tee test-results/operational-controls-playwright.log
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ steps.supabase.outputs.supabase_url }}
@@ -176,6 +179,7 @@ jobs:
           NEXT_PUBLIC_SOLANA_RPC_URL: https://api.mainnet-beta.solana.com
           NEXT_PUBLIC_SOLANA_NETWORK: mainnet-beta
           NEXT_PUBLIC_ORG_TOKEN_MINT: DuXugm4oTXrGDopgxgudyhboaf6uUg1GVbJ6jk6qbonk
+          SOLANA_RPC_MODE: fixture
 
       - name: Export operational-controls audit snapshot
         if: always()
@@ -240,6 +244,7 @@ jobs:
           NEXT_PUBLIC_SOLANA_RPC_URL: https://api.mainnet-beta.solana.com
           NEXT_PUBLIC_SOLANA_NETWORK: mainnet-beta
           NEXT_PUBLIC_ORG_TOKEN_MINT: DuXugm4oTXrGDopgxgudyhboaf6uUg1GVbJ6jk6qbonk
+          SOLANA_RPC_MODE: fixture
 
       - name: Upload Playwright report (full suite)
         if: always()

@@ -121,6 +121,18 @@ test.describe('Voting snapshot and finalization integrity', () => {
       .update({ wallet_pubkey: walletB })
       .eq('id', memberBUserId);
 
+    // Seed Solana RPC fixture holders so start-voting returns deterministic
+    // total_supply. Requires SOLANA_RPC_MODE=fixture in the API runtime.
+    await supabaseAdmin
+      .from('solana_rpc_fixtures')
+      .upsert(
+        [
+          { wallet_address: walletA, balance: 10 },
+          { wallet_address: walletB, balance: 2 },
+        ],
+        { onConflict: 'wallet_address' }
+      );
+
     // Disable proposer cooldown so the second proposal creation in the serial
     // suite doesn't hit the 7-day default cooldown (which returns 429).
     await supabaseAdmin
@@ -133,6 +145,11 @@ test.describe('Voting snapshot and finalization integrity', () => {
     if (missing.length > 0) return;
 
     const supabaseAdmin = createAdminClient();
+
+    await supabaseAdmin
+      .from('solana_rpc_fixtures')
+      .delete()
+      .in('wallet_address', [walletA, walletB]);
 
     if (proposalAId) {
       await supabaseAdmin.from('proposals').delete().eq('id', proposalAId);

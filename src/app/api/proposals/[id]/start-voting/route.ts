@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { getAllTokenHolders } from '@/lib/solana';
+import { getSolanaRpc } from '@/lib/solana';
 import { startVotingSchema } from '@/features/voting/schemas';
 import { parseJsonBody } from '@/lib/parse-json-body';
 import { logger } from '@/lib/logger';
@@ -154,7 +154,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       });
     }
 
-    const holders = await getAllTokenHolders();
+    const holders = await getSolanaRpc().getAllTokenHolders();
 
     if (!holders.length) {
       logger.error('On-chain snapshot returned zero holders', { proposal_id: proposalId });
@@ -193,7 +193,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       supabase,
       proposalId,
       votingDurationDays: input.voting_duration_days || undefined,
-      holders: holders as Json,
+      holders: holders as unknown as Json,
     });
 
     if (rpcError) {
