@@ -1,0 +1,54 @@
+{
+  // audit-ci runs `npm audit` and fails CI if advisories are newer or
+  // more severe than the rules below allow.
+  //
+  // Docs: https://github.com/IBM/audit-ci
+  //
+  // Policy: fail on any new high/critical advisory. Allowlist is only
+  // for advisories whose fix requires a breaking major upgrade we have
+  // not yet scheduled. Every entry has an `expiry` date forcing
+  // re-review at most every 90 days.
+  //
+  // Allowlist schema (audit-ci v7 NSPRecord):
+  //   { "<GHSA-id>": { "active": true, "notes": "...", "expiry": "<ISO date>" } }
+
+  "high": true,
+  "critical": true,
+  "moderate": false,
+  "low": false,
+
+  "allowlist": [
+    {
+      "GHSA-3gc7-fjrx-p6mg": {
+        "active": true,
+        "notes": "bigint-buffer Buffer Overflow via toBigIntLE(). Transitive via @solana/wallet-adapter-wallets > @solana/spl-token > @solana/buffer-layout-utils. Fix requires breaking @solana/spl-token downgrade to 0.1.8.",
+        "expiry": "2026-07-15T00:00:00Z"
+      }
+    },
+    {
+      "GHSA-r5fr-rjxr-66jc": {
+        "active": true,
+        "notes": "lodash code injection via _.template. Transitive via @walletconnect/universal-provider. Fix requires breaking @solana/wallet-adapter-wallets major bump.",
+        "expiry": "2026-07-15T00:00:00Z"
+      }
+    },
+    {
+      "GHSA-h25m-26qc-wcjf": {
+        "active": true,
+        "notes": "Next.js HTTP request deserialization DoS (insecure React Server Components). Fix requires breaking next@14 -> next@16.2.4 major upgrade, scheduled separately.",
+        "expiry": "2026-07-15T00:00:00Z"
+      }
+    },
+    {
+      "GHSA-q4gf-8mx6-v5v3": {
+        "active": true,
+        "notes": "Next.js DoS with Server Components. Fix requires breaking next@14 -> next@16.2.4 major upgrade, scheduled separately.",
+        "expiry": "2026-07-15T00:00:00Z"
+      }
+    }
+  ],
+
+  "pass-enoaudit": false,
+  "skip-dev": false,
+  "report-type": "summary"
+}
