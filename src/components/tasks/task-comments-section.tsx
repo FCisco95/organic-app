@@ -5,6 +5,72 @@ import { MessageSquare, Send } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { TaskComment } from '@/features/tasks';
+import { useCommentTranslation } from '@/features/translation/comment-hooks';
+
+function TaskCommentItem({
+  comment,
+  getDisplayName,
+  formatDate,
+}: {
+  comment: TaskComment;
+  getDisplayName: (user: TaskComment['user']) => string;
+  formatDate: (dateString: string) => string;
+}) {
+  const t = useTranslations('TaskDetail');
+  const {
+    translation,
+    isTranslated,
+    isLoading,
+    shouldShowButton,
+    translate,
+    showOriginal,
+  } = useCommentTranslation(comment.id, comment.detected_language ?? null);
+  const displayContent = isTranslated && translation ? translation : comment.content;
+
+  return (
+    <div className="border-l-2 border-border pl-4 py-2">
+      <div className="flex items-start gap-3">
+        {comment.user.avatar_url ? (
+          <Image
+            src={comment.user.avatar_url}
+            alt={getDisplayName(comment.user)}
+            width={32}
+            height={32}
+            className="rounded-full"
+            unoptimized
+          />
+        ) : (
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-organic-terracotta to-organic-yellow flex items-center justify-center">
+            <span className="text-white text-sm font-bold">
+              {getDisplayName(comment.user)[0].toUpperCase()}
+            </span>
+          </div>
+        )}
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="font-medium text-gray-900">{getDisplayName(comment.user)}</span>
+            <span className="text-xs text-gray-500">{formatDate(comment.created_at)}</span>
+          </div>
+          <p className="text-gray-700 whitespace-pre-wrap">{displayContent}</p>
+          {shouldShowButton && (
+            <button
+              type="button"
+              onClick={isTranslated ? showOriginal : translate}
+              disabled={isLoading}
+              className="mt-1 text-[11px] text-gray-500 transition-colors hover:text-gray-900"
+            >
+              {isLoading
+                ? t('translateLoading')
+                : isTranslated
+                  ? t('translateCommentShowOriginal')
+                  : t('translateCommentButton')}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 type TaskCommentsSectionProps = {
   comments: TaskComment[];
@@ -77,35 +143,12 @@ export function TaskCommentsSection({
           <p className="text-gray-500 text-center py-4">{t('noComments')}</p>
         ) : (
           comments.map((comment) => (
-            <div key={comment.id} className="border-l-2 border-border pl-4 py-2">
-              <div className="flex items-start gap-3">
-                {comment.user.avatar_url ? (
-                  <Image
-                    src={comment.user.avatar_url}
-                    alt={getDisplayName(comment.user)}
-                    width={32}
-                    height={32}
-                    className="rounded-full"
-                    unoptimized
-                  />
-                ) : (
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-organic-terracotta to-organic-yellow flex items-center justify-center">
-                    <span className="text-white text-sm font-bold">
-                      {getDisplayName(comment.user)[0].toUpperCase()}
-                    </span>
-                  </div>
-                )}
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-medium text-gray-900">
-                      {getDisplayName(comment.user)}
-                    </span>
-                    <span className="text-xs text-gray-500">{formatDate(comment.created_at)}</span>
-                  </div>
-                  <p className="text-gray-700 whitespace-pre-wrap">{comment.content}</p>
-                </div>
-              </div>
-            </div>
+            <TaskCommentItem
+              key={comment.id}
+              comment={comment}
+              getDisplayName={getDisplayName}
+              formatDate={formatDate}
+            />
           ))
         )}
       </div>

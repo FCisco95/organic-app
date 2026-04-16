@@ -30,7 +30,10 @@ import {
 } from 'lucide-react';
 import { formatDistanceToNow, format } from 'date-fns';
 import toast from 'react-hot-toast';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import { useProposalTranslation } from '@/features/translation/hooks';
+import { useCommentTranslation } from '@/features/translation/comment-hooks';
+import type { ProposalComment } from '@/features/proposals/types';
 import type { ProposalWithVoting } from '@/features/voting';
 import { FollowButton } from '@/components/notifications/follow-button';
 import { PageContainer } from '@/components/layout';
@@ -127,11 +130,81 @@ function AccordionCard({
   );
 }
 
+const LOCALE_DISPLAY_NAMES: Record<string, string> = {
+  en: 'English',
+  'pt-PT': 'Português',
+  'zh-CN': '中文',
+};
+
+interface ProposalCommentItemProps {
+  comment: ProposalComment;
+  commentVersion: number;
+  outdated: boolean;
+  authorLabel: string;
+}
+
+function ProposalCommentItem({
+  comment,
+  commentVersion,
+  outdated,
+  authorLabel,
+}: ProposalCommentItemProps) {
+  const t = useTranslations('ProposalDetail');
+  const displayName = comment.user_profiles.name;
+  const {
+    translation,
+    isTranslated,
+    isLoading,
+    shouldShowButton,
+    translate,
+    showOriginal,
+  } = useCommentTranslation(comment.id, comment.detected_language ?? null);
+  const displayBody = isTranslated && translation ? translation : comment.body;
+
+  return (
+    <div className="bg-gray-50 rounded-xl p-4">
+      <div className="flex items-center gap-2 mb-2 flex-wrap">
+        <div className="w-7 h-7 rounded-full bg-organic-terracotta/15 flex items-center justify-center text-xs font-semibold text-organic-terracotta shrink-0">
+          {(displayName ?? comment.user_profiles.email ?? '?')[0].toUpperCase()}
+        </div>
+        <span className="font-medium text-gray-900 text-sm">{authorLabel}</span>
+        <span className="text-xs text-gray-500">
+          {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
+        </span>
+        <span className="rounded-full bg-gray-200 px-2 py-0.5 text-xs font-medium text-gray-700">
+          {t('commentOnVersion', { version: commentVersion })}
+        </span>
+        {outdated && (
+          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
+            {t('updatedMarker')}
+          </span>
+        )}
+      </div>
+      <p className="text-gray-700 text-sm whitespace-pre-wrap pl-4">{displayBody}</p>
+      {shouldShowButton && (
+        <button
+          type="button"
+          onClick={isTranslated ? showOriginal : translate}
+          disabled={isLoading}
+          className="mt-1 pl-4 text-[11px] text-gray-500 transition-colors hover:text-gray-900"
+        >
+          {isLoading
+            ? t('translateLoading')
+            : isTranslated
+              ? t('translateCommentShowOriginal')
+              : t('translateCommentButton')}
+        </button>
+      )}
+    </div>
+  );
+}
+
 export default function ProposalDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { user, profile } = useAuth();
   const t = useTranslations('ProposalDetail');
+  const locale = useLocale();
   const [commentText, setCommentText] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [executionTasks, setExecutionTasks] = useState<ProposalExecutionTask[]>([]);
@@ -142,6 +215,26 @@ export default function ProposalDetailPage() {
 
   const { data: proposal, isLoading, refetch: refetchProposal } = useProposal(proposalId);
   const { data: comments = [], refetch: refetchComments } = useProposalComments(proposalId);
+
+  const {
+    translations: proposalTranslations,
+    isTranslated: isProposalTranslated,
+    isLoading: isTranslating,
+    translate: translateProposal,
+    showOriginal: showProposalOriginal,
+    shouldShowButton: canTranslateProposal,
+  } = useProposalTranslation(proposalId, proposal?.detected_language ?? null);
+
+  const displayProposal = proposal
+    ? isProposalTranslated && proposalTranslations
+      ? {
+          ...proposal,
+          title: proposalTranslations.title ?? proposal.title,
+          body: proposalTranslations.body ?? proposal.body,
+          summary: proposalTranslations.summary ?? proposal.summary,
+        }
+      : proposal
+    : null;
 
   const deleteProposal = useDeleteProposal();
   const updateStatus = useUpdateProposalStatus();
@@ -504,7 +597,7 @@ export default function ProposalDetailPage() {
 
               {/* Title + Actions */}
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex-1">{proposal.title}</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex-1">{displayProposal?.title ?? proposal.title}</h1>
                 <div className="flex gap-2 shrink-0">
                   {user && <FollowButton subjectType="proposal" subjectId={proposalId} />}
                   {(isAuthor || isAdmin) &&
@@ -562,8 +655,50 @@ export default function ProposalDetailPage() {
 
             {/* Content Area */}
             <div className="px-4 sm:px-8 py-6">
+              {canTranslateProposal && (
+                <div className="mb-5 flex items-center gap-2 text-xs">
+                  <span className="text-gray-500">{t('readingIn')}:</span>
+                  <div className="inline-flex items-center rounded-full bg-gray-100 p-0.5 ring-1 ring-border">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (isTranslating) return;
+                        if (!isProposalTranslated) void translateProposal();
+                      }}
+                      disabled={isTranslating}
+                      aria-pressed={isProposalTranslated}
+                      className={cn(
+                        'px-3 py-1 rounded-full font-medium transition-colors',
+                        isProposalTranslated
+                          ? 'bg-white text-gray-900 shadow-sm'
+                          : 'text-gray-600 hover:text-gray-900'
+                      )}
+                    >
+                      {isTranslating
+                        ? t('translateLoading')
+                        : (LOCALE_DISPLAY_NAMES[locale] ?? locale)}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (isTranslating) return;
+                        if (isProposalTranslated) showProposalOriginal();
+                      }}
+                      aria-pressed={!isProposalTranslated}
+                      className={cn(
+                        'px-3 py-1 rounded-full font-medium transition-colors',
+                        !isProposalTranslated
+                          ? 'bg-white text-gray-900 shadow-sm'
+                          : 'text-gray-600 hover:text-gray-900'
+                      )}
+                    >
+                      {t('readingOriginal')}
+                    </button>
+                  </div>
+                </div>
+              )}
               {/* Structured Sections */}
-              <ProposalSections proposal={proposal} />
+              <ProposalSections proposal={displayProposal ?? proposal} />
 
               {/* Admin Actions - Lifecycle Progression */}
               {isAdmin && (lifecycleStatus === 'public' || lifecycleStatus === 'qualified') && (
@@ -873,7 +1008,6 @@ export default function ProposalDetailPage() {
                   const displayName = comment.user_profiles.name;
                   const organicId = comment.user_profiles.organic_id;
 
-                  // Task 10: show "Display Name · Organic #ID" format
                   const authorLabel =
                     displayName && organicId
                       ? t('commentAuthorFormat', { displayName, id: organicId })
@@ -882,28 +1016,13 @@ export default function ProposalDetailPage() {
                         : comment.user_profiles.email.split('@')[0];
 
                   return (
-                    <div key={comment.id} className="bg-gray-50 rounded-xl p-4">
-                      <div className="flex items-center gap-2 mb-2 flex-wrap">
-                        <div className="w-7 h-7 rounded-full bg-organic-terracotta/15 flex items-center justify-center text-xs font-semibold text-organic-terracotta shrink-0">
-                          {(displayName ?? comment.user_profiles.email ?? '?')[0].toUpperCase()}
-                        </div>
-                        <span className="font-medium text-gray-900 text-sm">
-                          {authorLabel}
-                        </span>
-                        <span className="text-xs text-gray-500">
-                          {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
-                        </span>
-                        <span className="rounded-full bg-gray-200 px-2 py-0.5 text-xs font-medium text-gray-700">
-                          {t('commentOnVersion', { version: commentVersion })}
-                        </span>
-                        {outdated && (
-                          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
-                            {t('updatedMarker')}
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-gray-700 text-sm whitespace-pre-wrap pl-4">{comment.body}</p>
-                    </div>
+                    <ProposalCommentItem
+                      key={comment.id}
+                      comment={comment as ProposalComment}
+                      commentVersion={commentVersion}
+                      outdated={outdated}
+                      authorLabel={authorLabel}
+                    />
                   );
                 })
               )}

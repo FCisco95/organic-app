@@ -77,6 +77,7 @@ export interface TaskComment {
   content: string;
   created_at: string;
   updated_at: string;
+  detected_language: string | null;
   user: {
     id: string;
     name: string | null;

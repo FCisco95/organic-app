@@ -4,6 +4,7 @@ import { createProposalSchema } from '@/features/proposals/schemas';
 import { isPrivilegedRole } from '@/features/proposals/anti-abuse';
 import { parseJsonBody } from '@/lib/parse-json-body';
 import { logger } from '@/lib/logger';
+import { detectLanguage } from '@/lib/translation/detect-language';
 
 /** Statuses considered "active" for the max-live-proposals check. */
 const ACTIVE_STATUSES = ['public', 'qualified', 'discussion', 'voting', 'submitted'] as const;
@@ -182,7 +183,7 @@ export async function POST(request: NextRequest) {
       ...(input.timeline ? ['', '## Timeline', input.timeline] : []),
     ].join('\n');
 
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('proposals')
       .insert({
         title: input.title,
@@ -195,6 +196,7 @@ export async function POST(request: NextRequest) {
         timeline: input.timeline || null,
         status: proposalStatus,
         created_by: user.id,
+        detected_language: detectLanguage(bodyText),
       })
       .select()
       .single();

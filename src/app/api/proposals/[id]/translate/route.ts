@@ -7,14 +7,9 @@ import { applyUserRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
-interface ThreadPartRow {
-  part_order: number;
-  body: string;
-}
-
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
-    const { id: postId } = await params;
+    const { id: proposalId } = await params;
 
     const supabase = await createClient();
     const {
@@ -41,50 +36,41 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     const { targetLocale } = parsed.data;
 
-    const { data: post, error: postError } = await (supabase as any)
-      .from('posts')
-      .select('id, title, body, detected_language, post_type')
-      .eq('id', postId)
+    const { data: proposal, error: proposalError } = await (supabase as any)
+      .from('proposals')
+      .select('id, title, body, summary, detected_language')
+      .eq('id', proposalId)
       .single();
 
-    if (postError || !post) {
-      return NextResponse.json({ error: 'Post not found' }, { status: 404 });
-    }
-
-    let threadParts: ThreadPartRow[] = [];
-    if (post.post_type === 'thread') {
-      const { data: parts } = await (supabase as any)
-        .from('post_thread_parts')
-        .select('part_order, body')
-        .eq('post_id', postId)
-        .order('part_order', { ascending: true });
-      threadParts = (parts ?? []) as ThreadPartRow[];
+    if (proposalError || !proposal) {
+      return NextResponse.json({ error: 'Proposal not found' }, { status: 404 });
     }
 
     const fields: TranslationField[] = [
-      { name: 'title', text: post.title },
-      { name: 'body', text: post.body },
-      ...threadParts.map((p) => ({
-        name: `thread_part_${p.part_order}`,
-        text: p.body,
-      })),
-    ];
+      { name: 'title', text: proposal.title ?? '' },
+      { name: 'body', text: proposal.body ?? '' },
+      { name: 'summary', text: proposal.summary ?? '' },
+    ].filter((f) => f.text.length > 0);
 
     const result = await translateContent({
-      contentType: 'post',
-      contentId: postId,
+      contentType: 'proposal',
+      contentId: proposalId,
       fields,
-      sourceLocale: post.detected_language ?? null,
+      sourceLocale: (proposal as { detected_language: string | null }).detected_language ?? null,
       targetLocale,
     });
 
     return NextResponse.json({
-      data: result.translations,
+      data: {
+        title: result.translations.title ?? proposal.title,
+        body: result.translations.body ?? proposal.body,
+        summary: result.translations.summary ?? proposal.summary,
+      },
       cached: result.cached,
       sourceLocale: result.sourceLocale,
     });
   } catch (err) {
-    logger.error('Translation API error:', err);
+    logger.error('Proposal translation API error:', err);
     return NextResponse.json({ error: 'Translation failed' }, { status: 500 });
   }
 }

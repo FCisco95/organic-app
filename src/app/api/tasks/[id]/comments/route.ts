@@ -4,6 +4,7 @@ import { parseJsonBody } from '@/lib/parse-json-body';
 import { logger } from '@/lib/logger';
 import { createCommentSchema } from '@/features/tasks/schemas';
 import { checkUserRestriction } from '@/lib/moderation';
+import { detectLanguage } from '@/lib/translation/detect-language';
 
 // GET - Fetch comments for a task with cursor pagination
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -99,12 +100,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       );
     }
 
-    const { data: comment, error } = await supabase
+    const { data: comment, error } = await (supabase as any)
       .from('task_comments')
         .insert({
           task_id: id,
           user_id: user.id,
           content: parsed.data.content,
+          detected_language: detectLanguage(parsed.data.content),
         })
       .select(
         `

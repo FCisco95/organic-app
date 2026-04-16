@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { updateProposalSchema } from '@/features/proposals/schemas';
 import { normalizeProposalStatus } from '@/features/proposals/types';
 import { parseJsonBody } from '@/lib/parse-json-body';
@@ -189,6 +189,20 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       .single();
 
     if (updateError) throw updateError;
+
+    // Invalidate cached translations when any translated field changes.
+    if (
+      input.title !== undefined ||
+      input.summary !== undefined ||
+      updates.body !== undefined
+    ) {
+      const serviceClient = createServiceClient();
+      await (serviceClient as any)
+        .from('content_translations')
+        .delete()
+        .eq('content_type', 'proposal')
+        .eq('content_id', proposalId);
+    }
 
     const { data, error: refetchError } = await supabase
       .from('proposals')

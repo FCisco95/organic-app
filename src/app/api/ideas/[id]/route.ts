@@ -164,6 +164,16 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Failed to update idea' }, { status: 500 });
     }
 
+    // Invalidate cached translations when translated fields change.
+    if (contentUpdates.title !== undefined || contentUpdates.body !== undefined) {
+      const serviceClient = createServiceClient();
+      await (serviceClient as any)
+        .from('content_translations')
+        .delete()
+        .eq('content_type', 'idea')
+        .eq('content_id', id);
+    }
+
     // Log events
     const service = createServiceClient();
     const allKeys = [...Object.keys(contentUpdates), ...Object.keys(modUpdates)];

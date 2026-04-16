@@ -5,6 +5,7 @@ import { parseJsonBody } from '@/lib/parse-json-body';
 import { applyUserRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
 import { checkUserRestriction } from '@/lib/moderation';
+import { detectLanguage } from '@/lib/translation/detect-language';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -115,7 +116,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Proposal not found' }, { status: 404 });
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('comments')
       .insert({
         subject_type: 'proposal',
@@ -123,6 +124,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         proposal_version_id: proposal.current_version_id,
         user_id: user.id,
         body: parseResult.data.body,
+        detected_language: detectLanguage(parseResult.data.body),
       })
       .select(
         `

@@ -7,6 +7,7 @@ import { addPostCommentSchema } from '@/features/posts/schemas';
 import { awardXp } from '@/features/gamification/xp-service';
 import { getPromotionMultiplier, type PromotionTier } from '@/features/gamification/points-service';
 import { checkUserRestriction } from '@/lib/moderation';
+import { detectLanguage } from '@/lib/translation/detect-language';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -16,6 +17,7 @@ const COMMENT_SELECT = `
   user_id,
   created_at,
   updated_at,
+  detected_language,
   user_profiles!comments_user_id_fkey(
     id,
     name,
@@ -34,7 +36,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const limit = Math.min(50, Math.max(1, Number(searchParams.get('limit')) || 20));
     const before = searchParams.get('before');
 
-    let query = supabase
+    let query = (supabase as any)
       .from('comments')
       .select(COMMENT_SELECT)
       .eq('subject_type', 'post')
@@ -54,7 +56,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     }
 
     const hasMore = (comments?.length ?? 0) > limit;
-    const results = hasMore ? comments!.slice(0, limit) : (comments ?? []);
+    const results = (hasMore ? comments!.slice(0, limit) : (comments ?? [])) as Array<{
+      created_at: string;
+    }>;
 
     return NextResponse.json({
       comments: results,
@@ -132,13 +136,14 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const { data: comment, error: insertError } = await supabase
+    const { data: comment, error: insertError } = await (supabase as any)
       .from('comments')
       .insert({
         subject_type: 'post',
         subject_id: postId,
         user_id: user.id,
         body: parsed.data.body,
+        detected_language: detectLanguage(parsed.data.body),
       })
       .select(COMMENT_SELECT)
       .single();
