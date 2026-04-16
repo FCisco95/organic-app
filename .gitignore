@@ -81,3 +81,6 @@ alt-*.png
 # Sentry Config File
 .env.sentry-build-plugin
 auth.json
+
+# git worktrees
+.worktrees/
