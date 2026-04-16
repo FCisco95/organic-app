@@ -1,0 +1,47 @@
+name: Setup local Supabase
+description: Boots a local Supabase stack, applies migrations + seed, and exports URL/keys as outputs.
+outputs:
+  supabase_url:
+    description: Local Supabase API URL
+    value: ${{ steps.run.outputs.supabase_url }}
+  anon_key:
+    description: Local Supabase anon key
+    value: ${{ steps.run.outputs.anon_key }}
+  service_role_key:
+    description: Local Supabase service_role key
+    value: ${{ steps.run.outputs.service_role_key }}
+runs:
+  using: composite
+  steps:
+    - name: Install Supabase CLI
+      uses: supabase/setup-cli@v1
+      with:
+        version: latest
+
+    - name: Start Supabase and capture credentials
+      id: run
+      shell: bash
+      run: |
+        set -euo pipefail
+        supabase start --exclude studio,inbucket,edge-runtime,realtime,imgproxy > /tmp/supabase-start.log
+        cat /tmp/supabase-start.log
+
+        URL=$(grep -E '^\s*API URL:' /tmp/supabase-start.log | awk '{print $NF}')
+        ANON=$(grep -E '^\s*anon key:' /tmp/supabase-start.log | awk '{print $NF}')
+        SRK=$(grep -E '^\s*service_role key:' /tmp/supabase-start.log | awk '{print $NF}')
+
+        if [ -z "$URL" ] || [ -z "$ANON" ] || [ -z "$SRK" ]; then
+          echo "Failed to parse Supabase credentials from start output"
+          exit 1
+        fi
+
+        echo "supabase_url=$URL" >> "$GITHUB_OUTPUT"
+        echo "anon_key=$ANON" >> "$GITHUB_OUTPUT"
+        echo "service_role_key=$SRK" >> "$GITHUB_OUTPUT"
+
+        echo "::add-mask::$SRK"
+
+        supabase db reset --no-seed
+        if [ -f supabase/seed.sql ]; then
+          psql "postgres://postgres:postgres@127.0.0.1:54322/postgres" -f supabase/seed.sql
+        fi

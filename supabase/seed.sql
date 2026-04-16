@@ -1,0 +1,4 @@
+-- seed.sql — applied automatically by `supabase db reset`.
+-- Runs AFTER all migrations. Keep idempotent (use ON CONFLICT).
+-- Intentionally minimal: migrations seed default orgs + voting_config.
+-- Additional fixtures (Solana RPC holders) are added in Phase 4.
