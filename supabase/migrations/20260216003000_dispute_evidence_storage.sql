@@ -3,19 +3,29 @@
 -- Purpose: Add file evidence support for disputes with private storage
 -- ===========================================================================
 
-ALTER TABLE disputes
-  ADD COLUMN IF NOT EXISTS evidence_files TEXT[] NOT NULL DEFAULT '{}';
-
+-- The `disputes` table is created in 20260216100000_dispute_resolution.sql
+-- (later timestamp). The ALTER TABLE + constraint are deferred to migration
+-- 20260216100002 and guarded here so fresh Supabase instances can apply this
+-- migration without error.
 DO $$
 BEGIN
-  IF NOT EXISTS (
+  IF EXISTS (
     SELECT 1
-    FROM pg_constraint
-    WHERE conname = 'disputes_evidence_files_max'
+    FROM information_schema.tables
+    WHERE table_schema = 'public' AND table_name = 'disputes'
   ) THEN
     ALTER TABLE disputes
-      ADD CONSTRAINT disputes_evidence_files_max
-      CHECK (COALESCE(array_length(evidence_files, 1), 0) <= 5);
+      ADD COLUMN IF NOT EXISTS evidence_files TEXT[] NOT NULL DEFAULT '{}';
+
+    IF NOT EXISTS (
+      SELECT 1
+      FROM pg_constraint
+      WHERE conname = 'disputes_evidence_files_max'
+    ) THEN
+      ALTER TABLE disputes
+        ADD CONSTRAINT disputes_evidence_files_max
+        CHECK (COALESCE(array_length(evidence_files, 1), 0) <= 5);
+    END IF;
   END IF;
 END $$;
 
