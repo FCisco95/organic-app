@@ -4,17 +4,17 @@ import { translateRequestSchema } from '@/features/translation/schemas';
 import { translateContent, type TranslationField } from '@/lib/translation/translate-content';
 import { logger } from '@/lib/logger';
 import { applyUserRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
+import { isIdeasIncubatorEnabled } from '@/config/feature-flags';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
-interface ThreadPartRow {
-  part_order: number;
-  body: string;
-}
-
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
-    const { id: postId } = await params;
+    if (!isIdeasIncubatorEnabled()) {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    }
+
+    const { id: ideaId } = await params;
 
     const supabase = await createClient();
     const {
@@ -41,50 +41,39 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     const { targetLocale } = parsed.data;
 
-    const { data: post, error: postError } = await (supabase as any)
-      .from('posts')
-      .select('id, title, body, detected_language, post_type')
-      .eq('id', postId)
+    const { data: idea, error: ideaError } = await (supabase as any)
+      .from('ideas')
+      .select('id, title, body, detected_language')
+      .eq('id', ideaId)
       .single();
 
-    if (postError || !post) {
-      return NextResponse.json({ error: 'Post not found' }, { status: 404 });
-    }
-
-    let threadParts: ThreadPartRow[] = [];
-    if (post.post_type === 'thread') {
-      const { data: parts } = await (supabase as any)
-        .from('post_thread_parts')
-        .select('part_order, body')
-        .eq('post_id', postId)
-        .order('part_order', { ascending: true });
-      threadParts = (parts ?? []) as ThreadPartRow[];
+    if (ideaError || !idea) {
+      return NextResponse.json({ error: 'Idea not found' }, { status: 404 });
     }
 
     const fields: TranslationField[] = [
-      { name: 'title', text: post.title },
-      { name: 'body', text: post.body },
-      ...threadParts.map((p) => ({
-        name: `thread_part_${p.part_order}`,
-        text: p.body,
-      })),
-    ];
+      { name: 'title', text: idea.title ?? '' },
+      { name: 'body', text: idea.body ?? '' },
+    ].filter((f) => f.text.length > 0);
 
     const result = await translateContent({
-      contentType: 'post',
-      contentId: postId,
+      contentType: 'idea',
+      contentId: ideaId,
       fields,
-      sourceLocale: post.detected_language ?? null,
+      sourceLocale: (idea as { detected_language: string | null }).detected_language ?? null,
       targetLocale,
     });
 
     return NextResponse.json({
-      data: result.translations,
+      data: {
+        title: result.translations.title ?? idea.title,
+        body: result.translations.body ?? idea.body,
+      },
       cached: result.cached,
       sourceLocale: result.sourceLocale,
     });
   } catch (err) {
-    logger.error('Translation API error:', err);
+    logger.error('Idea translation API error:', err);
     return NextResponse.json({ error: 'Translation failed' }, { status: 500 });
   }
 }
