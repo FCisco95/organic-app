@@ -6,7 +6,14 @@
 --   - Refresh materialized view
 -- ============================================================================
 
-CREATE OR REPLACE VIEW public.leaderboard_view AS
+-- CREATE OR REPLACE VIEW cannot change column ordering relative to the
+-- existing view (restriction_status is inserted before the pre-existing
+-- `rank` column). Drop the view + its materialized dependent with CASCADE,
+-- then recreate from scratch.
+DROP MATERIALIZED VIEW IF EXISTS public.leaderboard_materialized;
+DROP VIEW IF EXISTS public.leaderboard_view CASCADE;
+
+CREATE VIEW public.leaderboard_view AS
 SELECT
   id,
   name,
