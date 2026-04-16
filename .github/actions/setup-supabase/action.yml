@@ -23,25 +23,35 @@ runs:
       shell: bash
       run: |
         set -euo pipefail
-        supabase start --exclude studio,inbucket,edge-runtime,realtime,imgproxy > /tmp/supabase-start.log
-        cat /tmp/supabase-start.log
 
-        URL=$(grep -E '^\s*API URL:' /tmp/supabase-start.log | awk '{print $NF}')
-        ANON=$(grep -E '^\s*anon key:' /tmp/supabase-start.log | awk '{print $NF}')
-        SRK=$(grep -E '^\s*service_role key:' /tmp/supabase-start.log | awk '{print $NF}')
+        supabase start --exclude studio,inbucket,edge-runtime,realtime,imgproxy
+
+        # Use `supabase status -o env` — stable KEY=VALUE shell-sourceable output
+        # that works across CLI 1.x and 2.x regardless of the pretty-print table
+        # format changes. SUPABASE_ANON_KEY and SUPABASE_SERVICE_ROLE_KEY are
+        # legacy JWT keys that remain compatible with the app's supabase-js
+        # client and existing env var names.
+        STATUS_ENV=$(supabase status -o env)
+        echo "$STATUS_ENV"
+
+        URL=$(echo "$STATUS_ENV" | awk -F'=' '/^SUPABASE_API_URL=/ { gsub(/"/, "", $2); print $2 }')
+        ANON=$(echo "$STATUS_ENV" | awk -F'=' '/^SUPABASE_ANON_KEY=/ { gsub(/"/, "", $2); print $2 }')
+        SRK=$(echo "$STATUS_ENV" | awk -F'=' '/^SUPABASE_SERVICE_ROLE_KEY=/ { gsub(/"/, "", $2); print $2 }')
 
         if [ -z "$URL" ] || [ -z "$ANON" ] || [ -z "$SRK" ]; then
-          echo "Failed to parse Supabase credentials from start output"
+          echo "Failed to parse Supabase credentials from 'supabase status -o env'"
+          echo "Raw status output:"
+          echo "$STATUS_ENV"
           exit 1
         fi
+
+        echo "::add-mask::$ANON"
+        echo "::add-mask::$SRK"
 
         echo "supabase_url=$URL" >> "$GITHUB_OUTPUT"
         echo "anon_key=$ANON" >> "$GITHUB_OUTPUT"
         echo "service_role_key=$SRK" >> "$GITHUB_OUTPUT"
 
-        echo "::add-mask::$SRK"
-
-        supabase db reset --no-seed
         if [ -f supabase/seed.sql ]; then
           psql "postgres://postgres:postgres@127.0.0.1:54322/postgres" -f supabase/seed.sql
         fi
