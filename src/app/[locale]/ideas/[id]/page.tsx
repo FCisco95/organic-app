@@ -34,6 +34,63 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { IdeaTimeline } from '@/components/ideas/IdeaTimeline';
 import { useIdeaTranslation } from '@/features/translation/hooks';
+import { useCommentTranslation } from '@/features/translation/comment-hooks';
+import type { IdeaComment } from '@/features/ideas/types';
+
+function IdeaCommentItem({ entry, isLast }: { entry: IdeaComment; isLast: boolean }) {
+  const t = useTranslations('IdeaDetail');
+  const {
+    translation,
+    isTranslated,
+    isLoading,
+    shouldShowButton,
+    translate,
+    showOriginal,
+  } = useCommentTranslation(entry.id, entry.detected_language ?? null);
+  const displayBody = isTranslated && translation ? translation : entry.body;
+
+  return (
+    <div className="relative flex gap-3 pb-5">
+      {!isLast && (
+        <div className="absolute left-[15px] top-10 h-[calc(100%-2rem)] w-px border-l-2 border-border" />
+      )}
+      <Avatar className="relative z-10 h-8 w-8 shrink-0">
+        <AvatarFallback className="bg-muted text-[10px] font-semibold text-muted-foreground">
+          {getInitials(entry.user_profiles.name, entry.user_profiles.email)}
+        </AvatarFallback>
+      </Avatar>
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+          <span className="font-medium text-foreground">
+            {entry.user_profiles.organic_id
+              ? t('authorOrganic', { id: entry.user_profiles.organic_id })
+              : entry.user_profiles.name ?? entry.user_profiles.email}
+          </span>
+          <span className="font-mono">
+            {new Date(entry.created_at).toLocaleString()}
+          </span>
+        </div>
+        <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-foreground">
+          {displayBody}
+        </p>
+        {shouldShowButton && (
+          <button
+            type="button"
+            onClick={isTranslated ? showOriginal : translate}
+            disabled={isLoading}
+            className="mt-1 text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+          >
+            {isLoading
+              ? t('translateLoading')
+              : isTranslated
+                ? t('translateCommentShowOriginal')
+                : t('translateCommentButton')}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
 
 function getInitials(name: string | null | undefined, email?: string | null): string {
   if (name) {
@@ -455,32 +512,11 @@ export default function IdeaDetailPage() {
                 </div>
               ) : commentsQuery.data?.comments.length ? (
                 commentsQuery.data.comments.map((entry, index) => (
-                  <div key={entry.id} className="relative flex gap-3 pb-5">
-                    {/* Timeline connector line */}
-                    {index < (commentsQuery.data?.comments.length ?? 0) - 1 && (
-                      <div className="absolute left-[15px] top-10 h-[calc(100%-2rem)] w-px border-l-2 border-border" />
-                    )}
-                    <Avatar className="relative z-10 h-8 w-8 shrink-0">
-                      <AvatarFallback className="bg-muted text-[10px] font-semibold text-muted-foreground">
-                        {getInitials(entry.user_profiles.name, entry.user_profiles.email)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                        <span className="font-medium text-foreground">
-                          {entry.user_profiles.organic_id
-                            ? t('authorOrganic', { id: entry.user_profiles.organic_id })
-                            : entry.user_profiles.name ?? entry.user_profiles.email}
-                        </span>
-                        <span className="font-mono">
-                          {new Date(entry.created_at).toLocaleString()}
-                        </span>
-                      </div>
-                      <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-foreground">
-                        {entry.body}
-                      </p>
-                    </div>
-                  </div>
+                  <IdeaCommentItem
+                    key={entry.id}
+                    entry={entry}
+                    isLast={index === (commentsQuery.data?.comments.length ?? 0) - 1}
+                  />
                 ))
               ) : (
                 <p className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">

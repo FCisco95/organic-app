@@ -32,6 +32,8 @@ import { formatDistanceToNow, format } from 'date-fns';
 import toast from 'react-hot-toast';
 import { useLocale, useTranslations } from 'next-intl';
 import { useProposalTranslation } from '@/features/translation/hooks';
+import { useCommentTranslation } from '@/features/translation/comment-hooks';
+import type { ProposalComment } from '@/features/proposals/types';
 import type { ProposalWithVoting } from '@/features/voting';
 import { FollowButton } from '@/components/notifications/follow-button';
 import { PageContainer } from '@/components/layout';
@@ -133,6 +135,69 @@ const LOCALE_DISPLAY_NAMES: Record<string, string> = {
   'pt-PT': 'Português',
   'zh-CN': '中文',
 };
+
+interface ProposalCommentItemProps {
+  comment: ProposalComment;
+  commentVersion: number;
+  outdated: boolean;
+  authorLabel: string;
+}
+
+function ProposalCommentItem({
+  comment,
+  commentVersion,
+  outdated,
+  authorLabel,
+}: ProposalCommentItemProps) {
+  const t = useTranslations('ProposalDetail');
+  const displayName = comment.user_profiles.name;
+  const {
+    translation,
+    isTranslated,
+    isLoading,
+    shouldShowButton,
+    translate,
+    showOriginal,
+  } = useCommentTranslation(comment.id, comment.detected_language ?? null);
+  const displayBody = isTranslated && translation ? translation : comment.body;
+
+  return (
+    <div className="bg-gray-50 rounded-xl p-4">
+      <div className="flex items-center gap-2 mb-2 flex-wrap">
+        <div className="w-7 h-7 rounded-full bg-organic-terracotta/15 flex items-center justify-center text-xs font-semibold text-organic-terracotta shrink-0">
+          {(displayName ?? comment.user_profiles.email ?? '?')[0].toUpperCase()}
+        </div>
+        <span className="font-medium text-gray-900 text-sm">{authorLabel}</span>
+        <span className="text-xs text-gray-500">
+          {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
+        </span>
+        <span className="rounded-full bg-gray-200 px-2 py-0.5 text-xs font-medium text-gray-700">
+          {t('commentOnVersion', { version: commentVersion })}
+        </span>
+        {outdated && (
+          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
+            {t('updatedMarker')}
+          </span>
+        )}
+      </div>
+      <p className="text-gray-700 text-sm whitespace-pre-wrap pl-4">{displayBody}</p>
+      {shouldShowButton && (
+        <button
+          type="button"
+          onClick={isTranslated ? showOriginal : translate}
+          disabled={isLoading}
+          className="mt-1 pl-4 text-[11px] text-gray-500 transition-colors hover:text-gray-900"
+        >
+          {isLoading
+            ? t('translateLoading')
+            : isTranslated
+              ? t('translateCommentShowOriginal')
+              : t('translateCommentButton')}
+        </button>
+      )}
+    </div>
+  );
+}
 
 export default function ProposalDetailPage() {
   const params = useParams();
@@ -943,7 +1008,6 @@ export default function ProposalDetailPage() {
                   const displayName = comment.user_profiles.name;
                   const organicId = comment.user_profiles.organic_id;
 
-                  // Task 10: show "Display Name · Organic #ID" format
                   const authorLabel =
                     displayName && organicId
                       ? t('commentAuthorFormat', { displayName, id: organicId })
@@ -952,28 +1016,13 @@ export default function ProposalDetailPage() {
                         : comment.user_profiles.email.split('@')[0];
 
                   return (
-                    <div key={comment.id} className="bg-gray-50 rounded-xl p-4">
-                      <div className="flex items-center gap-2 mb-2 flex-wrap">
-                        <div className="w-7 h-7 rounded-full bg-organic-terracotta/15 flex items-center justify-center text-xs font-semibold text-organic-terracotta shrink-0">
-                          {(displayName ?? comment.user_profiles.email ?? '?')[0].toUpperCase()}
-                        </div>
-                        <span className="font-medium text-gray-900 text-sm">
-                          {authorLabel}
-                        </span>
-                        <span className="text-xs text-gray-500">
-                          {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
-                        </span>
-                        <span className="rounded-full bg-gray-200 px-2 py-0.5 text-xs font-medium text-gray-700">
-                          {t('commentOnVersion', { version: commentVersion })}
-                        </span>
-                        {outdated && (
-                          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
-                            {t('updatedMarker')}
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-gray-700 text-sm whitespace-pre-wrap pl-4">{comment.body}</p>
-                    </div>
+                    <ProposalCommentItem
+                      key={comment.id}
+                      comment={comment as ProposalComment}
+                      commentVersion={commentVersion}
+                      outdated={outdated}
+                      authorLabel={authorLabel}
+                    />
                   );
                 })
               )}
