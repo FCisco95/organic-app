@@ -34,9 +34,11 @@ runs:
         STATUS_ENV=$(supabase status -o env)
         echo "$STATUS_ENV"
 
-        URL=$(echo "$STATUS_ENV" | awk -F'=' '/^SUPABASE_API_URL=/ { gsub(/"/, "", $2); print $2 }')
-        ANON=$(echo "$STATUS_ENV" | awk -F'=' '/^SUPABASE_ANON_KEY=/ { gsub(/"/, "", $2); print $2 }')
-        SRK=$(echo "$STATUS_ENV" | awk -F'=' '/^SUPABASE_SERVICE_ROLE_KEY=/ { gsub(/"/, "", $2); print $2 }')
+        # CLI 2.x emits unprefixed keys (ANON_KEY=..., API_URL=...);
+        # older 1.x versions may emit SUPABASE_ANON_KEY=... — handle both.
+        URL=$(echo "$STATUS_ENV" | awk -F'=' '/^(SUPABASE_)?API_URL=/ { gsub(/"/, "", $2); print $2 }')
+        ANON=$(echo "$STATUS_ENV" | awk -F'=' '/^(SUPABASE_)?ANON_KEY=/ { gsub(/"/, "", $2); print $2 }')
+        SRK=$(echo "$STATUS_ENV" | awk -F'=' '/^(SUPABASE_)?SERVICE_ROLE_KEY=/ { gsub(/"/, "", $2); print $2 }')
 
         if [ -z "$URL" ] || [ -z "$ANON" ] || [ -z "$SRK" ]; then
           echo "Failed to parse Supabase credentials from 'supabase status -o env'"
