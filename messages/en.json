@@ -609,6 +609,11 @@
     "sectionSolution": "Proposed Solution",
     "sectionBudget": "Budget / Resources",
     "sectionTimeline": "Timeline",
+    "translateProposal": "Translate proposal",
+    "translateLoading": "Translating...",
+    "translateError": "Translation unavailable",
+    "readingIn": "Reading in",
+    "readingOriginal": "Original",
     "editProposal": "Edit Proposal",
     "notFoundTitle": "Proposal not found",
     "backToProposals": "Back to Proposals",
@@ -3130,6 +3135,10 @@
     "harvestCta": "Weekly Harvest"
   },
   "IdeaDetail": {
+    "translateIdea": "Translate idea",
+    "translateLoading": "Translating...",
+    "translateShowOriginal": "Show original",
+    "translateError": "Translation unavailable",
     "disabledTitle": "Ideas incubator is disabled",
     "disabledDescription": "Enable the feature flag to access this page.",
     "notFoundTitle": "Idea not found",

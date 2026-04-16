@@ -5,7 +5,7 @@ export interface PostTranslation {
 }
 
 export interface TranslateResponse {
-  data: PostTranslation;
+  data: Record<string, string>;
   cached: boolean;
   sourceLocale: string;
 }

@@ -33,6 +33,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { IdeaTimeline } from '@/components/ideas/IdeaTimeline';
+import { useIdeaTranslation } from '@/features/translation/hooks';
 
 function getInitials(name: string | null | undefined, email?: string | null): string {
   if (name) {
@@ -80,6 +81,20 @@ export default function IdeaDetailPage() {
 
   const idea = ideaQuery.data;
   const canModerate = profile?.role === 'admin' || profile?.role === 'council';
+
+  const {
+    translations: ideaTranslations,
+    isTranslated: isIdeaTranslated,
+    isLoading: isTranslatingIdea,
+    translate: translateIdea,
+    showOriginal: showIdeaOriginal,
+    shouldShowButton: canTranslateIdea,
+  } = useIdeaTranslation(ideaId, idea?.detected_language ?? null);
+
+  const displayTitle =
+    isIdeaTranslated && ideaTranslations?.title ? ideaTranslations.title : idea?.title ?? '';
+  const displayBody =
+    isIdeaTranslated && ideaTranslations?.body ? ideaTranslations.body : idea?.body ?? '';
 
   async function onVote(next: 'up' | 'down' | 'none') {
     if (!idea) return;
@@ -228,10 +243,32 @@ export default function IdeaDetailPage() {
               </span>
             </div>
 
-            <h1 className="font-display text-2xl font-bold text-foreground">{idea.title}</h1>
+            <h1 className="font-display text-2xl font-bold text-foreground">{displayTitle}</h1>
             <p className="mt-4 whitespace-pre-wrap text-sm leading-7 text-muted-foreground">
-              {idea.body}
+              {displayBody}
             </p>
+
+            {canTranslateIdea && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (isTranslatingIdea) return;
+                  if (isIdeaTranslated) {
+                    showIdeaOriginal();
+                  } else {
+                    void translateIdea();
+                  }
+                }}
+                disabled={isTranslatingIdea}
+                className="mt-3 flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {isTranslatingIdea
+                  ? t('translateLoading')
+                  : isIdeaTranslated
+                    ? t('translateShowOriginal')
+                    : t('translateIdea')}
+              </button>
+            )}
 
             {/* Vote panel — horizontal */}
             <div className="mt-6 flex items-center gap-1 rounded-lg border border-border p-1">

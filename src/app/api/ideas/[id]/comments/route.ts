@@ -7,6 +7,7 @@ import { applyUserRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { isIdeasIncubatorEnabled } from '@/config/feature-flags';
 import { awardXp } from '@/features/gamification/xp-service';
 import { checkUserRestriction } from '@/lib/moderation';
+import { detectLanguage } from '@/lib/translation/detect-language';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -142,13 +143,14 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const { data: comment, error: insertError } = await supabase
+    const { data: comment, error: insertError } = await (supabase as any)
       .from('comments')
       .insert({
         subject_type: 'idea',
         subject_id: ideaId,
         user_id: user.id,
         body: parsed.data.body,
+        detected_language: detectLanguage(parsed.data.body),
       })
       .select(COMMENT_SELECT)
       .single();

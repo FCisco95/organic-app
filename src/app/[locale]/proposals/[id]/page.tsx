@@ -30,7 +30,8 @@ import {
 } from 'lucide-react';
 import { formatDistanceToNow, format } from 'date-fns';
 import toast from 'react-hot-toast';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import { useProposalTranslation } from '@/features/translation/hooks';
 import type { ProposalWithVoting } from '@/features/voting';
 import { FollowButton } from '@/components/notifications/follow-button';
 import { PageContainer } from '@/components/layout';
@@ -127,11 +128,18 @@ function AccordionCard({
   );
 }
 
+const LOCALE_DISPLAY_NAMES: Record<string, string> = {
+  en: 'English',
+  'pt-PT': 'Português',
+  'zh-CN': '中文',
+};
+
 export default function ProposalDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { user, profile } = useAuth();
   const t = useTranslations('ProposalDetail');
+  const locale = useLocale();
   const [commentText, setCommentText] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [executionTasks, setExecutionTasks] = useState<ProposalExecutionTask[]>([]);
@@ -142,6 +150,26 @@ export default function ProposalDetailPage() {
 
   const { data: proposal, isLoading, refetch: refetchProposal } = useProposal(proposalId);
   const { data: comments = [], refetch: refetchComments } = useProposalComments(proposalId);
+
+  const {
+    translations: proposalTranslations,
+    isTranslated: isProposalTranslated,
+    isLoading: isTranslating,
+    translate: translateProposal,
+    showOriginal: showProposalOriginal,
+    shouldShowButton: canTranslateProposal,
+  } = useProposalTranslation(proposalId, proposal?.detected_language ?? null);
+
+  const displayProposal = proposal
+    ? isProposalTranslated && proposalTranslations
+      ? {
+          ...proposal,
+          title: proposalTranslations.title ?? proposal.title,
+          body: proposalTranslations.body ?? proposal.body,
+          summary: proposalTranslations.summary ?? proposal.summary,
+        }
+      : proposal
+    : null;
 
   const deleteProposal = useDeleteProposal();
   const updateStatus = useUpdateProposalStatus();
@@ -504,7 +532,7 @@ export default function ProposalDetailPage() {
 
               {/* Title + Actions */}
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex-1">{proposal.title}</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex-1">{displayProposal?.title ?? proposal.title}</h1>
                 <div className="flex gap-2 shrink-0">
                   {user && <FollowButton subjectType="proposal" subjectId={proposalId} />}
                   {(isAuthor || isAdmin) &&
@@ -562,8 +590,50 @@ export default function ProposalDetailPage() {
 
             {/* Content Area */}
             <div className="px-4 sm:px-8 py-6">
+              {canTranslateProposal && (
+                <div className="mb-5 flex items-center gap-2 text-xs">
+                  <span className="text-gray-500">{t('readingIn')}:</span>
+                  <div className="inline-flex items-center rounded-full bg-gray-100 p-0.5 ring-1 ring-border">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (isTranslating) return;
+                        if (!isProposalTranslated) void translateProposal();
+                      }}
+                      disabled={isTranslating}
+                      aria-pressed={isProposalTranslated}
+                      className={cn(
+                        'px-3 py-1 rounded-full font-medium transition-colors',
+                        isProposalTranslated
+                          ? 'bg-white text-gray-900 shadow-sm'
+                          : 'text-gray-600 hover:text-gray-900'
+                      )}
+                    >
+                      {isTranslating
+                        ? t('translateLoading')
+                        : (LOCALE_DISPLAY_NAMES[locale] ?? locale)}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (isTranslating) return;
+                        if (isProposalTranslated) showProposalOriginal();
+                      }}
+                      aria-pressed={!isProposalTranslated}
+                      className={cn(
+                        'px-3 py-1 rounded-full font-medium transition-colors',
+                        !isProposalTranslated
+                          ? 'bg-white text-gray-900 shadow-sm'
+                          : 'text-gray-600 hover:text-gray-900'
+                      )}
+                    >
+                      {t('readingOriginal')}
+                    </button>
+                  </div>
+                </div>
+              )}
               {/* Structured Sections */}
-              <ProposalSections proposal={proposal} />
+              <ProposalSections proposal={displayProposal ?? proposal} />
 
               {/* Admin Actions - Lifecycle Progression */}
               {isAdmin && (lifecycleStatus === 'public' || lifecycleStatus === 'qualified') && (

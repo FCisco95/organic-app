@@ -1,9 +1,17 @@
 import { Database, ProposalStatus, ProposalCategory } from '@/types/database';
 
-// Base database types
-export type Proposal = Database['public']['Tables']['proposals']['Row'];
-export type ProposalInsert = Database['public']['Tables']['proposals']['Insert'];
-export type ProposalUpdate = Database['public']['Tables']['proposals']['Update'];
+// Base database types. detected_language is augmented here because the
+// generated Database types have not been regenerated after the translation
+// expansion migration yet.
+export type Proposal = Database['public']['Tables']['proposals']['Row'] & {
+  detected_language: string | null;
+};
+export type ProposalInsert = Database['public']['Tables']['proposals']['Insert'] & {
+  detected_language?: string | null;
+};
+export type ProposalUpdate = Database['public']['Tables']['proposals']['Update'] & {
+  detected_language?: string | null;
+};
 
 // Re-export for convenience
 export type { ProposalStatus, ProposalCategory };
@@ -41,6 +49,7 @@ export interface ProposalComment {
   } | null;
   user_id: string;
   created_at: string;
+  detected_language: string | null;
   user_profiles: {
     organic_id: number | null;
     email: string;

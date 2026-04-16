@@ -63,10 +63,10 @@ function XLikeButton({ twitterUrl }: { twitterUrl: string | null }) {
   );
 }
 
-function CommentItem({ comment, postId }: { comment: { id: string; body: string; created_at: string; user_profiles: { id: string; name: string | null; email: string; organic_id: number | null; avatar_url: string | null } | null }; postId: string }) {
+function CommentItem({ comment }: { comment: { id: string; body: string; created_at: string; user_profiles: { id: string; name: string | null; email: string; organic_id: number | null; avatar_url: string | null } | null } }) {
   const t = useTranslations('Posts');
   const { translation, isTranslated, isLoading, translate, showOriginal } =
-    useCommentTranslation(postId, comment.id);
+    useCommentTranslation(comment.id);
   const displayBody = isTranslated && translation ? translation : comment.body;
   const cAuthor = comment.user_profiles;
 
@@ -513,7 +513,7 @@ export default function PostDetailPage() {
           ) : (
             <div className="space-y-3">
               {comments.map((comment) => (
-                <CommentItem key={comment.id} comment={comment} postId={postId} />
+                <CommentItem key={comment.id} comment={comment} />
               ))}
             </div>
           )}

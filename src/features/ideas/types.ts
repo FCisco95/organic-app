@@ -1,8 +1,15 @@
 import { Database, ProposalCategory } from '@/types/database';
 
-export type Idea = Database['public']['Tables']['ideas']['Row'];
-export type IdeaInsert = Database['public']['Tables']['ideas']['Insert'];
-export type IdeaUpdate = Database['public']['Tables']['ideas']['Update'];
+// detected_language augmentation — pending Supabase types regeneration.
+export type Idea = Database['public']['Tables']['ideas']['Row'] & {
+  detected_language: string | null;
+};
+export type IdeaInsert = Database['public']['Tables']['ideas']['Insert'] & {
+  detected_language?: string | null;
+};
+export type IdeaUpdate = Database['public']['Tables']['ideas']['Update'] & {
+  detected_language?: string | null;
+};
 
 export type IdeaVote = Database['public']['Tables']['idea_votes']['Row'];
 export type IdeaVoteInsert = Database['public']['Tables']['idea_votes']['Insert'];
@@ -40,6 +47,7 @@ export interface IdeaComment {
   created_at: string;
   updated_at: string | null;
   user_id: string;
+  detected_language: string | null;
   user_profiles: {
     name: string | null;
     email: string;

@@ -69,6 +69,7 @@ export interface PostComment {
   user_id: string;
   created_at: string;
   updated_at: string | null;
+  detected_language: string | null;
   user_profiles: PostAuthor | null;
 }
 

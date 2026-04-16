@@ -7,6 +7,7 @@ import { applyUserRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { createIdeaSchema, listIdeasQuerySchema } from '@/features/ideas/schemas';
 import { isIdeasIncubatorEnabled } from '@/config/feature-flags';
 import { awardXp } from '@/features/gamification/xp-service';
+import { detectLanguage } from '@/lib/translation/detect-language';
 
 const IDEA_SELECT =
   '*, author:user_profiles!ideas_author_id_fkey(id,name,email,organic_id,avatar_url)';
@@ -168,13 +169,14 @@ export async function POST(request: NextRequest) {
 
     const { title, body, tags } = parsed.data;
 
-    const { data: idea, error: insertError } = await supabase
+    const { data: idea, error: insertError } = await (supabase as any)
       .from('ideas')
       .insert({
         author_id: user.id,
         title,
         body,
         tags: tags ?? [],
+        detected_language: detectLanguage(body),
       })
       .select(IDEA_SELECT)
       .single();

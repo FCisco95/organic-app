@@ -605,6 +605,11 @@
     "sectionSolution": "Solução Proposta",
     "sectionBudget": "Orçamento / Recursos",
     "sectionTimeline": "Cronograma",
+    "translateProposal": "Traduzir proposta",
+    "translateLoading": "A traduzir...",
+    "translateError": "Tradução indisponível",
+    "readingIn": "A ler em",
+    "readingOriginal": "Original",
     "editProposal": "Editar Proposta",
     "notFoundTitle": "Proposta não encontrada",
     "backToProposals": "Voltar para Propostas",
@@ -3130,6 +3135,10 @@
     "moderationError": "Falha ao aplicar ação de moderação"
   },
   "IdeaDetail": {
+    "translateIdea": "Traduzir ideia",
+    "translateLoading": "A traduzir...",
+    "translateShowOriginal": "Mostrar original",
+    "translateError": "Tradução indisponível",
     "disabledTitle": "A incubadora de ideias está desativada",
     "disabledDescription": "Ativa a feature flag para aceder a esta página.",
     "notFoundTitle": "Ideia não encontrada",

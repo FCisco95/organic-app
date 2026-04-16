@@ -605,6 +605,11 @@
     "sectionSolution": "提议方案",
     "sectionBudget": "预算 / 资源",
     "sectionTimeline": "时间线",
+    "translateProposal": "翻译提案",
+    "translateLoading": "翻译中...",
+    "translateError": "翻译不可用",
+    "readingIn": "阅读语言",
+    "readingOriginal": "原文",
     "editProposal": "编辑提案",
     "notFoundTitle": "未找到提案",
     "backToProposals": "返回提案列表",
@@ -3130,6 +3135,10 @@
     "moderationError": "管理操作执行失败"
   },
   "IdeaDetail": {
+    "translateIdea": "翻译想法",
+    "translateLoading": "翻译中...",
+    "translateShowOriginal": "显示原文",
+    "translateError": "翻译不可用",
     "disabledTitle": "想法孵化器已关闭",
     "disabledDescription": "请开启功能开关后再访问该页面。",
     "notFoundTitle": "未找到该想法",
