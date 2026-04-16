@@ -1,11 +1,10 @@
 -- Proposal lifecycle stage engine: forward-only lifecycle, immutable versions, and append-only stage events.
-
--- 1) Extend proposal status enum with lifecycle states.
-ALTER TYPE proposal_status ADD VALUE IF NOT EXISTS 'public';
-ALTER TYPE proposal_status ADD VALUE IF NOT EXISTS 'qualified';
-ALTER TYPE proposal_status ADD VALUE IF NOT EXISTS 'discussion';
-ALTER TYPE proposal_status ADD VALUE IF NOT EXISTS 'finalized';
-ALTER TYPE proposal_status ADD VALUE IF NOT EXISTS 'canceled';
+--
+-- Note: the 5 enum value additions (`public`, `qualified`, `discussion`,
+-- `finalized`, `canceled`) were moved into the separate migration
+-- 20260220085000_proposal_status_enum_extension.sql so they commit in their
+-- own transaction before this one uses them in function bodies. Postgres
+-- forbids using a newly added enum value in the same transaction.
 
 -- 2) Add lifecycle metadata columns.
 ALTER TABLE public.proposals
