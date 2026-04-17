@@ -15,7 +15,7 @@ Use this document to run workflow tests, page audits, and capture what works, wh
 | Recommended viewports | 1440x900 desktop, 768x1024 tablet, 375x812 mobile |
 | Required accounts | 1 admin, 1 council, 2 members, 1 guest |
 | Optional fixtures | At least 1 active sprint, 1 proposal in each major status, 1 rejected submission for disputes, rewards-enabled org, 1 onboarding-incomplete user, 1 Twitter/X engagement task |
-| Supabase target | Manual QA should run against **Main DB** (`dcqfuqjqmqrzycyvutkn`). CI automation runs against **CI DB** (`rrsftfoxcujsacipujrr`). |
+| Supabase target | Manual QA should run against **Main DB** (`dcqfuqjqmqrzycyvutkn`). CI automation runs against an ephemeral local Supabase started per job. |
 
 ---
 
