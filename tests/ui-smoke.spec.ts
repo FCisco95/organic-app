@@ -39,4 +39,31 @@ test.describe('UI smoke', () => {
     // URL should update to /zh-CN
     await expect(page).toHaveURL(/\/zh-CN(\/|$|\?)/);
   });
+
+  // Regression: mobile QA iteration 4 — trigger width caused right-edge
+  // overflow on narrow viewports in long-text locales (pt-PT "Português").
+  // Fix hides the language name on <sm screens while keeping the trigger
+  // (and its dropdown) fully interactive, and preserves the 44px touch target.
+  test('language switcher trigger fits narrow viewport without overflow (pt-PT)', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto(`${BASE_URL}/pt-PT`);
+
+    const trigger = page.getByRole('button', { name: /Português/ }).first();
+    await expect(trigger).toBeVisible();
+
+    const box = await trigger.boundingBox();
+    expect(box).not.toBeNull();
+    if (box) {
+      // Trigger must not extend past the viewport right edge
+      expect(box.x + box.width).toBeLessThanOrEqual(375);
+      // Still meets the 44px touch-target minimum
+      expect(box.width).toBeGreaterThanOrEqual(44);
+      expect(box.height).toBeGreaterThanOrEqual(44);
+    }
+
+    // Dropdown still opens and is visible (regression check for the earlier
+    // overflow-hidden fix that clipped the absolutely-positioned menu)
+    await trigger.click();
+    await expect(page.getByRole('menuitem', { name: /English/ })).toBeVisible();
+  });
 });
