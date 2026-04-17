@@ -112,10 +112,10 @@ export function LanguageSelector({
       <button
         ref={triggerRef}
         type="button"
-        className="inline-flex justify-center items-center gap-2
+        className="inline-flex justify-center items-center gap-2 shrink-0
                    rounded-lg border border-gray-300 dark:border-gray-700
                    bg-white dark:bg-gray-800
-                   shadow-sm px-4 py-2 text-sm font-medium
+                   shadow-sm px-2 sm:px-4 py-2 text-sm font-medium min-h-[44px] min-w-[44px]
                    text-gray-700 dark:text-gray-200
                    hover:bg-gray-50 dark:hover:bg-gray-700
                    focus:outline-none focus:ring-2 focus:ring-organic-terracotta focus:ring-offset-2 focus:ring-offset-gray-100 dark:focus:ring-offset-gray-800
@@ -123,12 +123,13 @@ export function LanguageSelector({
         id="language-menu-button"
         aria-expanded={isOpen}
         aria-haspopup="true"
+        aria-label={`Change language, current: ${currentLanguage.name}`}
         onClick={toggleDropdown}
       >
         <span className="text-xl">{currentLanguage.flag}</span>
-        <span>{currentLanguage.name}</span>
+        <span className="hidden sm:inline">{currentLanguage.name}</span>
         <svg
-          className="-mr-1 h-5 w-5 text-gray-400"
+          className="hidden sm:block -mr-1 h-5 w-5 text-gray-400"
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 20 20"
           fill="currentColor"
