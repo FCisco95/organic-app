@@ -52,6 +52,13 @@
         "notes": "glob CLI command injection via -c/--cmd. Transitive via eslint-config-next > @next/eslint-plugin-next > glob (dev-only). Fix requires eslint-config-next@16.2.4 major bump, scheduled with the next@14->16 upgrade.",
         "expiry": "2026-07-15T00:00:00Z"
       }
+    },
+    {
+      "GHSA-xq3m-2v4x-88gg": {
+        "active": true,
+        "notes": "protobufjs prototype-pollution. Transitive via @solana/wallet-adapter-wallets > @solana/wallet-adapter-trezor > @trezor/* > @trezor/protobuf > protobufjs. Fix requires breaking @solana/wallet-adapter-wallets bump (same track as GHSA-r5fr-rjxr-66jc).",
+        "expiry": "2026-07-15T00:00:00Z"
+      }
     }
   ],
 

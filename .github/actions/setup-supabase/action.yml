@@ -1,0 +1,59 @@
+name: Setup local Supabase
+description: Boots a local Supabase stack, applies migrations + seed, and exports URL/keys as outputs.
+outputs:
+  supabase_url:
+    description: Local Supabase API URL
+    value: ${{ steps.run.outputs.supabase_url }}
+  anon_key:
+    description: Local Supabase anon key
+    value: ${{ steps.run.outputs.anon_key }}
+  service_role_key:
+    description: Local Supabase service_role key
+    value: ${{ steps.run.outputs.service_role_key }}
+runs:
+  using: composite
+  steps:
+    - name: Install Supabase CLI
+      uses: supabase/setup-cli@v1
+      with:
+        version: latest
+
+    - name: Start Supabase and capture credentials
+      id: run
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        supabase start --exclude studio,inbucket,edge-runtime,realtime,imgproxy
+
+        # Use `supabase status -o env` — stable KEY=VALUE shell-sourceable output
+        # that works across CLI 1.x and 2.x regardless of the pretty-print table
+        # format changes. SUPABASE_ANON_KEY and SUPABASE_SERVICE_ROLE_KEY are
+        # legacy JWT keys that remain compatible with the app's supabase-js
+        # client and existing env var names.
+        STATUS_ENV=$(supabase status -o env)
+        echo "$STATUS_ENV"
+
+        # CLI 2.x emits unprefixed keys (ANON_KEY=..., API_URL=...);
+        # older 1.x versions may emit SUPABASE_ANON_KEY=... — handle both.
+        URL=$(echo "$STATUS_ENV" | awk -F'=' '/^(SUPABASE_)?API_URL=/ { gsub(/"/, "", $2); print $2 }')
+        ANON=$(echo "$STATUS_ENV" | awk -F'=' '/^(SUPABASE_)?ANON_KEY=/ { gsub(/"/, "", $2); print $2 }')
+        SRK=$(echo "$STATUS_ENV" | awk -F'=' '/^(SUPABASE_)?SERVICE_ROLE_KEY=/ { gsub(/"/, "", $2); print $2 }')
+
+        if [ -z "$URL" ] || [ -z "$ANON" ] || [ -z "$SRK" ]; then
+          echo "Failed to parse Supabase credentials from 'supabase status -o env'"
+          echo "Raw status output:"
+          echo "$STATUS_ENV"
+          exit 1
+        fi
+
+        echo "::add-mask::$ANON"
+        echo "::add-mask::$SRK"
+
+        echo "supabase_url=$URL" >> "$GITHUB_OUTPUT"
+        echo "anon_key=$ANON" >> "$GITHUB_OUTPUT"
+        echo "service_role_key=$SRK" >> "$GITHUB_OUTPUT"
+
+        if [ -f supabase/seed.sql ]; then
+          psql "postgres://postgres:postgres@127.0.0.1:54322/postgres" -f supabase/seed.sql
+        fi

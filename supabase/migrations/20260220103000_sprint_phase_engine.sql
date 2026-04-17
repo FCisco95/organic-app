@@ -8,10 +8,10 @@
 --   - Add reviewer SLA auto-escalation helper for overdue disputes
 -- ============================================================================
 
--- 1) Extend sprint status enum for phase engine.
-ALTER TYPE public.sprint_status ADD VALUE IF NOT EXISTS 'review';
-ALTER TYPE public.sprint_status ADD VALUE IF NOT EXISTS 'dispute_window';
-ALTER TYPE public.sprint_status ADD VALUE IF NOT EXISTS 'settlement';
+-- 1) The sprint_status enum values ('review', 'dispute_window', 'settlement')
+--    are added in the separate migration
+--    20260220102500_sprint_status_enum_extension.sql so they commit in
+--    their own transaction before this one uses them (Postgres SQLSTATE 55P04).
 
 -- 2) Add phase timestamps and settlement integrity metadata.
 ALTER TABLE public.sprints

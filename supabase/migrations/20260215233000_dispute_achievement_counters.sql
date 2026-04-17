@@ -189,8 +189,20 @@ BEGIN
 END;
 $$;
 
-DROP TRIGGER IF EXISTS trigger_dispute_activity_counters ON disputes;
-CREATE TRIGGER trigger_dispute_activity_counters
-  AFTER INSERT OR UPDATE ON disputes
-  FOR EACH ROW
-  EXECUTE FUNCTION update_dispute_activity_counters();
+-- The `disputes` table is created by migration 20260216100000_dispute_resolution.sql,
+-- which runs AFTER this one. Guard the trigger setup so fresh DBs can apply
+-- this migration; the trigger is re-created (idempotently) in a later migration
+-- once `disputes` exists.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.tables
+    WHERE table_schema = 'public' AND table_name = 'disputes'
+  ) THEN
+    DROP TRIGGER IF EXISTS trigger_dispute_activity_counters ON disputes;
+    CREATE TRIGGER trigger_dispute_activity_counters
+      AFTER INSERT OR UPDATE ON disputes
+      FOR EACH ROW
+      EXECUTE FUNCTION update_dispute_activity_counters();
+  END IF;
+END $$;
