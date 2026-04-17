@@ -144,28 +144,21 @@ The full Playwright suite (`npm run test:e2e`) remains non-blocking evidence unt
 In GitHub Actions, this evidence suite runs on pushes to `main` (not PRs) to keep PR feedback fast and focused on blocking gates.
 UI shell/surface revamp specs are skipped when `CI=true` to avoid flaky shared-runner rendering/auth timing failures.
 
-### Supabase Environment Strategy (Main vs CI)
-
-Use two Supabase projects with clear ownership:
+### Supabase Environment Strategy
 
 - **Main DB (`dcqfuqjqmqrzycyvutkn`)**: production/staging app data, source of truth.
-- **CI DB (`rrsftfoxcujsacipujrr`)**: GitHub Actions E2E/testing/safe automation surface.
+- **CI**: each CI job spins up an ephemeral local Supabase via the `supabase start` action, isolated per run. No hosted CI Supabase project is used.
 
 Pipeline behavior:
 
-1. PRs run CI against the **CI DB** (`CI_*` Supabase secrets).
-2. Merges to `main` trigger workflow **`Supabase Migration Sync`**.
-3. That workflow applies and records all local migrations on both **Main DB** and **CI DB**, then reloads PostgREST schema cache.
-4. App runtime environments (Vercel preview/prod) should continue pointing to **Main DB**.
+1. PRs and `main` pushes run CI against an ephemeral local Supabase per job.
+2. Merges to `main` trigger workflow **`Supabase Migration Sync`** which applies and records local migrations on **Main DB** and reloads PostgREST schema cache.
+3. App runtime environments (Vercel preview/prod) point to **Main DB**.
 
 Required GitHub Actions secrets for reliable DB sync:
 
-- `SUPABASE_ACCESS_TOKEN` (Management API token with access to both projects)
+- `SUPABASE_ACCESS_TOKEN` (Management API token with access to the main project)
 - `SUPABASE_MAIN_PROJECT_REF` (recommended: `dcqfuqjqmqrzycyvutkn`)
-- `SUPABASE_CI_PROJECT_REF` (recommended: `rrsftfoxcujsacipujrr`)
-- `CI_NEXT_PUBLIC_SUPABASE_URL`
-- `CI_NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `CI_SUPABASE_SERVICE_ROLE_KEY`
 
 Local verification command:
 
