@@ -1,7 +1,10 @@
-# QA Runbook — Organic App (Full Feature Coverage + Revamp Intake)
+# QA Runbook — Organic App
 
-Manual QA workbook for validating all current features and collecting redesign-ready feedback.
-Use this document to run workflow tests, page audits, and capture what works, what does not, and UI improvements.
+Manual QA workbook for validating current features and collecting redesign-ready feedback.
+
+> **Last rewrite:** 2026-04-21. Superseded the 2026-03 version that predated Pulse, Vault, Posts, Easter campaign, Translation toggles, and For-projects.
+>
+> **Rule of thumb:** any section that says "Last verified: 2026-04-21" has been walked in the browser against production or preview. Anything older is drift and should be re-run before release-gating.
 
 ---
 
@@ -9,17 +12,29 @@ Use this document to run workflow tests, page audits, and capture what works, wh
 
 | Item | Value |
 |---|---|
+| Production | `https://organichub.fun` |
+| Preview | Vercel preview URL per PR |
 | Desktop browsers | Chrome + Firefox (latest stable) |
 | Mobile browsers | Chrome (Android 12+) + Safari (iOS 16+) |
-| Locales | `en`, `pt-PT`, `zh-CN` |
-| Recommended viewports | 1440x900 desktop, 768x1024 tablet, 375x812 mobile |
+| Locales | `en`, `zh-CN` (production locales). `pt-PT` retained in source but not shipping in the selector — confirm before testing. |
+| Recommended viewports | 1440×900 desktop, 768×1024 tablet, 390×844 iPhone 13 mobile, 412×915 Pixel 7 |
 | Required accounts | 1 admin, 1 council, 2 members, 1 guest |
-| Optional fixtures | At least 1 active sprint, 1 proposal in each major status, 1 rejected submission for disputes, rewards-enabled org, 1 onboarding-incomplete user, 1 Twitter/X engagement task |
-| Supabase target | Manual QA should run against **Main DB** (`dcqfuqjqmqrzycyvutkn`). CI automation runs against an ephemeral local Supabase started per job. |
+| Supabase target | Manual QA runs against **Main DB** (`dcqfuqjqmqrzycyvutkn`). CI runs against ephemeral local Supabase. |
+
+### QA accounts
+
+| Account | Email | Password | Role | Organic ID |
+|---|---|---|---|---|
+| Claude test (primary) | `claude-test@organic-dao.dev` | `OrganicTest2026!` | admin | 999 |
+| QA Admin | `qa-admin@organic.test` | `QaAdmin2026!` | admin | 900001 |
+| QA Council | `qa-council@organic.test` | `QaCouncil2026!` | council | 900002 |
+| QA Member | `qa-member@organic.test` | `QaMember2026!` | member | 900003 |
+
+Create/refresh via `scripts/create-qa-accounts.ts`.
 
 ---
 
-## 2) Session Header (fill before testing)
+## 2) Session header (fill before testing)
 
 - Date:
 - Tester:
@@ -32,7 +47,7 @@ Use this document to run workflow tests, page audits, and capture what works, wh
 
 ---
 
-## 3) Scoring + Feedback Capture Rules
+## 3) Scoring and feedback capture
 
 ### 3.1 Severity
 - `S0` = blocker (cannot complete workflow)
@@ -40,13 +55,13 @@ Use this document to run workflow tests, page audits, and capture what works, wh
 - `S2` = moderate friction, workaround exists
 - `S3` = polish/consistency issue
 
-### 3.2 QA outcome tags
+### 3.2 Outcome tags
 - `PASS` = expected behavior observed
 - `FAIL` = behavior incorrect/broken
 - `PARTIAL` = usable but degraded
-- `SKIP` = cannot test due fixture/env precondition
+- `SKIP` = cannot test due to fixture/env precondition
 
-### 3.3 Required feedback block for each workflow section
+### 3.3 Per-section feedback block
 
 - What works well:
 - What does not work:
@@ -57,400 +72,456 @@ Use this document to run workflow tests, page audits, and capture what works, wh
 
 ---
 
-## 4) Workflow QA Packs
+## 4) Workflow QA packs
 
-## 4.1 Auth, Session, and Entry Flows
-<!-- qa-status: DONE | severity: S3 | plan: none -->
-Routes: `/login`, `/signup`, `/join?ref=CODE`, `/auth/error`, `/auth/callback`.
+> Sections are organized by domain. Each section lists routes, prereqs, and use cases. Append `Last verified: YYYY-MM-DD` whenever you run the pack.
+
+### 4.1 Auth, session, and entry flows
+<!-- qa-status: DONE | severity: S3 | plan: none | last verified: 2026-03-21 -->
+Routes: `/login`, `/signup`, `/join?ref=CODE`, `/auth/error`.
+
+Prereqs: guest (incognito), invalid creds, valid member creds, referral code `ORG-TEST-123`.
 
 Use cases:
-- [x] `AUTH-01` Guest opens `/login`; form renders and is usable. **PASS, S3**
-- [x] `AUTH-02` Guest opens `/signup`; form renders and is usable. **PASS, S3**
-- [x] `AUTH-03` Invalid credentials show understandable error copy. **PASS, S3** — fixed: friendly i18n message with recovery guidance replaces raw Supabase error
-- [x] `AUTH-04` Member login succeeds and lands on authenticated app surface. **PASS, S3** — fixed: redirect to Home, onboarding skip persisted
-- [x] `AUTH-05` Session persists across refresh. **PASS, S3**
-- [x] `AUTH-06` Sign-out clears session and protects private routes. **PASS, S3** — fixed: server-side middleware redirect
-- [x] `AUTH-07` Protected route redirect works for guest users. **PASS, S3** — fixed: returnTo param support
-- [x] `AUTH-08` `/join?ref=CODE` redirects to `/signup?ref=CODE`. **PASS, S3** — re-tested: ref param correctly preserved in redirect
-- [x] `AUTH-09` Signup with `ref` param preserves referral context. **PARTIAL, S3** — ref is sent in Supabase signup metadata but no visible UI indicator that referral is applied
-- [x] `AUTH-10` `/auth/error` recovery links (login/home) work. **PASS, S3** — re-tested: both CTAs navigate correctly
-- [x] `AUTH-11` `/auth/callback` does not dead-end or blank-screen when callback params are missing/invalid. **PASS, S3** — re-tested: gracefully redirects to home
-- [x] `AUTH-12` Mobile auth forms have no clipping or unreachable controls. **PASS, S3** — fixed: top-aligned on mobile, centered on desktop
+- [ ] `AUTH-01` Guest opens `/login`; form renders, inputs ≥44px tall.
+- [ ] `AUTH-02` Guest opens `/signup`; form renders, inputs ≥44px tall.
+- [ ] `AUTH-03` Invalid credentials show understandable error copy (i18n key, not raw Supabase error).
+- [ ] `AUTH-04` Member login succeeds and lands on Home.
+- [ ] `AUTH-05` Session persists across refresh.
+- [ ] `AUTH-06` Sign-out clears session and protects private routes via middleware.
+- [ ] `AUTH-07` Protected route redirect preserves `returnTo` param.
+- [ ] `AUTH-08` `/join?ref=CODE` redirects to `/signup?ref=CODE`.
+- [ ] `AUTH-09` Signup with `ref` param preserves referral context in Supabase metadata.
+- [ ] `AUTH-10` `/auth/error` recovery links (login/home) work.
+- [ ] `AUTH-12` Mobile auth forms have no clipping at 375px and no unreachable controls.
 
-### QA Accounts (permanent fixtures for QA skill)
+**Last verified:** 2026-03-21 (baseline), 2026-04-13 (Iter 2 mobile fixes).
 
-| Account | Email | Password | Role | Organic ID |
-|---|---|---|---|---|
-| QA Admin | `qa-admin@organic.test` | `QaAdmin2026!` | admin | 900001 |
-| QA Council | `qa-council@organic.test` | `QaCouncil2026!` | council | 900002 |
-| QA Member | `qa-member@organic.test` | `QaMember2026!` | member | 900003 |
-
-### Feedback
-<!-- Full feedback archived in git history + plan file. Summary below. -->
-**Tested:** 2026-03-07 | **Re-tested:** 2026-03-21 | **Fixed:** 2026-03-19 | **Cases:** 12/12 (0 skipped) | **Severity:** S3
-**Priority fixes:** All prior S1 fixes confirmed working. No functional bugs remaining.
-**Top revamp:** Wallet-based auth option, split panel product showcase, real-time username validation
-**Plan:** none — recorded only, no plan needed
-
-## 4.2 Global Navigation, Layout, and i18n
-<!-- qa-status: DONE | severity: S3 | plan: docs/plans/2026-03-21-navigation-qa-revamp.md -->
+### 4.2 Global navigation, layout, and i18n
+<!-- qa-status: DONE | severity: S3 | plan: docs/plans/2026-03-21-navigation-qa-revamp.md | last verified: 2026-04-13 -->
 Routes: global shell across all authenticated pages.
 
 Use cases:
-- [x] `NAV-01` Sidebar items render correctly by role (`admin`, `council`, `member`). **PASS, S3** — all 3 roles verified (2026-03-21 re-test)
-- [x] `NAV-02` Mobile sidebar exposes the same essential navigation. **PASS, S3** — 2 a11y errors (DialogTitle missing)
-- [x] `NAV-03` Active route state is visible and accurate. **PASS, S3** — orange indicator + accent bg consistent
-- [x] `NAV-04` Locale switch updates labels/content in current page. **PASS, S3** — EN/PT/ZH all verified
-- [x] `NAV-05` Query-bearing links (for example progression source context) keep expected behavior. **PASS, S3** — source context preserved
-- [x] `NAV-06` Top-bar actions are discoverable and keyboard reachable. **PASS, S3** — all actions have a11y labels
-- [x] `NAV-07` No overlap/collision in nav at 375px and 768px. **PASS, S3** — clean at both breakpoints
-- [x] `NAV-08` Role-restricted pages are not discoverable through unauthorized nav paths. **PASS, S3** — proper denial messages
+- [ ] `NAV-01` Sidebar items render correctly by role (`admin`, `council`, `member`).
+- [ ] `NAV-02` Mobile sidebar (Sheet) opens, exposes same essentials, closes without focus trap.
+- [ ] `NAV-03` Active route state is visible and accurate.
+- [ ] `NAV-04` Locale switch (EN ↔ ZH) updates labels/content on the current page.
+- [ ] `NAV-05` Query-bearing links (progression `?from=`) retain expected behavior.
+- [ ] `NAV-06` Top-bar actions discoverable + keyboard reachable.
+- [ ] `NAV-07` No overlap/collision at 375px, 390px, 412px, 768px.
+- [ ] `NAV-08` Role-restricted pages not discoverable via unauthorized nav paths.
+- [ ] `NAV-09` Breadcrumb route → section mapping correct (see `nav-config.ts`).
+- [ ] `NAV-10` Command palette (Cmd/Ctrl+K) opens, searches, dispatches actions.
 
-### Feedback
-<!-- Full feedback archived in git history + plan file. Summary below. -->
-**Re-tested:** 2026-03-21 | **Cases:** 8/8 PASS | **Severity:** S3
-**Priority fixes:** Mobile sidebar DialogTitle a11y (NAV-02), settings denial copy (NAV-08)
-**Top revamp:** Sidebar section grouping (Linear), Cmd+K command palette (Linear/Vercel), breadcrumbs
-**Plan:** `docs/plans/2026-03-21-navigation-qa-revamp.md`
+**Last verified:** 2026-04-13 (Iter 3 mobile sidebar + top-bar fixes confirmed at 390 and 428).
 
-## 4.3 Home, Analytics, Leaderboard, and Treasury Readability
-<!-- qa-status: DONE | severity: S3 | plan: docs/plans/2026-03-21-home-analytics-treasury.md -->
-Routes: `/`, `/analytics`, `/treasury`.
+### 4.3 Home
+<!-- qa-status: DONE | severity: S2 | plan: docs/plans/2026-03-21-home-analytics-treasury.md | last verified: 2026-04-13 -->
+Route: `/`.
 
 Use cases:
-- [x] `INSIGHT-01` Home dashboard loads with trust/summary surfaces. **PARTIAL, S1** — re-tested: 2 missing i18n keys render raw (`Home.trustSprintNoneShort` in Trust Pulse, `dashboard.activity.viewAll` as link text)
-- [x] `INSIGHT-02` `/analytics` charts/metrics load without blocking UI. **PASS, S3** — re-tested: 0 console errors, charts render with real data
-- [x] `INSIGHT-03` `/leaderboard` redirects to `/community` (Rankings tab). **PASS, S3** — re-tested: redirect works
-- [x] `INSIGHT-04` `/treasury` shows settlement posture and transparency metadata. **PASS, S3** — re-tested: 0 console errors, all sections render correctly
-- [x] `INSIGHT-05` Empty/loading states are informative, not confusing. **PARTIAL, S3** — $ORG price/market cap show “—“ without explanation
-- [x] `INSIGHT-06` Units and labels are understandable (percent, totals, balances). **PASS, S3** — re-tested: clear labels throughout
-- [x] `INSIGHT-07` Mobile chart/card readability is acceptable. **PARTIAL, S3** — charts readable once focused; analytics page scroll requires tab click first
-- [x] `INSIGHT-08` User can identify a clear “what to do next” action. **PASS, S3** — re-tested: multiple CTAs (Get Started, View Proposals, carousel cards, View Tasks)
+- [ ] `HOME-01` Dashboard loads with trust/summary surfaces and "what to do next" CTAs.
+- [ ] `HOME-02` Proposal stage count grid does not clip cell text at 375px (historical S1 — fixed Iter 2).
+- [ ] `HOME-03` "Get Started" and "View Proposals" CTAs ≥44px tall (fixed Iter 3).
+- [ ] `HOME-04` All i18n keys resolve (no raw `Home.*` strings).
+- [ ] `HOME-05` Launch banner dismiss button ≥44px.
+- [ ] `HOME-06` Empty state for $ORG price/market cap explains why value is `—`.
+- [ ] `HOME-07` Activity feed link (`dashboard.activity.viewAll`) renders translated.
 
-### Feedback
-<!-- Full feedback archived in git history + plan file. Summary below. -->
-**Tested:** 2026-03-07 | **Re-tested:** 2026-03-21 | **Cases:** 8/8 | **Severity:** S1
-**Priority fixes:** 2 missing i18n keys on home: `Home.trustSprintNoneShort` (Trust Pulse card), `dashboard.activity.viewAll` (activity feed link)
-**Top revamp:** Data-dense dashboard cards, time range selectors, mobile scroll fix, $ORG price empty state copy
-**Plan:** `docs/plans/2026-03-21-home-analytics-treasury.md`
+**Last verified:** 2026-04-13.
 
-## 4.4 Community (Rankings + Directory + Profile)
-<!-- qa-status: DONE | severity: S3 | plan: docs/plans/2026-03-21-community-qa-revamp.md -->
-Routes: `/community`, `/community/[id]`.
-Redirects: `/members` → `/community`, `/members/[id]` → `/community/[id]`, `/leaderboard` → `/community`.
+### 4.4 Pulse (analytics hub)
+<!-- qa-status: PLANNED | severity: S1 | plan: docs/plans/2026-04-21-pulse-analytics-fixes.md | last verified: 2026-04-13 -->
+Route: `/pulse` (previously `/analytics` — now a permanent redirect).
+
+**Note:** Pulse replaces the old Analytics page. Re-verification needed after PR #63 (concentration bars + distribution summary restoration) merges.
 
 Use cases:
-- [x] `COMM-01` Community loads with dark hero + Rankings tab default. **PASS, S3** — FIXED: i18n keys added, 0 console errors
-- [x] `COMM-02` Rankings: podium, your-position, ranked table, search bar works. **PASS, S3** — REVAMPED: keyboard nav, sortable headers, command palette search, skeleton loading
-- [x] `COMM-03` Directory: filterable member grid with rank/XP enriched cards. **PASS, S3** — REVAMPED: filter chips with counts, sort dropdown, clear button
-- [x] `COMM-04` Tab switching preserves per-tab state (search, filters, pagination). **PASS, S3** — CSS visibility toggle working
-- [x] `COMM-05` Rankings row click → `/community/[id]` profile page. **PASS, S3**
-- [x] `COMM-06` Directory card click → `/community/[id]` profile page. **PASS, S3**
-- [x] `COMM-07` Profile privacy gating works (private vs public profiles). **PARTIAL, S3** — code correct but no private profile fixture
-- [x] `COMM-08` `/members` redirects to `/community`. **PASS, S3**
-- [x] `COMM-09` `/members/[id]` redirects to `/community/[id]`. **PASS, S3**
-- [x] `COMM-10` `/leaderboard` redirects to `/community`. **PASS, S3**
-- [x] `COMM-11` Rankings search filters by name, email, and Organic ID. **PASS, S3**
-- [x] `COMM-12` All 3 locales (en, pt-PT, zh-CN) render Community correctly. **PASS, S3** — FIXED: all i18n keys present, 0 console errors
+- [ ] `PULSE-01` Page loads; tabs (Overview / Personal / Governance) render.
+- [ ] `PULSE-02` Tab bar + DateRangeSelector do not overflow at 375px (S1 — flex-col stack fixed Iter 3).
+- [ ] `PULSE-03` Charts render with real data; no console errors.
+- [ ] `PULSE-04` Concentration bars render for token holders (restored in PR #63).
+- [ ] `PULSE-05` Distribution summary cards visible under charts (restored in PR #63).
+- [ ] `PULSE-06` DexScreener/GeckoTerminal quick-links ≥44px tall (historical S1).
+- [ ] `PULSE-07` `/analytics` redirects to `/pulse` with no flash.
+- [ ] `PULSE-08` Mobile: chart scroll/zoom works; no layout thrash.
+- [ ] `PULSE-09` EN + ZH: labels, tooltip copy, legend all localized.
 
-### Feedback
-<!-- Full feedback archived in git history + plan file. Summary below. -->
-**Tested:** 2026-03-21 | **Fixed:** 2026-03-21 (81da1e1) | **Revamped:** 2026-03-21 (fb00427) | **Cases:** 12/12 | **Severity:** S3
-**Priority fixes:** ~~2 missing Community i18n keys~~ DONE, ~~4 achievement description keys~~ DONE, ~~8 pt-PT/zh-CN profile tab keys~~ DONE, ~~QA script onboarding fix~~ DONE
-**Top revamp:** Combined 3 prototypes — contribution heatmap + activity feed (GitHub), keyboard nav + filter counts (Linear), command search + 4-stat cards (Vercel). 25+ i18n keys.
-**Plan:** `docs/plans/2026-03-21-community-qa-revamp.md`
+**Last verified:** 2026-04-13 (layout only — PR #63 data fixes pending merge).
 
-## 4.5 My Profile, Privacy Toggle, and Progression Hub
-<!-- qa-status: DONE | severity: S3 | plan: docs/plans/2026-03-21-profile-progression-fixes-v2.md -->
-Routes: `/profile`, `/profile/progression`, `/community/[id]`.
+### 4.5 Vault (treasury)
+<!-- qa-status: PLANNED | severity: S3 | last verified: 2026-04-13 -->
+Route: `/vault` (previously `/treasury` — redirect).
 
 Use cases:
-- [x] `PROF-01` Profile identity/activity/preferences sections render. **PASS, S3** — all 10 sections render cleanly on mobile + desktop, 0 console errors on profile page
-- [x] `PROF-02` Privacy toggle updates state and message correctly. **PASS, S3** — toggles both directions with correct text, description, and toast notification
-- [x] `PROF-03` Progression page opens from profile quick action. **PASS** — opens correctly, 0 console errors. *(Fixed: 67811d2 — quest i18n resolved)*
-- [x] `PROF-04` Progression source context (`?from=tasks|proposals|profile`) behaves correctly. **PASS** — correct banner text and back link, 0 i18n errors. *(Fixed: 67811d2)*
-- [x] `PROF-05` XP/level/next-step context is understandable. **PASS** — stat cards, progress bar, achievements, rewards readiness all work; quest titles resolve correctly via API title fallback. Achievement name `peacemaker` also fixed. *(Fixed: 5a76747, 67811d2)*
-- [x] `PROF-06` Fallback messaging is useful when progression data is sparse. **PARTIAL, S3** — good empty states: "No active streak", "No XP earned yet", "Keep contributing to reach Level 2", "You need 100 more points to submit a claim"
-- [x] `PROF-07` Mobile layout keeps cards/actions usable. **PARTIAL, S3** — clean single-column layout, proper spacing, touch targets adequate
-- [x] `PROF-08` Twitter/X account link/unlink controls in profile work and persist state. **PASS** — connect button opens Twitter OAuth. *(Fixed: 5a76747 — empty body replaced with `JSON.stringify({})`)*
-- [x] `PROF-09` OAuth callback return parameters (`twitter_linked`, `twitter_error`) surface clear feedback on profile. **PASS, S3** — FIXED: `?twitter_linked=1` shows "Twitter/X account linked successfully!", `?twitter_linked=0&reason=auth_failed` shows "Failed to link Twitter/X account (auth_failed)". URL params cleaned after display
-- [x] `PROF-10` Onboarding progress shortcut in top bar dropdown appears only for incomplete users. **PASS, S3** — avatar dropdown shows "Setup Progress 1/4", clicking opens onboarding wizard
-- [x] `COMM-PROF` Community profile page renders member data correctly. **FAIL, S1** — 58 console errors, tab labels show raw keys (`Community.profileTabOverview`, `.profileTabReputation`, `.profileTabAchievements`, `.profileTabActivity`), section header `Community.quickGlance` also raw key. Missing i18n keys in Community namespace for the profile detail page
+- [ ] `VAULT-01` Hero + emission policy + balance cards stack cleanly at 375px (PASS Iter 1).
+- [ ] `VAULT-02` Settlement posture (held/killed/paid) labels readable.
+- [ ] `VAULT-03` Transparency metadata links (Supabase, Solana explorer) open in new tab.
+- [ ] `VAULT-04` Empty/loading states: clear when balances unavailable.
+- [ ] `VAULT-05` `/treasury` redirects to `/vault`.
+- [ ] `VAULT-06` Mobile: no horizontal scroll; touch targets ≥44px.
 
-### Feedback
-<!-- Re-tested: 2026-03-20 | QA accounts: qa-admin, qa-council, qa-member (created via scripts/create-qa-accounts.ts) -->
-**Tested:** 2026-03-20 | **Cases:** 11/11 (10 PROF + 1 COMM-PROF) | **Severity:** S1
+**Last verified:** 2026-04-13.
 
-**What works well:**
-- Profile page (/profile): all 10 sections render, 0 console errors, clean mobile + desktop layout (PROF-01)
-- Privacy toggle works both directions with toast feedback (PROF-02)
-- Progression stat cards, progress bar, quest grouping, achievement catalog, rewards readiness, empty states all functional (PROF-03-07)
-- Source context banners adapt correctly to `?from=` param (PROF-04)
-- OAuth callback params now work: success + error toasts fire and URL cleans up (PROF-09) — previously S1 FAIL, now PASS
-- Onboarding shortcut in avatar dropdown works (PROF-10)
-- QA accounts created and functional (admin/council/member with correct roles + organic IDs)
-
-**What does not work:**
-- **Quest i18n keys still broken (S1):** All 9 quest titles/descriptions render raw UUID-based keys on progression page. DB quests use UUIDs but locale files use slug keys. The `resolveQuestTitle` fallback to `quest.title` fires but the DB `title` field is null/empty for these quests. **38 console errors per page load.** (PROF-05)
-- **Twitter/X connect still broken (S1):** Profile page sends empty POST body to `/api/twitter/link/start`. `parseJsonBody` helper rejects the empty request → 400 "Invalid request payload". Fix: send `body: JSON.stringify({})` from profile page, or make `parseJsonBody` tolerate empty bodies. (PROF-08)
-- **Community profile i18n broken (S1):** `/community/[id]` page uses ~10 Community namespace keys that don't exist in locale files: `quickGlance`, `profileTabOverview`, `profileTabReputation`, `profileTabAchievements`, `profileTabActivity`, `activityComingSoon`, etc. **58 console errors.** (COMM-PROF)
-- **1 achievement i18n key missing:** `Reputation.achievementNames.peacemaker` renders as raw key on progression page. (PROF-05)
-
-**Top 3 highest-impact changes:**
-1. **Fix quest i18n resolution** — populate DB quest titles OR add UUID-keyed entries to locale files. 9 quests unreadable, 38 errors/page. (PROF-05, S1)
-2. **Fix Twitter/X connect** — send JSON body from profile page or tolerate empty body in parseJsonBody. (PROF-08, S1)
-3. **Fix Community profile i18n** — add ~10 missing Community.* keys to all 3 locale files. 58 errors/page. (COMM-PROF, S1)
-
-**Section severity:** S1
-**Confidence score:** 5/5 (11/11 tested with live QA accounts, 3 viewports, 3 roles)
-
-## 4.6 Quests, Referrals, and Gamification Controls
-<!-- qa-status: DONE | severity: S1 | plan: docs/plans/2026-03-21-quests-qa-revamp.md -->
-Routes: `/quests`, `/join?ref=CODE`, `/signup?ref=CODE`, `/admin/settings` (Gamification tab), `/profile/progression`.
+### 4.6 Community (rankings + directory + profile)
+<!-- qa-status: DONE | severity: S3 | plan: docs/plans/2026-03-21-community-qa-revamp.md | last verified: 2026-04-13 -->
+Routes: `/community`, `/community/[id]`. Redirects: `/members`, `/members/[id]`, `/leaderboard`.
 
 Use cases:
-- [x] `GAM-01` Member opens `/quests` and sees referral + quests surfaces. **PASS** — both surfaces render, 0 errors. Dark theme tokens applied throughout. *(Revamped: d736cbd)*
-- [x] `GAM-02` Quest tabs (`in_progress`, `done`, `all`) filter correctly. **PASS** — tabs work, empty state uses design tokens.
-- [x] `GAM-03` Referral code/link generation and copy actions work. **PASS** — copy link/code functional.
-- [x] `GAM-04` Referral link redirect flow works via `/join?ref=...`. **PASS** — redirects to `/signup?ref=CODE`.
-- [x] `GAM-05` Referral completion updates stats/cards. **PARTIAL, S3** — stats render (0s), can't test full flow. *(Revamped: tier stepper with Bronze→Silver→Gold)*
-- [x] `GAM-06` Burn-level flow handles enabled/disabled modes correctly. **PASS** — burn button conditionally shown; auto-level info card when disabled. *(Revamped: d736cbd)*
-- [ ] `GAM-07` Burn confirm dialog math (from level/to level/points) is correct. **SKIP** — burn disabled in config. *(Dialog dark-themed: d736cbd)*
-- [x] `GAM-08` Quests data remains coherent with progression context. **PASS** — 0 i18n errors on progression page. *(Fixed: 67811d2 — resolveQuestTitle prefers API title)*
-- [x] `GAM-09` Admin gamification settings and quest controls are accessible to admin only. **PASS** — admin-only, quest CRUD visible.
-- [x] `GAM-10` Localized copy for quests/referrals is valid in `en`, `pt-PT`, `zh-CN`. **PASS** — labels translate, quest titles DB-driven.
-- [x] `GAM-11` Mobile quest cards/filters/referral surface remain usable. **PASS** — dark theme tokens, progress rings, tier stepper all responsive. *(Revamped: d736cbd)*
+- [ ] `COMM-01` Community loads with hero + Rankings tab default.
+- [ ] `COMM-02` Rankings: podium, your-position, sortable table, search.
+- [ ] `COMM-03` Directory: filter chips, sort dropdown, clear button.
+- [ ] `COMM-04` Tab switching preserves per-tab state.
+- [ ] `COMM-05/06` Rankings row / Directory card click → `/community/[id]`.
+- [ ] `COMM-07` Profile privacy gating (private vs public).
+- [ ] `COMM-08/09/10` `/members`, `/members/[id]`, `/leaderboard` redirect correctly.
+- [ ] `COMM-11` Rankings search filters by name, email, and Organic ID.
+- [ ] `COMM-12` EN + ZH render correctly — 0 raw keys.
+- [ ] `COMM-PROF` Community profile (`/community/[id]`) renders member data — all tabs resolve (was S1 in March, verify before next release).
 
-### Feedback
-<!-- Full feedback archived in git history + plan file. Summary below. -->
-**Tested:** 2026-03-21 | **Cases:** 9/11 PASS, 1 PARTIAL, 1 SKIP | **Severity:** S1
-**Fixed (67811d2):** Quest UUID i18n errors — `resolveQuestTitle()` now prefers API title over i18n lookup, 0 console errors.
-**Revamped (d736cbd):** Duolingo-inspired Proto A — SVG progress rings with category colors (blue/purple/amber/emerald), tier stepper (Bronze→Silver→Gold) with glow, level ring sidebar, conditional burn button, dark theme tokens throughout. All hardcoded `bg-white`/`text-gray-900` replaced.
-**Plan:** `docs/plans/2026-03-21-quests-qa-revamp.md`
+**Last verified:** 2026-04-13 (mobile skeleton persistence S0 still open for unauthenticated visitors — see audit report).
 
-## 4.7 Tasks End-to-End Workflow (Creation -> Claim -> Submit -> Review)
-<!-- qa-status: DONE | severity: S3 | plan: docs/plans/2026-03-08-tasks-qa-revamp.md -->
+### 4.7 Profile, privacy toggle, progression, trophies
+<!-- qa-status: DONE | severity: S1 | plan: docs/plans/2026-03-21-profile-progression-fixes-v2.md | last verified: 2026-04-13 -->
+Routes: `/profile`, `/profile/progression`, `/profile/trophies`.
+
+Use cases:
+- [ ] `PROF-01` Profile identity/activity/preferences sections render; no raw i18n keys.
+- [ ] `PROF-02` Privacy toggle updates state + toast.
+- [ ] `PROF-03` Progression page opens from profile quick action.
+- [ ] `PROF-04` Progression source context (`?from=tasks|proposals|profile`) adapts banner + back link.
+- [ ] `PROF-05` XP/level/next-step surface readable; quest titles resolve via API title fallback.
+- [ ] `PROF-06` Fallback messaging informative when progression data is sparse.
+- [ ] `PROF-07` Mobile: stats row does NOT clip 3rd column (historical S1 — verify fix at 375/390/412).
+- [ ] `PROF-08` Twitter/X connect/unlink works; profile + submission form both send `body: JSON.stringify({})`.
+- [ ] `PROF-09` OAuth callback `twitter_linked=1|0` surfaces toast; URL cleans up.
+- [ ] `PROF-10` Onboarding progress shortcut in avatar dropdown shown only for incomplete users.
+- [ ] `TROPH-01` `/profile/trophies` filter chips and By Category/By Set toggles ≥44px (historical S1).
+- [ ] `TROPH-02` Trophy catalog renders badges; rarity tiers (Bronze/Silver/Gold/Platinum/Secret) visible.
+- [ ] `TROPH-03` Back arrow on trophies page ≥44px tap target.
+
+**Last verified:** 2026-04-13 (stats-row clip + trophy chips still `S1 Open` per Iter 1; pending revamp).
+
+### 4.8 Quests, referrals, gamification (via /earn)
+<!-- qa-status: DONE | severity: S1 | plan: docs/plans/2026-03-21-quests-qa-revamp.md | last verified: 2026-04-13 -->
+Routes: `/earn` (canonical), `/quests` and `/rewards` redirect to `/earn?tab=quests|rewards`. Related: `/join?ref=CODE`, `/signup?ref=CODE`, `/admin/settings` (Gamification tab), `/profile/progression`.
+
+Use cases:
+- [ ] `GAM-01` `/earn` shows quests + referral surfaces, 0 console errors.
+- [ ] `GAM-02` Quest tabs (`in_progress`, `done`, `all`) filter correctly.
+- [ ] `GAM-03` Referral code/link copy actions work.
+- [ ] `GAM-04` Referral link redirect via `/join?ref=...` → `/signup?ref=CODE`.
+- [ ] `GAM-05` Referral completion updates tier stepper (Bronze→Silver→Gold).
+- [ ] `GAM-06` Burn-level flow handles enabled/disabled config.
+- [ ] `GAM-07` Burn confirm math correct when enabled.
+- [ ] `GAM-08` Quest data coherent with progression context.
+- [ ] `GAM-09` Admin gamification settings/quest controls admin-only.
+- [ ] `GAM-10` EN + ZH render without raw keys.
+- [ ] `GAM-11` Mobile: quest cards, filters, referral copy buttons all ≥44px.
+
+**Last verified:** 2026-04-13 (referral copy buttons still 34px — `S2 Open`).
+
+### 4.9 Tasks end-to-end (create → claim → submit → review)
+<!-- qa-status: DONE | severity: S3 | plan: docs/plans/2026-03-08-tasks-qa-revamp.md | last verified: 2026-04-13 -->
 Routes: `/tasks`, `/tasks/[id]`, `/tasks/templates`, `/admin/submissions`.
 
 Use cases:
 - [ ] `TASK-01` Admin creates task from task modal/new flow.
-- [ ] `TASK-02` Member can discover tasks using search/filter/sort.
-- [ ] `TASK-03` Member claim/unclaim behavior is correct (respecting dependencies/rules).
-- [ ] `TASK-04` Task detail explains status, acceptance criteria, points, and assignee context.
-- [ ] `TASK-05` Member submission form works for expected task type.
-- [ ] `TASK-06` Submission moves task toward review state.
-- [ ] `TASK-07` Reviewer/admin approves submission successfully.
-- [ ] `TASK-08` Reviewer/admin rejects submission with required reason.
-- [ ] `TASK-09` Review queue (`/admin/submissions`) shows pending submissions and updates after actions.
-- [ ] `TASK-10` Dependency picker add/remove behaves correctly.
-- [ ] `TASK-11` Subtask creation/list/progress behavior is correct.
-- [ ] `TASK-12` Template manager (admin/council) create/edit/delete works.
-- [ ] `TASK-13` Template instantiate flow creates task for eligible members.
-- [ ] `TASK-14` Proposal-linked task gate enforces finalized+passed provenance where applicable.
-- [ ] `TASK-15` Mobile usability is acceptable on list, detail, submission, and review queue.
-- [ ] `TASK-16` Twitter/X task creation enforces target URL + engagement config requirements.
-- [ ] `TASK-17` Twitter/X task submission requires linked account and validates engagement context messaging.
+- [ ] `TASK-02` Member search/filter/sort works.
+- [ ] `TASK-03` Claim/unclaim respects dependencies/rules.
+- [ ] `TASK-04` Detail explains status, acceptance criteria, points, assignee.
+- [ ] `TASK-05` Submission form works for the expected task type.
+- [ ] `TASK-06` Submission moves task to review state.
+- [ ] `TASK-07/08` Approve / reject with required reason.
+- [ ] `TASK-09` `/admin/submissions` queue updates after actions.
+- [ ] `TASK-10/11` Dependency picker and subtasks work.
+- [ ] `TASK-12/13` Template CRUD + instantiate.
+- [ ] `TASK-14` Proposal-linked task gate enforces finalized+passed provenance.
+- [ ] `TASK-15` Mobile: list, detail, submission, review queue usable at 375px (tabs ≥44px — historical S1).
+- [ ] `TASK-16/17` Twitter/X task target URL + engagement config enforcement, linked-account requirement.
+- [ ] `TASK-18` **Translation toggle (PR #64):** Admin Content Translation panel exposes per-type switches (post, proposal, idea, task). Toggling off hides the translate button on the corresponding detail page within one refresh.
+- [ ] `TASK-19` **Task translation:** with Tasks toggle ON, task detail shows "Translate" affordance; click calls DeepL; cached translation returned on subsequent view.
+- [ ] `TASK-20` **Task done transition (PR #62):** review → done transition succeeds via API route.
 
-### Feedback
-<!-- Full feedback archived in git history + plan file. Summary below. -->
-**Tested:** 2026-03-08 | **Fixed:** 2026-03-14 (commit 3aed048) | **Cases:** 17/17 (code review + partial live) | **Severity:** S3
-**Priority fixes:** ~~Silent error handling S0 (TASK-04)~~ DONE — error toasts surfaced, ~~hardcoded locale S0 (TASK-04)~~ DONE — locale-aware dates, ~~emoji icons S1 (TASK-02)~~ DONE — normalized labels with i18n display
-**Top revamp:** Error states, loading skeletons, semantic table markup, confirmation dialogs
-**Plan:** `docs/plans/2026-03-08-tasks-qa-revamp.md`
+**Last verified:** 2026-04-13 (task done transition fix in PR #62 pending merge).
 
-## 4.8 Sprints End-to-End Workflow (Planning -> Completed)
-<!-- qa-status: DONE | severity: S1 | plan: docs/plans/2026-03-21-sprints-qa-revamp.md | merged: main (7ef0c54) -->
+### 4.10 Sprints end-to-end (planning → completed)
+<!-- qa-status: DONE | severity: S3 | plan: docs/plans/2026-03-21-sprints-qa-revamp.md | last verified: 2026-04-13 -->
 Routes: `/sprints`, `/sprints/[id]`, `/sprints/past`.
 
 Use cases:
-- [x] `SPR-01` Admin creates a sprint. **PASS, S3** — Create modal opens and has all fields (name, goal, dates, status, capacity). Form works correctly. Member/council correctly hidden.
-- [x] `SPR-02` Admin starts sprint from planning. **PASS, S3** — "Start Sprint" button visible for admin/council when sprint is in planning. Start dialog exists.
-- [x] `SPR-03` Sprint transitions to `review` via completion action. **PASS, S3** — "Advance to Review" button visible on active sprint for admin/council. Click triggers transition.
-- [x] `SPR-04` Sprint transitions to `dispute_window`. **SKIP** — No sprint in review phase to test. Code path exists (phase engine tested).
-- [x] `SPR-05` Dispute-window timing constraints are communicated. **PASS, S3** — Countdown badge with Timer icon shows "Phase time remaining" when deadline exists. Review/dispute phases supported.
-- [x] `SPR-06` Sprint transitions to `settlement` only when valid. **SKIP** — No sprint in dispute_window to test. Code path exists.
-- [x] `SPR-07` Settlement blockers and reasons are visible/understandable. **PASS, S3** — Settlement panel renders with "Open execution: N" and "Blocked: N" as GitHub-style badges. i18n key fixed, 0 console errors.
-- [x] `SPR-08` Sprint transitions to `completed` when integrity conditions are satisfied. **PASS, S3** — Complete dialog exists with stats, incomplete task handling options (backlog/next sprint), readiness checklist on detail page.
-- [x] `SPR-09` Sprint detail timeline/rail surfaces current phase clearly. **PASS, S3** — Phase timeline sidebar on detail page shows all 6 phases with clear current/complete/awaiting indicators. Readiness checklist with 4 checks.
-- [x] `SPR-10` Past sprints page is navigable and understandable. **PASS, S3** — `/sprints/past` redirects to `?view=timeline`. Timeline view with vertical line, date badges, status pills. Sprint List view also shows Past Sprints section.
-- [x] `SPR-11` Mobile sprint list/detail remain usable. **PASS, S3** — Board columns now horizontal-scroll with snap on mobile. i18n key fixed. All content accessible at 375px.
+- [ ] `SPR-01/02/03` Create → start → advance-to-review works for admin/council.
+- [ ] `SPR-04` `review` → `dispute_window` transition.
+- [ ] `SPR-05` Dispute-window countdown visible.
+- [ ] `SPR-06/07` Settlement transitions + blockers surfaced.
+- [ ] `SPR-08` `completed` transition gated on integrity conditions; incomplete-task handling options present.
+- [ ] `SPR-09` Phase rail/timeline surfaces current phase clearly.
+- [ ] `SPR-10` `/sprints/past` timeline view usable.
+- [ ] `SPR-11` Mobile: board horizontal-scrolls with snap; phase rail labels readable (historical: `min-w-[840px]` with no scroll hint, `S1`).
 
-### Feedback
-<!-- Full feedback archived in git history + plan file. Summary below. -->
-**Tested:** 2026-03-21 | **Cases:** 9/11 (2 skipped) | **Severity:** S3 (S1 fixed)
-**Fixes applied:** i18n key `Sprints.metricOpenExecution` added. 0 console errors.
-**Revamp applied:** Full 9-component GitHub-inspired overhaul (7ef0c54) — milestone cards, phase stepper, burndown gridlines, orange theme, muted success states, horizontal mobile board.
-**Plan:** `docs/plans/2026-03-21-sprints-qa-revamp.md`
+**Last verified:** 2026-04-13.
 
-## 4.9 Proposals and Governance Workflow
-<!-- qa-status: DONE | severity: S2 | plan: docs/plans/2026-03-19-proposals-qa-revamp.md | merged: main -->
+### 4.11 Proposals + governance
+<!-- qa-status: DONE | severity: S2 | plan: docs/plans/2026-03-19-proposals-qa-revamp.md | last verified: 2026-04-13 -->
 Routes: `/proposals`, `/proposals/new`, `/proposals/[id]`.
 
 Use cases:
-- [x] `PROP-01` Member creates proposal draft/public submission. **PARTIAL, S2** — wizard works but tab labels truncate on mobile
-- [x] `PROP-02` Proposal list shows governance signal/context correctly. **PARTIAL, S2** — garbage test data, admin CTA shown to members, count off-by-one
-- [x] `PROP-03` Proposal detail renders structured sections clearly. **PARTIAL, S2** — Decision Rail hidden/buried on mobile
-- [x] `PROP-04` Proposal comments can be posted and read. **PARTIAL, S2** — no display name, only avatar initial + Organic ID
-- [x] `PROP-05` Stage transitions are forward-only and clearly communicated. **PARTIAL, S2** — no transition history visible
-- [x] `PROP-06` Start voting works for authorized role only. **PARTIAL, S2** — works but finalize lacks attempt limit info
-- [x] `PROP-07` Vote eligibility and effective power are understandable. **PARTIAL, S2** — no token holder messaging for disconnected wallet
-- [x] `PROP-08` Casting vote succeeds/fails with clear feedback. **PARTIAL, S2** — sticky Vote button visible when voting closed
-- [x] `PROP-09` Finalize voting behaves idempotently. **PARTIAL, S2** — no execution deadline shown
-- [x] `PROP-10` Freeze and resume semantics are understandable to operators. **PARTIAL, S2** — good UX but missing max attempt count
-- [x] `PROP-11` Execution-window messaging for passed proposal is clear. **PARTIAL, S2** — no execution deadline surfaced
-- [x] `PROP-12` Proposal templates are usable (if enabled/configured). **SKIP** — not implemented
-- [x] `PROP-13` Mobile readability and action placement are acceptable. **PARTIAL, S2** — Vote shown when closed, Decision Rail buried, Follow duplicated
-- [x] `PROP-14` Proposal threshold gate blocks under-threshold proposers with clear reason. **PASS, S3**
-- [x] `PROP-15` Anti-abuse cooldown/one-live-proposal guard is enforced and explained. **PASS, S3**
-- [x] `PROP-16` Passed proposal finalize path remains usable under execution-window degraded mode (`PGRST204`) with non-blocking warning behavior. **PARTIAL, S2** — code exists but untestable locally
-- [x] `PROP-17` Proposal detail shows source-idea badge/link when `source_idea_id` is present. **PARTIAL, S2** — code exists but no test data to verify visually
+- [ ] `PROP-01` Member creates proposal draft/public submission; wizard tabs readable on mobile.
+- [ ] `PROP-02` List shows governance signal/context; counts accurate; no leaked admin CTA for members.
+- [ ] `PROP-03` Detail renders structured sections; Decision Rail not buried on mobile.
+- [ ] `PROP-04` Comments: post + read; display name shown (not just avatar initial).
+- [ ] `PROP-05` Stage transitions are forward-only; history visible.
+- [ ] `PROP-06` Start-voting authorized role only.
+- [ ] `PROP-07/08` Vote eligibility, power, token-holder messaging; casting succeeds/fails with clear feedback.
+- [ ] `PROP-09/10/11` Finalize idempotent; freeze/resume understandable; execution-window deadline surfaced.
+- [ ] `PROP-13` Mobile: no duplicate sticky Vote button when voting closed; Decision Rail collapsible.
+- [ ] `PROP-14/15` Threshold gate blocks under-threshold with clear reason; anti-abuse cooldown enforced.
+- [ ] `PROP-17` Source-idea badge/link visible on promoted proposal.
+- [ ] `PROP-18` **Translation toggle:** proposal translation respects admin toggle.
 
-### Feedback
-<!-- Full feedback archived in git history + plan file. Summary below. -->
-**Tested:** 2026-03-19 | **Cases:** 15/17 (1 skipped) | **Severity:** S2
-**Priority fixes:** Sticky Vote button shown when voting closed (mobile), garbage localhost:3003 test data, no execution deadline display, onboarding modal not persisting dismissal (cross-cutting S1)
-**Top revamp:** Decision Rail collapsible on mobile, sticky bar rationalization, wizard tab labels, role-aware CTAs, comment display names, stage transition history
-**Plan:** `docs/plans/2026-03-19-proposals-qa-revamp.md`
+**Last verified:** 2026-04-13.
 
-## 4.10 Disputes Workflow (File -> Evidence -> Resolve/Appeal)
-<!-- qa-status: PLANNED | severity: S1 | plan: docs/plans/2026-03-21-disputes-qa-revamp.md -->
+### 4.12 Ideas incubator
+<!-- qa-status: DONE | severity: S2 | plan: docs/plans/2026-03-23-ideas-incubator-qa-revamp.md | last verified: 2026-04-13 -->
+Routes: `/ideas`, `/ideas/[id]`, `/ideas/harvest`. APIs: `/api/ideas*`.
+
+Prereqs: feature flag enabled, ideas schema available, at least one open promotion cycle.
+
+Use cases:
+- [ ] `IDEA-01` Feed, sort tabs, search, KPI strip, weekly spotlight load.
+- [ ] `IDEA-02` Organic-ID member can create an idea; title/body validation bounded.
+- [ ] `IDEA-03` Member without Organic ID blocked with clear messaging.
+- [ ] `IDEA-04` Vote toggle idempotent (repeat `up/down` clears to neutral).
+- [ ] `IDEA-05` Self-vote blocked with explicit error.
+- [ ] `IDEA-06` Comment creation requires Organic ID; rejects empty payload.
+- [ ] `IDEA-07` Detail page: author, status, body, score breakdown, comments chronology.
+- [ ] `IDEA-08/09` Edit permissions + admin/council moderation enforced.
+- [ ] `IDEA-10/11` Feature-flag disabled / backend unavailable return safe fallback.
+- [ ] `IDEA-12` Mobile usability (feed, vote rail, composer, detail).
+- [ ] `IDEA-13/14` Promote to proposal + winner selection paths work.
+- [ ] `IDEA-15` Promoted proposal detail shows source-idea badge/link back.
+- [ ] `IDEA-16` `/ideas/harvest` weekly promotion UI accessible; Back-to-ideas link ≥44px (historical S1).
+- [ ] `IDEA-17` **Translation toggle:** idea translation respects admin toggle.
+
+**Last verified:** 2026-04-13.
+
+### 4.13 Posts (community feed)
+<!-- qa-status: NEW-SECTION | severity: S1 | last verified: 2026-04-13 -->
+Routes: `/posts`, `/posts/[id]`. See `docs/plans/phase-30-points-economy.md` for the points economy.
+
+Prereqs: member with sufficient points to post, at least 3 existing posts (mix of types).
+
+Use cases:
+- [ ] `POST-01` Feed loads; 6 filter pills render (`All`, `Posts`, `Threads`, `Announcements`, `Links`, `Organic`).
+- [ ] `POST-02` Filter row scrolls horizontally; **`Organic` pill must be reachable on 375px** (historical S1 — Organic pill was 65px off-screen with no scroll hint).
+- [ ] `POST-03` Sort pills (`New`, `Popular`, `Top This Week`) ≥44px tap target (historical S1 — 28px).
+- [ ] `POST-04` View toggle (grid/list) buttons ≥44px (historical S1 — 26px).
+- [ ] `POST-05` Create post: modal shows post cost in points; cost deducted on submit.
+- [ ] `POST-06` Post detail renders author, body, engagement counters.
+- [ ] `POST-07` Engagement (like/reply) awards XP per the points-economy rules.
+- [ ] `POST-08` Organic posts (ORG-emitted content) tagged + styled distinctly.
+- [ ] `POST-09` Flagging: any member can flag; flag hits moderation queue; repeat flags rate-limited.
+- [ ] `POST-10` Unauthenticated visitor: feed shows skeleton indefinitely (historical S0 — needs "sign in to see content" fallback).
+- [ ] `POST-11` **Translation toggle:** post detail shows/hides translate button per admin config; DeepL caches translations.
+- [ ] `POST-12` Mobile: composer + detail readable at 375px; no clipping.
+- [ ] `POST-13` EN + ZH: empty state, filters, cost copy, flag reason modal all localized.
+
+**Last verified:** 2026-04-13 (pill overflow + skeleton-forever still `Open`).
+
+### 4.14 Disputes workflow
+<!-- qa-status: PLANNED | severity: S1 | plan: docs/plans/2026-03-21-disputes-qa-revamp.md | last verified: 2026-03-21 -->
 Routes: `/disputes`, `/disputes/[id]`.
 
 Use cases:
-- [x] `DISP-01` Eligible member can file dispute from rejected submission flow. **SKIP** — no rejected submission in QA member account to test entry point
-- [x] `DISP-02` Queue page filters/tabs (`queue`, `mine`) work correctly. **PARTIAL, S2** — filters functional but member sees full admin triage deck
-- [x] `DISP-03` Detail page shows status/tier/SLA/evidence chronology. **PARTIAL, S2** — all sections render, data correct for admin/council, but non-party member sees stripped/misleading data
-- [x] `DISP-04` Comment thread add/list works and rejects empty content. **PASS, S3** — add works, empty/whitespace rejected, author name shown
-- [x] `DISP-05` Evidence upload accepts allowed file types and blocks unsupported ones. **PARTIAL, S3** — upload button present, accepts .png/.jpg/.jpeg/.pdf; file names display as UUIDs
-- [x] `DISP-06` Late evidence is tagged correctly. **PARTIAL, S3** — late evidence tag exists in code, no late evidence in test data to verify visual
-- [x] `DISP-07` Uploads are blocked after dispute window closes. **SKIP** — no closed-window dispute to test
-- [x] `DISP-08` Mediate/assign/respond actions enforce role constraints. **PARTIAL, S1** — resolve/assign correctly role-gated, but member sees triage deck with escalation controls
-- [x] `DISP-09` Resolve action shows XP impact estimate and summary. **PASS, S3** — impact lines update per resolution type, quality picker for compromise works
-- [x] `DISP-10` Withdraw flow works for disputant when allowed. **SKIP** — member not party to any dispute
-- [x] `DISP-11` Appeal path works for appeal-eligible outcomes. **SKIP** — disputant is different account
-- [x] `DISP-12` Unauthorized users cannot access restricted dispute details. **PARTIAL, S2** — non-party member accesses page but sees "Unassigned" for all participants instead of access denial
-- [x] `DISP-13` Mobile queue/detail controls remain usable. **PARTIAL, S2** — queue usable but triage deck dominates viewport; detail page extremely long single-column
+- [ ] `DISP-01` Eligible member files dispute from rejected submission.
+- [ ] `DISP-02` Queue tabs (`queue`, `mine`) filter correctly per role.
+- [ ] `DISP-03` Detail shows status/tier/SLA/evidence chronology.
+- [ ] `DISP-04` Comment thread add/list; empty content rejected.
+- [ ] `DISP-05` Evidence upload accepts allowed types only.
+- [ ] `DISP-06` Late evidence tagged.
+- [ ] `DISP-07` Uploads blocked after window closes.
+- [ ] `DISP-08` Mediate/assign/respond actions role-gated — **non-party members must NOT see admin triage controls** (historical S1).
+- [ ] `DISP-09` Resolve action shows XP impact estimate.
+- [ ] `DISP-10/11` Withdraw + appeal paths work for the right parties.
+- [ ] `DISP-12` Unauthorized users blocked from restricted dispute detail (historical S2: non-party saw "Unassigned" instead of access-denied).
+- [ ] `DISP-13` Mobile: queue + detail usable; triage deck doesn't dominate viewport.
 
-### Feedback
-<!-- Full feedback archived in git history + plan file. Summary below. -->
-**Tested:** 2026-03-21 | **Cases:** 8/13 (4 skipped) | **Severity:** S1
-**Priority fixes:** Member role sees admin-only triage controls (escalation buttons, route-to-council/admin). Non-party member detail shows "Unassigned" instead of access restriction.
-**Top revamp:** Dispute queue needs Linear-style dense list with inline status. Detail page needs GitHub-style tabbed layout to reduce scroll depth. Mobile needs bottom-sheet detail pattern.
-**Plan:** `docs/plans/2026-03-21-disputes-qa-revamp.md`
+**Last verified:** 2026-03-21.
 
-## 4.11 Rewards and Claim Workflow
-<!-- qa-status: PLANNED | severity: S2 | plan: docs/plans/2026-03-22-rewards-qa-revamp.md -->
-Routes: `/rewards`, `/admin/rewards`.
+### 4.15 Rewards + claim workflow
+<!-- qa-status: PLANNED | severity: S2 | plan: docs/plans/2026-03-22-rewards-qa-revamp.md | last verified: 2026-03-22 -->
+Routes: `/earn?tab=rewards` (member view, canonical), `/rewards` (redirects), `/admin/rewards` (ops).
 
 Use cases:
-- [x] `RWD-01` Member rewards summary loads with claimability data. **PARTIAL, S2**
-- [x] `RWD-02` Claim below threshold is blocked with clear reason. **PASS, S3**
-- [x] `RWD-03` Claim with invalid values is blocked with clear reason. **PARTIAL, S2**
-- [x] `RWD-04` Valid claim submits successfully. **PARTIAL, S3**
-- [x] `RWD-05` Claim status progression is visible and understandable. **PARTIAL, S2**
-- [x] `RWD-06` Admin rewards page surfaces pending review/triage clearly. **PARTIAL, S2**
-- [x] `RWD-07` Admin payout guardrails and warning copy are clear. **PASS, S3**
-- [x] `RWD-08` Held/killed settlement posture is communicated clearly on rewards surfaces. **PARTIAL, S2**
-- [x] `RWD-09` Mobile rewards surface remains usable. **PARTIAL, S2**
+- [ ] `RWD-01` Member rewards summary loads with claimability data.
+- [ ] `RWD-02` Claim below threshold blocked with clear reason.
+- [ ] `RWD-03` Invalid values blocked with inline validation.
+- [ ] `RWD-04` Valid claim submits; status progression visible.
+- [ ] `RWD-05/06` Admin rewards page triages pending review safely.
+- [ ] `RWD-07` Payout guardrails + warning copy clear.
+- [ ] `RWD-08` Held/killed settlement posture communicated (matches Vault).
+- [ ] `RWD-09` Mobile: claim CTA not buried under 4+ scrolls of education (historical S2).
 
-### Feedback
-<!-- Full feedback archived in git history + plan file. Summary below. -->
-**Tested:** 2026-03-22 | **Cases:** 9/9 (0 skipped) | **Severity:** S2
-**Priority fixes:** Queue age shown on resolved claims is misleading; settlement "Pending" styled green (should be neutral); claim modal has no inline validation for invalid amounts
-**Top revamp:** Mobile CTA buried under 4+ scrolls of educational content (add FAB like Proposals); merge duplicate admin summary cards; add progressive disclosure and claim status timeline (Stripe/GitHub patterns)
-**Plan:** `docs/plans/2026-03-22-rewards-qa-revamp.md`
+**Last verified:** 2026-03-22.
 
-## 4.12 Notifications Workflow
-<!-- qa-status: TESTED | severity: S1 -->
-Routes: `/notifications`.
+### 4.16 Notifications
+<!-- qa-status: TESTED | severity: S1 | plan: docs/plans/2026-03-22-notifications-qa-revamp.md | last verified: 2026-03-22 -->
+Routes: `/notifications`, bell dropdown.
 
 Use cases:
-- [x] `NOTIF-01` Notifications page loads with expected filters/tabs. **PASS, S3**
-- [x] `NOTIF-02` Mark-as-read action updates item state. **PARTIAL, S2**
-- [x] `NOTIF-03` Follow/unfollow notification action behaves correctly. **PASS, S3**
-- [x] `NOTIF-04` Preferences save and persist after reload. **PASS, S3**
-- [x] `NOTIF-05` Empty and error states are informative. **PASS, S3**
-- [x] `NOTIF-06` Mobile card readability and action hit targets are acceptable. **FAIL, S1**
+- [ ] `NOTIF-01` Page loads with expected filters/tabs.
+- [ ] `NOTIF-02` Mark-as-read updates item + counter atomically.
+- [ ] `NOTIF-03` Follow/unfollow action behaves correctly.
+- [ ] `NOTIF-04` Preferences save and persist after reload.
+- [ ] `NOTIF-05` Empty + error states informative.
+- [ ] `NOTIF-06` Mobile: bell dropdown panel does not overflow off-screen (historical S1).
+- [ ] `NOTIF-07` `getNotificationHref()` maps dispute subject types correctly (historical S1 — disputes routed to home).
 
-### Feedback
-<!-- Full feedback archived in git history + plan file. Summary below. -->
-**Tested:** 2026-03-22 | **Cases:** 6/6 (0 skipped) | **Severity:** S1
-**Priority fixes:** Bell dropdown panel overflows on mobile (clipped left edge, unusable). `getNotificationHref()` missing dispute subject_type mapping — all dispute notifications navigate to home.
-**Top revamp:** Notification items are visually monotone ("Someone Untitled" everywhere). Benchmark against Linear's notification center — grouped by time, rich action text, category icons, hover actions.
-**Plan:** `docs/plans/2026-03-22-notifications-qa-revamp.md`
+**Last verified:** 2026-03-22.
 
-## 4.13 Admin Ops Workflow (Settings, Submission Queue, Rewards Ops)
-<!-- qa-status: PLANNED | severity: S2 | plan: docs/plans/2026-03-22-admin-ops-qa-revamp.md -->
-Routes: `/admin/settings`, `/admin/submissions`, `/admin/rewards`.
+### 4.17 Admin ops (settings, submissions, rewards, users)
+<!-- qa-status: PLANNED | severity: S2 | plan: docs/plans/2026-03-22-admin-ops-qa-revamp.md | last verified: 2026-03-22 -->
+Routes: `/admin`, `/admin/settings`, `/admin/submissions`, `/admin/rewards`, `/admin/users`.
 
 Use cases:
-- [x] `ADM-01` Non-admin cannot access admin pages. **PASS, S3**
-- [x] `ADM-02` Admin settings page tabs load and switch without stale state. **PASS, S3**
-- [x] `ADM-03` Settings updates require reason where audit policy enforces it. **PASS, S3**
-- [x] `ADM-04` Settings update produces user-understandable success/failure messages. **PARTIAL, S2**
-- [x] `ADM-05` Admin submissions queue supports daily review operations. **PASS, S3**
-- [x] `ADM-06` Admin rewards surface supports payout triage safely. **PASS, S3**
-- [x] `ADM-07` Risky controls include clear warning context. **PARTIAL, S2**
-- [x] `ADM-08` Tablet/mobile admin usability is acceptable for critical actions. **PASS, S3**
+- [ ] `ADM-01` Non-admin cannot access admin pages (middleware + UI).
+- [ ] `ADM-02` Settings page tabs switch without stale state.
+- [ ] `ADM-03` Audit-policy settings require reason.
+- [ ] `ADM-04` Settings updates produce success/failure toast.
+- [ ] `ADM-05` Submissions queue usable for daily review.
+- [ ] `ADM-06` Rewards triage safe (claims table has React `key` prop — historical S2).
+- [ ] `ADM-07` Risky/dangerous controls visually distinct and warning-copy-gated.
+- [ ] `ADM-08` Tablet/mobile admin usable.
+- [ ] `ADM-09` Users table: warn/restrict/ban/unrestrict action buttons ≥44px (fixed Iter 3); 8-column table needs mobile card fallback (historical S1 Open).
+- [ ] `ADM-10` **Translation admin panel (PR #64):** per-content-type toggles visible; saving persists and propagates (tasks, posts, proposals, ideas).
 
-### Feedback
-<!-- Full feedback archived in git history + plan file. Summary below. -->
-**Tested:** 2026-03-22 | **Cases:** 8/8 (6 PASS, 2 PARTIAL) | **Severity:** S2
-**Priority fixes:** No save success toast on settings (ADM-04), missing React key prop in ClaimsTable (ADM-06), no warning context on dangerous governance controls (ADM-07)
-**Top revamp:** Add admin dashboard landing page, surface audit trail in settings, visually distinguish dangerous governance controls — benchmarked against Linear admin panel, Vercel settings, Stripe dashboard
-**Plan:** `docs/plans/2026-03-22-admin-ops-qa-revamp.md`
+**Last verified:** 2026-04-13 (Iter 3 — admin pages were blocked live due to a prior Sentry edge-runtime 500; confirm resolved before re-QA).
 
-## 4.14 Error Resilience and Health
-<!-- qa-status: PLANNED | severity: S1 | plan: docs/plans/2026-03-23-error-locale-ops-qa.md -->
-Routes: invalid app routes, major API-backed pages, `/api/health`.
+### 4.18 Error resilience + health
+<!-- qa-status: PLANNED | severity: S1 | plan: docs/plans/2026-03-23-error-locale-ops-qa.md | last verified: 2026-03-23 -->
+Scope: invalid routes, API-backed pages, `/api/health`.
 
 Use cases:
-- [x] `ERR-01` Invalid route shows safe fallback (`not-found`) and navigation out. **PARTIAL, S2**
-- [x] `ERR-02` Network/API failures show actionable UI errors (not silent failure). **PARTIAL, S1**
-- [x] `ERR-03` Long loading states provide feedback and do not freeze interactions. **PARTIAL, S2**
-- [x] `ERR-04` `/api/health` reports healthy status in target environment. **PASS, S3**
-- [x] `ERR-05` Unauthorized API interactions fail safely (401/403) with clear UX impact. **PASS, S3**
-- [x] `ERR-06` Mobile error states remain readable and recoverable. **PARTIAL, S2**
+- [ ] `ERR-01` Invalid route shows safe fallback + nav out.
+- [ ] `ERR-02` API 500s surface error + retry (historical S1 — "0 tasks" shown silently).
+- [ ] `ERR-03` Long loading states provide feedback; no interaction freeze.
+- [ ] `ERR-04` `/api/health` reports healthy.
+- [ ] `ERR-05` Unauthorized API calls return 401/403 + clear UX impact.
+- [ ] `ERR-06` Mobile error states readable + recoverable.
 
-### Feedback
-<!-- Full feedback archived in git history + plan file. Summary below. -->
-**Tested:** 2026-03-23 | **Cases:** 2/6 passed (0 skipped) | **Severity:** S1
-**Priority fixes:** API 500s silently show "0 tasks" with no error message or retry button (ERR-02)
-**Top revamp:** Custom branded 404 page with nav/CTA (Linear/GitHub benchmark), skeleton loading states (Vercel benchmark)
-**Plan:** `docs/plans/2026-03-23-error-locale-ops-qa.md`
+**Last verified:** 2026-03-23.
 
-## 4.15 Locale and Accessibility Pass (Cross-Workflow)
-<!-- qa-status: PLANNED | severity: S3 | plan: docs/plans/2026-03-23-error-locale-ops-qa.md -->
-Scope: Run this pass on core routes after completing workflow checks.
+### 4.19 Locale + a11y cross-pass
+<!-- qa-status: PLANNED | severity: S3 | last verified: 2026-03-23 -->
+Run after workflow packs.
 
 Use cases:
-- [x] `L10N-01` Validate critical flows in `en`. **PASS, S3**
-- [x] `L10N-02` Validate critical flows in `pt-PT`. **PASS, S3**
-- [x] `L10N-03` Validate critical flows in `zh-CN`. **PASS, S3**
-- [x] `A11Y-01` Keyboard-only navigation works for primary workflows. **PASS, S3**
-- [x] `A11Y-02` Focus states are visible and logical. **PASS, S3**
-- [x] `A11Y-03` Modal/dialog close behavior works via keyboard. **PASS, S3**
-- [x] `A11Y-04` Form validation messages are announced/visible near fields. **PASS, S3**
-- [x] `A11Y-05` Color contrast and visual hierarchy are acceptable for dense data surfaces. **PASS, S3**
+- [ ] `L10N-01/02` Validate critical flows in `en` and `zh-CN`.
+- [ ] `A11Y-01` Keyboard-only navigation works across primary workflows.
+- [ ] `A11Y-02` Focus-visible states are visible and logical.
+- [ ] `A11Y-03` Modal/dialog close via Escape works.
+- [ ] `A11Y-04` Form validation messages announced + visible near fields.
+- [ ] `A11Y-05` Color contrast acceptable for dense surfaces.
+- [ ] `A11Y-06` `prefers-reduced-motion` respected on scroll/parallax/motion-heavy screens.
 
-### Feedback
-<!-- Full feedback archived in git history + plan file. Summary below. -->
-**Tested:** 2026-03-23 | **Cases:** 8/8 passed (0 skipped) | **Severity:** S3
-**Priority fixes:** None — all locales and a11y flows pass
-**Top revamp:** Enhanced focus-visible rings on buttons/links for keyboard users (minor polish)
-**Plan:** `docs/plans/2026-03-23-error-locale-ops-qa.md`
+**Last verified:** 2026-03-23.
 
-## 4.16 Operational Controls (Automated Evidence)
-<!-- qa-status: PLANNED | severity: S3 | plan: docs/plans/2026-03-23-error-locale-ops-qa.md -->
+### 4.20 Onboarding wizard + progress APIs
+<!-- qa-status: PLANNED | severity: S3 | plan: docs/plans/2026-03-22-onboarding-qa-revamp.md | last verified: 2026-03-22 -->
+Routes: avatar dropdown shortcut, onboarding modal, `/api/onboarding/steps`, `/api/onboarding/steps/:step/complete`.
+
+Prereqs: user with `onboarding_completed_at IS NULL`; at least one task and one active sprint.
+
+Use cases:
+- [ ] `ONB-01` Incomplete user sees wizard auto-open on first authenticated app load.
+- [ ] `ONB-02` Step order: `connect_wallet → verify_token → pick_task → join_sprint`.
+- [ ] `ONB-03` `GET /api/onboarding/steps` returns four keys with accurate completion state.
+- [ ] `ONB-04..07` Each step's completion endpoint validates its prereq and returns a readable error otherwise.
+- [ ] `ONB-08` Completed steps stay completed after reload/session refresh.
+- [ ] `ONB-09` Repost completion is idempotent — no duplicate XP.
+- [ ] `ONB-10` Finished onboarding: shortcut disappears; `onboarding_completed_at` populated.
+
+**Last verified:** 2026-03-22.
+
+### 4.21 Twitter/X linking + engagement verification
+<!-- qa-status: PLANNED | severity: S1 | plan: docs/plans/2026-03-23-twitter-qa-revamp.md | last verified: 2026-03-23 -->
+Routes: `/profile`, `/tasks/[id]` (Twitter task type), `/api/twitter/link/*`, `/api/twitter/account`.
+
+Prereqs: Twitter app creds + callback URL configured; one `twitter_engagement` task.
+
+Use cases:
+- [ ] `TW-01` Linked vs unlinked card renders; CTA visible on 375px.
+- [ ] `TW-02` Start-link redirects to `x.com/i/oauth2/authorize` with PKCE S256 + required scopes.
+- [ ] `TW-03/04` Callback success (`twitter_linked=1`) + error (`twitter_error=...`) surface toast; URL cleaned.
+- [ ] `TW-05` `GET /api/twitter/account` returns current linkage state; 401 for unauthed.
+- [ ] `TW-06` Unlink is idempotent.
+- [ ] `TW-07/08/09` Twitter task submission form: unlinked state CTA visible; config missing renders red error; connect handler must send `body: JSON.stringify({})` (historical S1 — profile page had the fix, submission form did not).
+- [ ] `TW-10` Submission captures expected metadata + evidence.
+- [ ] `TW-11` Admin/reviewer Twitter-task review surface shows screenshot URL, engagement type, comment text.
+- [ ] `TW-12` Mobile: Profile Social tab + task detail both usable at 375×812.
+
+**Last verified:** 2026-03-23.
+
+### 4.22 For-projects marketing page
+<!-- qa-status: NEW-SECTION | severity: S3 | last verified: 2026-04-13 -->
+Route: `/for-projects`.
+
+Use cases:
+- [ ] `FORP-01` Hero card, plan selector, pricing cards render cleanly at 375px.
+- [ ] `FORP-02` CTA buttons ≥44px; contact form (if present) validates required fields.
+- [ ] `FORP-03` Indexable as public marketing page (SEO meta present).
+- [ ] `FORP-04` EN + ZH rendered.
+
+**Last verified:** 2026-04-13.
+
+### 4.23 Easter campaign (XP egg hunt)
+<!-- qa-status: NEW-SECTION | severity: S2 | plan: docs/plans/2026-03-30-easter-egg-hunt.md | last verified: 2026-04-13 -->
+Routes: `/share/egg/[number]` (egg share landing), eggs embedded across app pages.
+
+Prereqs: campaign window active (launched 2026-04-05); member has 0 eggs collected in test fixture.
+
+Use cases:
+- [ ] `EGG-01` Eggs visible on designated pages (see `src/features/easter/elements.ts` for placement map).
+- [ ] `EGG-02` Clicking an egg awards XP, triggers collection toast, updates egg counter.
+- [ ] `EGG-03` Same egg cannot be claimed twice by same user.
+- [ ] `EGG-04` Egg share page (`/share/egg/[n]`) renders public OG image + CTA to claim.
+- [ ] `EGG-05` Golden egg awards bonus; announcement surfaces in notifications.
+- [ ] `EGG-06` Collection UI (activity log / egg gallery) reachable from profile.
+- [ ] `EGG-07` Easter campaign honors `prefers-reduced-motion` (egg bounces / spawn animations disabled).
+- [ ] `EGG-08` Post-campaign: eggs hide; existing collections remain in profile history.
+
+**Last verified:** 2026-04-13.
+
+### 4.24 Translation toggles + content translation
+<!-- qa-status: NEW-SECTION | severity: S2 | plan: docs/plans/2026-04-13-content-translation.md | last verified: 2026-04-13 -->
+Routes: `/admin/settings` (Content Translation panel), `/posts/[id]`, `/proposals/[id]`, `/ideas/[id]`, `/tasks/[id]`. API: `/api/translations/*`.
+
+Prereqs: DeepL Free API key present; admin account; at least one record of each content type with non-current-locale body text.
+
+Use cases:
+- [ ] `XLT-01` Admin sees per-type toggles for `posts`, `proposals`, `ideas`, `tasks`. Initial state matches DB.
+- [ ] `XLT-02` Flipping a toggle persists immediately; detail page hides/shows translate button within one refresh.
+- [ ] `XLT-03` Clicking translate calls DeepL; translated body replaces original inline (X-style toggle back to original).
+- [ ] `XLT-04` Source-language detection avoids redundant translate button on same-locale content.
+- [ ] `XLT-05` Second view of the same content returns cached translation (Supabase) — no second DeepL call.
+- [ ] `XLT-06` Rate-limit / DeepL error surfaces a non-blocking error toast.
+- [ ] `XLT-07` Comments do NOT expose a translate button (scope explicitly excluded for now).
+- [ ] `XLT-08` Mobile: translate button + state toggle reachable on 375px.
+- [ ] `XLT-09` Tasks translation path (new in PR #64) honors toggle + caches like posts/proposals.
+
+**Last verified:** 2026-04-13 (PR #64 shipping).
+
+### 4.25 Operational safety controls (automated evidence)
+<!-- qa-status: PLANNED | severity: S3 | plan: docs/plans/2026-03-23-error-locale-ops-qa.md | last verified: 2026-03-23 -->
 
 Goal: verify governance and rewards safety controls with reproducible evidence.
 
 Pre-flight:
-- [x] `.env.local` includes Supabase URL/anon key/service role key.
-- [x] CI-mode base URL can boot successfully.
-- [x] Admin and council fixture users can be created.
+- [ ] `.env.local` includes Supabase URL / anon key / service role key.
+- [ ] CI-mode base URL boots.
+- [ ] Admin + council fixture users creatable.
 
-Execution command:
+Execution:
 
 ```bash
 set -a; source .env.local; set +a
@@ -460,7 +531,7 @@ CI=true npx playwright test \
   --workers=1 --reporter=list
 ```
 
-Fallback (when CI webServer startup is not viable locally):
+Fallback:
 
 ```bash
 # terminal A
@@ -476,208 +547,112 @@ PLAYWRIGHT_BASE_URL=http://127.0.0.1:3100 npx playwright test \
 ```
 
 Expected assertions:
-- [ ] Rewards hold path returns `EMISSION_CAP_BREACH` and sprint status `held`. **SKIP — active sprint in env**
-- [ ] Rewards kill-switch path returns `SETTLEMENT_KILL_SWITCH` and sprint status `killed`. **SKIP — active sprint in env**
+- [ ] Rewards hold path returns `EMISSION_CAP_BREACH`, sprint status `held`.
+- [ ] Rewards kill-switch path returns `SETTLEMENT_KILL_SWITCH`, sprint status `killed`.
+- [ ] `reward_settlement_events` contains `integrity_hold` + `kill_switch` rows.
+- [ ] Voting finalization freeze path returns `FINALIZATION_FROZEN`.
+- [ ] `proposal_stage_events` contains `finalization_kill_switch` with dedupe + attempt metadata.
+- [ ] Manual recovery (`finalization_manual_resume`) finalizes successfully.
 
-### Feedback
-<!-- Full feedback archived in git history + plan file. Summary below. -->
-**Tested:** 2026-03-23 | **Cases:** 2/4 passed (2 skipped) | **Severity:** S3
-**Priority fixes:** None — voting integrity passes fully. Rewards tests correctly guarded (skip when active sprint exists)
-**Top revamp:** Re-run rewards tests after active sprint completes
-**Plan:** `docs/plans/2026-03-23-error-locale-ops-qa.md`
-- [ ] `reward_settlement_events` contains `integrity_hold` and `kill_switch` rows.
-- [ ] Voting finalization freeze path returns `FINALIZATION_FROZEN` behavior.
-- [ ] `proposal_stage_events` contains `finalization_kill_switch` with dedupe and attempt metadata.
-- [ ] Manual recovery simulation (`finalization_manual_resume`) finalizes successfully.
-
-Evidence capture checklist:
-- [ ] Attach command output (or CI job URL).
-- [ ] Record proposal id used for freeze/recovery validation.
-- [ ] Record sprint id used for hold/kill-switch validation.
-- [ ] Export latest matching audit rows with timestamp.
+Evidence capture:
+- [ ] Command output / CI job URL attached.
+- [ ] Proposal id used for freeze/recovery.
+- [ ] Sprint id used for hold/kill-switch.
+- [ ] Audit rows exported with timestamp.
 
 Audit queries:
 
 ```sql
-select
-  sprint_id,
-  event_type,
-  reason,
-  idempotency_key,
-  metadata,
-  created_by,
-  created_at
+select sprint_id, event_type, reason, idempotency_key, metadata, created_by, created_at
 from reward_settlement_events
 where sprint_id = '<SPRINT_ID>'
 order by created_at desc;
 ```
 
 ```sql
-select
-  proposal_id,
-  reason,
-  from_status,
-  to_status,
-  actor_id,
-  metadata,
-  created_at
+select proposal_id, reason, from_status, to_status, actor_id, metadata, created_at
 from proposal_stage_events
 where proposal_id = '<PROPOSAL_ID>'
   and reason in ('finalization_kill_switch', 'finalization_manual_resume')
 order by created_at desc;
 ```
 
-Feedback:
-- What works well:
-- What does not work:
-- UI improvements requested:
-- Top 3 highest-impact changes:
-- Section severity (`S0/S1/S2/S3`):
-- Confidence score (`1-5`):
-
-## 4.17 Onboarding Wizard and Progress APIs
-<!-- qa-status: PLANNED | severity: S3 | plan: docs/plans/2026-03-22-onboarding-qa-revamp.md -->
-Routes: top-bar onboarding shortcut, onboarding modal, `/api/onboarding/steps`, `/api/onboarding/steps/:step/complete`.
-
-Pre-flight:
-- [x] Test user has `user_profiles.onboarding_completed_at IS NULL`.
-- [x] At least one task and one active sprint exist for step completion checks.
-
-Use cases:
-- [x] `ONB-01` Incomplete user sees onboarding wizard auto-open on first authenticated app load. **PASS, S3**
-- [x] `ONB-02` Wizard step order is `connect_wallet -> verify_token -> pick_task -> join_sprint`. **PASS, S3**
-- [x] `ONB-03` `GET /api/onboarding/steps` returns all four step keys with accurate completion state. **PASS, S3**
-- [x] `ONB-04` `connect_wallet` completion fails with clear error when wallet is not linked. **PASS, S3**
-- [x] `ONB-05` `verify_token` completion fails with clear error when Organic ID is missing. **PASS, S3**
-- [x] `ONB-06` `pick_task` completion enforces assigned-task requirement. **PASS, S3**
-- [x] `ONB-07` `join_sprint` completion enforces assigned-task-in-sprint requirement. **PASS, S3**
-- [x] `ONB-08` Completed steps remain completed after page reload and session refresh. **PASS, S3**
-- [x] `ONB-09` Re-posting completion for an already completed step is idempotent and does not duplicate XP award. **PASS, S3**
-- [x] `ONB-10` When all steps complete, onboarding shortcut disappears and profile `onboarding_completed_at` behavior is coherent. **PASS, S3**
-
-### Feedback
-<!-- Full feedback archived in git history + plan file. Summary below. -->
-**Tested:** 2026-03-22 | **Cases:** 10/10 PASS (0 skipped) | **Severity:** S3
-**Priority fixes:** None — all functional tests pass, no S0/S1 bugs.
-**Top revamp:** Hardcoded gray colors instead of theme tokens, no step transition animations, emoji icons instead of Lucide, poor empty states. Benchmark: Linear wizard stepper, Vercel deploy flow, Notion progressive onboarding.
-**Plan:** `docs/plans/2026-03-22-onboarding-qa-revamp.md`
-
-## 4.18 Twitter/X Linking and Engagement Verification Workflow
-<!-- qa-status: PLANNED | severity: S1 | plan: docs/plans/2026-03-23-twitter-qa-revamp.md -->
-Routes: `/profile`, `/tasks/[id]` (Twitter task type), `/api/twitter/link/start`, `/api/twitter/link/callback`, `/api/twitter/account`.
-
-Pre-flight:
-- [x] Twitter/X app credentials and callback URL are configured in environment.
-- [x] At least one task of type `twitter_engagement` exists.
-
-Use cases:
-- [x] `TW-01` Profile Twitter/X linking card renders proper linked vs unlinked state. **PASS, S3** — Unlinked state shows amber card with "No Twitter/X account linked yet" + "Connect Twitter/X account" CTA. Heading + description present. Works on mobile (375x812) and desktop (1440x900).
-- [x] `TW-02` Start-link action redirects to Twitter/X auth and returns to app callback safely. **PASS, S3** — Clicking connect redirects to `x.com/i/oauth2/authorize` with correct params: PKCE S256, scopes (users.read, tweet.read, like.read, offline.access), redirect_uri via ngrok to `/api/twitter/link/callback`.
-- [x] `TW-03` Callback success state (`twitter_linked=1`) is surfaced to user with success feedback. **PASS, S3** — Toast "Twitter/X account linked successfully!" shown. URL params cleaned from address bar.
-- [x] `TW-04` Callback error state (`twitter_error`) is surfaced with understandable failure reason. **PASS, S3** — Toast "Failed to link Twitter/X account (auth_failed)" shown with reason. URL params cleaned.
-- [x] `TW-05` `GET /api/twitter/account` reflects latest linked account metadata after callback. **PASS, S3** — Returns `{ account: null, profile: { twitter: null, twitter_verified: false } }` for unlinked. Correct shape with auth check (401 for unauthenticated).
-- [x] `TW-06` Unlink action removes account and updates profile state without stale UI. **PASS, S3** — `DELETE /api/twitter/account` returns `{ success: true }`. Idempotent — no crash when no account is linked.
-- [x] `TW-07` Twitter task submission blocks when account is unlinked and shows clear call-to-action. **PARTIAL, S1** — Cannot fully test: `task_assignees` table returns 400 on join query, blocking the "Join Task → Submit Work" flow for ALL task types. The Twitter submission form code correctly blocks with "Link your Twitter/X account" amber card + connect CTA, but unreachable via UI due to cross-cutting bug. **Additionally: `handleConnectTwitter` in TwitterSubmissionForm sends POST without body → 400 from API.**
-- [x] `TW-08` Twitter task submission context validates task config and handles missing config safely. **PASS, S3** — Code review: form loads `twitter_engagement_tasks` config via Supabase query. If null, renders red error "twitterTaskConfigMissing". Handles missing config gracefully.
-- [x] `TW-09` Twitter task connect/disconnect controls inside submission form stay in sync with profile linkage. **PARTIAL, S1** — Code review: form has independent connect/disconnect handlers. Connect handler calls `/api/twitter/link/start` WITHOUT `body: JSON.stringify({})`, triggering 400 "Expected object, received null". Profile page has the fix but submission form doesn't.
-- [x] `TW-10` Successful Twitter task submission captures expected metadata/evidence. **SKIP** — Cannot reach submission form via UI due to task_assignees bug. Code review: `onSubmit` sends `submission_type: 'twitter'`, `screenshot_url`, `comment_text`, `description` via `submitTask.mutateAsync`. Schema validation present.
-- [x] `TW-11` Role guardrails for Twitter-task review actions remain correct on admin/reviewer surfaces. **PASS, S3** — Review endpoint enforces admin/council role check. `submission-content.tsx` renders Twitter-specific fields (screenshot URL, engagement type, comment text) in review panel.
-- [x] `TW-12` Mobile behavior for link/unlink and Twitter task submission remains usable. **PASS, S3** — Profile Social tab renders clean on 375x812: Twitter card, connect button, amber/emerald states all fit. Task detail shows metadata grid in 2-col layout. Touch targets adequate.
-
-### Feedback
-<!-- Full feedback archived in git history + plan file. Summary below. -->
-**Tested:** 2026-03-23 | **Cases:** 9/12 passed (1 skip, 2 partial) | **Severity:** S1
-**Priority fixes:** (1) TwitterSubmissionForm missing `body: JSON.stringify({})` in connect handler → 400 error; (2) task_assignees query returns 400 blocking join/submit flow for all task types (cross-cutting).
-**Top revamp:** Profile Twitter card and submission form need benchmark upgrade — Linear's inline account linking, Stripe's verified badge patterns, Notion's warm empty states.
-**Plan:** `docs/plans/2026-03-23-twitter-qa-revamp.md`
-
-## 4.19 Ideas Incubator Workflow (Feature-Flagged)
-<!-- qa-status: PLANNED | severity: S2 | plan: docs/plans/2026-03-23-ideas-incubator-qa-revamp.md -->
-Routes: `/ideas`, `/ideas/[id]`, `/api/ideas`, `/api/ideas/:id`, `/api/ideas/:id/vote`, `/api/ideas/:id/comments`, `/api/ideas/kpis`.
-
-Pre-flight:
-- [x] Feature flag enabled (`NEXT_PUBLIC_IDEAS_INCUBATOR_ENABLED=true` or no falsey override).
-- [x] Ideas schema/tables are available in target environment.
-- [x] Test users include: member with Organic ID, member without Organic ID, admin/council.
-- [ ] At least one open promotion cycle row exists for winner-selection coverage.
-
-Use cases:
-- [x] `IDEA-01` `/ideas` loads feed, sort tabs, search, KPI strip, and weekly spotlight without layout breakage. **PASS, S3**
-- [x] `IDEA-02` Organic ID member can create an idea; title/body validation boundaries are enforced. **PASS, S3**
-- [x] `IDEA-03` Member without Organic ID is blocked from create with clear messaging. **PASS, S3**
-- [x] `IDEA-04` Vote toggle behavior is idempotent (`up/down` repeat clears to neutral) and score updates remain coherent. **PASS, S3**
-- [x] `IDEA-05` Self-vote is blocked with explicit error message. **PASS, S3**
-- [x] `IDEA-06` Comment creation requires Organic ID and rejects empty payloads. **PASS, S3**
-- [x] `IDEA-07` Idea detail page renders author, status, body, score breakdown, and comments chronology correctly. **PASS, S3**
-- [x] `IDEA-08` Author edit permissions are enforced; non-author/non-admin edits are rejected. **PASS, S3**
-- [x] `IDEA-09` Admin/council moderation capabilities behave as expected for editable idea fields. **PASS, S3**
-- [x] `IDEA-10` Feature-flag disabled posture returns safe fallback UX (`not found` / disabled panel). **PASS, S3** (code review)
-- [x] `IDEA-11` API responses fail safely when ideas backend schema is unavailable (clear error/no crash). **PASS, S3** (code review)
-- [x] `IDEA-12` Mobile usability is acceptable for feed cards, vote rail, composer, and detail discussion. **PARTIAL, S2**
-- [x] `IDEA-13` Admin/council can promote an idea to proposal (`POST /api/ideas/:id/promote`) and receives linked proposal id. **PASS, S3**
-- [x] `IDEA-14` Promotion cycle winner selection endpoint (`POST /api/ideas/cycles/:id/select-winner`) supports explicit and auto-computed winner paths. **PASS, S3** (code review)
-- [x] `IDEA-15` Promoted proposal detail shows source-idea badge/link back to ideas detail. **PASS, S3**
-
-### Feedback
-<!-- Full feedback archived in git history + plan file. Summary below. -->
-**Tested:** 2026-03-23 | **Cases:** 15/15 (0 skipped) | **Severity:** S2
-**Priority fixes:** Admin composer shows "You need an Organic ID" despite having one (auth context race); KPIs flash 0 before data loads
-**Top revamp:** Generic vibecoded UI — needs benchmark-driven redesign (Reddit/ProductHunt feed patterns, Linear detail views, Notion empty states)
-**Plan:** `docs/plans/2026-03-23-ideas-incubator-qa-revamp.md`
-
 ---
 
-## 5) Page-by-Page Audit Matrix (Granular Route Review)
+## 5) Page-by-page audit matrix
 
-Use this matrix after workflow testing to capture page-specific UX observations.
+Use this matrix after workflow testing to capture page-specific UX observations. Smoke: `PASS / FAIL / PARTIAL / SKIP`. UX score: `1 (poor) → 5 (excellent)`.
 
-Legend:
-- Smoke = `PASS / FAIL / PARTIAL / SKIP`
-- UX score = `1 (poor) -> 5 (excellent)`
-
-| Route | Workflow Ref | Smoke | UX score | What works | What does not | UI improvements |
+| Route | Section | Smoke | UX | What works | What does not | UI improvements |
 |---|---|---|---|---|---|---|
 | `/` | 4.3 | | | | | |
-| `/analytics` | 4.3 | | | | | |
-| `/treasury` | 4.3 | | | | | |
+| `/pulse` | 4.4 | | | | | |
+| `/analytics` (redirect → /pulse) | 4.4 | | | | | |
+| `/vault` | 4.5 | | | | | |
+| `/treasury` (redirect → /vault) | 4.5 | | | | | |
 | `/login` | 4.1 | | | | | |
 | `/signup` | 4.1 | | | | | |
-| `/join?ref=CODE` | 4.1 / 4.6 | | | | | |
+| `/join?ref=CODE` | 4.1 / 4.8 | | | | | |
 | `/auth/error` | 4.1 | | | | | |
-| `/auth/callback` | 4.1 | | | | | |
-| `/community` | 4.4 | | | | | |
-| `/community/[id]` | 4.4 | | | | | |
-| `/members` (redirect) | 4.4 | | | | | |
-| `/members/[id]` (redirect) | 4.4 | | | | | |
-| `/leaderboard` (redirect) | 4.4 | | | | | |
-| `/profile` | 4.5 | | | | | |
-| `/profile/progression` | 4.5 | | | | | |
-| `/ideas` | 4.19 | | | | | |
-| `/ideas/[id]` | 4.19 | | | | | |
-| `Onboarding wizard modal (global)` | 4.17 | | | | | |
-| `Twitter/X link flow (profile + callback)` | 4.18 | | | | | |
-| `/quests` | 4.6 | | | | | |
-| `/tasks` | 4.7 | | | | | |
-| `/tasks/[id]` | 4.7 | | | | | |
-| `Twitter/X engagement submission in task detail` | 4.18 | | | | | |
-| `/tasks/templates` | 4.7 | | | | | |
-| `/admin/submissions` | 4.7 / 4.13 | | | | | |
-| `/sprints` | 4.8 | | | | | |
-| `/sprints/[id]` | 4.8 | | | | | |
-| `/sprints/past` | 4.8 | | | | | |
-| `/proposals` | 4.9 | | | | | |
-| `/proposals/new` | 4.9 | | | | | |
-| `/proposals/[id]` | 4.9 | | | | | |
-| `/disputes` | 4.10 | | | | | |
-| `/disputes/[id]` | 4.10 | | | | | |
-| `/rewards` | 4.11 | | | | | |
-| `/notifications` | 4.12 | | | | | |
-| `/admin/settings` | 4.13 | | | | | |
-| `/admin/rewards` | 4.11 / 4.13 | | | | | |
+| `/community` | 4.6 | | | | | |
+| `/community/[id]` | 4.6 | | | | | |
+| `/members` (redirect → /community) | 4.6 | | | | | |
+| `/members/[id]` (redirect) | 4.6 | | | | | |
+| `/leaderboard` (redirect → /community) | 4.6 | | | | | |
+| `/profile` | 4.7 | | | | | |
+| `/profile/progression` | 4.7 | | | | | |
+| `/profile/trophies` | 4.7 | | | | | |
+| Onboarding wizard (modal, global) | 4.20 | | | | | |
+| Twitter/X link flow (profile + callback) | 4.21 | | | | | |
+| `/earn` | 4.8 / 4.15 | | | | | |
+| `/quests` (redirect → /earn?tab=quests) | 4.8 | | | | | |
+| `/rewards` (redirect → /earn?tab=rewards) | 4.15 | | | | | |
+| `/ideas` | 4.12 | | | | | |
+| `/ideas/[id]` | 4.12 | | | | | |
+| `/ideas/harvest` | 4.12 | | | | | |
+| `/posts` | 4.13 | | | | | |
+| `/posts/[id]` | 4.13 | | | | | |
+| `/tasks` | 4.9 | | | | | |
+| `/tasks/[id]` | 4.9 | | | | | |
+| Twitter/X engagement submission in task detail | 4.21 | | | | | |
+| `/tasks/templates` | 4.9 | | | | | |
+| `/admin/submissions` | 4.9 / 4.17 | | | | | |
+| `/sprints` | 4.10 | | | | | |
+| `/sprints/[id]` | 4.10 | | | | | |
+| `/sprints/past` | 4.10 | | | | | |
+| `/proposals` | 4.11 | | | | | |
+| `/proposals/new` | 4.11 | | | | | |
+| `/proposals/[id]` | 4.11 | | | | | |
+| `/disputes` | 4.14 | | | | | |
+| `/disputes/[id]` | 4.14 | | | | | |
+| `/notifications` | 4.16 | | | | | |
+| `/admin` | 4.17 | | | | | |
+| `/admin/settings` | 4.17 / 4.24 | | | | | |
+| `/admin/rewards` | 4.15 / 4.17 | | | | | |
+| `/admin/users` | 4.17 | | | | | |
+| `/marketplace` | 4.26 | | | | | |
+| `/for-projects` | 4.22 | | | | | |
+| `/share/egg/[number]` | 4.23 | | | | | |
+
+> **Coverage check** (2026-04-21): every item in `src/components/layout/nav-config.ts` is represented in this matrix (cross-referenced against `mainItemDefs`, admin nav, and utility nav).
+
+### 4.26 Marketplace (feature-flagged)
+<!-- qa-status: NEW-SECTION | severity: S2 | last verified: 2026-04-13 -->
+Route: `/marketplace`. Guard: `isMarketplaceEnabled()` flag.
+
+Use cases:
+- [ ] `MKT-01` Tabs (`Active Boosts`, `My Boosts`, `+ Create Boost`) render without text wrap at 375px (historical S1 — Active/My labels wrapped).
+- [ ] `MKT-02` Tab label heights consistent (historical: inconsistent 32/64 heights).
+- [ ] `MKT-03` Boost creation flow: form validates and posts.
+- [ ] `MKT-04` Active boosts list renders with author + cost + expiry.
+- [ ] `MKT-05` When flag disabled: sidebar entry hidden + route returns 404 / disabled state.
+- [ ] `MKT-06` EN + ZH locale parity.
+
+**Last verified:** 2026-04-13.
 
 ---
 
-## 6) Workflow Findings Ticket Template (copy one per issue)
+## 6) Workflow findings ticket template (copy one per issue)
 
 - Ticket ID:
 - Workflow section:
@@ -698,13 +673,13 @@ Legend:
 
 ---
 
-## 7) End-of-Session Synthesis (Input for Revamp Planning)
+## 7) End-of-session synthesis (input for revamp planning)
 
-Complete this only after sections 4 and 5 are filled.
+Fill only after sections 4 and 5 are complete.
 
 - Total workflows run:
 - Total pages audited:
-- Pass/Fail summary:
+- Pass/fail summary:
 - Top 5 friction points:
 - Highest-value UI opportunities:
 - Repeated UX anti-patterns:
@@ -719,3 +694,9 @@ Revamp input package checklist:
 - [ ] Page-by-page matrix completed.
 - [ ] Findings tickets created for all `S0` and `S1` issues.
 - [ ] Top 5 friction points and redesign priorities finalized.
+
+---
+
+## 8) Change log
+
+See `docs/qa-runbook-change-log.md` for a history of runbook revisions (what was added, removed, reorganized).
