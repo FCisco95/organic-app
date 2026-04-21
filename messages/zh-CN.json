@@ -1863,7 +1863,13 @@
       "healthyDistribution": "健康的代币分布",
       "healthyDesc": "仅{whaleCount}个钱包持有≥1%的供应量。前10名集中度为{top10}%——远低于操纵风险的典型阈值。",
       "median": "中位数",
-      "average": "平均值"
+      "average": "平均值",
+      "summary": {
+        "title": "分布概要",
+        "healthy": "分布健康。前10名钱包持有{top10}%的供应量，共{whaleCount}个钱包超过1%的鲸鱼阈值。",
+        "watch": "分布较为集中。前10名钱包持有{top10}%的供应量（共{totalHolders}名持有者），{whaleCount}个钱包超过1%的鲸鱼阈值。",
+        "updatedAt": "最后更新于 {time}"
+      }
     },
     "sections": {
       "governance": "治理"
