@@ -160,6 +160,58 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
     const input = validationResult.data;
 
+    // Load existing task + role once to authorize status transitions explicitly.
+    // RLS would otherwise silently drop the update and the client would see a
+    // generic 500 from .single() returning zero rows — we want a real 403.
+    const [{ data: existingTask, error: existingError }, { data: profile }] = await Promise.all([
+      supabase
+        .from('tasks')
+        .select('id, status, created_by, assignee_id, is_team_task')
+        .eq('id', id)
+        .maybeSingle(),
+      supabase.from('user_profiles').select('role').eq('id', user.id).maybeSingle(),
+    ]);
+
+    if (existingError || !existingTask) {
+      return NextResponse.json({ error: 'Task not found' }, { status: 404 });
+    }
+
+    const role = profile?.role ?? null;
+    const isPrivileged = role === 'admin' || role === 'council';
+    const isOwner = existingTask.created_by === user.id;
+    const isAssignee = existingTask.assignee_id === user.id;
+
+    if (!isPrivileged && !isOwner && !isAssignee) {
+      return NextResponse.json(
+        { error: 'You do not have permission to update this task' },
+        { status: 403 }
+      );
+    }
+
+    // Additional guard: promoting to `done` out of `review` requires an
+    // approved submission unless the caller is admin/council. Solo tasks are
+    // normally promoted by the submission review flow; team/manual transitions
+    // are reserved to privileged roles.
+    if (
+      input.status === 'done' &&
+      existingTask.status === 'review' &&
+      !isPrivileged
+    ) {
+      const { count: approvedCount } = await supabase
+        .from('task_submissions')
+        .select('id', { count: 'exact', head: true })
+        .eq('task_id', id)
+        .eq('user_id', user.id)
+        .eq('review_status', 'approved');
+
+      if (!approvedCount || approvedCount < 1) {
+        return NextResponse.json(
+          { error: 'Approved submission required to mark this task done' },
+          { status: 403 }
+        );
+      }
+    }
+
     // Build update object with only provided fields
     const updates: Record<string, unknown> = {};
     if (input.title !== undefined) updates.title = input.title;
@@ -214,7 +266,11 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       .single();
 
     if (error) {
-      return NextResponse.json({ error: 'Failed to update task' }, { status: 500 });
+      logger.error('Task PATCH update failed:', error);
+      return NextResponse.json(
+        { error: error.message || 'Failed to update task' },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({ task });
