@@ -87,11 +87,22 @@ export async function fetchDexScreenerData(): Promise<DexScreenerMarketData | nu
       return cache?.data ?? null;
     }
 
-    // Pick the pair with highest liquidity
+    // Pick the pair with highest liquidity. This matches DexScreener's
+    // own UI default, so marketCap/fdv/volume track the pair users verify
+    // against. Changing this heuristic will visibly move the displayed price.
     const best = pairs.reduce((a, b) => {
       const aLiq = (a.liquidity as Record<string, number>)?.usd ?? 0;
       const bLiq = (b.liquidity as Record<string, number>)?.usd ?? 0;
       return bLiq > aLiq ? b : a;
+    });
+
+    logger.info('DexScreener pair selected', {
+      dexId: best.dexId,
+      pairAddress: best.pairAddress,
+      liquidityUsd: (best.liquidity as Record<string, number>)?.usd ?? null,
+      marketCap: best.marketCap ?? null,
+      fdv: best.fdv ?? null,
+      totalPairs: pairs.length,
     });
 
     const priceChange = best.priceChange as Record<string, number> | undefined;
