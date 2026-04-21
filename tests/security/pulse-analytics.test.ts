@@ -143,8 +143,32 @@ describe('Pulse analytics: pair selection + observability', () => {
     expect(marketRoute).toMatch(/totalHolders:\s*holders\?\.totalHolders/);
   });
 
-  it('market route keeps the 120s cache TTL (changing this risks DexScreener rate limits)', () => {
-    expect(marketRoute).toMatch(/s-maxage=120/);
-    expect(marketRoute).toMatch(/stale-while-revalidate=300/);
+  it('market route keeps a short CDN cache so prices do not freeze between deploys', () => {
+    expect(marketRoute).toMatch(/s-maxage=60/);
+    expect(marketRoute).toMatch(/stale-while-revalidate=120/);
+  });
+
+  it('dexscreener fetch disables Next.js fetch caching (prevents multi-week price freeze)', () => {
+    // Next.js caches fetch responses in its Data Cache *by default and
+    // indefinitely*. Without `cache: 'no-store'` on this specific fetch,
+    // the DexScreener response is frozen at deploy time and price /
+    // marketCap never move — which is exactly the bug this commit fixes.
+    // `force-dynamic` on the route is not a substitute; it controls the
+    // route output, not the inner fetch.
+    const dexFetch = dexScreener.slice(
+      dexScreener.indexOf('await fetch('),
+      dexScreener.indexOf(');', dexScreener.indexOf('await fetch('))
+    );
+    expect(dexFetch).toMatch(/cache:\s*['"]no-store['"]/);
+  });
+
+  it('dexscreener in-memory TTL stays under 2 minutes so users never sit on very stale data', () => {
+    // Regression guard: if someone bumps this back up to minutes, the page
+    // starts to feel stuck again. 60s matches the 60 req/min DexScreener
+    // free-tier limit and the CDN s-maxage above.
+    const ttlMatch = dexScreener.match(/CACHE_TTL_MS\s*=\s*(\d+)\s*\*\s*(\d+)/);
+    expect(ttlMatch, 'CACHE_TTL_MS must be defined').not.toBeNull();
+    const ttlMs = Number(ttlMatch![1]) * Number(ttlMatch![2]);
+    expect(ttlMs).toBeLessThanOrEqual(120_000);
   });
 });

@@ -53,9 +53,11 @@ export interface DexScreenerMarketData {
   fetchedAt: string;
 }
 
-// In-memory cache
+// In-memory throttle: caps DexScreener load at ~1 request per instance per
+// minute, which is comfortably under the 60 req/min free-tier limit. The
+// freshness ceiling for users is this TTL plus the CDN s-maxage on the route.
 let cache: { data: DexScreenerMarketData; timestamp: number } | null = null;
-const CACHE_TTL_MS = 2 * 60 * 1000; // 2 minutes
+const CACHE_TTL_MS = 60 * 1000; // 60 seconds
 
 export async function fetchDexScreenerData(): Promise<DexScreenerMarketData | null> {
   const now = Date.now();
@@ -67,11 +69,16 @@ export async function fetchDexScreenerData(): Promise<DexScreenerMarketData | nu
   if (!mint) return null;
 
   try {
+    // `cache: 'no-store'` is mandatory: Next.js caches fetch responses in its
+    // Data Cache *by default and indefinitely*, which previously froze price
+    // and marketCap for weeks after each deploy. The in-memory TTL above is
+    // what actually throttles outbound requests.
     const response = await fetch(
       `https://api.dexscreener.com/tokens/v1/solana/${mint}`,
       {
         signal: AbortSignal.timeout(8000),
         headers: { Accept: 'application/json' },
+        cache: 'no-store',
       }
     );
 

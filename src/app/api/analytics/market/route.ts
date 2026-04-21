@@ -28,7 +28,10 @@ export async function GET() {
       { data: { market, holders } },
       {
         headers: {
-          'Cache-Control': 'public, s-maxage=120, stale-while-revalidate=300',
+          // Keep CDN freshness tight so users see live-ish numbers. The
+          // in-memory cache in dexscreener.ts is the real throttle; this just
+          // lets Vercel serve hot responses without re-invoking the function.
+          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
         },
       }
     );
