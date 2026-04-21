@@ -65,6 +65,7 @@ function ConcentrationBar({
   color: string;
   highlight?: boolean;
 }) {
+  const safeValue = Number.isFinite(value) ? Math.max(0, Math.min(value, 100)) : 0;
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between">
@@ -75,13 +76,13 @@ function ConcentrationBar({
             highlight ? 'text-emerald-600 dark:text-emerald-400' : 'text-foreground'
           )}
         >
-          {value.toFixed(1)}%
+          {safeValue.toFixed(1)}%
         </span>
       </div>
       <div className="h-2 rounded-full bg-muted overflow-hidden">
         <div
           className={cn('h-full rounded-full transition-all duration-700', color)}
-          style={{ width: `${Math.min(value, 100)}%` }}
+          style={{ width: `${safeValue}%` }}
         />
       </div>
     </div>
@@ -252,6 +253,44 @@ export function TokenAnalytics() {
         </div>
       )}
 
+      {/* Distribution summary — deterministic narrative from existing metrics. */}
+      {holders && !isLoading && (
+        <div className="rounded-xl border border-border bg-card/60 px-4 py-3">
+          <div className="flex items-start gap-2">
+            <Shield
+              className={cn(
+                'h-4 w-4 mt-0.5 shrink-0',
+                holders.whaleCount <= 5 ? 'text-emerald-500' : 'text-amber-500'
+              )}
+            />
+            <div className="flex-1 min-w-0">
+              <p className="text-[11px] font-semibold text-foreground">
+                {t('holders.summary.title')}
+              </p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                {t(
+                  holders.whaleCount <= 5
+                    ? 'holders.summary.healthy'
+                    : 'holders.summary.watch',
+                  {
+                    top10: holders.top10Concentration.toFixed(1),
+                    whaleCount: holders.whaleCount,
+                    totalHolders: holders.totalHolders.toLocaleString(),
+                  }
+                )}
+              </p>
+              {market?.fetchedAt && (
+                <p className="text-[10px] text-muted-foreground/70 mt-1 font-mono tabular-nums">
+                  {t('holders.summary.updatedAt', {
+                    time: new Date(market.fetchedAt).toLocaleTimeString(),
+                  })}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Holder Distribution */}
       {holders && !isLoading && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -266,7 +305,7 @@ export function TokenAnalytics() {
               <ConcentrationBar
                 label={t('holders.top10')}
                 value={holders.top10Concentration}
-                color="bg-organic-terracotta-lightest0"
+                color="bg-organic-terracotta"
                 highlight={holders.top10Concentration < 50}
               />
               <ConcentrationBar

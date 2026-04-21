@@ -1863,7 +1863,13 @@
       "healthyDistribution": "Distribuição saudável de tokens",
       "healthyDesc": "Apenas {whaleCount} carteira(s) detém ≥1% da oferta. Concentração do top 10 é {top10}% — bem abaixo dos limites típicos de risco de manipulação.",
       "median": "Mediana",
-      "average": "Média"
+      "average": "Média",
+      "summary": {
+        "title": "Resumo da distribuição",
+        "healthy": "Distribuição saudável. As 10 maiores carteiras detêm {top10}% da oferta e {whaleCount} carteira(s) excedem o limite de 1% de baleia.",
+        "watch": "Distribuição concentrada. As 10 maiores carteiras detêm {top10}% da oferta entre {totalHolders} detentores; {whaleCount} carteira(s) excedem o limite de 1% de baleia.",
+        "updatedAt": "Atualizado às {time}"
+      }
     },
     "sections": {
       "governance": "Governança"
