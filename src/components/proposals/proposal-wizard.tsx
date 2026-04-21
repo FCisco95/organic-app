@@ -206,7 +206,7 @@ export function ProposalWizard({ initialData, proposalId, onSuccess }: ProposalW
                 onClick={goBack}
                 disabled={step === 1}
                 className={cn(
-                  'flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors',
+                  'flex min-h-[44px] items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors',
                   step === 1 ? 'invisible' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 )}
               >
@@ -221,7 +221,7 @@ export function ProposalWizard({ initialData, proposalId, onSuccess }: ProposalW
                       type="button"
                       onClick={() => handleSubmit('draft')}
                       disabled={isSubmitting}
-                      className="flex items-center gap-2 px-6 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors disabled:opacity-50"
+                      className="flex min-h-[44px] items-center gap-2 px-6 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors disabled:opacity-50"
                     >
                       <Save className="w-4 h-4" />
                       {t('saveDraft')}
@@ -231,7 +231,7 @@ export function ProposalWizard({ initialData, proposalId, onSuccess }: ProposalW
                       onClick={() => handleSubmit('public')}
                       disabled={isSubmitting}
                       data-testid="proposal-wizard-submit"
-                      className="flex items-center gap-2 px-6 py-2 bg-cta hover:bg-cta-hover text-cta-fg rounded-lg font-medium transition-colors disabled:opacity-50"
+                      className="flex min-h-[44px] items-center gap-2 px-6 py-2 bg-cta hover:bg-cta-hover text-cta-fg rounded-lg font-medium transition-colors disabled:opacity-50"
                     >
                       <Send className="w-4 h-4" />
                       {isSubmitting ? t('submitting') : t('submitProposal')}
@@ -242,7 +242,7 @@ export function ProposalWizard({ initialData, proposalId, onSuccess }: ProposalW
                     type="button"
                     onClick={goNext}
                     data-testid="proposal-wizard-next"
-                    className="flex items-center gap-2 px-6 py-2 bg-cta hover:bg-cta-hover text-cta-fg rounded-lg font-medium transition-colors"
+                    className="flex min-h-[44px] items-center gap-2 px-6 py-2 bg-cta hover:bg-cta-hover text-cta-fg rounded-lg font-medium transition-colors"
                   >
                     {t('next')}
                   </button>
