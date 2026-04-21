@@ -4,6 +4,7 @@ import { translateRequestSchema } from '@/features/translation/schemas';
 import { translateContent, type TranslationField } from '@/lib/translation/translate-content';
 import { logger } from '@/lib/logger';
 import { applyUserRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
+import { isTranslationEnabled } from '@/lib/translation/flags';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -22,6 +23,13 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     } = await supabase.auth.getUser();
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    if (!(await isTranslationEnabled(supabase, 'posts'))) {
+      return NextResponse.json(
+        { error: 'Translation disabled for this content type' },
+        { status: 403 }
+      );
     }
 
     const rateLimited = await applyUserRateLimit(user.id, 'translate', RATE_LIMITS.translate);

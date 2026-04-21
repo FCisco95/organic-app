@@ -1132,6 +1132,7 @@ export type Database = {
           token_mint: string | null
           token_symbol: string
           token_total_supply: number
+          translation_settings: Json
           treasury_allocations: Json
           treasury_wallet: string | null
           updated_at: string | null
@@ -1156,6 +1157,7 @@ export type Database = {
           token_mint?: string | null
           token_symbol?: string
           token_total_supply?: number
+          translation_settings?: Json
           treasury_allocations?: Json
           treasury_wallet?: string | null
           updated_at?: string | null
@@ -1180,6 +1182,7 @@ export type Database = {
           token_mint?: string | null
           token_symbol?: string
           token_total_supply?: number
+          translation_settings?: Json
           treasury_allocations?: Json
           treasury_wallet?: string | null
           updated_at?: string | null
@@ -2299,6 +2302,7 @@ export type Database = {
           created_at: string | null
           created_by: string | null
           description: string | null
+          detected_language: string | null
           due_date: string | null
           id: string
           is_team_task: boolean | null
@@ -2326,6 +2330,7 @@ export type Database = {
           created_at?: string | null
           created_by?: string | null
           description?: string | null
+          detected_language?: string | null
           due_date?: string | null
           id?: string
           is_team_task?: boolean | null
@@ -2353,6 +2358,7 @@ export type Database = {
           created_at?: string | null
           created_by?: string | null
           description?: string | null
+          detected_language?: string | null
           due_date?: string | null
           id?: string
           is_team_task?: boolean | null

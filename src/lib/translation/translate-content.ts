@@ -15,7 +15,8 @@ export type TranslatableContentType =
   | 'comment'
   | 'task_comment'
   | 'proposal'
-  | 'idea';
+  | 'idea'
+  | 'task';
 
 export interface TranslationField {
   name: string;

@@ -34,6 +34,14 @@ export interface TokenAnalyticsConfig {
   dexscreener_pair: string | null;
 }
 
+export interface TranslationSettingsConfig {
+  posts: boolean;
+  proposals: boolean;
+  ideas: boolean;
+  tasks: boolean;
+  comments: boolean;
+}
+
 export interface Organization {
   id: string;
   name: string;
@@ -58,6 +66,8 @@ export interface Organization {
   sprint_policy: SprintPolicyConfig | null;
   // Rewards config
   rewards_config: RewardsConfig | null;
+  // Translation per-content-type toggles
+  translation_settings: TranslationSettingsConfig;
   // Timestamps
   created_at: string | null;
   updated_at: string | null;
@@ -88,7 +98,8 @@ export type SettingsTab =
   | 'members'
   | 'rewards'
   | 'gamification'
-  | 'campaigns';
+  | 'campaigns'
+  | 'translation';
 
 export const SETTINGS_TABS: { key: SettingsTab; labelKey: string; icon: string }[] = [
   { key: 'general', labelKey: 'Settings.tabs.general', icon: 'Settings' },
@@ -100,4 +111,5 @@ export const SETTINGS_TABS: { key: SettingsTab; labelKey: string; icon: string }
   { key: 'rewards', labelKey: 'Settings.tabs.rewards', icon: 'Gift' },
   { key: 'gamification', labelKey: 'Settings.tabs.gamification', icon: 'Sparkles' },
   { key: 'campaigns', labelKey: 'Settings.tabs.campaigns', icon: 'Megaphone' },
+  { key: 'translation', labelKey: 'Settings.tabs.translation', icon: 'Languages' },
 ];
