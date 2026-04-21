@@ -11,6 +11,23 @@ export const tokenAnalyticsConfigSchema = z.object({
   dexscreener_pair: z.string().trim().min(32).max(64).nullable().optional(),
 });
 
+export const translationSettingsSchema = z.object({
+  posts: z.boolean(),
+  proposals: z.boolean(),
+  ideas: z.boolean(),
+  tasks: z.boolean(),
+  comments: z.boolean(),
+});
+export type TranslationSettings = z.infer<typeof translationSettingsSchema>;
+
+export const DEFAULT_TRANSLATION_SETTINGS: TranslationSettings = {
+  posts: true,
+  proposals: true,
+  ideas: true,
+  tasks: true,
+  comments: false,
+};
+
 export const tokenSettingsSchema = z.object({
   token_symbol: z.string().min(1).max(20),
   token_mint: z.string().nullable().or(z.literal('')),
@@ -122,6 +139,7 @@ const orgFieldsSchema = z.object({
   governance_policy: governancePolicySchema,
   sprint_policy: sprintPolicySchema,
   rewards_config: rewardsConfigSchema,
+  translation_settings: translationSettingsSchema,
 });
 
 const votingFieldsSchema = z.object({

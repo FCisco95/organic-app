@@ -1401,6 +1401,8 @@
     "translateCommentButton": "Translate",
     "translateCommentShowOriginal": "Original",
     "translateLoading": "Translating...",
+    "translateButton": "Translate task",
+    "translateShowOriginal": "Show original",
     "assignTitle": "Assign User to Task",
     "assignDescription": "Select a user to assign this task to:",
     "unassignedHelp": "Remove current assignee",
@@ -2108,7 +2110,33 @@
       "members": "Members",
       "rewards": "Rewards",
       "gamification": "Gamification",
-      "campaigns": "Campaigns"
+      "campaigns": "Campaigns",
+      "translation": "Translation"
+    },
+    "translation": {
+      "description": "Turn translation on or off for each content type. When off, the translate button disappears and translation requests are rejected — saving DeepL quota.",
+      "quotaNotice": "Uses DeepL Free (500,000 characters per month).",
+      "quotaNoticeLinkLabel": "Monitor usage",
+      "posts": {
+        "label": "Posts",
+        "description": "Allow translating post titles, bodies, and thread parts."
+      },
+      "proposals": {
+        "label": "Proposals",
+        "description": "Allow translating proposal titles, bodies, and summaries."
+      },
+      "ideas": {
+        "label": "Ideas",
+        "description": "Allow translating idea titles and bodies."
+      },
+      "tasks": {
+        "label": "Tasks",
+        "description": "Allow translating task titles and descriptions."
+      },
+      "comments": {
+        "label": "Comments",
+        "description": "Allow translating comments across posts, proposals, ideas, and tasks. Off by default to preserve quota."
+      }
     },
     "general": {
       "description": "Basic organization information",

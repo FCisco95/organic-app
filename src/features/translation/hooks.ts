@@ -5,7 +5,7 @@ import { useLocale } from 'next-intl';
 import { fetchJson } from '@/lib/fetch-json';
 import type { PostTranslation, TranslateResponse } from './types';
 
-type TranslatableContentType = 'post' | 'proposal' | 'idea';
+type TranslatableContentType = 'post' | 'proposal' | 'idea' | 'task';
 
 interface ContentTranslateResponse {
   data: Record<string, string>;
@@ -17,6 +17,7 @@ const ROUTE_BY_TYPE: Record<TranslatableContentType, (id: string) => string> = {
   post: (id) => `/api/posts/${id}/translate`,
   proposal: (id) => `/api/proposals/${id}/translate`,
   idea: (id) => `/api/ideas/${id}/translate`,
+  task: (id) => `/api/tasks/${id}/translate`,
 };
 
 export interface UseContentTranslationResult {
@@ -128,6 +129,31 @@ export function useIdeaTranslation(
   detectedLanguage: string | null
 ) {
   return useContentTranslation('idea', ideaId, detectedLanguage);
+}
+
+export function useTaskTranslation(
+  taskId: string,
+  detectedLanguage: string | null
+) {
+  const base = useContentTranslation('task', taskId, detectedLanguage);
+
+  const translation =
+    base.translations !== null
+      ? {
+          title: base.translations.title ?? '',
+          description: base.translations.description ?? '',
+        }
+      : null;
+
+  return {
+    translation,
+    isTranslated: base.isTranslated,
+    isLoading: base.isLoading,
+    error: base.error,
+    translate: base.translate,
+    showOriginal: base.showOriginal,
+    shouldShowButton: base.shouldShowButton,
+  };
 }
 
 function extractThreadParts(

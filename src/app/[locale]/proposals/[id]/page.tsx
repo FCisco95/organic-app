@@ -33,6 +33,7 @@ import toast from 'react-hot-toast';
 import { useLocale, useTranslations } from 'next-intl';
 import { useProposalTranslation } from '@/features/translation/hooks';
 import { useCommentTranslation } from '@/features/translation/comment-hooks';
+import { useTranslationFlag } from '@/features/translation/use-translation-flags';
 import type { ProposalComment } from '@/features/proposals/types';
 import type { ProposalWithVoting } from '@/features/voting';
 import { FollowButton } from '@/components/notifications/follow-button';
@@ -151,14 +152,16 @@ function ProposalCommentItem({
 }: ProposalCommentItemProps) {
   const t = useTranslations('ProposalDetail');
   const displayName = comment.user_profiles.name;
+  const commentsTranslationEnabled = useTranslationFlag('comments');
   const {
     translation,
     isTranslated,
     isLoading,
-    shouldShowButton,
+    shouldShowButton: detectedShouldShowButton,
     translate,
     showOriginal,
   } = useCommentTranslation(comment.id, comment.detected_language ?? null);
+  const shouldShowButton = detectedShouldShowButton && commentsTranslationEnabled;
   const displayBody = isTranslated && translation ? translation : comment.body;
 
   return (
@@ -222,8 +225,10 @@ export default function ProposalDetailPage() {
     isLoading: isTranslating,
     translate: translateProposal,
     showOriginal: showProposalOriginal,
-    shouldShowButton: canTranslateProposal,
+    shouldShowButton: detectedCanTranslateProposal,
   } = useProposalTranslation(proposalId, proposal?.detected_language ?? null);
+  const proposalsTranslationEnabled = useTranslationFlag('proposals');
+  const canTranslateProposal = detectedCanTranslateProposal && proposalsTranslationEnabled;
 
   const displayProposal = proposal
     ? isProposalTranslated && proposalTranslations

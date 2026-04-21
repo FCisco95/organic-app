@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { TaskComment } from '@/features/tasks';
 import { useCommentTranslation } from '@/features/translation/comment-hooks';
+import { useTranslationFlag } from '@/features/translation/use-translation-flags';
 
 function TaskCommentItem({
   comment,
@@ -17,14 +18,16 @@ function TaskCommentItem({
   formatDate: (dateString: string) => string;
 }) {
   const t = useTranslations('TaskDetail');
+  const commentsTranslationEnabled = useTranslationFlag('comments');
   const {
     translation,
     isTranslated,
     isLoading,
-    shouldShowButton,
+    shouldShowButton: detectedShouldShowButton,
     translate,
     showOriginal,
   } = useCommentTranslation(comment.id, comment.detected_language ?? null);
+  const shouldShowButton = detectedShouldShowButton && commentsTranslationEnabled;
   const displayContent = isTranslated && translation ? translation : comment.content;
 
   return (

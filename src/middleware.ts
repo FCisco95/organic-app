@@ -51,7 +51,7 @@ const SENSITIVE_RATE_LIMIT_PREFIXES = [
   '/api/organic-id/assign',
 ];
 const TRANSLATE_RATE_LIMIT_PATH_PATTERN =
-  /^\/api\/(?:posts|proposals|ideas)\/[^/]+\/translate$|^\/api\/translate\/comment\/[^/]+$/;
+  /^\/api\/(?:posts|proposals|ideas|tasks)\/[^/]+\/translate$|^\/api\/translate\/comment\/[^/]+$/;
 
 function isLocalHost(hostname: string): boolean {
   return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1';
