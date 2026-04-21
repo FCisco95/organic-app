@@ -7,6 +7,7 @@ import type { PostType } from '@/features/posts/types';
 import { useTranslations } from 'next-intl';
 import { LinkPreviewCard } from '@/components/posts/LinkPreviewCard';
 import { usePostTranslation } from '@/features/translation/hooks';
+import { useTranslationFlag } from '@/features/translation/use-translation-flags';
 
 /* ─── Shared types ─────────────────────────────────────────────────────── */
 
@@ -109,14 +110,16 @@ export function FeaturedPostCard({ post, onLike, onClick, onFlag, likeLoading, i
   const author = post.author;
   const isAnnouncement = post.post_type === 'announcement';
   const isPromotedActive = post.is_promoted && post.promotion_expires_at && new Date(post.promotion_expires_at) > new Date();
+  const postsTranslationEnabled = useTranslationFlag('posts');
   const {
     translation,
     isTranslated,
     isLoading: translateLoading,
     translate,
     showOriginal,
-    shouldShowButton: showTranslate,
+    shouldShowButton: detectedShowTranslate,
   } = usePostTranslation(post.id, post.detected_language);
+  const showTranslate = detectedShowTranslate && postsTranslationEnabled;
   const displayTitle = isTranslated && translation ? translation.title : post.title;
   const displayBody = isTranslated && translation ? translation.body : post.body;
 
@@ -293,14 +296,16 @@ export function PostFeedCard({ post, onLike, onClick, onFlag, likeLoading }: Pos
   const TypeIcon = POST_TYPE_ICONS[post.post_type] ?? AlignLeft;
   const author = post.author;
   const isPromotedActive = post.is_promoted && post.promotion_expires_at && new Date(post.promotion_expires_at) > new Date();
+  const postsTranslationEnabled = useTranslationFlag('posts');
   const {
     translation,
     isTranslated,
     isLoading: translateLoading,
     translate,
     showOriginal,
-    shouldShowButton: showTranslate,
+    shouldShowButton: detectedShowTranslate,
   } = usePostTranslation(post.id, post.detected_language);
+  const showTranslate = detectedShowTranslate && postsTranslationEnabled;
   const displayTitle = isTranslated && translation ? translation.title : post.title;
   const displayBody = isTranslated && translation ? translation.body : post.body;
 

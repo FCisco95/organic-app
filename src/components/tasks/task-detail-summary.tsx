@@ -6,6 +6,8 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { getLabelDisplay, TaskSubmissionWithReviewer, TaskWithRelations, type TaskStatus } from '@/features/tasks';
 import { estimateXpFromPoints } from '@/features/tasks/utils';
+import { useTaskTranslation } from '@/features/translation/hooks';
+import { useTranslationFlag } from '@/features/translation/use-translation-flags';
 
 type Contributor = NonNullable<TaskSubmissionWithReviewer['user']>;
 
@@ -60,6 +62,25 @@ export function TaskDetailSummary({
   const status = (task.status ?? 'backlog') as TaskStatus;
   const statusColor = STATUS_TEXT_COLOR[status] ?? STATUS_TEXT_COLOR.backlog;
 
+  const tasksTranslationEnabled = useTranslationFlag('tasks');
+  const {
+    translation,
+    isTranslated,
+    isLoading: translateLoading,
+    translate,
+    showOriginal,
+    shouldShowButton: detectedShowTranslate,
+  } = useTaskTranslation(
+    task.id,
+    (task as { detected_language?: string | null }).detected_language ?? null
+  );
+  const showTranslate = detectedShowTranslate && tasksTranslationEnabled;
+  const displayTitle = isTranslated && translation?.title ? translation.title : task.title;
+  const displayDescription =
+    isTranslated && translation?.description
+      ? translation.description
+      : task.description ?? '';
+
   const getContributorName = (contributor: Contributor) => {
     if (contributor.organic_id) return t('organicId', { id: contributor.organic_id });
     return contributor.name ?? contributor.email;
@@ -108,13 +129,27 @@ export function TaskDetailSummary({
       {/* Title + inline status as colored text */}
       <div>
         <div className="flex flex-wrap items-center gap-2">
-          <h1 className="text-2xl font-bold text-foreground">{task.title}</h1>
+          <h1 className="text-2xl font-bold text-foreground">{displayTitle}</h1>
           <span className={`text-sm font-medium ${statusColor}`}>
             {t(`status.${status}`)}
           </span>
         </div>
-        {task.description && (
-          <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground max-w-prose">{task.description}</p>
+        {displayDescription && (
+          <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground max-w-prose">{displayDescription}</p>
+        )}
+        {showTranslate && (
+          <button
+            type="button"
+            onClick={() => (isTranslated ? showOriginal() : void translate())}
+            disabled={translateLoading}
+            className="mt-2 inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+          >
+            {translateLoading
+              ? t('translateLoading')
+              : isTranslated
+                ? t('translateShowOriginal')
+                : t('translateButton')}
+          </button>
         )}
       </div>
 

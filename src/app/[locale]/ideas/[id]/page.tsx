@@ -35,18 +35,21 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { IdeaTimeline } from '@/components/ideas/IdeaTimeline';
 import { useIdeaTranslation } from '@/features/translation/hooks';
 import { useCommentTranslation } from '@/features/translation/comment-hooks';
+import { useTranslationFlag } from '@/features/translation/use-translation-flags';
 import type { IdeaComment } from '@/features/ideas/types';
 
 function IdeaCommentItem({ entry, isLast }: { entry: IdeaComment; isLast: boolean }) {
   const t = useTranslations('IdeaDetail');
+  const commentsTranslationEnabled = useTranslationFlag('comments');
   const {
     translation,
     isTranslated,
     isLoading,
-    shouldShowButton,
+    shouldShowButton: detectedShouldShowButton,
     translate,
     showOriginal,
   } = useCommentTranslation(entry.id, entry.detected_language ?? null);
+  const shouldShowButton = detectedShouldShowButton && commentsTranslationEnabled;
   const displayBody = isTranslated && translation ? translation : entry.body;
 
   return (
@@ -145,8 +148,10 @@ export default function IdeaDetailPage() {
     isLoading: isTranslatingIdea,
     translate: translateIdea,
     showOriginal: showIdeaOriginal,
-    shouldShowButton: canTranslateIdea,
+    shouldShowButton: detectedCanTranslateIdea,
   } = useIdeaTranslation(ideaId, idea?.detected_language ?? null);
+  const ideasTranslationEnabled = useTranslationFlag('ideas');
+  const canTranslateIdea = detectedCanTranslateIdea && ideasTranslationEnabled;
 
   const displayTitle =
     isIdeaTranslated && ideaTranslations?.title ? ideaTranslations.title : idea?.title ?? '';
