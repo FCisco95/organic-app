@@ -1401,6 +1401,8 @@
     "translateCommentButton": "Traduzir",
     "translateCommentShowOriginal": "Original",
     "translateLoading": "A traduzir...",
+    "translateButton": "Traduzir tarefa",
+    "translateShowOriginal": "Ver original",
     "assignTitle": "Atribuir usuário à tarefa",
     "assignDescription": "Selecione um usuário para atribuir esta tarefa:",
     "unassignedHelp": "Remover responsável atual",
@@ -2102,7 +2104,33 @@
       "members": "Membros",
       "rewards": "Recompensas",
       "gamification": "Gamificação",
-      "campaigns": "Campanhas"
+      "campaigns": "Campanhas",
+      "translation": "Tradução"
+    },
+    "translation": {
+      "description": "Ativa ou desativa a tradução por tipo de conteúdo. Quando desativado, o botão de tradução desaparece e os pedidos são rejeitados — poupando quota DeepL.",
+      "quotaNotice": "Usa DeepL Free (500.000 caracteres por mês).",
+      "quotaNoticeLinkLabel": "Ver utilização",
+      "posts": {
+        "label": "Publicações",
+        "description": "Permitir tradução de títulos, corpos e partes de thread de publicações."
+      },
+      "proposals": {
+        "label": "Propostas",
+        "description": "Permitir tradução de títulos, corpos e resumos de propostas."
+      },
+      "ideas": {
+        "label": "Ideias",
+        "description": "Permitir tradução de títulos e corpos de ideias."
+      },
+      "tasks": {
+        "label": "Tarefas",
+        "description": "Permitir tradução de títulos e descrições de tarefas."
+      },
+      "comments": {
+        "label": "Comentários",
+        "description": "Permitir tradução de comentários em publicações, propostas, ideias e tarefas. Desativado por omissão para poupar quota."
+      }
     },
     "general": {
       "description": "Informações básicas da organização",

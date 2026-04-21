@@ -4,18 +4,13 @@ import { translateRequestSchema } from '@/features/translation/schemas';
 import { translateContent, type TranslationField } from '@/lib/translation/translate-content';
 import { logger } from '@/lib/logger';
 import { applyUserRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
-import { isIdeasIncubatorEnabled } from '@/config/feature-flags';
 import { isTranslationEnabled } from '@/lib/translation/flags';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
-    if (!isIdeasIncubatorEnabled()) {
-      return NextResponse.json({ error: 'Not found' }, { status: 404 });
-    }
-
-    const { id: ideaId } = await params;
+    const { id: taskId } = await params;
 
     const supabase = await createClient();
     const {
@@ -25,7 +20,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (!(await isTranslationEnabled(supabase, 'ideas'))) {
+    if (!(await isTranslationEnabled(supabase, 'tasks'))) {
       return NextResponse.json(
         { error: 'Translation disabled for this content type' },
         { status: 403 }
@@ -49,39 +44,39 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     const { targetLocale } = parsed.data;
 
-    const { data: idea, error: ideaError } = await (supabase as any)
-      .from('ideas')
-      .select('id, title, body, detected_language')
-      .eq('id', ideaId)
+    const { data: task, error: taskError } = await (supabase as any)
+      .from('tasks')
+      .select('id, title, description, detected_language')
+      .eq('id', taskId)
       .single();
 
-    if (ideaError || !idea) {
-      return NextResponse.json({ error: 'Idea not found' }, { status: 404 });
+    if (taskError || !task) {
+      return NextResponse.json({ error: 'Task not found' }, { status: 404 });
     }
 
     const fields: TranslationField[] = [
-      { name: 'title', text: idea.title ?? '' },
-      { name: 'body', text: idea.body ?? '' },
+      { name: 'title', text: task.title ?? '' },
+      { name: 'description', text: task.description ?? '' },
     ].filter((f) => f.text.length > 0);
 
     const result = await translateContent({
-      contentType: 'idea',
-      contentId: ideaId,
+      contentType: 'task',
+      contentId: taskId,
       fields,
-      sourceLocale: (idea as { detected_language: string | null }).detected_language ?? null,
+      sourceLocale: (task as { detected_language: string | null }).detected_language ?? null,
       targetLocale,
     });
 
     return NextResponse.json({
       data: {
-        title: result.translations.title ?? idea.title,
-        body: result.translations.body ?? idea.body,
+        title: result.translations.title ?? task.title,
+        description: result.translations.description ?? task.description,
       },
       cached: result.cached,
       sourceLocale: result.sourceLocale,
     });
   } catch (err) {
-    logger.error('Idea translation API error:', err);
+    logger.error('Task translation API error:', err);
     return NextResponse.json({ error: 'Translation failed' }, { status: 500 });
   }
 }

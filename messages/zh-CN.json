@@ -1401,6 +1401,8 @@
     "translateCommentButton": "翻译",
     "translateCommentShowOriginal": "原文",
     "translateLoading": "翻译中...",
+    "translateButton": "翻译任务",
+    "translateShowOriginal": "显示原文",
     "assignTitle": "分配任务给用户",
     "assignDescription": "选择要分配此任务的用户：",
     "unassignedHelp": "移除当前负责人",
@@ -2102,7 +2104,33 @@
       "members": "成员",
       "rewards": "奖励",
       "gamification": "游戏化",
-      "campaigns": "活动"
+      "campaigns": "活动",
+      "translation": "翻译"
+    },
+    "translation": {
+      "description": "按内容类型开启或关闭翻译。关闭后,翻译按钮将隐藏,并拒绝翻译请求——节省 DeepL 用量。",
+      "quotaNotice": "使用 DeepL Free(每月 500,000 字符)。",
+      "quotaNoticeLinkLabel": "查看用量",
+      "posts": {
+        "label": "帖子",
+        "description": "允许翻译帖子标题、正文和线程内容。"
+      },
+      "proposals": {
+        "label": "提案",
+        "description": "允许翻译提案标题、正文和摘要。"
+      },
+      "ideas": {
+        "label": "创意",
+        "description": "允许翻译创意标题和正文。"
+      },
+      "tasks": {
+        "label": "任务",
+        "description": "允许翻译任务标题和描述。"
+      },
+      "comments": {
+        "label": "评论",
+        "description": "允许翻译帖子、提案、创意和任务下的评论。默认关闭以节省用量。"
+      }
     },
     "general": {
       "description": "基本组织信息",

@@ -32,6 +32,7 @@ import { PROMOTION_CONFIG, type PromotionTier } from '@/features/gamification/po
 import { fetchJson } from '@/lib/fetch-json';
 import { usePostTranslation } from '@/features/translation/hooks';
 import { useCommentTranslation } from '@/features/translation/comment-hooks';
+import { useTranslationFlag } from '@/features/translation/use-translation-flags';
 
 function timeAgo(dateStr: string): string {
   const now = Date.now();
@@ -65,6 +66,7 @@ function XLikeButton({ twitterUrl }: { twitterUrl: string | null }) {
 
 function CommentItem({ comment }: { comment: { id: string; body: string; created_at: string; user_profiles: { id: string; name: string | null; email: string; organic_id: number | null; avatar_url: string | null } | null } }) {
   const t = useTranslations('Posts');
+  const commentsTranslationEnabled = useTranslationFlag('comments');
   const { translation, isTranslated, isLoading, translate, showOriginal } =
     useCommentTranslation(comment.id);
   const displayBody = isTranslated && translation ? translation : comment.body;
@@ -92,17 +94,19 @@ function CommentItem({ comment }: { comment: { id: string; body: string; created
           </span>
         </div>
         <p className="text-xs text-foreground/80 mt-0.5">{displayBody}</p>
-        <button
-          onClick={isTranslated ? showOriginal : translate}
-          disabled={isLoading}
-          className="text-[10px] text-muted-foreground hover:text-foreground transition-colors mt-0.5"
-        >
-          {isLoading
-            ? t('translateLoading')
-            : isTranslated
-              ? t('translateCommentShowOriginal')
-              : t('translateCommentButton')}
-        </button>
+        {commentsTranslationEnabled && (
+          <button
+            onClick={isTranslated ? showOriginal : translate}
+            disabled={isLoading}
+            className="text-[10px] text-muted-foreground hover:text-foreground transition-colors mt-0.5"
+          >
+            {isLoading
+              ? t('translateLoading')
+              : isTranslated
+                ? t('translateCommentShowOriginal')
+                : t('translateCommentButton')}
+          </button>
+        )}
       </div>
     </div>
   );
@@ -132,14 +136,16 @@ export default function PostDetailPage() {
   const isAdmin = profile?.role === 'admin';
   const isPromotedActive = post?.is_promoted && post?.promotion_expires_at && new Date(post.promotion_expires_at) > new Date();
 
+  const postsTranslationEnabled = useTranslationFlag('posts');
   const {
     translation,
     isTranslated,
     isLoading: translateLoading,
     translate,
     showOriginal,
-    shouldShowButton: showTranslate,
+    shouldShowButton: detectedShowTranslate,
   } = usePostTranslation(postId, post?.detected_language ?? null);
+  const showTranslate = detectedShowTranslate && postsTranslationEnabled;
 
   async function handleLike() {
     if (!profile) {

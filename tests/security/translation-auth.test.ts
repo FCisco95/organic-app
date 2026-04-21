@@ -12,6 +12,7 @@ const TRANSLATE_ROUTES = [
   'src/app/api/posts/[id]/translate/route.ts',
   'src/app/api/proposals/[id]/translate/route.ts',
   'src/app/api/ideas/[id]/translate/route.ts',
+  'src/app/api/tasks/[id]/translate/route.ts',
   'src/app/api/translate/comment/[commentId]/route.ts',
 ] as const;
 
@@ -46,9 +47,9 @@ describe('translate route authentication gates', () => {
 describe('middleware rate-limit path pattern', () => {
   const middleware = readFileSync('src/middleware.ts', 'utf-8');
 
-  it('includes all four translate path shapes in the pattern source', () => {
+  it('includes all five translate path shapes in the pattern source', () => {
     expect(middleware).toMatch(
-      /TRANSLATE_RATE_LIMIT_PATH_PATTERN\s*=[\s\S]{0,200}posts\|proposals\|ideas/
+      /TRANSLATE_RATE_LIMIT_PATH_PATTERN\s*=[\s\S]{0,200}posts\|proposals\|ideas\|tasks/
     );
     expect(middleware).toMatch(
       /TRANSLATE_RATE_LIMIT_PATH_PATTERN\s*=[\s\S]{0,200}\/api\\\/translate\\\/comment/
