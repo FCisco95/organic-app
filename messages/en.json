@@ -1865,7 +1865,13 @@
       "healthyDistribution": "Healthy token distribution",
       "healthyDesc": "Only {whaleCount} wallet(s) hold ≥1% of supply. Top 10 concentration is {top10}% — well below typical thresholds for manipulation risk.",
       "median": "Median",
-      "average": "Average"
+      "average": "Average",
+      "summary": {
+        "title": "Distribution summary",
+        "healthy": "Distribution is healthy. Top 10 wallets hold {top10}% of supply and {whaleCount} wallet(s) exceed the 1% whale threshold.",
+        "watch": "Distribution is concentrated. Top 10 wallets hold {top10}% of supply across {totalHolders} holders; {whaleCount} wallet(s) exceed the 1% whale threshold.",
+        "updatedAt": "Last updated {time}"
+      }
     },
     "sections": {
       "governance": "Governance"

@@ -510,25 +510,30 @@ export default function SprintsPage() {
       await handleDropToBacklog(taskId);
       return;
     }
+
+    const previousTasks = currentSprintTasks;
+    setCurrentSprintTasks((prev) =>
+      prev.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task))
+    );
+
     try {
-      const supabase = createClient();
-      const { error: updateError } = await supabase
-        .from('tasks')
-        .update({
-          status: newStatus,
-          completed_at: newStatus === 'done' ? new Date().toISOString() : null,
-        })
-        .eq('id', taskId);
+      const response = await fetch(`/api/tasks/${taskId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      });
 
-      if (updateError) throw updateError;
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        throw new Error(body?.error ?? `Request failed with status ${response.status}`);
+      }
 
-      setCurrentSprintTasks((prev) =>
-        prev.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task))
-      );
       toast.success(tTasks('toastTaskUpdated'));
     } catch (updateError) {
-      console.error('Error updating task:', updateError);
-      toast.error(tTasks('toastTaskUpdateFailed'));
+      setCurrentSprintTasks(previousTasks);
+      const message =
+        updateError instanceof Error ? updateError.message : tTasks('toastTaskUpdateFailed');
+      toast.error(message);
     }
   };
 
