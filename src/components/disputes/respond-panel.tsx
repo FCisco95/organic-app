@@ -79,10 +79,12 @@ export function RespondPanel({ disputeId, onSuccess }: RespondPanelProps) {
               <li key={i} className="flex items-center gap-2 text-xs text-gray-600">
                 <span className="truncate flex-1">{link}</span>
                 <button
+                  type="button"
                   onClick={() => setResponseLinks((prev) => prev.filter((_, idx) => idx !== i))}
-                  className="text-gray-400 hover:text-red-500"
+                  aria-label={tf('removeResponseLink')}
+                  className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
                 >
-                  <X className="w-3 h-3" />
+                  <X className="w-3.5 h-3.5" />
                 </button>
               </li>
             ))}

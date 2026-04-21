@@ -55,16 +55,16 @@ export function SprintListView({
           {/* Title row */}
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2.5">
+              <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
                 <Milestone className="h-4 w-4 shrink-0 text-gray-400" />
                 <Link
                   href={`/sprints/${sprint.id}`}
-                  className="text-base font-semibold text-gray-900 hover:text-blue-600 hover:underline"
+                  className="min-w-0 max-w-full truncate text-base font-semibold text-gray-900 hover:text-blue-600 hover:underline"
                 >
                   {sprint.name}
                 </Link>
                 <span
-                  className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${
+                  className={`inline-flex shrink-0 items-center rounded-full border px-2 py-0.5 text-xs font-medium ${
                     isOpen
                       ? 'border-organic-terracotta-light bg-organic-terracotta-lightest text-organic-terracotta-hover'
                       : 'border-gray-300 bg-gray-50 text-gray-600'
@@ -100,7 +100,7 @@ export function SprintListView({
             </div>
 
             {/* Stats row: GitHub milestone style */}
-            <div className="mt-1.5 flex items-center gap-4 text-xs text-gray-500">
+            <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500">
               <span>{t('milestoneOpenCount', { count: openCount })}</span>
               <span>{t('milestoneClosedCount', { count: closedCount })}</span>
               <span className="text-gray-400">

@@ -42,7 +42,7 @@ export function WizardTabs({ currentStep, onTabClick, labels }: WizardTabsProps)
               <button
                 type="button"
                 onClick={() => onTabClick(stepNum)}
-                className="flex flex-col items-center gap-1.5 group"
+                className="flex min-w-11 min-h-11 flex-col items-center justify-center gap-1.5 group"
               >
                 <div
                   className={cn(

@@ -276,10 +276,12 @@ export function CreateDisputeModal({
                   >
                     <span className="truncate flex-1">{link}</span>
                     <button
+                      type="button"
                       onClick={() => handleRemoveLink(i)}
-                      className="text-gray-400 hover:text-red-500"
+                      aria-label={tf('removeEvidenceLink')}
+                      className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
                     >
-                      <X className="w-3.5 h-3.5" />
+                      <X className="w-4 h-4" />
                     </button>
                   </li>
                 ))}
@@ -337,11 +339,12 @@ export function CreateDisputeModal({
                     <Paperclip className="w-3.5 h-3.5 text-gray-400 shrink-0" />
                     <span className="truncate flex-1">{file.name}</span>
                     <button
-                      onClick={() => handleRemoveEvidenceFile(file.path)}
-                      className="text-gray-400 hover:text-red-500"
                       type="button"
+                      onClick={() => handleRemoveEvidenceFile(file.path)}
+                      aria-label={tf('removeEvidenceFile')}
+                      className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
                     >
-                      <X className="w-3.5 h-3.5" />
+                      <X className="w-4 h-4" />
                     </button>
                   </li>
                 ))}
