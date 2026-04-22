@@ -84,3 +84,86 @@ export function classifyRpcError(error: unknown): RpcErrorKind {
 
   return 'transient';
 }
+
+export type BreakerState = 'closed' | 'open' | 'half-open';
+
+interface Sample {
+  ok: boolean;
+  at: number;
+}
+
+const WINDOW_MS = 60_000;
+const MIN_SAMPLES = 20;
+const OPEN_THRESHOLD = 0.5;
+const HALF_OPEN_AFTER_MS = 30_000;
+
+export class CircuitBreaker {
+  private samples: Sample[] = [];
+  private openedAt: number | null = null;
+  private probeInFlight = false;
+
+  recordSuccess(): void {
+    const now = Date.now();
+    this.prune(now);
+    this.samples.push({ ok: true, at: now });
+    if (this.probeInFlight) {
+      // Half-open probe succeeded → close.
+      this.openedAt = null;
+      this.probeInFlight = false;
+      this.samples = [];
+    }
+  }
+
+  recordFailure(): void {
+    const now = Date.now();
+    this.prune(now);
+    this.samples.push({ ok: false, at: now });
+    if (this.probeInFlight) {
+      // Half-open probe failed → reopen for another 30s.
+      this.openedAt = now;
+      this.probeInFlight = false;
+      return;
+    }
+    if (this.shouldOpen()) {
+      this.openedAt = now;
+    }
+  }
+
+  canAttempt(): boolean {
+    const s = this.state();
+    if (s === 'closed') return true;
+    if (s === 'open') return false;
+    // half-open: allow exactly one in-flight probe.
+    if (this.probeInFlight) return false;
+    this.probeInFlight = true;
+    return true;
+  }
+
+  state(): BreakerState {
+    const now = Date.now();
+    this.prune(now);
+
+    if (this.openedAt !== null) {
+      if (now - this.openedAt >= HALF_OPEN_AFTER_MS) return 'half-open';
+      return 'open';
+    }
+
+    if (this.shouldOpen()) {
+      this.openedAt = now;
+      return 'open';
+    }
+
+    return 'closed';
+  }
+
+  private prune(now: number): void {
+    const cutoff = now - WINDOW_MS;
+    this.samples = this.samples.filter((s) => s.at >= cutoff);
+  }
+
+  private shouldOpen(): boolean {
+    if (this.samples.length < MIN_SAMPLES) return false;
+    const failures = this.samples.filter((s) => !s.ok).length;
+    return failures / this.samples.length > OPEN_THRESHOLD;
+  }
+}
