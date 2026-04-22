@@ -8,6 +8,9 @@
  * See docs/superpowers/specs/2026-04-22-rpc-resilience-design.md §6.
  */
 
+import type { Connection } from '@solana/web3.js';
+import type { RpcProvider } from './providers';
+
 export type RpcErrorKind = 'transient' | 'permanent' | 'empty-ok';
 
 const TRANSIENT_NODE_CODES = new Set([
@@ -203,5 +206,138 @@ export class ProviderHealthTracker {
       lastErrorMessage: this.lastError,
       latencySamples: [...this.latencies],
     };
+  }
+}
+
+/** Alias used by tests to construct stub providers. */
+export type RpcProviderLike = RpcProvider;
+
+export interface RpcCallOptions {
+  timeoutMs?: number;
+  label?: string;
+}
+
+export class RpcCallError extends Error {
+  constructor(
+    message: string,
+    readonly cause: unknown,
+    readonly lastKind: RpcErrorKind
+  ) {
+    super(message);
+    this.name = 'RpcCallError';
+  }
+}
+
+async function withTimeout<T>(
+  op: Promise<T>,
+  ms: number,
+  label: string
+): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  // Ensure a late rejection from op (after the timeout wins) is observed
+  // and doesn't trip Node's unhandled-rejection handler.
+  op.catch(() => {});
+  const timeout = new Promise<T>((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`${label} timeout after ${ms}ms`)), ms);
+  });
+  try {
+    return await Promise.race([op, timeout]);
+  } finally {
+    if (timer !== undefined) clearTimeout(timer);
+  }
+}
+
+export class RpcPool {
+  private readonly breakers = new Map<string, CircuitBreaker>();
+  private readonly health = new Map<string, ProviderHealthTracker>();
+
+  constructor(private readonly providers: ReadonlyArray<RpcProvider>) {
+    if (providers.length === 0) {
+      throw new Error('RpcPool requires at least one provider');
+    }
+    for (const p of providers) {
+      this.breakers.set(p.name, new CircuitBreaker());
+      this.health.set(p.name, new ProviderHealthTracker());
+    }
+  }
+
+  /**
+   * Execute an operation against the provider pool with failover,
+   * circuit-breaker gating, and a per-attempt timeout.
+   *
+   * Error contract:
+   * - `empty-ok` errors (account-not-found signals) propagate unwrapped —
+   *   caller receives the raw error so stack/metadata are preserved.
+   * - `permanent` errors (HTTP 4xx except 429, JSON-RPC -32602) propagate
+   *   unwrapped. Retrying won't help; caller decides next steps.
+   * - `transient` exhaustion across all providers throws `RpcCallError`
+   *   carrying the last underlying error in `cause` and its classification
+   *   in `lastKind`.
+   */
+  async call<T>(
+    operation: (connection: Connection) => Promise<T>,
+    opts: RpcCallOptions = {}
+  ): Promise<T> {
+    const label = opts.label ?? 'rpc.call';
+    const perAttemptMs = opts.timeoutMs;
+    const budgetMs =
+      (perAttemptMs ?? Math.max(...this.providers.map((p) => p.timeoutMs))) * 3;
+    const deadline = Date.now() + budgetMs;
+
+    let lastError: unknown = new Error('no attempts made');
+    let lastKind: RpcErrorKind = 'transient';
+
+    for (const provider of this.providers) {
+      if (Date.now() >= deadline) break;
+      const breaker = this.breakers.get(provider.name)!;
+      const health = this.health.get(provider.name)!;
+
+      for (let attempt = 0; attempt < 2; attempt++) {
+        if (Date.now() >= deadline) break;
+        if (!breaker.canAttempt()) break;
+
+        const ms = perAttemptMs ?? provider.timeoutMs;
+        const start = Date.now();
+        try {
+          const value = await withTimeout(operation(provider.connection), ms, label);
+          breaker.recordSuccess();
+          health.recordOutcome({ ok: true, latencyMs: Date.now() - start });
+          return value;
+        } catch (err) {
+          const kind = classifyRpcError(err);
+          lastError = err;
+          lastKind = kind;
+          const latencyMs = Date.now() - start;
+          if (kind === 'empty-ok') {
+            breaker.recordSuccess();
+            health.recordOutcome({ ok: true, latencyMs });
+            throw err;
+          }
+          breaker.recordFailure();
+          health.recordOutcome({
+            ok: false,
+            latencyMs,
+            errorMessage: err instanceof Error ? err.message : String(err),
+          });
+          if (kind === 'permanent') throw err;
+          // transient: retry this provider once, then fall through to next tier.
+        }
+      }
+    }
+
+    throw new RpcCallError(
+      `${label} exhausted all providers`,
+      lastError,
+      lastKind
+    );
+  }
+
+  getHealth(): Array<{ name: string; tier: RpcProvider['tier']; breaker: BreakerState; stats: ProviderHealthSnapshot }> {
+    return this.providers.map((p) => ({
+      name: p.name,
+      tier: p.tier,
+      breaker: this.breakers.get(p.name)!.state(),
+      stats: this.health.get(p.name)!.snapshot(),
+    }));
   }
 }

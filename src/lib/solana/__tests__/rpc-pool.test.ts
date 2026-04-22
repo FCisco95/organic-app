@@ -1,5 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { classifyRpcError, CircuitBreaker, ProviderHealthTracker, type RpcErrorKind } from '../rpc-pool';
+import {
+  classifyRpcError,
+  CircuitBreaker,
+  ProviderHealthTracker,
+  RpcPool,
+  type RpcErrorKind,
+  type RpcProviderLike,
+} from '../rpc-pool';
 
 function check(error: unknown, expected: RpcErrorKind): void {
   expect(classifyRpcError(error)).toBe(expected);
@@ -174,5 +181,85 @@ describe('ProviderHealthTracker', () => {
     const snapshot = t.snapshot();
     snapshot.latencySamples.push(9999);
     expect(t.snapshot().latencySamples).toHaveLength(1);
+  });
+});
+
+function stubProvider(
+  name: string,
+  tier: 'primary' | 'secondary' | 'fallback',
+  handler: () => Promise<unknown>,
+  timeoutMs = 50
+): RpcProviderLike {
+  // Connection is only passed through to handler; tests do not touch it.
+  return {
+    name,
+    tier,
+    timeoutMs,
+    connection: {} as never,
+    __invoke: handler,
+  } as unknown as RpcProviderLike;
+}
+
+describe('RpcPool.call — single provider', () => {
+  beforeEach(() => vi.useRealTimers());
+
+  it('returns the operation result on success', async () => {
+    const provider = stubProvider('p', 'primary', async () => 42);
+    const pool = new RpcPool([provider]);
+    const result = await pool.call(async (_c) => {
+      return (provider as unknown as { __invoke: () => Promise<number> }).__invoke();
+    });
+    expect(result).toBe(42);
+  });
+
+  it('enforces per-provider timeoutMs', async () => {
+    const provider = stubProvider(
+      'p',
+      'primary',
+      () => new Promise((r) => setTimeout(() => r('late'), 500)),
+      50
+    );
+    const pool = new RpcPool([provider]);
+    await expect(
+      pool.call(async (_c) =>
+        (provider as unknown as { __invoke: () => Promise<string> }).__invoke()
+      )
+    ).rejects.toThrow(/timeout|exhausted/i);
+  });
+
+  it('honors opts.timeoutMs override', async () => {
+    const provider = stubProvider(
+      'p',
+      'primary',
+      () => new Promise((r) => setTimeout(() => r('late'), 200)),
+      5_000
+    );
+    const pool = new RpcPool([provider]);
+    await expect(
+      pool.call(
+        async (_c) =>
+          (provider as unknown as { __invoke: () => Promise<string> }).__invoke(),
+        { timeoutMs: 25 }
+      )
+    ).rejects.toThrow(/timeout|exhausted/i);
+  });
+
+  it('caps total call time at timeoutMs * 3', async () => {
+    // Single provider, transient errors each attempt → budget cap after ~3×timeoutMs.
+    const provider = stubProvider(
+      'p',
+      'primary',
+      () => new Promise((r) => setTimeout(() => r('late'), 200)),
+      60
+    );
+    const pool = new RpcPool([provider]);
+    const started = Date.now();
+    await expect(
+      pool.call(async (_c) =>
+        (provider as unknown as { __invoke: () => Promise<string> }).__invoke()
+      )
+    ).rejects.toBeInstanceOf(Error);
+    const elapsed = Date.now() - started;
+    expect(elapsed).toBeLessThan(400); // 3 × 60 + overhead
   });
 });
