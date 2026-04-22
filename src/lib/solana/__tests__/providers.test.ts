@@ -185,3 +185,60 @@ describe('tier resolution', () => {
     expect(() => parseProvidersFromEnv()).toThrow(/SOLANA_RPC_PRIMARY_URL is required/);
   });
 });
+
+describe('deduplication and legacy interaction', () => {
+  const originalPrimary = process.env.SOLANA_RPC_PRIMARY_URL;
+  const originalSecondary = process.env.SOLANA_RPC_SECONDARY_URL;
+  const originalFallback = process.env.SOLANA_RPC_FALLBACK_URL;
+  const originalPublic = process.env.NEXT_PUBLIC_SOLANA_RPC_URL;
+
+  afterEach(() => {
+    const restore = (key: string, value: string | undefined) => {
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    };
+    restore('SOLANA_RPC_PRIMARY_URL', originalPrimary);
+    restore('SOLANA_RPC_SECONDARY_URL', originalSecondary);
+    restore('SOLANA_RPC_FALLBACK_URL', originalFallback);
+    restore('NEXT_PUBLIC_SOLANA_RPC_URL', originalPublic);
+    vi.resetModules();
+  });
+
+  it('deduplicates when primary and secondary share the same URL', async () => {
+    process.env.SOLANA_RPC_PRIMARY_URL = 'https://same.example';
+    process.env.SOLANA_RPC_SECONDARY_URL = 'https://same.example';
+    delete process.env.SOLANA_RPC_FALLBACK_URL;
+    delete process.env.NEXT_PUBLIC_SOLANA_RPC_URL;
+    vi.resetModules();
+    const { parseProvidersFromEnv, DEFAULT_FALLBACK_URL } = await import('../providers');
+    const providers = parseProvidersFromEnv();
+    expect(providers.map((p) => p.name)).toEqual(['primary', 'fallback']);
+    expect(providers[0].connection.rpcEndpoint).toBe('https://same.example');
+    expect(providers[1].connection.rpcEndpoint).toBe(DEFAULT_FALLBACK_URL);
+  });
+
+  it('deduplicates case-insensitively when primary and fallback collide', async () => {
+    process.env.SOLANA_RPC_PRIMARY_URL = 'https://Host.Example/rpc';
+    delete process.env.SOLANA_RPC_SECONDARY_URL;
+    process.env.SOLANA_RPC_FALLBACK_URL = 'https://host.example/rpc';
+    delete process.env.NEXT_PUBLIC_SOLANA_RPC_URL;
+    vi.resetModules();
+    const { parseProvidersFromEnv } = await import('../providers');
+    const providers = parseProvidersFromEnv();
+    expect(providers).toHaveLength(1);
+    expect(providers[0].tier).toBe('primary');
+  });
+
+  it('ignores NEXT_PUBLIC_SOLANA_RPC_URL when any tier var is set', async () => {
+    process.env.SOLANA_RPC_PRIMARY_URL = 'https://tiered.example';
+    delete process.env.SOLANA_RPC_SECONDARY_URL;
+    delete process.env.SOLANA_RPC_FALLBACK_URL;
+    process.env.NEXT_PUBLIC_SOLANA_RPC_URL = 'https://legacy.example';
+    vi.resetModules();
+    const { parseProvidersFromEnv } = await import('../providers');
+    const providers = parseProvidersFromEnv();
+    const endpoints = providers.map((p) => p.connection.rpcEndpoint);
+    expect(endpoints).toContain('https://tiered.example');
+    expect(endpoints).not.toContain('https://legacy.example');
+  });
+});
