@@ -43,3 +43,53 @@ describe('parseProvidersFromEnv', () => {
     expect(providers[0].connection.rpcEndpoint).toContain('mainnet-beta');
   });
 });
+
+describe('env URL validation', () => {
+  const originalPrimary = process.env.SOLANA_RPC_PRIMARY_URL;
+  const originalSecondary = process.env.SOLANA_RPC_SECONDARY_URL;
+  const originalFallback = process.env.SOLANA_RPC_FALLBACK_URL;
+  const originalPublic = process.env.NEXT_PUBLIC_SOLANA_RPC_URL;
+
+  afterEach(() => {
+    const restore = (key: string, value: string | undefined) => {
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    };
+    restore('SOLANA_RPC_PRIMARY_URL', originalPrimary);
+    restore('SOLANA_RPC_SECONDARY_URL', originalSecondary);
+    restore('SOLANA_RPC_FALLBACK_URL', originalFallback);
+    restore('NEXT_PUBLIC_SOLANA_RPC_URL', originalPublic);
+    vi.resetModules();
+  });
+
+  it('rejects an invalid SOLANA_RPC_PRIMARY_URL with a clear error', async () => {
+    process.env.SOLANA_RPC_PRIMARY_URL = 'not a url';
+    delete process.env.SOLANA_RPC_SECONDARY_URL;
+    delete process.env.SOLANA_RPC_FALLBACK_URL;
+    delete process.env.NEXT_PUBLIC_SOLANA_RPC_URL;
+    vi.resetModules();
+    const { parseProvidersFromEnv } = await import('../providers');
+    expect(() => parseProvidersFromEnv()).toThrow(/SOLANA_RPC_PRIMARY_URL/);
+  });
+
+  it('rejects a non-http(s) scheme', async () => {
+    process.env.SOLANA_RPC_PRIMARY_URL = 'ftp://example.test';
+    delete process.env.SOLANA_RPC_SECONDARY_URL;
+    delete process.env.SOLANA_RPC_FALLBACK_URL;
+    delete process.env.NEXT_PUBLIC_SOLANA_RPC_URL;
+    vi.resetModules();
+    const { parseProvidersFromEnv } = await import('../providers');
+    expect(() => parseProvidersFromEnv()).toThrow(/SOLANA_RPC_PRIMARY_URL/);
+  });
+
+  it('accepts http:// and https:// URLs', async () => {
+    process.env.SOLANA_RPC_PRIMARY_URL = 'http://localhost:8899';
+    delete process.env.SOLANA_RPC_SECONDARY_URL;
+    delete process.env.SOLANA_RPC_FALLBACK_URL;
+    delete process.env.NEXT_PUBLIC_SOLANA_RPC_URL;
+    vi.resetModules();
+    const { parseProvidersFromEnv } = await import('../providers');
+    const providers = parseProvidersFromEnv();
+    expect(providers[0].connection.rpcEndpoint).toBe('http://localhost:8899');
+  });
+});
