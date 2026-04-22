@@ -92,4 +92,14 @@ describe('env URL validation', () => {
     const providers = parseProvidersFromEnv();
     expect(providers[0].connection.rpcEndpoint).toBe('http://localhost:8899');
   });
+
+  it('rejects an invalid NEXT_PUBLIC_SOLANA_RPC_URL on the legacy fallback path', async () => {
+    delete process.env.SOLANA_RPC_PRIMARY_URL;
+    delete process.env.SOLANA_RPC_SECONDARY_URL;
+    delete process.env.SOLANA_RPC_FALLBACK_URL;
+    process.env.NEXT_PUBLIC_SOLANA_RPC_URL = 'not a url';
+    vi.resetModules();
+    const { parseProvidersFromEnv } = await import('../providers');
+    expect(() => parseProvidersFromEnv()).toThrow(/NEXT_PUBLIC_SOLANA_RPC_URL/);
+  });
 });

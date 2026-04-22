@@ -43,14 +43,6 @@ function readEnvUrl(envKey: string): string | undefined {
   return result.data;
 }
 
-function legacyPublicUrl(): string | undefined {
-  const raw = process.env.NEXT_PUBLIC_SOLANA_RPC_URL;
-  if (typeof raw !== 'string') return undefined;
-  const trimmed = raw.trim();
-  if (trimmed.length === 0) return undefined;
-  return trimmed;
-}
-
 export function parseProvidersFromEnv(): RpcProvider[] {
   const primaryUrl = readEnvUrl('SOLANA_RPC_PRIMARY_URL');
   const secondaryUrl = readEnvUrl('SOLANA_RPC_SECONDARY_URL');
@@ -60,7 +52,7 @@ export function parseProvidersFromEnv(): RpcProvider[] {
   // NEXT_PUBLIC_SOLANA_RPC_URL (or the Solana cluster default) as the sole
   // primary. PR 5 removes this fallback entirely.
   if (!primaryUrl && !secondaryUrl && !fallbackUrlOverride) {
-    const legacy = legacyPublicUrl() ?? clusterApiUrl('mainnet-beta');
+    const legacy = readEnvUrl('NEXT_PUBLIC_SOLANA_RPC_URL') ?? clusterApiUrl('mainnet-beta');
     return [buildProvider('primary', 'primary', legacy)];
   }
 
