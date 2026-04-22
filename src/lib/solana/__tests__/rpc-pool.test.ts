@@ -263,3 +263,68 @@ describe('RpcPool.call — single provider', () => {
     expect(elapsed).toBeLessThan(400); // 3 × 60 + overhead
   });
 });
+
+describe('RpcPool.call — error branches', () => {
+  beforeEach(() => vi.useRealTimers());
+
+  function makeProvider(name: string): RpcProviderLike {
+    return {
+      name,
+      tier: 'primary',
+      timeoutMs: 100,
+      connection: {} as never,
+    } as RpcProviderLike;
+  }
+
+  it('retries the same provider once on transient error, then succeeds', async () => {
+    const provider = makeProvider('p1');
+    const pool = new RpcPool([provider]);
+    let calls = 0;
+    const result = await pool.call(async () => {
+      calls += 1;
+      if (calls === 1) throw Object.assign(new Error('boom'), { status: 503 });
+      return 'ok';
+    });
+    expect(result).toBe('ok');
+    expect(calls).toBe(2);
+  });
+
+  it('does not retry on permanent error (4xx)', async () => {
+    const provider = makeProvider('p1');
+    const pool = new RpcPool([provider]);
+    let calls = 0;
+    await expect(
+      pool.call(async () => {
+        calls += 1;
+        throw Object.assign(new Error('bad'), { status: 400 });
+      })
+    ).rejects.toThrow('bad');
+    expect(calls).toBe(1);
+  });
+
+  it('propagates empty-ok error as a real answer without retrying', async () => {
+    const provider = makeProvider('p1');
+    const pool = new RpcPool([provider]);
+    let calls = 0;
+    await expect(
+      pool.call(async () => {
+        calls += 1;
+        throw new Error('could not find account');
+      })
+    ).rejects.toThrow(/could not find account/);
+    expect(calls).toBe(1);
+  });
+
+  it('records success on empty-ok in health stats (not a provider fault)', async () => {
+    const provider = makeProvider('p1');
+    const pool = new RpcPool([provider]);
+    await expect(
+      pool.call(async () => {
+        throw new Error('account does not exist');
+      })
+    ).rejects.toThrow();
+    const [health] = pool.getHealth();
+    expect(health.stats.successCount).toBe(1);
+    expect(health.stats.failureCount).toBe(0);
+  });
+});
