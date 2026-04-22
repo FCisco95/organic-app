@@ -93,7 +93,7 @@ describe('parseProvidersFromEnv', () => {
     expect(providers[0].name).toBe('primary');
     expect(providers[0].tier).toBe('primary');
     expect(providers[0].timeoutMs).toBe(5000);
-    expect(providers[0].connection.rpcEndpoint).toBe('https://example-rpc.test/');
+    expect(providers[0].connection.rpcEndpoint).toBe('https://example-rpc.test');
   });
 
   it('falls back to clusterApiUrl mainnet-beta when env is unset', async () => {
