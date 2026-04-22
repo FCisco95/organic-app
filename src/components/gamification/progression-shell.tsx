@@ -216,40 +216,43 @@ export function ProgressionShell({ sourceContext = null }: { sourceContext?: Sou
       )}
 
       {/* ===== COMPACT STAT BAR — single horizontal strip ===== */}
-      <div
-        className="rounded-xl border border-border bg-card px-4 py-3 flex items-center gap-0 overflow-x-auto"
-        data-testid="progression-overview-cards"
-      >
-        {/* Level */}
-        <div className="flex items-center gap-2 pr-4 border-r border-border flex-shrink-0">
-          <LevelBadge level={data.level} size="md" />
-          <div>
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{t('levelCard')}</p>
+      <div className="relative rounded-xl border border-border bg-card" data-testid="progression-overview-cards">
+        <div
+          className="flex snap-x snap-mandatory items-center gap-0 overflow-x-auto px-4 py-3 pr-8 scrollbar-hide"
+        >
+          {/* Level */}
+          <div className="snap-start flex items-center gap-2 pr-4 border-r border-border flex-shrink-0">
+            <LevelBadge level={data.level} size="md" />
+            <div>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{t('levelCard')}</p>
+            </div>
+          </div>
+
+          {/* XP to next */}
+          <div className="snap-start px-4 border-r border-border flex-shrink-0 text-center">
+            <p className="text-lg font-bold font-mono tabular-nums text-foreground leading-none">
+              {data.level_progress.xp_to_next_level.toLocaleString()}
+            </p>
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">{t('xpToNextCard')}</p>
+          </div>
+
+          {/* Streak */}
+          <div className="snap-start px-4 border-r border-border flex-shrink-0">
+            <StreakDisplay streak={data.current_streak} />
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">{t('streakCard')}</p>
+          </div>
+
+          {/* Claimable points */}
+          <div className="snap-start px-4 flex-shrink-0 text-center">
+            <p className="text-lg font-bold font-mono tabular-nums text-foreground leading-none">
+              {data.rewards.claimable_points.toLocaleString()}
+            </p>
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">{t('claimablePointsCard')}</p>
+            <p className="text-[10px] text-muted-foreground/70">{t('totalPointsLine', { points: data.total_points.toLocaleString() })}</p>
           </div>
         </div>
-
-        {/* XP to next */}
-        <div className="px-4 border-r border-border flex-shrink-0 text-center">
-          <p className="text-lg font-bold font-mono tabular-nums text-foreground leading-none">
-            {data.level_progress.xp_to_next_level.toLocaleString()}
-          </p>
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">{t('xpToNextCard')}</p>
-        </div>
-
-        {/* Streak */}
-        <div className="px-4 border-r border-border flex-shrink-0">
-          <StreakDisplay streak={data.current_streak} />
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">{t('streakCard')}</p>
-        </div>
-
-        {/* Claimable points */}
-        <div className="px-4 flex-shrink-0 text-center">
-          <p className="text-lg font-bold font-mono tabular-nums text-foreground leading-none">
-            {data.rewards.claimable_points.toLocaleString()}
-          </p>
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">{t('claimablePointsCard')}</p>
-          <p className="text-[10px] text-muted-foreground/70">{t('totalPointsLine', { points: data.total_points.toLocaleString() })}</p>
-        </div>
+        {/* Scroll affordance — gradient fade on right edge */}
+        <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 rounded-r-xl bg-gradient-to-l from-card to-transparent" />
       </div>
 
       {/* ===== XP PROGRESS ===== */}

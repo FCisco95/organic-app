@@ -347,28 +347,32 @@ export default function ProfilePage() {
             </div>
           }
           stats={
-            <div className="flex items-center gap-1 overflow-x-auto">
-              {[
-                { label: t('totalSubmissionsLabel'), value: stats.totalSubmissions },
-                { label: t('approvedSubmissionsLabel'), value: stats.approvedSubmissions },
-                { label: t('contributionsLabel'), value: stats.contributions },
-                { label: t('pointsEarnedLabel'), value: stats.pointsEarned },
-              ].map((stat, i) => (
-                <div
-                  key={stat.label}
-                  className={cn(
-                    'text-center px-3 py-2 flex-shrink-0',
-                    i < 3 && 'border-r border-white/20'
-                  )}
-                >
-                  <p className="text-lg font-bold font-mono tabular-nums text-white leading-none">
-                    {statsLoading ? '\u2014' : formatStat(stat.value)}
-                  </p>
-                  <p className="text-[10px] uppercase tracking-wider text-gray-400 mt-1 whitespace-nowrap">
-                    {stat.label}
-                  </p>
-                </div>
-              ))}
+            <div className="relative">
+              <div className="flex snap-x snap-mandatory items-center gap-1 overflow-x-auto pr-6 scrollbar-hide">
+                {[
+                  { label: t('totalSubmissionsLabel'), value: stats.totalSubmissions },
+                  { label: t('approvedSubmissionsLabel'), value: stats.approvedSubmissions },
+                  { label: t('contributionsLabel'), value: stats.contributions },
+                  { label: t('pointsEarnedLabel'), value: stats.pointsEarned },
+                ].map((stat, i) => (
+                  <div
+                    key={stat.label}
+                    className={cn(
+                      'snap-start text-center px-3 py-2 flex-shrink-0',
+                      i < 3 && 'border-r border-white/20'
+                    )}
+                  >
+                    <p className="text-lg font-bold font-mono tabular-nums text-white leading-none">
+                      {statsLoading ? '\u2014' : formatStat(stat.value)}
+                    </p>
+                    <p className="text-[10px] uppercase tracking-wider text-gray-400 mt-1 whitespace-nowrap">
+                      {stat.label}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              {/* Scroll affordance — gradient fade on right edge */}
+              <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-gray-900 to-transparent" />
             </div>
           }
         >
