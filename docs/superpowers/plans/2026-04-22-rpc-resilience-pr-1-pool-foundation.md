@@ -238,6 +238,11 @@ describe('classifyRpcError', () => {
     check(new Error('Account does not exist'), 'empty-ok');
   });
 
+  it('treats POJO errors with empty-ok message text as empty-ok', () => {
+    check({ message: 'could not find account', status: 404 }, 'empty-ok');
+    check({ message: 'Account does not exist' }, 'empty-ok');
+  });
+
   it('treats unknown errors as transient (fail-open for retry)', () => {
     check(new Error('something weird'), 'transient');
     check('string error', 'transient');
@@ -313,6 +318,10 @@ function extractCode(error: unknown): string | number | undefined {
 function extractMessage(error: unknown): string {
   if (error instanceof Error) return error.message;
   if (typeof error === 'string') return error;
+  if (typeof error === 'object' && error !== null) {
+    const msg = (error as { message?: unknown }).message;
+    if (typeof msg === 'string') return msg;
+  }
   return '';
 }
 
