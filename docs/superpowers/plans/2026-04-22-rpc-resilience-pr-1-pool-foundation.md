@@ -1290,6 +1290,9 @@ import { RpcPool } from './rpc-pool';
 let cachedConnection: { rpcUrl: string; connection: Connection } | null = null;
 let cachedOrgMint: { mintAddress: string; mint: PublicKey } | null = null;
 let cachedPool: RpcPool | null = null;
+// cachedProviders is set once per module lifetime. Cleared only on module
+// reload (vi.resetModules() in tests; process restart in prod). Mutating
+// NEXT_PUBLIC_SOLANA_RPC_URL at runtime without a module reload has no effect.
 let cachedProviders: ReadonlyArray<RpcProvider> | null = null;
 
 const TOKEN_BALANCE_CACHE_TTL_MS = 15 * 1000;
@@ -1326,6 +1329,9 @@ export function getConnection(): Connection {
   // current behavior. PR 4 migrates these callers to proxy routes.
   const providers = getProviders();
   const primary = providers[0];
+  if (!primary) {
+    throw new Error('No RPC providers configured');
+  }
   if (cachedConnection?.rpcUrl === primary.connection.rpcEndpoint) {
     return cachedConnection.connection;
   }
