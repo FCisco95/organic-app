@@ -841,6 +841,9 @@ async function withTimeout<T>(
   label: string
 ): Promise<T> {
   let timer: ReturnType<typeof setTimeout> | undefined;
+  // Ensure a late rejection from op (after the timeout wins) is observed
+  // and doesn't trip Node's unhandled-rejection handler.
+  op.catch(() => {});
   const timeout = new Promise<T>((_, reject) => {
     timer = setTimeout(() => reject(new Error(`${label} timeout after ${ms}ms`)), ms);
   });
@@ -865,6 +868,19 @@ export class RpcPool {
     }
   }
 
+  /**
+   * Execute an operation against the provider pool with failover,
+   * circuit-breaker gating, and a per-attempt timeout.
+   *
+   * Error contract:
+   * - `empty-ok` errors (account-not-found signals) propagate unwrapped —
+   *   caller receives the raw error so stack/metadata are preserved.
+   * - `permanent` errors (HTTP 4xx except 429, JSON-RPC -32602) propagate
+   *   unwrapped. Retrying won't help; caller decides next steps.
+   * - `transient` exhaustion across all providers throws `RpcCallError`
+   *   carrying the last underlying error in `cause` and its classification
+   *   in `lastKind`.
+   */
   async call<T>(
     operation: (connection: Connection) => Promise<T>,
     opts: RpcCallOptions = {}
