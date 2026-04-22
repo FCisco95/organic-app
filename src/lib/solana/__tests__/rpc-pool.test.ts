@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { classifyRpcError, CircuitBreaker, type RpcErrorKind } from '../rpc-pool';
+import { classifyRpcError, CircuitBreaker, ProviderHealthTracker, type RpcErrorKind } from '../rpc-pool';
 
 function check(error: unknown, expected: RpcErrorKind): void {
   expect(classifyRpcError(error)).toBe(expected);
@@ -145,5 +145,34 @@ describe('CircuitBreaker', () => {
 
     vi.advanceTimersByTime(30_001);
     expect(breaker.state()).toBe('half-open');
+  });
+});
+
+describe('ProviderHealthTracker', () => {
+  it('retains the last 100 latency samples', () => {
+    const t = new ProviderHealthTracker();
+    for (let i = 0; i < 150; i++) t.recordOutcome({ ok: true, latencyMs: i });
+    const snapshot = t.snapshot();
+    expect(snapshot.latencySamples).toHaveLength(100);
+    expect(snapshot.latencySamples[0]).toBe(50);
+    expect(snapshot.latencySamples[99]).toBe(149);
+  });
+
+  it('counts failures and stores last error message', () => {
+    const t = new ProviderHealthTracker();
+    t.recordOutcome({ ok: true, latencyMs: 5 });
+    t.recordOutcome({ ok: false, latencyMs: 12, errorMessage: 'boom' });
+    const snapshot = t.snapshot();
+    expect(snapshot.failureCount).toBe(1);
+    expect(snapshot.successCount).toBe(1);
+    expect(snapshot.lastErrorMessage).toBe('boom');
+  });
+
+  it('snapshot is a copy — mutations do not affect tracker state', () => {
+    const t = new ProviderHealthTracker();
+    t.recordOutcome({ ok: true, latencyMs: 7 });
+    const snapshot = t.snapshot();
+    snapshot.latencySamples.push(9999);
+    expect(t.snapshot().latencySamples).toHaveLength(1);
   });
 });

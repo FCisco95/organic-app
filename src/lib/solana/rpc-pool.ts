@@ -167,3 +167,41 @@ export class CircuitBreaker {
     return failures / this.samples.length > OPEN_THRESHOLD;
   }
 }
+
+export interface ProviderHealthSnapshot {
+  successCount: number;
+  failureCount: number;
+  lastErrorMessage: string | null;
+  latencySamples: number[];
+}
+
+const MAX_LATENCY_SAMPLES = 100;
+
+export class ProviderHealthTracker {
+  private successes = 0;
+  private failures = 0;
+  private lastError: string | null = null;
+  private latencies: number[] = [];
+
+  recordOutcome(outcome: { ok: boolean; latencyMs: number; errorMessage?: string }): void {
+    if (outcome.ok) {
+      this.successes += 1;
+    } else {
+      this.failures += 1;
+      this.lastError = outcome.errorMessage ?? null;
+    }
+    this.latencies.push(outcome.latencyMs);
+    if (this.latencies.length > MAX_LATENCY_SAMPLES) {
+      this.latencies.splice(0, this.latencies.length - MAX_LATENCY_SAMPLES);
+    }
+  }
+
+  snapshot(): ProviderHealthSnapshot {
+    return {
+      successCount: this.successes,
+      failureCount: this.failures,
+      lastErrorMessage: this.lastError,
+      latencySamples: [...this.latencies],
+    };
+  }
+}
