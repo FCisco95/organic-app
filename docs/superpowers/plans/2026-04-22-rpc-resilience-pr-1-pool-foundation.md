@@ -433,8 +433,12 @@ describe('CircuitBreaker', () => {
     expect(breaker.state()).toBe('open');
 
     vi.advanceTimersByTime(61_000);
-    // After window expiry, zero samples remain, so state recomputes to closed.
-    expect(breaker.state()).toBe('closed');
+    // Window drained (samples aged out), but openedAt persists — 61s ≥ 30s
+    // half-open threshold, so breaker awaits a probe. Single-probe gating
+    // prevents a stampede against a still-possibly-bad provider.
+    expect(breaker.state()).toBe('half-open');
+    expect(breaker.canAttempt()).toBe(true);  // probe admitted
+    expect(breaker.canAttempt()).toBe(false); // subsequent callers blocked
   });
 
   it('transitions open -> half-open after 30s and allows a single probe', () => {
