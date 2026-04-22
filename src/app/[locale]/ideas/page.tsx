@@ -8,6 +8,7 @@ import { CalendarDays, Flame, Lightbulb, MessageCircle, Search, Sparkles, Trendi
 import toast from 'react-hot-toast';
 import { PageContainer } from '@/components/layout';
 import { PageHero } from '@/components/ui/page-hero';
+import { UnauthFallback } from '@/components/ui/unauth-fallback';
 import { useAuth } from '@/features/auth/context';
 import {
   type IdeaSort,
@@ -45,7 +46,8 @@ const IDEAS_FILTER_DEFAULTS: Record<string, string> = { tab: 'all', sort: 'hot',
 
 function IdeasPageInner() {
   const t = useTranslations('Ideas');
-  const { profile } = useAuth();
+  const tFallback = useTranslations('UnauthFallback');
+  const { user, profile, loading: authLoading } = useAuth();
   const { filters: urlFilters, setFilter } = useUrlFilters(IDEAS_FILTER_DEFAULTS);
   const sort = urlFilters.sort as IdeaSort;
   const search = urlFilters.q;
@@ -57,9 +59,10 @@ function IdeasPageInner() {
   const activeTab = urlFilters.tab as FeedTab;
 
   const enabled = isIdeasIncubatorEnabled();
+  const showUnauthFallback = !authLoading && !user && enabled;
 
-  const ideasQuery = useIdeas({ sort, search, enabled });
-  const kpisQuery = useIdeasKpis({ enabled });
+  const ideasQuery = useIdeas({ sort, search, enabled: enabled && !showUnauthFallback });
+  const kpisQuery = useIdeasKpis({ enabled: enabled && !showUnauthFallback });
   const voteIdea = useVoteIdea();
   const moderateIdea = useModerateIdea();
 
@@ -263,7 +266,14 @@ function IdeasPageInner() {
 
         {/* ── Feed list ───────────────────────────────────────── */}
         <div className="opacity-0 animate-fade-up" style={{ animationDelay: '320ms' }}>
-          {ideasQuery.isLoading ? (
+          {showUnauthFallback ? (
+            <UnauthFallback
+              icon={Lightbulb}
+              title={tFallback('ideasTitle')}
+              description={tFallback('ideasDescription')}
+              returnTo="/ideas"
+            />
+          ) : ideasQuery.isLoading ? (
             <div className="space-y-3">
               {[1, 2, 3, 4].map((i) => (
                 <IdeaCardSkeleton key={i} />

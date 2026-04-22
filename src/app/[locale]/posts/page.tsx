@@ -16,6 +16,7 @@ import {
 import toast from 'react-hot-toast';
 import { PageContainer } from '@/components/layout';
 import { PageHero } from '@/components/ui/page-hero';
+import { UnauthFallback } from '@/components/ui/unauth-fallback';
 import { useAuth } from '@/features/auth/context';
 import { usePosts, useLikePost, useFlagPost, type PostSortInput } from '@/features/posts';
 import { cn } from '@/lib/utils';
@@ -91,7 +92,8 @@ const POSTS_FILTER_DEFAULTS: Record<string, string> = { sort: 'new', q: '', type
 function PostsPageInner() {
   const router = useRouter();
   const t = useTranslations('Posts');
-  const { profile } = useAuth();
+  const tFallback = useTranslations('UnauthFallback');
+  const { user, profile, loading: authLoading } = useAuth();
   const { filters: urlFilters, setFilter } = useUrlFilters(POSTS_FILTER_DEFAULTS);
   const sort = urlFilters.sort as PostSort;
   const search = urlFilters.q;
@@ -105,7 +107,14 @@ function PostsPageInner() {
     return () => { document.title = 'Organic'; };
   }, []);
 
-  const postsQuery = usePosts({ sort, search, type: typeFilter, organic: organicFilter ? 'true' : undefined });
+  const showUnauthFallback = !authLoading && !user;
+  const postsQuery = usePosts({
+    sort,
+    search,
+    type: typeFilter,
+    organic: organicFilter ? 'true' : undefined,
+    enabled: !showUnauthFallback,
+  });
   const likePost = useLikePost();
   const flagPost = useFlagPost();
 
@@ -187,21 +196,25 @@ function PostsPageInner() {
 
           {/* Sort + View toggle */}
           <div className="flex items-center gap-2">
-            <div className="flex gap-1.5 overflow-x-auto scrollbar-none min-w-0 flex-1">
-              {SORT_KEYS.map((opt) => (
-                <button
-                  key={opt.value}
-                  onClick={() => setFilter('sort', opt.value)}
-                  className={cn(
-                    'text-xs font-medium px-3 py-2.5 rounded-full whitespace-nowrap transition-colors min-h-[44px] inline-flex items-center shrink-0',
-                    sort === opt.value
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted text-muted-foreground hover:bg-muted/80',
-                  )}
-                >
-                  {t(opt.labelKey)}
-                </button>
-              ))}
+            <div className="relative min-w-0 flex-1">
+              <div className="flex gap-1.5 overflow-x-auto scrollbar-none pr-6">
+                {SORT_KEYS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    onClick={() => setFilter('sort', opt.value)}
+                    className={cn(
+                      'text-xs font-medium px-3 py-2.5 rounded-full whitespace-nowrap transition-colors min-h-[44px] inline-flex items-center shrink-0',
+                      sort === opt.value
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted text-muted-foreground hover:bg-muted/80',
+                    )}
+                  >
+                    {t(opt.labelKey)}
+                  </button>
+                ))}
+              </div>
+              {/* Scroll affordance — gradient fade on right edge */}
+              <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-background to-transparent" />
             </div>
 
             {/* View mode toggle */}
@@ -271,7 +284,14 @@ function PostsPageInner() {
         </div>
 
         {/* Feed */}
-        {postsQuery.isLoading ? (
+        {showUnauthFallback ? (
+          <UnauthFallback
+            icon={MessageSquare}
+            title={tFallback('postsTitle')}
+            description={tFallback('postsDescription')}
+            returnTo="/posts"
+          />
+        ) : postsQuery.isLoading ? (
           <div className="space-y-3">
             {viewMode === 'cards' ? (
               <>

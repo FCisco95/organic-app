@@ -3733,5 +3733,17 @@
     "proposalTitle": "Não foi possível carregar esta proposta",
     "proposalDescription": "Houve um erro ao carregar a proposta. Pode ter sido removida ou poderás não ter acesso.",
     "backToProposals": "Voltar às propostas"
+  },
+  "UnauthFallback": {
+    "signInCta": "Entrar",
+    "signUpCta": "Criar conta",
+    "postsTitle": "Entra para ler o feed da comunidade",
+    "postsDescription": "Explora atualizações, tópicos e anúncios do Organic DAO. Entra para gostar, comentar e ganhar XP em cada interação.",
+    "communityTitle": "Entra para conheceres a comunidade",
+    "communityDescription": "Explora rankings, sequências e o directório de membros. Entra para veres a tua posição no leaderboard.",
+    "ideasTitle": "Entra para explorares ideias",
+    "ideasDescription": "Vê o que a comunidade está a propor antes de virar governança. Entra para votar, comentar e dar direcção.",
+    "harvestTitle": "Entra para veres a colheita semanal",
+    "harvestDescription": "A ideia vencedora, os maiores contribuintes e o impulso da semana. Entra para apareceres em destaque na próxima semana."
   }
 }

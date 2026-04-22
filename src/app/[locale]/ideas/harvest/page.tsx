@@ -5,14 +5,19 @@ import { useTranslations } from 'next-intl';
 import { ArrowLeft, Trophy } from 'lucide-react';
 import { PageContainer } from '@/components/layout';
 import { PageHero } from '@/components/ui/page-hero';
+import { UnauthFallback } from '@/components/ui/unauth-fallback';
+import { useAuth } from '@/features/auth/context';
 import { useHarvest } from '@/features/ideas';
 import { isIdeasIncubatorEnabled } from '@/config/feature-flags';
 import { WeeklyHarvest } from '@/components/ideas/WeeklyHarvest';
 
 export default function HarvestPage() {
   const t = useTranslations('Harvest');
+  const tFallback = useTranslations('UnauthFallback');
+  const { user, loading: authLoading } = useAuth();
   const enabled = isIdeasIncubatorEnabled();
-  const harvestQuery = useHarvest({ enabled });
+  const showUnauthFallback = !authLoading && !user && enabled;
+  const harvestQuery = useHarvest({ enabled: enabled && !showUnauthFallback });
 
   if (!enabled) {
     return (
@@ -57,7 +62,16 @@ export default function HarvestPage() {
 
         {/* Harvest content */}
         <div className="opacity-0 animate-fade-up stagger-2">
-          <WeeklyHarvest data={harvestQuery.data} isLoading={harvestQuery.isLoading} />
+          {showUnauthFallback ? (
+            <UnauthFallback
+              icon={Trophy}
+              title={tFallback('harvestTitle')}
+              description={tFallback('harvestDescription')}
+              returnTo="/ideas/harvest"
+            />
+          ) : (
+            <WeeklyHarvest data={harvestQuery.data} isLoading={harvestQuery.isLoading} />
+          )}
         </div>
       </div>
     </PageContainer>
