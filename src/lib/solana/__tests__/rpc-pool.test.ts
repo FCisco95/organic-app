@@ -328,3 +328,103 @@ describe('RpcPool.call — error branches', () => {
     expect(health.stats.failureCount).toBe(0);
   });
 });
+
+describe('RpcPool.call — failover order', () => {
+  beforeEach(() => vi.useRealTimers());
+
+  // Tag each provider's connection with an _id so handlers can tell
+  // which provider invoked them without reaching into pool internals.
+  function idProvider(
+    name: 'primary' | 'secondary' | 'fallback',
+    timeoutMs = 100
+  ): RpcProviderLike {
+    return {
+      name,
+      tier: name,
+      timeoutMs,
+      connection: { _id: name } as never,
+    } as RpcProviderLike;
+  }
+
+  function idOf(c: unknown): string {
+    return (c as { _id: string })._id;
+  }
+
+  it('fails over primary → secondary when primary keeps throwing transient', async () => {
+    const pool = new RpcPool([idProvider('primary'), idProvider('secondary')]);
+    const touched: string[] = [];
+    const result = await pool.call(async (c) => {
+      touched.push(idOf(c));
+      if (idOf(c) === 'primary') {
+        throw Object.assign(new Error('rate limit'), { status: 429 });
+      }
+      return 'ok-from-secondary';
+    });
+    expect(result).toBe('ok-from-secondary');
+    // primary: 2 attempts (initial + 1 retry) → secondary: 1 success.
+    expect(touched).toEqual(['primary', 'primary', 'secondary']);
+  });
+
+  it('skips a provider whose breaker is open', async () => {
+    const pool = new RpcPool([idProvider('primary'), idProvider('secondary')]);
+
+    // Prime: 20 rounds where only primary fails; secondary stays healthy.
+    for (let i = 0; i < 20; i++) {
+      await pool.call(async (c) => {
+        if (idOf(c) === 'primary') {
+          throw Object.assign(new Error('rl'), { status: 503 });
+        }
+        return 'ok';
+      });
+    }
+    const health = pool.getHealth();
+    expect(health[0].breaker).toBe('open');
+    expect(health[1].breaker).toBe('closed');
+
+    const touched: string[] = [];
+    const result = await pool.call(async (c) => {
+      touched.push(idOf(c));
+      return 'ok';
+    });
+    expect(result).toBe('ok');
+    expect(touched).toEqual(['secondary']); // primary skipped entirely
+  });
+
+  it('enforces 6-attempt total budget across 3 providers (2 retries each)', async () => {
+    const pool = new RpcPool([
+      idProvider('primary', 50),
+      idProvider('secondary', 50),
+      idProvider('fallback', 50),
+    ]);
+    const touched: string[] = [];
+    await expect(
+      pool.call(async (c) => {
+        touched.push(idOf(c));
+        throw Object.assign(new Error('rl'), { status: 503 });
+      })
+    ).rejects.toBeInstanceOf(Error);
+    expect(touched).toEqual([
+      'primary',
+      'primary',
+      'secondary',
+      'secondary',
+      'fallback',
+      'fallback',
+    ]);
+  });
+
+  it('throws RpcCallError with lastKind when all providers exhaust', async () => {
+    const { RpcCallError } = await import('../rpc-pool');
+    const pool = new RpcPool([idProvider('primary'), idProvider('secondary')]);
+    const err = await pool
+      .call(async () => {
+        throw Object.assign(new Error('rl'), { status: 503 });
+      })
+      .then(
+        () => null,
+        (e: unknown) => e
+      );
+    expect(err).toBeInstanceOf(RpcCallError);
+    expect((err as InstanceType<typeof RpcCallError>).lastKind).toBe('transient');
+  });
+});
