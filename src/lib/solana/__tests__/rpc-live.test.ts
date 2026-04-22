@@ -49,3 +49,30 @@ describe('rpc-live pool wiring', () => {
     expect(mod.__getPool()).toBeNull();
   });
 });
+
+describe('public export surface (regression)', () => {
+  it('index.ts exports the exact symbols existing callers depend on', async () => {
+    vi.resetModules();
+    const mod = await import('../index');
+    const expected = [
+      'getSolanaRpc',
+      'getConnection',
+      'getOrgTokenMint',
+      'ORG_TOKEN_MINT',
+      'getTokenBalance',
+      'getAllTokenHolders',
+      'isOrgHolder',
+    ];
+    for (const name of expected) {
+      expect(mod).toHaveProperty(name);
+    }
+  });
+
+  it('SolanaRpc interface contract: LiveSolanaRpc implements required methods', async () => {
+    const { LiveSolanaRpc } = await import('../rpc-live');
+    const inst = new LiveSolanaRpc();
+    expect(typeof inst.getTokenBalance).toBe('function');
+    expect(typeof inst.isOrgHolder).toBe('function');
+    expect(typeof inst.getAllTokenHolders).toBe('function');
+  });
+});
