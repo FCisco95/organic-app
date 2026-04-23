@@ -20,11 +20,15 @@ export const txSignatureQuerySchema = z.object({
     .regex(BASE58_REGEX, { message: 'signature must be base58' }),
 });
 
+export const MAX_TOP_N = 100;
+
 export const topNSchema = z
   .string()
   .regex(/^\d+$/, { message: 'top must be a positive integer' })
   .transform((v) => Number.parseInt(v, 10))
-  .refine((n) => n >= 1 && n <= 100, { message: 'top must be 1..100' });
+  .refine((n) => n >= 1 && n <= MAX_TOP_N, {
+    message: `top must be 1..${MAX_TOP_N}`,
+  });
 
 export type WalletQuery = z.infer<typeof walletQuerySchema>;
 export type TxSignatureQuery = z.infer<typeof txSignatureQuerySchema>;

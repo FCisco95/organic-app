@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAllTokenHolders } from '@/lib/solana';
-import { topNSchema } from '@/features/solana-proxy/schemas';
+import { MAX_TOP_N, topNSchema } from '@/features/solana-proxy/schemas';
 import { logger } from '@/lib/logger';
 
 // ddos-exempt: public user-facing proxy. Safe because the route is
@@ -24,7 +24,9 @@ interface HolderCountCache {
 
 let holderCountCache: HolderCountCache | null = null;
 const STALE_CAP_MS = 10 * 60_000;
-const CACHE_TOP_SIZE = 100;
+// Cache holds exactly the schema's max so every valid ?top=N can be
+// served from the warm slice without re-running getAllTokenHolders.
+const CACHE_TOP_SIZE = MAX_TOP_N;
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const rawTop = request.nextUrl.searchParams.get('top');
