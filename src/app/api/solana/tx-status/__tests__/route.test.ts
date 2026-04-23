@@ -40,7 +40,14 @@ function fakeTx(
   return {
     slot: 42,
     blockTime: 1_700_000_000,
-    meta: null,
+    meta: {
+      err: null,
+      fee: 5000,
+      innerInstructions: [],
+      logMessages: [],
+      postBalances: [],
+      preBalances: [],
+    },
     transaction: {
       message: { accountKeys: [], instructions: [] },
       signatures: [],
@@ -149,5 +156,16 @@ describe('GET /api/solana/tx-status', () => {
     const res = await GET(buildRequest({ signature: VALID_SIG }));
     const body = await res.json();
     expect(body.data.status).toBe('failed');
+  });
+
+  it("returns status='unknown' when tx.meta is null (pruned metadata)", async () => {
+    vi.mocked(getConnection).mockReturnValue({
+      getParsedTransaction: vi.fn().mockResolvedValueOnce(fakeTx({ meta: null })),
+    } as unknown as ReturnType<typeof getConnection>);
+    const res = await GET(buildRequest({ signature: VALID_SIG }));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.data.status).toBe('unknown');
+    expect(body.data.slot).toBe(42);
   });
 });
