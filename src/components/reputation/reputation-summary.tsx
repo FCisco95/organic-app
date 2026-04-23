@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { Trophy } from 'lucide-react';
 import { useReputation } from '@/features/reputation';
 import { formatXp } from '@/features/reputation';
+import { useLoginStreak } from '@/features/daily-tasks/hooks';
 import { LevelBadge } from './level-badge';
 import { XpProgressBar } from './xp-progress-bar';
 import { StreakDisplay } from './streak-display';
@@ -15,6 +16,7 @@ interface ReputationSummaryProps {
 export function ReputationSummary({ className }: ReputationSummaryProps) {
   const t = useTranslations('Reputation');
   const { data, isLoading } = useReputation();
+  const { data: loginStreak } = useLoginStreak();
 
   if (isLoading) {
     return (
@@ -54,7 +56,12 @@ export function ReputationSummary({ className }: ReputationSummaryProps) {
         <XpProgressBar xpTotal={data.xp_total} level={data.level} />
 
         <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/50">
-          <StreakDisplay streak={data.current_streak} showLabel={false} />
+          <StreakDisplay
+            streak={loginStreak?.current_streak ?? data.current_streak}
+            showLabel
+            interactive
+            lastLoginDate={loginStreak?.last_login_date ?? null}
+          />
           <span className="flex items-center gap-1 text-xs text-muted-foreground">
             <Trophy className="w-3.5 h-3.5 text-amber-500" />
             {t('achievementsUnlocked', { count: data.achievement_count })}

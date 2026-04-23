@@ -28,3 +28,21 @@ export type LoginStreak = z.infer<typeof loginStreakSchema>;
 export const trackTaskSchema = z.object({
   task_key: z.string().min(1).max(100),
 });
+
+const IANA_TIMEZONE = z.string().min(1).max(80).refine(
+  (tz) => {
+    try {
+      new Intl.DateTimeFormat('en-US', { timeZone: tz });
+      return true;
+    } catch {
+      return false;
+    }
+  },
+  { message: 'Invalid IANA timezone' }
+);
+
+export const markStreakTodaySchema = z.object({
+  timezone: IANA_TIMEZONE,
+});
+
+export type MarkStreakTodayInput = z.infer<typeof markStreakTodaySchema>;
