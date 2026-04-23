@@ -10,7 +10,8 @@ vi.mock('@/lib/logger', () => ({
 }));
 
 import { getTokenBalance } from '@/lib/solana';
-import { GET, __resetStaleCacheForTests } from '../route';
+import { GET } from '../route';
+import { __resetStaleCacheForTests } from '../stale-cache';
 
 function buildRequest(query: Record<string, string>): NextRequest {
   const url = new URL('http://test.local/api/solana/token-balance');

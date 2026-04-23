@@ -2,17 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getTokenBalance } from '@/lib/solana';
 import { walletQuerySchema } from '@/features/solana-proxy/schemas';
 import { logger } from '@/lib/logger';
+import { staleCache, STALE_CAP_MS } from './stale-cache';
 
 export const dynamic = 'force-dynamic';
-
-interface StaleCacheEntry {
-  balance: number;
-  ts: number;
-}
-
-// Module-level stale cache for pool-exhaustion fallback. 5 min cap.
-const staleCache = new Map<string, StaleCacheEntry>();
-const STALE_CAP_MS = 5 * 60_000;
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const parsed = walletQuerySchema.safeParse({
@@ -59,9 +51,4 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       { status: 500 }
     );
   }
-}
-
-// Exported for tests; do not import from runtime code.
-export function __resetStaleCacheForTests(): void {
-  staleCache.clear();
 }
