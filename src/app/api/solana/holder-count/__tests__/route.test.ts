@@ -10,7 +10,8 @@ vi.mock('@/lib/logger', () => ({
 }));
 
 import { getAllTokenHolders } from '@/lib/solana';
-import { GET, __resetHolderCountCacheForTests } from '../route';
+import { GET } from '../route';
+import { __resetHolderCountCacheForTests } from '../holder-cache';
 
 function buildRequest(query: Record<string, string>): NextRequest {
   const url = new URL('http://test.local/api/solana/holder-count');
