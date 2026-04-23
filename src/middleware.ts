@@ -41,7 +41,6 @@ const DASHBOARD_READ_RATE_LIMIT_PATHS = new Set([
   '/api/analytics',
   '/api/leaderboard',
   '/api/treasury',
-  '/api/organic-id/balance',
 ]);
 const INTERNAL_BYPASS_PATHS = new Set(['/api/internal/market-cache/refresh']);
 const SENSITIVE_RATE_LIMIT_PREFIXES = [
