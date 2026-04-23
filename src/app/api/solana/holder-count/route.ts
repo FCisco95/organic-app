@@ -3,11 +3,11 @@ import { getAllTokenHolders } from '@/lib/solana';
 import { topNSchema } from '@/features/solana-proxy/schemas';
 import { logger } from '@/lib/logger';
 
-// Public holder-count proxy. Unlike other getAllTokenHolders callers
-// (admin / council / cron jobs), this route is deliberately user-facing
-// and shields the paid RPC via three layers: the RpcPool rate-limit
-// bucket, CDN caching (s-maxage=300, SWR=900), and a module-level stale
-// cache (10 min) for pool-exhaustion fallback.
+// ddos-exempt: public user-facing proxy. Safe because the route is
+// rate-limited via the `solana-proxy` middleware bucket (100 req/min
+// per IP), CDN-cached (s-maxage=300, SWR=900), and falls back to a
+// module-scoped stale cache on pool exhaustion. The paid RPC is never
+// reached directly from the browser.
 export const dynamic = 'force-dynamic';
 
 interface HolderEntry {
