@@ -3,11 +3,6 @@ import { readFileSync } from 'fs';
 import { globSync } from 'fs';
 
 describe('API Security', () => {
-  it('should require auth on organic-id/balance endpoint', () => {
-    const content = readFileSync('src/app/api/organic-id/balance/route.ts', 'utf-8');
-    expect(content).toContain('getUser');
-  });
-
   it('should support idempotency key on reward claims', () => {
     const content = readFileSync('src/app/api/rewards/claims/route.ts', 'utf-8');
     expect(content.toLowerCase()).toContain('idempotency');

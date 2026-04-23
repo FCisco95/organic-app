@@ -1,19 +1,42 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 
 describe('parseProvidersFromEnv', () => {
-  const originalUrl = process.env.NEXT_PUBLIC_SOLANA_RPC_URL;
+  const originalPrimary = process.env.SOLANA_RPC_PRIMARY_URL;
+  const originalSecondary = process.env.SOLANA_RPC_SECONDARY_URL;
+  const originalFallback = process.env.SOLANA_RPC_FALLBACK_URL;
+  const originalPublic = process.env.NEXT_PUBLIC_SOLANA_RPC_URL;
+  const originalNodeEnv = process.env.NODE_ENV;
+
+  // NODE_ENV is typed as readonly on NodeJS.ProcessEnv; cast through a mutable
+  // shape so strict tsc accepts the assignment in tests that must exercise
+  // the production-mode code path in providers.ts.
+  const setNodeEnv = (value: string | undefined): void => {
+    if (value === undefined) {
+      delete (process.env as Record<string, string | undefined>).NODE_ENV;
+    } else {
+      (process.env as Record<string, string | undefined>).NODE_ENV = value;
+    }
+  };
 
   afterEach(() => {
-    if (originalUrl === undefined) {
-      delete process.env.NEXT_PUBLIC_SOLANA_RPC_URL;
-    } else {
-      process.env.NEXT_PUBLIC_SOLANA_RPC_URL = originalUrl;
-    }
+    const restore = (key: string, value: string | undefined) => {
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    };
+    restore('SOLANA_RPC_PRIMARY_URL', originalPrimary);
+    restore('SOLANA_RPC_SECONDARY_URL', originalSecondary);
+    restore('SOLANA_RPC_FALLBACK_URL', originalFallback);
+    restore('NEXT_PUBLIC_SOLANA_RPC_URL', originalPublic);
+    setNodeEnv(originalNodeEnv);
     vi.resetModules();
   });
 
-  it('returns a single primary provider from NEXT_PUBLIC_SOLANA_RPC_URL when set', async () => {
-    process.env.NEXT_PUBLIC_SOLANA_RPC_URL = 'https://example-rpc.test';
+  it('uses mainnet-beta cluster default when no tier URLs are set (dev ergonomics)', async () => {
+    delete process.env.SOLANA_RPC_PRIMARY_URL;
+    delete process.env.SOLANA_RPC_SECONDARY_URL;
+    delete process.env.SOLANA_RPC_FALLBACK_URL;
+    delete process.env.NEXT_PUBLIC_SOLANA_RPC_URL;
+    setNodeEnv('test');
     vi.resetModules();
     const { parseProvidersFromEnv, DEFAULT_TIMEOUT_MS } = await import('../providers');
     const providers = parseProvidersFromEnv();
@@ -21,26 +44,32 @@ describe('parseProvidersFromEnv', () => {
     expect(providers[0].name).toBe('primary');
     expect(providers[0].tier).toBe('primary');
     expect(providers[0].timeoutMs).toBe(DEFAULT_TIMEOUT_MS);
-    expect(providers[0].connection.rpcEndpoint).toBe('https://example-rpc.test');
+    expect(providers[0].connection.rpcEndpoint).toContain('mainnet-beta');
   });
 
-  it('falls back to clusterApiUrl mainnet-beta when env is unset', async () => {
+  it('ignores NEXT_PUBLIC_SOLANA_RPC_URL entirely (browser URL stays browser-only)', async () => {
+    delete process.env.SOLANA_RPC_PRIMARY_URL;
+    delete process.env.SOLANA_RPC_SECONDARY_URL;
+    delete process.env.SOLANA_RPC_FALLBACK_URL;
+    process.env.NEXT_PUBLIC_SOLANA_RPC_URL = 'https://browser-only.example.com';
+    setNodeEnv('test');
+    vi.resetModules();
+    const { parseProvidersFromEnv } = await import('../providers');
+    const providers = parseProvidersFromEnv();
+    expect(providers).toHaveLength(1);
+    expect(providers[0].connection.rpcEndpoint).not.toContain('browser-only.example.com');
+    expect(providers[0].connection.rpcEndpoint).toContain('mainnet-beta');
+  });
+
+  it('throws a clear error in production when no tier URLs are set', async () => {
+    delete process.env.SOLANA_RPC_PRIMARY_URL;
+    delete process.env.SOLANA_RPC_SECONDARY_URL;
+    delete process.env.SOLANA_RPC_FALLBACK_URL;
     delete process.env.NEXT_PUBLIC_SOLANA_RPC_URL;
+    setNodeEnv('production');
     vi.resetModules();
     const { parseProvidersFromEnv } = await import('../providers');
-    const providers = parseProvidersFromEnv();
-    expect(providers).toHaveLength(1);
-    expect(providers[0].name).toBe('primary');
-    expect(providers[0].connection.rpcEndpoint).toContain('mainnet-beta');
-  });
-
-  it('trims whitespace and rejects empty strings, falling back to cluster default', async () => {
-    process.env.NEXT_PUBLIC_SOLANA_RPC_URL = '   ';
-    vi.resetModules();
-    const { parseProvidersFromEnv } = await import('../providers');
-    const providers = parseProvidersFromEnv();
-    expect(providers).toHaveLength(1);
-    expect(providers[0].connection.rpcEndpoint).toContain('mainnet-beta');
+    expect(() => parseProvidersFromEnv()).toThrow(/SOLANA_RPC_PRIMARY_URL/);
   });
 });
 
@@ -91,16 +120,6 @@ describe('env URL validation', () => {
     const { parseProvidersFromEnv } = await import('../providers');
     const providers = parseProvidersFromEnv();
     expect(providers[0].connection.rpcEndpoint).toBe('http://localhost:8899');
-  });
-
-  it('rejects an invalid NEXT_PUBLIC_SOLANA_RPC_URL on the legacy fallback path', async () => {
-    delete process.env.SOLANA_RPC_PRIMARY_URL;
-    delete process.env.SOLANA_RPC_SECONDARY_URL;
-    delete process.env.SOLANA_RPC_FALLBACK_URL;
-    process.env.NEXT_PUBLIC_SOLANA_RPC_URL = 'not a url';
-    vi.resetModules();
-    const { parseProvidersFromEnv } = await import('../providers');
-    expect(() => parseProvidersFromEnv()).toThrow(/NEXT_PUBLIC_SOLANA_RPC_URL/);
   });
 });
 
@@ -186,7 +205,7 @@ describe('tier resolution', () => {
   });
 });
 
-describe('deduplication and legacy interaction', () => {
+describe('deduplication', () => {
   const originalPrimary = process.env.SOLANA_RPC_PRIMARY_URL;
   const originalSecondary = process.env.SOLANA_RPC_SECONDARY_URL;
   const originalFallback = process.env.SOLANA_RPC_FALLBACK_URL;
@@ -227,18 +246,5 @@ describe('deduplication and legacy interaction', () => {
     const providers = parseProvidersFromEnv();
     expect(providers).toHaveLength(1);
     expect(providers[0].tier).toBe('primary');
-  });
-
-  it('ignores NEXT_PUBLIC_SOLANA_RPC_URL when any tier var is set', async () => {
-    process.env.SOLANA_RPC_PRIMARY_URL = 'https://tiered.example';
-    delete process.env.SOLANA_RPC_SECONDARY_URL;
-    delete process.env.SOLANA_RPC_FALLBACK_URL;
-    process.env.NEXT_PUBLIC_SOLANA_RPC_URL = 'https://legacy.example';
-    vi.resetModules();
-    const { parseProvidersFromEnv } = await import('../providers');
-    const providers = parseProvidersFromEnv();
-    const endpoints = providers.map((p) => p.connection.rpcEndpoint);
-    expect(endpoints).toContain('https://tiered.example');
-    expect(endpoints).not.toContain('https://legacy.example');
   });
 });

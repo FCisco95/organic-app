@@ -4,7 +4,7 @@ import type { Connection, PublicKey } from '@solana/web3.js';
 describe('rpc-live pool wiring', () => {
   const originalMode = process.env.SOLANA_RPC_MODE;
   const originalDisabled = process.env.SOLANA_RPC_POOL_DISABLED;
-  const originalUrl = process.env.NEXT_PUBLIC_SOLANA_RPC_URL;
+  const originalPrimary = process.env.SOLANA_RPC_PRIMARY_URL;
 
   afterEach(() => {
     const restore = (key: string, val: string | undefined) => {
@@ -13,14 +13,14 @@ describe('rpc-live pool wiring', () => {
     };
     restore('SOLANA_RPC_MODE', originalMode);
     restore('SOLANA_RPC_POOL_DISABLED', originalDisabled);
-    restore('NEXT_PUBLIC_SOLANA_RPC_URL', originalUrl);
+    restore('SOLANA_RPC_PRIMARY_URL', originalPrimary);
     vi.resetModules();
   });
 
   it('getConnection() returns a Connection object — API preserved', async () => {
     delete process.env.SOLANA_RPC_MODE;
     delete process.env.SOLANA_RPC_POOL_DISABLED;
-    process.env.NEXT_PUBLIC_SOLANA_RPC_URL = 'https://example.test';
+    process.env.SOLANA_RPC_PRIMARY_URL = 'https://example.test';
     vi.resetModules();
     const { getConnection } = await import('../rpc-live');
     const { Connection } = await import('@solana/web3.js');
@@ -37,6 +37,7 @@ describe('rpc-live pool wiring', () => {
 
   it('exposes __getPool() only when SOLANA_RPC_POOL_DISABLED is unset', async () => {
     delete process.env.SOLANA_RPC_POOL_DISABLED;
+    process.env.SOLANA_RPC_PRIMARY_URL = 'https://example.test';
     vi.resetModules();
     const mod = await import('../rpc-live');
     expect(typeof mod.__getPool).toBe('function');
@@ -59,7 +60,7 @@ describe('rpc-live pool wiring', () => {
 
   it('returns a ConsensusVerifier from __getConsensus() when pool is not disabled', async () => {
     delete process.env.SOLANA_RPC_POOL_DISABLED;
-    process.env.NEXT_PUBLIC_SOLANA_RPC_URL = 'https://example.test';
+    process.env.SOLANA_RPC_PRIMARY_URL = 'https://example.test';
     vi.resetModules();
     const mod = await import('../rpc-live');
     const { ConsensusVerifier } = await import('../rpc-consensus');
@@ -70,7 +71,7 @@ describe('rpc-live pool wiring', () => {
 
   it('getSolanaConsensus() mirrors __getConsensus() behavior', async () => {
     delete process.env.SOLANA_RPC_POOL_DISABLED;
-    process.env.NEXT_PUBLIC_SOLANA_RPC_URL = 'https://example.test';
+    process.env.SOLANA_RPC_PRIMARY_URL = 'https://example.test';
     vi.resetModules();
     const { getSolanaConsensus } = await import('../index');
     const { ConsensusVerifier } = await import('../rpc-consensus');
