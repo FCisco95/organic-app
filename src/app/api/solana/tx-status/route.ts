@@ -28,6 +28,13 @@ function summarizeForConsensus(
   return { slot: tx.slot, status: 'finalized' };
 }
 
+function mapTxStatus(
+  tx: ParsedTransactionWithMeta
+): 'finalized' | 'failed' | 'unknown' {
+  if (tx.meta === null) return 'unknown';
+  return tx.meta.err ? 'failed' : 'finalized';
+}
+
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const parsed = txSignatureQuerySchema.safeParse({
     signature: request.nextUrl.searchParams.get('signature') ?? '',
@@ -73,7 +80,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       {
         data: {
           slot: tx.slot,
-          status: tx.meta?.err ? 'failed' : 'finalized',
+          status: mapTxStatus(tx),
           block_time: tx.blockTime ?? null,
         },
         error: null,
