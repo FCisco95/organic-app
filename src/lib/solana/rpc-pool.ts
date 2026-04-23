@@ -10,6 +10,7 @@
 
 import type { Connection } from '@solana/web3.js';
 import type { RpcProvider } from './providers';
+import { withTimeout } from './rpc-timing';
 
 export type RpcErrorKind = 'transient' | 'permanent' | 'empty-ok';
 
@@ -225,25 +226,6 @@ export class RpcCallError extends Error {
   ) {
     super(message);
     this.name = 'RpcCallError';
-  }
-}
-
-async function withTimeout<T>(
-  op: Promise<T>,
-  ms: number,
-  label: string
-): Promise<T> {
-  let timer: ReturnType<typeof setTimeout> | undefined;
-  // Ensure a late rejection from op (after the timeout wins) is observed
-  // and doesn't trip Node's unhandled-rejection handler.
-  op.catch(() => {});
-  const timeout = new Promise<T>((_, reject) => {
-    timer = setTimeout(() => reject(new Error(`${label} timeout after ${ms}ms`)), ms);
-  });
-  try {
-    return await Promise.race([op, timeout]);
-  } finally {
-    if (timer !== undefined) clearTimeout(timer);
   }
 }
 
