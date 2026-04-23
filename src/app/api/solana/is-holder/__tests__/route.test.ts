@@ -73,7 +73,7 @@ beforeEach(() => {
 describe('GET /api/solana/is-holder', () => {
   it('returns 401 when unauthenticated', async () => {
     vi.mocked(createClient).mockResolvedValue(
-      mockSupabase(null) as never
+      mockSupabase(null) as unknown as Awaited<ReturnType<typeof createClient>>
     );
 
     const res = await GET(buildRequest({ wallet: VALID_WALLET }));
@@ -83,9 +83,25 @@ describe('GET /api/solana/is-holder', () => {
     expect(body.error).toBe('Unauthorized');
   });
 
+  it('returns 401 when supabase reports an auth error', async () => {
+    vi.mocked(createClient).mockResolvedValue({
+      auth: {
+        getUser: vi.fn().mockResolvedValue({
+          data: { user: null },
+          error: new Error('session expired'),
+        }),
+      },
+    } as unknown as Awaited<ReturnType<typeof createClient>>);
+    const res = await GET(buildRequest({ wallet: VALID_WALLET }));
+    expect(res.status).toBe(401);
+    const body = await res.json();
+    expect(body.data).toBeNull();
+    expect(body.error).toBe('Unauthorized');
+  });
+
   it('returns 400 on malformed wallet when authenticated', async () => {
     vi.mocked(createClient).mockResolvedValue(
-      mockSupabase({ id: 'user-123' }) as never
+      mockSupabase({ id: 'user-123' }) as unknown as Awaited<ReturnType<typeof createClient>>
     );
 
     const res = await GET(buildRequest({ wallet: 'not-base58!' }));
@@ -97,13 +113,15 @@ describe('GET /api/solana/is-holder', () => {
 
   it('returns 200 with isHolder=true and no-store when consensus agrees', async () => {
     vi.mocked(createClient).mockResolvedValue(
-      mockSupabase({ id: 'user-123' }) as never
+      mockSupabase({ id: 'user-123' }) as unknown as Awaited<ReturnType<typeof createClient>>
     );
 
     const verifier: MockVerifier = {
       verify: vi.fn().mockResolvedValue(true),
     };
-    vi.mocked(getSolanaConsensus).mockReturnValue(verifier as never);
+    vi.mocked(getSolanaConsensus).mockReturnValue(
+      verifier as unknown as ReturnType<typeof getSolanaConsensus>
+    );
 
     const res = await GET(buildRequest({ wallet: VALID_WALLET }));
     expect(res.status).toBe(200);
@@ -124,7 +142,7 @@ describe('GET /api/solana/is-holder', () => {
 
   it('returns 503 when consensus disagrees (ConsensusError)', async () => {
     vi.mocked(createClient).mockResolvedValue(
-      mockSupabase({ id: 'user-123' }) as never
+      mockSupabase({ id: 'user-123' }) as unknown as Awaited<ReturnType<typeof createClient>>
     );
 
     vi.mocked(getSolanaConsensus).mockReturnValue({
@@ -146,9 +164,26 @@ describe('GET /api/solana/is-holder', () => {
     expect(body.error).toMatch(/temporarily inconsistent/i);
   });
 
+  it('returns 500 on unexpected error from consensus.verify', async () => {
+    vi.mocked(createClient).mockResolvedValue(
+      mockSupabase({ id: 'user-1' }) as unknown as Awaited<ReturnType<typeof createClient>>
+    );
+    const verifier = {
+      verify: vi.fn().mockRejectedValue(new Error('rpc timeout')),
+    };
+    vi.mocked(getSolanaConsensus).mockReturnValue(
+      verifier as unknown as ReturnType<typeof getSolanaConsensus>
+    );
+    const res = await GET(buildRequest({ wallet: VALID_WALLET }));
+    expect(res.status).toBe(500);
+    const body = await res.json();
+    expect(body.data).toBeNull();
+    expect(body.error).toBe('Temporarily unavailable');
+  });
+
   it('falls back to isOrgHolder when consensus is not configured', async () => {
     vi.mocked(createClient).mockResolvedValue(
-      mockSupabase({ id: 'user-123' }) as never
+      mockSupabase({ id: 'user-123' }) as unknown as Awaited<ReturnType<typeof createClient>>
     );
 
     vi.mocked(getSolanaConsensus).mockReturnValue(null);
