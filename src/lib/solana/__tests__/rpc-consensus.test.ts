@@ -308,13 +308,13 @@ describe('compareBoolean', () => {
 
 describe('compareLamports', () => {
   it('compares two bigints exactly', () => {
-    expect(compareLamports(1n, 1n)).toBe(true);
-    expect(compareLamports(1n, 2n)).toBe(false);
+    expect(compareLamports(BigInt(1), BigInt(1))).toBe(true);
+    expect(compareLamports(BigInt(1), BigInt(2))).toBe(false);
   });
 
   it('coerces number to bigint when comparing mixed inputs', () => {
-    expect(compareLamports(1, 1n)).toBe(true);
-    expect(compareLamports(1n, 1)).toBe(true);
+    expect(compareLamports(1, BigInt(1))).toBe(true);
+    expect(compareLamports(BigInt(1), 1)).toBe(true);
   });
 
   it('handles large-but-safe number values converted to bigint', () => {
