@@ -3,10 +3,12 @@ import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import type { SolanaRpc, TokenHolder } from './rpc';
 import { parseProvidersFromEnv, type RpcProvider } from './providers';
 import { RpcPool } from './rpc-pool';
+import { ConsensusVerifier } from './rpc-consensus';
 
 let cachedConnection: { rpcUrl: string; connection: Connection } | null = null;
 let cachedOrgMint: { mintAddress: string; mint: PublicKey } | null = null;
 let cachedPool: RpcPool | null = null;
+let cachedConsensus: ConsensusVerifier | null = null;
 // cachedProviders is set once per module lifetime. Cleared only on module
 // reload (vi.resetModules() in tests; process restart in prod). Mutating
 // NEXT_PUBLIC_SOLANA_RPC_URL at runtime without a module reload has no effect.
@@ -38,6 +40,28 @@ export function __getPool(): RpcPool | null {
   if (cachedPool) return cachedPool;
   cachedPool = new RpcPool(getProviders());
   return cachedPool;
+}
+
+/** @internal — exported for tests only. */
+export function __getConsensus(): ConsensusVerifier | null {
+  if (poolDisabled()) return null;
+  if (cachedConsensus) return cachedConsensus;
+  const pool = __getPool();
+  if (!pool) return null;
+  cachedConsensus = new ConsensusVerifier(getProviders(), pool);
+  return cachedConsensus;
+}
+
+/**
+ * @internal — test-only hook. Clears all module-level caches so tests can
+ * re-parse env and rebuild providers/pool/consensus between scenarios.
+ */
+export function __resetRpcCachesForTests(): void {
+  cachedConnection = null;
+  cachedOrgMint = null;
+  cachedPool = null;
+  cachedConsensus = null;
+  cachedProviders = null;
 }
 
 export function getConnection(): Connection {
@@ -141,6 +165,32 @@ export async function isOrgHolder(
 ): Promise<boolean> {
   const balance = await getTokenBalance(walletAddress, ORG_TOKEN_MINT, options);
   return balance > 0;
+}
+
+/**
+ * Authoritative fresh holder check against a specific `Connection`.
+ *
+ * Unlike `isOrgHolder`, this helper bypasses both the module-level TTL cache
+ * and the pool's retry/breaker layer. It is designed to be invoked by the
+ * `ConsensusVerifier` once per provider in parallel — each provider must
+ * observe its own independent read so disagreements are not masked by cache
+ * hits or shared pool state.
+ */
+export async function isOrgHolderUsingConnection(
+  walletAddress: string,
+  connection: Connection,
+  mintAddress: PublicKey = ORG_TOKEN_MINT
+): Promise<boolean> {
+  const walletKey = new PublicKey(walletAddress);
+  const accounts = await connection.getParsedTokenAccountsByOwner(walletKey, {
+    programId: TOKEN_PROGRAM_ID,
+  });
+  const match = accounts.value.find(
+    (a) => a.account.data.parsed.info.mint === mintAddress.toBase58()
+  );
+  if (!match) return false;
+  const ui = match.account.data.parsed.info.tokenAmount.uiAmount;
+  return (ui ?? 0) > 0;
 }
 
 export async function getAllTokenHolders(

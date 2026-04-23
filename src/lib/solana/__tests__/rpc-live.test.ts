@@ -1,4 +1,5 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
+import type { Connection, PublicKey } from '@solana/web3.js';
 
 describe('rpc-live pool wiring', () => {
   const originalMode = process.env.SOLANA_RPC_MODE;
@@ -48,6 +49,166 @@ describe('rpc-live pool wiring', () => {
     const mod = await import('../rpc-live');
     expect(mod.__getPool()).toBeNull();
   });
+
+  it('returns null from __getConsensus() when SOLANA_RPC_POOL_DISABLED=true', async () => {
+    process.env.SOLANA_RPC_POOL_DISABLED = 'true';
+    vi.resetModules();
+    const mod = await import('../rpc-live');
+    expect(mod.__getConsensus()).toBeNull();
+  });
+
+  it('returns a ConsensusVerifier from __getConsensus() when pool is not disabled', async () => {
+    delete process.env.SOLANA_RPC_POOL_DISABLED;
+    process.env.NEXT_PUBLIC_SOLANA_RPC_URL = 'https://example.test';
+    vi.resetModules();
+    const mod = await import('../rpc-live');
+    const { ConsensusVerifier } = await import('../rpc-consensus');
+    const consensus = mod.__getConsensus();
+    expect(consensus).not.toBeNull();
+    expect(consensus).toBeInstanceOf(ConsensusVerifier);
+  });
+
+  it('getSolanaConsensus() mirrors __getConsensus() behavior', async () => {
+    delete process.env.SOLANA_RPC_POOL_DISABLED;
+    process.env.NEXT_PUBLIC_SOLANA_RPC_URL = 'https://example.test';
+    vi.resetModules();
+    const { getSolanaConsensus } = await import('../index');
+    const { ConsensusVerifier } = await import('../rpc-consensus');
+    expect(getSolanaConsensus()).toBeInstanceOf(ConsensusVerifier);
+
+    process.env.SOLANA_RPC_POOL_DISABLED = 'true';
+    vi.resetModules();
+    const reimport = await import('../index');
+    expect(reimport.getSolanaConsensus()).toBeNull();
+  });
+});
+
+describe('isOrgHolderUsingConnection', () => {
+  type ParsedTokenAccount = {
+    account: {
+      data: {
+        parsed: {
+          info: {
+            mint: string;
+            tokenAmount: { uiAmount: number | null };
+          };
+        };
+      };
+    };
+  };
+
+  function mockConnectionReturning(
+    accounts: ReadonlyArray<ParsedTokenAccount>
+  ): { connection: Connection; spy: ReturnType<typeof vi.fn> } {
+    const spy = vi.fn(async (_owner: PublicKey, _opts: { programId: PublicKey }) => ({
+      value: accounts,
+    }));
+    const connection = {
+      getParsedTokenAccountsByOwner: spy,
+    } as unknown as Connection;
+    return { connection, spy };
+  }
+
+  it('returns true when a matching mint account has a positive uiAmount', async () => {
+    const { isOrgHolderUsingConnection, ORG_TOKEN_MINT } = await import('../rpc-live');
+    const { connection, spy } = mockConnectionReturning([
+      {
+        account: {
+          data: {
+            parsed: {
+              info: {
+                mint: ORG_TOKEN_MINT.toBase58(),
+                tokenAmount: { uiAmount: 123 },
+              },
+            },
+          },
+        },
+      },
+    ]);
+
+    const result = await isOrgHolderUsingConnection(
+      'HN7cABqLq46Es1jh92dQQisAq662SmxELLLsHHe4YWrH',
+      connection
+    );
+
+    expect(result).toBe(true);
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  it('returns false when no token account matches the mint', async () => {
+    const { isOrgHolderUsingConnection } = await import('../rpc-live');
+    const { connection } = mockConnectionReturning([
+      {
+        account: {
+          data: {
+            parsed: {
+              info: {
+                mint: 'SomeOtherMintAddressAAAAAAAAAAAAAAAAAAAAAAA',
+                tokenAmount: { uiAmount: 500 },
+              },
+            },
+          },
+        },
+      },
+    ]);
+
+    const result = await isOrgHolderUsingConnection(
+      'HN7cABqLq46Es1jh92dQQisAq662SmxELLLsHHe4YWrH',
+      connection
+    );
+
+    expect(result).toBe(false);
+  });
+
+  it('returns false when the matching account has zero balance', async () => {
+    const { isOrgHolderUsingConnection, ORG_TOKEN_MINT } = await import('../rpc-live');
+    const { connection } = mockConnectionReturning([
+      {
+        account: {
+          data: {
+            parsed: {
+              info: {
+                mint: ORG_TOKEN_MINT.toBase58(),
+                tokenAmount: { uiAmount: 0 },
+              },
+            },
+          },
+        },
+      },
+    ]);
+
+    const result = await isOrgHolderUsingConnection(
+      'HN7cABqLq46Es1jh92dQQisAq662SmxELLLsHHe4YWrH',
+      connection
+    );
+
+    expect(result).toBe(false);
+  });
+
+  it('returns false when the matching account reports null uiAmount', async () => {
+    const { isOrgHolderUsingConnection, ORG_TOKEN_MINT } = await import('../rpc-live');
+    const { connection } = mockConnectionReturning([
+      {
+        account: {
+          data: {
+            parsed: {
+              info: {
+                mint: ORG_TOKEN_MINT.toBase58(),
+                tokenAmount: { uiAmount: null },
+              },
+            },
+          },
+        },
+      },
+    ]);
+
+    const result = await isOrgHolderUsingConnection(
+      'HN7cABqLq46Es1jh92dQQisAq662SmxELLLsHHe4YWrH',
+      connection
+    );
+
+    expect(result).toBe(false);
+  });
 });
 
 describe('public export surface (regression)', () => {
@@ -62,6 +223,13 @@ describe('public export surface (regression)', () => {
       'getTokenBalance',
       'getAllTokenHolders',
       'isOrgHolder',
+      'isOrgHolderUsingConnection',
+      'getSolanaConsensus',
+      'ConsensusError',
+      'compareBoolean',
+      'compareLamports',
+      'compareHolderSet',
+      'compareTxConfirmation',
     ];
     for (const name of expected) {
       expect(mod).toHaveProperty(name);
