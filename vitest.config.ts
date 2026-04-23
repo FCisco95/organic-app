@@ -14,6 +14,7 @@ export default defineConfig({
     include: [
       'src/lib/solana/__tests__/**/*.test.ts',
       'src/app/api/**/__tests__/**/*.test.ts',
+      'src/features/donations/**/__tests__/**/*.test.ts',
       'tests/security/**/*.test.ts',
     ],
   },
