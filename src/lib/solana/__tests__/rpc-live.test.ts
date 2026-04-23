@@ -4,7 +4,6 @@ import type { Connection, PublicKey } from '@solana/web3.js';
 describe('rpc-live pool wiring', () => {
   const originalMode = process.env.SOLANA_RPC_MODE;
   const originalDisabled = process.env.SOLANA_RPC_POOL_DISABLED;
-  const originalUrl = process.env.NEXT_PUBLIC_SOLANA_RPC_URL;
   const originalPrimary = process.env.SOLANA_RPC_PRIMARY_URL;
 
   afterEach(() => {
@@ -14,7 +13,6 @@ describe('rpc-live pool wiring', () => {
     };
     restore('SOLANA_RPC_MODE', originalMode);
     restore('SOLANA_RPC_POOL_DISABLED', originalDisabled);
-    restore('NEXT_PUBLIC_SOLANA_RPC_URL', originalUrl);
     restore('SOLANA_RPC_PRIMARY_URL', originalPrimary);
     vi.resetModules();
   });
