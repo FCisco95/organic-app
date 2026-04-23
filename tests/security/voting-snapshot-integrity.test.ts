@@ -42,10 +42,22 @@ describe('Voting Snapshot On-Chain Integrity', () => {
   it('start-voting route must not use client-provided snapshot_holders', () => {
     const source = readFileSync('src/app/api/proposals/[id]/start-voting/route.ts', 'utf-8');
 
-    // Must call getAllTokenHolders() via the SolanaRpc factory unconditionally.
-    // The factory (getSolanaRpc) returns LiveSolanaRpc in prod and
-    // FixtureSolanaRpc only when SOLANA_RPC_MODE=fixture is set (CI-only).
-    expect(source).toContain('await getSolanaRpc().getAllTokenHolders()');
+    // The holder list must come from a trusted on-chain source. After PR 3
+    // the route has two trusted branches:
+    //   (1) `ConsensusVerifier.verify(...)` — 2-of-N agreement across RPC
+    //       providers (default-off via SOLANA_RPC_CONSENSUS_ENABLED).
+    //   (2) `getSolanaRpc().getAllTokenHolders()` — legacy fallback used
+    //       when consensus is null (pool disabled / SOLANA_RPC_MODE=fixture).
+    // Both must be present: (1) is the hardened path, (2) preserves the
+    // fixture-mode + kill-switch behavior required by existing tests.
+    const hasConsensus = source.includes('consensus.verify(');
+    const hasLegacyFallback = source.includes('getSolanaRpc().getAllTokenHolders()');
+    expect(hasConsensus).toBe(true);
+    expect(hasLegacyFallback).toBe(true);
+
+    // Must wire the fail-closed disagreement path.
+    expect(source).toContain('ConsensusError');
+    expect(source).toContain("code: 'CONSENSUS_DISAGREEMENT'");
 
     // Must NOT fall back from client-provided snapshot_holders
     expect(source).not.toContain('input.snapshot_holders ?? (await getAllTokenHolders())');

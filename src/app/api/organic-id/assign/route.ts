@@ -1,6 +1,12 @@
 import { NextResponse } from 'next/server';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
-import { isOrgHolder } from '@/lib/solana';
+import {
+  ConsensusError,
+  compareBoolean,
+  getSolanaConsensus,
+  isOrgHolder,
+  isOrgHolderUsingConnection,
+} from '@/lib/solana';
 import { logger } from '@/lib/logger';
 
 const ASSIGN_PROFILE_COLUMNS = 'id, organic_id, wallet_pubkey';
@@ -74,8 +80,41 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Please link your wallet first' }, { status: 400 });
     }
 
-    // Check if user holds ORG tokens (bypass cache for this critical security check)
-    const isHolder = await isOrgHolder(profile.wallet_pubkey, { skipCache: true });
+    const walletPubkey = profile.wallet_pubkey;
+
+    // Check if user holds ORG tokens. This is a security-critical read — a
+    // single lying or compromised RPC provider must not be able to grant an
+    // Organic ID. When SOLANA_RPC_CONSENSUS_ENABLED is on and we have ≥2
+    // providers, require cross-provider agreement. Otherwise fall back to
+    // the legacy cache-bypass path for byte-identical default behavior.
+    const consensus = getSolanaConsensus();
+    let isHolder: boolean;
+    if (consensus) {
+      try {
+        isHolder = await consensus.verify(
+          (connection) => isOrgHolderUsingConnection(walletPubkey, connection),
+          { label: 'isOrgHolder', compare: compareBoolean }
+        );
+      } catch (err) {
+        if (err instanceof ConsensusError) {
+          logger.error('Organic ID grant: consensus disagreement', {
+            label: err.label,
+            wallet: walletPubkey,
+            userId: user.id,
+          });
+          return NextResponse.json(
+            {
+              error:
+                'On-chain verification is temporarily inconsistent. Please retry shortly; persistent failures will be reviewed manually.',
+            },
+            { status: 503 }
+          );
+        }
+        throw err;
+      }
+    } else {
+      isHolder = await isOrgHolder(walletPubkey, { skipCache: true });
+    }
 
     if (!isHolder) {
       return NextResponse.json(

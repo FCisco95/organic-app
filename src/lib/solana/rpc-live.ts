@@ -3,10 +3,12 @@ import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import type { SolanaRpc, TokenHolder } from './rpc';
 import { parseProvidersFromEnv, type RpcProvider } from './providers';
 import { RpcPool } from './rpc-pool';
+import { ConsensusVerifier } from './rpc-consensus';
 
 let cachedConnection: { rpcUrl: string; connection: Connection } | null = null;
 let cachedOrgMint: { mintAddress: string; mint: PublicKey } | null = null;
 let cachedPool: RpcPool | null = null;
+let cachedConsensus: ConsensusVerifier | null = null;
 // cachedProviders is set once per module lifetime. Cleared only on module
 // reload (vi.resetModules() in tests; process restart in prod). Mutating
 // NEXT_PUBLIC_SOLANA_RPC_URL at runtime without a module reload has no effect.
@@ -38,6 +40,28 @@ export function __getPool(): RpcPool | null {
   if (cachedPool) return cachedPool;
   cachedPool = new RpcPool(getProviders());
   return cachedPool;
+}
+
+/** @internal — exported for tests only. */
+export function __getConsensus(): ConsensusVerifier | null {
+  if (poolDisabled()) return null;
+  if (cachedConsensus) return cachedConsensus;
+  const pool = __getPool();
+  if (!pool) return null;
+  cachedConsensus = new ConsensusVerifier(getProviders(), pool);
+  return cachedConsensus;
+}
+
+/**
+ * @internal — test-only hook. Clears all module-level caches so tests can
+ * re-parse env and rebuild providers/pool/consensus between scenarios.
+ */
+export function __resetRpcCachesForTests(): void {
+  cachedConnection = null;
+  cachedOrgMint = null;
+  cachedPool = null;
+  cachedConsensus = null;
+  cachedProviders = null;
 }
 
 export function getConnection(): Connection {
@@ -141,6 +165,74 @@ export async function isOrgHolder(
 ): Promise<boolean> {
   const balance = await getTokenBalance(walletAddress, ORG_TOKEN_MINT, options);
   return balance > 0;
+}
+
+/**
+ * Authoritative fresh holder check against a specific `Connection`.
+ *
+ * Unlike `isOrgHolder`, this helper bypasses both the module-level TTL cache
+ * and the pool's retry/breaker layer. It is designed to be invoked by the
+ * `ConsensusVerifier` once per provider in parallel — each provider must
+ * observe its own independent read so disagreements are not masked by cache
+ * hits or shared pool state.
+ */
+export async function isOrgHolderUsingConnection(
+  walletAddress: string,
+  connection: Connection,
+  mintAddress: PublicKey = ORG_TOKEN_MINT
+): Promise<boolean> {
+  const walletKey = new PublicKey(walletAddress);
+  const accounts = await connection.getParsedTokenAccountsByOwner(walletKey, {
+    programId: TOKEN_PROGRAM_ID,
+  });
+  const match = accounts.value.find(
+    (a) => a.account.data.parsed.info.mint === mintAddress.toBase58()
+  );
+  if (!match) return false;
+  const ui = match.account.data.parsed.info.tokenAmount.uiAmount;
+  return (ui ?? 0) > 0;
+}
+
+/**
+ * Authoritative fresh holder-set read against a specific `Connection`.
+ *
+ * Mirrors `getAllTokenHolders` for consensus fanout: bypasses the module
+ * TTL cache and the `RpcPool`'s retry/breaker layer so each provider's
+ * read is independent. Normalization (dedup-by-owner, sum balances) must
+ * match `compareHolderSet` and the cached `getAllTokenHolders` result
+ * shape, so a consensus-winning value is structurally identical to the
+ * historical DB-persisted shape.
+ *
+ * Does NOT log per-row parse failures by design — the comparator will
+ * surface any cross-provider shape drift. Malformed accounts are filtered
+ * silently.
+ */
+export async function getAllTokenHoldersUsingConnection(
+  connection: Connection,
+  mintAddress: PublicKey = ORG_TOKEN_MINT
+): Promise<Array<{ address: string; balance: number }>> {
+  const accounts = await connection.getParsedProgramAccounts(TOKEN_PROGRAM_ID, {
+    filters: [
+      { dataSize: 165 },
+      { memcmp: { offset: 0, bytes: mintAddress.toBase58() } },
+    ],
+  });
+  const holderBalances = new Map<string, number>();
+  for (const account of accounts) {
+    const data = account.account.data;
+    if (!('parsed' in data)) continue;
+    const tokenData = data.parsed.info;
+    const balance = tokenData.tokenAmount?.uiAmount;
+    if (balance && balance > 0) {
+      const owner = tokenData.owner as string;
+      const previous = holderBalances.get(owner) ?? 0;
+      holderBalances.set(owner, previous + balance);
+    }
+  }
+  return Array.from(holderBalances.entries()).map(([address, balance]) => ({
+    address,
+    balance,
+  }));
 }
 
 export async function getAllTokenHolders(
