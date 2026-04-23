@@ -29,6 +29,10 @@ describe('txSignatureQuerySchema', () => {
   it('rejects short string', () => {
     expect(() => txSignatureQuerySchema.parse({ signature: 'abc' })).toThrow();
   });
+
+  it('rejects string longer than 88 chars (max base58 signature length)', () => {
+    expect(() => txSignatureQuerySchema.parse({ signature: 'a'.repeat(89) })).toThrow();
+  });
 });
 
 describe('topNSchema', () => {
