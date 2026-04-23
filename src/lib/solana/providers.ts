@@ -48,12 +48,18 @@ export function parseProvidersFromEnv(): RpcProvider[] {
   const secondaryUrl = readEnvUrl('SOLANA_RPC_SECONDARY_URL');
   const fallbackUrlOverride = readEnvUrl('SOLANA_RPC_FALLBACK_URL');
 
-  // Transitional: if none of the new tier vars are set, honor the legacy
-  // NEXT_PUBLIC_SOLANA_RPC_URL (or the Solana cluster default) as the sole
-  // primary. PR 5 removes this fallback entirely.
+  // No tier URLs configured. In production this is a misconfiguration —
+  // set at least SOLANA_RPC_PRIMARY_URL. For local dev, fall back to the
+  // public cluster default so the app boots without requiring a paid key.
+  // Browser-exposed RPC URLs are intentionally not read here; they belong
+  // to the wallet adapter only.
   if (!primaryUrl && !secondaryUrl && !fallbackUrlOverride) {
-    const legacy = readEnvUrl('NEXT_PUBLIC_SOLANA_RPC_URL') ?? clusterApiUrl('mainnet-beta');
-    return [buildProvider('primary', 'primary', legacy)];
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error(
+        'Solana RPC providers are not configured. Set SOLANA_RPC_PRIMARY_URL (and recommended SOLANA_RPC_SECONDARY_URL).'
+      );
+    }
+    return [buildProvider('primary', 'primary', clusterApiUrl('mainnet-beta'))];
   }
 
   // At least one tier var was set. Primary is required in this branch —
