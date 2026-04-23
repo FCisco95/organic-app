@@ -184,7 +184,9 @@ Set these variables in Vercel for both Preview and Production:
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
-- `NEXT_PUBLIC_SOLANA_RPC_URL`
+- `SOLANA_RPC_PRIMARY_URL` — server-side Solana RPC endpoint (paid provider recommended)
+- `SOLANA_RPC_SECONDARY_URL` — optional server-side failover
+- `NEXT_PUBLIC_SOLANA_RPC_URL` — **wallet-adapter only, browser-exposed**; must be domain-restricted
 - `NEXT_PUBLIC_SOLANA_NETWORK`
 - `NEXT_PUBLIC_ORG_TOKEN_MINT`
 - `NEXT_PUBLIC_APP_URL`
