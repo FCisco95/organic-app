@@ -49,10 +49,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         { headers: { 'Cache-Control': 'no-store' } }
       );
     }
-    logger.error('token-balance proxy: pool exhausted with no cache', {
-      wallet,
-      error,
-    });
+    logger.error(
+      'token-balance proxy: pool exhausted with no cache',
+      { wallet },
+      error
+    );
     return NextResponse.json(
       { data: null, error: 'Temporarily unavailable' },
       { status: 500 }
