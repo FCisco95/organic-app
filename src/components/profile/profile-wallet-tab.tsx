@@ -51,15 +51,14 @@ export function ProfileWalletTab({ profile, userId, refreshProfile }: ProfileWal
     balanceRequestRef.current = { controller, id: requestId };
 
     try {
-      const response = await fetch('/api/organic-id/balance', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ walletAddress }),
+      const qs = new URLSearchParams({ wallet: walletAddress });
+      const response = await fetch(`/api/solana/token-balance?${qs.toString()}`, {
+        method: 'GET',
         signal: controller.signal,
       });
-      const data = await response.json();
+      const json = await response.json();
       if (balanceRequestRef.current.id !== requestId) return;
-      const balance = data.balance || 0;
+      const balance = typeof json.data?.balance === 'number' ? json.data.balance : 0;
       balanceCacheRef.current.set(cacheKey, { balance, ts: now });
       setTokenBalance(balance);
     } catch (error: any) {
