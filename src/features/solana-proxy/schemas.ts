@@ -16,7 +16,7 @@ export const txSignatureQuerySchema = z.object({
     .string()
     .trim()
     .min(64, { message: 'signature must be a base58 tx signature' })
-    .max(96, { message: 'signature must be a base58 tx signature' })
+    .max(88, { message: 'signature must be a base58 tx signature' })
     .regex(BASE58_REGEX, { message: 'signature must be base58' }),
 });
 
