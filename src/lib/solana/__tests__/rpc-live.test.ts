@@ -211,6 +211,131 @@ describe('isOrgHolderUsingConnection', () => {
   });
 });
 
+describe('getAllTokenHoldersUsingConnection', () => {
+  type ParsedProgramAccount = {
+    account: {
+      data:
+        | {
+            parsed: {
+              info: {
+                owner: string;
+                tokenAmount: { uiAmount: number | null };
+              };
+            };
+          }
+        | { data: Buffer };
+    };
+  };
+
+  function mockConnectionReturning(
+    accounts: ReadonlyArray<ParsedProgramAccount>
+  ): { connection: Connection; spy: ReturnType<typeof vi.fn> } {
+    const spy = vi.fn(async (_programId: PublicKey, _config: unknown) => accounts);
+    const connection = {
+      getParsedProgramAccounts: spy,
+    } as unknown as Connection;
+    return { connection, spy };
+  }
+
+  it('sums balances for two accounts owned by the same wallet', async () => {
+    const { getAllTokenHoldersUsingConnection } = await import('../rpc-live');
+    const { connection } = mockConnectionReturning([
+      {
+        account: {
+          data: {
+            parsed: {
+              info: {
+                owner: 'OwnerWalletAAA',
+                tokenAmount: { uiAmount: 100 },
+              },
+            },
+          },
+        },
+      },
+      {
+        account: {
+          data: {
+            parsed: {
+              info: {
+                owner: 'OwnerWalletAAA',
+                tokenAmount: { uiAmount: 250 },
+              },
+            },
+          },
+        },
+      },
+    ]);
+
+    const holders = await getAllTokenHoldersUsingConnection(connection);
+
+    expect(holders).toHaveLength(1);
+    expect(holders[0]).toEqual({ address: 'OwnerWalletAAA', balance: 350 });
+  });
+
+  it('excludes accounts with zero balance', async () => {
+    const { getAllTokenHoldersUsingConnection } = await import('../rpc-live');
+    const { connection } = mockConnectionReturning([
+      {
+        account: {
+          data: {
+            parsed: {
+              info: {
+                owner: 'OwnerWalletAAA',
+                tokenAmount: { uiAmount: 0 },
+              },
+            },
+          },
+        },
+      },
+      {
+        account: {
+          data: {
+            parsed: {
+              info: {
+                owner: 'OwnerWalletBBB',
+                tokenAmount: { uiAmount: 42 },
+              },
+            },
+          },
+        },
+      },
+    ]);
+
+    const holders = await getAllTokenHoldersUsingConnection(connection);
+
+    expect(holders).toHaveLength(1);
+    expect(holders[0]).toEqual({ address: 'OwnerWalletBBB', balance: 42 });
+  });
+
+  it("skips non-'parsed' accounts without throwing", async () => {
+    const { getAllTokenHoldersUsingConnection } = await import('../rpc-live');
+    const { connection } = mockConnectionReturning([
+      {
+        account: {
+          data: { data: Buffer.from([0x01, 0x02, 0x03]) },
+        },
+      },
+      {
+        account: {
+          data: {
+            parsed: {
+              info: {
+                owner: 'OwnerWalletAAA',
+                tokenAmount: { uiAmount: 7 },
+              },
+            },
+          },
+        },
+      },
+    ]);
+
+    const holders = await getAllTokenHoldersUsingConnection(connection);
+
+    expect(holders).toHaveLength(1);
+    expect(holders[0]).toEqual({ address: 'OwnerWalletAAA', balance: 7 });
+  });
+});
+
 describe('public export surface (regression)', () => {
   it('index.ts exports the exact symbols existing callers depend on', async () => {
     vi.resetModules();
@@ -222,6 +347,7 @@ describe('public export surface (regression)', () => {
       'ORG_TOKEN_MINT',
       'getTokenBalance',
       'getAllTokenHolders',
+      'getAllTokenHoldersUsingConnection',
       'isOrgHolder',
       'isOrgHolderUsingConnection',
       'getSolanaConsensus',

@@ -10,6 +10,7 @@ export {
   ORG_TOKEN_MINT,
   getTokenBalance,
   getAllTokenHolders,
+  getAllTokenHoldersUsingConnection,
   isOrgHolder,
   isOrgHolderUsingConnection,
 } from './rpc-live';

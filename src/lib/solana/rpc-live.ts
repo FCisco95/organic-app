@@ -193,6 +193,48 @@ export async function isOrgHolderUsingConnection(
   return (ui ?? 0) > 0;
 }
 
+/**
+ * Authoritative fresh holder-set read against a specific `Connection`.
+ *
+ * Mirrors `getAllTokenHolders` for consensus fanout: bypasses the module
+ * TTL cache and the `RpcPool`'s retry/breaker layer so each provider's
+ * read is independent. Normalization (dedup-by-owner, sum balances) must
+ * match `compareHolderSet` and the cached `getAllTokenHolders` result
+ * shape, so a consensus-winning value is structurally identical to the
+ * historical DB-persisted shape.
+ *
+ * Does NOT log per-row parse failures by design — the comparator will
+ * surface any cross-provider shape drift. Malformed accounts are filtered
+ * silently.
+ */
+export async function getAllTokenHoldersUsingConnection(
+  connection: Connection,
+  mintAddress: PublicKey = ORG_TOKEN_MINT
+): Promise<Array<{ address: string; balance: number }>> {
+  const accounts = await connection.getParsedProgramAccounts(TOKEN_PROGRAM_ID, {
+    filters: [
+      { dataSize: 165 },
+      { memcmp: { offset: 0, bytes: mintAddress.toBase58() } },
+    ],
+  });
+  const holderBalances = new Map<string, number>();
+  for (const account of accounts) {
+    const data = account.account.data;
+    if (!('parsed' in data)) continue;
+    const tokenData = data.parsed.info;
+    const balance = tokenData.tokenAmount?.uiAmount;
+    if (balance && balance > 0) {
+      const owner = tokenData.owner as string;
+      const previous = holderBalances.get(owner) ?? 0;
+      holderBalances.set(owner, previous + balance);
+    }
+  }
+  return Array.from(holderBalances.entries()).map(([address, balance]) => ({
+    address,
+    balance,
+  }));
+}
+
 export async function getAllTokenHolders(
   mintAddress: PublicKey = ORG_TOKEN_MINT
 ): Promise<Array<{ address: string; balance: number }>> {
