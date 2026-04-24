@@ -13,6 +13,7 @@ import {
   Trophy,
 } from 'lucide-react';
 import { useGamificationOverview, useQuestProgress } from '@/features/gamification';
+import { useLoginStreak } from '@/features/daily-tasks/hooks';
 import type { QuestCadence, QuestProgressItem } from '@/features/gamification';
 import { LevelBadge } from '@/components/reputation/level-badge';
 import { XpProgressBar } from '@/components/reputation/xp-progress-bar';
@@ -64,6 +65,7 @@ export function ProgressionShell({ sourceContext = null }: { sourceContext?: Sou
   const t = useTranslations('Gamification');
   const tReputation = useTranslations('Reputation');
   const { data, isLoading, isError } = useGamificationOverview({ enabled: true });
+  const { data: loginStreak } = useLoginStreak();
   const { data: questProgress, isLoading: isQuestLoading, isError: isQuestError } = useQuestProgress({
     enabled: !isError,
   });
@@ -238,7 +240,11 @@ export function ProgressionShell({ sourceContext = null }: { sourceContext?: Sou
 
           {/* Streak */}
           <div className="snap-start px-4 border-r border-border flex-shrink-0">
-            <StreakDisplay streak={data.current_streak} />
+            <StreakDisplay
+              streak={loginStreak?.current_streak ?? data.current_streak}
+              interactive
+              lastLoginDate={loginStreak?.last_login_date ?? null}
+            />
             <p className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">{t('streakCard')}</p>
           </div>
 
