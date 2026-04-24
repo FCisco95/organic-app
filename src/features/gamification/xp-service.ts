@@ -39,6 +39,10 @@ const DAILY_CAPS: Record<string, number> = {
   holding_reward: 1,          // 1 holding reward sync/day
   streak_milestone: 1,        // 1 milestone claim/day
   xp_egg_found: 20,           // 20 XP egg claims/day
+  x_engagement_like: 50,      // 50 like awards/day (one per tracked post)
+  x_engagement_retweet: 30,   // 30 retweet awards/day
+  x_engagement_comment: 20,   // 20 comment awards/day
+  // Sprint bonuses and appeal resolutions aren't capped — they're episodic.
 };
 
 /** After this many awards in a day, XP starts diminishing (50% per extra). */
