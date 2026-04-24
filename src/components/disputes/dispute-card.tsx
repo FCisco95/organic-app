@@ -1,7 +1,6 @@
 'use client';
 
 import { Link } from '@/i18n/navigation';
-import { formatDistanceToNow } from 'date-fns';
 import { useTranslations } from 'next-intl';
 import type { DisputeListItem } from '@/features/disputes/types';
 import {
@@ -9,16 +8,10 @@ import {
   isReviewerResponseTracked,
 } from '@/features/disputes/sla';
 import { cn } from '@/lib/utils';
+import { formatRelativeTime } from './dispute-detail/utils';
 
 interface DisputeCardProps {
   dispute: DisputeListItem;
-}
-
-function formatRelativeTime(value: string | null | undefined): string {
-  if (!value) return 'recently';
-  const date = new Date(value);
-  if (!Number.isFinite(date.getTime())) return 'recently';
-  return formatDistanceToNow(date, { addSuffix: true });
 }
 
 /** Status icon colors matching GitHub's circle indicators */
