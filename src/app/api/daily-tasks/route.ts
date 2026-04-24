@@ -8,7 +8,9 @@ import { DAILY_TASK_DEFINITIONS } from '@/features/daily-tasks/config';
  *
  * Returns today's daily/weekly tasks with the current user's progress.
  * Creates task entries for today if they don't exist yet.
- * Also updates the user's login streak.
+ *
+ * Streak is no longer auto-incremented here — it only advances when the user
+ * explicitly presses the flame button (POST /api/daily-tasks/streak).
  */
 export async function GET() {
   try {
@@ -78,84 +80,21 @@ export async function GET() {
       return NextResponse.json({ error: refetchError.message }, { status: 500 });
     }
 
-    // Update login streak
-    const streak = await updateLoginStreak(supabase, user.id, today);
-
-    // Auto-complete daily_login task
+    // Auto-complete daily_login task (task progress only — streak is manual)
     await autoCompleteLogin(supabase, user.id, today, tasks as any[]);
 
-    return NextResponse.json({ data: tasks, streak });
+    // Read current streak without mutating it
+    const { data: streak } = await (supabase as any)
+      .from('login_streaks')
+      .select('*')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    return NextResponse.json({ data: tasks, streak: streak ?? null });
   } catch (error) {
     logger.error('Daily tasks GET error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}
-
-/** Update login streak: increment if consecutive day, reset if gap > 1 */
-async function updateLoginStreak(
-  supabase: any,
-  userId: string,
-  today: string
-): Promise<any> {
-  const { data: streakRow } = await (supabase as any)
-    .from('login_streaks')
-    .select('*')
-    .eq('user_id', userId)
-    .maybeSingle();
-
-  if (!streakRow) {
-    // First login — create streak record
-    const { data: created } = await (supabase as any)
-      .from('login_streaks')
-      .insert({
-        user_id: userId,
-        current_streak: 1,
-        longest_streak: 1,
-        last_login_date: today,
-        updated_at: new Date().toISOString(),
-      })
-      .select()
-      .single();
-
-    return created;
-  }
-
-  const lastDate = streakRow.last_login_date;
-
-  // Already logged in today
-  if (lastDate === today) {
-    return streakRow;
-  }
-
-  // Calculate day difference
-  const lastMs = new Date(lastDate + 'T00:00:00Z').getTime();
-  const todayMs = new Date(today + 'T00:00:00Z').getTime();
-  const dayDiff = Math.round((todayMs - lastMs) / (1000 * 60 * 60 * 24));
-
-  let newStreak: number;
-  if (dayDiff === 1) {
-    // Consecutive day
-    newStreak = streakRow.current_streak + 1;
-  } else {
-    // Gap > 1 day, reset streak
-    newStreak = 1;
-  }
-
-  const newLongest = Math.max(streakRow.longest_streak, newStreak);
-
-  const { data: updated } = await (supabase as any)
-    .from('login_streaks')
-    .update({
-      current_streak: newStreak,
-      longest_streak: newLongest,
-      last_login_date: today,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('user_id', userId)
-    .select()
-    .single();
-
-  return updated;
 }
 
 /** Auto-complete the daily_login task if not already completed */
