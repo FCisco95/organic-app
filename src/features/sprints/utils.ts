@@ -8,13 +8,6 @@ export function formatSprintDate(dateString: string): string {
   });
 }
 
-export function getSprintDuration(startDate: string, endDate: string): string {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-  const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-  return `${days} days`;
-}
-
 export function getCompletionPercent(stats: SprintStats[string]): number {
   if (stats.totalPoints > 0) {
     return Math.round((stats.points / stats.totalPoints) * 100);

@@ -217,6 +217,123 @@ export class TwitterClient {
     return { verified: hasReply, data: { replies } };
   }
 
+  /**
+   * Fetch recent tweets from a handle (username, without @). Used by the
+   * X Engagement Rewards poll cron to discover new official posts.
+   *
+   * Pass `sinceId` to only return tweets newer than the given ID — this is
+   * the only robust way to avoid re-processing the same tweets across polls.
+   */
+  async fetchPostsByHandle(
+    accessToken: string,
+    handle: string,
+    options: { sinceId?: string; maxResults?: number } = {}
+  ): Promise<{
+    tweets: Array<{ id: string; text: string; created_at: string; author_id: string }>;
+    authorId: string | null;
+  }> {
+    const lookup = await this.fetchApi<TwitterApiEnvelope<{ id: string; username: string }>>(
+      `/users/by/username/${encodeURIComponent(handle.replace(/^@/, ''))}`,
+      accessToken
+    );
+    const authorId = lookup.data?.id ?? null;
+    if (!authorId) return { tweets: [], authorId: null };
+
+    const params = new URLSearchParams({
+      max_results: String(Math.min(Math.max(options.maxResults ?? 20, 5), 100)),
+      'tweet.fields': 'created_at,author_id',
+      exclude: 'replies,retweets',
+    });
+    if (options.sinceId) params.set('since_id', options.sinceId);
+
+    const response = await this.fetchApi<
+      TwitterApiEnvelope<Array<{ id: string; text: string; created_at: string; author_id: string }>>
+    >(`/users/${authorId}/tweets?${params.toString()}`, accessToken);
+
+    return { tweets: response.data ?? [], authorId };
+  }
+
+  /**
+   * Fetch a single tweet with public metrics. Used to refresh engagement
+   * counts on tracked posts.
+   */
+  async fetchTweet(
+    accessToken: string,
+    tweetId: string
+  ): Promise<{
+    id: string;
+    text: string;
+    created_at: string;
+    author_id: string;
+    public_metrics: {
+      like_count: number;
+      reply_count: number;
+      retweet_count: number;
+      quote_count: number;
+    };
+  } | null> {
+    const response = await this.fetchApi<
+      TwitterApiEnvelope<{
+        id: string;
+        text: string;
+        created_at: string;
+        author_id: string;
+        public_metrics: {
+          like_count: number;
+          reply_count: number;
+          retweet_count: number;
+          quote_count: number;
+        };
+      }>
+    >(
+      `/tweets/${encodeURIComponent(tweetId)}?tweet.fields=created_at,author_id,public_metrics`,
+      accessToken
+    );
+    return response.data ?? null;
+  }
+
+  /**
+   * Fetch replies to a tweet via the recent-search endpoint. Returns
+   * replies authored in the last ~7 days (API limitation on free/basic tiers).
+   *
+   * `paginationToken` supports multi-page fetches when a post accumulates
+   * more than 100 replies between polls.
+   */
+  async fetchReplies(
+    accessToken: string,
+    tweetId: string,
+    options: { paginationToken?: string; maxResults?: number } = {}
+  ): Promise<{
+    replies: Array<{ id: string; text: string; created_at: string; author_id: string; conversation_id: string }>;
+    nextToken: string | null;
+  }> {
+    const query = encodeURIComponent(`conversation_id:${tweetId}`);
+    const params = new URLSearchParams({
+      query,
+      max_results: String(Math.min(Math.max(options.maxResults ?? 100, 10), 100)),
+      'tweet.fields': 'created_at,author_id,conversation_id',
+    });
+    if (options.paginationToken) params.set('next_token', options.paginationToken);
+
+    // URLSearchParams double-encodes the query value since it was already
+    // percent-encoded. Build the path manually to avoid that.
+    const path =
+      `/tweets/search/recent?query=${query}&max_results=${params.get('max_results')}` +
+      `&tweet.fields=created_at,author_id,conversation_id` +
+      (options.paginationToken ? `&next_token=${encodeURIComponent(options.paginationToken)}` : '');
+
+    const response = await this.fetchApi<
+      TwitterApiEnvelope<
+        Array<{ id: string; text: string; created_at: string; author_id: string; conversation_id: string }>
+      > & { meta?: { next_token?: string } }
+    >(path, accessToken);
+
+    return {
+      replies: response.data ?? [],
+      nextToken: response.meta?.next_token ?? null,
+    };
+  }
+
   private async fetchApi<T>(path: string, accessToken: string): Promise<T> {
     const response = await fetch(`${API_BASE_URL}${path}`, {
       headers: { Authorization: `Bearer ${accessToken}` },

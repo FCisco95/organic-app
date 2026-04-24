@@ -29,21 +29,13 @@ import {
   DisputeImpactSummary,
   DisputeIntegrityRail,
 } from './dispute-detail';
-import { formatDateTime } from './dispute-detail/utils';
+import { formatDateTime, formatRelativeTime } from './dispute-detail/utils';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Loader2, FileText, Shield, MessageSquare, Eye } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
 
 type DetailTab = 'overview' | 'evidence' | 'resolution' | 'discussion';
-
-function formatRelativeTime(value: string | null | undefined): string {
-  if (!value) return 'recently';
-  const date = new Date(value);
-  if (!Number.isFinite(date.getTime())) return 'recently';
-  return formatDistanceToNow(date, { addSuffix: true });
-}
 
 interface DisputeDetailProps {
   dispute: DisputeWithRelations;

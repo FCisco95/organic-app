@@ -2,10 +2,10 @@
 
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
-import { format } from 'date-fns';
 import { isDeadlinePast } from '@/features/disputes/sla';
 import type { DisputeStatus } from '@/features/disputes/types';
 import { TERMINAL_STATUSES } from '@/features/disputes/types';
+import { formatDateTime } from './dispute-detail/utils';
 
 interface TimelineStep {
   key: string;
@@ -21,13 +21,6 @@ interface DisputeTimelineProps {
   disputeWindowEndsAt?: string | null;
   lateEvidenceCount?: number;
   className?: string;
-}
-
-function formatDateTime(value: string | null | undefined): string | null {
-  if (!value) return null;
-  const date = new Date(value);
-  if (!Number.isFinite(date.getTime())) return null;
-  return format(date, 'PPp');
 }
 
 export function DisputeTimeline({
