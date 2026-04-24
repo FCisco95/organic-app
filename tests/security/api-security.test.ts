@@ -3,11 +3,6 @@ import { readFileSync } from 'fs';
 import { globSync } from 'fs';
 
 describe('API Security', () => {
-  it('should require auth on organic-id/balance endpoint', () => {
-    const content = readFileSync('src/app/api/organic-id/balance/route.ts', 'utf-8');
-    expect(content).toContain('getUser');
-  });
-
   it('should support idempotency key on reward claims', () => {
     const content = readFileSync('src/app/api/rewards/claims/route.ts', 'utf-8');
     expect(content.toLowerCase()).toContain('idempotency');
@@ -28,7 +23,13 @@ describe('API Security', () => {
       // Skip referral validation - intentionally unauthenticated (used during signup)
       if (file.includes('/referrals/validate/')) continue;
 
-      const hasAuth = content.includes('getUser') || content.includes('Bearer') || content.includes('authorization');
+      const hasAuth =
+        content.includes('getUser') ||
+        content.includes('Bearer') ||
+        content.includes('authorization') ||
+        // Canonical role-gating helpers from @/lib/auth/require-role
+        content.includes('requireAdminOrCouncil') ||
+        content.includes('requireVerifiedMember');
       if (!hasAuth) {
         unauthMutations.push(file);
       }

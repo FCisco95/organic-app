@@ -388,6 +388,10 @@ export const RATE_LIMITS = {
   write: { limit: 20, windowMs: 60_000 },
   /** Sensitive endpoints: 5 req/min per user/IP */
   sensitive: { limit: 5, windowMs: 60_000 },
+  /** Solana proxy reads: 100/min per IP (anon) */
+  solanaProxy: { limit: 100, windowMs: 60_000 },
+  /** Solana proxy reads for authed users: 300/min per user */
+  solanaProxyUser: { limit: 300, windowMs: 60_000 },
   /** Comment creation: 3 req/min per user (anti-spam) */
   comment: { limit: 3, windowMs: 60_000 },
 

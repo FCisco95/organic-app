@@ -15,6 +15,7 @@ import {
   buildMarketDataHeaders,
   getMarketPriceSnapshot,
 } from '@/features/market-data/server/service';
+import { readTreasurySolBalance } from '@/features/treasury/server/consensus-balance';
 
 export const dynamic = 'force-dynamic';
 
@@ -124,12 +125,11 @@ async function computeTreasurySnapshot(): Promise<{
   marketHeaders: Record<string, string>;
 }> {
   const wallet = TOKEN_CONFIG.treasuryWallet;
-  const connection = getConnection();
   const pubkey = new PublicKey(wallet);
   const supabase = createAnonClient();
 
   const [
-    solBalance,
+    solBalanceResult,
     orgBalance,
     solPriceSnapshot,
     orgPriceSnapshot,
@@ -137,7 +137,7 @@ async function computeTreasurySnapshot(): Promise<{
     orgConfigResult,
     latestSettlementResult,
   ] = await Promise.all([
-    connection.getBalance(pubkey),
+    readTreasurySolBalance(pubkey),
     getTokenBalance(wallet),
     getMarketPriceSnapshot('sol_price'),
     getMarketPriceSnapshot('org_price'),
@@ -159,6 +159,7 @@ async function computeTreasurySnapshot(): Promise<{
       .maybeSingle(),
   ]);
 
+  const { balance: solBalance, stale: solBalanceStale } = solBalanceResult;
   const solPrice = solPriceSnapshot.value;
   const orgPrice = orgPriceSnapshot.value;
   const solAmount = solBalance / LAMPORTS_PER_SOL;
@@ -197,6 +198,7 @@ async function computeTreasurySnapshot(): Promise<{
       org: orgBalance,
       org_usd: orgUsd,
       total_usd: totalUsd,
+      stale: solBalanceStale,
     },
     allocations,
     transactions,

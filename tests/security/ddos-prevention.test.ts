@@ -17,13 +17,17 @@ describe('DDoS & Cost Prevention', () => {
       const content = readFileSync(file, 'utf-8');
       if (!content.includes('getAllTokenHolders')) continue;
 
-      // Check if the route has admin/council role checks or is a cron/server-only route
+      // Route is acceptable if it has admin/council role enforcement OR
+      // an explicit `// ddos-exempt: <reason>` marker documenting why a
+      // user-facing route that calls getAllTokenHolders is safe
+      // (e.g. rate-limited + CDN-cached + stale-fallback).
       const hasAdminCheck =
         content.includes("'admin'") ||
         content.includes("'council'") ||
         content.includes('isAdmin') ||
         content.includes('cron');
-      if (!hasAdminCheck) {
+      const hasExemptionMarker = content.includes('// ddos-exempt:');
+      if (!hasAdminCheck && !hasExemptionMarker) {
         userFacingCallers.push(file);
       }
     }

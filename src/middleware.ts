@@ -41,7 +41,6 @@ const DASHBOARD_READ_RATE_LIMIT_PATHS = new Set([
   '/api/analytics',
   '/api/leaderboard',
   '/api/treasury',
-  '/api/organic-id/balance',
 ]);
 const INTERNAL_BYPASS_PATHS = new Set(['/api/internal/market-cache/refresh']);
 const SENSITIVE_RATE_LIMIT_PREFIXES = [
@@ -50,6 +49,8 @@ const SENSITIVE_RATE_LIMIT_PREFIXES = [
   '/api/rewards/distributions/manual',
   '/api/organic-id/assign',
 ];
+const SOLANA_PROXY_USER_PATHS = new Set(['/api/solana/is-holder']);
+const SOLANA_PROXY_IP_PATH_PREFIX = '/api/solana/';
 const TRANSLATE_RATE_LIMIT_PATH_PATTERN =
   /^\/api\/(?:posts|proposals|ideas|tasks)\/[^/]+\/translate$|^\/api\/translate\/comment\/[^/]+$/;
 
@@ -85,6 +86,14 @@ function getApiRateLimitPolicy(pathname: string, method: string): ApiRateLimitPo
 
   if (method === 'POST' && TRANSLATE_RATE_LIMIT_PATH_PATTERN.test(pathname)) {
     return { bucket: 'translate', config: RATE_LIMITS.translate, scope: 'user' };
+  }
+
+  if (method === 'GET' && pathname.startsWith(SOLANA_PROXY_IP_PATH_PREFIX)) {
+    if (SOLANA_PROXY_USER_PATHS.has(pathname)) {
+      return { bucket: 'solana-proxy-user', config: RATE_LIMITS.solanaProxyUser, scope: 'user' };
+    }
+
+    return { bucket: 'solana-proxy', config: RATE_LIMITS.solanaProxy, scope: 'ip' };
   }
 
   if (method === 'GET' || method === 'HEAD') {

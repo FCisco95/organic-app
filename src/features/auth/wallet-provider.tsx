@@ -6,7 +6,17 @@ import { clusterApiUrl } from '@solana/web3.js';
 import type { Adapter } from '@solana/wallet-adapter-base';
 
 export function SolanaWalletProvider({ children }: { children: React.ReactNode }) {
-  // Configure RPC endpoint
+  /**
+   * Wallet adapter endpoint. This is the ONLY place server-adjacent code
+   * reads NEXT_PUBLIC_SOLANA_RPC_URL — the paid-provider tier URLs
+   * (SOLANA_RPC_PRIMARY_URL etc.) handle all server-side Solana calls.
+   *
+   * Invariant: this URL must be a domain-restricted public key. The
+   * wallet adapter uses it for `signAndSendTransaction`, blockhash
+   * lookup, and tx submission — operations any visitor's wallet could
+   * already perform. Never set this to a paid key without origin
+   * restrictions at the provider level.
+   */
   const endpoint = useMemo(() => {
     return process.env.NEXT_PUBLIC_SOLANA_RPC_URL || clusterApiUrl('mainnet-beta');
   }, []);

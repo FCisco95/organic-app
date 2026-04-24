@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { getSolanaRpc } from '@/lib/solana';
+import {
+  getSolanaRpc,
+  getSolanaConsensus,
+  ConsensusError,
+  compareHolderSet,
+  getAllTokenHoldersUsingConnection,
+  ORG_TOKEN_MINT,
+} from '@/lib/solana';
 import { startVotingSchema } from '@/features/voting/schemas';
 import { parseJsonBody } from '@/lib/parse-json-body';
 import { logger } from '@/lib/logger';
@@ -154,7 +161,39 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       });
     }
 
-    const holders = await getSolanaRpc().getAllTokenHolders();
+    const consensus = getSolanaConsensus();
+    let holders: Array<{ address: string; balance: number }>;
+    if (consensus) {
+      try {
+        holders = await consensus.verify(
+          (connection) => getAllTokenHoldersUsingConnection(connection, ORG_TOKEN_MINT),
+          {
+            label: 'getAllTokenHolders',
+            compare: compareHolderSet,
+            timeoutMs: 10_000,
+          }
+        );
+      } catch (err) {
+        if (err instanceof ConsensusError) {
+          logger.error('Vote snapshot: consensus disagreement — proposal start blocked', {
+            label: err.label,
+            proposal_id: proposalId,
+            actor_id: user.id,
+          });
+          return NextResponse.json(
+            {
+              error:
+                'On-chain holder snapshot is temporarily inconsistent. An administrator has been notified.',
+              code: 'CONSENSUS_DISAGREEMENT',
+            },
+            { status: 503 }
+          );
+        }
+        throw err;
+      }
+    } else {
+      holders = await getSolanaRpc().getAllTokenHolders();
+    }
 
     if (!holders.length) {
       logger.error('On-chain snapshot returned zero holders', { proposal_id: proposalId });
