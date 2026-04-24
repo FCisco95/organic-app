@@ -3738,5 +3738,17 @@
     "proposalTitle": "无法加载此提案",
     "proposalDescription": "加载提案时出错。它可能已被删除或你可能没有访问权限。",
     "backToProposals": "返回提案列表"
+  },
+  "UnauthFallback": {
+    "signInCta": "登录",
+    "signUpCta": "注册账户",
+    "postsTitle": "登录后查看社区动态",
+    "postsDescription": "浏览 Organic DAO 的更新、讨论和公告。登录后即可点赞、评论，并从每次互动中赚取 XP。",
+    "communityTitle": "登录后认识社区成员",
+    "communityDescription": "查看排行榜、连胜记录和成员目录。登录后追踪你在榜单上的位置。",
+    "ideasTitle": "登录后浏览想法",
+    "ideasDescription": "在社区想法进入治理流程之前先行了解。登录后即可投票、评论，塑造方向。",
+    "harvestTitle": "登录后查看每周精选",
+    "harvestDescription": "过去一周的最佳想法、顶级贡献者与社区势头。登录后有机会登上下周精选。"
   }
 }

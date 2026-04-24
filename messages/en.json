@@ -3737,5 +3737,17 @@
     "proposalTitle": "Couldn't load this proposal",
     "proposalDescription": "There was an error loading the proposal. It may have been removed or you may not have access.",
     "backToProposals": "Back to proposals"
+  },
+  "UnauthFallback": {
+    "signInCta": "Sign in",
+    "signUpCta": "Create account",
+    "postsTitle": "Sign in to read the community feed",
+    "postsDescription": "Browse updates, threads, and announcements from the Organic DAO. Sign in to like, comment, and earn XP from every engagement.",
+    "communityTitle": "Sign in to meet the community",
+    "communityDescription": "Explore rankings, streaks, and the member directory. Sign in to track your own position on the leaderboard.",
+    "ideasTitle": "Sign in to browse ideas",
+    "ideasDescription": "See what the community is proposing before it becomes a governance action. Sign in to vote, comment, and shape direction.",
+    "harvestTitle": "Sign in to see the weekly harvest",
+    "harvestDescription": "The winning idea, top contributors, and momentum stats from the past week. Sign in to get featured in next week's spotlight."
   }
 }
