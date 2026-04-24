@@ -7,14 +7,6 @@
     {
       "path": "/api/internal/ai/governance-summary/generate",
       "schedule": "0 8 * * *"
-    },
-    {
-      "path": "/api/internal/engagement/poll",
-      "schedule": "*/15 * * * *"
-    },
-    {
-      "path": "/api/internal/engagement/appeals-sweep",
-      "schedule": "0 * * * *"
     }
   ]
 }
