@@ -23,7 +23,13 @@ describe('API Security', () => {
       // Skip referral validation - intentionally unauthenticated (used during signup)
       if (file.includes('/referrals/validate/')) continue;
 
-      const hasAuth = content.includes('getUser') || content.includes('Bearer') || content.includes('authorization');
+      const hasAuth =
+        content.includes('getUser') ||
+        content.includes('Bearer') ||
+        content.includes('authorization') ||
+        // Canonical role-gating helpers from @/lib/auth/require-role
+        content.includes('requireAdminOrCouncil') ||
+        content.includes('requireVerifiedMember');
       if (!hasAuth) {
         unauthMutations.push(file);
       }

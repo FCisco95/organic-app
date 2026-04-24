@@ -7,6 +7,7 @@ import {
   parseRewardSettlementResult,
   type RewardSettlementResult,
 } from '@/features/sprints/settlement-blockers';
+import { settleSprintEngagementBonuses } from '@/features/engagement/settlement';
 import { logger } from '@/lib/logger';
 
 const SPRINT_COLUMNS =
@@ -285,6 +286,19 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         ? (pointsData as Record<string, unknown>)
         : null;
 
+    // Distribute X Engagement top-N bonus pools for posts in this sprint.
+    // Non-fatal: a failure here shouldn't block token reward settlement.
+    let engagementSettlement: Record<string, unknown> | null = null;
+    try {
+      const engagementResult = await settleSprintEngagementBonuses(supabase, id);
+      engagementSettlement = engagementResult as unknown as Record<string, unknown>;
+      if (!engagementResult.ok) {
+        logger.warn('Engagement sprint-bonus settlement returned non-ok', engagementResult);
+      }
+    } catch (engErr) {
+      logger.error('Engagement sprint-bonus settlement threw', engErr);
+    }
+
     const { data: settlementData, error: settlementError } = await supabase.rpc(
       'commit_sprint_reward_settlement',
       {
@@ -472,6 +486,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       recurring_tasks_cloned: recurringTasksCloned,
       epoch_distributions: epochDistributions,
       points_settlement: pointsSettlement,
+      engagement_settlement: engagementSettlement,
       reward_settlement: rewardSettlement,
       disputes_escalated: disputesEscalated,
       settlement_blockers: settlementBlockers,
