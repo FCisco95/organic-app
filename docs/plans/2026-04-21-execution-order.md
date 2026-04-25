@@ -8,10 +8,15 @@
 
 ## Recommended order
 
-1. **Sprints: Review → Done transition bug** — [plan](2026-04-21-sprints-review-to-done-bug.md) · **S0, ~1–2h**
-2. **Pulse analytics fixes** — [plan](2026-04-21-pulse-analytics-fixes.md) · **S1, 0.5–1 day**
-3. **Translation admin toggles** — [plan](2026-04-21-translation-admin-toggles.md) · **feature, ~1 day**
-4. **QA Runbook revamp + Mobile audit** — [plan](2026-04-21-mobile-audit-and-qa-runbook-revamp.md) · **foundation, 1–2 days**
+1. **Sprints: Review → Done transition bug** — [plan](2026-04-21-sprints-review-to-done-bug.md) · **S0, ~1–2h** · ✅ **CLOSED 2026-04-25** — fix shipped PR #62 (2026-04-21); no-repro receipt PR #80 (2026-04-25), see [receipt](2026-04-25-sprints-review-to-done-no-repro.md).
+2. **Pulse analytics fixes** — [plan](2026-04-21-pulse-analytics-fixes.md) · **S1, 0.5–1 day** · ✅ **CLOSED 2026-04-25** — fix shipped PR #63 (2026-04-21); no-repro receipt for the market-data scope, see [receipt](2026-04-25-pulse-analytics-no-repro.md).
+3. **Translation admin toggles** — [plan](2026-04-21-translation-admin-toggles.md) · **feature, ~1 day** · 🟢 **VERIFY-FIRST** — code shipped PR #64 (2026-04-21); needs a quick QA pass against the spec before formal closure.
+4. **QA Runbook revamp + Mobile audit** — [plan](2026-04-21-mobile-audit-and-qa-runbook-revamp.md) · **foundation, 1–2 days** · 🟡 **PARTIAL** — runbook + audit shipped PR #65 (2026-04-21); mobile QA iter 1–4 shipped (latest PR #66, 2026-04-24); iter 5 final validation pass still open.
+
+### New items (added 2026-04-25)
+
+5. **RPC env vars missing in Vercel prod** — [plan](2026-04-25-rpc-env-vars-prod.md) · **S1 config, requires user** · 🔴 **BLOCKED-ON-USER** — Vercel env work, Claude must not touch.
+6. **Distribution summary gating (code/doc mismatch)** — [plan](2026-04-25-distribution-summary-gating.md) · **S2, small + brainstorm** · 🆕 **FRESH** — no related code touched since PR #63.
 
 ## Rationale for this order
 
