@@ -10,7 +10,7 @@
     },
     {
       "path": "/api/internal/cron/sprint-summary",
-      "schedule": "0 */6 * * *"
+      "schedule": "0 6 * * *"
     }
   ]
 }
