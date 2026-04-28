@@ -116,6 +116,109 @@
     "navLeaderboardDesc": "XP-ranked contributors and competition",
     "navLeaderboardBadge": "Rankings"
   },
+  "Dashboard": {
+    "pageTitle": "Dashboard",
+    "placeholderHint": "Section content coming online.",
+    "sections": {
+      "masthead": "Community pulse",
+      "sprintHero": "Active sprint",
+      "statStrip": "Live numbers",
+      "myContributions": "My contributions",
+      "invitation": "Join {community}",
+      "activityDigest": "What happened this week",
+      "testimonials": "From the community",
+      "footer": "Stay connected"
+    },
+    "masthead": {
+      "liveNow": "{count, plural, =0 {No one active right now} =1 {1 active right now} other {# active right now}}",
+      "lastActivity": "Last activity {when}",
+      "joinPill": "Join {community}"
+    },
+    "sprintHero": {
+      "phase": "{phase}",
+      "endsIn": "Ends in {countdown}",
+      "tasksProgress": "{done} of {total} tasks",
+      "topContributors": "Top contributors this sprint",
+      "viewSprint": "View sprint",
+      "summaryFallback": "{name} is in {phase}. {done} of {total} tasks complete.",
+      "summaryHeading": "Sprint summary"
+    },
+    "statStrip": {
+      "activeMembers24h": "Active members (24h)",
+      "pointsDistributed": "Points distributed",
+      "tasksShipped": "Tasks shipped",
+      "openProposals": "Open proposals"
+    },
+    "myContributions": {
+      "title": "My contributions this sprint",
+      "tasks": "{count} tasks",
+      "points": "{count} points",
+      "xp": "{count} XP",
+      "nextAction": "Pick up the next task",
+      "empty": "No contributions yet — pick up a task to get started."
+    },
+    "invitation": {
+      "title": "Join {community}",
+      "lead": "A community building, governing, rewarding — together.",
+      "bullet1": "Earn points and XP for real contributions",
+      "bullet2": "Vote on proposals that shape the community",
+      "bullet3": "Get rewarded from the community treasury",
+      "cta": "Sign up"
+    },
+    "activityDigest": {
+      "title": "What happened this week",
+      "empty": "No activity in the last 7 days.",
+      "freshness": {
+        "live": "Just now",
+        "recent": "Within the hour"
+      }
+    },
+    "testimonials": {
+      "title": "From the community",
+      "shareCta": "Share your story",
+      "shareCtaAnonymous": "Sign in to share",
+      "empty": "Approved testimonials will appear here.",
+      "previous": "Previous testimonial",
+      "next": "Next testimonial",
+      "ratingLabel": "{rating} out of 5",
+      "card": {
+        "memberAt": "Member of {community}"
+      },
+      "modal": {
+        "title": "Share your story",
+        "description": "Tell {community} what your experience has been like. Approved testimonials earn 50 points.",
+        "ratingLabel": "Rating",
+        "quoteLabel": "Your story",
+        "quotePlaceholder": "What's working? What surprised you?",
+        "submit": "Submit",
+        "submitting": "Submitting…",
+        "cancel": "Cancel",
+        "successToast": "Submitted. An admin will review and approve.",
+        "errorToast": "Something went wrong. Try again in a moment.",
+        "validationRating": "Please pick a rating.",
+        "validationQuoteShort": "Tell us a bit more (10+ characters).",
+        "validationQuoteLong": "Keep it under 500 characters."
+      },
+      "admin": {
+        "tabLabel": "Testimonials",
+        "queueTitle": "Pending testimonials",
+        "noneTitle": "Nothing to review",
+        "noneDescription": "Approved testimonials show up on the dashboard.",
+        "approve": "Approve (+50 pts)",
+        "reject": "Reject",
+        "submittedAt": "Submitted {when}"
+      }
+    },
+    "footer": {
+      "linksTitle": "Explore",
+      "linkPulse": "Pulse",
+      "linkStats": "Public stats",
+      "linkSprints": "Sprints",
+      "socialsTitle": "Follow",
+      "joinCta": "Join {community}",
+      "poweredBy": "Powered by Organic"
+    }
+  },
   "HowItWorks": {
     "title": "How Organic works",
     "subtitle": "Everything you need to know to start contributing",
@@ -192,7 +295,8 @@
     "earn": "Earn",
     "marketplace": "Boost",
     "resolve": "Resolve",
-    "forProjects": "For Projects"
+    "forProjects": "For Projects",
+    "dashboard": "Dashboard"
   },
   "Wallet": {
     "toastConnected": "Wallet connected",

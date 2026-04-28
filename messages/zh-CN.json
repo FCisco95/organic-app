@@ -116,6 +116,109 @@
     "navLeaderboardDesc": "按 XP 排名的贡献者竞争",
     "navLeaderboardBadge": "排名"
   },
+  "Dashboard": {
+    "pageTitle": "仪表板",
+    "placeholderHint": "此区块的内容即将上线。",
+    "sections": {
+      "masthead": "社区动脉",
+      "sprintHero": "进行中的冲刺",
+      "statStrip": "实时数据",
+      "myContributions": "我的贡献",
+      "invitation": "加入{community}",
+      "activityDigest": "本周亮点",
+      "testimonials": "社区之声",
+      "footer": "保持联系"
+    },
+    "masthead": {
+      "liveNow": "{count, plural, =0 {当前无人在线} =1 {当前 1 人在线} other {当前 # 人在线}}",
+      "lastActivity": "最近活动于{when}",
+      "joinPill": "加入{community}"
+    },
+    "sprintHero": {
+      "phase": "{phase}",
+      "endsIn": "{countdown} 后结束",
+      "tasksProgress": "{done} / {total} 任务",
+      "topContributors": "本冲刺主要贡献者",
+      "viewSprint": "查看冲刺",
+      "summaryFallback": "{name} 处于 {phase} 阶段。{done} / {total} 任务已完成。",
+      "summaryHeading": "冲刺总结"
+    },
+    "statStrip": {
+      "activeMembers24h": "活跃成员（24小时）",
+      "pointsDistributed": "积分分发",
+      "tasksShipped": "已完成任务",
+      "openProposals": "进行中的提案"
+    },
+    "myContributions": {
+      "title": "我在本冲刺的贡献",
+      "tasks": "{count} 任务",
+      "points": "{count} 积分",
+      "xp": "{count} XP",
+      "nextAction": "领取下一个任务",
+      "empty": "还没有贡献 — 领一个任务开始吧。"
+    },
+    "invitation": {
+      "title": "加入{community}",
+      "lead": "一个共同建设、治理与奖励的社区。",
+      "bullet1": "通过真实贡献赚取积分和 XP",
+      "bullet2": "投票决定社区的发展方向",
+      "bullet3": "从社区金库中获得奖励",
+      "cta": "注册"
+    },
+    "activityDigest": {
+      "title": "本周亮点",
+      "empty": "近 7 天无活动。",
+      "freshness": {
+        "live": "刚刚",
+        "recent": "一小时内"
+      }
+    },
+    "testimonials": {
+      "title": "社区之声",
+      "shareCta": "分享你的故事",
+      "shareCtaAnonymous": "登录后分享",
+      "empty": "已批准的反馈将显示于此。",
+      "previous": "上一条反馈",
+      "next": "下一条反馈",
+      "ratingLabel": "{rating} / 5",
+      "card": {
+        "memberAt": "{community} 成员"
+      },
+      "modal": {
+        "title": "分享你的故事",
+        "description": "向{community}讲述你的经历。审核通过可获得 50 积分。",
+        "ratingLabel": "评分",
+        "quoteLabel": "你的故事",
+        "quotePlaceholder": "哪些方面表现突出？什么让你印象深刻？",
+        "submit": "提交",
+        "submitting": "提交中…",
+        "cancel": "取消",
+        "successToast": "已提交。管理员将审核并批准。",
+        "errorToast": "出了点问题，请稍后重试。",
+        "validationRating": "请选择评分。",
+        "validationQuoteShort": "再多说一点吧（至少 10 个字符）。",
+        "validationQuoteLong": "请控制在 500 字符以内。"
+      },
+      "admin": {
+        "tabLabel": "反馈",
+        "queueTitle": "待审核反馈",
+        "noneTitle": "暂无待审核",
+        "noneDescription": "已批准的反馈会出现在仪表板。",
+        "approve": "批准（+50 积分）",
+        "reject": "驳回",
+        "submittedAt": "提交于{when}"
+      }
+    },
+    "footer": {
+      "linksTitle": "浏览",
+      "linkPulse": "Pulse",
+      "linkStats": "公开数据",
+      "linkSprints": "冲刺",
+      "socialsTitle": "关注",
+      "joinCta": "加入{community}",
+      "poweredBy": "Powered by Organic"
+    }
+  },
   "HowItWorks": {
     "title": "Organic 如何运作",
     "subtitle": "开始贡献所需的一切",
@@ -192,7 +295,8 @@
     "earn": "赚取",
     "resolve": "仲裁",
     "forProjects": "合作入驻",
-    "marketplace": "推广"
+    "marketplace": "推广",
+    "dashboard": "仪表板"
   },
   "Wallet": {
     "toastConnected": "钱包已连接",

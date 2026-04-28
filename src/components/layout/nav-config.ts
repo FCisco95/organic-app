@@ -58,6 +58,14 @@ const mainItemDefs: (NavItem & { groupId: string; showWhen?: (ctx: NavContext) =
   // Navigate
   {
     groupId: 'navigate',
+    id: 'dashboard',
+    href: '/dashboard',
+    labelKey: 'dashboard',
+    icon: LayoutDashboard,
+    shortcutHint: 'G D',
+  },
+  {
+    groupId: 'navigate',
     id: 'home',
     href: '/',
     labelKey: 'home',
@@ -221,6 +229,7 @@ export function getSidebarNavSections(context: NavContext): NavSections {
 
 /** Route segment to section i18n key mapping for breadcrumbs */
 export const routeSectionMap: Record<string, string> = {
+  dashboard: 'sectionNavigate',
   pulse: 'sectionNavigate',
   vault: 'sectionNavigate',
   analytics: 'sectionNavigate', // backward compat
@@ -245,6 +254,7 @@ export const routeSectionMap: Record<string, string> = {
 
 /** Route segment to i18n label key mapping for breadcrumbs */
 export const routeLabelMap: Record<string, string> = {
+  dashboard: 'dashboard',
   pulse: 'pulse',
   vault: 'vault',
   analytics: 'pulse', // backward compat
