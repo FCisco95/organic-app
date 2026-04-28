@@ -58,7 +58,7 @@ export function TestimonialsRail({ branding, isAuthenticated }: TestimonialsRail
           type="button"
           onClick={() => isAuthenticated && setModalOpen(true)}
           disabled={!isAuthenticated}
-          className="inline-flex w-fit items-center gap-2 rounded-full border border-organic-terracotta/30 bg-organic-terracotta/10 px-4 py-1.5 text-sm font-medium text-organic-terracotta transition-colors hover:bg-organic-terracotta/15 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex min-h-[44px] w-fit items-center gap-2 rounded-full border border-organic-terracotta/30 bg-organic-terracotta/10 px-4 py-2 text-sm font-medium text-organic-terracotta transition-colors hover:bg-organic-terracotta/15 disabled:cursor-not-allowed disabled:opacity-60"
           aria-disabled={!isAuthenticated}
         >
           {isAuthenticated ? t('shareCta') : t('shareCtaAnonymous')}
@@ -104,7 +104,7 @@ export function TestimonialsRail({ branding, isAuthenticated }: TestimonialsRail
                 type="button"
                 onClick={handlePrev}
                 disabled={pageIndex === 0}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-organic-terracotta/40 hover:text-organic-terracotta disabled:opacity-30 disabled:hover:border-border disabled:hover:text-muted-foreground"
+                className="inline-flex h-11 w-11 flex-none items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-organic-terracotta/40 hover:text-organic-terracotta disabled:opacity-30 disabled:hover:border-border disabled:hover:text-muted-foreground"
                 aria-label={t('previous')}
               >
                 <ChevronLeft className="h-4 w-4" />
@@ -124,12 +124,16 @@ export function TestimonialsRail({ branding, isAuthenticated }: TestimonialsRail
                         aria-selected={active}
                         aria-label={`${i + 1}`}
                         onClick={() => setPageIndex(i * PAGE_SIZE_DESKTOP)}
-                        className={`h-2 rounded-full transition-all ${
-                          active
-                            ? 'w-6 bg-organic-terracotta'
-                            : 'w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50'
-                        }`}
-                      />
+                        className="group flex h-11 items-center justify-center px-1"
+                      >
+                        <span
+                          className={`block h-2 rounded-full transition-all ${
+                            active
+                              ? 'w-6 bg-organic-terracotta'
+                              : 'w-2 bg-muted-foreground/30 group-hover:bg-muted-foreground/50'
+                          }`}
+                        />
+                      </button>
                     </li>
                   );
                 })}
@@ -139,7 +143,7 @@ export function TestimonialsRail({ branding, isAuthenticated }: TestimonialsRail
                 type="button"
                 onClick={handleNext}
                 disabled={pageIndex >= testimonials.length - 1}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-organic-terracotta/40 hover:text-organic-terracotta disabled:opacity-30 disabled:hover:border-border disabled:hover:text-muted-foreground"
+                className="inline-flex h-11 w-11 flex-none items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-organic-terracotta/40 hover:text-organic-terracotta disabled:opacity-30 disabled:hover:border-border disabled:hover:text-muted-foreground"
                 aria-label={t('next')}
               >
                 <ChevronRight className="h-4 w-4" />

@@ -35,7 +35,7 @@ export function LiveIndicator({ className }: LiveIndicatorProps) {
   if (isLoading || !data) {
     return (
       <div
-        className={`inline-flex items-center gap-2 text-xs text-muted-foreground ${className ?? ''}`}
+        className={`flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground ${className ?? ''}`}
         aria-hidden
       >
         <span className="h-1.5 w-1.5 rounded-full bg-muted" />
@@ -46,19 +46,21 @@ export function LiveIndicator({ className }: LiveIndicatorProps) {
 
   return (
     <div
-      className={`inline-flex items-center gap-2 text-xs text-muted-foreground ${className ?? ''}`}
+      className={`flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground ${className ?? ''}`}
       role="status"
       aria-live="polite"
     >
-      <span className="relative flex h-2 w-2">
-        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500/60" />
-        <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+      <span className="inline-flex items-center gap-2">
+        <span className="relative flex h-2 w-2 flex-none">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500/60" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+        </span>
+        <span className="font-medium text-foreground/80">
+          {t('liveNow', { count: data.activeCount })}
+        </span>
       </span>
-      <span className="font-medium text-foreground/80">
-        {t('liveNow', { count: data.activeCount })}
-      </span>
-      <span className="text-muted-foreground/60">·</span>
-      <span>{t('lastActivity', { when: lastActivityText })}</span>
+      <span className="hidden text-muted-foreground/60 sm:inline">·</span>
+      <span className="whitespace-nowrap">{t('lastActivity', { when: lastActivityText })}</span>
     </div>
   );
 }

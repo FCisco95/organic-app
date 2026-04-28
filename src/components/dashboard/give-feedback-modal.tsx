@@ -100,7 +100,7 @@ export function GiveFeedbackModal({ open, onOpenChange, branding }: GiveFeedback
                       if (errors.rating) setErrors({ ...errors, rating: undefined });
                     }}
                     onMouseEnter={() => setHoverRating(star)}
-                    className="rounded p-1 transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-organic-terracotta focus:ring-offset-2"
+                    className="flex h-11 w-11 items-center justify-center rounded transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-organic-terracotta focus:ring-offset-2"
                   >
                     <Star
                       className={`h-7 w-7 ${
@@ -154,14 +154,14 @@ export function GiveFeedbackModal({ open, onOpenChange, branding }: GiveFeedback
             <button
               type="button"
               onClick={() => onOpenChange(false)}
-              className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+              className="min-h-[44px] rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
             >
               {t('cancel')}
             </button>
             <button
               type="submit"
               disabled={submit.isPending}
-              className="rounded-lg bg-organic-terracotta px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-organic-terracotta-hover disabled:opacity-50"
+              className="min-h-[44px] rounded-lg bg-organic-terracotta px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-organic-terracotta-hover disabled:opacity-50"
             >
               {submit.isPending ? t('submitting') : t('submit')}
             </button>

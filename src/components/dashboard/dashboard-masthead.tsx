@@ -39,7 +39,7 @@ export function DashboardMasthead({ branding, isAuthenticated }: DashboardMasthe
       {!isAuthenticated && (
         <Link
           href="/signup"
-          className="group inline-flex items-center gap-2 rounded-full bg-organic-terracotta px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-organic-terracotta-hover"
+          className="group inline-flex flex-shrink-0 items-center gap-2 self-start whitespace-nowrap rounded-full bg-organic-terracotta px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-organic-terracotta-hover sm:self-auto"
         >
           {t('joinPill', { community: branding.communityName })}
           <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
