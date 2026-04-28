@@ -9,6 +9,7 @@ import {
   Lightbulb,
   Megaphone,
   MessageSquare,
+  Quote,
   Rocket,
   Scale,
   Settings,
@@ -210,6 +211,7 @@ export function getSidebarNavSections(context: NavContext): NavSections {
       icon: ClipboardCheck,
     },
     { id: 'adminRewards', href: '/admin/rewards', labelKey: 'adminRewards', icon: Gift },
+    { id: 'adminTestimonials', href: '/admin/testimonials', labelKey: 'adminTestimonials', icon: Quote },
     { id: 'userManagement', href: '/admin/users', labelKey: 'userManagement', icon: ShieldAlert },
     { id: 'settings', href: '/admin/settings', labelKey: 'settings', icon: Settings },
   ].filter((item) => {

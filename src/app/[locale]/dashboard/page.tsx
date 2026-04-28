@@ -14,6 +14,7 @@ import { DashboardStatStripSection } from '@/components/dashboard/dashboard-stat
 import { MyContributionsCard } from '@/components/dashboard/my-contributions';
 import { AnonymousJoinCard } from '@/components/dashboard/anonymous-join-card';
 import { ActivityDigestSection } from '@/components/dashboard/activity-digest';
+import { TestimonialsRail } from '@/components/dashboard/testimonials-rail';
 import { DashboardFooter } from '@/components/dashboard/dashboard-footer';
 
 const GovernanceSummaryCard = dynamic(
@@ -85,15 +86,7 @@ export default function DashboardPage() {
 
         <ActivityDigestSection entries={data.activityDigest} />
 
-        {/* Testimonials section placeholder — wired in PR 4 */}
-        <section
-          data-testid="dashboard-testimonials"
-          className="rounded-2xl border border-dashed border-border bg-card p-8"
-        >
-          <h2 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
-            {t('sections.testimonials')}
-          </h2>
-        </section>
+        <TestimonialsRail branding={branding} isAuthenticated={isAuthenticated} />
 
         <DashboardFooter branding={branding} isAuthenticated={isAuthenticated} />
       </div>
