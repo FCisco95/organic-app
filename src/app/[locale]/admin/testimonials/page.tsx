@@ -29,17 +29,21 @@ function formatRelative(iso: string): string {
 
 export default function AdminTestimonialsPage() {
   const t = useTranslations('Dashboard.testimonials.admin');
-  const { profile, loading } = useAuth();
+  const { user, profile, loading } = useAuth();
   const router = useRouter();
   const { data: pending = [], isLoading } = usePendingTestimonials();
   const review = useReviewTestimonial();
 
   useEffect(() => {
     if (loading) return;
-    if (!profile?.role || !ADMIN_ROLES.has(profile.role)) {
+    if (!user) {
+      router.replace('/');
+      return;
+    }
+    if (profile && (!profile.role || !ADMIN_ROLES.has(profile.role))) {
       router.replace('/');
     }
-  }, [loading, profile?.role, router]);
+  }, [loading, user, profile, router]);
 
   const handleAction = async (
     testimonial: PendingTestimonial,
@@ -60,7 +64,7 @@ export default function AdminTestimonialsPage() {
     }
   };
 
-  if (loading || !profile?.role || !ADMIN_ROLES.has(profile.role)) {
+  if (loading || !profile) {
     return (
       <PageContainer>
         <div className="flex items-center justify-center py-16">
@@ -68,6 +72,9 @@ export default function AdminTestimonialsPage() {
         </div>
       </PageContainer>
     );
+  }
+  if (!profile.role || !ADMIN_ROLES.has(profile.role)) {
+    return null;
   }
 
   return (
@@ -142,7 +149,7 @@ export default function AdminTestimonialsPage() {
                     type="button"
                     onClick={() => handleAction(item, 'reject')}
                     disabled={review.isPending}
-                    className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted disabled:opacity-50"
+                    className="min-h-[44px] rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted disabled:opacity-50"
                   >
                     {t('reject')}
                   </button>
@@ -150,7 +157,7 @@ export default function AdminTestimonialsPage() {
                     type="button"
                     onClick={() => handleAction(item, 'approve')}
                     disabled={review.isPending}
-                    className="rounded-lg bg-organic-terracotta px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-organic-terracotta-hover disabled:opacity-50"
+                    className="min-h-[44px] rounded-lg bg-organic-terracotta px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-organic-terracotta-hover disabled:opacity-50"
                   >
                     {t('approve')}
                   </button>
