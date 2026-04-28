@@ -12,7 +12,7 @@ interface DashboardFooterProps {
 
 export function DashboardFooter({ branding, isAuthenticated }: DashboardFooterProps) {
   const t = useTranslations('Dashboard.footer');
-  const showPoweredBy = branding.communityName !== 'Organic';
+  const showPoweredBy = !branding.isPlatformOwner;
 
   return (
     <footer

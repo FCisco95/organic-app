@@ -9,6 +9,7 @@ const ORGANIC_BRANDING: TenantBranding = {
   accentSecondary: '60 100% 60%',
   tagline: 'A community building, governing, rewarding — together.',
   footerNote: null,
+  isPlatformOwner: true,
   socials: {
     twitter: 'https://x.com/organic_bonk',
     telegram: null,
