@@ -50,8 +50,8 @@ export function SprintHeroSection({ sprint }: SprintHeroSectionProps) {
       <div className="relative bg-gradient-to-br from-organic-terracotta/15 via-organic-terracotta/5 to-transparent p-6 sm:p-8">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-organic-terracotta">
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-organic-terracotta" />
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-organic-terracotta-active">
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-organic-terracotta-active" aria-hidden />
               {formatPhaseLabel(sprint.status)}
             </div>
             <h2 className="mt-2 font-display text-3xl text-foreground sm:text-4xl">
@@ -87,7 +87,7 @@ export function SprintHeroSection({ sprint }: SprintHeroSectionProps) {
 
           <div className="mt-5">
             <div className="flex items-baseline justify-between">
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <p className="text-xs font-semibold uppercase tracking-wider text-foreground/70">
                 {t('tasksProgress', { done: sprint.progress.done, total: sprint.progress.total })}
               </p>
               <p className="font-mono text-xs tabular-nums text-muted-foreground">
@@ -97,6 +97,7 @@ export function SprintHeroSection({ sprint }: SprintHeroSectionProps) {
             <div
               className="mt-2 h-2 overflow-hidden rounded-full bg-muted"
               role="progressbar"
+              aria-label={t('tasksProgress', { done: sprint.progress.done, total: sprint.progress.total })}
               aria-valuenow={progressPercent}
               aria-valuemin={0}
               aria-valuemax={100}
@@ -110,7 +111,7 @@ export function SprintHeroSection({ sprint }: SprintHeroSectionProps) {
         </div>
 
         <div>
-          <p className="mb-3 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <p className="mb-3 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-foreground/70">
             <Users className="h-3.5 w-3.5" aria-hidden />
             {t('topContributors')}
           </p>

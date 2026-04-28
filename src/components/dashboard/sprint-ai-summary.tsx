@@ -17,7 +17,7 @@ export function SprintAiSummaryCard({ summary }: SprintAiSummaryCardProps) {
           <Sparkles className="h-4 w-4 text-organic-terracotta" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <p className="text-xs font-semibold uppercase tracking-wider text-foreground/70">
             {t('summaryHeading')}
           </p>
           <p className="mt-1.5 text-sm leading-relaxed text-foreground/90">{summary.text}</p>

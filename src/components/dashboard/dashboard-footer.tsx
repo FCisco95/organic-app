@@ -21,7 +21,7 @@ export function DashboardFooter({ branding, isAuthenticated }: DashboardFooterPr
     >
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <p className="text-xs font-semibold uppercase tracking-wider text-foreground/70">
             {t('linksTitle')}
           </p>
           <ul className="mt-3 space-y-2 text-sm">
@@ -53,7 +53,7 @@ export function DashboardFooter({ branding, isAuthenticated }: DashboardFooterPr
         </div>
 
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <p className="text-xs font-semibold uppercase tracking-wider text-foreground/70">
             {t('socialsTitle')}
           </p>
           <ul className="mt-3 space-y-2 text-sm">
@@ -104,7 +104,7 @@ export function DashboardFooter({ branding, isAuthenticated }: DashboardFooterPr
             <p className="text-sm text-muted-foreground">{branding.tagline}</p>
             <Link
               href="/signup"
-              className="mt-3 inline-flex w-fit items-center gap-2 rounded-full bg-organic-terracotta px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-organic-terracotta-hover"
+              className="mt-3 inline-flex w-fit items-center gap-2 rounded-full bg-organic-terracotta-hover px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-organic-terracotta-active"
             >
               {t('joinCta', { community: branding.communityName })}
               <ArrowUpRight className="h-4 w-4" />

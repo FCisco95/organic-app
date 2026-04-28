@@ -180,6 +180,7 @@
       "empty": "Os testemunhos aprovados aparecerão aqui.",
       "previous": "Testemunho anterior",
       "next": "Próximo testemunho",
+      "pageOf": "Página {current} de {total}",
       "ratingLabel": "{rating} de 5",
       "card": {
         "memberAt": "Membro de {community}"
@@ -188,6 +189,7 @@
         "title": "Partilha a tua história",
         "description": "Conta à {community} a tua experiência. Testemunhos aprovados ganham 50 pontos.",
         "ratingLabel": "Classificação",
+        "ratingValueLabel": "{rating} de 5",
         "quoteLabel": "A tua história",
         "quotePlaceholder": "O que está a funcionar? O que te surpreendeu?",
         "submit": "Submeter",

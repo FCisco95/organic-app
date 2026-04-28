@@ -180,6 +180,7 @@
       "empty": "已批准的反馈将显示于此。",
       "previous": "上一条反馈",
       "next": "下一条反馈",
+      "pageOf": "第 {current} 页，共 {total} 页",
       "ratingLabel": "{rating} / 5",
       "card": {
         "memberAt": "{community} 成员"
@@ -188,6 +189,7 @@
         "title": "分享你的故事",
         "description": "向{community}讲述你的经历。审核通过可获得 50 积分。",
         "ratingLabel": "评分",
+        "ratingValueLabel": "{rating} / 5",
         "quoteLabel": "你的故事",
         "quotePlaceholder": "哪些方面表现突出？什么让你印象深刻？",
         "submit": "提交",

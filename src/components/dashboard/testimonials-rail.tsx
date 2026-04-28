@@ -122,7 +122,7 @@ export function TestimonialsRail({ branding, isAuthenticated }: TestimonialsRail
                         type="button"
                         role="tab"
                         aria-selected={active}
-                        aria-label={`${i + 1}`}
+                        aria-label={t('pageOf', { current: i + 1, total: pageCount })}
                         onClick={() => setPageIndex(i * PAGE_SIZE_DESKTOP)}
                         className="group flex h-11 items-center justify-center px-1"
                       >

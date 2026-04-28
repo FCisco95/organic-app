@@ -180,6 +180,7 @@
       "empty": "Approved testimonials will appear here.",
       "previous": "Previous testimonial",
       "next": "Next testimonial",
+      "pageOf": "Page {current} of {total}",
       "ratingLabel": "{rating} out of 5",
       "card": {
         "memberAt": "Member of {community}"
@@ -188,6 +189,7 @@
         "title": "Share your story",
         "description": "Tell {community} what your experience has been like. Approved testimonials earn 50 points.",
         "ratingLabel": "Rating",
+        "ratingValueLabel": "{rating} out of 5",
         "quoteLabel": "Your story",
         "quotePlaceholder": "What's working? What surprised you?",
         "submit": "Submit",
