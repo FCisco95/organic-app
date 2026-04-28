@@ -116,6 +116,111 @@
     "navLeaderboardDesc": "Contribuidores classificados por XP",
     "navLeaderboardBadge": "Rankings"
   },
+  "Dashboard": {
+    "pageTitle": "Painel",
+    "placeholderHint": "O conteúdo desta secção vai aparecer em breve.",
+    "sections": {
+      "masthead": "Pulso da comunidade",
+      "sprintHero": "Sprint ativa",
+      "statStrip": "Números ao vivo",
+      "myContributions": "As minhas contribuições",
+      "invitation": "Junta-te à {community}",
+      "activityDigest": "Esta semana",
+      "testimonials": "Vozes da comunidade",
+      "footer": "Mantém-te ligado"
+    },
+    "masthead": {
+      "liveNow": "{count, plural, =0 {Ninguém ativo agora} =1 {1 pessoa ativa agora} other {# pessoas ativas agora}}",
+      "lastActivity": "Última atividade {when}",
+      "joinPill": "Junta-te à {community}"
+    },
+    "sprintHero": {
+      "phase": "{phase}",
+      "endsIn": "Termina em {countdown}",
+      "tasksProgress": "{done} de {total} tarefas",
+      "topContributors": "Principais contribuidores nesta sprint",
+      "viewSprint": "Ver sprint",
+      "summaryFallback": "{name} está em {phase}. {done} de {total} tarefas concluídas.",
+      "summaryHeading": "Resumo da sprint"
+    },
+    "statStrip": {
+      "activeMembers24h": "Membros ativos (24h)",
+      "pointsDistributed": "Pontos distribuídos",
+      "tasksShipped": "Tarefas concluídas",
+      "openProposals": "Propostas em aberto"
+    },
+    "myContributions": {
+      "title": "As minhas contribuições nesta sprint",
+      "tasks": "{count} tarefas",
+      "points": "{count} pontos",
+      "xp": "{count} XP",
+      "nextAction": "Pegar na próxima tarefa",
+      "empty": "Ainda sem contribuições — pega numa tarefa para começar."
+    },
+    "invitation": {
+      "title": "Junta-te à {community}",
+      "lead": "Uma comunidade que constrói, governa e recompensa em conjunto.",
+      "bullet1": "Ganha pontos e XP por contribuições reais",
+      "bullet2": "Vota em propostas que moldam a comunidade",
+      "bullet3": "Recebe recompensas da tesouraria comunitária",
+      "cta": "Inscrever"
+    },
+    "activityDigest": {
+      "title": "Esta semana",
+      "empty": "Sem atividade nos últimos 7 dias.",
+      "freshness": {
+        "live": "Agora mesmo",
+        "recent": "Na última hora"
+      }
+    },
+    "testimonials": {
+      "title": "Vozes da comunidade",
+      "shareCta": "Partilha a tua história",
+      "shareCtaAnonymous": "Inicia sessão para partilhar",
+      "empty": "Os testemunhos aprovados aparecerão aqui.",
+      "previous": "Testemunho anterior",
+      "next": "Próximo testemunho",
+      "pageOf": "Página {current} de {total}",
+      "ratingLabel": "{rating} de 5",
+      "card": {
+        "memberAt": "Membro de {community}"
+      },
+      "modal": {
+        "title": "Partilha a tua história",
+        "description": "Conta à {community} a tua experiência. Testemunhos aprovados ganham 50 pontos.",
+        "ratingLabel": "Classificação",
+        "ratingValueLabel": "{rating} de 5",
+        "quoteLabel": "A tua história",
+        "quotePlaceholder": "O que está a funcionar? O que te surpreendeu?",
+        "submit": "Submeter",
+        "submitting": "A submeter…",
+        "cancel": "Cancelar",
+        "successToast": "Submetido. Um administrador irá rever e aprovar.",
+        "errorToast": "Algo correu mal. Tenta de novo daqui a pouco.",
+        "validationRating": "Por favor escolhe uma classificação.",
+        "validationQuoteShort": "Conta-nos um pouco mais (10+ caracteres).",
+        "validationQuoteLong": "Mantém abaixo dos 500 caracteres."
+      },
+      "admin": {
+        "tabLabel": "Testemunhos",
+        "queueTitle": "Testemunhos pendentes",
+        "noneTitle": "Nada para rever",
+        "noneDescription": "Os testemunhos aprovados aparecem no painel.",
+        "approve": "Aprovar (+50 pts)",
+        "reject": "Rejeitar",
+        "submittedAt": "Submetido {when}"
+      }
+    },
+    "footer": {
+      "linksTitle": "Explorar",
+      "linkPulse": "Pulse",
+      "linkStats": "Estatísticas públicas",
+      "linkSprints": "Sprints",
+      "socialsTitle": "Seguir",
+      "joinCta": "Junta-te à {community}",
+      "poweredBy": "Powered by Organic"
+    }
+  },
   "HowItWorks": {
     "title": "Como funciona o Organic",
     "subtitle": "Tudo o que precisas de saber para começar a contribuir",
@@ -157,6 +262,7 @@
     "disconnectWallet": "Desconectar Carteira",
     "rewards": "Recompensas",
     "adminRewards": "Gerir Recompensas",
+    "adminTestimonials": "Testemunhos",
     "userManagement": "Gestão de Utilizadores",
     "submissions": "Submissões",
     "refAndQuests": "Ref & Quests",
@@ -192,7 +298,8 @@
     "earn": "Ganhar",
     "resolve": "Resolver",
     "forProjects": "Para Projetos",
-    "marketplace": "Impulsionar"
+    "marketplace": "Impulsionar",
+    "dashboard": "Painel"
   },
   "Wallet": {
     "toastConnected": "Carteira conectada",

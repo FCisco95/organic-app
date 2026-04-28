@@ -27,7 +27,8 @@ export default function LoginPage() {
   const [loginError, setLoginError] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const returnTo = sanitizeReturnTo(searchParams.get('returnTo'));
+  const rawReturnTo = searchParams.get('returnTo');
+  const returnTo = rawReturnTo ? sanitizeReturnTo(rawReturnTo) : '/dashboard';
   const supabase = createClient();
 
   const validateForm = () => {

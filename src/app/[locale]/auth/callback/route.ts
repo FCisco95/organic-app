@@ -25,7 +25,8 @@ export async function GET(request: Request) {
     }
   }
 
-  // Redirect to home (or returnTo destination) after email confirmation
-  const returnTo = sanitizeReturnTo(requestUrl.searchParams.get('returnTo'));
+  // Redirect to dashboard (or returnTo destination) after email confirmation
+  const rawReturnTo = requestUrl.searchParams.get('returnTo');
+  const returnTo = rawReturnTo ? sanitizeReturnTo(rawReturnTo) : '/dashboard';
   return NextResponse.redirect(new URL(`${basePath}${returnTo}`, requestUrl.origin));
 }
