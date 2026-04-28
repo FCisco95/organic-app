@@ -7,6 +7,10 @@
     {
       "path": "/api/internal/ai/governance-summary/generate",
       "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/internal/cron/sprint-summary",
+      "schedule": "0 */6 * * *"
     }
   ]
 }
