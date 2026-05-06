@@ -135,7 +135,8 @@
       "joinPill": "Join {community}"
     },
     "identityTile": {
-      "activeMembers": "{count, plural, =1 {1 active in last 24h} other {# active in last 24h}}"
+      "activeMembers": "{count, plural, =1 {1 active in last 24h} other {# active in last 24h}}",
+      "followOn": "Follow {community} on {platform}"
     },
     "tokenTile": {
       "label": "Official token",
@@ -157,7 +158,19 @@
       "topContributors": "Top contributors this sprint",
       "viewSprint": "View sprint",
       "summaryFallback": "{name} is in {phase}. {done} of {total} tasks complete.",
-      "summaryHeading": "Sprint summary"
+      "summaryHeading": "Sprint summary",
+      "empty": "No active sprint right now.",
+      "noContributors": "No contributors yet.",
+      "phaseLabel": {
+        "draft": "Draft",
+        "active": "Active",
+        "review": "Review",
+        "dispute_window": "Dispute window",
+        "settlement": "Settlement",
+        "completed": "Completed",
+        "cancelled": "Cancelled",
+        "unknown": "—"
+      }
     },
     "statStrip": {
       "activeMembers24h": "Active members (24h)",
