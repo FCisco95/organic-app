@@ -4,16 +4,12 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { ArrowRight, Clock, Users } from 'lucide-react';
 import type { SprintHero } from '@/features/dashboard/types';
+import { resolveSprintPhaseLabel } from '@/features/dashboard/sprint-phase-label';
 import { SprintAiSummaryCard } from './sprint-ai-summary';
 import { SprintCountdown } from './sprint-countdown';
 
 interface SprintHeroSectionProps {
   sprint: SprintHero | null;
-}
-
-function formatPhaseLabel(status: string | null): string {
-  if (!status) return '—';
-  return status.replace(/_/g, ' ');
 }
 
 function getCountdownTarget(sprint: SprintHero): string {
@@ -32,7 +28,7 @@ export function SprintHeroSection({ sprint }: SprintHeroSectionProps) {
         data-testid="dashboard-sprint-hero"
         className="rounded-2xl border border-border bg-card p-8"
       >
-        <p className="text-sm text-muted-foreground">No active sprint right now.</p>
+        <p className="text-sm text-muted-foreground">{t('empty')}</p>
       </section>
     );
   }
@@ -52,7 +48,7 @@ export function SprintHeroSection({ sprint }: SprintHeroSectionProps) {
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-organic-terracotta-active">
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-organic-terracotta-active" aria-hidden />
-              {formatPhaseLabel(sprint.status)}
+              {resolveSprintPhaseLabel(sprint.status, t)}
             </div>
             <h2 className="mt-2 font-display text-3xl text-foreground sm:text-4xl">
               {sprint.name}
@@ -103,7 +99,7 @@ export function SprintHeroSection({ sprint }: SprintHeroSectionProps) {
               aria-valuemax={100}
             >
               <div
-                className="h-full rounded-full bg-organic-terracotta transition-all duration-500"
+                className="h-full rounded-full bg-organic-terracotta transition-all duration-500 motion-reduce:transition-none"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
@@ -116,7 +112,7 @@ export function SprintHeroSection({ sprint }: SprintHeroSectionProps) {
             {t('topContributors')}
           </p>
           {sprint.topContributors.length === 0 ? (
-            <p className="text-xs text-muted-foreground/70">No contributors yet.</p>
+            <p className="text-xs text-muted-foreground/70">{t('noContributors')}</p>
           ) : (
             <ul className="space-y-2">
               {sprint.topContributors.map((c) => (
