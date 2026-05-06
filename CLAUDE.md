@@ -1,8 +1,8 @@
 # CLAUDE.md
 
-Operational instructions for Claude Code in this repository.
+**Project:** Organic App — a DAO-style platform built with Next.js App Router, Supabase, and Solana wallet linking. Core domains: auth, tasks, proposals, voting, sprints, members, notifications, reputation, analytics, treasury. Live at organichub.fun.
 
-Keep this file short, stable, and execution-focused.
+Operational instructions for Claude Code in this repository. Keep this file short, stable, and execution-focused.
 
 ## Authority and scope
 
@@ -31,6 +31,31 @@ Use these files instead:
 - `BUILD_PLAN.md` for roadmap and phase status
 - `README.md` for onboarding and setup context
 
+## Claude non-negotiables
+
+- Never expose secrets from `.env.local`.
+- Never commit secrets, private keys, or service-role credentials.
+- Do not weaken auth/session/wallet verification behavior without explicit approval.
+- Do not modify Supabase RLS policies unless explicitly requested.
+- Keep Solana token checks server-validated.
+- Prefer small, focused diffs over broad refactors.
+- Ask before changing public APIs, route contracts, or DB schema strategy.
+- Do not change npm scripts without approval.
+- Make surgical changes only. Touch only files required by the task. If you spot unrelated issues (bugs, smells, dead code), **report them in your summary** — do not fix them in the same change.
+
+## Destructive command safety
+
+Never run any of these without explicit user confirmation in the current session:
+
+- `rm -rf`, `rm` on directories, or any recursive delete
+- `git push --force` (use `--force-with-lease` only when explicitly approved)
+- `git reset --hard`, `git clean -fd`, branch deletion (`git branch -D`, `git push origin --delete`)
+- `DROP TABLE`, `DROP DATABASE`, `TRUNCATE`, or any destructive SQL
+- `npm uninstall`, dependency downgrades, lockfile rewrites
+- Killing processes or modifying CI workflows
+
+If you are unsure whether a command is destructive or reversible, **ask before running it**. The cost of asking is one prompt; the cost of a wrong delete is hours of recovery.
+
 ## Test account for browser QA
 
 When you need to log in to the app for testing or QA, use this account:
@@ -45,23 +70,6 @@ This account has full admin access to all pages and features.
 ## Reading large files
 
 When reading large files, run `wc -l` first, to check the line count. If the file is over 2000 lines, use the `offset`and `limit` parameters on the Read tool to read in chunks rather than attempting to read the entire file at once.
-
-## Project snapshot
-
-Organic App is a DAO-style platform built with Next.js App Router, Supabase, and Solana wallet linking.
-
-Core domains: auth, tasks, proposals, voting, sprints, members, notifications, reputation, analytics, treasury.
-
-## Claude non-negotiables
-
-- Never expose secrets from `.env.local`.
-- Never commit secrets, private keys, or service-role credentials.
-- Do not weaken auth/session/wallet verification behavior without explicit approval.
-- Do not modify Supabase RLS policies unless explicitly requested.
-- Keep Solana token checks server-validated.
-- Prefer small, focused diffs over broad refactors.
-- Ask before changing public APIs, route contracts, or DB schema strategy.
-- Do not change npm scripts without approval.
 
 ## Worktree strategy
 
@@ -135,6 +143,16 @@ Before executing any non-trivial task, ask:
 
 Push back on user assumptions when something looks off. Be adversarial when asked.
 
+## Corrections log
+
+When the user corrects your approach or points out a mistake — especially one that would recur in future sessions — write a short note to `.claude/memory/feedback_<topic>.md` capturing:
+
+- The rule (one line)
+- **Why:** the reason given
+- **How to apply:** when this kicks in
+
+Update `.claude/memory/MEMORY.md` with a one-line index entry. Do not duplicate corrections already saved.
+
 ## Context window discipline (Level 3)
 
 - The dead zone starts at ~50-60% context usage. Watch the statusline.
@@ -147,13 +165,15 @@ Push back on user assumptions when something looks off. Be adversarial when aske
 For each task:
 
 1. Restate the goal in one sentence.
-2. Note assumptions only when needed.
+2. State assumptions explicitly before writing code. If any assumption is load-bearing and unverified, ask first.
 3. Identify the minimal file set to edit.
-4. Keep business logic in feature modules, UI in components, orchestration in API routes.
-5. Use Zod for external input validation.
-6. Maintain strict typing; avoid introducing `any`.
-7. Validate with repo scripts before handoff when change impact warrants it.
-8. Report exactly what changed and where.
+4. Define verifiable success criteria up front: which command, test, or browser check will prove the change works. Run it before claiming completion.
+5. Keep business logic in feature modules, UI in components, orchestration in API routes.
+6. Prefer simplicity over cleverness. If a function exceeds ~50 lines or a file exceeds ~800 lines while you're editing it, flag the threshold to the user and propose a refactor — do not silently absorb the bloat. Do not refactor unrelated code.
+7. Use Zod for external input validation.
+8. Maintain strict typing; avoid introducing `any`.
+9. Validate with repo scripts before handoff when change impact warrants it.
+10. Report exactly what changed and where.
 
 ## Testing (non-negotiable)
 
@@ -225,6 +245,12 @@ See `AGENTS.md` for the full folder map and standard command reference (`npm run
 - Roadmap/progress: `BUILD_PLAN.md`
 - Product reality snapshot: `PROJECT_CONTEXT.md`
 - Manual QA baseline: `docs/qa-runbook.md`
+- Path-scoped rules: `.claude/rules/`
+  - General: `api.md`, `frontend.md`, `database.md`
+  - Common: `common/{patterns,code-review,agents}.md`
+  - TypeScript: `typescript/{coding-style,patterns}.md`
+  - Web: `web/{coding-style,design-quality,patterns,performance,security,testing}.md`
+- Apply the rule file matching the area you're editing. When multiple apply, the more specific (web > common) wins.
 
 ## Maintenance rule
 
