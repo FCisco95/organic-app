@@ -9,6 +9,7 @@ import { TOKEN_CONFIG } from '@/config/token';
 import { useDashboardData } from '@/features/dashboard/hooks';
 import { IdentityTile } from '@/components/dashboard/identity-tile';
 import { TokenTile } from '@/components/dashboard/token-tile';
+import { JupiterSwapEmbed } from '@/components/dashboard/jupiter-swap-embed';
 import { SprintHeroSection } from '@/components/dashboard/sprint-hero';
 import { DashboardStatStripSection } from '@/components/dashboard/dashboard-stat-strip';
 import { MyContributionsCard } from '@/components/dashboard/my-contributions';
@@ -77,6 +78,14 @@ export default function DashboardPage() {
             <TokenTile branding={branding} mint={TOKEN_CONFIG.mint} symbol={TOKEN_CONFIG.symbol} />
           </div>
         </div>
+
+        {TOKEN_CONFIG.mint && (
+          <JupiterSwapEmbed
+            branding={branding}
+            mint={TOKEN_CONFIG.mint}
+            symbol={TOKEN_CONFIG.symbol}
+          />
+        )}
 
         <SprintHeroSection sprint={data.sprint} />
 
