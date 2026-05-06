@@ -153,6 +153,13 @@
         "holders": "{count} detentores"
       }
     },
+    "swap": {
+      "eyebrow": "Trocar",
+      "heading": "Obter {symbol}",
+      "subheading": "Troca qualquer token Solana por {symbol} diretamente da carteira ligada. Rotas asseguradas pela Jupiter.",
+      "loadError": "Não foi possível carregar a interface de troca. Atualiza a página para tentar de novo.",
+      "referralDisclosure": "Powered by Jupiter. Inclui uma comissão de referência de {feeBps} bps que reverte para a tesouraria da comunidade."
+    },
     "copyAddress": {
       "ariaLabel": "Copiar endereço do contrato {address}",
       "copiedToast": "Copiado {address}",

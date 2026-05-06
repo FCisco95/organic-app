@@ -153,6 +153,13 @@
         "holders": "{count} holders"
       }
     },
+    "swap": {
+      "eyebrow": "Swap",
+      "heading": "Get {symbol}",
+      "subheading": "Swap any Solana token for {symbol} directly from your connected wallet. Routed by Jupiter.",
+      "loadError": "Couldn't load the swap interface. Refresh the page to try again.",
+      "referralDisclosure": "Powered by Jupiter. Includes a {feeBps} bps referral fee that flows to the community treasury."
+    },
     "copyAddress": {
       "ariaLabel": "Copy contract address {address}",
       "copiedToast": "Copied {address}",

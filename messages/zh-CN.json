@@ -153,6 +153,13 @@
         "holders": "{count} 个持有者"
       }
     },
+    "swap": {
+      "eyebrow": "兑换",
+      "heading": "获取 {symbol}",
+      "subheading": "从已连接的钱包将任意 Solana 代币兑换为 {symbol}。由 Jupiter 提供路由。",
+      "loadError": "无法加载兑换界面。请刷新页面重试。",
+      "referralDisclosure": "由 Jupiter 提供支持。包含 {feeBps} 个基点的推荐费，归社区国库所有。"
+    },
     "copyAddress": {
       "ariaLabel": "复制合约地址 {address}",
       "copiedToast": "已复制 {address}",
