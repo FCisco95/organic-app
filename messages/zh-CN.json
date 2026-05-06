@@ -143,7 +143,14 @@
       "viewOnSolscan": "在 Solscan 查看",
       "viewOnSolscanAria": "在 Solscan 查看代币",
       "officialLinks": "官方链接",
-      "antiPhishing": "请始终核实合约地址。不要相信 DM 中收到的链接。"
+      "antiPhishing": "请始终核实合约地址。不要相信 DM 中收到的链接。",
+      "trust": {
+        "mintRevoked": "铸造权已撤销",
+        "mintActive": "铸造权未撤销",
+        "freezeRevoked": "冻结权已撤销",
+        "freezeActive": "冻结权未撤销",
+        "holders": "{count} 个持有者"
+      }
     },
     "copyAddress": {
       "ariaLabel": "复制合约地址 {address}",

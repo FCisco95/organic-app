@@ -53,6 +53,7 @@ export interface ActivityDigestEntry {
 }
 
 import type { TenantBranding } from '@/lib/tenant/types';
+import type { TokenTrust } from '@/features/token/onchain';
 
 export interface DashboardPayload {
   branding: TenantBranding;
@@ -60,6 +61,7 @@ export interface DashboardPayload {
   stats: DashboardStatStrip;
   myContributions: MyContributions | null;
   activityDigest: ActivityDigestEntry[];
+  tokenTrust: TokenTrust | null;
 }
 
 export interface PresencePayload {
