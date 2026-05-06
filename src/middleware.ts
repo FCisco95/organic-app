@@ -192,8 +192,8 @@ function getLocale(request: NextRequest): Locale {
  * now uses a per-request nonce instead of 'unsafe-inline'.
  */
 export function buildCspHeader(nonce: string): string {
-  // Next.js dev mode's React Refresh runtime evaluates module code via eval(),
-  // which 'strict-dynamic' alone does not permit. Only relax in development.
+  // Next.js dev mode's React Refresh runtime needs runtime evaluation
+  // primitives that 'strict-dynamic' alone does not permit. Only relax in dev.
   const scriptSrcExtras = process.env.NODE_ENV === 'production' ? '' : " 'unsafe-eval'";
   return [
     "default-src 'self'",
