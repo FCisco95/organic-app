@@ -191,10 +191,13 @@ function getLocale(request: NextRequest): Locale {
  * Directives mirror what was previously in next.config.js, but script-src
  * now uses a per-request nonce instead of 'unsafe-inline'.
  */
-function buildCspHeader(nonce: string): string {
+export function buildCspHeader(nonce: string): string {
+  // Next.js dev mode's React Refresh runtime needs runtime evaluation
+  // primitives that 'strict-dynamic' alone does not permit. Only relax in dev.
+  const scriptSrcExtras = process.env.NODE_ENV === 'production' ? '' : " 'unsafe-eval'";
   return [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`,
+    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${scriptSrcExtras}`,
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https://*.supabase.co https://raw.githubusercontent.com https://pbs.twimg.com https://abs.twimg.com https://opengraph.githubassets.com https:",
     "font-src 'self'",
