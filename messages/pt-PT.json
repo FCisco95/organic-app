@@ -134,6 +134,22 @@
       "lastActivity": "Última atividade {when}",
       "joinPill": "Junta-te à {community}"
     },
+    "identityTile": {
+      "activeMembers": "{count, plural, =1 {1 ativo nas últimas 24h} other {# ativos nas últimas 24h}}"
+    },
+    "tokenTile": {
+      "label": "Token oficial",
+      "contractAddress": "Endereço do contrato",
+      "viewOnSolscan": "Ver no Solscan",
+      "viewOnSolscanAria": "Ver token no Solscan",
+      "officialLinks": "Links oficiais",
+      "antiPhishing": "Verifica sempre o endereço do contrato. Não confies em links enviados por DM."
+    },
+    "copyAddress": {
+      "ariaLabel": "Copiar endereço do contrato {address}",
+      "copiedToast": "Copiado {address}",
+      "copyFailed": "Falha a copiar — tenta de novo."
+    },
     "sprintHero": {
       "phase": "{phase}",
       "endsIn": "Termina em {countdown}",
@@ -2210,6 +2226,7 @@
     "settingsUpdateFailed": "Falha ao atualizar configurações",
     "tabs": {
       "general": "Geral",
+      "branding": "Marca",
       "token": "Token",
       "treasury": "Tesouraria",
       "governance": "Governança",
@@ -2219,6 +2236,38 @@
       "gamification": "Gamificação",
       "campaigns": "Campanhas",
       "translation": "Tradução"
+    },
+    "branding": {
+      "title": "Marca",
+      "description": "Identidade, visuais e canais sociais — o que os visitantes vêem no teu dashboard.",
+      "viewPublicPage": "Ver página pública",
+      "previewLabel": "Pré-visualização",
+      "previewNoTagline": "Adiciona um slogan para apresentar a tua comunidade.",
+      "sectionIdentity": "Identidade",
+      "sectionVisuals": "Visuais",
+      "sectionSocial": "Social & comunidade",
+      "sectionAdvanced": "Avançado",
+      "handle": "Handle da comunidade",
+      "handleHelp": "Um @handle curto mostrado junto ao nome da comunidade.",
+      "tagline": "Slogan",
+      "taglineHelp": "Uma frase que apresenta a tua comunidade.",
+      "taglinePlaceholder": "O que está a tua comunidade a construir?",
+      "logoUrl": "URL do logótipo",
+      "logoUrlHelp": "Logótipo quadrado. Usa um caminho relativo /logo.png ou um URL https.",
+      "bannerUrl": "URL do banner",
+      "bannerUrlHelp": "Banner principal. Opcional.",
+      "faviconUrl": "URL do favicon",
+      "faviconUrlHelp": "Ícone do separador do browser. Cai no logótipo se não definido.",
+      "brandColorPrimary": "Cor primária da marca",
+      "brandColorSecondary": "Cor secundária da marca",
+      "brandColorHelp": "Formato HSL com três valores separados por espaço, ex. \"28 100% 50%\".",
+      "socialIntro": "Adiciona os URLs dos canais que mantens. Os campos vazios são escondidos dos visitantes.",
+      "website": "Website",
+      "websiteHelp": "O website principal do teu projeto. Qualquer URL http(s).",
+      "ogImageUrl": "URL da imagem OG",
+      "ogImageUrlHelp": "Imagem usada quando o teu dashboard é partilhado em redes sociais.",
+      "footerNote": "Nota de rodapé",
+      "footerNoteHelp": "Pequeno texto opcional mostrado no rodapé do dashboard."
     },
     "translation": {
       "description": "Ativa ou desativa a tradução por tipo de conteúdo. Quando desativado, o botão de tradução desaparece e os pedidos são rejeitados — poupando quota DeepL.",

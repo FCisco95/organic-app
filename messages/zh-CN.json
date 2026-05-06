@@ -134,6 +134,22 @@
       "lastActivity": "最近活动于{when}",
       "joinPill": "加入{community}"
     },
+    "identityTile": {
+      "activeMembers": "{count, plural, =1 {过去 24 小时 1 人活跃} other {过去 24 小时 # 人活跃}}"
+    },
+    "tokenTile": {
+      "label": "官方代币",
+      "contractAddress": "合约地址",
+      "viewOnSolscan": "在 Solscan 查看",
+      "viewOnSolscanAria": "在 Solscan 查看代币",
+      "officialLinks": "官方链接",
+      "antiPhishing": "请始终核实合约地址。不要相信 DM 中收到的链接。"
+    },
+    "copyAddress": {
+      "ariaLabel": "复制合约地址 {address}",
+      "copiedToast": "已复制 {address}",
+      "copyFailed": "复制失败 — 请重试。"
+    },
     "sprintHero": {
       "phase": "{phase}",
       "endsIn": "{countdown} 后结束",
@@ -2210,6 +2226,7 @@
     "settingsUpdateFailed": "更新设置失败",
     "tabs": {
       "general": "常规",
+      "branding": "品牌",
       "token": "代币",
       "treasury": "国库",
       "governance": "治理",
@@ -2219,6 +2236,38 @@
       "gamification": "游戏化",
       "campaigns": "活动",
       "translation": "翻译"
+    },
+    "branding": {
+      "title": "品牌",
+      "description": "身份、视觉和社交频道——访客在你的仪表板上看到的内容。",
+      "viewPublicPage": "查看公开页面",
+      "previewLabel": "实时预览",
+      "previewNoTagline": "添加标语来介绍你的社区。",
+      "sectionIdentity": "身份",
+      "sectionVisuals": "视觉",
+      "sectionSocial": "社交与社区",
+      "sectionAdvanced": "高级",
+      "handle": "社区句柄",
+      "handleHelp": "显示在社区名称旁边的简短 @ 句柄。",
+      "tagline": "标语",
+      "taglineHelp": "介绍你社区的一句话。",
+      "taglinePlaceholder": "你的社区在构建什么?",
+      "logoUrl": "Logo URL",
+      "logoUrlHelp": "方形 logo。使用 /logo.png 这样的根路径或 https URL。",
+      "bannerUrl": "横幅 URL",
+      "bannerUrlHelp": "宽幅主图。可选。",
+      "faviconUrl": "Favicon URL",
+      "faviconUrlHelp": "浏览器标签页图标。未设置时使用 logo。",
+      "brandColorPrimary": "主品牌色",
+      "brandColorSecondary": "副品牌色",
+      "brandColorHelp": "HSL 格式,三个空格分隔的值,如 \"28 100% 50%\"。",
+      "socialIntro": "添加你运营的频道 URL。空字段对公开访客隐藏。",
+      "website": "网站",
+      "websiteHelp": "你项目的主网站。任意 http(s) URL。",
+      "ogImageUrl": "OG 图片 URL",
+      "ogImageUrlHelp": "你的仪表板被分享到社交平台时使用的图片。",
+      "footerNote": "页脚注释",
+      "footerNoteHelp": "在仪表板页脚显示的可选小字。"
     },
     "translation": {
       "description": "按内容类型开启或关闭翻译。关闭后,翻译按钮将隐藏,并拒绝翻译请求——节省 DeepL 用量。",

@@ -52,7 +52,10 @@ export interface ActivityDigestEntry {
   createdAt: string;
 }
 
+import type { TenantBranding } from '@/lib/tenant/types';
+
 export interface DashboardPayload {
+  branding: TenantBranding;
   sprint: SprintHero | null;
   stats: DashboardStatStrip;
   myContributions: MyContributions | null;

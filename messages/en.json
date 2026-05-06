@@ -134,6 +134,22 @@
       "lastActivity": "Last activity {when}",
       "joinPill": "Join {community}"
     },
+    "identityTile": {
+      "activeMembers": "{count, plural, =1 {1 active in last 24h} other {# active in last 24h}}"
+    },
+    "tokenTile": {
+      "label": "Official token",
+      "contractAddress": "Contract address",
+      "viewOnSolscan": "View on Solscan",
+      "viewOnSolscanAria": "View token on Solscan",
+      "officialLinks": "Official links",
+      "antiPhishing": "Always verify the contract address. Don't trust links sent in DMs."
+    },
+    "copyAddress": {
+      "ariaLabel": "Copy contract address {address}",
+      "copiedToast": "Copied {address}",
+      "copyFailed": "Couldn't copy — try again."
+    },
     "sprintHero": {
       "phase": "{phase}",
       "endsIn": "Ends in {countdown}",
@@ -2210,6 +2226,7 @@
     "settingsUpdateFailed": "Failed to update settings",
     "tabs": {
       "general": "General",
+      "branding": "Branding",
       "token": "Token",
       "treasury": "Treasury",
       "governance": "Governance",
@@ -2219,6 +2236,38 @@
       "gamification": "Gamification",
       "campaigns": "Campaigns",
       "translation": "Translation"
+    },
+    "branding": {
+      "title": "Branding",
+      "description": "Identity, visuals, and social channels — what visitors see on your dashboard.",
+      "viewPublicPage": "View public page",
+      "previewLabel": "Live preview",
+      "previewNoTagline": "Add a tagline to introduce your community.",
+      "sectionIdentity": "Identity",
+      "sectionVisuals": "Visuals",
+      "sectionSocial": "Social & community",
+      "sectionAdvanced": "Advanced",
+      "handle": "Community handle",
+      "handleHelp": "A short @handle shown next to the community name.",
+      "tagline": "Tagline",
+      "taglineHelp": "One sentence that introduces your community.",
+      "taglinePlaceholder": "What is your community building?",
+      "logoUrl": "Logo URL",
+      "logoUrlHelp": "Square logo. Use a root path like /logo.png or a full https URL.",
+      "bannerUrl": "Banner URL",
+      "bannerUrlHelp": "Wide hero banner image. Optional.",
+      "faviconUrl": "Favicon URL",
+      "faviconUrlHelp": "Browser tab icon. Falls back to the logo when unset.",
+      "brandColorPrimary": "Primary brand color",
+      "brandColorSecondary": "Secondary brand color",
+      "brandColorHelp": "HSL format with three space-separated values, e.g. \"28 100% 50%\".",
+      "socialIntro": "Add the URLs for any channels you run. Empty fields are hidden from public visitors.",
+      "website": "Website",
+      "websiteHelp": "Your project's main website. Any http(s) URL.",
+      "ogImageUrl": "OG image URL",
+      "ogImageUrlHelp": "Image used when your dashboard is shared on social platforms.",
+      "footerNote": "Footer note",
+      "footerNoteHelp": "Optional small print shown in the dashboard footer."
     },
     "translation": {
       "description": "Turn translation on or off for each content type. When off, the translate button disappears and translation requests are rejected — saving DeepL quota.",

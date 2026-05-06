@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import {
   Settings,
   ShieldAlert,
+  Palette,
   Coins,
   Wallet,
   Vote,
@@ -21,6 +22,7 @@ import { useAuth } from '@/features/auth/context';
 import { useOrganization } from '@/features/settings';
 import type { SettingsTab } from '@/features/settings';
 import { GeneralTab } from '@/components/settings/general-tab';
+import { BrandingTab } from '@/components/settings/branding-tab';
 import { TokenTab } from '@/components/settings/token-tab';
 import { TreasuryTab } from '@/components/settings/treasury-tab';
 import { GovernanceTab } from '@/components/settings/governance-tab';
@@ -46,6 +48,7 @@ const TAB_GROUPS: TabGroup[] = [
     labelKey: 'settingsGroups.organization',
     tabs: [
       { key: 'general', icon: Settings },
+      { key: 'branding', icon: Palette },
       { key: 'token', icon: Coins },
       { key: 'treasury', icon: Wallet },
     ],
@@ -116,6 +119,8 @@ export default function AdminSettingsPage() {
     switch (activeTab) {
       case 'general':
         return <GeneralTab org={org} />;
+      case 'branding':
+        return <BrandingTab org={org} />;
       case 'token':
         return <TokenTab org={org} />;
       case 'treasury':

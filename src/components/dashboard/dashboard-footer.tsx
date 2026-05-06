@@ -19,16 +19,16 @@ export function DashboardFooter({ branding, isAuthenticated }: DashboardFooterPr
       data-testid="dashboard-footer"
       className="rounded-2xl border border-border bg-card p-6"
     >
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <div>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <nav aria-label={t('linksTitle')}>
           <p className="text-xs font-semibold uppercase tracking-wider text-foreground/70">
             {t('linksTitle')}
           </p>
-          <ul className="mt-3 space-y-2 text-sm">
+          <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm">
             <li>
               <Link
                 href="/pulse"
-                className="text-foreground/80 transition-colors hover:text-organic-terracotta"
+                className="text-foreground/80 transition-colors hover:text-organic-terracotta motion-reduce:transition-none"
               >
                 {t('linkPulse')}
               </Link>
@@ -36,7 +36,7 @@ export function DashboardFooter({ branding, isAuthenticated }: DashboardFooterPr
             <li>
               <Link
                 href="/stats"
-                className="text-foreground/80 transition-colors hover:text-organic-terracotta"
+                className="text-foreground/80 transition-colors hover:text-organic-terracotta motion-reduce:transition-none"
               >
                 {t('linkStats')}
               </Link>
@@ -44,67 +44,20 @@ export function DashboardFooter({ branding, isAuthenticated }: DashboardFooterPr
             <li>
               <Link
                 href="/sprints"
-                className="text-foreground/80 transition-colors hover:text-organic-terracotta"
+                className="text-foreground/80 transition-colors hover:text-organic-terracotta motion-reduce:transition-none"
               >
                 {t('linkSprints')}
               </Link>
             </li>
           </ul>
-        </div>
+        </nav>
 
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-foreground/70">
-            {t('socialsTitle')}
-          </p>
-          <ul className="mt-3 space-y-2 text-sm">
-            {branding.socials.twitter && (
-              <li>
-                <a
-                  href={branding.socials.twitter}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-foreground/80 transition-colors hover:text-organic-terracotta"
-                >
-                  {branding.communityHandle ?? branding.communityName}
-                  <ArrowUpRight className="h-3 w-3" />
-                </a>
-              </li>
-            )}
-            {branding.socials.telegram && (
-              <li>
-                <a
-                  href={branding.socials.telegram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-foreground/80 transition-colors hover:text-organic-terracotta"
-                >
-                  Telegram
-                  <ArrowUpRight className="h-3 w-3" />
-                </a>
-              </li>
-            )}
-            {branding.socials.discord && (
-              <li>
-                <a
-                  href={branding.socials.discord}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-foreground/80 transition-colors hover:text-organic-terracotta"
-                >
-                  Discord
-                  <ArrowUpRight className="h-3 w-3" />
-                </a>
-              </li>
-            )}
-          </ul>
-        </div>
-
-        {!isAuthenticated && (
-          <div className="flex flex-col justify-center rounded-xl border border-organic-terracotta/30 bg-organic-terracotta/5 p-4">
+        {!isAuthenticated && branding.tagline && (
+          <div className="flex flex-col rounded-xl border border-organic-terracotta/30 bg-organic-terracotta/5 p-4 sm:max-w-sm">
             <p className="text-sm text-muted-foreground">{branding.tagline}</p>
             <Link
               href="/signup"
-              className="mt-3 inline-flex w-fit items-center gap-2 rounded-full bg-organic-terracotta-hover px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-organic-terracotta-active"
+              className="mt-3 inline-flex w-fit items-center gap-2 rounded-full bg-organic-terracotta-hover px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-organic-terracotta-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-organic-terracotta/40 focus-visible:ring-offset-2 motion-reduce:transition-none"
             >
               {t('joinCta', { community: branding.communityName })}
               <ArrowUpRight className="h-4 w-4" />
@@ -113,8 +66,16 @@ export function DashboardFooter({ branding, isAuthenticated }: DashboardFooterPr
         )}
       </div>
 
+      {branding.footerNote && (
+        <p className="mt-5 border-t border-border pt-4 text-center text-xs text-muted-foreground/80">
+          {branding.footerNote}
+        </p>
+      )}
+
       {showPoweredBy && (
-        <p className="mt-6 border-t border-border pt-4 text-center text-xs text-muted-foreground/70">
+        <p
+          className={`text-center text-xs text-muted-foreground/70 ${branding.footerNote ? 'mt-2' : 'mt-5 border-t border-border pt-4'}`}
+        >
           {t('poweredBy')}
         </p>
       )}

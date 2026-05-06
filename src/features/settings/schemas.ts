@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { brandingFieldsSchema } from '@/features/branding/schemas';
 
 export const generalSettingsSchema = z.object({
   name: z.string().min(1).max(100),
@@ -122,25 +123,26 @@ export type RewardsConfigInput = z.infer<typeof rewardsConfigSchema>;
 
 // Server-side schema for the PATCH /api/settings route.
 // Accepts any combination of org + voting config fields in a flat payload.
-const orgFieldsSchema = z.object({
-  name: z.string().min(1).max(100),
-  description: z.string().max(500).nullable(),
-  logo_url: z.string().url().nullable().or(z.literal('')),
-  token_symbol: z.string().min(1).max(20),
-  token_mint: z.string().nullable().or(z.literal('')),
-  token_decimals: z.coerce.number().int().min(0).max(18),
-  token_total_supply: z.coerce.number().int().positive(),
-  token_analytics_config: tokenAnalyticsConfigSchema,
-  treasury_wallet: z.string().nullable().or(z.literal('')),
-  treasury_allocations: z.array(treasuryAllocationItemSchema),
-  default_sprint_capacity: z.coerce.number().int().min(1),
-  default_sprint_duration_days: z.coerce.number().int().min(1).max(90),
-  organic_id_threshold: z.coerce.number().min(0).nullable(),
-  governance_policy: governancePolicySchema,
-  sprint_policy: sprintPolicySchema,
-  rewards_config: rewardsConfigSchema,
-  translation_settings: translationSettingsSchema,
-});
+const orgFieldsSchema = z
+  .object({
+    name: z.string().min(1).max(100),
+    description: z.string().max(500).nullable(),
+    token_symbol: z.string().min(1).max(20),
+    token_mint: z.string().nullable().or(z.literal('')),
+    token_decimals: z.coerce.number().int().min(0).max(18),
+    token_total_supply: z.coerce.number().int().positive(),
+    token_analytics_config: tokenAnalyticsConfigSchema,
+    treasury_wallet: z.string().nullable().or(z.literal('')),
+    treasury_allocations: z.array(treasuryAllocationItemSchema),
+    default_sprint_capacity: z.coerce.number().int().min(1),
+    default_sprint_duration_days: z.coerce.number().int().min(1).max(90),
+    organic_id_threshold: z.coerce.number().min(0).nullable(),
+    governance_policy: governancePolicySchema,
+    sprint_policy: sprintPolicySchema,
+    rewards_config: rewardsConfigSchema,
+    translation_settings: translationSettingsSchema,
+  })
+  .merge(brandingFieldsSchema);
 
 const votingFieldsSchema = z.object({
   quorum_percentage: z.coerce.number().min(0).max(100),

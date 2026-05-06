@@ -1113,19 +1113,34 @@ export type Database = {
       }
       orgs: {
         Row: {
+          banner_url: string | null
+          brand_color_primary: string | null
+          brand_color_secondary: string | null
+          community_handle: string | null
           created_at: string | null
           default_sprint_capacity: number
           default_sprint_duration_days: number
           description: string | null
+          favicon_url: string | null
+          footer_note: string | null
           gamification_config: Json
           governance_policy: Json
           id: string
+          is_platform_owner: boolean
           logo_url: string | null
           name: string
+          og_image_url: string | null
           organic_id_threshold: number | null
           rewards_config: Json | null
           slug: string
+          social_discord: string | null
+          social_telegram: string | null
+          social_tiktok: string | null
+          social_website: string | null
+          social_x: string | null
+          social_youtube: string | null
           sprint_policy: Json
+          tagline: string | null
           theme: Json | null
           token_analytics_config: Json
           token_decimals: number
@@ -1138,19 +1153,34 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          banner_url?: string | null
+          brand_color_primary?: string | null
+          brand_color_secondary?: string | null
+          community_handle?: string | null
           created_at?: string | null
           default_sprint_capacity?: number
           default_sprint_duration_days?: number
           description?: string | null
+          favicon_url?: string | null
+          footer_note?: string | null
           gamification_config?: Json
           governance_policy?: Json
           id?: string
+          is_platform_owner?: boolean
           logo_url?: string | null
           name: string
+          og_image_url?: string | null
           organic_id_threshold?: number | null
           rewards_config?: Json | null
           slug: string
+          social_discord?: string | null
+          social_telegram?: string | null
+          social_tiktok?: string | null
+          social_website?: string | null
+          social_x?: string | null
+          social_youtube?: string | null
           sprint_policy?: Json
+          tagline?: string | null
           theme?: Json | null
           token_analytics_config?: Json
           token_decimals?: number
@@ -1163,19 +1193,34 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          banner_url?: string | null
+          brand_color_primary?: string | null
+          brand_color_secondary?: string | null
+          community_handle?: string | null
           created_at?: string | null
           default_sprint_capacity?: number
           default_sprint_duration_days?: number
           description?: string | null
+          favicon_url?: string | null
+          footer_note?: string | null
           gamification_config?: Json
           governance_policy?: Json
           id?: string
+          is_platform_owner?: boolean
           logo_url?: string | null
           name?: string
+          og_image_url?: string | null
           organic_id_threshold?: number | null
           rewards_config?: Json | null
           slug?: string
+          social_discord?: string | null
+          social_telegram?: string | null
+          social_tiktok?: string | null
+          social_website?: string | null
+          social_x?: string | null
+          social_youtube?: string | null
           sprint_policy?: Json
+          tagline?: string | null
           theme?: Json | null
           token_analytics_config?: Json
           token_decimals?: number
