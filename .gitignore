@@ -84,3 +84,7 @@ auth.json
 
 # git worktrees
 .worktrees/
+
+# Wizard / scratch artifacts that should never be committed
+.wip-sentry/
+login3.yml
