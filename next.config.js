@@ -15,10 +15,9 @@ try {
 const isProductionBuild = process.env.NEXT_PHASE === 'phase-production-build';
 
 // Only load Sentry in production — importing it in dev triggers webpack issues
-const { withSentryConfig } =
-  isProductionBuild
-    ? require('@sentry/nextjs')
-    : { withSentryConfig: (c) => c };
+const { withSentryConfig } = isProductionBuild
+  ? require('@sentry/nextjs')
+  : { withSentryConfig: (c) => c };
 
 // CSP is now set dynamically in middleware with per-request nonces.
 // See src/middleware.ts for the full Content-Security-Policy configuration.
@@ -82,9 +81,7 @@ const sentryBuildOptions = {
   },
   sourcemaps: {
     disable:
-      !process.env.SENTRY_AUTH_TOKEN ||
-      !process.env.SENTRY_ORG ||
-      !process.env.SENTRY_PROJECT,
+      !process.env.SENTRY_AUTH_TOKEN || !process.env.SENTRY_ORG || !process.env.SENTRY_PROJECT,
   },
 };
 
