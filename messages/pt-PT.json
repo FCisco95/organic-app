@@ -135,7 +135,8 @@
       "joinPill": "Junta-te à {community}"
     },
     "identityTile": {
-      "activeMembers": "{count, plural, =1 {1 ativo nas últimas 24h} other {# ativos nas últimas 24h}}"
+      "activeMembers": "{count, plural, =1 {1 ativo nas últimas 24h} other {# ativos nas últimas 24h}}",
+      "followOn": "Segue {community} no {platform}"
     },
     "tokenTile": {
       "label": "Token oficial",
@@ -143,7 +144,14 @@
       "viewOnSolscan": "Ver no Solscan",
       "viewOnSolscanAria": "Ver token no Solscan",
       "officialLinks": "Links oficiais",
-      "antiPhishing": "Verifica sempre o endereço do contrato. Não confies em links enviados por DM."
+      "antiPhishing": "Verifica sempre o endereço do contrato. Não confies em links enviados por DM.",
+      "trust": {
+        "mintRevoked": "Mint revogado",
+        "mintActive": "Mint ativo",
+        "freezeRevoked": "Congelamento revogado",
+        "freezeActive": "Congelamento ativo",
+        "holders": "{count} detentores"
+      }
     },
     "copyAddress": {
       "ariaLabel": "Copiar endereço do contrato {address}",
@@ -157,7 +165,19 @@
       "topContributors": "Principais contribuidores nesta sprint",
       "viewSprint": "Ver sprint",
       "summaryFallback": "{name} está em {phase}. {done} de {total} tarefas concluídas.",
-      "summaryHeading": "Resumo da sprint"
+      "summaryHeading": "Resumo da sprint",
+      "empty": "Não há sprint ativa neste momento.",
+      "noContributors": "Ainda sem contribuidores.",
+      "phaseLabel": {
+        "draft": "Rascunho",
+        "active": "Ativa",
+        "review": "Em revisão",
+        "dispute_window": "Janela de disputa",
+        "settlement": "Apuramento",
+        "completed": "Concluída",
+        "cancelled": "Cancelada",
+        "unknown": "—"
+      }
     },
     "statStrip": {
       "activeMembers24h": "Membros ativos (24h)",

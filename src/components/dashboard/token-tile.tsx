@@ -1,11 +1,12 @@
 'use client';
 
 import Image from 'next/image';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { ExternalLink } from 'lucide-react';
 import { CopyAddressButton } from '@/components/ui/copy-address-button';
 import { TrustStrip, type TrustItem } from '@/components/ui/trust-strip';
 import type { TenantBranding } from '@/lib/tenant/types';
+import type { TokenTrust } from '@/features/token/onchain';
 
 interface TokenTileProps {
   branding: TenantBranding;
@@ -13,11 +14,40 @@ interface TokenTileProps {
   mint: string;
   symbol: string;
   /**
-   * Optional on-chain trust items (mint authority revoked, freeze authority
-   * revoked, holder count). Phase 4 wires these to live RPC data; for now the
-   * caller may pass an empty array or pre-computed neutral pills.
+   * Server-fetched on-chain trust signals: mint authority status, freeze
+   * authority status, holder count. When `null` the trust strip is hidden.
    */
-  trustItems?: TrustItem[];
+  tokenTrust?: TokenTrust | null;
+}
+
+function formatHolderCount(count: number, locale: string): string {
+  return new Intl.NumberFormat(locale).format(count);
+}
+
+function buildTrustItems(
+  trust: TokenTrust,
+  t: (key: string, values?: Record<string, string | number>) => string,
+  locale: string
+): TrustItem[] {
+  return [
+    {
+      key: 'mint',
+      label: trust.mintAuthorityRevoked ? t('trust.mintRevoked') : t('trust.mintActive'),
+      variant: trust.mintAuthorityRevoked ? 'positive' : 'warning',
+    },
+    {
+      key: 'freeze',
+      label: trust.freezeAuthorityRevoked
+        ? t('trust.freezeRevoked')
+        : t('trust.freezeActive'),
+      variant: trust.freezeAuthorityRevoked ? 'positive' : 'warning',
+    },
+    {
+      key: 'holders',
+      label: t('trust.holders', { count: formatHolderCount(trust.holderCount, locale) }),
+      variant: 'neutral',
+    },
+  ];
 }
 
 interface OutboundLink {
@@ -51,13 +81,15 @@ function buildOutboundLinks(mint: string): OutboundLink[] {
   ];
 }
 
-export function TokenTile({ branding, mint, symbol, trustItems = [] }: TokenTileProps) {
+export function TokenTile({ branding, mint, symbol, tokenTrust }: TokenTileProps) {
   const t = useTranslations('Dashboard.tokenTile');
+  const locale = useLocale();
   const accent = branding.accentPrimary;
 
   if (!mint || mint.length === 0) return null;
 
   const outbound = buildOutboundLinks(mint);
+  const trustItems = tokenTrust ? buildTrustItems(tokenTrust, t, locale) : [];
   const tileStyle = {
     backgroundImage: `radial-gradient(80% 60% at 50% 0%, hsl(${accent} / 0.18), transparent 60%)`,
   } as const;
