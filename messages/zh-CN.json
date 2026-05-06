@@ -135,7 +135,8 @@
       "joinPill": "加入{community}"
     },
     "identityTile": {
-      "activeMembers": "{count, plural, =1 {过去 24 小时 1 人活跃} other {过去 24 小时 # 人活跃}}"
+      "activeMembers": "{count, plural, =1 {过去 24 小时 1 人活跃} other {过去 24 小时 # 人活跃}}",
+      "followOn": "在 {platform} 上关注 {community}"
     },
     "tokenTile": {
       "label": "官方代币",
@@ -143,7 +144,14 @@
       "viewOnSolscan": "在 Solscan 查看",
       "viewOnSolscanAria": "在 Solscan 查看代币",
       "officialLinks": "官方链接",
-      "antiPhishing": "请始终核实合约地址。不要相信 DM 中收到的链接。"
+      "antiPhishing": "请始终核实合约地址。不要相信 DM 中收到的链接。",
+      "trust": {
+        "mintRevoked": "铸造权已撤销",
+        "mintActive": "铸造权未撤销",
+        "freezeRevoked": "冻结权已撤销",
+        "freezeActive": "冻结权未撤销",
+        "holders": "{count} 个持有者"
+      }
     },
     "copyAddress": {
       "ariaLabel": "复制合约地址 {address}",
@@ -157,7 +165,19 @@
       "topContributors": "本冲刺主要贡献者",
       "viewSprint": "查看冲刺",
       "summaryFallback": "{name} 处于 {phase} 阶段。{done} / {total} 任务已完成。",
-      "summaryHeading": "冲刺总结"
+      "summaryHeading": "冲刺总结",
+      "empty": "目前没有进行中的冲刺。",
+      "noContributors": "暂无贡献者。",
+      "phaseLabel": {
+        "draft": "草稿",
+        "active": "进行中",
+        "review": "审核中",
+        "dispute_window": "争议窗口",
+        "settlement": "结算中",
+        "completed": "已完成",
+        "cancelled": "已取消",
+        "unknown": "—"
+      }
     },
     "statStrip": {
       "activeMembers24h": "活跃成员（24小时）",

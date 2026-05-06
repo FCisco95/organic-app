@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient, createAnonClient } from '@/lib/supabase/server';
 import { logger } from '@/lib/logger';
 import { getBranding } from '@/lib/tenant/branding';
+import { getTokenTrust } from '@/features/token/onchain';
 import { buildFallbackSummary } from '@/features/dashboard/sprint-summary-service';
 import type { Database } from '@/types/database';
 import type {
@@ -253,11 +254,15 @@ export async function GET() {
       data: { user },
     } = await supabase.auth.getUser();
 
-    const [stats, activityDigest, myContributions, branding] = await Promise.all([
+    const [stats, activityDigest, myContributions, branding, tokenTrust] = await Promise.all([
       loadStatStrip(sprintId),
       loadActivityDigest(),
       user ? loadMyContributions(user.id, sprintId) : Promise.resolve(null),
       getBranding(),
+      getTokenTrust().catch((error) => {
+        logger.error('dashboard: failed to load token trust', { error: String(error) });
+        return null;
+      }),
     ]);
 
     const payload: DashboardPayload = {
@@ -266,6 +271,7 @@ export async function GET() {
       stats,
       myContributions,
       activityDigest,
+      tokenTrust,
     };
 
     return NextResponse.json({ data: payload, error: null });

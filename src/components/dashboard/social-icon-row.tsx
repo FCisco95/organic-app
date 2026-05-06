@@ -1,3 +1,6 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { Globe } from 'lucide-react';
 import { BrandIcon, type BrandPlatform } from '@/components/ui/brand-icon';
 import type { TenantSocials } from '@/lib/tenant/types';
@@ -30,6 +33,8 @@ const PLATFORMS: PlatformDef[] = [
 ];
 
 export function SocialIconRow({ socials, communityName, className }: SocialIconRowProps) {
+  const t = useTranslations('Dashboard.identityTile');
+
   const configured = PLATFORMS.filter((p) => {
     const url = socials[p.key];
     return typeof url === 'string' && url.length > 0;
@@ -45,7 +50,7 @@ export function SocialIconRow({ socials, communityName, className }: SocialIconR
     >
       {configured.map(({ key, label, brand }) => {
         const url = socials[key] as string;
-        const ariaLabel = `Follow ${communityName} on ${label}`;
+        const ariaLabel = t('followOn', { community: communityName, platform: label });
         return (
           <li key={key}>
             <a
@@ -53,7 +58,7 @@ export function SocialIconRow({ socials, communityName, className }: SocialIconR
               target="_blank"
               rel="noopener noreferrer"
               aria-label={ariaLabel}
-              className="group inline-flex h-9 w-9 items-center justify-center rounded-lg text-foreground/70 transition-all hover:-translate-y-0.5 hover:bg-foreground/5 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-organic-terracotta/40 focus-visible:ring-offset-2 motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:h-10 sm:w-10"
+              className="group inline-flex h-11 w-11 items-center justify-center rounded-lg text-foreground/70 transition-all hover:-translate-y-0.5 hover:bg-foreground/5 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-organic-terracotta/40 focus-visible:ring-offset-2 motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:h-9 sm:w-9"
             >
               {brand === 'website' ? (
                 <Globe aria-hidden="true" className="h-[18px] w-[18px]" />
