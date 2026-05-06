@@ -59,6 +59,34 @@
         "notes": "protobufjs prototype-pollution. Transitive via @solana/wallet-adapter-wallets > @solana/wallet-adapter-trezor > @trezor/* > @trezor/protobuf > protobufjs. Fix requires breaking @solana/wallet-adapter-wallets bump (same track as GHSA-r5fr-rjxr-66jc).",
         "expiry": "2026-07-15T00:00:00Z"
       }
+    },
+    {
+      "GHSA-6chq-wfr3-2hj9": {
+        "active": true,
+        "notes": "axios@1.15.0 header injection via prototype pollution. Transitive 7-deep via @solana/wallet-adapter-wallets > @solana/wallet-adapter-trezor > @trezor/connect-web > @trezor/connect > @trezor/blockchain-link-utils > @stellar/stellar-sdk. Fix requires bumping @stellar/stellar-sdk (currently pinned by @trezor/blockchain-link-utils@1.5.2). Tracked alongside the @solana/wallet-adapter-wallets major upgrade.",
+        "expiry": "2026-08-04T00:00:00Z"
+      }
+    },
+    {
+      "GHSA-pf86-5x62-jrwf": {
+        "active": true,
+        "notes": "axios@1.15.0 prototype pollution gadgets (response tampering, data exfiltration, request hijacking). Same transitive path as GHSA-6chq-wfr3-2hj9 — fix tied to @solana/wallet-adapter-wallets major bump.",
+        "expiry": "2026-08-04T00:00:00Z"
+      }
+    },
+    {
+      "GHSA-pmwg-cvhr-8vh7": {
+        "active": true,
+        "notes": "axios@1.15.0 NO_PROXY bypass via 127.0.0.0/8 loopback subnet. Same transitive path as GHSA-6chq-wfr3-2hj9 — fix tied to @solana/wallet-adapter-wallets major bump.",
+        "expiry": "2026-08-04T00:00:00Z"
+      }
+    },
+    {
+      "GHSA-q8qp-cvcw-x6jj": {
+        "active": true,
+        "notes": "axios prototype pollution read-side gadgets in HTTP adapter (credential injection, request hijacking). Vulnerable range <1.15.2. Same transitive path as GHSA-6chq-wfr3-2hj9 — fix tied to @solana/wallet-adapter-wallets major bump.",
+        "expiry": "2026-08-04T00:00:00Z"
+      }
     }
   ],
 
