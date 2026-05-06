@@ -68,6 +68,22 @@ export interface Organization {
   rewards_config: RewardsConfig | null;
   // Translation per-content-type toggles
   translation_settings: TranslationSettingsConfig;
+  // Branding (tenant identity / visuals / socials)
+  community_handle: string | null;
+  tagline: string | null;
+  banner_url: string | null;
+  favicon_url: string | null;
+  og_image_url: string | null;
+  brand_color_primary: string | null;
+  brand_color_secondary: string | null;
+  footer_note: string | null;
+  is_platform_owner: boolean;
+  social_x: string | null;
+  social_telegram: string | null;
+  social_discord: string | null;
+  social_youtube: string | null;
+  social_tiktok: string | null;
+  social_website: string | null;
   // Timestamps
   created_at: string | null;
   updated_at: string | null;
@@ -91,6 +107,7 @@ export interface OrganizationWithVoting extends Organization {
 
 export type SettingsTab =
   | 'general'
+  | 'branding'
   | 'token'
   | 'treasury'
   | 'governance'
@@ -103,6 +120,7 @@ export type SettingsTab =
 
 export const SETTINGS_TABS: { key: SettingsTab; labelKey: string; icon: string }[] = [
   { key: 'general', labelKey: 'Settings.tabs.general', icon: 'Settings' },
+  { key: 'branding', labelKey: 'Settings.tabs.branding', icon: 'Palette' },
   { key: 'token', labelKey: 'Settings.tabs.token', icon: 'Coins' },
   { key: 'treasury', labelKey: 'Settings.tabs.treasury', icon: 'Wallet' },
   { key: 'governance', labelKey: 'Settings.tabs.governance', icon: 'Vote' },

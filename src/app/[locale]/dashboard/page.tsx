@@ -1,14 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/layout';
 import { useAuth } from '@/features/auth/context';
-import { getBranding } from '@/lib/tenant/branding';
-import type { TenantBranding } from '@/lib/tenant/types';
+import { TOKEN_CONFIG } from '@/config/token';
 import { useDashboardData } from '@/features/dashboard/hooks';
-import { DashboardMasthead } from '@/components/dashboard/dashboard-masthead';
+import { IdentityTile } from '@/components/dashboard/identity-tile';
+import { TokenTile } from '@/components/dashboard/token-tile';
 import { SprintHeroSection } from '@/components/dashboard/sprint-hero';
 import { DashboardStatStripSection } from '@/components/dashboard/dashboard-stat-strip';
 import { MyContributionsCard } from '@/components/dashboard/my-contributions';
@@ -28,12 +28,8 @@ const GovernanceSummaryCard = dynamic(
 export default function DashboardPage() {
   const t = useTranslations('Dashboard');
   const { user } = useAuth();
-  const [branding, setBranding] = useState<TenantBranding | null>(null);
   const { data, isLoading } = useDashboardData();
-
-  useEffect(() => {
-    getBranding().then(setBranding);
-  }, []);
+  const branding = data?.branding ?? null;
 
   useEffect(() => {
     if (!branding) return;
@@ -45,11 +41,14 @@ export default function DashboardPage() {
 
   const isAuthenticated = !!user;
 
-  if (!branding || isLoading || !data) {
+  if (!data || !branding || isLoading) {
     return (
       <PageContainer layout="fluid">
         <div className="space-y-6">
-          <div className="h-20 animate-pulse rounded-2xl bg-muted/40" />
+          <div className="grid gap-6 lg:grid-cols-12">
+            <div className="lg:col-span-7 h-48 animate-pulse rounded-2xl bg-muted/40" />
+            <div className="lg:col-span-5 h-48 animate-pulse rounded-2xl bg-muted/40" />
+          </div>
           <div className="h-72 animate-pulse rounded-2xl bg-muted/40" />
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
             {Array.from({ length: 4 }).map((_, i) => (
@@ -65,7 +64,19 @@ export default function DashboardPage() {
   return (
     <PageContainer layout="fluid">
       <div className="space-y-6">
-        <DashboardMasthead branding={branding} isAuthenticated={isAuthenticated} />
+        {/* Bento hero — Identity (left, 7 cols) + Token (right, 5 cols) */}
+        <div className="grid gap-6 lg:grid-cols-12">
+          <div className="lg:col-span-7">
+            <IdentityTile
+              branding={branding}
+              isAuthenticated={isAuthenticated}
+              activeMembers24h={data.stats.activeMembers24h}
+            />
+          </div>
+          <div className="lg:col-span-5">
+            <TokenTile branding={branding} mint={TOKEN_CONFIG.mint} symbol={TOKEN_CONFIG.symbol} />
+          </div>
+        </div>
 
         <SprintHeroSection sprint={data.sprint} />
 

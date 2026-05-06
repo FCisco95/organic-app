@@ -1,8 +1,20 @@
+export interface TenantSocials {
+  x: string | null;
+  telegram: string | null;
+  discord: string | null;
+  youtube: string | null;
+  tiktok: string | null;
+  website: string | null;
+}
+
 export interface TenantBranding {
   communityName: string;
   communityHandle: string | null;
   logoUrl: string;
   heroImageUrl: string | null;
+  bannerUrl: string | null;
+  faviconUrl: string | null;
+  ogImageUrl: string | null;
   accentPrimary: string;
   accentSecondary: string | null;
   tagline: string | null;
@@ -13,9 +25,5 @@ export interface TenantBranding {
    * For every other tenant this stays false and the attribution renders.
    */
   isPlatformOwner: boolean;
-  socials: {
-    twitter: string | null;
-    telegram: string | null;
-    discord: string | null;
-  };
+  socials: TenantSocials;
 }

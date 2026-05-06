@@ -15,6 +15,7 @@ export default defineConfig({
       'src/lib/solana/__tests__/**/*.test.ts',
       'src/app/api/**/__tests__/**/*.test.ts',
       'tests/security/**/*.test.ts',
+      'tests/features/**/*.test.ts',
     ],
   },
 });

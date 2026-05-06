@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient, createAnonClient } from '@/lib/supabase/server';
 import { logger } from '@/lib/logger';
+import { getBranding } from '@/lib/tenant/branding';
 import { buildFallbackSummary } from '@/features/dashboard/sprint-summary-service';
 import type { Database } from '@/types/database';
 import type {
@@ -252,13 +253,15 @@ export async function GET() {
       data: { user },
     } = await supabase.auth.getUser();
 
-    const [stats, activityDigest, myContributions] = await Promise.all([
+    const [stats, activityDigest, myContributions, branding] = await Promise.all([
       loadStatStrip(sprintId),
       loadActivityDigest(),
       user ? loadMyContributions(user.id, sprintId) : Promise.resolve(null),
+      getBranding(),
     ]);
 
     const payload: DashboardPayload = {
+      branding,
       sprint,
       stats,
       myContributions,
