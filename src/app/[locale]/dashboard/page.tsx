@@ -74,7 +74,12 @@ export default function DashboardPage() {
             />
           </div>
           <div className="lg:col-span-5">
-            <TokenTile branding={branding} mint={TOKEN_CONFIG.mint} symbol={TOKEN_CONFIG.symbol} />
+            <TokenTile
+              branding={branding}
+              mint={TOKEN_CONFIG.mint}
+              symbol={TOKEN_CONFIG.symbol}
+              tokenTrust={data.tokenTrust}
+            />
           </div>
         </div>
 

@@ -143,7 +143,14 @@
       "viewOnSolscan": "Ver no Solscan",
       "viewOnSolscanAria": "Ver token no Solscan",
       "officialLinks": "Links oficiais",
-      "antiPhishing": "Verifica sempre o endereço do contrato. Não confies em links enviados por DM."
+      "antiPhishing": "Verifica sempre o endereço do contrato. Não confies em links enviados por DM.",
+      "trust": {
+        "mintRevoked": "Mint revogado",
+        "mintActive": "Mint ativo",
+        "freezeRevoked": "Congelamento revogado",
+        "freezeActive": "Congelamento ativo",
+        "holders": "{count} detentores"
+      }
     },
     "copyAddress": {
       "ariaLabel": "Copiar endereço do contrato {address}",
