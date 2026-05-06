@@ -4,6 +4,7 @@ import { FixtureSolanaRpc } from './rpc-fixture';
 import type { ConsensusVerifier } from './rpc-consensus';
 
 export type { SolanaRpc, TokenHolder } from './rpc';
+export type { TokenMintInfo } from './rpc-live';
 export {
   getConnection,
   getOrgTokenMint,
@@ -11,6 +12,7 @@ export {
   getTokenBalance,
   getAllTokenHolders,
   getAllTokenHoldersUsingConnection,
+  getTokenMintInfo,
   isOrgHolder,
   isOrgHolderUsingConnection,
 } from './rpc-live';

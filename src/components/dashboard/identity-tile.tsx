@@ -45,6 +45,7 @@ export function IdentityTile({
             fill
             sizes="(max-width: 1024px) 100vw, 60vw"
             className="object-cover"
+            loading="lazy"
             unoptimized
           />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-card/60 to-card" />

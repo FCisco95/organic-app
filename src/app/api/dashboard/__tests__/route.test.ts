@@ -9,6 +9,10 @@ vi.mock('@/lib/logger', () => ({
   logger: { error: vi.fn(), warn: vi.fn(), info: vi.fn() },
 }));
 
+vi.mock('@/features/token/onchain', () => ({
+  getTokenTrust: vi.fn().mockResolvedValue(null),
+}));
+
 import { createClient, createAnonClient } from '@/lib/supabase/server';
 import { GET } from '../route';
 
@@ -65,6 +69,7 @@ describe('GET /api/dashboard', () => {
     expect(body.data.myContributions).toBeNull();
     expect(body.data.stats.openProposals).toBe(3);
     expect(Array.isArray(body.data.activityDigest)).toBe(true);
+    expect(body.data.tokenTrust).toBeNull();
   });
 
   it('returns myContributions object when authenticated', async () => {

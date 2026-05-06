@@ -16,6 +16,7 @@ let cachedProviders: ReadonlyArray<RpcProvider> | null = null;
 
 const TOKEN_BALANCE_CACHE_TTL_MS = 15 * 1000;
 const TOKEN_HOLDERS_CACHE_TTL_MS = 5 * 60 * 1000;
+const TOKEN_MINT_INFO_CACHE_TTL_MS = 5 * 60 * 1000;
 const HEAVY_OP_TIMEOUT_MS = 10_000;
 
 const tokenBalanceCache = new Map<string, { balance: number; timestamp: number }>();
@@ -23,6 +24,17 @@ const tokenHoldersCache = new Map<
   string,
   { holders: Array<{ address: string; balance: number }>; timestamp: number }
 >();
+const tokenMintInfoCache = new Map<
+  string,
+  { info: TokenMintInfo; timestamp: number }
+>();
+
+export interface TokenMintInfo {
+  mintAuthority: string | null;
+  freezeAuthority: string | null;
+  decimals: number;
+  supply: string;
+}
 
 function poolDisabled(): boolean {
   return process.env.SOLANA_RPC_POOL_DISABLED === 'true';
@@ -62,6 +74,9 @@ export function __resetRpcCachesForTests(): void {
   cachedPool = null;
   cachedConsensus = null;
   cachedProviders = null;
+  tokenBalanceCache.clear();
+  tokenHoldersCache.clear();
+  tokenMintInfoCache.clear();
 }
 
 export function getConnection(): Connection {
@@ -286,6 +301,68 @@ export async function getAllTokenHolders(
     console.error('Error fetching all token holders:', error);
     if (cachedHolders) return cachedHolders.holders;
     return [];
+  }
+}
+
+/**
+ * Reads the on-chain mint account for the given token, returning authority
+ * status, decimals, and total supply. Cached server-side for 5 minutes.
+ *
+ * Returns `null` when the mint account isn't a parseable SPL token mint,
+ * or when the RPC fails and no stale cache is available.
+ */
+export async function getTokenMintInfo(
+  mintAddress: PublicKey = ORG_TOKEN_MINT,
+  options?: { skipCache?: boolean }
+): Promise<TokenMintInfo | null> {
+  const cacheKey = mintAddress.toBase58();
+  const now = Date.now();
+  const cached = tokenMintInfoCache.get(cacheKey);
+  if (
+    !options?.skipCache &&
+    cached &&
+    now - cached.timestamp < TOKEN_MINT_INFO_CACHE_TTL_MS
+  ) {
+    return cached.info;
+  }
+
+  try {
+    const accountInfo = await runRead('getTokenMintInfo', (connection) =>
+      connection.getParsedAccountInfo(mintAddress)
+    );
+
+    const value = accountInfo.value;
+    if (!value || !('parsed' in value.data)) {
+      if (cached) return cached.info;
+      return null;
+    }
+
+    const parsed = value.data.parsed;
+    if (parsed.type !== 'mint') {
+      if (cached) return cached.info;
+      return null;
+    }
+
+    const info = parsed.info as {
+      mintAuthority: string | null;
+      freezeAuthority: string | null;
+      decimals: number;
+      supply: string;
+    };
+
+    const result: TokenMintInfo = {
+      mintAuthority: info.mintAuthority ?? null,
+      freezeAuthority: info.freezeAuthority ?? null,
+      decimals: info.decimals,
+      supply: info.supply,
+    };
+
+    tokenMintInfoCache.set(cacheKey, { info: result, timestamp: now });
+    return result;
+  } catch (error) {
+    console.error('Error fetching token mint info:', error);
+    if (cached) return cached.info;
+    return null;
   }
 }
 
