@@ -32,6 +32,17 @@ describe('JupiterSwapEmbed module', () => {
   it('uses ExactIn swap mode', () => {
     expect(source).toMatch(/swapMode:\s*'ExactIn'/);
   });
+
+  it('loads the plugin from the Jupiter CDN, not the npm package', () => {
+    expect(source).toMatch(/https:\/\/plugin\.jup\.ag\/plugin-v1\.js/);
+    expect(source).not.toMatch(/from\s+['"]@jup-ag\/plugin['"]/);
+    expect(source).not.toMatch(/import\(['"]@jup-ag\/plugin['"]\)/);
+  });
+
+  it('uses Next.js Script with lazyOnload so the per-request CSP nonce is applied', () => {
+    expect(source).toMatch(/from\s+['"]next\/script['"]/);
+    expect(source).toMatch(/strategy="lazyOnload"/);
+  });
 });
 
 describe('resolveReferralAccount', () => {

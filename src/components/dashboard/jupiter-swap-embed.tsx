@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useId, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
+import Script from 'next/script';
 import { useTranslations } from 'next-intl';
 import { useWallet, type WalletContextState } from '@solana/wallet-adapter-react';
 import type { TenantBranding } from '@/lib/tenant/types';
@@ -18,72 +19,115 @@ interface JupiterSwapEmbedProps {
   symbol: string;
 }
 
+interface JupiterFormProps {
+  initialOutputMint: string;
+  swapMode: 'ExactIn' | 'ExactOut';
+  referralAccount?: string;
+  referralFee: number;
+}
+
+interface JupiterInitConfig {
+  displayMode: 'integrated' | 'modal' | 'widget';
+  integratedTargetId: string;
+  enableWalletPassthrough: boolean;
+  passthroughWalletContextState: WalletContextState;
+  formProps: JupiterFormProps;
+  branding: { name: string; logoUri: string };
+}
+
+interface JupiterGlobal {
+  init: (config: JupiterInitConfig) => Promise<void> | void;
+  syncProps: (props: { passthroughWalletContextState: WalletContextState }) => void;
+  close: () => void;
+  resume?: () => void;
+}
+
+declare global {
+  interface Window {
+    Jupiter?: JupiterGlobal;
+  }
+}
+
+/**
+ * Jupiter Plugin URL on Jupiter's CDN. Loaded as a `<Script>` so Next.js
+ * applies the per-request CSP nonce automatically (`strict-dynamic` then
+ * trusts anything this script loads transitively).
+ *
+ * Using the CDN script avoids the `@jup-ag/plugin` npm package's stale
+ * peer-dep range (`@solana/spl-token@^0.1.8`) which conflicts with the
+ * project's `^0.4.0` and breaks `npm ci` in CI/Vercel.
+ */
+const JUPITER_PLUGIN_SRC = 'https://plugin.jup.ag/plugin-v1.js';
+
 /**
  * Renders Jupiter's "integrated" plugin into a sized container, wired to the
- * app-level Solana wallet adapter via `enableWalletPassthrough`. The plugin is
- * loaded dynamically (it touches `window` on import) and mounts into a DOM id
- * we own.
+ * app-level Solana wallet adapter via `enableWalletPassthrough`. The plugin
+ * is loaded from Jupiter's CDN and exposes a `window.Jupiter` global.
  *
- * Visual treatment matches `IdentityTile` / `TokenTile`: rounded-2xl card with
- * the tenant brand glow.
+ * Visual treatment matches `IdentityTile` / `TokenTile`: rounded-2xl card
+ * with the tenant brand glow.
  */
 export function JupiterSwapEmbed({ branding, mint, symbol }: JupiterSwapEmbedProps) {
   const t = useTranslations('Dashboard.swap');
   const accent = branding.accentPrimary;
   const wallet: WalletContextState = useWallet();
 
-  // Stable id for the Jupiter integrated target so two embeds on the same page
-  // (unlikely, but cheap insurance) cannot collide.
+  // Stable id for the Jupiter integrated target so two embeds on the same
+  // page (unlikely, but cheap insurance) cannot collide.
   const reactId = useId();
   const targetId = `jupiter-swap-embed-${reactId.replace(/[^a-zA-Z0-9_-]/g, '')}`;
 
+  const [scriptLoaded, setScriptLoaded] = useState(false);
   const [pluginReady, setPluginReady] = useState(false);
   const [loadError, setLoadError] = useState(false);
-  const pluginRef = useRef<typeof import('@jup-ag/plugin') | null>(null);
+  const initStartedRef = useRef(false);
 
-  // Initialize the plugin once when mounted and whenever the mint changes.
-  useEffect(() => {
+  const initPlugin = useCallback(async () => {
+    if (initStartedRef.current) return;
     if (!shouldRenderSwapEmbed(mint)) return;
+    if (typeof window === 'undefined' || !window.Jupiter) return;
 
-    let cancelled = false;
+    initStartedRef.current = true;
     const referralAccount = resolveReferralAccount(
       process.env.NEXT_PUBLIC_JUPITER_REFERRAL_ACCOUNT,
       TOKEN_CONFIG.treasuryWallet
     );
 
-    (async () => {
-      try {
-        const plugin = await import('@jup-ag/plugin');
-        if (cancelled) return;
-        pluginRef.current = plugin;
+    try {
+      await window.Jupiter.init({
+        displayMode: 'integrated',
+        integratedTargetId: targetId,
+        enableWalletPassthrough: true,
+        passthroughWalletContextState: wallet,
+        formProps: {
+          initialOutputMint: mint,
+          swapMode: 'ExactIn',
+          ...(referralAccount ? { referralAccount } : {}),
+          referralFee: JUPITER_REFERRAL_FEE_BPS,
+        },
+        branding: {
+          name: branding.communityName,
+          logoUri: branding.logoUrl,
+        },
+      });
+      setPluginReady(true);
+    } catch {
+      setLoadError(true);
+      initStartedRef.current = false;
+    }
+    // wallet is intentionally omitted — we forward wallet changes via
+    // syncProps (next effect) instead of re-initializing the embed.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mint, targetId, branding.communityName, branding.logoUrl]);
 
-        await plugin.init({
-          displayMode: 'integrated',
-          integratedTargetId: targetId,
-          enableWalletPassthrough: true,
-          passthroughWalletContextState: wallet,
-          formProps: {
-            initialOutputMint: mint,
-            swapMode: 'ExactIn',
-            ...(referralAccount ? { referralAccount } : {}),
-            referralFee: JUPITER_REFERRAL_FEE_BPS,
-          },
-          branding: {
-            name: branding.communityName,
-            logoUri: branding.logoUrl,
-          },
-        });
-
-        if (!cancelled) setPluginReady(true);
-      } catch {
-        if (!cancelled) setLoadError(true);
-      }
-    })();
+  // Initialize the plugin once the CDN script has loaded.
+  useEffect(() => {
+    if (!scriptLoaded) return;
+    void initPlugin();
 
     return () => {
-      cancelled = true;
-      const plugin = pluginRef.current;
-      if (plugin) {
+      const plugin = typeof window !== 'undefined' ? window.Jupiter : undefined;
+      if (plugin && initStartedRef.current) {
         try {
           plugin.close();
         } catch {
@@ -91,17 +135,13 @@ export function JupiterSwapEmbed({ branding, mint, symbol }: JupiterSwapEmbedPro
         }
       }
     };
-    // We intentionally do not depend on `wallet` here — re-running init would
-    // remount the entire embed. Instead, syncProps is called in the next
-    // effect to forward wallet state changes.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mint, targetId, branding.communityName, branding.logoUrl]);
+  }, [scriptLoaded, initPlugin]);
 
   // Forward wallet state changes (connect / disconnect / signing capability)
   // into the plugin without re-initializing it.
   useEffect(() => {
     if (!pluginReady) return;
-    const plugin = pluginRef.current;
+    const plugin = typeof window !== 'undefined' ? window.Jupiter : undefined;
     if (!plugin) return;
     try {
       plugin.syncProps({ passthroughWalletContextState: wallet });
@@ -124,6 +164,13 @@ export function JupiterSwapEmbed({ branding, mint, symbol }: JupiterSwapEmbedPro
       className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 sm:p-7"
       style={sectionStyle}
     >
+      <Script
+        src={JUPITER_PLUGIN_SRC}
+        strategy="lazyOnload"
+        onLoad={() => setScriptLoaded(true)}
+        onError={() => setLoadError(true)}
+      />
+
       <header className="mb-5 flex flex-col gap-1">
         <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           {t('eyebrow')}
