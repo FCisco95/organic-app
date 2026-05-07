@@ -29,7 +29,7 @@ function buildTrustItems(
   t: (key: string, values?: Record<string, string | number>) => string,
   locale: string
 ): TrustItem[] {
-  return [
+  const items: TrustItem[] = [
     {
       key: 'mint',
       label: trust.mintAuthorityRevoked ? t('trust.mintRevoked') : t('trust.mintActive'),
@@ -42,12 +42,17 @@ function buildTrustItems(
         : t('trust.freezeActive'),
       variant: trust.freezeAuthorityRevoked ? 'positive' : 'warning',
     },
-    {
+  ];
+
+  if (trust.holderCount !== null) {
+    items.push({
       key: 'holders',
       label: t('trust.holders', { count: formatHolderCount(trust.holderCount, locale) }),
       variant: 'neutral',
-    },
-  ];
+    });
+  }
+
+  return items;
 }
 
 interface OutboundLink {

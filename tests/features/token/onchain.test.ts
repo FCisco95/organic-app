@@ -83,6 +83,52 @@ describe('getTokenTrust', () => {
     expect(await getTokenTrust()).toBeNull();
   });
 
+  it('returns trust with holderCount: null when holder scan fails but mint info succeeds', async () => {
+    vi.mocked(getTokenMintInfo).mockResolvedValue({
+      mintAuthority: null,
+      freezeAuthority: null,
+      decimals: 9,
+      supply: '1000000000000000',
+    });
+    vi.mocked(getAllTokenHolders).mockRejectedValue(new Error('getParsedProgramAccounts timeout'));
+
+    const trust = await getTokenTrust();
+
+    expect(trust).not.toBeNull();
+    expect(trust!.mintAuthorityRevoked).toBe(true);
+    expect(trust!.freezeAuthorityRevoked).toBe(true);
+    expect(trust!.holderCount).toBeNull();
+    expect(typeof trust!.fetchedAt).toBe('string');
+  });
+
+  it('returns full trust when both mint info and holder scan succeed', async () => {
+    vi.mocked(getTokenMintInfo).mockResolvedValue({
+      mintAuthority: null,
+      freezeAuthority: 'SomeFreezePubkey',
+      decimals: 9,
+      supply: '1000000000000000',
+    });
+    vi.mocked(getAllTokenHolders).mockResolvedValue([
+      { address: 'A', balance: 1 },
+      { address: 'B', balance: 2 },
+    ]);
+
+    const trust = await getTokenTrust();
+
+    expect(trust).toEqual({
+      mintAuthorityRevoked: true,
+      freezeAuthorityRevoked: false,
+      holderCount: 2,
+      fetchedAt: expect.any(String),
+    });
+  });
+
+  it('returns null when both mint info and holder scan fail and no cache exists', async () => {
+    vi.mocked(getTokenMintInfo).mockRejectedValue(new Error('rpc down'));
+    vi.mocked(getAllTokenHolders).mockRejectedValue(new Error('rpc down'));
+    expect(await getTokenTrust()).toBeNull();
+  });
+
   it('serves the cached value within the 5-minute TTL', async () => {
     vi.mocked(getTokenMintInfo).mockResolvedValue({
       mintAuthority: null,
