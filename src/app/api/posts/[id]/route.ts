@@ -8,7 +8,7 @@ import { updatePostSchema, moderatePostSchema } from '@/features/posts/schemas';
 type RouteParams = { params: Promise<{ id: string }> };
 
 const POST_SELECT =
-  '*, author:user_profiles!posts_author_id_fkey(id,name,email,organic_id,avatar_url)';
+  '*, author:user_profiles!posts_author_id_fkey(id,name,email,organic_id,avatar_url,easter_2026_eggs_found)';
 
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {

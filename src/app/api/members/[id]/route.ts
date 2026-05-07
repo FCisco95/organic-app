@@ -10,7 +10,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const { data, error } = await supabase
       .from('user_profiles')
       .select(
-        'id, name, email, avatar_url, organic_id, role, total_points, tasks_completed, profile_visible, bio, location, website, twitter, discord, wallet_pubkey, created_at'
+        'id, name, email, avatar_url, organic_id, role, total_points, tasks_completed, profile_visible, bio, location, website, twitter, discord, wallet_pubkey, created_at, easter_2026_eggs_found'
       )
       .eq('id', id)
       .maybeSingle();

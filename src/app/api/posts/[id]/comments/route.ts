@@ -23,7 +23,8 @@ const COMMENT_SELECT = `
     name,
     email,
     organic_id,
-    avatar_url
+    avatar_url,
+    easter_2026_eggs_found
   )
 `;
 
