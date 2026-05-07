@@ -1827,7 +1827,8 @@
         "title": "Streak Master",
         "description": "Maintain a 30-day activity streak."
       }
-    }
+    },
+    "easter2026BadgeTooltip": "Easter 2026 hunter"
   },
   "Voting": {
     "title": "Token-Weighted Voting",

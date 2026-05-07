@@ -21,13 +21,14 @@ export function EasterEggBadge({ count, className }: EasterEggBadgeProps) {
 }
 
 function EasterEggBadgeIcon({ className }: { className?: string }) {
-  const t = useTranslations('gamification.easter_2026_badge');
+  const t = useTranslations('Gamification');
+  const label = t('easter2026BadgeTooltip');
   return (
     <TooltipProvider delayDuration={150}>
       <Tooltip>
         <TooltipTrigger asChild>
           <span
-            aria-label={t('tooltip')}
+            aria-label={label}
             className={cn(
               'inline-flex h-4 w-4 items-center justify-center align-middle text-orange-500/90',
               className
@@ -37,7 +38,7 @@ function EasterEggBadgeIcon({ className }: { className?: string }) {
           </span>
         </TooltipTrigger>
         <TooltipContent side="top" className="text-xs">
-          {t('tooltip')}
+          {label}
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
