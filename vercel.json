@@ -3,6 +3,17 @@
   "framework": "nextjs",
   "buildCommand": "npm run build",
   "regions": ["iad1"],
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "phase/*": true,
+      "feat/*": true,
+      "fix/*": true,
+      "chore/*": false,
+      "docs/*": false,
+      "claude/*": false
+    }
+  },
   "crons": [
     {
       "path": "/api/internal/ai/governance-summary/generate",
