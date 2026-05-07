@@ -84,6 +84,7 @@ export interface TaskComment {
     email: string;
     organic_id: number | null;
     avatar_url: string | null;
+    easter_2026_egg_elements?: string[] | null;
   };
 }
 

@@ -163,6 +163,7 @@ export interface DisputeWithRelations extends Dispute {
     email: string;
     organic_id: number | null;
     avatar_url: string | null;
+    easter_2026_egg_elements?: string[] | null;
   };
   reviewer?: {
     id: string;
@@ -170,6 +171,7 @@ export interface DisputeWithRelations extends Dispute {
     email: string;
     organic_id: number | null;
     avatar_url: string | null;
+    easter_2026_egg_elements?: string[] | null;
   };
   arbitrator?: {
     id: string;
@@ -177,6 +179,7 @@ export interface DisputeWithRelations extends Dispute {
     email: string;
     organic_id: number | null;
     avatar_url: string | null;
+    easter_2026_egg_elements?: string[] | null;
   } | null;
   task?: {
     id: string;

@@ -54,6 +54,7 @@ export interface ProposalComment {
     organic_id: number | null;
     email: string;
     name?: string | null;
+    easter_2026_egg_elements?: string[] | null;
   };
 }
 

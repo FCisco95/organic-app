@@ -195,6 +195,7 @@ export interface LeaderboardEntry {
   xp_total: number;
   level: number | null;
   current_streak: number | null;
+  easter_2026_egg_elements?: string[] | null;
 }
 
 export interface LeaderboardResponse {

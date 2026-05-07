@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { logger } from '@/lib/logger';
 
 const DELEGATION_COLUMNS = 'id, delegator_id, delegate_id, category, created_at, updated_at';
-const DELEGATION_PROFILE_COLUMNS = 'id, name, email, organic_id, avatar_url';
+const DELEGATION_PROFILE_COLUMNS = 'id, name, email, organic_id, avatar_url, easter_2026_egg_elements';
 
 type DelegationProfile = {
   id: string;
@@ -13,6 +13,7 @@ type DelegationProfile = {
   email: string;
   organic_id: number | null;
   avatar_url: string | null;
+  easter_2026_egg_elements: string[] | null;
 };
 
 const delegateSchema = z.object({

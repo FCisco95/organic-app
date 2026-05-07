@@ -3184,6 +3184,7 @@ export type Database = {
           claimable_points: number | null
           current_streak: number | null
           dense_rank: number | null
+          easter_2026_egg_elements: string[] | null
           email: string | null
           id: string | null
           level: number | null
@@ -3204,6 +3205,7 @@ export type Database = {
           claimable_points: number | null
           current_streak: number | null
           dense_rank: number | null
+          easter_2026_egg_elements: string[] | null
           email: string | null
           id: string | null
           level: number | null

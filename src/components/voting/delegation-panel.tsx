@@ -16,6 +16,7 @@ import { createClient } from '@/lib/supabase/client';
 import { escapePostgrestValue } from '@/lib/security';
 import { useQuery } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
+import { EasterEggBadge } from '@/components/gamification/easter-egg-badge';
 
 interface DelegationPanelProps {
   className?: string;
@@ -117,6 +118,7 @@ export function DelegationPanel({ className }: DelegationPanelProps) {
                     <span className="font-medium text-gray-700">
                       {del.delegate?.name || del.delegate?.email || 'Unknown'}
                     </span>
+                    <EasterEggBadge elements={del.delegate?.easter_2026_egg_elements} className="ml-1" />
                     {del.category ? (
                       <span className="ml-2 text-xs text-gray-400">
                         ({DELEGATION_CATEGORY_LABELS[del.category]})
@@ -152,6 +154,7 @@ export function DelegationPanel({ className }: DelegationPanelProps) {
                     <span className="font-medium text-gray-700">
                       {del.delegator?.name || del.delegator?.email || 'Unknown'}
                     </span>
+                    <EasterEggBadge elements={del.delegator?.easter_2026_egg_elements} className="ml-1" />
                     {del.category ? (
                       <span className="ml-2 text-xs text-gray-400">
                         ({DELEGATION_CATEGORY_LABELS[del.category]})
