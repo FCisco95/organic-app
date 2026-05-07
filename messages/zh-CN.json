@@ -251,7 +251,10 @@
         "noneDescription": "已批准的反馈会出现在仪表板。",
         "approve": "批准（+50 积分）",
         "reject": "驳回",
-        "submittedAt": "提交于{when}"
+        "submittedAt": "提交于{when}",
+        "toastApproved": "已批准",
+        "toastRejected": "已驳回",
+        "toastError": "出现错误"
       }
     },
     "footer": {
@@ -3701,6 +3704,8 @@
     "flagSuccess": "帖子已举报",
     "flagError": "举报帖子失败",
     "flagAlready": "你已举报此帖子",
+    "restoreBonusSuccess": "有机奖励已恢复，虚假举报者已被处罚",
+    "restoreBonusError": "恢复奖励失败",
     "promoteButton": "推广",
     "promoteTitle": "推广你的帖子",
     "promoteSpotlight": "聚光灯",
