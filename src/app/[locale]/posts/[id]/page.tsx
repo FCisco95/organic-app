@@ -312,6 +312,7 @@ export default function PostDetailPage() {
             <div>
               <div className="flex items-center gap-1.5">
                 <span className="text-sm font-semibold text-foreground">{author.name || 'Anonymous'}</span>
+                <EasterEggBadge elements={author.easter_2026_egg_elements} />
                 {author.organic_id && (
                   <span className="text-[10px] font-mono text-muted-foreground">#{author.organic_id}</span>
                 )}

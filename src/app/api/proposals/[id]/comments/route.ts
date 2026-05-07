@@ -31,7 +31,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           organic_id,
           name,
           avatar_url,
-          role
+          role,
+          easter_2026_egg_elements
         )
       `
       )
@@ -133,7 +134,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
           organic_id,
           name,
           avatar_url,
-          role
+          role,
+          easter_2026_egg_elements
         )
       `
       )

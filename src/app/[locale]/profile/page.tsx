@@ -24,7 +24,6 @@ import { PageHero } from '@/components/ui/page-hero';
 import { TwoColumnLayout } from '@/components/layout/two-column-layout';
 import { ReputationSummary } from '@/components/reputation/reputation-summary';
 import { TrophyShowcase } from '@/components/reputation/trophy-showcase';
-import { EggCollection } from '@/components/easter/egg-collection';
 import { useMyEggs } from '@/features/easter/hooks';
 import { EGG_ELEMENTS } from '@/features/easter/elements';
 import { useUpdatePrivacy } from '@/features/members';
@@ -466,11 +465,6 @@ export default function ProfilePage() {
               {/* Trophy showcase */}
               <div className="mt-4">
                 <TrophyShowcase />
-              </div>
-
-              {/* Egg collection */}
-              <div className="mt-4">
-                <EggCollection />
               </div>
 
               {/* Activity stats card */}

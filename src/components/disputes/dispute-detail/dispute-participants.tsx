@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { ExternalLink } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { EasterEggBadge } from '@/components/gamification/easter-egg-badge';
 import type { DisputeWithRelations } from '@/features/disputes/types';
 
 interface DisputeParticipantsProps {
@@ -24,6 +25,7 @@ function UserRow({
     email?: string;
     organic_id?: number | null;
     avatar_url?: string | null;
+    easter_2026_egg_elements?: string[] | null;
   } | null;
   hasId: boolean;
   unassignedLabel: string;
@@ -43,6 +45,7 @@ function UserRow({
           <span className="text-sm text-gray-900">
             {user.name || (user.organic_id ? `ORG-${user.organic_id}` : user.email?.split('@')[0])}
           </span>
+          <EasterEggBadge elements={user.easter_2026_egg_elements} />
         </div>
       ) : hasId ? (
         <span className="text-sm italic text-gray-400">{restrictedLabel}</span>

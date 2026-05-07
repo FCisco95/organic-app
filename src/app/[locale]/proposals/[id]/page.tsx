@@ -37,6 +37,7 @@ import { useTranslationFlag } from '@/features/translation/use-translation-flags
 import type { ProposalComment } from '@/features/proposals/types';
 import type { ProposalWithVoting } from '@/features/voting';
 import { FollowButton } from '@/components/notifications/follow-button';
+import { EasterEggBadge } from '@/components/gamification/easter-egg-badge';
 import { PageContainer } from '@/components/layout';
 import { TwoColumnLayout } from '@/components/layout/two-column-layout';
 import { StatusBadge, CategoryBadge, ProposalSections, StageStepper } from '@/components/proposals';
@@ -171,6 +172,7 @@ function ProposalCommentItem({
           {(displayName ?? comment.user_profiles.email ?? '?')[0].toUpperCase()}
         </div>
         <span className="font-medium text-gray-900 text-sm">{authorLabel}</span>
+        <EasterEggBadge elements={comment.user_profiles.easter_2026_egg_elements} />
         <span className="text-xs text-gray-500">
           {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
         </span>

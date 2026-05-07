@@ -14,13 +14,13 @@ function getEvidenceFileName(path: string): string {
 const DISPUTE_DETAIL_SELECT = `
   *,
   disputant:user_profiles!disputes_disputant_id_fkey(
-    id, name, email, organic_id, avatar_url
+    id, name, email, organic_id, avatar_url, easter_2026_egg_elements
   ),
   reviewer:user_profiles!disputes_reviewer_id_fkey(
-    id, name, email, organic_id, avatar_url
+    id, name, email, organic_id, avatar_url, easter_2026_egg_elements
   ),
   arbitrator:user_profiles!disputes_arbitrator_id_fkey(
-    id, name, email, organic_id, avatar_url
+    id, name, email, organic_id, avatar_url, easter_2026_egg_elements
   ),
   task:tasks!disputes_task_id_fkey(
     id, title, status, base_points

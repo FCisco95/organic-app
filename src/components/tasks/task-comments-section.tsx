@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { TaskComment } from '@/features/tasks';
 import { useCommentTranslation } from '@/features/translation/comment-hooks';
 import { useTranslationFlag } from '@/features/translation/use-translation-flags';
+import { EasterEggBadge } from '@/components/gamification/easter-egg-badge';
 
 function TaskCommentItem({
   comment,
@@ -52,6 +53,7 @@ function TaskCommentItem({
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
             <span className="font-medium text-gray-900">{getDisplayName(comment.user)}</span>
+            <EasterEggBadge elements={comment.user.easter_2026_egg_elements} />
             <span className="text-xs text-gray-500">{formatDate(comment.created_at)}</span>
           </div>
           <p className="text-gray-700 whitespace-pre-wrap">{displayContent}</p>
