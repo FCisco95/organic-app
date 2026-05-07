@@ -432,15 +432,10 @@ const serviceRoleUsages: ServiceRoleUsage[] = [
   },
 
   // ── Read-Only Reviewable ─────────────────────────────────────────────
-  {
-    file: 'src/app/api/gamification/overview/route.ts',
-    function: 'GET',
-    purpose: 'Read user XP/level/quests/achievements overview',
-    justification:
-      'CONCERN: Read-only endpoint. user_profiles, xp_events, achievements all have user-scoped SELECT policies. Could likely be migrated to createClient (RLS-gated) instead of bypassing.',
-    tablesAccessed: ['user_profiles', 'xp_events', 'achievements', 'user_achievements', 'quests'],
-    severity: 'concern',
-  },
+  // NOTE: src/app/api/gamification/overview/route.ts no longer uses
+  // createServiceClient — its two unstable_cache helpers were migrated to
+  // createAnonClient (achievements + orgs both have public-read RLS).
+  // Entry intentionally omitted from this manifest.
 ];
 
 // NOTE: a grep for createServiceClient across src/ currently finds 43 distinct
@@ -471,14 +466,13 @@ describe('RLS Isolation', () => {
     // Known concerns still to review:
     // 1. onboarding/steps - may not need service role
     // 2. user/points/route.ts - reads only
-    // 3. gamification/overview/route.ts - read-only with user-scoped policies; could downgrade
-    // (health/route.ts was migrated to createAnonClient and removed from manifest.)
-    expect(concerns.length).toBe(3);
+    // (health/route.ts was migrated to createAnonClient in #105.
+    //  gamification/overview was migrated to createAnonClient — also removed.)
+    expect(concerns.length).toBe(2);
     expect(concerns.map((c) => c.file)).toEqual(
       expect.arrayContaining([
         'src/app/api/onboarding/steps/[step]/complete/route.ts',
         'src/app/api/user/points/route.ts',
-        'src/app/api/gamification/overview/route.ts',
       ])
     );
   });
@@ -486,9 +480,8 @@ describe('RLS Isolation', () => {
   it('should account for all createServiceClient usages in the codebase', () => {
     // Total distinct files using createServiceClient in src/ (excluding the
     // server.ts definition and __tests__ files). Re-audited 2026-05-07.
-    // NOTE: 42 (was 43 in the original re-audit) — health/route.ts was
-    // dropped from the manifest in #105 (migrated to createAnonClient).
-    const EXPECTED_USAGE_COUNT = 42;
+    // 41 = 42 (post-#110) - 1 (gamification/overview migrated to createAnonClient).
+    const EXPECTED_USAGE_COUNT = 41;
     expect(serviceRoleUsages.length).toBe(EXPECTED_USAGE_COUNT);
   });
 
