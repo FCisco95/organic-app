@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { unstable_cache } from 'next/cache';
 import { z } from 'zod';
-import { createClient, createServiceClient } from '@/lib/supabase/server';
+import { createAnonClient, createClient } from '@/lib/supabase/server';
 import { logger } from '@/lib/logger';
 import { DEFAULT_REWARDS_CONFIG, type RewardsConfig } from '@/features/rewards';
 import { gamificationOverviewSchema, gamificationAchievementSchema } from '@/features/gamification/schemas';
@@ -48,11 +48,13 @@ function parseRewardsConfig(value: unknown): RewardsConfig {
 type AchievementShape = z.infer<typeof gamificationAchievementSchema>;
 
 // Achievements are global static data — fetch once and cache for 5 minutes
-// across all users instead of re-querying on every overview call.
+// across all users instead of re-querying on every overview call. The
+// `achievements` table has an `Anyone can read achievements` RLS policy
+// (`USING (true)`), so an anon client suffices and we avoid bypassing RLS.
 const getCachedAchievementDefs = unstable_cache(
   async () => {
-    const service = createServiceClient();
-    const { data, error } = await service
+    const anon = createAnonClient();
+    const { data, error } = await anon
       .from('achievements')
       .select('*')
       .order('category', { ascending: true })
@@ -64,11 +66,13 @@ const getCachedAchievementDefs = unstable_cache(
   { revalidate: 300, tags: ['gamification-achievements'] },
 );
 
-// Org rewards config rarely changes — cache globally for 5 minutes.
+// Org rewards config rarely changes — cache globally for 5 minutes. The
+// `orgs` table has an `Orgs are viewable by everyone` SELECT policy, so an
+// anon client can read it without service-role bypass.
 const getCachedRewardsConfig = unstable_cache(
   async () => {
-    const service = createServiceClient();
-    const { data } = await service
+    const anon = createAnonClient();
+    const { data } = await anon
       .from('orgs')
       .select('rewards_config')
       .order('created_at', { ascending: true })
