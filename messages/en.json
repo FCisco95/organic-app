@@ -251,7 +251,10 @@
         "noneDescription": "Approved testimonials show up on the dashboard.",
         "approve": "Approve (+50 pts)",
         "reject": "Reject",
-        "submittedAt": "Submitted {when}"
+        "submittedAt": "Submitted {when}",
+        "toastApproved": "Approved",
+        "toastRejected": "Rejected",
+        "toastError": "Something went wrong"
       }
     },
     "footer": {
@@ -3611,6 +3614,8 @@
     "flagSuccess": "Post flagged",
     "flagError": "Failed to flag post",
     "flagAlready": "You already flagged this post",
+    "restoreBonusSuccess": "Organic bonus restored, false flaggers penalized",
+    "restoreBonusError": "Failed to restore bonus",
     "promoteButton": "Promote",
     "promoteTitle": "Promote Your Post",
     "promoteSpotlight": "Spotlight",

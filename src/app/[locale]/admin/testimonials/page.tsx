@@ -58,9 +58,9 @@ export default function AdminTestimonialsPage() {
         toast.error(result.error);
         return;
       }
-      toast.success(action === 'approve' ? 'Approved' : 'Rejected');
+      toast.success(action === 'approve' ? t('toastApproved') : t('toastRejected'));
     } catch {
-      toast.error('Something went wrong');
+      toast.error(t('toastError'));
     }
   };
 
