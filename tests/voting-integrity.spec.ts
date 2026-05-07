@@ -49,8 +49,8 @@ test.describe('Voting snapshot and finalization integrity', () => {
   let councilCookie = { name: '', value: '' };
   let memberACookie = { name: '', value: '' };
 
-  let proposalAId: string | null = null;
-  let proposalBId: string | null = null;
+  let proposalAId = '';
+  let proposalBId = '';
 
   const walletA = `${runId('wallet_a')}_pubkey`;
   const walletB = `${runId('wallet_b')}_pubkey`;
