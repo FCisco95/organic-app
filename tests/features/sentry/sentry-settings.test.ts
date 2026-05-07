@@ -5,6 +5,10 @@ import {
   parseSampleRate,
 } from '@/lib/sentry-settings';
 
+// Node 22+ types NODE_ENV as readonly. Cast to a writable view so
+// these tests can swap it in/out without disabling type checks.
+const env = process.env as Record<string, string | undefined>;
+
 const ENV_KEYS = [
   'NEXT_PUBLIC_SENTRY_DSN',
   'SENTRY_DSN',
@@ -55,7 +59,7 @@ describe('getSentryDsn', () => {
       if (original[key] === undefined) {
         delete process.env[key];
       } else {
-        process.env[key] = original[key];
+        env[key] = original[key];
       }
     }
   });
@@ -96,7 +100,7 @@ describe('getSentryEnvironment', () => {
       if (original[key] === undefined) {
         delete process.env[key];
       } else {
-        process.env[key] = original[key];
+        env[key] = original[key];
       }
     }
   });
@@ -106,18 +110,18 @@ describe('getSentryEnvironment', () => {
   });
 
   it('returns NODE_ENV when only that is set', () => {
-    process.env.NODE_ENV = 'staging';
+    env.NODE_ENV = 'staging';
     expect(getSentryEnvironment()).toBe('staging');
   });
 
   it('returns SENTRY_ENVIRONMENT over NODE_ENV', () => {
-    process.env.NODE_ENV = 'production';
+    env.NODE_ENV = 'production';
     process.env.SENTRY_ENVIRONMENT = 'preview';
     expect(getSentryEnvironment()).toBe('preview');
   });
 
   it('returns NEXT_PUBLIC_SENTRY_ENVIRONMENT over SENTRY_ENVIRONMENT and NODE_ENV', () => {
-    process.env.NODE_ENV = 'production';
+    env.NODE_ENV = 'production';
     process.env.SENTRY_ENVIRONMENT = 'preview';
     process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT = 'canary';
     expect(getSentryEnvironment()).toBe('canary');

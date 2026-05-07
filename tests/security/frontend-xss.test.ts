@@ -5,7 +5,7 @@ import { sanitizeHref, sanitizeReturnTo } from '../../src/lib/security';
 
 describe('Frontend XSS Prevention', () => {
   const srcFiles = globSync('src/**/*.{tsx,ts}', {
-    ignore: ['**/node_modules/**'],
+    exclude: ['**/node_modules/**'],
     cwd: process.cwd(),
   });
 
