@@ -275,6 +275,178 @@ const serviceRoleUsages: ServiceRoleUsage[] = [
     tablesAccessed: ['market_snapshots'],
     severity: 'justified',
   },
+
+  // ── Admin Moderation ─────────────────────────────────────────────────
+  {
+    file: 'src/app/api/admin/users/flag-check/route.ts',
+    function: 'POST',
+    purpose: 'Scan all comments for spam/abuse, flag user_profiles, write audit',
+    justification:
+      'Admin-gated. Cross-user reads of comments and updates to user_profiles.flagged on rows the actor does not own. Audit log inserts require service role.',
+    tablesAccessed: ['comments', 'user_profiles', 'admin_config_audit_events', 'orgs'],
+    severity: 'justified',
+  },
+  {
+    file: 'src/app/api/admin/users/restrict/route.ts',
+    function: 'POST',
+    purpose: 'Bulk apply restriction status (warn/restrict/ban/unrestrict) and write audit',
+    justification:
+      'Admin-gated. Updates user_profiles for other users; admin_config_audit_events INSERT has no user-write policy.',
+    tablesAccessed: ['user_profiles', 'admin_config_audit_events', 'orgs'],
+    severity: 'justified',
+  },
+
+  // ── Easter Campaign ──────────────────────────────────────────────────
+  {
+    file: 'src/app/api/easter/egg-check/route.ts',
+    function: 'GET',
+    purpose: 'Spawn-check + server-managed luck cache; create xp_egg_pending tokens',
+    justification:
+      'xp_egg_pending lacks a user INSERT policy (server-only writes); egg_hunt_luck UPSERT bypasses per-user RLS to maintain the cross-user spawn-rate cache.',
+    tablesAccessed: ['egg_hunt_config', 'egg_hunt_luck', 'xp_egg_pending', 'golden_eggs'],
+    severity: 'justified',
+  },
+  {
+    file: 'src/app/api/easter/egg-claim/route.ts',
+    function: 'POST',
+    purpose: 'Claim a golden egg and award XP atomically',
+    justification:
+      'Cross-user concurrency (only one claimer per egg_number) needs the bypass; xp_events INSERT requires service role.',
+    tablesAccessed: ['golden_eggs', 'xp_events', 'user_profiles'],
+    severity: 'justified',
+  },
+  {
+    file: 'src/app/api/easter/leaderboard/route.ts',
+    function: 'GET',
+    purpose: "Public Easter leaderboard reading every user's golden_eggs",
+    justification:
+      "golden_eggs RLS scopes SELECT to own + admin only. A public leaderboard listing ALL users' eggs requires bypass. Read-only.",
+    tablesAccessed: ['golden_eggs', 'user_profiles'],
+    severity: 'justified',
+  },
+  {
+    file: 'src/app/api/easter/xp-egg-claim/route.ts',
+    function: 'POST',
+    purpose: 'Atomic claim of pending xp_egg + XP award',
+    justification:
+      'xp_egg_pending DELETE+SELECT pattern needs server context; xp_events INSERT requires service role.',
+    tablesAccessed: ['xp_egg_pending', 'xp_events', 'user_profiles'],
+    severity: 'justified',
+  },
+
+  // ── Engagement (Appeals + Cron) ──────────────────────────────────────
+  {
+    file: 'src/app/api/engagement/submissions/[id]/appeal/route.ts',
+    function: 'POST',
+    purpose: 'File an appeal against an engagement submission score',
+    justification:
+      'engagement_appeals lacks user INSERT policy. fileAppeal() enforces ownership server-side before insert.',
+    tablesAccessed: ['engagement_appeals', 'engagement_submissions'],
+    severity: 'justified',
+  },
+  {
+    file: 'src/app/api/engagement/appeals/[id]/vote/route.ts',
+    function: 'POST',
+    purpose: 'Cast a community vote on an engagement appeal',
+    justification:
+      'engagement_appeal_votes lacks user INSERT policy. castAppealVote() validates voter eligibility server-side.',
+    tablesAccessed: ['engagement_appeal_votes', 'engagement_appeals'],
+    severity: 'justified',
+  },
+  {
+    file: 'src/app/api/internal/cron/sprint-summary/route.ts',
+    function: 'GET/POST',
+    purpose: 'Generate AI sprint summaries for active sprints (cron)',
+    justification:
+      'Cron-secret bearer auth. Reads sprints across all owners and writes summaries via the sprint-summary-service.',
+    tablesAccessed: ['sprints', 'tasks', 'task_submissions', 'sprint_snapshots'],
+    severity: 'justified',
+  },
+  {
+    file: 'src/app/api/internal/engagement/appeals-sweep/route.ts',
+    function: 'GET/POST',
+    purpose: 'Resolve expired engagement appeals (cron)',
+    justification:
+      'Cron-secret bearer auth. Cross-user appeals state machine; needs full table access.',
+    tablesAccessed: ['engagement_appeals', 'engagement_appeal_votes', 'engagement_submissions'],
+    severity: 'justified',
+  },
+  {
+    file: 'src/app/api/internal/engagement/poll/route.ts',
+    function: 'GET/POST',
+    purpose: 'Poll Twitter for new engagements and process them (cron)',
+    justification:
+      'Cron-secret bearer auth. Cross-user processing of engagement_handles, engagement_posts, engagement_submissions.',
+    tablesAccessed: [
+      'engagement_handles',
+      'engagement_posts',
+      'engagement_submissions',
+      'engagement_calibration_samples',
+    ],
+    severity: 'justified',
+  },
+
+  // ── Posts & Proposals (additional) ───────────────────────────────────
+  {
+    file: 'src/app/api/posts/[id]/route.ts',
+    function: 'GET/PATCH/DELETE',
+    purpose: "Read/edit a post; admin moderation on others' posts",
+    justification:
+      'Admin moderation actions modify posts owned by other users. Service role used for those branches.',
+    tablesAccessed: ['posts', 'post_likes', 'user_profiles'],
+    severity: 'justified',
+  },
+  {
+    file: 'src/app/api/proposals/[id]/route.ts',
+    function: 'GET/PATCH',
+    purpose: 'Read/update a proposal (status transitions, admin overrides)',
+    justification:
+      'Admin/council updates proposals owned by other authors (state transitions, override promotions). Service role gates those write paths.',
+    tablesAccessed: ['proposals', 'proposal_versions', 'user_profiles'],
+    severity: 'justified',
+  },
+
+  // ── Testimonials Moderation ──────────────────────────────────────────
+  {
+    file: 'src/app/api/testimonials/admin/route.ts',
+    function: 'GET/POST',
+    purpose: 'List pending testimonials and approve/reject them',
+    justification:
+      'Admin/council action. Reads all pending testimonials regardless of submitter; approval awards XP via gamification service.',
+    tablesAccessed: ['testimonials', 'user_profiles', 'xp_events'],
+    severity: 'justified',
+  },
+
+  // ── Server-Only Services ─────────────────────────────────────────────
+  {
+    file: 'src/features/dashboard/sprint-summary-service.ts',
+    function: 'generateSprintSummary',
+    purpose: 'Aggregate sprint metrics + persist AI-generated summary',
+    justification:
+      'Cross-user aggregation of tasks, submissions, contributors. Writes sprint_snapshots which is admin-write only.',
+    tablesAccessed: ['sprints', 'tasks', 'task_submissions', 'sprint_snapshots', 'user_profiles'],
+    severity: 'justified',
+  },
+  {
+    file: 'src/lib/translation/translate-content.ts',
+    function: 'translateContent',
+    purpose: 'Read/write content_translations cache for any user-generated content',
+    justification:
+      'Shared helper invoked from translate routes. content_translations is a server-managed cache; no user INSERT/UPDATE policy.',
+    tablesAccessed: ['content_translations'],
+    severity: 'justified',
+  },
+
+  // ── Read-Only Reviewable ─────────────────────────────────────────────
+  {
+    file: 'src/app/api/gamification/overview/route.ts',
+    function: 'GET',
+    purpose: 'Read user XP/level/quests/achievements overview',
+    justification:
+      'CONCERN: Read-only endpoint. user_profiles, xp_events, achievements all have user-scoped SELECT policies. Could likely be migrated to createClient (RLS-gated) instead of bypassing.',
+    tablesAccessed: ['user_profiles', 'xp_events', 'achievements', 'user_achievements', 'quests'],
+    severity: 'concern',
+  },
 ];
 
 describe('RLS Isolation', () => {
@@ -300,24 +472,25 @@ describe('RLS Isolation', () => {
   it('should flag all known concerns', () => {
     const concerns = serviceRoleUsages.filter((u) => u.severity === 'concern');
     // Known concerns that should be reviewed:
-    // 1. health/route.ts - could use anon client
+    // 1. health/route.ts - could use anon client (still uses service-role per current code)
     // 2. onboarding/steps - may not need service role
     // 3. user/points/route.ts - reads only
-    expect(concerns.length).toBe(3);
+    // 4. gamification/overview/route.ts - read-only with user-scoped policies; could downgrade
+    expect(concerns.length).toBe(4);
     expect(concerns.map((c) => c.file)).toEqual(
       expect.arrayContaining([
         'src/app/api/health/route.ts',
         'src/app/api/onboarding/steps/[step]/complete/route.ts',
         'src/app/api/user/points/route.ts',
+        'src/app/api/gamification/overview/route.ts',
       ])
     );
   });
 
   it('should account for all createServiceClient usages in the codebase', () => {
-    // Total distinct files using createServiceClient (excluding definition and docs)
-    // If this number changes, update the serviceRoleUsages array above
-    // 26 distinct usages across 26 files (server.ts definition excluded, docs excluded)
-    const EXPECTED_USAGE_COUNT = 26;
+    // Total distinct files using createServiceClient in src/ (excluding the
+    // server.ts definition and __tests__ files). Re-audited 2026-05-07.
+    const EXPECTED_USAGE_COUNT = 43;
     expect(serviceRoleUsages.length).toBe(EXPECTED_USAGE_COUNT);
   });
 
