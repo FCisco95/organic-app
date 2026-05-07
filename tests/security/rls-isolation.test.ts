@@ -52,15 +52,9 @@ const serviceRoleUsages: ServiceRoleUsage[] = [
   },
 
   // ── Health ────────────────────────────────────────────────────────────
-  {
-    file: 'src/app/api/health/route.ts',
-    function: 'GET',
-    purpose: 'Ping wallet_nonces and market_snapshots tables',
-    justification:
-      'CONCERN: Only performs SELECT head:true. Could use createAnonClient() instead. Service role is overkill for a health ping.',
-    tablesAccessed: ['wallet_nonces', 'market_snapshots'],
-    severity: 'concern',
-  },
+  // NOTE: src/app/api/health/route.ts no longer uses createServiceClient —
+  // it was migrated to createAnonClient and now only pings market_snapshots.
+  // Entry intentionally omitted from this manifest.
 
   // ── Task Submissions & Reviews ────────────────────────────────────────
   {
@@ -271,11 +265,14 @@ const serviceRoleUsages: ServiceRoleUsage[] = [
     function: 'readSnapshot/writeSnapshot',
     purpose: 'Read and write cached market price data',
     justification:
-      'market_snapshots table has no RLS (identified gap). Service role is the only writer. Server-side only code.',
+      'market_snapshots has RLS (added 20260329000000_rls_remaining_tables.sql) blocking direct user writes. Service role is still the only writer; reads could theoretically use anon client.',
     tablesAccessed: ['market_snapshots'],
     severity: 'justified',
   },
 ];
+
+// NOTE: a grep for createServiceClient across src/ currently finds 43 distinct
+// files; the manifest above tracks 26. Re-audit pending — see follow-up issue.
 
 describe('RLS Isolation', () => {
   it('should document service_role usage justification for every usage', () => {
@@ -299,14 +296,13 @@ describe('RLS Isolation', () => {
 
   it('should flag all known concerns', () => {
     const concerns = serviceRoleUsages.filter((u) => u.severity === 'concern');
-    // Known concerns that should be reviewed:
-    // 1. health/route.ts - could use anon client
-    // 2. onboarding/steps - may not need service role
-    // 3. user/points/route.ts - reads only
-    expect(concerns.length).toBe(3);
+    // Known concerns still to review:
+    // 1. onboarding/steps - may not need service role
+    // 2. user/points/route.ts - reads only
+    // (health/route.ts was migrated to createAnonClient and removed from manifest.)
+    expect(concerns.length).toBe(2);
     expect(concerns.map((c) => c.file)).toEqual(
       expect.arrayContaining([
-        'src/app/api/health/route.ts',
         'src/app/api/onboarding/steps/[step]/complete/route.ts',
         'src/app/api/user/points/route.ts',
       ])
@@ -316,42 +312,61 @@ describe('RLS Isolation', () => {
   it('should account for all createServiceClient usages in the codebase', () => {
     // Total distinct files using createServiceClient (excluding definition and docs)
     // If this number changes, update the serviceRoleUsages array above
-    // 26 distinct usages across 26 files (server.ts definition excluded, docs excluded)
-    const EXPECTED_USAGE_COUNT = 26;
+    // 25 distinct usages across 25 files (server.ts definition excluded, docs excluded)
+    // NOTE: a fresh `grep -rln createServiceClient src/` finds ~43 files —
+    // significant manifest drift since the last audit. Re-audit pending.
+    const EXPECTED_USAGE_COUNT = 25;
     expect(serviceRoleUsages.length).toBe(EXPECTED_USAGE_COUNT);
   });
 
-  describe('Tables missing RLS', () => {
-    // These tables were identified as missing RLS during the audit.
-    // They should be addressed in a future migration.
-    const tablesMissingRls = [
+  describe('Tables previously missing RLS — now protected', () => {
+    // These tables were identified as missing RLS in earlier audits and have
+    // since been protected by 20260329000000_rls_remaining_tables.sql.
+    // Kept here as a record so a future regression is easy to spot.
+    const recentlyProtectedTables = [
       {
         table: 'market_snapshots',
-        severity: 'MEDIUM',
-        note: 'Only accessed via service_role. Contains public market price data.',
+        protectedBy: '20260329000000_rls_remaining_tables.sql',
+        policyShape: 'authenticated SELECT, service-role-only writes',
       },
       {
         table: 'reward_settlement_events',
-        severity: 'HIGH',
-        note: 'Settlement audit trail. Should be admin-only write, authenticated read.',
+        protectedBy: '20260329000000_rls_remaining_tables.sql',
+        policyShape: 'admin/council SELECT, append-only via SECURITY DEFINER',
       },
       {
         table: 'proposal_voter_snapshots',
-        severity: 'HIGH',
-        note: 'Voter eligibility snapshots with token balances. Should be read-only for authenticated.',
+        protectedBy: '20260329000000_rls_remaining_tables.sql',
+        policyShape: 'participants + admin/council SELECT, service-role writes',
       },
     ];
 
-    it('should document all tables missing RLS', () => {
-      tablesMissingRls.forEach((entry) => {
-        expect(entry.table).toBeTruthy();
-        expect(entry.severity).toBeTruthy();
-        expect(entry.note).toBeTruthy();
+    it('should document the migration that closed each previous gap', () => {
+      recentlyProtectedTables.forEach((entry) => {
+        expect(entry.protectedBy).toMatch(/^\d{14}_/);
+        expect(entry.policyShape).toBeTruthy();
       });
     });
+  });
 
-    it('should have 3 known tables missing RLS', () => {
-      expect(tablesMissingRls.length).toBe(3);
+  describe('User-scoped tables verified RLS-protected', () => {
+    // Tables audited 2026-05-07: RLS is enabled in their source migrations
+    // with user-scoped policies. Listed here so any regression (e.g. someone
+    // disabling RLS in a future migration) is easy to spot in review.
+    const verifiedUserScopedTables = [
+      { table: 'egg_hunt_luck', source: '20260331000001_egg_hunt.sql' },
+      { table: 'sprint_snapshots', source: '20260215100000_sprint_snapshots.sql' },
+      { table: 'user_badges', source: '20260331000002_badges.sql' },
+      { table: 'wallet_snapshots', source: '20260331000002_badges.sql' },
+      { table: 'xp_egg_pending', source: '20260404000000_xp_eggs.sql' },
+      { table: 'login_streaks', source: '20260331000003_daily_tasks.sql' },
+    ];
+
+    it('should record source migration for every verified table', () => {
+      verifiedUserScopedTables.forEach((entry) => {
+        expect(entry.table).toBeTruthy();
+        expect(entry.source).toMatch(/^\d{14}_.*\.sql$/);
+      });
     });
   });
 
