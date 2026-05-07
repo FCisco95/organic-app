@@ -76,11 +76,12 @@ test-results/
 # QA artifacts
 qa-*.png
 alt-*.png
+/qa/
 .playwright/
 .playwright-cli/
 # Sentry Config File
 .env.sentry-build-plugin
-auth.json
+auth*.json
 
 # git worktrees
 .worktrees/
