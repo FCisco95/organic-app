@@ -84,7 +84,22 @@ export type EventIconName =
   | 'ArrowUp'
   | 'Undo2'
   | 'Settings'
-  | 'Egg';
+  | 'Egg'
+  | 'Lightbulb'
+  | 'Trophy'
+  | 'FileText'
+  | 'Heart'
+  | 'Sparkles'
+  | 'Flag'
+  | 'Coins'
+  | 'RefreshCw'
+  | 'Gift'
+  | 'Snowflake'
+  | 'Flame'
+  | 'Repeat'
+  | 'ShieldQuestion'
+  | 'ShieldCheck'
+  | 'Star';
 
 export const EVENT_ICON_NAMES: Record<ActivityEventType, EventIconName> = {
   task_created: 'ClipboardList',
@@ -107,6 +122,30 @@ export const EVENT_ICON_NAMES: Record<ActivityEventType, EventIconName> = {
   dispute_resolved: 'CheckCircle2',
   dispute_withdrawn: 'Undo2',
   egg_found: 'Egg',
+  idea_created: 'Lightbulb',
+  idea_voted: 'Vote',
+  idea_promoted_winner: 'Trophy',
+  post_created: 'FileText',
+  post_liked: 'Heart',
+  post_commented: 'MessageCircle',
+  post_like_received: 'Heart',
+  post_comment_received: 'MessageCircle',
+  post_promoted: 'Sparkles',
+  post_flagged: 'Flag',
+  donation_submitted: 'Coins',
+  donation_verified: 'CheckCircle2',
+  holding_sync: 'RefreshCw',
+  holding_reward: 'Gift',
+  streak_freeze_earned: 'Snowflake',
+  streak_freeze_used: 'Snowflake',
+  streak_milestone: 'Flame',
+  x_engagement_like: 'Heart',
+  x_engagement_retweet: 'Repeat',
+  x_engagement_comment: 'MessageCircle',
+  x_engagement_sprint_bonus: 'Trophy',
+  x_engagement_appeal_opened: 'ShieldQuestion',
+  x_engagement_appeal_resolved: 'ShieldCheck',
+  testimonial_approved: 'Star',
 };
 
 /** Category colors for timeline dots */
@@ -137,8 +176,11 @@ export const CATEGORY_ICON_NAMES: Record<NotificationCategory, CategoryIconName>
   system: 'Settings',
 };
 
-// Legacy emoji icons — kept for backward compatibility
-export const EVENT_ICONS: Record<ActivityEventType, string> = {
+// Legacy emoji icons — kept for backward compatibility. Currently unused;
+// new event types are NOT required to add an emoji here. Loosened to
+// Partial<...> so the strict-record type doesn't fail every time a new
+// event type is added to ActivityEventType.
+export const EVENT_ICONS: Partial<Record<ActivityEventType, string>> = {
   task_created: '📋',
   task_status_changed: '🔄',
   task_completed: '✅',

@@ -21,6 +21,21 @@ import {
   Undo2,
   Settings,
   Egg,
+  Lightbulb,
+  Trophy,
+  FileText,
+  Heart,
+  Sparkles,
+  Flag,
+  Coins,
+  RefreshCw,
+  Gift,
+  Snowflake,
+  Flame,
+  Repeat,
+  ShieldQuestion,
+  ShieldCheck,
+  Star,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { EventIconName } from '@/features/notifications/types';
@@ -42,6 +57,21 @@ const ICON_MAP: Record<EventIconName, LucideIcon> = {
   Undo2,
   Settings,
   Egg,
+  Lightbulb,
+  Trophy,
+  FileText,
+  Heart,
+  Sparkles,
+  Flag,
+  Coins,
+  RefreshCw,
+  Gift,
+  Snowflake,
+  Flame,
+  Repeat,
+  ShieldQuestion,
+  ShieldCheck,
+  Star,
 };
 
 function getRelativeTime(dateStr: string): string {
