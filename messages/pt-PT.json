@@ -251,7 +251,10 @@
         "noneDescription": "Os testemunhos aprovados aparecem no painel.",
         "approve": "Aprovar (+50 pts)",
         "reject": "Rejeitar",
-        "submittedAt": "Submetido {when}"
+        "submittedAt": "Submetido {when}",
+        "toastApproved": "Aprovado",
+        "toastRejected": "Rejeitado",
+        "toastError": "Algo correu mal"
       }
     },
     "footer": {
@@ -3701,6 +3704,8 @@
     "flagSuccess": "Publicacao denunciada",
     "flagError": "Falha ao denunciar publicacao",
     "flagAlready": "Ja denunciou esta publicacao",
+    "restoreBonusSuccess": "Bonus organico restaurado, denunciantes falsos penalizados",
+    "restoreBonusError": "Falha ao restaurar bonus",
     "promoteButton": "Promover",
     "promoteTitle": "Promover a Sua Publicacao",
     "promoteSpotlight": "Destaque",
