@@ -1,0 +1,158 @@
+{
+  "$schema": "logo manifest for Organic App — official brand assets only",
+  "generated": "2026-05-06",
+  "downloadPath": "/public/assets/logos/",
+  "publicUrlPath": "/assets/logos/",
+  "logos": {
+    "discord": {
+      "name": "Discord",
+      "icon": "discord.svg",
+      "wordmark": "discord-wordmark.svg",
+      "primaryHex": "#5865F2",
+      "source": "https://discord.com/branding",
+      "status": "downloaded"
+    },
+    "telegram": {
+      "name": "Telegram",
+      "icon": "telegram.svg",
+      "wordmark": null,
+      "primaryHex": "#229ED9",
+      "source": "https://telegram.org/img/t_logo.svg",
+      "status": "downloaded",
+      "notes": "Telegram also publishes a gradient variant (#2AABEE → #229ED9)."
+    },
+    "github": {
+      "name": "GitHub",
+      "icon": "github.svg",
+      "wordmark": "github-wordmark.svg",
+      "primaryHex": "#181717",
+      "source": "https://brand.github.com/GitHub_Logos.zip",
+      "status": "downloaded"
+    },
+    "solana": {
+      "name": "Solana",
+      "icon": "solana.svg",
+      "wordmark": "solana-wordmark.svg",
+      "primaryHex": "#9945FF",
+      "secondaryHex": "#14F195",
+      "source": "https://solana.com/branding",
+      "status": "downloaded"
+    },
+    "phantom": {
+      "name": "Phantom",
+      "icon": "phantom.svg",
+      "wordmark": "phantom-wordmark.svg",
+      "primaryHex": "#AB9FF2",
+      "source": "https://docs.phantom.com/resources/assets",
+      "status": "downloaded"
+    },
+    "jupiter": {
+      "name": "Jupiter",
+      "icon": "jupiter.svg",
+      "wordmark": "jupiter-wordmark.svg",
+      "primaryHex": "#5EE9B5",
+      "source": "https://github.com/jup-ag/docs/tree/main/static/files/brand-kit",
+      "status": "downloaded"
+    },
+    "raydium": {
+      "name": "Raydium",
+      "icon": "raydium.svg",
+      "wordmark": "raydium-wordmark.svg",
+      "primaryHex": "#3772FF",
+      "source": "https://github.com/raydium-io/media-assets",
+      "status": "downloaded",
+      "notes": "Logo uses a gradient: #C200FB → #3772FF → #5AC4BE."
+    },
+    "x": {
+      "name": "X (Twitter)",
+      "icon": null,
+      "wordmark": null,
+      "primaryHex": "#000000",
+      "source": "https://about.x.com/en/who-we-are/brand-toolkit",
+      "status": "manual_download_required",
+      "notes": "Brand toolkit is gated (returns 402). Download manually from the toolkit page after accepting brand guidelines."
+    },
+    "reddit": {
+      "name": "Reddit",
+      "icon": null,
+      "wordmark": null,
+      "primaryHex": "#FF4500",
+      "source": "https://www.redditinc.com/brand",
+      "status": "manual_download_required",
+      "notes": "Reddit corporate site blocks automated fetches. Download Snoo + wordmark manually."
+    },
+    "youtube": {
+      "name": "YouTube",
+      "icon": null,
+      "wordmark": null,
+      "primaryHex": "#FF0000",
+      "source": "https://brand.youtube/",
+      "status": "manual_download_required",
+      "notes": "Brand site exposes only thumbnails; SVGs delivered through interactive download flow."
+    },
+    "instagram": {
+      "name": "Instagram",
+      "icon": null,
+      "wordmark": null,
+      "primaryHex": "#E4405F",
+      "source": "https://www.meta.com/brand/resources/instagram/",
+      "status": "manual_download_required",
+      "notes": "Meta brand portal requires guideline acceptance + interactive download."
+    },
+    "tiktok": {
+      "name": "TikTok",
+      "icon": null,
+      "wordmark": null,
+      "primaryHex": "#FE2C55",
+      "secondaryHex": "#25F4EE",
+      "source": "https://newsroom.tiktok.com/en-us/brand-guidelines",
+      "status": "manual_download_required",
+      "notes": "Brand kit not exposed on a static page; download via newsroom flow."
+    },
+    "coingecko": {
+      "name": "CoinGecko",
+      "icon": null,
+      "wordmark": null,
+      "primaryHex": "#8DC647",
+      "source": "https://brand.coingecko.com/resources/brand-kit",
+      "status": "manual_download_required",
+      "notes": "Brand kit served via opaque GitBook file IDs requiring browser session."
+    },
+    "coinmarketcap": {
+      "name": "CoinMarketCap",
+      "icon": null,
+      "wordmark": null,
+      "primaryHex": "#1A1F36",
+      "source": "https://coinmarketcap.com",
+      "status": "manual_download_required",
+      "notes": "No public brand kit page found. Contact press@coinmarketcap.com or capture from app."
+    },
+    "coinbase": {
+      "name": "Coinbase",
+      "icon": null,
+      "wordmark": null,
+      "primaryHex": "#0052FF",
+      "source": "https://www.coinbase.com/press",
+      "status": "manual_download_required",
+      "notes": "Press page returns 403 to scrapers; download manually."
+    },
+    "dexscreener": {
+      "name": "Dexscreener",
+      "icon": null,
+      "wordmark": null,
+      "primaryHex": "#1F2937",
+      "source": "https://dexscreener.com",
+      "status": "manual_download_required",
+      "notes": "No public brand page; bot-blocked. Use browser inspector to extract their inline logo SVG if needed."
+    },
+    "birdeye": {
+      "name": "Birdeye",
+      "icon": null,
+      "wordmark": null,
+      "primaryHex": "#F5C242",
+      "source": "https://birdeye.so",
+      "status": "manual_download_required",
+      "notes": "SPA — direct asset paths return HTML. No public brand page."
+    }
+  }
+}
