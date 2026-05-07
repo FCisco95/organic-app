@@ -3,7 +3,12 @@ import { getAllTokenHolders, getOrgTokenMint, getTokenMintInfo } from '@/lib/sol
 export interface TokenTrust {
   mintAuthorityRevoked: boolean;
   freezeAuthorityRevoked: boolean;
-  holderCount: number;
+  /**
+   * Total holder count from `getAllTokenHolders`. `null` when the holder
+   * scan failed or timed out — the UI hides the holders pill in that case
+   * but still renders the mint + freeze authority pills.
+   */
+  holderCount: number | null;
   fetchedAt: string;
 }
 
@@ -15,9 +20,15 @@ let cachedTrust: { trust: TokenTrust; timestamp: number } | null = null;
  * mint and freeze authorities have been revoked, and the current holder
  * count. Cached server-side for 5 minutes.
  *
- * Returns `null` when the mint env var isn't configured, when the mint
- * account can't be read, and no stale cache is available. The dashboard
- * surface hides the trust strip in that case.
+ * Mint authority + freeze authority are cheap single-account reads. The
+ * holder scan (`getAllTokenHolders`) is a heavy `getParsedProgramAccounts`
+ * call that can time out under load. We use `Promise.allSettled` so a
+ * holder-count failure does NOT poison the cheap authority reads —
+ * `holderCount` becomes `null` in that case and the UI hides only the
+ * holders pill.
+ *
+ * Returns `null` only when the mint env var isn't configured, when the
+ * mint account can't be read, and no stale cache is available.
  */
 export async function getTokenTrust(): Promise<TokenTrust | null> {
   const now = Date.now();
@@ -29,20 +40,33 @@ export async function getTokenTrust(): Promise<TokenTrust | null> {
 
   try {
     const mint = getOrgTokenMint();
-    const [mintInfo, holders] = await Promise.all([
+    const [mintInfoResult, holdersResult] = await Promise.allSettled([
       getTokenMintInfo(mint),
       getAllTokenHolders(mint),
     ]);
 
+    const mintInfo =
+      mintInfoResult.status === 'fulfilled' ? mintInfoResult.value : null;
+
     if (!mintInfo) {
+      if (mintInfoResult.status === 'rejected') {
+        console.error('Error fetching token mint info:', mintInfoResult.reason);
+      }
       if (cachedTrust) return cachedTrust.trust;
       return null;
+    }
+
+    let holderCount: number | null = null;
+    if (holdersResult.status === 'fulfilled') {
+      holderCount = holdersResult.value.length;
+    } else {
+      console.error('Error fetching token holders:', holdersResult.reason);
     }
 
     const trust: TokenTrust = {
       mintAuthorityRevoked: mintInfo.mintAuthority === null,
       freezeAuthorityRevoked: mintInfo.freezeAuthority === null,
-      holderCount: holders.length,
+      holderCount,
       fetchedAt: new Date().toISOString(),
     };
 
