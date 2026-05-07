@@ -2868,7 +2868,7 @@ export type Database = {
           created_at: string | null
           current_streak: number
           discord: string | null
-          easter_2026_eggs_found: number
+          easter_2026_egg_elements: string[]
           email: string
           flagged: boolean
           id: string
@@ -2901,7 +2901,7 @@ export type Database = {
           created_at?: string | null
           current_streak?: number
           discord?: string | null
-          easter_2026_eggs_found?: number
+          easter_2026_egg_elements?: string[]
           email: string
           flagged?: boolean
           id: string
@@ -2934,7 +2934,7 @@ export type Database = {
           created_at?: string | null
           current_streak?: number
           discord?: string | null
-          easter_2026_eggs_found?: number
+          easter_2026_egg_elements?: string[]
           email?: string
           flagged?: boolean
           id?: string
@@ -3184,7 +3184,6 @@ export type Database = {
           claimable_points: number | null
           current_streak: number | null
           dense_rank: number | null
-          easter_2026_eggs_found: number | null
           email: string | null
           id: string | null
           level: number | null
@@ -3205,7 +3204,6 @@ export type Database = {
           claimable_points: number | null
           current_streak: number | null
           dense_rank: number | null
-          easter_2026_eggs_found: number | null
           email: string | null
           id: string | null
           level: number | null

@@ -3,19 +3,15 @@ import assert from 'node:assert/strict';
 import { EasterEggBadge } from '../easter-egg-badge';
 
 describe('EasterEggBadge', () => {
-  it('returns null when count is 0', () => {
-    assert.equal(EasterEggBadge({ count: 0 }), null);
+  it('returns null when elements is undefined', () => {
+    assert.equal(EasterEggBadge({ elements: undefined }), null);
   });
 
-  it('returns null when count is undefined', () => {
-    assert.equal(EasterEggBadge({ count: undefined }), null);
+  it('returns null when elements is null', () => {
+    assert.equal(EasterEggBadge({ elements: null }), null);
   });
 
-  it('returns null when count is null', () => {
-    assert.equal(EasterEggBadge({ count: null }), null);
-  });
-
-  it('returns null when count is negative', () => {
-    assert.equal(EasterEggBadge({ count: -1 }), null);
+  it('returns null when elements is an empty array', () => {
+    assert.equal(EasterEggBadge({ elements: [] }), null);
   });
 });

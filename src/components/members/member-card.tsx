@@ -81,7 +81,7 @@ export function MemberCard({ member, rank, xpTotal }: MemberCardProps) {
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <p className="font-medium text-foreground truncate">{displayName}</p>
-            <EasterEggBadge count={member.easter_2026_eggs_found} />
+            <EasterEggBadge elements={member.easter_2026_egg_elements} />
             {member.role && member.role !== 'guest' && (
               <span
                 data-testid="member-role-badge"

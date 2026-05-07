@@ -12,7 +12,7 @@ export interface MemberListItem {
   profile_visible: boolean;
   created_at: string | null;
   level: number;
-  easter_2026_eggs_found?: number;
+  easter_2026_egg_elements?: string[] | null;
 }
 
 export interface MemberProfile extends MemberListItem {

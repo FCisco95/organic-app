@@ -24,7 +24,7 @@ const COMMENT_SELECT = `
     email,
     organic_id,
     avatar_url,
-    easter_2026_eggs_found
+    easter_2026_egg_elements
   )
 `;
 

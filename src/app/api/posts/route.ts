@@ -18,7 +18,7 @@ import { checkUserRestriction } from '@/lib/moderation';
 import { detectLanguage } from '@/lib/translation/detect-language';
 
 const POST_SELECT =
-  '*, author:user_profiles!posts_author_id_fkey(id,name,email,organic_id,avatar_url,easter_2026_eggs_found)';
+  '*, author:user_profiles!posts_author_id_fkey(id,name,email,organic_id,avatar_url,easter_2026_egg_elements)';
 
 export async function GET(request: NextRequest) {
   try {
