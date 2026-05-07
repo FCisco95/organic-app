@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     let query = supabase
       .from('user_profiles')
       .select(
-        'id, name, avatar_url, organic_id, role, total_points, tasks_completed, profile_visible, created_at, level',
+        'id, name, avatar_url, organic_id, role, total_points, tasks_completed, profile_visible, created_at, level, easter_2026_eggs_found',
         { count: 'exact' }
       )
       .eq('profile_visible', true)

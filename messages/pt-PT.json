@@ -1827,7 +1827,8 @@
     "questTableCadence": "Cadência",
     "questTableProgress": "Progresso",
     "questTableStatus": "Estado",
-    "questTableAction": "Ação"
+    "questTableAction": "Ação",
+    "easter2026BadgeTooltip": "Caçador da Páscoa 2026"
   },
   "Voting": {
     "title": "Votação Ponderada por Tokens",

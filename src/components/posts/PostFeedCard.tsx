@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 import { LinkPreviewCard } from '@/components/posts/LinkPreviewCard';
 import { usePostTranslation } from '@/features/translation/hooks';
 import { useTranslationFlag } from '@/features/translation/use-translation-flags';
+import { EasterEggBadge } from '@/components/gamification/easter-egg-badge';
 
 /* ─── Shared types ─────────────────────────────────────────────────────── */
 
@@ -233,6 +234,7 @@ export function FeaturedPostCard({ post, onLike, onClick, onFlag, likeLoading, i
           <span className="text-sm font-medium text-foreground">
             {author.name || 'Anonymous'}
           </span>
+          <EasterEggBadge count={author.easter_2026_eggs_found} className="ml-1" />
           {author.organic_id && (
             <span className="text-[10px] font-mono text-muted-foreground ml-1">#{author.organic_id}</span>
           )}
@@ -327,6 +329,7 @@ export function PostFeedCard({ post, onLike, onClick, onFlag, likeLoading }: Pos
             <span className="text-xs font-medium text-foreground truncate">
               {author.name || 'Anonymous'}
             </span>
+            <EasterEggBadge count={author.easter_2026_eggs_found} />
             {author.organic_id && (
               <span className="text-[10px] font-mono text-muted-foreground">#{author.organic_id}</span>
             )}
@@ -494,6 +497,7 @@ export function CompactPostRow({ post, onLike, onClick, onFlag, likeLoading }: P
       <span className="text-[11px] text-muted-foreground truncate max-w-[100px] hidden sm:inline">
         {author.name || 'Anonymous'}
       </span>
+      <EasterEggBadge count={author.easter_2026_eggs_found} className="hidden sm:inline-flex" />
 
       {/* Time */}
       <span className="text-[11px] text-muted-foreground tabular-nums shrink-0 w-12 text-right">

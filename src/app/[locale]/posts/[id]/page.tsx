@@ -33,6 +33,7 @@ import { fetchJson } from '@/lib/fetch-json';
 import { usePostTranslation } from '@/features/translation/hooks';
 import { useCommentTranslation } from '@/features/translation/comment-hooks';
 import { useTranslationFlag } from '@/features/translation/use-translation-flags';
+import { EasterEggBadge } from '@/components/gamification/easter-egg-badge';
 
 function timeAgo(dateStr: string): string {
   const now = Date.now();
@@ -64,7 +65,7 @@ function XLikeButton({ twitterUrl }: { twitterUrl: string | null }) {
   );
 }
 
-function CommentItem({ comment }: { comment: { id: string; body: string; created_at: string; user_profiles: { id: string; name: string | null; email: string; organic_id: number | null; avatar_url: string | null } | null } }) {
+function CommentItem({ comment }: { comment: { id: string; body: string; created_at: string; user_profiles: { id: string; name: string | null; email: string; organic_id: number | null; avatar_url: string | null; easter_2026_eggs_found?: number } | null } }) {
   const t = useTranslations('Posts');
   const commentsTranslationEnabled = useTranslationFlag('comments');
   const { translation, isTranslated, isLoading, translate, showOriginal } =
@@ -89,6 +90,7 @@ function CommentItem({ comment }: { comment: { id: string; body: string; created
           <span className="text-xs font-medium text-foreground">
             {cAuthor?.name || 'Anonymous'}
           </span>
+          <EasterEggBadge count={cAuthor?.easter_2026_eggs_found} />
           <span className="text-[10px] text-muted-foreground">
             {timeAgo(comment.created_at)}
           </span>

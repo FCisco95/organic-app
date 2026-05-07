@@ -1827,7 +1827,8 @@
     "questTableCadence": "周期",
     "questTableProgress": "进度",
     "questTableStatus": "状态",
-    "questTableAction": "操作"
+    "questTableAction": "操作",
+    "easter2026BadgeTooltip": "2026复活节寻宝者"
   },
   "Voting": {
     "title": "代币加权投票",
