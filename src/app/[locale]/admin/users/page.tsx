@@ -1,7 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
-import { useRouter } from '@/i18n/navigation';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Search,
   Shield,
@@ -33,6 +33,27 @@ import { Link } from '@/i18n/navigation';
 type RestrictionStatus = 'active' | 'warned' | 'restricted' | 'banned';
 type RestrictionAction = 'warn' | 'restrict' | 'ban' | 'unrestrict';
 
+const STATUS_ICONS: Record<RestrictionStatus, typeof CheckCircle> = {
+  active: CheckCircle,
+  warned: AlertTriangle,
+  restricted: ShieldAlert,
+  banned: Ban,
+};
+
+const STATUS_COLORS: Record<RestrictionStatus, string> = {
+  active: 'text-emerald-400 bg-emerald-400/10',
+  warned: 'text-yellow-400 bg-yellow-400/10',
+  restricted: 'text-orange-400 bg-orange-400/10',
+  banned: 'text-red-400 bg-red-400/10',
+};
+
+const ACTION_COLORS: Record<RestrictionAction, string> = {
+  warn: 'bg-yellow-600 hover:bg-yellow-700',
+  restrict: 'bg-orange-600 hover:bg-orange-700',
+  ban: 'bg-red-600 hover:bg-red-700',
+  unrestrict: 'bg-emerald-600 hover:bg-emerald-700',
+};
+
 interface UserRow {
   id: string;
   name: string | null;
@@ -52,25 +73,14 @@ interface UserRow {
   comment_count: number;
 }
 
-const statusConfig: Record<
-  RestrictionStatus,
-  { label: string; color: string; icon: typeof CheckCircle }
-> = {
-  active: { label: 'Active', color: 'text-emerald-400 bg-emerald-400/10', icon: CheckCircle },
-  warned: { label: 'Warned', color: 'text-yellow-400 bg-yellow-400/10', icon: AlertTriangle },
-  restricted: { label: 'Restricted', color: 'text-orange-400 bg-orange-400/10', icon: ShieldAlert },
-  banned: { label: 'Banned', color: 'text-red-400 bg-red-400/10', icon: Ban },
-};
-
-function StatusBadge({ status }: { status: RestrictionStatus }) {
-  const cfg = statusConfig[status];
-  const Icon = cfg.icon;
+function StatusBadge({ status, label }: { status: RestrictionStatus; label: string }) {
+  const Icon = STATUS_ICONS[status];
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${cfg.color}`}
+      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[status]}`}
     >
       <Icon className="h-3 w-3" />
-      {cfg.label}
+      {label}
     </span>
   );
 }
@@ -86,9 +96,30 @@ function formatDate(dateStr: string | null) {
 
 export default function AdminUsersPage() {
   const { profile } = useAuth();
-  const router = useRouter();
+  const t = useTranslations('AdminDashboard.users');
+  const tAdmin = useTranslations('AdminDashboard');
   const isAdmin = profile?.role === 'admin';
   const isAdminOrCouncil = isAdmin || profile?.role === 'council';
+
+  const statusLabels: Record<RestrictionStatus, string> = useMemo(
+    () => ({
+      active: t('statusActive'),
+      warned: t('statusWarned'),
+      restricted: t('statusRestricted'),
+      banned: t('statusBanned'),
+    }),
+    [t]
+  );
+
+  const actionLabels: Record<RestrictionAction, string> = useMemo(
+    () => ({
+      warn: t('actionWarn'),
+      restrict: t('actionRestrict'),
+      ban: t('actionBan'),
+      unrestrict: t('actionUnrestrict'),
+    }),
+    [t]
+  );
 
   const [users, setUsers] = useState<UserRow[]>([]);
   const [total, setTotal] = useState(0);
@@ -195,17 +226,15 @@ export default function AdminUsersPage() {
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-muted">
               <Shield className="h-8 w-8 text-muted-foreground" />
             </div>
-            <h2 className="mb-2 text-xl font-semibold text-foreground">Access Denied</h2>
-            <p className="mb-6 text-sm text-muted-foreground">
-              You need admin or council permissions to access user management.
-            </p>
+            <h2 className="mb-2 text-xl font-semibold text-foreground">{tAdmin('accessDenied')}</h2>
+            <p className="mb-6 text-sm text-muted-foreground">{t('accessDeniedDesc')}</p>
             <div className="flex flex-col gap-2 sm:flex-row sm:justify-center">
               <Link
                 href="/"
                 className="inline-flex items-center justify-center gap-2 rounded-lg bg-cta px-5 py-2.5 text-sm font-medium text-cta-fg transition-colors hover:bg-cta-hover"
               >
                 <Home className="h-4 w-4" />
-                Go Home
+                {tAdmin('goHome')}
               </Link>
             </div>
           </div>
@@ -214,20 +243,13 @@ export default function AdminUsersPage() {
     );
   }
 
-  const actionLabels: Record<RestrictionAction, { label: string; color: string }> = {
-    warn: { label: 'Warn', color: 'bg-yellow-600 hover:bg-yellow-700' },
-    restrict: { label: 'Restrict', color: 'bg-orange-600 hover:bg-orange-700' },
-    ban: { label: 'Ban', color: 'bg-red-600 hover:bg-red-700' },
-    unrestrict: { label: 'Unrestrict', color: 'bg-emerald-600 hover:bg-emerald-700' },
-  };
-
   return (
     <PageContainer width="wide">
       <div className="space-y-6" data-testid="admin-users-page">
         <PageHero
           icon={Users}
-          title="User Management"
-          description="Search, review, and moderate user accounts"
+          title={t('title')}
+          description={t('description')}
           variant="dark"
         />
 
@@ -237,7 +259,7 @@ export default function AdminUsersPage() {
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Search by name, email, or Organic ID..."
+              placeholder={t('searchPlaceholder')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full rounded-lg border border-border bg-card py-2 pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-cta/50"
@@ -250,11 +272,11 @@ export default function AdminUsersPage() {
               onChange={(e) => setStatusFilter(e.target.value)}
               className="appearance-none rounded-lg border border-border bg-card py-2 pl-3 pr-8 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-cta/50"
             >
-              <option value="">All Statuses</option>
-              <option value="active">Active</option>
-              <option value="warned">Warned</option>
-              <option value="restricted">Restricted</option>
-              <option value="banned">Banned</option>
+              <option value="">{t('filterAllStatuses')}</option>
+              <option value="active">{statusLabels.active}</option>
+              <option value="warned">{statusLabels.warned}</option>
+              <option value="restricted">{statusLabels.restricted}</option>
+              <option value="banned">{statusLabels.banned}</option>
             </select>
             <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           </div>
@@ -268,7 +290,7 @@ export default function AdminUsersPage() {
             }`}
           >
             <Flag className="h-3.5 w-3.5" />
-            Flagged
+            {t('filterFlagged')}
           </button>
 
           {isAdmin && (
@@ -276,7 +298,7 @@ export default function AdminUsersPage() {
               onClick={handleRunFlagCheck}
               className="rounded-lg border border-border bg-card px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             >
-              Run Flag Check
+              {t('runFlagCheck')}
             </button>
           )}
         </div>
@@ -285,7 +307,7 @@ export default function AdminUsersPage() {
         {selectedIds.size > 0 && isAdmin && (
           <div className="flex items-center gap-2 rounded-lg border border-border bg-card/50 px-4 py-3">
             <span className="text-sm font-medium text-foreground">
-              {selectedIds.size} selected
+              {t('selectedCount', { count: selectedIds.size })}
             </span>
             <div className="ml-auto flex gap-2">
               {(['warn', 'restrict', 'ban', 'unrestrict'] as const).map((action) => (
@@ -294,9 +316,9 @@ export default function AdminUsersPage() {
                   onClick={() =>
                     openRestrictionDialog(action, Array.from(selectedIds))
                   }
-                  className={`rounded-md px-3 py-2 text-xs font-medium text-white transition-colors ${actionLabels[action].color}`}
+                  className={`rounded-md px-3 py-2 text-xs font-medium text-white transition-colors ${ACTION_COLORS[action]}`}
                 >
-                  {actionLabels[action].label}
+                  {actionLabels[action]}
                 </button>
               ))}
             </div>
@@ -319,26 +341,26 @@ export default function AdminUsersPage() {
                   </th>
                 )}
                 <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  User
+                  {t('tableUser')}
                 </th>
                 <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Status
+                  {t('tableStatus')}
                 </th>
                 <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground text-right">
-                  XP
+                  {t('tableXp')}
                 </th>
                 <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground text-right">
-                  Points
+                  {t('tablePoints')}
                 </th>
                 <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground text-right">
-                  Comments
+                  {t('tableComments')}
                 </th>
                 <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Joined
+                  {t('tableJoined')}
                 </th>
                 {isAdmin && (
                   <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Actions
+                    {t('tableActions')}
                   </th>
                 )}
               </tr>
@@ -353,7 +375,7 @@ export default function AdminUsersPage() {
               ) : users.length === 0 ? (
                 <tr>
                   <td colSpan={isAdmin ? 8 : 6} className="px-4 py-12 text-center text-muted-foreground">
-                    No users found
+                    {t('empty')}
                   </td>
                 </tr>
               ) : (
@@ -392,7 +414,7 @@ export default function AdminUsersPage() {
                         <div className="min-w-0">
                           <div className="flex items-center gap-1.5">
                             <span className="truncate font-medium text-foreground">
-                              {user.name ?? 'Unnamed'}
+                              {user.name ?? t('unnamed')}
                             </span>
                             {user.flagged && (
                               <Flag className="h-3.5 w-3.5 shrink-0 text-red-400" />
@@ -406,7 +428,10 @@ export default function AdminUsersPage() {
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <StatusBadge status={user.restriction_status} />
+                      <StatusBadge
+                        status={user.restriction_status}
+                        label={statusLabels[user.restriction_status]}
+                      />
                       {user.restriction_reason && (
                         <p className="mt-1 max-w-[200px] truncate text-xs text-muted-foreground">
                           {user.restriction_reason}
@@ -435,20 +460,20 @@ export default function AdminUsersPage() {
                                   onClick={() => openRestrictionDialog('warn', [user.id])}
                                   className="inline-flex items-center min-h-[44px] rounded px-2 py-2 text-xs font-medium text-yellow-400 hover:bg-yellow-400/10"
                                 >
-                                  Warn
+                                  {actionLabels.warn}
                                 </button>
                               )}
                               <button
                                 onClick={() => openRestrictionDialog('restrict', [user.id])}
                                 className="inline-flex items-center min-h-[44px] rounded px-2 py-2 text-xs font-medium text-orange-400 hover:bg-orange-400/10"
                               >
-                                Restrict
+                                {actionLabels.restrict}
                               </button>
                               <button
                                 onClick={() => openRestrictionDialog('ban', [user.id])}
                                 className="inline-flex items-center min-h-[44px] rounded px-2 py-2 text-xs font-medium text-red-400 hover:bg-red-400/10"
                               >
-                                Ban
+                                {actionLabels.ban}
                               </button>
                             </>
                           ) : (
@@ -456,7 +481,7 @@ export default function AdminUsersPage() {
                               onClick={() => openRestrictionDialog('unrestrict', [user.id])}
                               className="inline-flex items-center min-h-[44px] rounded px-2 py-2 text-xs font-medium text-emerald-400 hover:bg-emerald-400/10"
                             >
-                              Unrestrict
+                              {actionLabels.unrestrict}
                             </button>
                           )}
                         </div>
@@ -471,7 +496,7 @@ export default function AdminUsersPage() {
           {/* Footer */}
           {total > 0 && (
             <div className="border-t border-border px-4 py-3 text-xs text-muted-foreground">
-              Showing {users.length} of {total} users
+              {t('showingCount', { shown: users.length, total })}
             </div>
           )}
         </div>
@@ -481,21 +506,31 @@ export default function AdminUsersPage() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="capitalize">{dialogAction} User{dialogTargets.length > 1 ? 's' : ''}</DialogTitle>
+            <DialogTitle>
+              {dialogTargets.length > 1
+                ? t('dialogTitlePlural', {
+                    action: actionLabels[dialogAction],
+                    count: dialogTargets.length,
+                  })
+                : t('dialogTitleSingle', { action: actionLabels[dialogAction] })}
+            </DialogTitle>
             <DialogDescription>
               {dialogTargets.length > 1
-                ? `This will ${dialogAction} ${dialogTargets.length} users.`
-                : `This will ${dialogAction} the selected user.`}
+                ? t('dialogDescPlural', {
+                    action: actionLabels[dialogAction],
+                    count: dialogTargets.length,
+                  })
+                : t('dialogDescSingle', { action: actionLabels[dialogAction] })}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
             <label className="block text-sm font-medium text-foreground">
-              Reason <span className="text-red-400">*</span>
+              {t('dialogReasonLabel')} <span className="text-red-400">*</span>
             </label>
             <textarea
               value={dialogReason}
               onChange={(e) => setDialogReason(e.target.value)}
-              placeholder="Enter the reason for this action..."
+              placeholder={t('dialogReasonPlaceholder')}
               rows={3}
               maxLength={500}
               className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-cta/50"
@@ -507,17 +542,17 @@ export default function AdminUsersPage() {
               onClick={() => setDialogOpen(false)}
               className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
             >
-              Cancel
+              {t('dialogCancel')}
             </button>
             <button
               onClick={handleRestrict}
               disabled={!dialogReason.trim() || submitting}
-              className={`rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors disabled:opacity-50 ${actionLabels[dialogAction].color}`}
+              className={`rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors disabled:opacity-50 ${ACTION_COLORS[dialogAction]}`}
             >
               {submitting ? (
                 <Loader2 className="mx-auto h-4 w-4 animate-spin" />
               ) : (
-                `Confirm ${actionLabels[dialogAction].label}`
+                t('dialogConfirm', { action: actionLabels[dialogAction] })
               )}
             </button>
           </DialogFooter>
