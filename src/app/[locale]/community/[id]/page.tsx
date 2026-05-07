@@ -656,7 +656,7 @@ export default function CommunityProfilePage() {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-2xl font-bold text-foreground">{displayName}</h1>
-                <EasterEggBadge count={member.easter_2026_eggs_found} />
+                <EasterEggBadge elements={member.easter_2026_egg_elements} />
                 {member.role && member.role !== 'guest' && (
                   <span
                     className={`text-xs px-2 py-0.5 rounded-full border ${ROLE_COLORS[member.role as UserRole]}`}

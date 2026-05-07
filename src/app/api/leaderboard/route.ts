@@ -39,12 +39,11 @@ type LeaderboardRow = {
   level: number | null;
   current_streak: number | null;
   restriction_status: string | null;
-  easter_2026_eggs_found: number | null;
 };
 const RESPONSE_CACHE_CONTROL = 'public, s-maxage=300, stale-while-revalidate=600';
 // No email or wallet — PII must not appear in public leaderboard
 const LEADERBOARD_COLUMNS =
-  'id, name, organic_id, avatar_url, total_points, tasks_completed, role, rank, dense_rank, xp_total, level, current_streak, restriction_status, easter_2026_eggs_found';
+  'id, name, organic_id, avatar_url, total_points, tasks_completed, role, rank, dense_rank, xp_total, level, current_streak, restriction_status';
 
 type NormalizedLeaderboardEntry = Omit<LeaderboardEntry, 'rank'>;
 
@@ -65,7 +64,6 @@ function normalizeLeaderboardRow(row: LeaderboardRow): NormalizedLeaderboardEntr
     xp_total: row.xp_total ?? 0,
     level: row.level,
     current_streak: row.current_streak,
-    easter_2026_eggs_found: row.easter_2026_eggs_found ?? 0,
   };
 }
 
@@ -100,7 +98,7 @@ async function directUserProfilesFallback(): Promise<LeaderboardRow[]> {
   const supabase = createCacheSafeAnonClient();
   const { data, error } = await supabase
     .from('user_profiles')
-    .select('id, name, organic_id, avatar_url, total_points, tasks_completed, role, xp_total, level, current_streak, restriction_status, easter_2026_eggs_found')
+    .select('id, name, organic_id, avatar_url, total_points, tasks_completed, role, xp_total, level, current_streak, restriction_status')
     .not('organic_id', 'is', null)
     .order('xp_total', { ascending: false })
     .order('total_points', { ascending: false })

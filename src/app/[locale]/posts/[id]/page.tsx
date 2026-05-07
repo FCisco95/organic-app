@@ -65,7 +65,7 @@ function XLikeButton({ twitterUrl }: { twitterUrl: string | null }) {
   );
 }
 
-function CommentItem({ comment }: { comment: { id: string; body: string; created_at: string; user_profiles: { id: string; name: string | null; email: string; organic_id: number | null; avatar_url: string | null; easter_2026_eggs_found?: number } | null } }) {
+function CommentItem({ comment }: { comment: { id: string; body: string; created_at: string; user_profiles: { id: string; name: string | null; email: string; organic_id: number | null; avatar_url: string | null; easter_2026_egg_elements?: string[] | null } | null } }) {
   const t = useTranslations('Posts');
   const commentsTranslationEnabled = useTranslationFlag('comments');
   const { translation, isTranslated, isLoading, translate, showOriginal } =
@@ -90,7 +90,7 @@ function CommentItem({ comment }: { comment: { id: string; body: string; created
           <span className="text-xs font-medium text-foreground">
             {cAuthor?.name || 'Anonymous'}
           </span>
-          <EasterEggBadge count={cAuthor?.easter_2026_eggs_found} />
+          <EasterEggBadge elements={cAuthor?.easter_2026_egg_elements} />
           <span className="text-[10px] text-muted-foreground">
             {timeAgo(comment.created_at)}
           </span>
