@@ -9,6 +9,7 @@ export interface PostAuthor {
   email: string;
   organic_id: number | null;
   avatar_url: string | null;
+  easter_2026_eggs_found?: number;
 }
 
 export type PromotionTier = 'spotlight' | 'feature' | 'mega';
