@@ -46,7 +46,10 @@ test('threshold: passes when balance exceeds threshold', () => {
 test('threshold: treats null balance as 0', () => {
   const result = checkTokenThreshold({ threshold: 100, walletPubkey: 'abc123', balance: null });
   assert.equal(result.ok, false);
-  if (!result.ok) assert.equal(result.current, 0);
+  assert.equal(result.ok === false && result.reason, 'insufficient_balance');
+  if (result.ok === false && result.reason === 'insufficient_balance') {
+    assert.equal(result.current, 0);
+  }
 });
 
 // ── Max live proposals checks ───────────────────────────────────────
