@@ -18,6 +18,7 @@ import {
 import { useAuth } from '@/features/auth/context';
 import { LevelBadge } from '@/components/reputation/level-badge';
 import { formatXp, useLeaderboard, type LeaderboardEntry } from '@/features/reputation';
+import { EasterEggBadge } from '@/components/gamification/easter-egg-badge';
 import { cn } from '@/lib/utils';
 
 type SortColumn = 'rank' | 'level' | 'tasks' | 'xp';
@@ -661,6 +662,7 @@ export function RankingsTab() {
                           <p className="font-medium text-foreground truncate" title={getDisplayName(entry)}>
                             {getDisplayName(entry)}
                           </p>
+                          <EasterEggBadge count={entry.easter_2026_eggs_found} />
                           {isCurrentUser && (
                             <span className="shrink-0 text-xs bg-organic-terracotta-lightest0 text-white px-2 py-0.5 rounded-full">
                               {t('youBadge')}
@@ -728,10 +730,11 @@ export function RankingsTab() {
                         </div>
                       )}
                       <div>
-                        <p className="font-medium text-foreground">
-                          {getDisplayName(entry)}
+                        <p className="font-medium text-foreground inline-flex items-center gap-2 flex-wrap">
+                          <span>{getDisplayName(entry)}</span>
+                          <EasterEggBadge count={entry.easter_2026_eggs_found} />
                           {isCurrentUser && (
-                            <span className="ml-2 text-xs bg-organic-terracotta-lightest0 text-white px-2 py-0.5 rounded-full">
+                            <span className="text-xs bg-organic-terracotta-lightest0 text-white px-2 py-0.5 rounded-full">
                               {t('youBadge')}
                             </span>
                           )}
