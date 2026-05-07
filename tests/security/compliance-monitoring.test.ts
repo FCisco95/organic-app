@@ -22,7 +22,7 @@ describe('Compliance & Monitoring', () => {
   });
 
   it('logger calls should not contain PII patterns', () => {
-    const files = globSync('src/**/*.{ts,tsx}', { ignore: ['**/node_modules/**', '**/*.test.*'] });
+    const files = globSync('src/**/*.{ts,tsx}', { exclude: ['**/node_modules/**', '**/*.test.*'] });
     // Match logger calls that log PII as variable values (not just mentioning "token" in a description string).
     // Looks for patterns like: { password: ..., apiKey: ..., sessionToken: ... }
     const piiPatterns = /logger\.(error|warn|info)\([^)]*\{\s*[^}]*?(password|secret|apiKey|sessionToken)\s*:/i;
