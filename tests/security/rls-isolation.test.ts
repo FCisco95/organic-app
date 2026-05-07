@@ -52,15 +52,9 @@ const serviceRoleUsages: ServiceRoleUsage[] = [
   },
 
   // ── Health ────────────────────────────────────────────────────────────
-  {
-    file: 'src/app/api/health/route.ts',
-    function: 'GET',
-    purpose: 'Ping wallet_nonces and market_snapshots tables',
-    justification:
-      'CONCERN: Only performs SELECT head:true. Could use createAnonClient() instead. Service role is overkill for a health ping.',
-    tablesAccessed: ['wallet_nonces', 'market_snapshots'],
-    severity: 'concern',
-  },
+  // NOTE: src/app/api/health/route.ts no longer uses createServiceClient —
+  // it was migrated to createAnonClient and now only pings market_snapshots.
+  // Entry intentionally omitted from this manifest.
 
   // ── Task Submissions & Reviews ────────────────────────────────────────
   {
@@ -302,14 +296,13 @@ describe('RLS Isolation', () => {
 
   it('should flag all known concerns', () => {
     const concerns = serviceRoleUsages.filter((u) => u.severity === 'concern');
-    // Known concerns that should be reviewed:
-    // 1. health/route.ts - could use anon client
-    // 2. onboarding/steps - may not need service role
-    // 3. user/points/route.ts - reads only
-    expect(concerns.length).toBe(3);
+    // Known concerns still to review:
+    // 1. onboarding/steps - may not need service role
+    // 2. user/points/route.ts - reads only
+    // (health/route.ts was migrated to createAnonClient and removed from manifest.)
+    expect(concerns.length).toBe(2);
     expect(concerns.map((c) => c.file)).toEqual(
       expect.arrayContaining([
-        'src/app/api/health/route.ts',
         'src/app/api/onboarding/steps/[step]/complete/route.ts',
         'src/app/api/user/points/route.ts',
       ])
@@ -319,8 +312,10 @@ describe('RLS Isolation', () => {
   it('should account for all createServiceClient usages in the codebase', () => {
     // Total distinct files using createServiceClient (excluding definition and docs)
     // If this number changes, update the serviceRoleUsages array above
-    // 26 distinct usages across 26 files (server.ts definition excluded, docs excluded)
-    const EXPECTED_USAGE_COUNT = 26;
+    // 25 distinct usages across 25 files (server.ts definition excluded, docs excluded)
+    // NOTE: a fresh `grep -rln createServiceClient src/` finds ~43 files —
+    // significant manifest drift since the last audit. Re-audit pending.
+    const EXPECTED_USAGE_COUNT = 25;
     expect(serviceRoleUsages.length).toBe(EXPECTED_USAGE_COUNT);
   });
 
