@@ -194,10 +194,10 @@ export default function PostDetailPage() {
   async function handleAdminRestoreBonus() {
     try {
       await fetchJson(`/api/posts/${postId}/flag`, { method: 'DELETE' });
-      toast.success('Organic bonus restored, false flaggers penalized');
+      toast.success(t('restoreBonusSuccess'));
       postQuery.refetch();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to restore bonus');
+      toast.error(error instanceof Error ? error.message : t('restoreBonusError'));
     }
   }
 
