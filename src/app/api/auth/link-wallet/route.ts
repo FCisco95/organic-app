@@ -94,7 +94,12 @@ export async function POST(request: Request) {
     // Atomic nonce consume: a single conditional UPDATE with .is('used_at',
     // null) is the only way to guarantee single-use under concurrent calls.
     // If zero rows come back, another request consumed it first — replay.
-    const consumeResult = await consumeWalletNonce(serviceClient, nonceRecord.id);
+    // Cast to a structural type so the helper doesn't try to deep-instantiate
+    // the full Database generic — the runtime contract is what matters.
+    const consumeResult = await consumeWalletNonce(
+      serviceClient as unknown as Parameters<typeof consumeWalletNonce>[0],
+      nonceRecord.id,
+    );
     if (!consumeResult.ok) {
       if (consumeResult.reason === 'already-used') {
         return NextResponse.json(

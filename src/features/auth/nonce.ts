@@ -10,12 +10,18 @@
 // receipt. If zero rows come back, another request already consumed the
 // nonce (or it was never valid) — caller MUST reject with 409.
 
-type WalletNonceUpdater = {
-  from: (table: 'wallet_nonces') => {
-    update: (values: { used_at: string }) => {
-      eq: (column: 'id', value: string) => {
-        is: (column: 'used_at', value: null) => {
-          select: (cols: string) => Promise<{
+// We deliberately type the client structurally rather than as
+// SupabaseClient<Database>: the generated Database type recursively expands
+// into the supabase-js builder types and triggers
+//   "Type instantiation is excessively deep and possibly infinite"
+// when this helper is called from a route. The runtime contract is what
+// matters here — only the four chained calls we use need to type-check.
+export interface WalletNonceUpdater {
+  from(table: string): {
+    update(values: { used_at: string }): {
+      eq(column: string, value: string): {
+        is(column: string, value: null): {
+          select(cols: string): PromiseLike<{
             data: Array<{ id: string }> | null;
             error: { message: string } | null;
           }>;
@@ -23,7 +29,7 @@ type WalletNonceUpdater = {
       };
     };
   };
-};
+}
 
 export type ConsumeNonceResult =
   | { ok: true; id: string }
