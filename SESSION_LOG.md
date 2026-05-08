@@ -2,6 +2,69 @@
 
 Add newest entries at the top.
 
+## 2026-05-08 (Session: Comprehensive Hardening Pass + Treasury Restore)
+
+### Treasury restored (operator action)
+
+- **Symptom:** `/vault` showed "Unable to load treasury data" — `/api/treasury` returning 500
+- **Root cause:** `SOLANA_RPC_PRIMARY_URL` not set in Vercel production env. Server-side RpcPool throws hard in prod when no tier URL is configured (see `src/lib/solana/providers.ts:54-63`). The RPC-resilience PR series (Apr 22–23) introduced this requirement; the env var was never set on prod, so on-chain reads have been silently failing for ~2 weeks
+- **Fix:** Set `SOLANA_RPC_PRIMARY_URL` to the existing `NEXT_PUBLIC_SOLANA_RPC_URL` value (public mainnet endpoint), redeployed prod via `vercel redeploy`. Verified `/api/treasury`, `/api/health`, `/api/leaderboard`, `/api/stats`, `/api/analytics/market` all return 200
+- **Follow-up needed:** swap the public mainnet URL for a paid Helius/QuickNode key + add `SOLANA_RPC_SECONDARY_URL` so the consensus verifier has providers to compare. Public RPC is severely rate-limited (~100 req/10s/IP) and will degrade under load
+
+### Hardening pass — single-PR consolidation
+
+Six-phase autonomous pass: 4 parallel audits → CRIT/HIGH fixes → test coverage → XER diagnosis → validation → final report. All work landed on `chore/hardening-2026-05-08` (chore/* skips Vercel preview deploys per vercel.json) — one branch, one PR, one push.
+
+#### Security fixes (3 CRIT + 3 HIGH)
+- **CRIT-1** — `email` and `claimable_points` removed from publicly-readable `leaderboard_view` (anon SELECT was exposing PII + economic data; two recent feature migrations had re-introduced columns an earlier hardening migration stripped). Migration `20260508000000_leaderboard_view_remove_pii.sql` + regression test
+- **CRIT-2** — SSRF guard on OG metadata fetch. `isSafeOgUrl()` allowlist (twitter.com / x.com / t.co) + private-IP block (RFC1918, 127/8, 169.254/16, IPv6 ULAs) + `redirect: 'manual'`. 31 regression tests cover IMDS, RFC1918, IPv6, scheme bypass, subdomain confusion
+- **CRIT-3** — Atomic nonce consume in `/api/auth/link-wallet`. New `consumeWalletNonce` helper issues a single conditional UPDATE with `.is('used_at', null)`; race-loser gets 409. Removes the swallowed-error path
+- **HIGH-1** — Removed spoofable `User-Agent: Next.js` rate-limit bypass in middleware
+- **HIGH-2** — Fail-closed in `applyRateLimit` when production-on-Vercel without Upstash credentials (returns 503 + Retry-After). In-memory map is per-instance and useless on serverless
+- **HIGH-3** — Dropped user-level `golden_eggs_insert_authenticated` RLS policy. Migration `20260508000100_golden_eggs_drop_user_insert.sql`. Service role retains full write access
+
+#### Test coverage (5 new files, ~186 assertions)
+- `tests/security/api-auth-enforcement.test.ts` — sweeping static guard: every `src/app/api/**/route.ts` (161 routes) must have a recognizable auth gate on POST/PATCH/PUT/DELETE handlers. Two routes allowlisted with justifications (`/api/health`, `/api/referrals/validate`)
+- Domain-specific auth + Zod + IDOR tests for: notifications (8), easter (5), gamification + points (5), cron `appeals-sweep` + `engagement-poll` (6)
+
+#### XER diagnosis (operator-side, no code change)
+- Cron is healthy (GitHub Actions every 15 min, not Vercel — moved off Vercel at PR #77 because Hobby caps cron at daily). Pipeline has no inputs:
+  1. `engagement_handles` empty in production (no migration seeds it; admin UI deferred)
+  2. `TWITTER_TOKEN_ENCRYPTION_KEY` likely not set in Vercel prod env
+  3. No admin/council has linked Twitter, so `loadCrawlerToken` cannot acquire a verify-able crawler identity
+  4. `engagement_rubric_examples` also unseeded
+- Diagnosis doc at `docs/audits/xer-diagnosis-2026-05-08.md` includes Supabase SQL verification queries and step-by-step fix sequence
+
+#### Audit reports landed
+- `docs/audits/security-audit-2026-05-08.md` — 3 CRIT + 3 HIGH + 1 MED + 2 LOW
+- `docs/audits/typescript-audit-2026-05-08.md` — 201 `as any`, 47 unsafe casts, 2 unvalidated routes
+- `docs/audits/performance-audit-2026-05-08.md` — top 3: tasks/[id] 334 kB, dashboard waterfall, unbounded analytics queries
+- `docs/audits/test-coverage-map-2026-05-08.md` — coverage map for all 12 domains
+- `docs/audits/HARDENING-REPORT-2026-05-08.md` — final report with judgment-call documentation, deferred-item justifications, P0/P1/P2/P3 next steps
+
+#### Validation
+- `npm run lint` → clean
+- `npm run build` → green (only pre-existing global-error.tsx warning)
+- `npx vitest run` → 745 passed across 63 files
+- `npx vitest run tests/security/` → 500 passed across 37 files
+- `npm run test` (node) → 130 passed
+
+#### Lessons learned
+- Default to ONE PR per task, not per phase. Each branch push triggers a Vercel preview deploy that counts against quota. Saved feedback memory `feedback_one_pr_per_task.md`
+- `chore/*`, `docs/*`, `claude/*` branches do not trigger Vercel previews per `vercel.json`; use those for non-feature hardening work
+- Build trip-up: hand-rolled structural types over Supabase chains can hit "Type instantiation is excessively deep and possibly infinite" when called from route handlers. Cast at the call site with `as unknown as Parameters<typeof helper>[0]`
+
+### Deferred / next-session candidates
+- MED-1 — `/api/solana/token-balance` unauth (needs UX call on whether wallet-verify can require a session)
+- Regenerate `src/types/database.ts` from live schema (closes ~120 of the 201 `as any` casts in one pass)
+- `/tasks/[id]` 334 kB → dynamic-import the 8 below-the-fold sections
+- `/api/dashboard` parallelize `loadSprintHero()` to remove the waterfall
+- Add `.limit()` to the unbounded analytics queries
+- Upgrade SOLANA_RPC_PRIMARY_URL to a paid endpoint + add SECONDARY for the consensus verifier
+- XER unblock: seed `engagement_handles`, set `TWITTER_TOKEN_ENCRYPTION_KEY`, admin links Twitter, seed rubric examples (per `docs/audits/xer-diagnosis-2026-05-08.md`)
+
+---
+
 ## 2026-05-07 → 2026-05-08 (Session: Easter Egg Recipient Micro-Badge — End-to-End Ship)
 
 ### Loose ends cleared
