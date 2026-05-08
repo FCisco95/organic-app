@@ -58,15 +58,6 @@ function isLocalHost(hostname: string): boolean {
   return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1';
 }
 
-function isInternalSystemRequest(request: NextRequest): boolean {
-  const userAgent = request.headers.get('user-agent') ?? '';
-
-  return (
-    userAgent.includes('Next.js') ||
-    request.headers.has('x-middleware-subrequest')
-  );
-}
-
 function getApiRateLimitPolicy(pathname: string, method: string): ApiRateLimitPolicy | null {
   if (method === 'OPTIONS') {
     return null;
@@ -237,10 +228,10 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next();
     }
 
-    if (isInternalSystemRequest(request)) {
-      return NextResponse.next();
-    }
-
+    // No User-Agent-based bypass: any HTTP client can set User-Agent: Next.js
+    // and defeat rate limiting. The CVE-2025-29927 strip above already neutralizes
+    // x-middleware-subrequest, so the only legitimate bypass for internal routes
+    // is path-based (INTERNAL_BYPASS_PATHS, AUTH-Bearer for cron, etc.).
     const rateLimited = await applyApiRateLimit(request);
     if (rateLimited) {
       return rateLimited;
