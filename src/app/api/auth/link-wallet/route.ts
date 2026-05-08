@@ -5,6 +5,7 @@ import bs58 from 'bs58';
 import nacl from 'tweetnacl';
 import { parseJsonBody } from '@/lib/parse-json-body';
 import { linkWalletSchema } from '@/features/auth/schemas';
+import { consumeWalletNonce } from '@/features/auth/nonce';
 import { applyIpRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
 
@@ -90,13 +91,28 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }
 
-    // Mark nonce as used immediately after signature verification
-    const { error: updateNonceError } = await serviceClient
-      .from('wallet_nonces')
-      .update({ used_at: new Date().toISOString() })
-      .eq('id', nonceRecord.id);
-
-    // Continue even if marking nonce fails - validation was successful
+    // Atomic nonce consume: a single conditional UPDATE with .is('used_at',
+    // null) is the only way to guarantee single-use under concurrent calls.
+    // If zero rows come back, another request consumed it first — replay.
+    // Cast to a structural type so the helper doesn't try to deep-instantiate
+    // the full Database generic — the runtime contract is what matters.
+    const consumeResult = await consumeWalletNonce(
+      serviceClient as unknown as Parameters<typeof consumeWalletNonce>[0],
+      nonceRecord.id,
+    );
+    if (!consumeResult.ok) {
+      if (consumeResult.reason === 'already-used') {
+        return NextResponse.json(
+          { error: 'Nonce already used or expired' },
+          { status: 409 },
+        );
+      }
+      logger.error('Failed to consume wallet nonce', {
+        nonceId: nonceRecord.id,
+        message: consumeResult.message,
+      });
+      return NextResponse.json({ error: 'Failed to validate nonce' }, { status: 500 });
+    }
 
     // Get auth token from header
     const authHeader = request.headers.get('authorization');

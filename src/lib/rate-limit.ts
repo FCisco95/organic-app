@@ -21,15 +21,27 @@ type RateLimitEntry = {
 
 const store = new Map<string, RateLimitEntry>();
 
-// Warn once at module load when Upstash is not configured in production.
-// In-memory rate limiting is ineffective on serverless (each cold start gets a fresh Map).
-if (
-  process.env.NODE_ENV === 'production' &&
-  (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN)
-) {
-  console.warn(
-    '[SECURITY] Rate limiting is using in-memory fallback in production. ' +
-      'Configure UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN for effective rate limiting.'
+// In-memory rate limiting is ineffective on serverless (each cold start gets a
+// fresh Map). On Vercel-production, refuse to silently fall back to it: a
+// missing Upstash configuration is an operator misconfiguration that must be
+// loudly visible.
+function isProductionVercelRuntime(): boolean {
+  return process.env.NODE_ENV === 'production' && process.env.VERCEL === '1';
+}
+
+function isUpstashConfigured(): boolean {
+  return Boolean(
+    process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN,
+  );
+}
+
+if (isProductionVercelRuntime() && !isUpstashConfigured()) {
+  // logger isn't called at module load to avoid pulling Sentry into the build
+  // graph for every consumer of this module.
+  console.error(
+    '[SECURITY] CRITICAL: Rate limiting has no durable backend. ' +
+      'UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN must be set in production. ' +
+      'Rate-limited endpoints will return 503 until this is fixed.'
   );
 }
 
@@ -250,6 +262,21 @@ export async function applyRateLimit(
 ): Promise<NextResponse | null> {
   if (shouldBypassRateLimiting()) {
     return null;
+  }
+
+  // Fail closed on Vercel-production with no Upstash backend. The in-memory
+  // fallback is per-instance and useless on serverless, so an attacker with
+  // basic tooling can defeat any rate limit. We surface this as 503 so the
+  // misconfiguration is loudly visible.
+  if (isProductionVercelRuntime() && !isUpstashConfigured()) {
+    logger.error('Rate limit unavailable: Upstash not configured in production', {
+      bucket: context?.bucket,
+      path: context?.path,
+    });
+    return NextResponse.json(
+      { error: 'Service temporarily unavailable' },
+      { status: 503, headers: { 'Retry-After': '30' } },
+    );
   }
 
   const result =
