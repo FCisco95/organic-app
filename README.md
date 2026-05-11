@@ -1,6 +1,10 @@
 # Organic App
 
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
+
 DAO governance and task management platform for Organic DAO
+
+Licensed under the GNU Affero General Public License v3.0 — see [LICENSE](LICENSE).
 
 ## Overview
 
@@ -370,4 +374,17 @@ See `supabase/migrations/` for full schema definitions.
 
 ## License
 
-Private project - All rights reserved
+Copyright (C) 2026 Organic DAO.
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License version 3 as published by
+the Free Software Foundation. See [LICENSE](LICENSE) for the full text.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU AGPL for more details.
+
+If you run a modified version of this software as a network service (e.g.
+host it as a web app), AGPL-3.0 requires that you make the complete
+corresponding source code of your modified version available to the users
+interacting with it over the network.
