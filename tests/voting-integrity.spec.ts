@@ -211,6 +211,36 @@ test.describe('Voting snapshot and finalization integrity', () => {
     expect(started?.integrity?.server_voting_started_at).toBeTruthy();
     expect(Number(started?.snapshot?.total_supply ?? 0)).toBe(12);
 
+    // TEMP DIAGNOSTIC for #59 bug (b) — dump state right after start-voting
+    // to evidence why proposal_voter_snapshots is empty. Remove once root-caused.
+    const [
+      { data: diagProfiles },
+      { data: diagVoterSnapshots },
+      { data: diagHolderSnapshots },
+      { data: diagStageEvents },
+    ] = await Promise.all([
+      supabaseAdmin.from('user_profiles').select('id, wallet_pubkey').in('id', [memberAUserId, memberBUserId]),
+      supabaseAdmin.from('proposal_voter_snapshots').select('voter_id, total_weight, own_weight').eq('proposal_id', proposalAId),
+      supabaseAdmin.from('holder_snapshots').select('wallet_pubkey, balance_ui').eq('proposal_id', proposalAId),
+      supabaseAdmin.from('proposal_stage_events').select('reason, metadata').eq('proposal_id', proposalAId).order('created_at'),
+    ]);
+    // eslint-disable-next-line no-console
+    console.log('[DIAG-59] walletA:', JSON.stringify(walletA));
+    // eslint-disable-next-line no-console
+    console.log('[DIAG-59] walletB:', JSON.stringify(walletB));
+    // eslint-disable-next-line no-console
+    console.log('[DIAG-59] memberAUserId:', memberAUserId);
+    // eslint-disable-next-line no-console
+    console.log('[DIAG-59] memberBUserId:', memberBUserId);
+    // eslint-disable-next-line no-console
+    console.log('[DIAG-59] user_profiles:', JSON.stringify(diagProfiles));
+    // eslint-disable-next-line no-console
+    console.log('[DIAG-59] proposal_voter_snapshots:', JSON.stringify(diagVoterSnapshots));
+    // eslint-disable-next-line no-console
+    console.log('[DIAG-59] holder_snapshots:', JSON.stringify(diagHolderSnapshots));
+    // eslint-disable-next-line no-console
+    console.log('[DIAG-59] proposal_stage_events:', JSON.stringify(diagStageEvents));
+
     await supabaseAdmin
       .from('holder_snapshots')
       .update({ balance_ui: 999 })
