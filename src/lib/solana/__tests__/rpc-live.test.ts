@@ -82,6 +82,30 @@ describe('rpc-live pool wiring', () => {
     const reimport = await import('../index');
     expect(reimport.getSolanaConsensus()).toBeNull();
   });
+
+  // Regression test for issue #59. The consensus path in start-voting/route.ts
+  // (and 5 other consumer sites) was bypassing the fixture dispatcher: even
+  // when SOLANA_RPC_MODE=fixture, getSolanaConsensus() returned a verifier
+  // that hit live RPC providers. That caused proposal_voter_snapshots to be
+  // populated from mainnet holders instead of fixture wallets, making
+  // tests/voting-integrity.spec.ts fail and stay quarantined.
+  it('returns null from __getConsensus() when SOLANA_RPC_MODE=fixture', async () => {
+    process.env.SOLANA_RPC_MODE = 'fixture';
+    delete process.env.SOLANA_RPC_POOL_DISABLED;
+    process.env.SOLANA_RPC_PRIMARY_URL = 'https://example.test';
+    vi.resetModules();
+    const mod = await import('../rpc-live');
+    expect(mod.__getConsensus()).toBeNull();
+  });
+
+  it('getSolanaConsensus() returns null when SOLANA_RPC_MODE=fixture', async () => {
+    process.env.SOLANA_RPC_MODE = 'fixture';
+    delete process.env.SOLANA_RPC_POOL_DISABLED;
+    process.env.SOLANA_RPC_PRIMARY_URL = 'https://example.test';
+    vi.resetModules();
+    const { getSolanaConsensus } = await import('../index');
+    expect(getSolanaConsensus()).toBeNull();
+  });
 });
 
 describe('isOrgHolderUsingConnection', () => {
