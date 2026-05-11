@@ -40,6 +40,15 @@ function poolDisabled(): boolean {
   return process.env.SOLANA_RPC_POOL_DISABLED === 'true';
 }
 
+// Fixture mode short-circuits the consensus verifier so test/CI code paths
+// that depend on the FixtureSolanaRpc dispatcher aren't silently bypassed
+// by callers that go through getSolanaConsensus(). See issue #59 — without
+// this guard, start-voting (and 5 other routes) hit live RPC providers
+// even when SOLANA_RPC_MODE=fixture is set.
+function fixtureMode(): boolean {
+  return process.env.SOLANA_RPC_MODE === 'fixture';
+}
+
 function getProviders(): ReadonlyArray<RpcProvider> {
   if (cachedProviders) return cachedProviders;
   cachedProviders = parseProvidersFromEnv();
@@ -56,7 +65,7 @@ export function __getPool(): RpcPool | null {
 
 /** @internal — exported for tests only. */
 export function __getConsensus(): ConsensusVerifier | null {
-  if (poolDisabled()) return null;
+  if (poolDisabled() || fixtureMode()) return null;
   if (cachedConsensus) return cachedConsensus;
   const pool = __getPool();
   if (!pool) return null;
