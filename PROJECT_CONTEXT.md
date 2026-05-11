@@ -188,13 +188,15 @@ These are areas where agent input is explicitly welcome.
 
 ### 11. Project Status Summary
 
-**As of 2026-05-09.** Organic Hub is live at organichub.fun with ~50 real users. All core DAO flows (auth, tasks, proposals, voting, sprints, disputes, rewards, reputation, notifications, analytics, treasury) are built, tested, and UX-revamped. The foundation is solid and post-launch hardening is complete.
+**As of 2026-05-11.** Organic Hub is live at organichub.fun with ~50 real users. All core DAO flows (auth, tasks, proposals, voting, sprints, disputes, rewards, reputation, notifications, analytics, treasury) are built, tested, and UX-revamped. The foundation is solid and post-launch hardening is complete.
 
-**Current focus:** Sprint 1 of the 30-day growth plan — brand basics + credibility moves. Two Sprint 1 tasks touch the codebase: `wallets.json` endpoint + AGPL-3.0 license. The next major product surface is the Engagement Marketplace (open reward pools + contributor scoring + leaderboard).
+**Strategic direction (v2):** Multi-tenant platform readiness — see canonical design spec at `docs/superpowers/specs/2026-05-11-multi-tenant-platform-readiness-design.md`. Four-layer architecture (Identity / Index / Tenant / Economic), 13 locked decisions, 11 sequenced sub-sessions (9 engineering phases + 2 brand/communication parallel track). v2 introduces three product surfaces — **Organic Hub** (current DAO platform, multi-tenant), **Organic Passport** (soulbound personhood credential), **Organic Scan** (community-health discovery + alpha-hunting). The central engineering bet is Pillar 4 (community management via AI Steward) — without it, multi-tenancy stays founder-dependent and the business model fails.
+
+**Current focus (near-term, parallel to v2 planning):** Sprint 1 codebase items (`wallets.json` endpoint + AGPL-3.0 license — license shipped 2026-05-10 PR #123, wallets.json shipped 2026-05-11 PR #124). Non-code brand/comms work runs in parallel.
 
 **Next on-product build priorities:**
-1. XER UI (blocked on seeding `engagement_handles` and confirming `TWITTER_TOKEN_ENCRYPTION_KEY`)
-2. wallets.json endpoint + AGPL-3.0 license (Sprint 1)
+1. **V2 planning kickoff** — open sub-session 1 (multi-tenant data model migration) via `superpowers:writing-plans`; or sub-session 10 (brand identity refresh) for the parallel brand track
+2. XER UI (blocked on seeding `engagement_handles` and confirming `TWITTER_TOKEN_ENCRYPTION_KEY`)
 3. `database.ts` regeneration from live schema
 4. `/tasks/[id]` bundle size reduction
 

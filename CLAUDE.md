@@ -245,12 +245,26 @@ See `AGENTS.md` for the full folder map and standard command reference (`npm run
 - Roadmap/progress: `BUILD_PLAN.md`
 - Product reality snapshot: `PROJECT_CONTEXT.md`
 - Manual QA baseline: `docs/qa-runbook.md`
+- Design specs (north-star architecture): `docs/superpowers/specs/`
+  - V2 strategic frame: `docs/superpowers/specs/2026-05-11-multi-tenant-platform-readiness-design.md` — multi-tenant platform readiness, four-layer architecture, 13 locked decisions, 11 sub-sessions
+- Implementation plans per sub-session: `docs/superpowers/plans/`
 - Path-scoped rules: `.claude/rules/`
   - General: `api.md`, `frontend.md`, `database.md`
   - Common: `common/{patterns,code-review,agents}.md`
   - TypeScript: `typescript/{coding-style,patterns}.md`
   - Web: `web/{coding-style,design-quality,patterns,performance,security,testing}.md`
 - Apply the rule file matching the area you're editing. When multiple apply, the more specific (web > common) wins.
+
+### Where things go
+
+- **Strategic architecture** (north-star, multi-decision frames): `docs/superpowers/specs/<date>-<topic>-design.md`
+- **Implementation plans** (file paths, migration SQL, sequencing): `docs/superpowers/plans/<date>-<topic>.md` — produced via `superpowers:writing-plans`
+- **QA / revamp plans** (one per surface): `docs/plans/<date>-<topic>-revamp.md`
+- **Audit reports** (security/performance/typescript/coverage one-offs): `docs/audits/<date>-<topic>.md`
+- **Session notes**: `SESSION_LOG.md` (chronological, newest first; rotate to `docs/session-log-archive.md` when bloated)
+- **Roadmap status**: `BUILD_PLAN.md`
+- **Product reality**: `PROJECT_CONTEXT.md`
+- **Memories** (cross-session knowledge): `~/.claude/projects/-Users-cisco-Desktop-projects-organic-app/memory/` — index in `MEMORY.md`
 
 ## Maintenance rule
 

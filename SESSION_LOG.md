@@ -2,6 +2,80 @@
 
 Add newest entries at the top.
 
+## 2026-05-11 (Session: Multi-tenant platform readiness — design brainstorm)
+
+### Summary
+
+Long-form multi-persona brainstorm session producing the strategic design for Organic v2 — multi-tenant platform readiness. Output: a comprehensive spec at `docs/superpowers/specs/2026-05-11-multi-tenant-platform-readiness-design.md`, 8 new project memory files, and documentation cross-references. No code changes.
+
+### Spec written
+
+`docs/superpowers/specs/2026-05-11-multi-tenant-platform-readiness-design.md` (340 lines). Canonical north-star design for v2:
+
+- **Four-layer architecture**: Identity (Organic Passport) / Index (organichub.fun parent surface — Organic Scan + discovery) / Tenant (per-community spaces) / Economic (freemium + reward-pool fee)
+- **13 locked design decisions** spanning topology, personhood, governance, AI scope, revenue, onboarding, treasury
+- **11 implementation sub-sessions** (9 engineering phases A–F + 2 brand/communication parallel track) — each with goal, first questions, rough recommendation
+- **Pillar coverage v1→v2** — Pillar 4 (community management) is the central engineering bet; AI Steward unlocks the entire multi-tenant business model
+- **Adjacent strategic questions** — stack, RAG/vector DB, ML, rebrand, gamification, reach, mobile, token economics
+- **7 measurable success criteria** for v2 readiness
+
+### Key strategic decisions
+
+| # | Decision | Resolution |
+|---|---|---|
+| 1 | Discord/Telegram | Layer on top — Organic owns structured work, not chat |
+| 2 | Personhood | Organic Passport — soulbound NFT, Bronze→Diamond tiers |
+| 3 | Anti-bot moat | Platinum/Diamond tiers earned only (not buyable) |
+| 4 | Per-community gate | Passport tier + token holding, action-gated |
+| 5 | AI scope | Suggest + Act, never Decide |
+| 6 | Visibility | Layered: public face + private space |
+| 7 | Organic Scan | Open scoring + Verified upgrade — third product surface |
+| 8 | Revenue | Freemium + reward-pool fee (1-3% above threshold). No token allocation. |
+| 9 | Onboarding | AI-conversational + Bootstrap Constitution + admin panel |
+| 10 | URL/branding | `coinname.organichub.fun` + custom domain on Verified |
+| 11 | Treasury | Rotational Council Governance (auto-Squads multi-sig, community-elected signers, monthly rotation default) |
+| 12 | Meta-governance | Constitution-as-Configuration — communities vote on their own dials |
+| 13 | AI persona | Single "Organic Steward" at MVP; per-tenant overlay on Verified phase 2 |
+
+### Memory notes saved (8 new)
+
+In `~/.claude/projects/-Users-cisco-Desktop-projects-organic-app/memory/`:
+
+- `project_v2_topology_design.md` — four-layer architecture
+- `project_organic_passport.md` — soulbound personhood credential
+- `project_organic_scan.md` — community-health discovery layer
+- `project_rotational_council_governance.md` — trustless rotating multi-sig treasury
+- `project_constitution_as_configuration.md` — meta-governance pattern
+- `project_ai_steward_scope.md` — Suggest + Act, never Decide
+- `project_freemium_revenue_model.md` — freemium + reward-pool fee
+- `project_brand_and_holder_deck.md` — near-term brand + holder deck parallel track
+
+Plus updates to: `project_multisig_treasury.md`, `project_bonk_partnership.md`, `project_vision_growth.md` (pointers to the spec).
+
+### Documentation cross-references updated
+
+- `SESSION_LOG.md` — this entry
+- `PROJECT_CONTEXT.md` — status summary updated to reference v2 spec as strategic direction
+- `BUILD_PLAN.md` — new v2 strategic-direction section pointing at the spec
+- `CLAUDE.md` — Living references updated to include design specs directory + v2 master spec
+
+### Branch / commit
+
+- Branch: `docs/multi-tenant-platform-design`
+- Commit: `c6e8cfb` (spec only) + docs cross-reference commit (this session)
+- `docs/*` branches skip Vercel preview per `vercel.json`
+- PR ready at https://github.com/FCisco95/organic-app/pull/new/docs/multi-tenant-platform-design
+
+### Next step
+
+Open dedicated session via `superpowers:writing-plans` for either:
+- **Engineering track:** sub-session 1 — multi-tenant data model migration (bedrock dependency for all Phases A–F)
+- **Brand & Communication track:** sub-session 10 — Organic brand identity refresh (parallel; no shared dependencies; faster timeline ~2-4 weeks)
+
+The two tracks are independent and can run concurrently.
+
+---
+
 ## 2026-05-09 (Session: Brain context review + MD file updates)
 
 ### Context loaded
