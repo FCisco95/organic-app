@@ -206,7 +206,10 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     // Sanity check: total supply should not exceed expected maximum.
     // Catches RPC data corruption or unexpected token minting.
     const totalSnapshotSupply = holders.reduce((sum, h) => sum + h.balance, 0);
-    const expectedMaxSupply = Number(process.env.NEXT_PUBLIC_TOKEN_TOTAL_SUPPLY || 1_000_000_000);
+    // Fallback reflects real ORG supply (~123.3M after one ~50k burn). The
+    // prior 1B fallback effectively disabled this integrity check when env
+    // was missing. Mint authority is revoked, so supply can only decrease.
+    const expectedMaxSupply = Number(process.env.NEXT_PUBLIC_TOKEN_TOTAL_SUPPLY || 123_324_835.756187);
     if (totalSnapshotSupply > expectedMaxSupply * 1.01) {
       logger.error('Snapshot total exceeds expected supply — possible data corruption', {
         proposal_id: proposalId,

@@ -1,9 +1,13 @@
 // Static fallbacks — used when DB is unreachable or on the client side.
+// Production runtime values come from env vars; these fallbacks must reflect
+// real on-chain ORG so market-cap math doesn't silently misreport if env is
+// missing. ORG mint: 6 decimals; current circulating ~123,324,835.756187 after
+// one ~50k burn. Supply can only decrease (no mint authority).
 export const TOKEN_CONFIG = {
   symbol: process.env.NEXT_PUBLIC_TOKEN_SYMBOL ?? '$ORG',
   mint: process.env.NEXT_PUBLIC_ORG_TOKEN_MINT ?? '',
-  decimals: Number(process.env.NEXT_PUBLIC_TOKEN_DECIMALS ?? '9'),
-  totalSupply: Number(process.env.NEXT_PUBLIC_TOKEN_TOTAL_SUPPLY ?? '1000000000'),
+  decimals: Number(process.env.NEXT_PUBLIC_TOKEN_DECIMALS ?? '6'),
+  totalSupply: Number(process.env.NEXT_PUBLIC_TOKEN_TOTAL_SUPPLY ?? '123324835.756187'),
   treasuryWallet: 'CuBV7VVq3zSrh1wf5SZCp36JqpFRCGJHvV7he6K8SDJ1',
 } as const;
 
