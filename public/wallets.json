@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "updated": "2026-05-11",
+  "network": "mainnet-beta",
+  "token": {
+    "mint": "DuXugm4oTXrGDopgxgudyhboaf6uUg1GVbJ6jk6qbonk",
+    "symbol": "ORG",
+    "decimals": 9,
+    "total_supply": "1000000000"
+  },
+  "wallets": [
+    {
+      "key": "dev_wallet",
+      "address": "CuBV7VVq3zSrh1wf5SZCp36JqpFRCGJHvV7he6K8SDJ1",
+      "label": "Dev / Treasury (placeholder)",
+      "purpose": "Current treasury and dev allocation. Pending migration to a dedicated dev multi-sig."
+    },
+    {
+      "key": "lp_raydium",
+      "address": "WLHv2UAZm6z4KyaaELi5pjdbJh6RESMva1Rnn8pJVVh",
+      "label": "Raydium LP",
+      "purpose": "Liquidity pool on Raydium DEX (ORG/SOL pair)."
+    },
+    {
+      "key": "community_rewards",
+      "address": null,
+      "label": "Community Rewards (pending)",
+      "purpose": "Dedicated multi-sig wallet for community reward distributions. Not yet provisioned."
+    }
+  ],
+  "notes": "Multi-sig wallets for dev and community rewards are planned in a follow-up sprint. This file will be updated when they are created.",
+  "source": "https://github.com/FCisco95/organic-app/blob/main/public/wallets.json"
+}
