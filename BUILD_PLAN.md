@@ -4,6 +4,36 @@ For session-by-session implementation notes see `SESSION_LOG.md`.
 
 ---
 
+## Strategic Direction — V2 Multi-Tenant Platform (2026-05-11)
+
+**Canonical spec:** `docs/superpowers/specs/2026-05-11-multi-tenant-platform-readiness-design.md`
+
+The v2 phase introduces three product surfaces:
+
+- **Organic Hub** — current DAO platform, refactored to multi-tenant
+- **Organic Passport** — soulbound personhood credential (Bronze→Diamond tiers; B2B-licensable)
+- **Organic Scan** — community-health discovery + alpha-hunting layer at the parent surface
+
+Four-layer architecture (Identity / Index / Tenant / Economic). 13 locked design decisions. 11 sequenced sub-sessions:
+
+| Phase | Sub-sessions | Focus |
+|---|---|---|
+| A | 1, 2 | Multi-tenant data model + Vercel-for-Platforms subdomain routing |
+| B | 3, 4 | Organic Passport + Rotational Council treasury (Squads multi-sig) |
+| C | 5, 6 | AI Steward operational layer + Bootstrap Constitution templates |
+| D | 7 | Organic Scan data pipeline + discovery UI |
+| E | 8 | Verified tier + reward-pool fee operations |
+| F | 9 | Launchpad partnership pitch (gated on Phases A–E) |
+| Parallel | 10, 11 | Brand identity refresh + holder/partner presentation deck |
+
+**Central engineering bet:** Pillar 4 (community management via AI Steward) — without it, multi-tenancy fails because the platform stays founder-dependent.
+
+**Execution model:** Each sub-session is opened via `superpowers:writing-plans` for a focused implementation plan (file paths, migrations, sequencing) — this BUILD_PLAN tracks status; the spec defines architecture; per-sub-session plans live under `docs/superpowers/plans/`.
+
+**Status:** Spec approved 2026-05-11. No sub-session execution started yet. Engineering track and brand track are independent and can run concurrently.
+
+---
+
 ## Current Focus — Sprint 1 (2026-05-09)
 
 ### Active: Brand Basics + Credibility Moves (non-code)
@@ -432,6 +462,8 @@ Section 4.3 (Home, Analytics, Leaderboard, Treasury) fixes — ✅ Complete (PR 
 ## Growth Roadmap — Community & Product Differentiation
 
 These phases address the core gaps in crypto community SaaS platforms: contributor retention, collaboration visibility, governance quality, and portable identity.
+
+> **Note:** This roadmap predates the 2026-05-11 v2 spec. Several phases below (cohorts, onboarding, portable identity, multi-tenant) are reframed and consolidated under the V2 Multi-Tenant Platform direction at the top of this file. The canonical strategic architecture is `docs/superpowers/specs/2026-05-11-multi-tenant-platform-readiness-design.md`. Treat the phases below as historical context / detailed sub-plans that may inform individual v2 sub-sessions.
 
 ---
 
