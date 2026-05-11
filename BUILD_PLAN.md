@@ -4,6 +4,33 @@ For session-by-session implementation notes see `SESSION_LOG.md`.
 
 ---
 
+## Current Focus — Sprint 1 (2026-05-09)
+
+### Active: Brand Basics + Credibility Moves (non-code)
+Brand/comms sprint running in parallel to codebase work. Full plan in `~/Documents/cisco-brain/20 - PROJECTS/Organic/Organic — Next 30 Days — Concrete Tasks.md`.
+
+### In scope for this repo (code tasks)
+
+| Task | Status | Notes |
+|---|---|---|
+| `wallets.json` endpoint at `/wallets.json` | 🔲 Not started | Serve labeled wallets JSON via Vercel routing |
+| AGPL-3.0 `LICENSE` file + README update | 🔲 Not started | 30-min task |
+| `src/types/database.ts` regeneration | 🔲 Not started | Closes ~120 of 201 `as any` casts |
+| `/tasks/[id]` bundle size (334 kB → dynamic imports) | 🔲 Not started | Deferred from hardening pass |
+| XER UI | 🔲 Blocked | Needs `engagement_handles` seeded + `TWITTER_TOKEN_ENCRYPTION_KEY` confirmed |
+
+### Hardening pass — ✅ Complete (2026-05-08, PR #121)
+
+3 CRIT + 3 HIGH security fixes, 186 new assertions, 4 audit reports. Full detail in SESSION_LOG 2026-05-08 and `docs/audits/`.
+
+### Post-hardening deferred items (P1/P2)
+- MED-1: `/api/solana/token-balance` unauth — needs UX call on whether wallet-verify requires a session
+- TypeScript: regenerate `database.ts` from live schema (closes ~120 `as any`)
+- Performance: `/tasks/[id]` 334 kB → dynamic-import below-fold sections
+- RPC: swap public mainnet RPC for paid Helius/QuickNode key + add `SOLANA_RPC_SECONDARY_URL`
+
+---
+
 ## Launch Status — Production Ready (2026-03-30)
 
 The app is production-ready. Security hardened, seed content live, 2x XP launch event active.

@@ -7,12 +7,12 @@
 **Project name:** Organic
 
 **One-liner:**  
-Organic is a community-driven governance and execution platform designed to help memecoin communities actually become decentralized, not just claim to be.
+Organic is a company that builds AI-driven infrastructure for blockchain communities.
 
 **Core idea:**  
-Most memecoin communities talk about being “CTO” or community-owned, but in practice decisions, execution, and rewards remain centralized or informal. Organic aims to turn community participation into a real, structured system where proposals, tasks, execution, and rewards are transparently coordinated and fairly distributed.
+Organic builds the rails that any blockchain community can run on. The product surface turns community activity from messy human coordination into legible, on-chain, auto-settled infrastructure. Seven pillars: transparency (blockchain-verified activity), share of rewards (verifiable participation in project economics), incentivization (reward pools + leaderboards), community management (moderation, onboarding, role-gating), roadmap definition (on-chain governance), sprint-basis execution (scoped sprints with payouts), and automatic payments (programmatic on-chain settlement). All seven are AI-driven.
 
-Organic is first being built for the Organic memecoin community, with the long-term vision of becoming a reusable platform that other projects can adopt.
+Organic Hub (organichub.fun) is the v1 product — a functioning DAO platform built for the Organic memecoin community first, with the long-term vision of becoming reusable infrastructure for any blockchain community.
 
 ---
 
@@ -90,8 +90,20 @@ Role systems are **not finalized** and expected to evolve.
 - Internationalization: en, pt-PT, zh-CN
 - Codebase standardization: all hooks use `fetchJson`/`buildQueryString`, shared Zod schemas, consistent feature domain structure, kebab-case file naming, 89 unit tests
 
+**Recent ships (post-launch):**
+
+- Easter egg hunt + genesis hatch campaign — ✅ Shipped, wound down Apr 6
+- Content translation (DeepL on-demand, posts/comments/proposals/ideas/tasks, admin toggles) — ✅ Shipped Apr 15–21
+- RPC resilience (RpcPool, consensus verifier, browser proxy routes, lockdown) — ✅ Shipped Apr 22–23 (5 PRs)
+- XER backend (engagement verification pipeline, crons running on GitHub Actions) — ✅ Backend shipped PR #77 Apr 24; UI deferred
+- Streak button (auth-gated) — ✅ Shipped PR #78 Apr 24
+- Egg badges everywhere (byline, profile, members, leaderboard, post/task/proposal comments) — ✅ Shipped PRs #113–#115
+- Egg-recipient micro-badge (denormalized count, badge on posts/profile/members/leaderboard) — ✅ Shipped PR #112
+- Comprehensive hardening pass (3 CRIT + 3 HIGH security fixes, 186 new assertions, audit reports) — ✅ Shipped PR #121 May 8
+
 **What is still open or incomplete:**
 
+- XER UI — deferred intentionally; backend pipeline works but has no seeded data yet (engagement_handles empty, TWITTER_TOKEN_ENCRYPTION_KEY not confirmed set). See `docs/audits/xer-diagnosis-2026-05-08.md`
 - Email notification digests (Resend integration not built)
 - Multi-sig treasury (Squads or similar — not started)
 - Onboarding cohorts layer (weekly cohort assignment, cohort leaderboard, cohort widgets)
@@ -99,6 +111,10 @@ Role systems are **not finalized** and expected to evolve.
 - Ideas incubator hardening (moderation UX controls, abuse checks, and manual QA closure)
 - Discord bot / GitHub contribution tracking
 - Multi-tenant / white-label support (future)
+- wallets.json endpoint at `/wallets.json` (Sprint 1 Task 1.4 — in scope next)
+- AGPL-3.0 LICENSE file in repo (Sprint 1 Task 1.5 — in scope next)
+- `src/types/database.ts` regeneration from live schema (closes ~120 of 201 `as any` casts)
+- `/tasks/[id]` bundle size: 334 kB → needs dynamic-import for below-fold sections
 
 ---
 
@@ -172,6 +188,14 @@ These are areas where agent input is explicitly welcome.
 
 ### 11. Project Status Summary
 
-Organic is a functioning platform with all core DAO flows built, tested, and UX-revamped. The foundation is solid. Current priority is production hardening, blocking manual QA completion, and shipping the remaining open items in `BUILD_PLAN.md` (including cohort onboarding expansion and launch-gate closure).
+**As of 2026-05-09.** Organic Hub is live at organichub.fun with ~50 real users. All core DAO flows (auth, tasks, proposals, voting, sprints, disputes, rewards, reputation, notifications, analytics, treasury) are built, tested, and UX-revamped. The foundation is solid and post-launch hardening is complete.
+
+**Current focus:** Sprint 1 of the 30-day growth plan — brand basics + credibility moves. Two Sprint 1 tasks touch the codebase: `wallets.json` endpoint + AGPL-3.0 license. The next major product surface is the Engagement Marketplace (open reward pools + contributor scoring + leaderboard).
+
+**Next on-product build priorities:**
+1. XER UI (blocked on seeding `engagement_handles` and confirming `TWITTER_TOKEN_ENCRYPTION_KEY`)
+2. wallets.json endpoint + AGPL-3.0 license (Sprint 1)
+3. `database.ts` regeneration from live schema
+4. `/tasks/[id]` bundle size reduction
 
 The goal remains: build the _best possible version_ of this system — correctly and intentionally.

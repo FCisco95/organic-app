@@ -2,6 +2,32 @@
 
 Add newest entries at the top.
 
+## 2026-05-09 (Session: Brain context review + MD file updates)
+
+### Context loaded
+
+Read and indexed the Organic brain vault (`~/Documents/cisco-brain/20 - PROJECTS/Organic/`). No code changes this session.
+
+### Memory updates
+
+Saved four new project memory entries:
+- `project_positioning.md` — canonical 7-pillar north-star + Organic Score wedge
+- `project_sprint1_codebase.md` — two Sprint 1 codebase tasks: wallets.json endpoint + AGPL-3.0 license
+- `project_engagement_marketplace.md` — next major product surface; hard problems: scoring fairness + X ToS risk
+- `project_token_tiering.md` — soft holdings-based feature gating planned ~mid-July 2026
+
+### MD files updated
+
+- `PROJECT_CONTEXT.md` — updated one-liner to canonical positioning, added post-launch ships, updated open items + status summary
+- `BUILD_PLAN.md` — added Current Focus section with Sprint 1 codebase tasks, hardening summary, deferred P1/P2 items
+- `SESSION_LOG.md` — this entry
+
+### What's next
+
+Sprint 1 codebase tasks (wallets.json + LICENSE) are ready to pick up whenever.
+
+---
+
 ## 2026-05-08 (Session: Comprehensive Hardening Pass + Treasury Restore)
 
 ### Treasury restored (operator action)
