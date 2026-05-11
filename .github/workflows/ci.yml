@@ -102,8 +102,15 @@ jobs:
         uses: ./.github/actions/setup-supabase
 
       - name: Run integrity E2E gate
-        # TEMP: voting-integrity.spec.ts re-enabled with [DIAG-59] console.log
-        # diagnostics to evidence the second bug. Will revert after root cause.
+        # NOTE: tests/proposals-lifecycle, tests/proposal-task-flow,
+        # tests/sprint-phase-engine, tests/dispute-sla are still excluded —
+        # they depend on test-data state the hosted CI project accumulated
+        # and the fresh ephemeral Supabase does not reproduce. Tracked in #58.
+        # tests/voting-integrity.spec.ts re-enabled — issue #59 had two root
+        # causes, both now fixed: (a) consensus path bypassing fixture
+        # dispatcher (src/lib/solana/rpc-live.ts); (b) self-referential RLS
+        # policy on proposal_voter_snapshots collapsing to false under
+        # session auth (supabase/migrations/20260511140000_fix_voter_snapshots_rls_recursion.sql).
         run: |
           npx playwright test \
             tests/rewards-settlement-integrity.spec.ts \
@@ -159,14 +166,14 @@ jobs:
         run: echo "OP_CONTROLS_SINCE=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_ENV"
 
       - name: Run operational-controls E2E gate
-        # tests/voting-integrity.spec.ts still excluded — see e2e-integrity
-        # comment above. Bug (a) consensus bypass fixed; bug (b) JOIN
-        # silently empty still under investigation per #59.
+        # tests/voting-integrity.spec.ts re-enabled — issue #59 fully fixed
+        # (consensus bypass + RLS recursion). See e2e-integrity comment above.
         run: |
           mkdir -p test-results
           set -o pipefail
           CI=true npx playwright test \
             tests/rewards-settlement-integrity.spec.ts \
+            tests/voting-integrity.spec.ts \
             --workers=1 --reporter=list | tee test-results/operational-controls-playwright.log
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ steps.supabase.outputs.supabase_url }}
