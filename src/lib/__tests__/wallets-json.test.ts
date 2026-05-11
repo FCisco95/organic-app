@@ -20,8 +20,6 @@ const walletsJsonSchema = z.object({
   token: z.object({
     mint: z.string().regex(SOLANA_PUBKEY),
     symbol: z.string().min(1),
-    decimals: z.number().int().nonnegative(),
-    total_supply: z.string().regex(/^\d+$/),
   }),
   wallets: z.array(walletEntrySchema).length(3),
   notes: z.string(),

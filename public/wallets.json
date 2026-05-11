@@ -4,9 +4,7 @@
   "network": "mainnet-beta",
   "token": {
     "mint": "DuXugm4oTXrGDopgxgudyhboaf6uUg1GVbJ6jk6qbonk",
-    "symbol": "ORG",
-    "decimals": 9,
-    "total_supply": "1000000000"
+    "symbol": "ORG"
   },
   "wallets": [
     {
