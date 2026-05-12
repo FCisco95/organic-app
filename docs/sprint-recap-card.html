@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Organic — Sprint Recap Card</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Fraunces:opsz,wght@9..144,700;9..144,900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+  <script>
+    // ==========================================================
+    // SPRINT DATA — update this object each sprint, nothing else
+    // ==========================================================
+    const SPRINT = {
+      number:  "Sprint 2",
+      name:    "Community Ritual & Automation",
+      dates:   "Apr 27 – May 11, 2026",
+
+      stats: {
+        members:      { value: "69",  sub: "+1 this sprint" },
+        xp:           { value: "245", sub: "27 XP events",  featured: true },
+        tasks:        { value: "5",   sub: "5 in progress" },
+        contributors: { value: "7",   sub: "out of 69 members" },
+      },
+
+      mvps: [
+        { rank: "#1", medal: "gold",   initial: "H",  name: "Heer2026", detail: "8 events · 7-day streak", xp: "73 XP", topRow: true },
+        { rank: "#2", medal: "silver", initial: "C",  name: "Cisco",    detail: "5 tasks shipped",         xp: "63 XP" },
+        { rank: "#3", medal: "bronze", initial: "凌", name: "凌米",     detail: "6 events · consistent",   xp: "39 XP" },
+        { rank: "#4", medal: "",       initial: "荣", name: "阿荣",     detail: "5 events",                xp: "25 XP" },
+      ],
+
+      streaks: [
+        { name: "Heer2026", days: "7d" },
+        { name: "雪醉暗香", days: "5d" },
+      ],
+
+      shipped: [
+        "Discord server set up",
+        "Community guidelines drafted",
+        "Social media templates designed",
+        "Welcome post translated (PT)",
+        "First contributor onboarded",
+      ],
+
+      inProgress: [
+        { text: "Twitter thread about $ORG",               badge: null },
+        { text: "Hub translation layer",                   badge: null },
+        { text: "Jupiter signal — public stats upgrade",   badge: "250 pts open" },
+        { text: "Smart-likes on Jupiter token page",       badge: null },
+      ],
+    };
+  </script>
+  <style>
+    :root {
+      --bg:          #09090b;
+      --surface:     #141416;
+      --surface-2:   #1c1c1f;
+      --border:      #27272a;
+      --border-warm: rgba(249,115,22,0.25);
+      --orange:      #f97316;
+      --orange-glow: rgba(249,115,22,0.12);
+      --orange-dim:  rgba(249,115,22,0.08);
+      --text:        #fafafa;
+      --text-2:      #a1a1aa;
+      --text-3:      #52525b;
+      --gold:        #f59e0b;
+      --silver:      #94a3b8;
+      --bronze:      #b87333;
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      width: 1200px;
+      height: 675px;
+      overflow: hidden;
+      background: var(--bg);
+      font-family: 'DM Sans', system-ui, sans-serif;
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .atmosphere {
+      position: absolute; inset: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 600px 380px at 108% -8%,  rgba(249,115,22,0.09) 0%, transparent 70%),
+        radial-gradient(ellipse 380px 260px at -4%  108%, rgba(249,115,22,0.05) 0%, transparent 60%);
+    }
+
+    .grid-overlay {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 32px 32px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+    }
+
+    .card {
+      position: relative; z-index: 1;
+      width: 1200px; height: 675px;
+      padding: 44px 56px 36px;
+      display: grid;
+      grid-template-rows: auto 1px auto 1fr auto;
+      row-gap: 26px;
+    }
+
+    /* Header */
+    .header { display:flex; align-items:flex-start; justify-content:space-between; }
+    .brand  { display:flex; align-items:center; gap:14px; }
+    .brand-logo { height:40px; width:auto; border-radius:6px; }
+    .brand-text { display:flex; flex-direction:column; gap:2px; }
+    .brand-name { font-weight:700; font-size:17px; letter-spacing:-0.02em; color:var(--text); }
+    .brand-sub  { font-size:11px; font-weight:500; color:var(--text-2); letter-spacing:0.04em; }
+    .sprint-meta { text-align:right; }
+    .sprint-eyebrow {
+      font-size:10px; font-weight:700; letter-spacing:0.12em;
+      text-transform:uppercase; color:var(--orange); margin-bottom:5px;
+    }
+    .sprint-title {
+      font-family:'Fraunces',Georgia,serif; font-weight:900;
+      font-size:21px; color:var(--text); line-height:1.15; letter-spacing:-0.01em;
+    }
+    .sprint-dates { font-size:12px; color:var(--text-2); margin-top:4px; }
+
+    /* Divider */
+    .divider {
+      height:1px;
+      background:linear-gradient(90deg, var(--orange) 0%, rgba(249,115,22,0.3) 30%, var(--border) 60%, transparent 100%);
+    }
+
+    /* Stats */
+    .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+    .stat-card {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:12px; padding:18px 22px 16px; position:relative; overflow:hidden;
+    }
+    .stat-card::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:2px;
+      background:var(--border); border-radius:12px 12px 0 0;
+    }
+    .stat-card.featured {
+      border-color:var(--border-warm);
+      background:linear-gradient(145deg, var(--orange-glow) 0%, var(--surface) 70%);
+    }
+    .stat-card.featured::before { background:var(--orange); }
+    .stat-label { font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-2); margin-bottom:10px; }
+    .stat-number { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:46px; line-height:1; letter-spacing:-0.03em; color:var(--text); }
+    .stat-card.featured .stat-number { color:var(--orange); }
+    .stat-sub { font-size:11px; color:var(--text-3); margin-top:7px; font-weight:500; }
+
+    /* Content columns */
+    .content-row { display:grid; grid-template-columns:1fr 1px 1fr; gap:40px; align-items:start; }
+    .col-sep { background:var(--border); height:100%; }
+    .col-label { font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--orange); margin-bottom:14px; }
+
+    /* MVPs */
+    .mvp-list { display:flex; flex-direction:column; gap:9px; }
+    .mvp-row {
+      display:flex; align-items:center; gap:11px;
+      padding:8px 10px; border-radius:8px;
+      background:var(--surface-2); border:1px solid var(--border);
+    }
+    .mvp-row.top {
+      border-color:rgba(245,158,11,0.25);
+      background:linear-gradient(90deg, rgba(245,158,11,0.07) 0%, var(--surface-2) 100%);
+    }
+    .mvp-rank { font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; width:20px; flex-shrink:0; color:var(--text-3); }
+    .rank-gold   { color:var(--gold); }
+    .rank-silver { color:var(--silver); }
+    .rank-bronze { color:var(--bronze); }
+    .mvp-avatar {
+      width:30px; height:30px; border-radius:50%;
+      background:var(--orange-dim); border:1px solid var(--border-warm);
+      display:flex; align-items:center; justify-content:center;
+      font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700;
+      color:var(--orange); flex-shrink:0;
+    }
+    .mvp-info { flex:1; min-width:0; }
+    .mvp-name   { font-weight:600; font-size:13px; color:var(--text); }
+    .mvp-detail { font-size:11px; color:var(--text-2); margin-top:1px; }
+    .mvp-xp { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:14px; color:var(--orange); flex-shrink:0; }
+
+    /* Streaks */
+    .streak-pills { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+    .streak-pill {
+      display:flex; align-items:center; gap:6px;
+      background:var(--surface-2); border:1px solid var(--border);
+      border-radius:20px; padding:5px 12px 5px 10px;
+    }
+    .streak-name  { font-size:12px; font-weight:600; color:var(--text); }
+    .streak-count { font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:var(--orange); }
+
+    /* Shipped / In Progress */
+    .right-col { display:flex; flex-direction:column; gap:0; height:100%; }
+    .mini-divider { height:1px; background:var(--border); margin:14px 0; }
+    .item-list { display:flex; flex-direction:column; gap:7px; }
+    .item-row { display:flex; align-items:center; gap:10px; font-size:13px; color:var(--text); }
+    .dot { width:5px; height:5px; border-radius:50%; background:var(--orange); flex-shrink:0; }
+    .dot.pending { background:transparent; border:1px solid var(--text-3); }
+    .item-badge {
+      margin-left:auto;
+      font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
+      color:var(--orange); background:var(--orange-dim); border:1px solid var(--border-warm);
+      border-radius:4px; padding:2px 6px; white-space:nowrap;
+    }
+
+    /* Footer */
+    .footer { display:flex; align-items:center; justify-content:space-between; }
+    .footer-url { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text-3); }
+    .footer-tags { display:flex; align-items:center; gap:6px; }
+    .tag {
+      font-size:11px; font-weight:600; letter-spacing:0.04em;
+      color:var(--text-2); background:var(--surface); border:1px solid var(--border);
+      border-radius:4px; padding:3px 8px;
+    }
+    .tag.accent { color:var(--orange); background:var(--orange-dim); border-color:var(--border-warm); }
+  </style>
+</head>
+<body>
+  <div class="atmosphere"></div>
+  <div class="grid-overlay"></div>
+  <div class="card">
+    <header class="header">
+      <div class="brand">
+        <img class="brand-logo" src="../public/organic-logo.png" alt="Organic" />
+        <div class="brand-text">
+          <span class="brand-name">Organic Hub</span>
+          <span class="brand-sub">DAO Infrastructure · Solana</span>
+        </div>
+      </div>
+      <div class="sprint-meta">
+        <div class="sprint-eyebrow" id="sprint-eyebrow"></div>
+        <div class="sprint-title"  id="sprint-title"></div>
+        <div class="sprint-dates"  id="sprint-dates"></div>
+      </div>
+    </header>
+
+    <div class="divider"></div>
+
+    <div class="stats-row" id="stats-row"></div>
+
+    <div class="content-row">
+      <div>
+        <div class="col-label">Sprint MVPs</div>
+        <div class="mvp-list" id="mvp-list"></div>
+        <div class="col-label" style="margin-top:14px;" id="streak-label"></div>
+        <div class="streak-pills" id="streak-pills"></div>
+      </div>
+      <div class="col-sep"></div>
+      <div class="right-col">
+        <div>
+          <div class="col-label">Shipped</div>
+          <div class="item-list" id="shipped-list"></div>
+        </div>
+        <div class="mini-divider"></div>
+        <div>
+          <div class="col-label">In Progress</div>
+          <div class="item-list" id="progress-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="footer-url">organichub.fun</div>
+      <div class="footer-tags">
+        <div class="tag accent">$ORG</div>
+        <div class="tag">#Solana</div>
+        <div class="tag">#DAO</div>
+        <div class="tag">#Organic</div>
+        <div class="tag">#BuildInPublic</div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Render sprint data into DOM
+    document.getElementById('sprint-eyebrow').textContent = SPRINT.number + ' · Recap';
+    document.getElementById('sprint-title').textContent   = SPRINT.name;
+    document.getElementById('sprint-dates').textContent   = SPRINT.dates;
+
+    // Stats
+    const statsEl = document.getElementById('stats-row');
+    const statsMap = [
+      { key: 'members',      label: 'Total Members' },
+      { key: 'xp',           label: 'XP Earned' },
+      { key: 'tasks',        label: 'Tasks Shipped' },
+      { key: 'contributors', label: 'Active Contributors' },
+    ];
+    statsMap.forEach(({ key, label }) => {
+      const s = SPRINT.stats[key];
+      const card = document.createElement('div');
+      card.className = 'stat-card' + (s.featured ? ' featured' : '');
+      card.innerHTML = `
+        <div class="stat-label">${label}</div>
+        <div class="stat-number">${s.value}</div>
+        <div class="stat-sub">${s.sub}</div>
+      `;
+      statsEl.appendChild(card);
+    });
+
+    // MVPs
+    const mvpEl = document.getElementById('mvp-list');
+    SPRINT.mvps.forEach(m => {
+      const row = document.createElement('div');
+      row.className = 'mvp-row' + (m.topRow ? ' top' : '');
+      row.innerHTML = `
+        <div class="mvp-rank rank-${m.medal}">${m.rank}</div>
+        <div class="mvp-avatar">${m.initial}</div>
+        <div class="mvp-info">
+          <div class="mvp-name">${m.name}</div>
+          <div class="mvp-detail">${m.detail}</div>
+        </div>
+        <div class="mvp-xp">${m.xp}</div>
+      `;
+      mvpEl.appendChild(row);
+    });
+
+    // Streaks
+    if (SPRINT.streaks.length > 0) {
+      document.getElementById('streak-label').textContent = 'Active Streaks';
+      const pillsEl = document.getElementById('streak-pills');
+      SPRINT.streaks.forEach(s => {
+        const pill = document.createElement('div');
+        pill.className = 'streak-pill';
+        pill.innerHTML = `<span>🔥</span><span class="streak-name">${s.name}</span><span class="streak-count">${s.days}</span>`;
+        pillsEl.appendChild(pill);
+      });
+    }
+
+    // Shipped
+    const shippedEl = document.getElementById('shipped-list');
+    SPRINT.shipped.forEach(text => {
+      shippedEl.innerHTML += `<div class="item-row"><div class="dot"></div>${text}</div>`;
+    });
+
+    // In Progress
+    const progressEl = document.getElementById('progress-list');
+    SPRINT.inProgress.forEach(item => {
+      const badge = item.badge ? `<div class="item-badge">${item.badge}</div>` : '';
+      progressEl.innerHTML += `<div class="item-row"><div class="dot pending"></div>${item.text}${badge}</div>`;
+    });
+  </script>
+</body>
+</html>
