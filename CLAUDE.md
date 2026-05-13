@@ -4,6 +4,8 @@
 
 Operational instructions for Claude Code in this repository. Keep this file short, stable, and execution-focused.
 
+Structural conventions (naming, root allow-list, intentional deviations) are locked in `workspace.config.yaml`. Re-run `/workspace-revamp` to re-audit.
+
 ## Authority and scope
 
 Follow instruction precedence in this order:
@@ -261,10 +263,13 @@ See `AGENTS.md` for the full folder map and standard command reference (`npm run
 - **Implementation plans** (file paths, migration SQL, sequencing): `docs/superpowers/plans/<date>-<topic>.md` — produced via `superpowers:writing-plans`
 - **QA / revamp plans** (one per surface): `docs/plans/<date>-<topic>-revamp.md`
 - **Audit reports** (security/performance/typescript/coverage one-offs): `docs/audits/<date>-<topic>.md`
+- **Post-PR handoffs / deployment plans**: `docs/handoffs/<date>-<topic>.md`
+- **Operational artefacts** (one-off prompts, design dashboards, overhaul plans): `docs/operational/<topic>.md`
 - **Session notes**: `SESSION_LOG.md` (chronological, newest first; rotate to `docs/session-log-archive.md` when bloated)
 - **Roadmap status**: `BUILD_PLAN.md`
 - **Product reality**: `PROJECT_CONTEXT.md`
 - **Memories** (cross-session knowledge): `~/.claude/projects/-Users-cisco-Desktop-projects-organic-app/memory/` — index in `MEMORY.md`
+- **Workspace conventions** (structural rules, intentional deviations): `workspace.config.yaml` at repo root
 
 ## Maintenance rule
 

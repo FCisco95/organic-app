@@ -1,0 +1,53 @@
+# Workspace conventions for organic-app.
+# Written by `/workspace-revamp` on 2026-05-13. Re-run the slash command
+# to re-audit and refresh CLAUDE.md / this file.
+
+pack: nextjs-ts
+pack_version: 1
+
+# This repo intentionally runs both colocated unit tests (src/**/__tests__/)
+# and a centralized tree (tests/security/, tests/features/). See vitest.config.ts.
+test_layout: hybrid
+
+naming:
+  files: kebab-case
+  components: PascalCase
+
+# Files the pack's default allow-list would flag but the project deliberately
+# keeps at the repo root. CLAUDE.md and AGENTS.md document several of these
+# as "living references" with many inbound links.
+root_allow_list_extra:
+  - BUILD_PLAN.md
+  - PROJECT_CONTEXT.md
+  - SESSION_LOG.md
+  - GEMINI.md
+  - .claudeignore
+  - .env.local.example
+  - audit-ci.jsonc
+  - components.json
+  - conductor.json
+  - skills-lock.json
+  - vercel.json
+
+# Pack defaults the project chose not to enforce. Each entry should name a
+# concrete reason — these are decisions, not omissions.
+deviations:
+  - id: T2-e2e-location
+    pack_default: "Playwright specs in tests/e2e/"
+    actual: "tests/*.spec.ts (27 specs + helpers.ts)"
+    reason: >
+      playwright.config.ts uses testDir './tests' and .github/workflows/ci.yml
+      has 8 hardcoded test paths across three jobs. Move is cosmetic; risk to
+      CI is not. Revisit during a CI refactor.
+  - id: T1-dual-test-layout
+    pack_default: "Single test layout (colocated or separate)"
+    actual: "Hybrid — colocated for lib/api/features, centralized for security/features"
+    reason: >
+      Explicit project convention. CLAUDE.md mandates tests/security/ for
+      security tests. vitest.config.ts globs both layouts deliberately.
+
+# Architectural debt the audit surfaces but does not propose to fix as part of
+# a workspace-revamp. Track these for a future focused pass.
+deferred_architectural_debt:
+  - "NX2: 14 src/app/**/route.ts files > 80 lines (top: 499 lines)"
+  - "X2: Deep feature imports — features/* lack public index.ts barrels"

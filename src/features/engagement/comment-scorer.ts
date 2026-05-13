@@ -90,7 +90,7 @@ let cachedTemplate: string | null = null;
 
 function loadTemplate(): string {
   if (cachedTemplate) return cachedTemplate;
-  const path = join(process.cwd(), 'prompts', `${PROMPT_VERSION}.md`);
+  const path = join(process.cwd(), 'docs', 'operational', `${PROMPT_VERSION}.md`);
   cachedTemplate = readFileSync(path, 'utf8');
   return cachedTemplate;
 }
