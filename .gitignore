@@ -89,3 +89,6 @@ auth*.json
 # Wizard / scratch artifacts that should never be committed
 .wip-sentry/
 login3.yml
+
+# /workspace-revamp audit output
+WORKSPACE_AUDIT.md

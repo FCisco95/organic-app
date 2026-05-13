@@ -82,9 +82,9 @@ All reversible. Logged in rough order of importance.
 
 **If you want it removed:** safe after verifying the three E2E jobs still pass with `NEXT_PUBLIC_SOLANA_RPC_URL` unset — the wallet-adapter's `|| clusterApiUrl('mainnet-beta')` fallback would kick in.
 
-### D5. Left `workspace-snapshot.tsv` alone
+### D5. Left workspace snapshot alone
 
-**Context:** `workspace-snapshot.tsv:188` references the deleted `src/app/api/organic-id/balance/route.ts`.
+**Context:** `docs/audits/2026-04-23-workspace-snapshot.tsv:188` (was `workspace-snapshot.tsv` at repo root before the 2026-05-13 workspace revamp) references the deleted `src/app/api/organic-id/balance/route.ts`.
 
 **Decision:** Not touched — the file is auto-generated and will regenerate on the next snapshot run. Task 2 plan explicitly excluded it.
 

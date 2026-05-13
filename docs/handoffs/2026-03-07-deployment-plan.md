@@ -26,12 +26,12 @@ Each track has a detailed implementation spec with DB schemas, file paths, imple
 
 | Track | Spec File |
 |---|---|
-| Track 1: Blockers & Hardening | [`docs/specs/blockers-hardening.md`](docs/specs/blockers-hardening.md) |
-| Track 2.1: PWA Support | [`docs/specs/pwa-support.md`](docs/specs/pwa-support.md) |
-| Track 2.2: Public Landing Page | [`docs/specs/landing-page.md`](docs/specs/landing-page.md) |
-| Track 2.3: Unified Activity Feed | [`docs/specs/activity-feed.md`](docs/specs/activity-feed.md) |
-| Track 2.4: Shareable Profiles + OG Cards | [`docs/specs/shareable-profiles.md`](docs/specs/shareable-profiles.md) |
-| Track 3: Phase 21 Task Threads | [`docs/specs/phase-21-task-threads.md`](docs/specs/phase-21-task-threads.md) |
+| Track 1: Blockers & Hardening | [`docs/specs/blockers-hardening.md`](../specs/blockers-hardening.md) |
+| Track 2.1: PWA Support | [`docs/specs/pwa-support.md`](../specs/pwa-support.md) |
+| Track 2.2: Public Landing Page | [`docs/specs/landing-page.md`](../specs/landing-page.md) |
+| Track 2.3: Unified Activity Feed | [`docs/specs/activity-feed.md`](../specs/activity-feed.md) |
+| Track 2.4: Shareable Profiles + OG Cards | [`docs/specs/shareable-profiles.md`](../specs/shareable-profiles.md) |
+| Track 3: Phase 21 Task Threads | [`docs/specs/phase-21-task-threads.md`](../specs/phase-21-task-threads.md) |
 
 ---
 
