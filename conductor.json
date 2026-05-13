@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "setup": "cp -n .env.local.example .env.local; npm install",
+    "run": "npm run dev"
+  }
+}
