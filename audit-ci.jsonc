@@ -101,6 +101,34 @@
         "notes": "axios prototype pollution read-side gadgets in HTTP adapter (credential injection, request hijacking). Vulnerable range <1.15.2. Same transitive path as GHSA-6chq-wfr3-2hj9 — fix tied to @solana/wallet-adapter-wallets major bump.",
         "expiry": "2026-08-04T00:00:00Z"
       }
+    },
+    {
+      "GHSA-66ff-xgx4-vchm": {
+        "active": true,
+        "notes": "protobufjs vulnerability (additional advisory). Same transitive path as GHSA-xq3m-2v4x-88gg: @solana/wallet-adapter-wallets > @solana/wallet-adapter-trezor > @trezor/* > @trezor/protobuf > protobufjs. Fix tied to @solana/wallet-adapter-wallets major bump.",
+        "expiry": "2026-08-13T00:00:00Z"
+      }
+    },
+    {
+      "GHSA-685m-2w69-288q": {
+        "active": true,
+        "notes": "protobufjs vulnerability (additional advisory). Same transitive path as GHSA-xq3m-2v4x-88gg: @solana/wallet-adapter-wallets > @solana/wallet-adapter-trezor > @trezor/* > @trezor/protobuf > protobufjs. Fix tied to @solana/wallet-adapter-wallets major bump.",
+        "expiry": "2026-08-13T00:00:00Z"
+      }
+    },
+    {
+      "GHSA-75px-5xx7-5xc7": {
+        "active": true,
+        "notes": "protobufjs vulnerability (additional advisory). Same transitive path as GHSA-xq3m-2v4x-88gg: @solana/wallet-adapter-wallets > @solana/wallet-adapter-trezor > @trezor/* > @trezor/protobuf > protobufjs. Fix tied to @solana/wallet-adapter-wallets major bump.",
+        "expiry": "2026-08-13T00:00:00Z"
+      }
+    },
+    {
+      "GHSA-jvwf-75h9-cwgg": {
+        "active": true,
+        "notes": "protobufjs vulnerability (additional advisory). Same transitive path as GHSA-xq3m-2v4x-88gg: @solana/wallet-adapter-wallets > @solana/wallet-adapter-trezor > @trezor/* > @trezor/protobuf > protobufjs. Fix tied to @solana/wallet-adapter-wallets major bump.",
+        "expiry": "2026-08-13T00:00:00Z"
+      }
     }
   ],
 
