@@ -1,651 +1,844 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-  <meta charset="UTF-8" />
-  <title>Organic — 投资者简报</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --orange:      #f97316;
-      --orange-light:#fff7ed;
-      --orange-mid:  #ffedd5;
-      --orange-dim:  rgba(249,115,22,0.08);
-      --text:        #18181b;
-      --text-2:      #52525b;
-      --text-3:      #a1a1aa;
-      --border:      #e4e4e7;
-      --surface:     #fafafa;
-      --bg:          #ffffff;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <title>Organic — 投资者简报</title>
+    Okay, now it's working.
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@600;700&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --orange: #f97316;
+        --orange-light: #fff7ed;
+        --orange-mid: #ffedd5;
+        --orange-dim: rgba(249, 115, 22, 0.08);
+        --text: #18181b;
+        --text-2: #52525b;
+        --text-3: #a1a1aa;
+        --border: #e4e4e7;
+        --surface: #fafafa;
+        --bg: #ffffff;
+      }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-    body {
-      font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-      font-size: 10.5pt;
-      line-height: 1.75;
-      color: var(--text);
-      background: var(--bg);
-      padding: 0;
-    }
+      body {
+        font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        font-size: 10.5pt;
+        line-height: 1.75;
+        color: var(--text);
+        background: var(--bg);
+        padding: 0;
+      }
 
-    /* ── Page layout ── */
-    .page {
-      max-width: 780px;
-      margin: 0 auto;
-      padding: 52px 56px 60px;
-    }
+      /* ── Page layout ── */
+      .page {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 52px 56px 60px;
+      }
 
-    /* ── Cover header ── */
-    .cover {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      margin-bottom: 36px;
-      padding-bottom: 28px;
-      border-bottom: 2px solid var(--orange);
-    }
+      /* ── Cover header ── */
+      .cover {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 36px;
+        padding-bottom: 28px;
+        border-bottom: 2px solid var(--orange);
+      }
 
-    .cover-brand {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
+      .cover-brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
 
-    .cover-logo {
-      height: 48px;
-      width: auto;
-    }
+      .cover-logo {
+        height: 48px;
+        width: auto;
+      }
 
-    .cover-brand-text h1 {
-      font-family: 'Noto Serif SC', serif;
-      font-size: 22pt;
-      font-weight: 700;
-      color: var(--text);
-      line-height: 1.1;
-    }
+      .cover-brand-text h1 {
+        font-family: 'Noto Serif SC', serif;
+        font-size: 22pt;
+        font-weight: 700;
+        color: var(--text);
+        line-height: 1.1;
+      }
 
-    .cover-brand-text p {
-      font-size: 9pt;
-      color: var(--text-2);
-      margin-top: 3px;
-      letter-spacing: 0.04em;
-    }
+      .cover-brand-text p {
+        font-size: 9pt;
+        color: var(--text-2);
+        margin-top: 3px;
+        letter-spacing: 0.04em;
+      }
 
-    .cover-meta {
-      text-align: right;
-    }
+      .cover-meta {
+        text-align: right;
+      }
 
-    .cover-meta .label {
-      font-size: 8pt;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--orange);
-      margin-bottom: 4px;
-    }
+      .cover-meta .label {
+        font-size: 8pt;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--orange);
+        margin-bottom: 4px;
+      }
 
-    .cover-meta .date {
-      font-size: 9pt;
-      color: var(--text-2);
-    }
+      .cover-meta .date {
+        font-size: 9pt;
+        color: var(--text-2);
+      }
 
-    /* ── Tagline ── */
-    .tagline {
-      background: linear-gradient(135deg, var(--orange-mid) 0%, var(--orange-light) 100%);
-      border-left: 4px solid var(--orange);
-      border-radius: 0 8px 8px 0;
-      padding: 18px 24px;
-      margin-bottom: 40px;
-      font-family: 'Noto Serif SC', serif;
-      font-size: 13pt;
-      font-weight: 600;
-      color: var(--text);
-      line-height: 1.6;
-    }
+      /* ── Tagline ── */
+      .tagline {
+        background: linear-gradient(135deg, var(--orange-mid) 0%, var(--orange-light) 100%);
+        border-left: 4px solid var(--orange);
+        border-radius: 0 8px 8px 0;
+        padding: 18px 24px;
+        margin-bottom: 40px;
+        font-family: 'Noto Serif SC', serif;
+        font-size: 13pt;
+        font-weight: 600;
+        color: var(--text);
+        line-height: 1.6;
+      }
 
-    /* ── Section ── */
-    .section {
-      margin-bottom: 36px;
-    }
+      /* ── Section ── */
+      .section {
+        margin-bottom: 36px;
+      }
 
-    .section-title {
-      font-family: 'Noto Serif SC', serif;
-      font-size: 13pt;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 14px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+      .section-title {
+        font-family: 'Noto Serif SC', serif;
+        font-size: 13pt;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 14px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
 
-    .section-title .num {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 22px;
-      height: 22px;
-      background: var(--orange);
-      color: white;
-      border-radius: 50%;
-      font-size: 9pt;
-      font-weight: 700;
-      flex-shrink: 0;
-      font-family: 'JetBrains Mono', monospace;
-    }
+      .section-title .num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 22px;
+        height: 22px;
+        background: var(--orange);
+        color: white;
+        border-radius: 50%;
+        font-size: 9pt;
+        font-weight: 700;
+        flex-shrink: 0;
+        font-family: 'JetBrains Mono', monospace;
+      }
 
-    p {
-      color: var(--text-2);
-      margin-bottom: 10px;
-      font-size: 10pt;
-    }
+      p {
+        color: var(--text-2);
+        margin-bottom: 10px;
+        font-size: 10pt;
+      }
 
-    /* ── Table ── */
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 14px 0;
-      font-size: 9.5pt;
-    }
+      /* ── Table ── */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 14px 0;
+        font-size: 9.5pt;
+      }
 
-    thead tr {
-      background: var(--orange);
-      color: white;
-    }
+      thead tr {
+        background: var(--orange);
+        color: white;
+      }
 
-    thead th {
-      padding: 9px 14px;
-      text-align: left;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-    }
+      thead th {
+        padding: 9px 14px;
+        text-align: left;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+      }
 
-    tbody tr:nth-child(even) { background: var(--surface); }
-    tbody tr:nth-child(odd)  { background: var(--bg); }
+      tbody tr:nth-child(even) {
+        background: var(--surface);
+      }
+      tbody tr:nth-child(odd) {
+        background: var(--bg);
+      }
 
-    tbody td {
-      padding: 9px 14px;
-      color: var(--text);
-      border-bottom: 1px solid var(--border);
-      vertical-align: top;
-      line-height: 1.5;
-    }
+      tbody td {
+        padding: 9px 14px;
+        color: var(--text);
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+        line-height: 1.5;
+      }
 
-    tbody td:first-child {
-      font-weight: 600;
-      color: var(--text);
-      white-space: nowrap;
-    }
+      tbody td:first-child {
+        font-weight: 600;
+        color: var(--text);
+        white-space: nowrap;
+      }
 
-    tbody td .tag {
-      display: inline-block;
-      font-size: 8pt;
-      font-weight: 600;
-      padding: 1px 7px;
-      border-radius: 10px;
-      margin-left: 4px;
-    }
+      tbody td .tag {
+        display: inline-block;
+        font-size: 8pt;
+        font-weight: 600;
+        padding: 1px 7px;
+        border-radius: 10px;
+        margin-left: 4px;
+      }
 
-    .tag-done { background: #dcfce7; color: #16a34a; }
-    .tag-next { background: var(--orange-mid); color: #c2410c; }
+      .tag-done {
+        background: #dcfce7;
+        color: #16a34a;
+      }
+      .tag-next {
+        background: var(--orange-mid);
+        color: #c2410c;
+      }
 
-    /* ── Card grid ── */
-    .card-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 14px;
-      margin: 14px 0;
-    }
+      /* ── Card grid ── */
+      .card-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 14px;
+        margin: 14px 0;
+      }
 
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 16px 18px;
-      border-top: 3px solid var(--orange);
-    }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 16px 18px;
+        border-top: 3px solid var(--orange);
+      }
 
-    .card-title {
-      font-family: 'Noto Serif SC', serif;
-      font-weight: 700;
-      font-size: 10.5pt;
-      color: var(--text);
-      margin-bottom: 6px;
-    }
+      .card-title {
+        font-family: 'Noto Serif SC', serif;
+        font-weight: 700;
+        font-size: 10.5pt;
+        color: var(--text);
+        margin-bottom: 6px;
+      }
 
-    .card-sub {
-      font-size: 8.5pt;
-      color: var(--text-2);
-      line-height: 1.5;
-    }
+      .card-sub {
+        font-size: 8.5pt;
+        color: var(--text-2);
+        line-height: 1.5;
+      }
 
-    /* ── Revenue model ── */
-    .revenue-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 14px;
-      margin: 14px 0;
-    }
+      /* ── Revenue model ── */
+      .revenue-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 14px;
+        margin: 14px 0;
+      }
 
-    .rev-card {
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      overflow: hidden;
-    }
+      .rev-card {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+      }
 
-    .rev-card-header {
-      background: var(--orange);
-      color: white;
-      padding: 10px 14px;
-      font-weight: 700;
-      font-size: 9.5pt;
-    }
+      .rev-card-header {
+        background: var(--orange);
+        color: white;
+        padding: 10px 14px;
+        font-weight: 700;
+        font-size: 9.5pt;
+      }
 
-    .rev-card-body {
-      padding: 12px 14px;
-      background: var(--bg);
-    }
+      .rev-card-body {
+        padding: 12px 14px;
+        background: var(--bg);
+      }
 
-    .rev-card-body p {
-      font-size: 9pt;
-      color: var(--text-2);
-      margin: 0;
-    }
+      .rev-card-body p {
+        font-size: 9pt;
+        color: var(--text-2);
+        margin: 0;
+      }
 
-    .rev-card-body .highlight {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11pt;
-      font-weight: 600;
-      color: var(--orange);
-      display: block;
-      margin-bottom: 4px;
-    }
+      .rev-card-body .highlight {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11pt;
+        font-weight: 600;
+        color: var(--orange);
+        display: block;
+        margin-bottom: 4px;
+      }
 
-    /* ── Roadmap ── */
-    .roadmap-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 14px;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--border);
-    }
+      /* ── Roadmap ── */
+      .roadmap-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border);
+      }
 
-    .roadmap-row:last-child { border-bottom: none; }
+      .roadmap-row:last-child {
+        border-bottom: none;
+      }
 
-    .phase-badge {
-      flex-shrink: 0;
-      width: 52px;
-      height: 28px;
-      background: var(--orange-mid);
-      border: 1px solid rgba(249,115,22,0.3);
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 8.5pt;
-      font-weight: 700;
-      color: var(--orange);
-    }
+      .phase-badge {
+        flex-shrink: 0;
+        width: 52px;
+        height: 28px;
+        background: var(--orange-mid);
+        border: 1px solid rgba(249, 115, 22, 0.3);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 8.5pt;
+        font-weight: 700;
+        color: var(--orange);
+      }
 
-    .roadmap-content { flex: 1; }
+      .roadmap-content {
+        flex: 1;
+      }
 
-    .roadmap-title {
-      font-weight: 700;
-      font-size: 10pt;
-      color: var(--text);
-      margin-bottom: 2px;
-    }
+      .roadmap-title {
+        font-weight: 700;
+        font-size: 10pt;
+        color: var(--text);
+        margin-bottom: 2px;
+      }
 
-    .roadmap-desc {
-      font-size: 9pt;
-      color: var(--text-2);
-      margin: 0;
-    }
+      .roadmap-desc {
+        font-size: 9pt;
+        color: var(--text-2);
+        margin: 0;
+      }
 
-    /* ── Status table ── */
-    .status-done { color: #16a34a; font-weight: 600; }
-    .status-next { color: var(--orange); font-weight: 600; }
+      /* ── Status table ── */
+      .status-done {
+        color: #16a34a;
+        font-weight: 600;
+      }
+      .status-next {
+        color: var(--orange);
+        font-weight: 600;
+      }
 
-    /* ── KPI boxes ── */
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin: 14px 0;
-    }
+      /* ── KPI boxes ── */
+      .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin: 14px 0;
+      }
 
-    .kpi-box {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 14px 16px;
-      text-align: center;
-    }
+      .kpi-box {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 14px 16px;
+        text-align: center;
+      }
 
-    .kpi-value {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 20pt;
-      font-weight: 700;
-      color: var(--orange);
-      line-height: 1;
-    }
+      .kpi-value {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 20pt;
+        font-weight: 700;
+        color: var(--orange);
+        line-height: 1;
+      }
 
-    .kpi-label {
-      font-size: 8pt;
-      color: var(--text-2);
-      margin-top: 5px;
-    }
+      .kpi-label {
+        font-size: 8pt;
+        color: var(--text-2);
+        margin-top: 5px;
+      }
 
-    /* ── Footer ── */
-    .footer {
-      margin-top: 44px;
-      padding-top: 18px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
+      /* ── Footer ── */
+      .footer {
+        margin-top: 44px;
+        padding-top: 18px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
 
-    .footer-left {
-      font-size: 8.5pt;
-      color: var(--text-3);
-    }
+      .footer-left {
+        font-size: 8.5pt;
+        color: var(--text-3);
+      }
 
-    .footer-right {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 8.5pt;
-      color: var(--text-2);
-    }
+      .footer-right {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 8.5pt;
+        color: var(--text-2);
+      }
 
-    /* ── Print ── */
-    @media print {
-      body { background: white; }
-      .page { padding: 40px 48px; }
-      @page { margin: 0; size: A4; }
-    }
-  </style>
-</head>
-<body>
-<div class="page">
-
-  <!-- Cover -->
-  <div class="cover">
-    <div class="cover-brand">
-      <img class="cover-logo" src="../public/organic-logo.png" alt="Organic" />
-      <div class="cover-brand-text">
-        <h1>Organic</h1>
-        <p>区块链社区的 AI 驱动基础设施</p>
-      </div>
-    </div>
-    <div class="cover-meta">
-      <div class="label">投资者简报</div>
-      <div class="date">2026年5月 · 机密</div>
-    </div>
-  </div>
-
-  <!-- Tagline -->
-  <div class="tagline">
-    Organic 为区块链社区提供一键部署的完整 DAO 基础设施——治理、任务、国库、奖励、以及保持社区持续运转的 AI 管家，全部在 15 分钟内上线。
-  </div>
-
-  <!-- Section 1: 是什么 -->
-  <div class="section">
-    <div class="section-title"><span class="num">1</span>Organic 是什么</div>
-    <p>
-      Organic 正在构建区块链社区的运营基础设施。就像 Shopify 让任何人都能开设在线商店一样，Organic 让任何加密项目都能快速搭建功能完整的 DAO——包含治理、任务管理、链上国库、贡献奖励，以及一个 AI 管家来维持社区日常运转。
-    </p>
-    <p>
-      当前产品 <strong>Organic Hub</strong>（organichub.fun）是已上线的 v1 版本，服务于 $ORG 社区。所有核心功能均已构建、测试并稳定运行。下一阶段将把它升级为任何社区都可使用的多租户平台。
-    </p>
-
-    <!-- Live stats -->
-    <div class="kpi-grid">
-      <div class="kpi-box">
-        <div class="kpi-value">69</div>
-        <div class="kpi-label">注册成员</div>
-      </div>
-      <div class="kpi-box">
-        <div class="kpi-value">32</div>
-        <div class="kpi-label">任务总量</div>
-      </div>
-      <div class="kpi-box">
-        <div class="kpi-value">18K+</div>
-        <div class="kpi-label">累计 XP</div>
-      </div>
-      <div class="kpi-box">
-        <div class="kpi-value">v1</div>
-        <div class="kpi-label">已上线运行</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Section 2: 问题 -->
-  <div class="section">
-    <div class="section-title"><span class="num">2</span>我们在解决什么问题</div>
-    <p>
-      每个加密社区都在 Discord 和 Telegram 上运营——这些只是聊天工具，不是协作工具。没有办法衡量谁做了贡献，国库不透明，治理决策无法落地执行，没有问责机制。创始人疲于亲力亲为，社区在发布后迅速沉寂。
-    </p>
-
-    <table>
-      <thead>
-        <tr><th>七大核心能力</th><th>具体作用</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>透明度</td><td>链上可验证的活动记录，一切公开可查</td></tr>
-        <tr><td>奖励分配</td><td>贡献者根据真实可量化的工作获得奖励</td></tr>
-        <tr><td>激励机制</td><td>冲刺周期、排行榜、XP 积分、声誉系统</td></tr>
-        <tr><td>社区管理</td><td>AI 管家自动处理日常运营事务</td></tr>
-        <tr><td>路线图定义</td><td>链上提案与社区投票</td></tr>
-        <tr><td>冲刺执行</td><td>有时间节点的工作周期，配套结构化任务</td></tr>
-        <tr><td>自动支付</td><td>多签国库的无信任链上自动结算</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Section 3: 三大产品 -->
-  <div class="section">
-    <div class="section-title"><span class="num">3</span>三大产品形态</div>
-
-    <div class="card-grid">
-      <div class="card">
-        <div class="card-title">🏛 Organic Hub</div>
-        <div class="card-sub">DAO 平台本体。每个社区的工作空间——提案、任务、冲刺周期、国库、排行榜、声誉系统。</div>
-      </div>
-      <div class="card">
-        <div class="card-title">🪪 Organic Passport</div>
-        <div class="card-sub">灵魂绑定 NFT 身份凭证。防机器人的人格层，青铜→白银→黄金→铂金→钻石，分级认证。可授权给其他 Solana 应用使用（B2B 收入层）。</div>
-      </div>
-      <div class="card">
-        <div class="card-title">🔍 Organic Scan</div>
-        <div class="card-sub">社区健康度评分系统。类似 DexScreener，但衡量的是社区质量而非代币价格。用于发现"强社区、低估值代币"的 Alpha 机会。</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Section 4: 客户体验 -->
-  <div class="section">
-    <div class="section-title"><span class="num">4</span>客户使用流程（新加密项目接入）</div>
-    <p>一个新项目注册后，<strong>15 分钟内自动完成</strong>以下所有配置：</p>
-
-    <table>
-      <thead>
-        <tr><th>步骤</th><th>自动完成内容</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>① 子域名</td><td>项目 Hub 上线，地址为 <code>projectname.organichub.fun</code>（认证版支持自定义域名）</td></tr>
-        <tr><td>② 链上国库</td><td>在 Solana 上创建 Squads 多签国库——Organic 永不持有客户私钥</td></tr>
-        <tr><td>③ 引导章程</td><td>部署初始治理规则、首个冲刺周期、启动任务包、基础提案（供社区投票通过）</td></tr>
-        <tr><td>④ AI 管家</td><td>自动起草任务、提醒贡献者、总结冲刺、维持社区活跃——即使创始人不在线</td></tr>
-        <tr><td>⑤ 社区选举</td><td>成员投票选出 4 名理事会签名人，多签从创始人独控切换为 3/5 多签治理</td></tr>
-      </tbody>
-    </table>
-
-    <p style="margin-top:10px;">
-      <strong>核心价值主张：</strong>社区不会在发布后陷入沉寂，因为 AI 管家持续维持运营循环。这也是整个多租户故事的关键——如果需要创始人手动推动每件事，没有其他社区会采用这套系统。
-    </p>
-  </div>
-
-  <!-- Section 5: 商业模式 -->
-  <div class="section">
-    <div class="section-title"><span class="num">5</span>商业模式——如何盈利</div>
-    <p>三条收入来源，均在社区成功时才产生成本——设计上与客户利益对齐。</p>
-
-    <div class="revenue-grid">
-      <div class="rev-card">
-        <div class="rev-card-header">免费版</div>
-        <div class="rev-card-body">
-          <span class="highlight">$0</span>
-          <p>全功能 Hub，有限 AI 管家用量（每日 50 次操作）。获取顶层流量漏斗。</p>
+      /* ── Print ── */
+      @media print {
+        body {
+          background: white;
+        }
+        .page {
+          padding: 40px 48px;
+        }
+        @page {
+          margin: 0;
+          size: A4;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <!-- Cover -->
+      <div class="cover">
+        <div class="cover-brand">
+          <img class="cover-logo" src="../public/organic-logo.png" alt="Organic" />
+          <div class="cover-brand-text">
+            <h1>Organic</h1>
+            <p>区块链社区的 AI 驱动基础设施</p>
+          </div>
+        </div>
+        <div class="cover-meta">
+          <div class="label">投资者简报</div>
+          <div class="date">2026年5月 · 机密</div>
         </div>
       </div>
-      <div class="rev-card">
-        <div class="rev-card-header">认证版订阅</div>
-        <div class="rev-card-body">
-          <span class="highlight">月付 $ORG</span>
-          <p>自定义域名、无限 AI 管家、实时操作、Scan 高级档案、高级 AI 功能。</p>
+
+      <!-- Tagline -->
+      <div class="tagline">
+        Organic 为区块链社区提供一键部署的完整 DAO
+        基础设施——治理、任务、国库、奖励、以及保持社区持续运转的 AI 管家，全部在 15 分钟内上线。
+      </div>
+
+      <!-- Section 1: 是什么 -->
+      <div class="section">
+        <div class="section-title"><span class="num">1</span>Organic 是什么</div>
+        <p>
+          Organic 正在构建区块链社区的运营基础设施。就像 Shopify
+          让任何人都能开设在线商店一样，Organic 让任何加密项目都能快速搭建功能完整的
+          DAO——包含治理、任务管理、链上国库、贡献奖励，以及一个 AI 管家来维持社区日常运转。
+        </p>
+        <p>
+          当前产品 <strong>Organic Hub</strong>（organichub.fun）是已上线的 v1 版本，服务于 $ORG
+          社区。所有核心功能均已构建、测试并稳定运行。下一阶段将把它升级为任何社区都可使用的多租户平台。
+        </p>
+
+        <!-- Live stats -->
+        <div class="kpi-grid">
+          <div class="kpi-box">
+            <div class="kpi-value">69</div>
+            <div class="kpi-label">注册成员</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-value">32</div>
+            <div class="kpi-label">任务总量</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-value">18K+</div>
+            <div class="kpi-label">累计 XP</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-value">v1</div>
+            <div class="kpi-label">已上线运行</div>
+          </div>
         </div>
       </div>
-      <div class="rev-card">
-        <div class="rev-card-header">奖励池分成</div>
-        <div class="rev-card-body">
-          <span class="highlight">1–3%</span>
-          <p>当社区通过平台实际发放奖励时抽取，超过月 $1K 阈值后生效。仅对成功社区收费。</p>
+
+      <!-- Section 2: 问题 -->
+      <div class="section">
+        <div class="section-title"><span class="num">2</span>我们在解决什么问题</div>
+        <p>
+          每个加密社区都在 Discord 和 Telegram
+          上运营——这些只是聊天工具，不是协作工具。没有办法衡量谁做了贡献，国库不透明，治理决策无法落地执行，没有问责机制。创始人疲于亲力亲为，社区在发布后迅速沉寂。
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>七大核心能力</th>
+              <th>具体作用</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>透明度</td>
+              <td>链上可验证的活动记录，一切公开可查</td>
+            </tr>
+            <tr>
+              <td>奖励分配</td>
+              <td>贡献者根据真实可量化的工作获得奖励</td>
+            </tr>
+            <tr>
+              <td>激励机制</td>
+              <td>冲刺周期、排行榜、XP 积分、声誉系统</td>
+            </tr>
+            <tr>
+              <td>社区管理</td>
+              <td>AI 管家自动处理日常运营事务</td>
+            </tr>
+            <tr>
+              <td>路线图定义</td>
+              <td>链上提案与社区投票</td>
+            </tr>
+            <tr>
+              <td>冲刺执行</td>
+              <td>有时间节点的工作周期，配套结构化任务</td>
+            </tr>
+            <tr>
+              <td>自动支付</td>
+              <td>多签国库的无信任链上自动结算</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Section 3: 三大产品 -->
+      <div class="section">
+        <div class="section-title"><span class="num">3</span>三大产品形态</div>
+
+        <div class="card-grid">
+          <div class="card">
+            <div class="card-title">🏛 Organic Hub</div>
+            <div class="card-sub">
+              DAO 平台本体。每个社区的工作空间——提案、任务、冲刺周期、国库、排行榜、声誉系统。
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">🪪 Organic Passport</div>
+            <div class="card-sub">
+              灵魂绑定 NFT
+              身份凭证。防机器人的人格层，青铜→白银→黄金→铂金→钻石，分级认证。可授权给其他 Solana
+              应用使用（B2B 收入层）。
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">🔍 Organic Scan</div>
+            <div class="card-sub">
+              社区健康度评分系统。类似
+              DexScreener，但衡量的是社区质量而非代币价格。用于发现"强社区、低估值代币"的 Alpha
+              机会。
+            </div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <table style="margin-top:16px;">
-      <thead>
-        <tr><th>规模</th><th>预估月度基础设施成本</th><th>盈亏平衡点</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>1–10 个社区</td><td>$200–500</td><td>自筹覆盖（种子期）</td></tr>
-        <tr><td>10–50 个社区</td><td>$1,000–3,000</td><td>1–2 个付费认证版覆盖</td></tr>
-        <tr><td>50–200 个社区</td><td>$5,000–20,000</td><td>5–10 个成功社区的奖励池分成覆盖</td></tr>
-        <tr><td>200–1,000 个社区</td><td>$20,000–100,000+</td><td>头部 10% 社区覆盖 80%+ 的平台成本</td></tr>
-      </tbody>
-    </table>
+      <!-- Section 4: 客户体验 -->
+      <div class="section">
+        <div class="section-title"><span class="num">4</span>客户使用流程（新加密项目接入）</div>
+        <p>一个新项目注册后，<strong>15 分钟内自动完成</strong>以下所有配置：</p>
 
-    <p style="margin-top:8px; font-size:9pt;">
-      <strong>结构逻辑：</strong>幂律效应意味着少数大型成功社区覆盖所有人的基础设施成本。免费版构建流量漏斗；奖励池分成在赢家身上获取上行收益。不发行平台代币分配，不进行股权稀释。
-    </p>
-  </div>
+        <table>
+          <thead>
+            <tr>
+              <th>步骤</th>
+              <th>自动完成内容</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>① 子域名</td>
+              <td>
+                项目 Hub 上线，地址为
+                <code>projectname.organichub.fun</code>（认证版支持自定义域名）
+              </td>
+            </tr>
+            <tr>
+              <td>② 链上国库</td>
+              <td>在 Solana 上创建 Squads 多签国库——Organic 永不持有客户私钥</td>
+            </tr>
+            <tr>
+              <td>③ 引导章程</td>
+              <td>部署初始治理规则、首个冲刺周期、启动任务包、基础提案（供社区投票通过）</td>
+            </tr>
+            <tr>
+              <td>④ AI 管家</td>
+              <td>自动起草任务、提醒贡献者、总结冲刺、维持社区活跃——即使创始人不在线</td>
+            </tr>
+            <tr>
+              <td>⑤ 社区选举</td>
+              <td>成员投票选出 4 名理事会签名人，多签从创始人独控切换为 3/5 多签治理</td>
+            </tr>
+          </tbody>
+        </table>
 
-  <!-- Section 6: 路线图 -->
-  <div class="section">
-    <div class="section-title"><span class="num">6</span>产品路线图（6 个阶段）</div>
+        <p style="margin-top: 10px">
+          <strong>核心价值主张：</strong>社区不会在发布后陷入沉寂，因为 AI
+          管家持续维持运营循环。这也是整个多租户故事的关键——如果需要创始人手动推动每件事，没有其他社区会采用这套系统。
+        </p>
+      </div>
 
-    <div class="roadmap-row">
-      <div class="phase-badge">阶段 A</div>
-      <div class="roadmap-content">
-        <div class="roadmap-title">多租户基础设施 + 子域名路由</div>
-        <div class="roadmap-desc">数据库改造以支持多租户隔离；任意社区均可获得 <code>xxx.organichub.fun</code> 子域名。最先执行——所有后续阶段的基础依赖。</div>
+      <!-- Section 5: 商业模式 -->
+      <div class="section">
+        <div class="section-title"><span class="num">5</span>商业模式——如何盈利</div>
+        <p>三条收入来源，均在社区成功时才产生成本——设计上与客户利益对齐。</p>
+
+        <div class="revenue-grid">
+          <div class="rev-card">
+            <div class="rev-card-header">免费版</div>
+            <div class="rev-card-body">
+              <span class="highlight">$0</span>
+              <p>全功能 Hub，有限 AI 管家用量（每日 50 次操作）。获取顶层流量漏斗。</p>
+            </div>
+          </div>
+          <div class="rev-card">
+            <div class="rev-card-header">认证版订阅</div>
+            <div class="rev-card-body">
+              <span class="highlight">月付 $ORG</span>
+              <p>自定义域名、无限 AI 管家、实时操作、Scan 高级档案、高级 AI 功能。</p>
+            </div>
+          </div>
+          <div class="rev-card">
+            <div class="rev-card-header">奖励池分成</div>
+            <div class="rev-card-body">
+              <span class="highlight">1–3%</span>
+              <p>当社区通过平台实际发放奖励时抽取，超过月 $1K 阈值后生效。仅对成功社区收费。</p>
+            </div>
+          </div>
+        </div>
+
+        <table style="margin-top: 16px">
+          <thead>
+            <tr>
+              <th>规模</th>
+              <th>预估月度基础设施成本</th>
+              <th>盈亏平衡点</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1–10 个社区</td>
+              <td>$200–500</td>
+              <td>自筹覆盖（种子期）</td>
+            </tr>
+            <tr>
+              <td>10–50 个社区</td>
+              <td>$1,000–3,000</td>
+              <td>1–2 个付费认证版覆盖</td>
+            </tr>
+            <tr>
+              <td>50–200 个社区</td>
+              <td>$5,000–20,000</td>
+              <td>5–10 个成功社区的奖励池分成覆盖</td>
+            </tr>
+            <tr>
+              <td>200–1,000 个社区</td>
+              <td>$20,000–100,000+</td>
+              <td>头部 10% 社区覆盖 80%+ 的平台成本</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p style="margin-top: 8px; font-size: 9pt">
+          <strong>结构逻辑：</strong
+          >幂律效应意味着少数大型成功社区覆盖所有人的基础设施成本。免费版构建流量漏斗；奖励池分成在赢家身上获取上行收益。不发行平台代币分配，不进行股权稀释。
+        </p>
+      </div>
+
+      <!-- Section 6: 路线图 -->
+      <div class="section">
+        <div class="section-title"><span class="num">6</span>产品路线图（6 个阶段）</div>
+
+        <div class="roadmap-row">
+          <div class="phase-badge">阶段 A</div>
+          <div class="roadmap-content">
+            <div class="roadmap-title">多租户基础设施 + 子域名路由</div>
+            <div class="roadmap-desc">
+              数据库改造以支持多租户隔离；任意社区均可获得
+              <code>xxx.organichub.fun</code> 子域名。最先执行——所有后续阶段的基础依赖。
+            </div>
+          </div>
+        </div>
+
+        <div class="roadmap-row">
+          <div class="phase-badge">阶段 B</div>
+          <div class="roadmap-content">
+            <div class="roadmap-title">Organic Passport + Squads 多签国库 + 轮值理事会治理</div>
+            <div class="roadmap-desc">
+              灵魂绑定 NFT 身份层；每个社区拥有真正的去中心化链上国库；社区选举轮值签名人。
+            </div>
+          </div>
+        </div>
+
+        <div class="roadmap-row">
+          <div class="phase-badge">阶段 C</div>
+          <div class="roadmap-content">
+            <div class="roadmap-title">AI 管家（运营自动化层）+ 引导章程模板</div>
+            <div class="roadmap-desc">
+              <strong>最核心的工程项目。</strong>没有 AI
+              管家，多租户就无法规模化——其他社区的创始人不会接受还需要手动推动每件事的系统。
+            </div>
+          </div>
+        </div>
+
+        <div class="roadmap-row">
+          <div class="phase-badge">阶段 D</div>
+          <div class="roadmap-content">
+            <div class="roadmap-title">Organic Scan（社区发现层）</div>
+            <div class="roadmap-desc">
+              面向所有加密社区的公开健康度评分，无论是否使用 Organic。驱动平台的自然增长和顶层获客。
+            </div>
+          </div>
+        </div>
+
+        <div class="roadmap-row">
+          <div class="phase-badge">阶段 E</div>
+          <div class="roadmap-content">
+            <div class="roadmap-title">认证版订阅计费 + 奖励池分成核算</div>
+            <div class="roadmap-desc">以 $ORG 计价的订阅系统；链上分成收费机制；功能分级管控。</div>
+          </div>
+        </div>
+
+        <div class="roadmap-row">
+          <div class="phase-badge">阶段 F</div>
+          <div class="roadmap-content">
+            <div class="roadmap-title">发射台合作伙伴接洽（Bonk 优先）</div>
+            <div class="roadmap-desc">
+              需阶段 A–E 完成后启动。届时平台具备向发射台推介的完整故事：10
+              分钟自动开通、非托管国库、AI 驱动的社区存活率。
+            </div>
+          </div>
+        </div>
+
+        <div class="roadmap-row">
+          <div class="phase-badge">并行</div>
+          <div class="roadmap-content">
+            <div class="roadmap-title">品牌视觉升级 + 持币人/合作伙伴路演材料</div>
+            <div class="roadmap-desc">
+              独立于工程阶段并行推进，现在即可启动。2–4 周完成品牌方向，再加 1–2 周完成路演 PPT
+              初稿。
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 7: 现状 vs 规划 -->
+      <div class="section">
+        <div class="section-title"><span class="num">7</span>现状 vs 即将实现</div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>状态</th>
+              <th>内容</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="status-done">✅ 已上线</span></td>
+              <td>$ORG 社区的完整 DAO 平台（约 70 名成员，organichub.fun）</td>
+            </tr>
+            <tr>
+              <td><span class="status-done">✅ 已上线</span></td>
+              <td>任务管理、提案、投票、冲刺周期、国库看板、声誉系统、数据分析</td>
+            </tr>
+            <tr>
+              <td><span class="status-done">✅ 已上线</span></td>
+              <td>AI 辅助翻译、内容创作、XP 积分体系、连续登录奖励</td>
+            </tr>
+            <tr>
+              <td><span class="status-done">✅ 已上线</span></td>
+              <td>安全加固（3 个严重 + 3 个高危漏洞修复，186 个新断言，4 份审计报告）</td>
+            </tr>
+            <tr>
+              <td><span class="status-next">🔲 即将</span></td>
+              <td>多租户（任意社区均可入驻）</td>
+            </tr>
+            <tr>
+              <td><span class="status-next">🔲 即将</span></td>
+              <td>Organic Passport 身份层</td>
+            </tr>
+            <tr>
+              <td><span class="status-next">🔲 即将</span></td>
+              <td>AI 管家（自驱动社区运营）</td>
+            </tr>
+            <tr>
+              <td><span class="status-next">🔲 即将</span></td>
+              <td>Organic Scan 发现层</td>
+            </tr>
+            <tr>
+              <td><span class="status-next">🔲 即将</span></td>
+              <td>认证版订阅 + 分成收入</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Section 8: 成功标准 -->
+      <div class="section">
+        <div class="section-title"><span class="num">8</span>v2 成功标准（7 项可验证指标）</div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>指标</th>
+              <th>验证方式</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>多租户隔离正常运行</td>
+              <td>两个测试社区数据完全隔离，RLS 无泄漏</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>15 分钟内完成社区开通</td>
+              <td>从首次点击到国库 + 冲刺 + 成员加入，全程不超过 15 分钟</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>国库非托管</td>
+              <td>Organic 从不持有任何租户的私钥，通过 Squads 链上浏览器可验证</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>社区自驱动运营</td>
+              <td>AI 管家编排完整冲刺周期，理事会签名，无需 Organic 内部人员手动干预</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>Scan 产出真实 Alpha</td>
+              <td>识别出至少 3 个"强社区、低代币价格"的真实案例</td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>Passport 被至少 1 个外部应用采用</td>
+              <td>1 个非 Organic 的 Solana 应用读取 Passport 凭证用于身份门控</td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td>幂律收入成立</td>
+              <td>认证版上线 6 个月内，头部 10 个成功租户覆盖 ≥80% 的基础设施成本</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <div class="footer-left">© 2026 Organic · 保密文件，请勿转发</div>
+        <div class="footer-right">organichub.fun · @organic_bonk</div>
       </div>
     </div>
-
-    <div class="roadmap-row">
-      <div class="phase-badge">阶段 B</div>
-      <div class="roadmap-content">
-        <div class="roadmap-title">Organic Passport + Squads 多签国库 + 轮值理事会治理</div>
-        <div class="roadmap-desc">灵魂绑定 NFT 身份层；每个社区拥有真正的去中心化链上国库；社区选举轮值签名人。</div>
-      </div>
-    </div>
-
-    <div class="roadmap-row">
-      <div class="phase-badge">阶段 C</div>
-      <div class="roadmap-content">
-        <div class="roadmap-title">AI 管家（运营自动化层）+ 引导章程模板</div>
-        <div class="roadmap-desc"><strong>最核心的工程项目。</strong>没有 AI 管家，多租户就无法规模化——其他社区的创始人不会接受还需要手动推动每件事的系统。</div>
-      </div>
-    </div>
-
-    <div class="roadmap-row">
-      <div class="phase-badge">阶段 D</div>
-      <div class="roadmap-content">
-        <div class="roadmap-title">Organic Scan（社区发现层）</div>
-        <div class="roadmap-desc">面向所有加密社区的公开健康度评分，无论是否使用 Organic。驱动平台的自然增长和顶层获客。</div>
-      </div>
-    </div>
-
-    <div class="roadmap-row">
-      <div class="phase-badge">阶段 E</div>
-      <div class="roadmap-content">
-        <div class="roadmap-title">认证版订阅计费 + 奖励池分成核算</div>
-        <div class="roadmap-desc">以 $ORG 计价的订阅系统；链上分成收费机制；功能分级管控。</div>
-      </div>
-    </div>
-
-    <div class="roadmap-row">
-      <div class="phase-badge">阶段 F</div>
-      <div class="roadmap-content">
-        <div class="roadmap-title">发射台合作伙伴接洽（Bonk 优先）</div>
-        <div class="roadmap-desc">需阶段 A–E 完成后启动。届时平台具备向发射台推介的完整故事：10 分钟自动开通、非托管国库、AI 驱动的社区存活率。</div>
-      </div>
-    </div>
-
-    <div class="roadmap-row">
-      <div class="phase-badge">并行</div>
-      <div class="roadmap-content">
-        <div class="roadmap-title">品牌视觉升级 + 持币人/合作伙伴路演材料</div>
-        <div class="roadmap-desc">独立于工程阶段并行推进，现在即可启动。2–4 周完成品牌方向，再加 1–2 周完成路演 PPT 初稿。</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Section 7: 现状 vs 规划 -->
-  <div class="section">
-    <div class="section-title"><span class="num">7</span>现状 vs 即将实现</div>
-
-    <table>
-      <thead>
-        <tr><th>状态</th><th>内容</th></tr>
-      </thead>
-      <tbody>
-        <tr><td><span class="status-done">✅ 已上线</span></td><td>$ORG 社区的完整 DAO 平台（约 70 名成员，organichub.fun）</td></tr>
-        <tr><td><span class="status-done">✅ 已上线</span></td><td>任务管理、提案、投票、冲刺周期、国库看板、声誉系统、数据分析</td></tr>
-        <tr><td><span class="status-done">✅ 已上线</span></td><td>AI 辅助翻译、内容创作、XP 积分体系、连续登录奖励</td></tr>
-        <tr><td><span class="status-done">✅ 已上线</span></td><td>安全加固（3 个严重 + 3 个高危漏洞修复，186 个新断言，4 份审计报告）</td></tr>
-        <tr><td><span class="status-next">🔲 即将</span></td><td>多租户（任意社区均可入驻）</td></tr>
-        <tr><td><span class="status-next">🔲 即将</span></td><td>Organic Passport 身份层</td></tr>
-        <tr><td><span class="status-next">🔲 即将</span></td><td>AI 管家（自驱动社区运营）</td></tr>
-        <tr><td><span class="status-next">🔲 即将</span></td><td>Organic Scan 发现层</td></tr>
-        <tr><td><span class="status-next">🔲 即将</span></td><td>认证版订阅 + 分成收入</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Section 8: 成功标准 -->
-  <div class="section">
-    <div class="section-title"><span class="num">8</span>v2 成功标准（7 项可验证指标）</div>
-
-    <table>
-      <thead>
-        <tr><th>#</th><th>指标</th><th>验证方式</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>1</td><td>多租户隔离正常运行</td><td>两个测试社区数据完全隔离，RLS 无泄漏</td></tr>
-        <tr><td>2</td><td>15 分钟内完成社区开通</td><td>从首次点击到国库 + 冲刺 + 成员加入，全程不超过 15 分钟</td></tr>
-        <tr><td>3</td><td>国库非托管</td><td>Organic 从不持有任何租户的私钥，通过 Squads 链上浏览器可验证</td></tr>
-        <tr><td>4</td><td>社区自驱动运营</td><td>AI 管家编排完整冲刺周期，理事会签名，无需 Organic 内部人员手动干预</td></tr>
-        <tr><td>5</td><td>Scan 产出真实 Alpha</td><td>识别出至少 3 个"强社区、低代币价格"的真实案例</td></tr>
-        <tr><td>6</td><td>Passport 被至少 1 个外部应用采用</td><td>1 个非 Organic 的 Solana 应用读取 Passport 凭证用于身份门控</td></tr>
-        <tr><td>7</td><td>幂律收入成立</td><td>认证版上线 6 个月内，头部 10 个成功租户覆盖 ≥80% 的基础设施成本</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Footer -->
-  <div class="footer">
-    <div class="footer-left">© 2026 Organic · 保密文件，请勿转发</div>
-    <div class="footer-right">organichub.fun · @organic_bonk</div>
-  </div>
-
-</div>
-</body>
+  </body>
 </html>
