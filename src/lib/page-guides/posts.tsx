@@ -117,7 +117,7 @@ function OrganicPostsVisual() {
           <p className="text-xs font-bold text-white">Organic-Related Posts</p>
         </div>
         <div className="space-y-1.5 text-[10px] text-gray-300">
-          <p>Posts about Organic DAO, ORG token, governance, or the ecosystem.</p>
+          <p>Posts about Organic Hub, ORG token, governance, or the ecosystem.</p>
           <div className="rounded-lg bg-green-500/10 border border-green-500/20 px-2.5 py-1.5">
             <p className="text-green-300 font-medium">3 free organic posts per week</p>
             <p className="text-[9px] text-gray-400 mt-0.5">After that, discounted rate (3-8 pts)</p>
@@ -189,7 +189,7 @@ export const guide: PageGuide = {
     {
       title: 'Organic Posts — Free & Rewarding',
       description:
-        'Posts about Organic DAO get 3 free per week and earn bonus rewards. Toggle "Organic-related" in the composer. The community can flag posts that aren\'t truly organic — 3 flags removes the bonus.',
+        'Posts about Organic Hub get 3 free per week and earn bonus rewards. Toggle "Organic-related" in the composer. The community can flag posts that aren\'t truly organic — 3 flags removes the bonus.',
       visual: <OrganicPostsVisual />,
     },
     {

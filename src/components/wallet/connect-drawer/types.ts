@@ -15,7 +15,6 @@ export interface WalletMainViewProps extends WalletViewProps {
   recentWallet: Wallet | null;
   popularWallets: Wallet[];
   availableWalletsCount: number;
-  recentWalletName: string | null;
   onShowAll: () => void;
 }
 

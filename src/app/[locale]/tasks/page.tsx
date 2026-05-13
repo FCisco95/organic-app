@@ -12,7 +12,6 @@ import {
   TaskStatus,
   buildTaskStatusLaneCounts,
   STANDARD_LABEL_KEYS,
-  getLabelDisplay,
 } from '@/features/tasks';
 
 import { createClient } from '@/lib/supabase/client';

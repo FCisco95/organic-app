@@ -111,7 +111,7 @@ export async function awardXp(
   supabase: DbClient,
   options: AwardXpOptions
 ): Promise<AwardXpResult> {
-  const { userId, eventType, xpAmount, sourceType, sourceId, metadata } = options;
+  const { userId, eventType, xpAmount, metadata } = options;
 
   if (xpAmount <= 0) {
     return { awarded: false, xpAwarded: 0, bonusApplied: false, reason: 'zero_xp' };

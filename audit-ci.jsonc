@@ -75,13 +75,6 @@
       }
     },
     {
-      "GHSA-xq3m-2v4x-88gg": {
-        "active": true,
-        "notes": "protobufjs prototype-pollution. Transitive via @solana/wallet-adapter-wallets > @solana/wallet-adapter-trezor > @trezor/* > @trezor/protobuf > protobufjs. Fix requires breaking @solana/wallet-adapter-wallets bump (same track as GHSA-r5fr-rjxr-66jc).",
-        "expiry": "2026-07-15T00:00:00Z"
-      }
-    },
-    {
       "GHSA-6chq-wfr3-2hj9": {
         "active": true,
         "notes": "axios@1.15.0 header injection via prototype pollution. Transitive 7-deep via @solana/wallet-adapter-wallets > @solana/wallet-adapter-trezor > @trezor/connect-web > @trezor/connect > @trezor/blockchain-link-utils > @stellar/stellar-sdk. Fix requires bumping @stellar/stellar-sdk (currently pinned by @trezor/blockchain-link-utils@1.5.2). Tracked alongside the @solana/wallet-adapter-wallets major upgrade.",

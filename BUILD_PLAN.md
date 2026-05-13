@@ -1,4 +1,4 @@
-# Organic DAO Platform — Build Plan
+# Organic Hub Platform — Build Plan
 
 For session-by-session implementation notes see `SESSION_LOG.md`.
 
@@ -43,8 +43,9 @@ Brand/comms sprint running in parallel to codebase work. Full plan in `~/Documen
 
 | Task | Status | Notes |
 |---|---|---|
-| `wallets.json` endpoint at `/wallets.json` | 🔲 Not started | Serve labeled wallets JSON via Vercel routing |
-| AGPL-3.0 `LICENSE` file + README update | 🔲 Not started | 30-min task |
+| `wallets.json` endpoint at `/wallets.json` | ✅ Shipped | Public wallet labels validated by unit tests |
+| AGPL-3.0 `LICENSE` file + README update | ✅ Shipped | License metadata present in `package.json` / lockfile |
+| Strict unused-code cleanup | ✅ Complete | Removed unused locals/imports/private helpers; `tsc --noUnusedLocals --noUnusedParameters` clean on 2026-05-13 |
 | `src/types/database.ts` regeneration | 🔲 Not started | Closes ~120 of 201 `as any` casts |
 | `/tasks/[id]` bundle size (334 kB → dynamic imports) | 🔲 Not started | Deferred from hardening pass |
 | XER UI | 🔲 Blocked | Needs `engagement_handles` seeded + `TWITTER_TOKEN_ENCRYPTION_KEY` confirmed |

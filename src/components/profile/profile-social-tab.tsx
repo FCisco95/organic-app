@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { useRouter } from '@/i18n/navigation';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import {
@@ -55,7 +54,6 @@ export function ProfileSocialTab({
   userId,
 }: ProfileSocialTabProps) {
   const t = useTranslations('Profile');
-  const router = useRouter();
   const searchParams = useSearchParams();
 
   const [twitterAccount, setTwitterAccount] = useState<LinkedTwitterAccount | null>(null);

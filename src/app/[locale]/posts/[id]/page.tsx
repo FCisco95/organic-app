@@ -12,14 +12,11 @@ import {
   Megaphone,
   Send,
   Clock,
-  LinkIcon,
-  AlignLeft,
   Leaf,
   Sparkles,
   Flag,
   Rocket,
   ShieldCheck,
-  ShieldX,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { PageContainer } from '@/components/layout';

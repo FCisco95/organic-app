@@ -186,7 +186,7 @@ export function useCastVote() {
         body: JSON.stringify(input),
       });
     },
-    onSuccess: (data, variables) => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: votingKeys.results(variables.proposalId) });
       // Invalidate user vote queries - the user ID will be refetched
       queryClient.invalidateQueries({

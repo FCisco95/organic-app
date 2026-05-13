@@ -361,7 +361,6 @@ function main() {
     // 2. Copy missing keys from en to other locales
     for (const locale of LOCALES) {
       if (locale === PRIMARY_LOCALE) continue;
-      const missing = missingFromLocales[locale];
       // Also include any newly-stubbed keys
       let addedCount = 0;
       for (const key of updatedEnFlat.keys()) {

@@ -3,9 +3,8 @@
 import { useMemo } from 'react';
 import Link from 'next/link';
 import { Trophy, Award, ChevronRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { useAchievements } from '@/features/reputation/hooks';
-import { RARITY_ORDER, RARITY_COLORS, type AchievementWithStatus } from '@/features/reputation';
+import { RARITY_ORDER } from '@/features/reputation';
 import { AchievementCard } from './achievement-card';
 
 export function TrophyShowcase() {

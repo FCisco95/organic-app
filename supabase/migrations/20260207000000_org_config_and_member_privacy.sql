@@ -30,7 +30,7 @@ ALTER TABLE orgs
 ALTER TABLE user_profiles
   ADD COLUMN IF NOT EXISTS profile_visible BOOLEAN NOT NULL DEFAULT true;
 
--- 3. Seed the initial Organic DAO org with current hardcoded values
+-- 3. Seed the initial Organic Hub org with current hardcoded values
 INSERT INTO orgs (
   name,
   slug,
@@ -48,7 +48,7 @@ INSERT INTO orgs (
 VALUES (
   'Organic',
   'organic',
-  'Organic DAO Community',
+  'Organic Hub Community',
   '$ORG',
   '',
   9,

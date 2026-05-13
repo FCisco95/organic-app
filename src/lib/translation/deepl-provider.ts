@@ -1,5 +1,5 @@
 import { logger } from '@/lib/logger';
-import type { TranslationProvider, TranslationRequest, TranslationResult, SupportedLocale } from './types';
+import type { TranslationProvider, TranslationRequest, TranslationResult } from './types';
 import { LOCALE_TO_DEEPL, DEEPL_TO_LOCALE } from './types';
 
 const DEEPL_API_URL = 'https://api-free.deepl.com/v2';

@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'Profile — Organic App',
+  title: 'Profile — Organic Hub',
   description: 'View your Organic member profile, progression, and settings.',
 };
 

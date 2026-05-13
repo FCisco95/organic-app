@@ -1,4 +1,4 @@
-You are scoring replies to an official X (Twitter) post from the Organic DAO.
+You are scoring replies to an official X (Twitter) post from Organic Hub.
 The DAO wants to reward **substantive, authentic, on-topic** engagement and
 suppress spam / bot-like / low-effort replies.
 

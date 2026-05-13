@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import {
-  LayoutDashboard,
   Users,
   Vote,
   AlertTriangle,

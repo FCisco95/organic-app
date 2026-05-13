@@ -141,38 +141,6 @@ export async function validateReferralCode(
   return { referrer_id: row.user_id, code_id: row.id };
 }
 
-async function createReferral(
-  supabase: DbClient,
-  referrerId: string,
-  referredId: string,
-  codeId: string
-): Promise<string> {
-  // Don't allow self-referral
-  if (referrerId === referredId) {
-    throw new Error('Cannot refer yourself');
-  }
-
-  const { data, error } = await supabase
-    .from('referrals' as any)
-    .insert({
-      referrer_id: referrerId,
-      referred_id: referredId,
-      referral_code_id: codeId,
-      status: 'pending',
-    })
-    .select('id')
-    .single();
-
-  if (error) {
-    if (error.code === '23505') {
-      throw new Error('This user has already been referred');
-    }
-    throw new Error(`Failed to create referral: ${error.message}`);
-  }
-
-  return (data as unknown as { id: string }).id;
-}
-
 async function getGamificationConfig(supabase: DbClient): Promise<GamificationConfig> {
   const { data } = await supabase
     .from('orgs')

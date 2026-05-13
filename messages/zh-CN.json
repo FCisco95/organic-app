@@ -1,8 +1,8 @@
 {
   "Home": {
     "title": "欢迎来到",
-    "description": "一个为Organic DAO打造的社区协调平台。提出想法、投票决策、协作任务。",
-    "heroKicker": "Organic DAO",
+    "description": "一个为 Organic Hub 打造的社区协调平台。提出想法、投票决策、协作任务。",
+    "heroKicker": "Organic Hub",
     "heroNetwork": "Solana 主网",
     "heroLead": "社区协作",
     "heroTitle": "一个治理与执行中心，面向",
@@ -31,7 +31,7 @@
     "heroAccessTitle": "成员权限",
     "heroAccessBody": "链接持有 $ORG 的钱包以解锁治理、任务与贡献者工具。",
     "poweredByOrg": "由$ORG驱动",
-    "poweredByOrgDescription": "Organic DAO是一个由社区驱动的Solana组织。持有$ORG代币以参与治理并塑造未来。",
+    "poweredByOrgDescription": "Organic Hub 是一个由社区驱动的 Solana 组织。持有$ORG代币以参与治理并塑造未来。",
     "contractAddress": "合约地址",
     "loading": "加载中...",
     "participate": "参与",
@@ -361,7 +361,7 @@
     "changeWalletAction": "更换钱包",
     "disconnectWalletAction": "断开连接",
     "drawerTitle": "连接钱包",
-    "drawerSubtext": "连接钱包以访问 Organic DAO。资金始终由你掌控。本应用已通过安全审计。",
+    "drawerSubtext": "连接钱包以访问 Organic Hub。资金始终由你掌控。本应用已通过安全审计。",
     "closeDrawer": "关闭抽屉",
     "searchWalletsPlaceholder": "搜索钱包...",
     "backToPopular": "返回热门",
@@ -451,7 +451,7 @@
     "leftPanelFooter": "去中心化团队的透明治理。"
   },
   "LoginBackup": {
-    "brandName": "Organic DAO",
+    "brandName": "Organic Hub",
     "tagline": "社区协作平台",
     "welcomeBack": "欢迎回来",
     "joinOrganic": "加入 Organic",
@@ -521,7 +521,7 @@
   },
   "Proposals": {
     "title": "提案",
-    "subtitle": "提交想法并对 Organic DAO 的提案进行投票",
+    "subtitle": "提交想法并对 Organic Hub 的提案进行投票",
     "governanceSignalLabel": "治理信号",
     "reviewDiscussionCta": "查看讨论阶段",
     "metricOpenLifecycle": "开放流程",
@@ -613,7 +613,7 @@
     "backToProposals": "返回提案列表",
     "title": "创建新提案",
     "editTitle": "编辑提案",
-    "subtitle": "与 Organic DAO 社区分享你的想法",
+    "subtitle": "与 Organic Hub 社区分享你的想法",
     "lifecycleHintLabel": "流程提示",
     "lifecycleHintText": "先以草稿完善结构，再发布进入理事会评估、讨论和投票阶段。",
     "labelTitle": "标题",
@@ -1681,7 +1681,7 @@
     "getOrganicId": "获取Organic ID",
     "verifying": "验证中...",
     "verifiedMemberTitle": "您是经过验证的成员！",
-    "verifiedMemberDescription": "您现在可以创建提案、对决策进行投票并参与Organic DAO。",
+    "verifiedMemberDescription": "您现在可以创建提案、对决策进行投票并参与 Organic Hub。",
     "changeProfilePicture": "更改个人资料图片",
     "toastConnectWallet": "请先连接您的钱包",
     "toastSignInFirst": "请先登录",
@@ -2145,7 +2145,7 @@
   },
   "Treasury": {
     "heroTitle": "DAO 财务",
-    "heroDescription": "Organic DAO 财务资助社区活动、开发和生态系统增长。所有支出需要通过提案系统获得治理批准。",
+    "heroDescription": "Organic Hub 财务资助社区活动、开发和生态系统增长。所有支出需要通过提案系统获得治理批准。",
     "emissionPolicyTitle": "发行策略",
     "policyEmissionPercent": "发行比例 %",
     "policyFixedCap": "固定上限",
@@ -2214,7 +2214,7 @@
   },
   "Members": {
     "title": "成员",
-    "description": "浏览 Organic DAO 社区目录",
+    "description": "浏览 Organic Hub 社区目录",
     "totalMembers": "{count} 位成员",
     "searchPlaceholder": "按姓名或邮箱搜索...",
     "filters": {
@@ -3461,7 +3461,7 @@
   },
   "Community": {
     "title": "社区",
-    "subtitle": "认识构建 Organic DAO 的成员 — 浏览排行榜和成员目录。",
+    "subtitle": "认识构建 Organic Hub 的成员 — 浏览排行榜和成员目录。",
     "leaderboardError": "无法加载排名。排行榜数据暂时不可用。",
     "tabRankings": "排行榜",
     "tabDirectory": "成员目录",
@@ -3508,7 +3508,7 @@
     "heading": "迷失在花园里？",
     "description": "此页面已被移动或不再存在。让我们帮您找到正确的方向。",
     "goBack": "返回上一页",
-    "footer": "Organic DAO",
+    "footer": "Organic Hub",
     "cards": {
       "home": {
         "title": "首页",
@@ -3606,7 +3606,7 @@
   "ForProjects": {
     "badge": "抢先体验计划",
     "heroTitle": "你的社区值得拥有真正的工具",
-    "heroSubtitle": "驱动 Organic DAO 的同一平台 — 治理、任务、奖励和数据分析 — 为你的项目准备就绪。社区操作系统，不只是一个仪表盘。",
+    "heroSubtitle": "驱动 Organic Hub 的同一平台 — 治理、任务、奖励和数据分析 — 为你的项目准备就绪。社区操作系统，不只是一个仪表盘。",
     "socialProof": "由 Organic 社区构建。经过真实治理和真实贡献者的实战检验。",
     "tiersTitle": "选择你的方案",
     "tiersSubtitle": "限定10个测试项目 — 早期用户享有优先支持",
@@ -3723,7 +3723,7 @@
     "composerLinkHint": "每篇帖子都需要一个链接。分享推文、文章或任何URL。",
     "composerLinkRequired": "需要链接URL",
     "composerOrganicLabel": "Organic相关",
-    "composerOrganicHint": "关于Organic DAO的帖子获得额外奖励",
+    "composerOrganicHint": "关于 Organic Hub 的帖子获得额外奖励",
     "composerFreeRemaining": "本周剩余{count}篇免费",
     "composerNoFreeRemaining": "之后需要积分",
     "composerPointsLabel": "积分",
@@ -3968,7 +3968,7 @@
       "step3Title": "消费积分",
       "step3Desc": "创建非有机帖子需要消耗积分（保持信息流无垃圾）。你还可以推广你的帖子以获得更高曝光——推广帖子会被突出显示并从互动中获得额外奖励。",
       "step4Title": "有机帖子——免费且有奖励",
-      "step4Desc": "关于Organic DAO的帖子每周有3次免费机会并获得额外奖励。在编辑器中启用与Organic相关。社区可以举报不是真正有机的帖子——3次举报将取消奖励。",
+      "step4Desc": "关于 Organic Hub 的帖子每周有3次免费机会并获得额外奖励。在编辑器中启用与Organic相关。社区可以举报不是真正有机的帖子——3次举报将取消奖励。",
       "step5Title": "入门指南",
       "step5Desc": "刚加入社区？从免费有机帖子开始，与他人互动，查看任务页面。你的第一个悬赏任务将给你足够的积分来开始创建付费内容。"
     },
@@ -3992,7 +3992,7 @@
     "signInCta": "登录",
     "signUpCta": "注册账户",
     "postsTitle": "登录后查看社区动态",
-    "postsDescription": "浏览 Organic DAO 的更新、讨论和公告。登录后即可点赞、评论，并从每次互动中赚取 XP。",
+    "postsDescription": "浏览 Organic Hub 的更新、讨论和公告。登录后即可点赞、评论，并从每次互动中赚取 XP。",
     "communityTitle": "登录后认识社区成员",
     "communityDescription": "查看排行榜、连胜记录和成员目录。登录后追踪你在榜单上的位置。",
     "ideasTitle": "登录后浏览想法",

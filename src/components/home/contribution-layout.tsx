@@ -76,13 +76,11 @@ const NAV_CARDS: NavCard[] = [
 interface ContributionLayoutProps {
   proposalCount: number;
   sprintActive: boolean;
-  activityCount: number;
 }
 
 export function ContributionLayout({
   proposalCount,
   sprintActive,
-  activityCount,
 }: ContributionLayoutProps) {
   const t = useTranslations('Home');
 

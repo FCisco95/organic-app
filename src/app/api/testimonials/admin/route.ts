@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic';
 
 const ADMIN_ROLES = ['admin', 'council'];
 
-async function requireAdmin(request: Request) {
+async function requireAdmin() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -29,8 +29,8 @@ async function requireAdmin(request: Request) {
   return { ok: true as const, userId: user.id, role: profile.role };
 }
 
-export async function GET(request: Request) {
-  const auth = await requireAdmin(request);
+export async function GET(_request: Request) {
+  const auth = await requireAdmin();
   if (!auth.ok) {
     return NextResponse.json({ data: null, error: auth.error }, { status: auth.status });
   }
@@ -95,7 +95,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const auth = await requireAdmin(request);
+  const auth = await requireAdmin();
   if (!auth.ok) {
     return NextResponse.json({ data: null, error: auth.error }, { status: auth.status });
   }

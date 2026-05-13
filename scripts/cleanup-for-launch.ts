@@ -49,7 +49,7 @@ async function deleteFrom(table: string, filter?: { column: string; op: string; 
       // Delete all rows — need a filter, use id > 0 or created_at is not null
       query = query.gte('id', 0);
     }
-    const { error, count } = await query;
+    const { error } = await query;
     if (error) {
       // Try with uuid-style filter if int id fails
       if (error.message.includes('invalid input syntax')) {

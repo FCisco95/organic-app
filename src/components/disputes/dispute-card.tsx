@@ -3,10 +3,7 @@
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import type { DisputeListItem } from '@/features/disputes/types';
-import {
-  getDisputeSlaUrgency,
-  isReviewerResponseTracked,
-} from '@/features/disputes/sla';
+import { getDisputeSlaUrgency } from '@/features/disputes/sla';
 import { cn } from '@/lib/utils';
 import { formatRelativeTime } from './dispute-detail/utils';
 
@@ -46,7 +43,6 @@ export function DisputeCard({ dispute }: DisputeCardProps) {
     }
       ? t(`reason.${dispute.reason}`)
       : dispute.reason;
-  const tracksReviewerResponse = isReviewerResponseTracked(dispute.status);
   const slaUrgency = getDisputeSlaUrgency(dispute.response_deadline);
 
   const slaChipClass: Record<typeof slaUrgency, string> = {

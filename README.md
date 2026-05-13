@@ -1,8 +1,8 @@
-# Organic App
+# Organic Hub
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 
-DAO governance and task management platform for Organic DAO
+Community governance and task management platform for Organic Hub
 
 Licensed under the GNU Affero General Public License v3.0 — see [LICENSE](LICENSE).
 
@@ -18,7 +18,7 @@ A full-stack application for managing DAO proposals, voting, task management, an
 - **Styling**: Tailwind CSS + shadcn/ui
 - **State Management**: React Query
 - **Validation**: Zod
-- **Analytics**: Plausible
+- **Analytics**: Supabase-backed product analytics, treasury metrics, and market data
 
 ## Project Structure
 
@@ -32,7 +32,7 @@ Core architecture map:
 - `messages/` locale dictionaries (`en`, `pt-PT`, `zh-CN`)
 - `supabase/migrations/` SQL migrations
 
-## Platform Status (2026-03-01)
+## Platform Status (2026-05-13)
 
 Implemented and active:
 
@@ -50,15 +50,17 @@ Implemented and active:
 - Onboarding foundation (4-step wizard + progress APIs; cohorts still pending)
 - Ideas incubator baseline (`/ideas`, `/ideas/[id]`, vote/comment/KPI APIs, promote/winner endpoints, source-idea proposal linkage) behind feature flag
 - Internationalization (`en`, `pt-PT`, `zh-CN`) and Wave 2 UI/UX revamp
+- Public `/wallets.json` labeling endpoint and AGPL-3.0 licensing files
+- Codebase cleanup pass: strict unused-local/unused-parameter check is clean, with lint/unit/build regression validation passing
 
 Open and in progress:
 
-- Launch gate closure: blocking manual QA matrix completion + staging schema-cache alignment for proposal execution-window writes
 - Cohort onboarding layer (assignment, cohort leaderboard/widgets)
 - Ideas incubator hardening (admin moderation UX controls + integrity/manual QA pass)
 - Treasury spending analytics + multi-sig integration
 - Email digest/announcement delivery layer (Resend + system announcements)
 - Integrations backlog (Discord, GitHub contribution tracking, on-chain activity verification)
+- XER UI, live-schema `database.ts` regeneration, and `/tasks/[id]` bundle-size reduction
 
 For detailed roadmap and per-phase status, see [BUILD_PLAN.md](./BUILD_PLAN.md).  
 For manual QA coverage, see [docs/qa-runbook.md](./docs/qa-runbook.md).
@@ -374,7 +376,7 @@ See `supabase/migrations/` for full schema definitions.
 
 ## License
 
-Copyright (C) 2026 Organic DAO.
+Copyright (C) 2026 Organic Hub.
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU Affero General Public License version 3 as published by

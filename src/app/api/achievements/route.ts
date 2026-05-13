@@ -2,9 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { logger } from '@/lib/logger';
 
-const ACHIEVEMENT_COLUMNS =
-  'id, name, description, icon, category, condition_type, condition_field, condition_threshold, xp_reward, rarity, set_id, chain_id, chain_order, is_hidden, prerequisite_achievement_id, created_at';
-
 export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient();

@@ -3,7 +3,7 @@
 import { FilterX, Heart, MessageSquare, Upload, Users } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import { getLabelDisplay, type Sprint, type TaskListItem, type TaskTab, type TaskStatus } from '@/features/tasks';
+import { type Sprint, type TaskListItem, type TaskTab, type TaskStatus } from '@/features/tasks';
 
 const STATUS_TEXT_COLOR: Record<TaskStatus, string> = {
   backlog: 'text-muted-foreground',

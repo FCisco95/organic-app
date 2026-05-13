@@ -2,6 +2,42 @@
 
 Add newest entries at the top.
 
+## 2026-05-13 (Session: Organic Hub naming cleanup)
+
+### Summary
+
+Updated app-facing legacy brand copy to `Organic Hub` across locale files, page metadata, wallet signing copy, page guides, seed content, prompts, QA docs, and static reference files. Verified no remaining exact legacy brand phrases outside `package-lock.json`.
+
+### Validation
+
+- Full-repo legacy brand phrase scan, excluding generated/vendor files and `package-lock.json`, returns no matches
+- `npm run lint`
+- `npm test`
+
+---
+
+## 2026-05-13 (Session: Codebase simplification + docs refresh)
+
+### Summary
+
+Repo-wide maintenance pass focused on documentation drift and unused code. Updated the current project information files, removed unused locals/imports/private helpers, and validated the cleanup in three passes.
+
+### Findings and fixes
+
+- Documentation drift: `BUILD_PLAN.md` still listed `wallets.json` and AGPL licensing as not started even though both had shipped. Updated `README.md`, `BUILD_PLAN.md`, and `PROJECT_CONTEXT.md`.
+- Unused-code drift: strict TypeScript unused checks found unused icon imports, unused route parameters, dead local helper components, a private unused referral helper, and unused test/script locals. Removed or marked them intentionally.
+- Remaining larger work: live-schema `src/types/database.ts` regeneration and `/tasks/[id]` dynamic-import split remain intentionally open.
+
+### Validation
+
+- Pass 1 baseline: `npm run lint`, `npm test`, `npm run build`
+- Pass 2 cleanup check: `npx tsc --noEmit --noUnusedLocals --noUnusedParameters --pretty false`
+- Pass 3 final regression: lint/unit/build rerun after edits
+
+Detailed audit note: `docs/audits/code-simplification-audit-2026-05-13.md`.
+
+---
+
 ## 2026-05-11 (Session: Multi-tenant platform readiness — design brainstorm)
 
 ### Summary
@@ -1757,4 +1793,3 @@ Tested cross-account post engagement using QA fixture accounts (qa-admin, qa-mem
 ### Commit
 
 `110f004` — `fix(posts): deduplicate engagement points + fix like/comment count triggers`
-

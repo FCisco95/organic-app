@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'Sprint Detail — Organic App',
+  title: 'Sprint Detail — Organic Hub',
   description: 'View sprint tasks, progress, and contributor activity.',
 };
 

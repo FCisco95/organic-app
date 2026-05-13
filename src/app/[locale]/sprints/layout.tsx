@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'Sprints — Organic App',
+  title: 'Sprints — Organic Hub',
   description: 'Plan milestones, assign owners, and ship work in focused sprint cycles.',
 };
 

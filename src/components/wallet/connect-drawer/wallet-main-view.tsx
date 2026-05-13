@@ -10,7 +10,6 @@ export function WalletMainView({
   recentWallet,
   popularWallets,
   availableWalletsCount,
-  recentWalletName,
   onSelectWallet,
   isDisabled,
   focusedIndex,

@@ -1,8 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { useTranslations } from 'next-intl';
-import { ArrowLeft, Trophy, Award, Star, Lock } from 'lucide-react';
+import { ArrowLeft, Trophy, Award, Star } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { useAchievementsWithSets } from '@/features/reputation/hooks';
@@ -101,7 +100,6 @@ function RarestShowcase({ achievements }: { achievements: AchievementWithStatus[
 }
 
 export default function TrophiesPage() {
-  const t = useTranslations('Reputation');
   const { data, isLoading } = useAchievementsWithSets();
   const achievements = useMemo(() => data?.achievements ?? [], [data]);
   const sets = useMemo(() => data?.sets ?? [], [data]);

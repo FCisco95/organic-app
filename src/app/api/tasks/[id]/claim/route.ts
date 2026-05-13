@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { logger } from '@/lib/logger';
 
 // POST - Join a task (universal self-join: always uses task_assignees)
-export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function POST(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: taskId } = await params;
     const supabase = await createClient();
@@ -91,7 +91,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 }
 
 // DELETE - Leave a task
-export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: taskId } = await params;
     const supabase = await createClient();

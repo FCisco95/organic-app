@@ -318,7 +318,6 @@ export default function Home() {
         <ContributionLayout
           proposalCount={proposalStageCounts.public + proposalStageCounts.qualified + proposalStageCounts.discussion + proposalStageCounts.voting}
           sprintActive={!!inFlightSprint}
-          activityCount={activity.length}
         />
       </section>
 

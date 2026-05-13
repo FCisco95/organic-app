@@ -228,7 +228,6 @@ export function EggHuntProvider() {
         <DiscoveryOverlay
           eggNumber={discovery.eggNumber}
           shareUrl={discovery.shareUrl}
-          tweetText={discovery.tweetText}
           xpAwarded={discovery.xpAwarded}
           onClose={handleCloseDiscovery}
         />

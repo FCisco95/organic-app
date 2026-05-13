@@ -8,7 +8,6 @@ import { getEggElement, getRarityLabel } from '@/features/easter/elements';
 interface DiscoveryOverlayProps {
   eggNumber: number;
   shareUrl: string;
-  tweetText: string;
   xpAwarded: number;
   onClose: () => void;
 }
@@ -26,7 +25,6 @@ function playSound(src: string) {
 export function DiscoveryOverlay({
   eggNumber,
   shareUrl,
-  tweetText,
   xpAwarded,
   onClose,
 }: DiscoveryOverlayProps) {

@@ -11,7 +11,7 @@ const SPRINT_SNAPSHOT_COLUMNS =
   'id, sprint_id, completed_by, completed_at, total_tasks, completed_tasks, incomplete_tasks, total_points, completed_points, completion_rate, task_summary, incomplete_action, created_at';
 
 // GET - Fetch a single sprint with its tasks
-export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const supabase = await createClient();
@@ -37,7 +37,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     }
 
     // Fetch tasks associated with this sprint
-    const { data: tasks, error: tasksError } = await supabase
+    const { data: tasks } = await supabase
       .from('tasks')
       .select(
         `
@@ -158,7 +158,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 }
 
 // DELETE - Delete a sprint
-export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const supabase = await createClient();
