@@ -8,7 +8,7 @@ import { checkUserRestriction } from '@/lib/moderation';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
-export async function POST(request: NextRequest, { params }: RouteParams) {
+export async function POST(_request: NextRequest, { params }: RouteParams) {
   try {
     const { id: postId } = await params;
     const supabase = await createClient();

@@ -1,8 +1,8 @@
 {
   "Home": {
     "title": "Welcome to",
-    "description": "A community coordination platform for the Organic DAO. Propose ideas, vote on decisions, and collaborate on tasks.",
-    "heroKicker": "Organic DAO",
+    "description": "A community coordination platform for Organic Hub. Propose ideas, vote on decisions, and collaborate on tasks.",
+    "heroKicker": "Organic Hub",
     "heroNetwork": "Solana Mainnet",
     "heroLead": "Community coordination",
     "heroTitle": "A governance and execution hub for",
@@ -31,7 +31,7 @@
     "heroAccessTitle": "Member access",
     "heroAccessBody": "Link a wallet holding $ORG to unlock governance, tasks, and contributor tools.",
     "poweredByOrg": "Powered by $ORG",
-    "poweredByOrgDescription": "The Organic DAO is a community-driven organization on Solana. Hold $ORG tokens to participate in governance and shape the future.",
+    "poweredByOrgDescription": "Organic Hub is a community-driven organization on Solana. Hold $ORG tokens to participate in governance and shape the future.",
     "contractAddress": "Contract Address",
     "loading": "Loading...",
     "participate": "Participate",
@@ -361,7 +361,7 @@
     "changeWalletAction": "Change Wallet",
     "disconnectWalletAction": "Disconnect",
     "drawerTitle": "Connect Wallet",
-    "drawerSubtext": "Connect your wallet to access Organic DAO. Your funds remain in your control. This app has been audited for security.",
+    "drawerSubtext": "Connect your wallet to access Organic Hub. Your funds remain in your control. This app has been audited for security.",
     "closeDrawer": "Close drawer",
     "searchWalletsPlaceholder": "Search wallets...",
     "backToPopular": "Back to popular",
@@ -451,7 +451,7 @@
     "leftPanelFooter": "Transparent governance for decentralized teams."
   },
   "LoginBackup": {
-    "brandName": "Organic DAO",
+    "brandName": "Organic Hub",
     "tagline": "Community Coordination Platform",
     "welcomeBack": "Welcome Back",
     "joinOrganic": "Join Organic",
@@ -521,7 +521,7 @@
   },
   "Proposals": {
     "title": "Proposals",
-    "subtitle": "Submit ideas and vote on proposals for the Organic DAO",
+    "subtitle": "Submit ideas and vote on proposals for Organic Hub",
     "governanceSignalLabel": "Governance signal",
     "reviewDiscussionCta": "Review discussion stage",
     "metricOpenLifecycle": "Open lifecycle",
@@ -613,7 +613,7 @@
     "backToProposals": "Back to Proposals",
     "title": "Create New Proposal",
     "editTitle": "Edit Proposal",
-    "subtitle": "Share your idea with the Organic DAO community",
+    "subtitle": "Share your idea with the Organic Hub community",
     "lifecycleHintLabel": "Lifecycle hint",
     "lifecycleHintText": "Draft with structure first, then publish for council qualification, discussion, and voting.",
     "labelTitle": "Title",
@@ -1681,7 +1681,7 @@
     "getOrganicId": "Get Organic ID",
     "verifying": "Verifying...",
     "verifiedMemberTitle": "You're a verified member!",
-    "verifiedMemberDescription": "You can now create proposals, vote on decisions, and participate in the Organic DAO.",
+    "verifiedMemberDescription": "You can now create proposals, vote on decisions, and participate in Organic Hub.",
     "changeProfilePicture": "Change profile picture",
     "toastConnectWallet": "Please connect your wallet first",
     "toastSignInFirst": "Please sign in first",
@@ -2145,7 +2145,7 @@
   },
   "Treasury": {
     "heroTitle": "DAO Treasury",
-    "heroDescription": "The Organic DAO treasury funds community initiatives, development, and ecosystem growth. All spending requires governance approval through the proposal system.",
+    "heroDescription": "The Organic Hub treasury funds community initiatives, development, and ecosystem growth. All spending requires governance approval through the proposal system.",
     "emissionPolicyTitle": "Emission policy",
     "policyEmissionPercent": "Emission %",
     "policyFixedCap": "Fixed cap",
@@ -2214,7 +2214,7 @@
   },
   "Members": {
     "title": "Members",
-    "description": "Browse the Organic DAO community directory",
+    "description": "Browse the Organic Hub community directory",
     "totalMembers": "{count} members",
     "searchPlaceholder": "Search by name or email...",
     "filters": {
@@ -3484,7 +3484,7 @@
   },
   "Community": {
     "title": "Community",
-    "subtitle": "Meet the people building the Organic DAO — explore rankings and the member directory.",
+    "subtitle": "Meet the people building Organic Hub — explore rankings and the member directory.",
     "leaderboardError": "Unable to load rankings. The leaderboard data is temporarily unavailable.",
     "tabRankings": "Rankings",
     "tabDirectory": "Directory",
@@ -3597,7 +3597,7 @@
     "composerLinkHint": "Every post needs a link. Share a tweet, article, or any URL.",
     "composerLinkRequired": "A link URL is required",
     "composerOrganicLabel": "Organic-related",
-    "composerOrganicHint": "Posts about Organic DAO get bonus rewards",
+    "composerOrganicHint": "Posts about Organic Hub get bonus rewards",
     "composerFreeRemaining": "{count} free this week",
     "composerNoFreeRemaining": "Paid from here",
     "composerPointsLabel": "pts",
@@ -3639,7 +3639,7 @@
     "heading": "Lost in the garden?",
     "description": "This page has been moved or doesn't exist anymore. Let us help you find your way.",
     "goBack": "Back to previous page",
-    "footer": "Organic DAO",
+    "footer": "Organic Hub",
     "cards": {
       "home": {
         "title": "Home",
@@ -3870,7 +3870,7 @@
       "step3Title": "Spending Points",
       "step3Desc": "Creating non-organic posts costs points (keeping the feed spam-free). You can also promote your posts for extra visibility — promoted posts get highlighted and earn bonus rewards from engagement.",
       "step4Title": "Organic Posts — Free & Rewarding",
-      "step4Desc": "Posts about Organic DAO get 3 free per week and earn bonus rewards. Toggle \"Organic-related\" in the composer. The community can flag posts that aren't truly organic — 3 flags removes the bonus.",
+      "step4Desc": "Posts about Organic Hub get 3 free per week and earn bonus rewards. Toggle \"Organic-related\" in the composer. The community can flag posts that aren't truly organic — 3 flags removes the bonus.",
       "step5Title": "Getting Started",
       "step5Desc": "New to the community? Start with free organic posts, engage with others, and check the quests page. Your first task bounty will give you enough points to start creating paid content and promoting posts."
     },
@@ -3931,7 +3931,7 @@
   "ForProjects": {
     "badge": "Early Access Program",
     "heroTitle": "Your Community Deserves Real Tools",
-    "heroSubtitle": "The same platform powering Organic DAO — governance, tasks, rewards, and analytics — ready for your project. Community OS, not just another dashboard.",
+    "heroSubtitle": "The same platform powering Organic Hub — governance, tasks, rewards, and analytics — ready for your project. Community OS, not just another dashboard.",
     "socialProof": "Built by the Organic community. Battle-tested with real governance and real contributors.",
     "tiersTitle": "Choose Your Plan",
     "tiersSubtitle": "Limited to 10 beta projects — early adopters get priority support",
@@ -3991,7 +3991,7 @@
     "signInCta": "Sign in",
     "signUpCta": "Create account",
     "postsTitle": "Sign in to read the community feed",
-    "postsDescription": "Browse updates, threads, and announcements from the Organic DAO. Sign in to like, comment, and earn XP from every engagement.",
+    "postsDescription": "Browse updates, threads, and announcements from Organic Hub. Sign in to like, comment, and earn XP from every engagement.",
     "communityTitle": "Sign in to meet the community",
     "communityDescription": "Explore rankings, streaks, and the member directory. Sign in to track your own position on the leaderboard.",
     "ideasTitle": "Sign in to browse ideas",

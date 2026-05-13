@@ -274,7 +274,7 @@ async function seedProposals(adminId: string, orgId: string) {
       solution: 'Adopt a 40/25/20/15 allocation model: 40% for development bounties and contractor payments, 25% for community rewards and XP-to-token conversions, 20% for operational costs (hosting, tools, services), and 15% held in reserve for emergencies or strategic opportunities. Quarterly reviews to adjust percentages based on DAO needs.',
       budget: 'This proposal covers the allocation framework, not a specific amount. Actual disbursements will follow as separate proposals.',
       timeline: 'Immediate upon passing. First quarterly review scheduled 90 days after ratification.',
-      body: 'This proposal establishes the foundational treasury allocation for Organic DAO. See summary, motivation, and solution fields for full details.',
+      body: 'This proposal establishes the foundational treasury allocation for Organic Hub. See summary, motivation, and solution fields for full details.',
     },
     {
       title: 'Sprint cadence: weekly vs. biweekly',
@@ -285,7 +285,7 @@ async function seedProposals(adminId: string, orgId: string) {
       solution: 'Option A: Weekly sprints (7 days) with 1-day planning phase and 1-day review phase. Option B: Biweekly sprints (14 days) with 2-day planning phase and 2-day review phase. Both options maintain the existing phase lifecycle (planning, active, review, dispute window, settlement). Vote on your preferred option.',
       budget: 'No budget implications. This is a process decision.',
       timeline: 'Effective starting with the sprint after this proposal passes.',
-      body: 'This proposal determines the standard sprint length for Organic DAO. See summary, motivation, and solution fields for full details.',
+      body: 'This proposal determines the standard sprint length for Organic Hub. See summary, motivation, and solution fields for full details.',
     },
     {
       title: 'Contributor Reward Structure',
@@ -296,7 +296,7 @@ async function seedProposals(adminId: string, orgId: string) {
       solution: 'Base points by task type: Development (8-15pts), Design (6-10pts), Content (3-8pts), Community (3-5pts), Twitter engagement (1-3pts). XP multiplier: 10 XP per point earned. Bonus rules: first-time contributor bonus (+50% on first completed task), streak bonus (+10% per consecutive sprint with a completed task, max +50%), quality bonus (reviewer can award up to +25% for exceptional work). Sprint MVP gets a 2x multiplier on their highest-value task.',
       budget: 'No direct budget — this defines the framework for how sprint reward pools are distributed.',
       timeline: 'Effective starting with the next sprint after ratification.',
-      body: 'This proposal defines the contributor reward structure for Organic DAO, including base points per task type, XP multipliers, and bonus rules.',
+      body: 'This proposal defines the contributor reward structure for Organic Hub, including base points per task type, XP multipliers, and bonus rules.',
     },
     {
       title: 'Community Guidelines & Code of Conduct',
@@ -307,7 +307,7 @@ async function seedProposals(adminId: string, orgId: string) {
       solution: 'Core principles: (1) Assume good intent — disagree with ideas, not people. (2) Back claims with reasoning — "I don\'t like it" is not governance. (3) Respect the process — use ideas for brainstorming, proposals for decisions, comments for discussion. (4) No spam, shilling, or self-promotion outside designated channels. Moderation: first offense = warning, second = 24h mute, third = council review for potential removal. Appeals go through a proposal. All moderation actions are logged publicly.',
       budget: 'No budget required.',
       timeline: 'Effective immediately upon passing.',
-      body: 'This proposal establishes community guidelines and a code of conduct for Organic DAO members.',
+      body: 'This proposal establishes community guidelines and a code of conduct for Organic Hub members.',
     },
     {
       title: 'First Community Call: format and schedule',
@@ -318,7 +318,7 @@ async function seedProposals(adminId: string, orgId: string) {
       solution: 'Proposed format: 45-minute call on X Spaces (public, attracts new members) or Discord (private, better for focused discussion). Suggested cadence: biweekly on Thursdays, alternating between 10:00 UTC (EU/Asia friendly) and 18:00 UTC (Americas/EU friendly). Agenda template: (1) Sprint recap — 10 min, (2) Active proposals discussion — 15 min, (3) Open floor / Q&A — 15 min, (4) Preview next sprint — 5 min. Recorded and posted to the feed for async members.',
       budget: 'No direct costs. Recording/editing volunteer needed (could be a sprint task).',
       timeline: 'First call within 2 weeks of this proposal passing.',
-      body: 'This proposal decides the format, platform, cadence, and agenda for Organic DAO community calls.',
+      body: 'This proposal decides the format, platform, cadence, and agenda for Organic Hub community calls.',
     },
   ];
 

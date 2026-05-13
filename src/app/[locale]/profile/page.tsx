@@ -14,7 +14,6 @@ import {
   Info,
   Hash,
   Award,
-  Trophy,
   User,
 } from 'lucide-react';
 import toast from 'react-hot-toast';

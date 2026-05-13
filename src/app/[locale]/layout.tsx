@@ -11,11 +11,9 @@ import { RestrictionBanner } from '@/components/layout/restriction-banner';
 
 import type { Viewport } from 'next';
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://organichub.fun';
-
 export const metadata: Metadata = {
-  title: 'Organic App',
-  description: 'DAO governance and task management platform for Organic DAO. Propose ideas, vote on decisions, earn XP, and shape the future.',
+  title: 'Organic Hub',
+  description: 'Community governance and task management platform for Organic Hub. Propose ideas, vote on decisions, earn XP, and shape the future.',
   icons: {
     icon: '/favicon.ico',
     apple: '/apple-touch-icon.png',

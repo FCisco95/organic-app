@@ -81,11 +81,6 @@ export function TaskDetailSummary({
       ? translation.description
       : task.description ?? '';
 
-  const getContributorName = (contributor: Contributor) => {
-    if (contributor.organic_id) return t('organicId', { id: contributor.organic_id });
-    return contributor.name ?? contributor.email;
-  };
-
   // Avatar stack component
   const AvatarStack = ({ users, maxVisible = 4 }: { users: { id: string; avatar_url?: string | null; name?: string | null; email?: string | null; organic_id?: number | null }[]; maxVisible?: number }) => {
     const visible = users.slice(0, maxVisible);

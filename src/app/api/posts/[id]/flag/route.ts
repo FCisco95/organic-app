@@ -11,7 +11,7 @@ type RouteParams = { params: Promise<{ id: string }> };
  * DELETE — Admin: restore organic bonus (penalizes false flaggers)
  */
 
-export async function POST(request: NextRequest, { params }: RouteParams) {
+export async function POST(_request: NextRequest, { params }: RouteParams) {
   try {
     const { id: postId } = await params;
     const supabase = await createClient();
@@ -96,7 +96,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 /**
  * DELETE — Admin: restore organic bonus and penalize false flaggers (-5 pts each)
  */
-export async function DELETE(request: NextRequest, { params }: RouteParams) {
+export async function DELETE(_request: NextRequest, { params }: RouteParams) {
   try {
     const { id: postId } = await params;
     const supabase = await createClient();

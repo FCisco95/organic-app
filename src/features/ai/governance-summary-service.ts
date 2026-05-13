@@ -134,7 +134,7 @@ async function collectMetrics(): Promise<DaoMetricsSnapshot> {
 // ─── AI Generation ───────────────────────────────────────────────────────────
 
 function buildPrompt(metrics: DaoMetricsSnapshot): string {
-  return `You are a DAO governance analyst. Analyze the following metrics for Organic DAO and produce a concise health summary.
+  return `You are a governance analyst. Analyze the following metrics for Organic Hub and produce a concise health summary.
 
 ## Current Metrics (last 7 days)
 

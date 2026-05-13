@@ -19,7 +19,7 @@ export function ContentSubmissionForm({ task, onSuccess, onCancel }: SubmissionF
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { isSubmitting },
     watch,
   } = useForm({
     resolver: zodResolver(contentSubmissionSchema),

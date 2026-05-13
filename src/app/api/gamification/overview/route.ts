@@ -12,8 +12,6 @@ const USER_PROFILE_COLUMNS =
   'xp_total, level, current_streak, longest_streak, total_points, tasks_completed, claimable_points, wallet_pubkey';
 const XP_EVENT_COLUMNS =
   'id, user_id, event_type, source_type, source_id, xp_amount, metadata, created_at';
-const ACHIEVEMENT_COLUMNS =
-  'id, name, description, icon, category, condition_type, condition_field, condition_threshold, xp_reward, rarity, set_id, chain_id, chain_order, is_hidden, prerequisite_achievement_id, created_at';
 
 function parseRewardsConfig(value: unknown): RewardsConfig {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {

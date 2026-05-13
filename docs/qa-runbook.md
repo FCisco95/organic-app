@@ -1,4 +1,4 @@
-# QA Runbook — Organic App
+# QA Runbook — Organic Hub
 
 Manual QA workbook for validating current features and collecting redesign-ready feedback.
 

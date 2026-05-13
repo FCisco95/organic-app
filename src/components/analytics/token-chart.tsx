@@ -39,8 +39,6 @@ export function TokenChart() {
     );
   }
 
-  const activeProvider = PROVIDERS.find((p) => p.key === provider)!;
-
   return (
     <div className="rounded-2xl border border-border bg-card overflow-hidden">
       {/* Header with provider tabs */}

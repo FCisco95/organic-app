@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, useEffect, Suspense } from 'react';
+import { useMemo, useEffect, Suspense } from 'react';
 import { useUrlFilters } from '@/hooks/use-url-filters';
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';

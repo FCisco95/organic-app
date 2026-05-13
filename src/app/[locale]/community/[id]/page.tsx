@@ -65,67 +65,6 @@ function StatCard({
 }
 
 /* ------------------------------------------------------------------ */
-/*  XP Sparkline — tiny inline SVG showing upward trend to current XP */
-/* ------------------------------------------------------------------ */
-function XpSparkline({ xpTotal }: { xpTotal: number }) {
-  const points = useMemo(() => {
-    // Generate 8 points trending upward with some noise
-    const steps = 8;
-    const result: number[] = [];
-    for (let i = 0; i < steps; i++) {
-      const base = (xpTotal * (i + 1)) / steps;
-      const noise = (Math.random() - 0.5) * xpTotal * 0.12;
-      result.push(Math.max(0, base + noise));
-    }
-    // Ensure last point is actual XP
-    result[steps - 1] = xpTotal;
-    return result;
-  }, [xpTotal]);
-
-  if (xpTotal <= 0) return null;
-
-  const width = 60;
-  const height = 20;
-  const max = Math.max(...points);
-  const min = Math.min(...points);
-  const range = max - min || 1;
-
-  const pathData = points
-    .map((p, i) => {
-      const x = (i / (points.length - 1)) * width;
-      const y = height - ((p - min) / range) * (height - 4) - 2;
-      return `${i === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`;
-    })
-    .join(' ');
-
-  return (
-    <svg
-      width={width}
-      height={height}
-      viewBox={`0 0 ${width} ${height}`}
-      className="inline-block ml-1.5 align-middle"
-      aria-hidden="true"
-    >
-      <path
-        d={pathData}
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="text-organic-terracotta"
-        style={{
-          strokeDasharray: 200,
-          strokeDashoffset: 200,
-          animation: 'sparkline-draw 1.2s ease-out forwards 0.3s',
-        }}
-      />
-      <style>{`@keyframes sparkline-draw { to { stroke-dashoffset: 0; } }`}</style>
-    </svg>
-  );
-}
-
-/* ------------------------------------------------------------------ */
 /*  Contribution Heatmap — GitHub-style 365-day grid                  */
 /* ------------------------------------------------------------------ */
 function ContributionHeatmap({
@@ -319,27 +258,6 @@ function ContributionHeatmap({
           {tooltip.text}
         </div>
       )}
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  Contribution Heatmap Skeleton                                     */
-/* ------------------------------------------------------------------ */
-function HeatmapSkeleton() {
-  return (
-    <div className="bg-card rounded-xl border border-border p-4 mb-6 animate-pulse">
-      <div className="h-4 w-40 bg-muted rounded mb-3" />
-      <div className="flex gap-px">
-        {Array.from({ length: 20 }).map((_, i) => (
-          <div key={i} className="flex flex-col gap-px">
-            {Array.from({ length: 7 }).map((_, j) => (
-              <div key={j} className="w-[11px] h-[11px] rounded-[2px] bg-muted" />
-            ))}
-          </div>
-        ))}
-      </div>
-      <div className="h-3 w-48 bg-muted rounded mt-2" />
     </div>
   );
 }

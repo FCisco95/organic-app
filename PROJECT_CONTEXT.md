@@ -88,7 +88,7 @@ Role systems are **not finalized** and expected to evolve.
 - Wave 2 UI/UX revamp complete across all surfaces
 - Accessibility pass (WCAG 2.1 AA aria-labels, aria-hidden)
 - Internationalization: en, pt-PT, zh-CN
-- Codebase standardization: all hooks use `fetchJson`/`buildQueryString`, shared Zod schemas, consistent feature domain structure, kebab-case file naming, 89 unit tests
+- Codebase standardization: all hooks use `fetchJson`/`buildQueryString`, shared Zod schemas, consistent feature domain structure, kebab-case file naming, 133 unit tests, and strict unused-local/unused-parameter checks passing as of 2026-05-13
 
 **Recent ships (post-launch):**
 
@@ -100,6 +100,8 @@ Role systems are **not finalized** and expected to evolve.
 - Egg badges everywhere (byline, profile, members, leaderboard, post/task/proposal comments) — ✅ Shipped PRs #113–#115
 - Egg-recipient micro-badge (denormalized count, badge on posts/profile/members/leaderboard) — ✅ Shipped PR #112
 - Comprehensive hardening pass (3 CRIT + 3 HIGH security fixes, 186 new assertions, audit reports) — ✅ Shipped PR #121 May 8
+- Sprint 1 credibility basics (`wallets.json` + AGPL-3.0 license) — ✅ Shipped PRs #123–#124 May 10–11
+- Unused-code simplification pass — ✅ Local cleanup May 13; strict `tsc --noUnusedLocals --noUnusedParameters`, lint, unit tests, and build validated
 
 **What is still open or incomplete:**
 
@@ -111,8 +113,6 @@ Role systems are **not finalized** and expected to evolve.
 - Ideas incubator hardening (moderation UX controls, abuse checks, and manual QA closure)
 - Discord bot / GitHub contribution tracking
 - Multi-tenant / white-label support (future)
-- wallets.json endpoint at `/wallets.json` (Sprint 1 Task 1.4 — in scope next)
-- AGPL-3.0 LICENSE file in repo (Sprint 1 Task 1.5 — in scope next)
 - `src/types/database.ts` regeneration from live schema (closes ~120 of 201 `as any` casts)
 - `/tasks/[id]` bundle size: 334 kB → needs dynamic-import for below-fold sections
 
@@ -188,11 +188,11 @@ These are areas where agent input is explicitly welcome.
 
 ### 11. Project Status Summary
 
-**As of 2026-05-11.** Organic Hub is live at organichub.fun with ~50 real users. All core DAO flows (auth, tasks, proposals, voting, sprints, disputes, rewards, reputation, notifications, analytics, treasury) are built, tested, and UX-revamped. The foundation is solid and post-launch hardening is complete.
+**As of 2026-05-13.** Organic Hub is live at organichub.fun with ~50 real users. All core DAO flows (auth, tasks, proposals, voting, sprints, disputes, rewards, reputation, notifications, analytics, treasury) are built, tested, and UX-revamped. The foundation is solid; post-launch hardening, Sprint 1 credibility basics, and an unused-code simplification pass are complete.
 
 **Strategic direction (v2):** Multi-tenant platform readiness — see canonical design spec at `docs/superpowers/specs/2026-05-11-multi-tenant-platform-readiness-design.md`. Four-layer architecture (Identity / Index / Tenant / Economic), 13 locked decisions, 11 sequenced sub-sessions (9 engineering phases + 2 brand/communication parallel track). v2 introduces three product surfaces — **Organic Hub** (current DAO platform, multi-tenant), **Organic Passport** (soulbound personhood credential), **Organic Scan** (community-health discovery + alpha-hunting). The central engineering bet is Pillar 4 (community management via AI Steward) — without it, multi-tenancy stays founder-dependent and the business model fails.
 
-**Current focus (near-term, parallel to v2 planning):** Sprint 1 codebase items (`wallets.json` endpoint + AGPL-3.0 license — license shipped 2026-05-10 PR #123, wallets.json shipped 2026-05-11 PR #124). Non-code brand/comms work runs in parallel.
+**Current focus (near-term, parallel to v2 planning):** database type regeneration, `/tasks/[id]` bundle-size reduction, and XER UI once `engagement_handles` is seeded and `TWITTER_TOKEN_ENCRYPTION_KEY` is confirmed. Non-code brand/comms work runs in parallel.
 
 **Next on-product build priorities:**
 1. **V2 planning kickoff** — open sub-session 1 (multi-tenant data model migration) via `superpowers:writing-plans`; or sub-session 10 (brand identity refresh) for the parallel brand track

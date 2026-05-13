@@ -130,9 +130,6 @@ export async function GET() {
 
     const allClaimed = cachedClaimedEggs as any[];
     const globallyClaimedNumbers = new Set(allClaimed.map((e: any) => e.egg_number as number));
-    const userOwnedNumbers = new Set(
-      allClaimed.filter((e: any) => e.user_id === user.id).map((e: any) => e.egg_number as number)
-    );
 
     // If all 10 eggs are claimed globally, no more golden egg spawns for anyone
     if (globallyClaimedNumbers.size >= 10) {

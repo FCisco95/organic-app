@@ -3,8 +3,8 @@ import { describe, it, expect } from 'vitest';
 describe('Blockchain Security', () => {
   it('should validate message domain in SIWS', () => {
     // Document that SIWS messages must contain app domain
-    const validMessage = 'organic-app-rust.vercel.app wants you to sign in with your Solana account.\n\nSign this message to link your wallet to Organic App.\n\nNonce: abc123';
-    const invalidMessage = 'evil-site.com wants you to sign in with your Solana account.\n\nSign this message to link your wallet to Organic App.\n\nNonce: abc123';
+    const validMessage = 'organic-app-rust.vercel.app wants you to sign in with your Solana account.\n\nSign this message to link your wallet to Organic Hub.\n\nNonce: abc123';
+    const invalidMessage = 'evil-site.com wants you to sign in with your Solana account.\n\nSign this message to link your wallet to Organic Hub.\n\nNonce: abc123';
 
     const appDomain = 'organic-app-rust.vercel.app';
     expect(validMessage.includes(appDomain)).toBe(true);

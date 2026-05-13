@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-**Project:** Organic App — a DAO-style platform built with Next.js App Router, Supabase, and Solana wallet linking. Core domains: auth, tasks, proposals, voting, sprints, members, notifications, reputation, analytics, treasury. Live at organichub.fun.
+**Project:** Organic Hub — a DAO-style platform built with Next.js App Router, Supabase, and Solana wallet linking. Core domains: auth, tasks, proposals, voting, sprints, members, notifications, reputation, analytics, treasury. Live at organichub.fun.
 
 Operational instructions for Claude Code in this repository. Keep this file short, stable, and execution-focused.
 

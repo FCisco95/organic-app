@@ -132,12 +132,6 @@ export async function POST(
 
     // If overturned: approve the submission and award points
     if (input.resolution === 'overturned') {
-      const { data: task } = await supabase
-        .from('tasks')
-        .select('base_points')
-        .eq('id', dispute.task_id)
-        .single();
-
       // Points are settled at sprint close; earned_points left null here.
       const { error: subError } = await supabase
         .from('task_submissions')
@@ -162,12 +156,6 @@ export async function POST(
 
     // If compromise: update submission with new quality score
     if (input.resolution === 'compromise' && input.new_quality_score) {
-      const { data: task } = await supabase
-        .from('tasks')
-        .select('base_points')
-        .eq('id', dispute.task_id)
-        .single();
-
       // Points are settled at sprint close; earned_points left null here.
       const { error: subError } = await supabase
         .from('task_submissions')

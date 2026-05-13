@@ -3,7 +3,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/features/auth/context';
 import {
-  Sprint,
   SprintFormData,
   SPRINT_PHASE_SEQUENCE,
   SprintStats,
@@ -19,7 +18,6 @@ import {
 
 import {
   AlertTriangle,
-  Calendar,
   CheckCircle2,
   ChevronDown,
   Milestone,

@@ -29,7 +29,7 @@ const CADENCE_COLORS: Record<QuestCadence, { ring: string; badge: string; icon: 
   event: { ring: '#34d399', badge: 'bg-emerald-500/15 text-emerald-400', icon: 'text-emerald-400' },
 };
 
-function getCadenceIcon(questId: string, cadence: QuestCadence) {
+function getCadenceIcon(questId: string) {
   if (questId.includes('vote') || questId.includes('governance')) return Vote;
   if (questId.includes('xp')) return Zap;
   if (questId.includes('streak') || questId.includes('active_days')) return Calendar;
@@ -46,7 +46,7 @@ export function QuestCard({ quest }: QuestCardProps) {
   const isCompleted = quest.completed;
   const cadence = quest.cadence;
   const colors = CADENCE_COLORS[cadence];
-  const Icon = getCadenceIcon(quest.id, cadence);
+  const Icon = getCadenceIcon(quest.id);
   const cta = QUEST_CTA_MAP[quest.id];
 
   return (

@@ -1,5 +1,4 @@
 import { Database, SprintStatus } from '@/types/database';
-import type { Json } from '@/types/database';
 
 // Base database types
 export type Sprint = Database['public']['Tables']['sprints']['Row'];

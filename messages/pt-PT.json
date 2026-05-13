@@ -361,7 +361,7 @@
     "changeWalletAction": "Alterar Carteira",
     "disconnectWalletAction": "Desconectar",
     "drawerTitle": "Conectar Carteira",
-    "drawerSubtext": "Conecte sua carteira para acessar o Organic DAO. Seus fundos permanecem sob seu controle. Este app foi auditado por seguranca.",
+    "drawerSubtext": "Conecte sua carteira para acessar o Organic Hub. Seus fundos permanecem sob seu controle. Este app foi auditado por seguranca.",
     "closeDrawer": "Fechar painel",
     "searchWalletsPlaceholder": "Pesquisar carteiras...",
     "backToPopular": "Voltar as populares",
@@ -451,7 +451,7 @@
     "leftPanelFooter": "Governança transparente para equipas descentralizadas."
   },
   "LoginBackup": {
-    "brandName": "Organic DAO",
+    "brandName": "Organic Hub",
     "tagline": "Plataforma de coordenação comunitária",
     "welcomeBack": "Bem-vindo de volta",
     "joinOrganic": "Junte-se ao Organic",
@@ -2214,7 +2214,7 @@
   },
   "Members": {
     "title": "Membros",
-    "description": "Explorar o diretório da comunidade Organic DAO",
+    "description": "Explorar o diretório da comunidade Organic Hub",
     "totalMembers": "{count} membros",
     "searchPlaceholder": "Pesquisar por nome ou email...",
     "filters": {
@@ -3461,7 +3461,7 @@
   },
   "Community": {
     "title": "Comunidade",
-    "subtitle": "Conhece as pessoas que constroem a Organic DAO — explora rankings e o diretório de membros.",
+    "subtitle": "Conhece as pessoas que constroem o Organic Hub — explora rankings e o diretório de membros.",
     "leaderboardError": "Não foi possível carregar os rankings. Os dados do ranking estão temporariamente indisponíveis.",
     "tabRankings": "Rankings",
     "tabDirectory": "Diretório",
@@ -3508,7 +3508,7 @@
     "heading": "Perdido no jardim?",
     "description": "Esta página foi movida ou já não existe. Vamos ajudá-lo a encontrar o caminho.",
     "goBack": "Voltar à página anterior",
-    "footer": "Organic DAO",
+    "footer": "Organic Hub",
     "cards": {
       "home": {
         "title": "Início",
@@ -3606,7 +3606,7 @@
   "ForProjects": {
     "badge": "Programa de Acesso Antecipado",
     "heroTitle": "A Tua Comunidade Merece Ferramentas Reais",
-    "heroSubtitle": "A mesma plataforma que alimenta a Organic DAO — governança, tarefas, recompensas e analíticas — pronta para o teu projeto. Community OS, não apenas mais um painel.",
+    "heroSubtitle": "A mesma plataforma que alimenta o Organic Hub — governança, tarefas, recompensas e analíticas — pronta para o teu projeto. Community OS, não apenas mais um painel.",
     "socialProof": "Construído pela comunidade Organic. Testado com governança real e contribuidores reais.",
     "tiersTitle": "Escolhe o Teu Plano",
     "tiersSubtitle": "Limitado a 10 projetos beta — primeiros adotantes têm suporte prioritário",
@@ -3723,7 +3723,7 @@
     "composerLinkHint": "Cada publicacao precisa de um link. Partilhe um tweet, artigo ou qualquer URL.",
     "composerLinkRequired": "Um URL de link e obrigatorio",
     "composerOrganicLabel": "Relacionado com Organic",
-    "composerOrganicHint": "Publicacoes sobre Organic DAO ganham bonus",
+    "composerOrganicHint": "Publicacoes sobre Organic Hub ganham bonus",
     "composerFreeRemaining": "{count} gratis esta semana",
     "composerNoFreeRemaining": "Pago a partir daqui",
     "composerPointsLabel": "pts",
@@ -3968,7 +3968,7 @@
       "step3Title": "Gastar Pontos",
       "step3Desc": "Criar publicações não-orgânicas custa pontos (mantendo o feed livre de spam). Também podes promover as tuas publicações para mais visibilidade — publicações promovidas são destacadas e ganham recompensas bónus.",
       "step4Title": "Publicações Orgânicas — Gratuitas e Recompensadoras",
-      "step4Desc": "Publicações sobre a Organic DAO têm 3 gratuitas por semana e ganham recompensas bónus. Ativa \"Relacionado com Organic\" no compositor. A comunidade pode sinalizar publicações que não são verdadeiramente orgânicas — 3 sinalizações removem o bónus.",
+      "step4Desc": "Publicações sobre o Organic Hub têm 3 gratuitas por semana e ganham recompensas bónus. Ativa \"Relacionado com Organic\" no compositor. A comunidade pode sinalizar publicações que não são verdadeiramente orgânicas — 3 sinalizações removem o bónus.",
       "step5Title": "Começar",
       "step5Desc": "Novo na comunidade? Começa com publicações orgânicas gratuitas, interage com outros e verifica a página de missões. A tua primeira tarefa de recompensa dar-te-á pontos suficientes para começar a criar conteúdo pago."
     },
@@ -3992,7 +3992,7 @@
     "signInCta": "Entrar",
     "signUpCta": "Criar conta",
     "postsTitle": "Entra para ler o feed da comunidade",
-    "postsDescription": "Explora atualizações, tópicos e anúncios do Organic DAO. Entra para gostar, comentar e ganhar XP em cada interação.",
+    "postsDescription": "Explora atualizações, tópicos e anúncios do Organic Hub. Entra para gostar, comentar e ganhar XP em cada interação.",
     "communityTitle": "Entra para conheceres a comunidade",
     "communityDescription": "Explora rankings, sequências e o directório de membros. Entra para veres a tua posição no leaderboard.",
     "ideasTitle": "Entra para explorares ideias",

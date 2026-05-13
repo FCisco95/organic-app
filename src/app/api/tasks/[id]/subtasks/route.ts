@@ -5,7 +5,7 @@ import { parseJsonBody } from '@/lib/parse-json-body';
 import { logger } from '@/lib/logger';
 
 // GET - Fetch subtasks for a parent task
-export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const supabase = await createClient();

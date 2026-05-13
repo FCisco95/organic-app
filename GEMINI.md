@@ -1,12 +1,12 @@
 # Gemini Workspace
 
-This file defines the project goals, context, and collaboration principles for working on the Organic App.
+This file defines the project goals, context, and collaboration principles for working on Organic Hub.
 
 Gemini should use this file to understand _what we are building_, _how we work_, and _what to optimize for_ when proposing changes or writing code.
 
 ## Project Goal
 
-Organic App is a DAO-style community application for $ORG built with Next.js, Supabase, and Solana.
+Organic Hub is a DAO-style community application for $ORG built with Next.js, Supabase, and Solana.
 
 The goal is to provide a clean, reliable platform for:
 

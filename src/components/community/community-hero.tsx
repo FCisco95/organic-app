@@ -1,6 +1,6 @@
 'use client';
 
-import { Trophy, Users, Flame, Zap } from 'lucide-react';
+import { Users, Flame, Zap } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { PageHero } from '@/components/ui/page-hero';

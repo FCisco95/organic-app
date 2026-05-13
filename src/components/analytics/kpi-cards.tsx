@@ -3,16 +3,12 @@
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import type { AnalyticsKPIs, AnalyticsTrustMeta } from '@/features/analytics';
-import { TOKEN_CONFIG } from '@/config/token';
 import {
   ArrowUpRight,
-  ArrowDownRight,
   Activity,
   Gauge,
   ShieldAlert,
-  Coins,
   Users,
-  BarChart3,
   CheckCircle2,
   Vote,
 } from 'lucide-react';
@@ -23,114 +19,8 @@ interface KPICardsProps {
   loading: boolean;
 }
 
-function formatCompact(value: number): string {
-  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(2)}M`;
-  if (value >= 1_000) return `$${(value / 1_000).toFixed(1)}K`;
-  return `$${value.toLocaleString()}`;
-}
-
-function formatPrice(value: number): string {
-  if (value < 0.01) return `$${value.toFixed(6)}`;
-  if (value < 1) return `$${value.toFixed(4)}`;
-  return `$${value.toFixed(2)}`;
-}
-
 function Skeleton({ className }: { className?: string }) {
   return <div className={cn('rounded-md bg-muted animate-pulse', className)} />;
-}
-
-/* ─── Token Market Strip ──────────────────────────────────────────── */
-
-function TokenMarketStrip({
-  kpis,
-  loading,
-  t,
-}: {
-  kpis: AnalyticsKPIs | undefined;
-  loading: boolean;
-  t: ReturnType<typeof useTranslations<'Analytics'>>;
-}) {
-  const priceAvailable = kpis?.org_price != null;
-  const mcapAvailable = kpis?.market_cap != null;
-
-  const items = [
-    {
-      label: t('kpi.orgPrice', { symbol: TOKEN_CONFIG.symbol }),
-      value: priceAvailable ? formatPrice(kpis!.org_price!) : null,
-      icon: Coins,
-      iconColor: 'text-organic-terracotta',
-      mono: true,
-    },
-    {
-      label: t('kpi.marketCap'),
-      value: mcapAvailable ? formatCompact(kpis!.market_cap!) : null,
-      icon: BarChart3,
-      iconColor: 'text-blue-500',
-      mono: true,
-    },
-    {
-      label: t('kpi.orgHolders', { symbol: TOKEN_CONFIG.symbol }),
-      value: kpis?.org_holders != null ? kpis.org_holders.toLocaleString() : null,
-      icon: Users,
-      iconColor: 'text-emerald-500',
-    },
-    {
-      label: t('marketStrip.totalSupply'),
-      value: TOKEN_CONFIG.totalSupply
-        ? `${(TOKEN_CONFIG.totalSupply / 1_000_000_000).toFixed(0)}B`
-        : null,
-      icon: Activity,
-      iconColor: 'text-purple-500',
-    },
-  ];
-
-  return (
-    <div className="rounded-2xl bg-gradient-to-r from-organic-terracotta/5 via-transparent to-organic-terracotta/5 border border-organic-terracotta/10 p-1">
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-px">
-        {items.map((item) => {
-          const Icon = item.icon;
-          return (
-            <div key={item.label} className="flex items-center gap-3 px-4 py-3">
-              <div className="rounded-lg bg-background/80 p-2 shadow-sm">
-                <Icon className={cn('h-4 w-4', item.iconColor)} />
-              </div>
-              <div className="min-w-0">
-                {loading ? (
-                  <>
-                    <Skeleton className="h-5 w-16" />
-                    <Skeleton className="mt-1 h-3 w-20" />
-                  </>
-                ) : item.value ? (
-                  <>
-                    <p
-                      className={cn(
-                        'text-base font-bold text-foreground leading-none truncate',
-                        item.mono && 'font-mono tabular-nums'
-                      )}
-                    >
-                      {item.value}
-                    </p>
-                    <p className="mt-0.5 text-[11px] text-muted-foreground leading-tight">
-                      {item.label}
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <span className="text-[10px] font-medium bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-full px-2 py-0.5 inline-block">
-                      {t('kpiComingSoon')}
-                    </span>
-                    <p className="mt-0.5 text-[11px] text-muted-foreground leading-tight">
-                      {item.label}
-                    </p>
-                  </>
-                )}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
 }
 
 /* ─── Governance KPI Cards ────────────────────────────────────────── */

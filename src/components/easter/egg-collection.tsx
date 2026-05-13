@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { Lock } from 'lucide-react';
 import { useMyEggs } from '@/features/easter/hooks';
-import { EGG_ELEMENTS, getEggElement } from '@/features/easter/elements';
+import { EGG_ELEMENTS } from '@/features/easter/elements';
 import type { GoldenEgg } from '@/features/easter/schemas';
 import { EggLeaderboard } from './egg-leaderboard';
 

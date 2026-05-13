@@ -12,16 +12,6 @@ export const dynamic = 'force-dynamic';
 
 const APPROVED_LIMIT = 10;
 
-interface TestimonialRow {
-  id: string;
-  rating: number;
-  quote: string;
-  approved_at: string | null;
-  created_at: string | null;
-  member_id: string;
-  status: string;
-}
-
 export async function GET() {
   try {
     const supabase = createAnonClient();

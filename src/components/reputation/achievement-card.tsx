@@ -1,9 +1,8 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
 import { Lock, Link2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { RARITY_COLORS, RARITY_ORDER, type AchievementWithStatus, type AchievementRarity } from '@/features/reputation';
+import { RARITY_COLORS, type AchievementWithStatus, type AchievementRarity } from '@/features/reputation';
 
 interface AchievementCardProps {
   achievement: AchievementWithStatus;
@@ -20,7 +19,6 @@ const RARITY_LABELS: Record<AchievementRarity, string> = {
 };
 
 export function AchievementCard({ achievement, className, compact }: AchievementCardProps) {
-  const t = useTranslations('Reputation');
   const rarity = achievement.rarity ?? 'bronze';
   const colors = RARITY_COLORS[rarity];
   const isHidden = achievement.is_hidden && !achievement.unlocked;

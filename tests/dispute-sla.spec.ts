@@ -21,7 +21,6 @@ test.describe('Dispute SLA and evidence hardening', () => {
 
   let adminUserId = '';
   let memberUserId = '';
-  let adminCookie = { name: '', value: '' };
   let memberCookie = { name: '', value: '' };
 
   let ownedSprintId: string | null = null;
@@ -51,7 +50,6 @@ test.describe('Dispute SLA and evidence hardening', () => {
       organicId: randomOrganicId(),
     });
     adminUserId = admin.id;
-    adminCookie = await buildSessionCookie(admin.email, pass);
 
     const member = await createQaUser(supabaseAdmin, {
       email: `${id}.member@example.com`,

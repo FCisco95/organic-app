@@ -1,11 +1,11 @@
-# Organic DAO — Visual Overhaul: Implementation Prompt & Plan
+# Organic Hub — Visual Overhaul: Implementation Prompt & Plan
 
 ---
 
 ## The Prompt (copy-paste this to your coding assistant)
 
 ```
-I need to reskin the Organic DAO dashboard (Next.js + Tailwind + shadcn/ui, deployed on Vercel) 
+I need to reskin the Organic Hub dashboard (Next.js + Tailwind + shadcn/ui, deployed on Vercel)
 to feel like a dark, animated, game-like experience — while keeping all existing functionality, 
 routing, sidebar navigation, and data intact.
 

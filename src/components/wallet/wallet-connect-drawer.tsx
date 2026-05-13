@@ -368,7 +368,6 @@ export function WalletConnectDrawer({ isOpen, onClose }: WalletConnectDrawerProp
               recentWallet={recentWallet}
               popularWallets={popularWallets}
               availableWalletsCount={availableWallets.length}
-              recentWalletName={recentWalletName}
               onSelectWallet={handleSelectWallet}
               isDisabled={isActionDisabled}
               focusedIndex={focusedIndex}

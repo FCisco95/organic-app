@@ -33,9 +33,6 @@ describe('Task Submission Authorization', () => {
 
   it('should NOT cascade serviceClient to sprint/twitter queries', () => {
     // Sprint query should use user-scoped client
-    const sprintSection = submissionsRoute.slice(
-      submissionsRoute.indexOf("from('sprints')")
-    );
     const beforeSprint = submissionsRoute.slice(
       0,
       submissionsRoute.indexOf("from('sprints')")

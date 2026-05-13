@@ -263,7 +263,7 @@ export default function TaskDetailPage() {
         return;
       }
 
-      const { data: profiles, error: profilesError } = await supabase
+      const { data: profiles } = await supabase
         .from('user_profiles')
         .select('id, name, email, organic_id, avatar_url')
         .in('id', userIds);

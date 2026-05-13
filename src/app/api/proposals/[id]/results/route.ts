@@ -12,7 +12,7 @@ let cachedAbstainCountsTowardQuorum: { value: boolean; timestamp: number } | nul
  * GET /api/proposals/[id]/results
  * Get vote tallies and participation stats for a proposal.
  */
-export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: proposalId } = await params;
     const supabase = await createClient();

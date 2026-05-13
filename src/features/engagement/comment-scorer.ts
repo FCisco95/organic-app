@@ -118,7 +118,7 @@ export function buildPrompt(input: { postText: string; commentText: string; exam
 // ─── Main entry ─────────────────────────────────────────────────────────
 
 /**
- * Scores a reply comment on Organic DAO's 3-axis rubric via Claude Haiku.
+ * Scores a reply comment on Organic Hub's 3-axis rubric via Claude Haiku.
  *
  * Returns a fallback score of 1 on any parse/API failure — this is
  * intentional: a low score gives the user appeal grounds rather than

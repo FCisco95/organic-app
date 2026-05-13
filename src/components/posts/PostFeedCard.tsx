@@ -452,8 +452,7 @@ export function PostFeedCard({ post, onLike, onClick, onFlag, likeLoading }: Pos
 
 /* ─── Compact List Row ─────────────────────────────────────────────────── */
 
-export function CompactPostRow({ post, onLike, onClick, onFlag, likeLoading }: PostFeedCardProps) {
-  const t = useTranslations('Posts');
+export function CompactPostRow({ post, onLike, onClick, likeLoading }: PostFeedCardProps) {
   const TypeIcon = POST_TYPE_ICONS[post.post_type] ?? AlignLeft;
   const author = post.author;
   const isPromotedActive = post.is_promoted && post.promotion_expires_at && new Date(post.promotion_expires_at) > new Date();
