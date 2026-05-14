@@ -2377,6 +2377,89 @@ export type Database = {
           },
         ]
       }
+      backlog_votes: {
+        Row: {
+          created_at: string
+          id: string
+          task_id: string
+          updated_at: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          task_id: string
+          updated_at?: string
+          user_id: string
+          value: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          task_id?: string
+          updated_at?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "backlog_votes_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "backlog_votes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_steward_reviews: {
+        Row: {
+          clarity_score: number
+          concerns: Json
+          generated_at: string
+          generated_by: string
+          recommendation: string
+          scope_score: number
+          summary: string
+          task_id: string
+        }
+        Insert: {
+          clarity_score: number
+          concerns?: Json
+          generated_at?: string
+          generated_by: string
+          recommendation: string
+          scope_score: number
+          summary: string
+          task_id: string
+        }
+        Update: {
+          clarity_score?: number
+          concerns?: Json
+          generated_at?: string
+          generated_by?: string
+          recommendation?: string
+          scope_score?: number
+          summary?: string
+          task_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_steward_reviews_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: true
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tasks: {
         Row: {
           assignee_id: string | null
@@ -2387,6 +2470,7 @@ export type Database = {
           created_by: string | null
           description: string | null
           detected_language: string | null
+          downvotes: number
           due_date: string | null
           id: string
           is_team_task: boolean | null
@@ -2405,6 +2489,7 @@ export type Database = {
           template_id: string | null
           title: string
           updated_at: string | null
+          upvotes: number
         }
         Insert: {
           assignee_id?: string | null
@@ -2415,6 +2500,7 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           detected_language?: string | null
+          downvotes?: number
           due_date?: string | null
           id?: string
           is_team_task?: boolean | null
@@ -2433,6 +2519,7 @@ export type Database = {
           template_id?: string | null
           title: string
           updated_at?: string | null
+          upvotes?: number
         }
         Update: {
           assignee_id?: string | null
@@ -2443,6 +2530,7 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           detected_language?: string | null
+          downvotes?: number
           due_date?: string | null
           id?: string
           is_team_task?: boolean | null
@@ -2461,6 +2549,7 @@ export type Database = {
           template_id?: string | null
           title?: string
           updated_at?: string | null
+          upvotes?: number
         }
         Relationships: [
           {
@@ -3261,6 +3350,23 @@ export type Database = {
       }
     }
     Functions: {
+      suggest_promote_n: { Args: { p_org_id: string | null }; Returns: number }
+      get_top_backlog_candidates: {
+        Args: { p_org_id: string | null; p_limit: number }
+        Returns: {
+          id: string
+          title: string
+          description: string | null
+          points: number | null
+          upvotes: number
+          downvotes: number
+          score: number
+        }[]
+      }
+      promote_top_backlog_to_sprint: {
+        Args: { p_sprint_id: string; p_n: number }
+        Returns: { promoted_task_id: string }[]
+      }
       calculate_level_from_xp: { Args: { xp: number }; Returns: number }
       calculate_quality_multiplier: { Args: { score: number }; Returns: number }
       calculate_vote_result: {
