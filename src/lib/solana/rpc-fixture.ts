@@ -1,3 +1,4 @@
+import 'server-only';
 import type { PublicKey } from '@solana/web3.js';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import type { SolanaRpc, TokenHolder } from './rpc';

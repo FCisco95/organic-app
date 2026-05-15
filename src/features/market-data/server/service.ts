@@ -1,3 +1,4 @@
+import 'server-only';
 import { createServiceClient } from '@/lib/supabase/server';
 import { logger } from '@/lib/logger';
 import type { Database, Json } from '@/types/database';

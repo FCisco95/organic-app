@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
-    "test": "node --import tsx --test src/features/*/__tests__/*.test.ts src/lib/__tests__/*.test.ts",
+    "test": "node --import tsx --require ./tests/setup/server-only-shim.cjs --test src/features/*/__tests__/*.test.ts src/lib/__tests__/*.test.ts",
     "test:e2e": "playwright test"
   },
   "dependencies": {
@@ -51,6 +51,7 @@
     "react-hook-form": "^7.71.1",
     "react-hot-toast": "^2.4.1",
     "recharts": "^3.7.0",
+    "server-only": "^0.0.1",
     "tailwind-merge": "^2.3.0",
     "tweetnacl": "^1.0.3",
     "zod": "^3.23.0",
