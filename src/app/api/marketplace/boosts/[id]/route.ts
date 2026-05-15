@@ -6,10 +6,8 @@ import { cancelBoost } from '@/features/marketplace/marketplace-service';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(_request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   if (!isMarketplaceEnabled()) {
     return NextResponse.json({ error: 'Marketplace is not enabled' }, { status: 403 });
   }
@@ -41,10 +39,8 @@ export async function GET(
   }
 }
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   if (!isMarketplaceEnabled()) {
     return NextResponse.json({ error: 'Marketplace is not enabled' }, { status: 403 });
   }
