@@ -1,5 +1,6 @@
 import { redirect } from '@/i18n/navigation';
 
-export default function PastSprintsRedirect({ params }: { params: { locale: string } }) {
+export default async function PastSprintsRedirect(props: { params: Promise<{ locale: string }> }) {
+  const params = await props.params;
   redirect({ href: '/sprints?view=timeline', locale: params.locale });
 }
