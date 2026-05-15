@@ -36,8 +36,9 @@ jobs:
       - name: lockfile-lint (https + npm registry only)
         run: npx --yes lockfile-lint --type npm --path package-lock.json --validate-https --allowed-hosts npm
 
-      - name: npm audit (high + critical only)
-        # audit-ci is the existing PR gate; this runs the raw npm audit on a
-        # schedule so a freshly-published advisory pages someone via Actions
-        # rather than waiting for the next PR.
-        run: npm audit --audit-level=high
+      - name: audit-ci (high + critical, respects audit-ci.jsonc allowlist)
+        # Uses the same config as the per-PR security-audit job in ci.yml.
+        # Running it again on a schedule catches advisories newly published
+        # against locked deps between PRs, and surfaces allowlist entries
+        # whose expiry has passed (audit-ci re-fails when expiry lapses).
+        run: npx audit-ci --config ./audit-ci.jsonc
