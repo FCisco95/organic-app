@@ -96,7 +96,6 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       .update({
         execution_status: 'executed',
         executed_at: now,
-        execution_notes: parseResult.data.notes,
         updated_at: now,
       })
       .eq('id', proposalId)
@@ -111,6 +110,16 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
         { status: 409 }
       );
     }
+
+    // Append admin-only execution event (replaces the deprecated execution_notes column)
+    await supabase
+      .from('proposal_execution_events')
+      .insert({
+        proposal_id: proposalId,
+        actor_id: user.id,
+        event_type: 'executed',
+        notes: parseResult.data.notes,
+      });
 
     // Log stage event (non-fatal if table structure differs)
     await supabase
