@@ -51,7 +51,11 @@ export async function GET(request: Request) {
       return NextResponse.redirect(buildProfileRedirect(appOrigin, false, 'invalid_state'));
     }
 
-    if (user && user.id !== oauthSession.user_id) {
+    // Defense-in-depth: require an authenticated session that matches the
+    // session.user_id stored when the OAuth flow was initiated. The random
+    // `state` token is the primary CSRF protection; this is the second layer
+    // so a leaked state token alone cannot complete the link.
+    if (!user || user.id !== oauthSession.user_id) {
       return NextResponse.redirect(buildProfileRedirect(appOrigin, false, 'session_mismatch'));
     }
 
