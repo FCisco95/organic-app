@@ -11,6 +11,19 @@
   //
   // Allowlist schema (audit-ci v7 NSPRecord):
   //   { "<GHSA-id>": { "active": true, "notes": "...", "expiry": "<ISO date>" } }
+  //
+  // Pruning history:
+  //   2026-05-16 — removed 14 stale entries that audit-ci flagged via the
+  //   "Consider not allowlisting" warning. The Next.js entries (GHSA-h25m,
+  //   GHSA-q4gf, GHSA-8h8q, GHSA-36qx, GHSA-c4j6) cleared after PR #134
+  //   landed next@15.5.18. The axios chain (GHSA-6chq, GHSA-pf86, GHSA-pmwg,
+  //   GHSA-q8qp), protobufjs chain (GHSA-66ff, GHSA-685m, GHSA-75px,
+  //   GHSA-jvwf), and lodash (GHSA-r5fr) entries cleared upstream when the
+  //   wallet-adapter chain's transitive resolutions advanced. Reachability
+  //   guard at tests/security/transitive-only-import-guard.test.ts (PR #156)
+  //   continues to prevent us from importing axios/lodash/protobufjs
+  //   directly, so if any of those advisories re-emerges, the same
+  //   structural-zero argument still applies.
 
   "high": true,
   "critical": true,
@@ -26,108 +39,10 @@
       }
     },
     {
-      "GHSA-r5fr-rjxr-66jc": {
-        "active": true,
-        "notes": "lodash code injection via _.template. Transitive via @walletconnect/universal-provider. Fix requires breaking @solana/wallet-adapter-wallets major bump.",
-        "expiry": "2026-07-15T00:00:00Z"
-      }
-    },
-    {
-      "GHSA-h25m-26qc-wcjf": {
-        "active": true,
-        "notes": "Next.js HTTP request deserialization DoS (insecure React Server Components). Fix requires breaking next@14 -> next@16.2.4 major upgrade, scheduled separately.",
-        "expiry": "2026-07-15T00:00:00Z"
-      }
-    },
-    {
-      "GHSA-q4gf-8mx6-v5v3": {
-        "active": true,
-        "notes": "Next.js DoS with Server Components. Fix requires breaking next@14 -> next@16.2.4 major upgrade, scheduled separately.",
-        "expiry": "2026-07-15T00:00:00Z"
-      }
-    },
-    {
-      "GHSA-8h8q-6873-q5fj": {
-        "active": true,
-        "notes": "Next.js DoS with Server Components (variant; patched in 15.5.16). Same DoS family as GHSA-q4gf-8mx6-v5v3 (already allowlisted). Fix requires breaking next@14 -> next@16 major upgrade, scheduled separately.",
-        "expiry": "2026-07-15T00:00:00Z"
-      }
-    },
-    {
-      "GHSA-36qx-fr4f-26g5": {
-        "active": true,
-        "notes": "Next.js Middleware / Proxy bypass in Pages Router applications using i18n (patched in 15.5.16). We use App Router exclusively (src/app/[locale]/...) — Pages Router is not in use, exposure is structural-zero. Fix requires breaking next@14 -> next@16 major upgrade, scheduled separately.",
-        "expiry": "2026-07-15T00:00:00Z"
-      }
-    },
-    {
-      "GHSA-c4j6-fc7j-m34r": {
-        "active": true,
-        "notes": "Next.js SSRF in applications using WebSocket upgrades (patched in 15.5.16). We do not expose WebSocket upgrade handlers in Next.js routes. Existing SSRF guards on external-fetch surfaces (isSafeOgUrl allowlist + private-IP block, see CRIT-2 hardening 2026-05-08) protect the OG-fetch path. Fix requires breaking next@14 -> next@16 major upgrade, scheduled separately.",
-        "expiry": "2026-07-15T00:00:00Z"
-      }
-    },
-    {
       "GHSA-5j98-mcp5-4vw2": {
         "active": true,
-        "notes": "glob CLI command injection via -c/--cmd. Transitive via eslint-config-next > @next/eslint-plugin-next > glob (dev-only). Fix requires eslint-config-next@16.2.4 major bump, scheduled with the next@14->16 upgrade.",
+        "notes": "glob CLI command injection via -c/--cmd. Transitive via eslint-config-next > @next/eslint-plugin-next > glob (dev-only). The vulnerable CLI path is never invoked by our lint pipeline — eslint-config-next uses glob's library API, not its CLI. Fix requires eslint-config-next@16.2.4 major bump, scheduled with the next@14->16 upgrade (separate effort tracked elsewhere).",
         "expiry": "2026-07-15T00:00:00Z"
-      }
-    },
-    {
-      "GHSA-6chq-wfr3-2hj9": {
-        "active": true,
-        "notes": "axios@1.15.0 header injection via prototype pollution. Transitive 7-deep via @solana/wallet-adapter-wallets > @solana/wallet-adapter-trezor > @trezor/connect-web > @trezor/connect > @trezor/blockchain-link-utils > @stellar/stellar-sdk. Fix requires bumping @stellar/stellar-sdk (currently pinned by @trezor/blockchain-link-utils@1.5.2). Tracked alongside the @solana/wallet-adapter-wallets major upgrade.",
-        "expiry": "2026-08-04T00:00:00Z"
-      }
-    },
-    {
-      "GHSA-pf86-5x62-jrwf": {
-        "active": true,
-        "notes": "axios@1.15.0 prototype pollution gadgets (response tampering, data exfiltration, request hijacking). Same transitive path as GHSA-6chq-wfr3-2hj9 — fix tied to @solana/wallet-adapter-wallets major bump.",
-        "expiry": "2026-08-04T00:00:00Z"
-      }
-    },
-    {
-      "GHSA-pmwg-cvhr-8vh7": {
-        "active": true,
-        "notes": "axios@1.15.0 NO_PROXY bypass via 127.0.0.0/8 loopback subnet. Same transitive path as GHSA-6chq-wfr3-2hj9 — fix tied to @solana/wallet-adapter-wallets major bump.",
-        "expiry": "2026-08-04T00:00:00Z"
-      }
-    },
-    {
-      "GHSA-q8qp-cvcw-x6jj": {
-        "active": true,
-        "notes": "axios prototype pollution read-side gadgets in HTTP adapter (credential injection, request hijacking). Vulnerable range <1.15.2. Same transitive path as GHSA-6chq-wfr3-2hj9 — fix tied to @solana/wallet-adapter-wallets major bump.",
-        "expiry": "2026-08-04T00:00:00Z"
-      }
-    },
-    {
-      "GHSA-66ff-xgx4-vchm": {
-        "active": true,
-        "notes": "protobufjs vulnerability (additional advisory). Same transitive path as GHSA-xq3m-2v4x-88gg: @solana/wallet-adapter-wallets > @solana/wallet-adapter-trezor > @trezor/* > @trezor/protobuf > protobufjs. Fix tied to @solana/wallet-adapter-wallets major bump.",
-        "expiry": "2026-08-13T00:00:00Z"
-      }
-    },
-    {
-      "GHSA-685m-2w69-288q": {
-        "active": true,
-        "notes": "protobufjs vulnerability (additional advisory). Same transitive path as GHSA-xq3m-2v4x-88gg: @solana/wallet-adapter-wallets > @solana/wallet-adapter-trezor > @trezor/* > @trezor/protobuf > protobufjs. Fix tied to @solana/wallet-adapter-wallets major bump.",
-        "expiry": "2026-08-13T00:00:00Z"
-      }
-    },
-    {
-      "GHSA-75px-5xx7-5xc7": {
-        "active": true,
-        "notes": "protobufjs vulnerability (additional advisory). Same transitive path as GHSA-xq3m-2v4x-88gg: @solana/wallet-adapter-wallets > @solana/wallet-adapter-trezor > @trezor/* > @trezor/protobuf > protobufjs. Fix tied to @solana/wallet-adapter-wallets major bump.",
-        "expiry": "2026-08-13T00:00:00Z"
-      }
-    },
-    {
-      "GHSA-jvwf-75h9-cwgg": {
-        "active": true,
-        "notes": "protobufjs vulnerability (additional advisory). Same transitive path as GHSA-xq3m-2v4x-88gg: @solana/wallet-adapter-wallets > @solana/wallet-adapter-trezor > @trezor/* > @trezor/protobuf > protobufjs. Fix tied to @solana/wallet-adapter-wallets major bump.",
-        "expiry": "2026-08-13T00:00:00Z"
       }
     }
   ],
