@@ -39,8 +39,11 @@ import { globSync } from 'fs';
  *
  * 1. State parameter: Validated against DB via twitter_oauth_sessions table lookup
  *    (callback/route.ts:44-51). State is matched to user_id, preventing CSRF.
- *    Session mismatch check at line 54 prevents a different logged-in user from
- *    completing another user's OAuth flow.
+ *    Session guard at line 54 requires an authenticated session whose user_id
+ *    matches the session stored at OAuth-init time. Logged-out callers and
+ *    different-user sessions are both rejected (hardened 2026-05-16; see
+ *    docs/audits/2026-05-16-routes-auth-check-triage.md and the dedicated
+ *    regression test in tests/security/twitter-callback-session.test.ts).
  *
  * 2. Code verifier: Stored in twitter_oauth_sessions table (start/route.ts:110-115).
  *    Consumed (single-use) by deleting the session row after successful callback
