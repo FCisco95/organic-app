@@ -16,7 +16,11 @@ import path from 'node:path';
  *   3. routed the executor (src/app/api/proposals/[id]/execute/route.ts)
  *      to write to the new table instead of the deprecated column.
  *
- * This test guards against regressions on all three legs.
+ * The follow-up 20260517000000_drop_proposal_execution_notes.sql migration
+ * then dropped the column entirely (with a defensive rescue-backfill for
+ * any value not already represented in proposal_execution_events).
+ *
+ * This test guards against regressions on all four legs.
  */
 
 const REPO_ROOT = path.resolve(__dirname, '../..');
@@ -67,6 +71,24 @@ describe('proposal execution notes anon leak (2026-05-16 audit)', () => {
     expect(sql, 'the column-list builder must exclude execution_notes').toMatch(
       /column_name\s*<>\s*'execution_notes'/i
     );
+  });
+
+  it('the drop migration exists and removes proposals.execution_notes', () => {
+    const name = migrationExists('20260517000000_drop_proposal_execution_notes');
+    expect(
+      name,
+      'expected 20260517000000_drop_proposal_execution_notes.sql migration'
+    ).not.toBeNull();
+
+    const sql = readMigration(name!);
+
+    expect(sql, 'must drop the execution_notes column').toMatch(
+      /ALTER\s+TABLE\s+(?:public\.)?proposals\s+DROP\s+COLUMN(?:\s+IF\s+EXISTS)?\s+execution_notes/i
+    );
+    expect(
+      sql,
+      'must include a defensive rescue-backfill into proposal_execution_events before the drop'
+    ).toMatch(/INSERT\s+INTO\s+(?:public\.)?proposal_execution_events[\s\S]+execution_notes/i);
   });
 
   it('execute route writes to proposal_execution_events and not to execution_notes', () => {

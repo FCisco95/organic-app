@@ -21,7 +21,7 @@
     {
       "GHSA-3gc7-fjrx-p6mg": {
         "active": true,
-        "notes": "bigint-buffer Buffer Overflow via toBigIntLE(). Transitive via @solana/wallet-adapter-wallets > @solana/spl-token > @solana/buffer-layout-utils. Fix requires breaking @solana/spl-token downgrade to 0.1.8.",
+        "notes": "bigint-buffer toBigIntLE() buffer overflow. Chain: @solana/spl-token (DIRECT dep, ^0.4.0) > @solana/buffer-layout-utils@0.2.0 > bigint-buffer@1.1.5. All three are at latest published version — no upstream patch exists; npm audit's proposed downgrade to spl-token@0.1.8 is regressive and wrong. Reachability: structural-zero. We import @solana/spl-token only for the TOKEN_PROGRAM_ID PublicKey constant; no decoder is ever invoked. Guarded by tests/security/spl-token-import-surface.test.ts; full triage in docs/audits/2026-05-16-spl-token-bigint-buffer-triage.md.",
         "expiry": "2026-07-15T00:00:00Z"
       }
     },

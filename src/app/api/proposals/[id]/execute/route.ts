@@ -111,7 +111,9 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    // Append admin-only execution event (replaces the deprecated execution_notes column)
+    // Append admin-only execution event. Replaces the dropped
+    // proposals.execution_notes column (see migrations 20260516000000
+    // and 20260517000000).
     await supabase
       .from('proposal_execution_events')
       .insert({
