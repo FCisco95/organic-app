@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { globSync } from 'fs';
 import path from 'node:path';
+import ts from 'typescript';
 
 /**
  * Structural invariant: a set of packages reach our lockfile only through
@@ -10,113 +11,262 @@ import path from 'node:path';
  * structural-zero" as the reason CI ignores their advisories. That claim
  * holds only as long as our app code never imports them directly.
  *
- * This test fails if anyone in `src/` introduces an `import` (or `require`)
- * of a packaged listed in TRANSITIVE_ONLY_PACKAGES. The fix is one of:
+ * This test fails if anyone in `src/` introduces a module-specifier reference
+ * to a package listed in TRANSITIVE_ONLY_PACKAGES. It walks a real TypeScript
+ * AST instead of grepping, so every reachable syntax form is caught:
  *
- *   1. Don't import it. There is almost always a maintained, smaller, or
- *      built-in alternative (e.g. native fetch instead of axios, structured
- *      clone instead of lodash.cloneDeep).
- *   2. If the import is intentional and necessary, promote the package to a
- *      direct dependency in package.json (so it shows up in supply-chain
- *      tooling under your ownership) AND re-triage every related advisory
- *      in audit-ci.jsonc — the "transitive-only, unreachable" justification
- *      no longer applies. Remove the package from TRANSITIVE_ONLY_PACKAGES
- *      below and update this test's docstring with the rationale.
+ *   - import x from 'pkg' / import 'pkg' / import {a} from 'pkg'
+ *   - import type {a} from 'pkg'
+ *   - export {x} from 'pkg' / export * from 'pkg' / export * as ns from 'pkg'
+ *   - require('pkg')
+ *   - import('pkg') / await import('pkg')          (dynamic import)
+ *   - type T = import('pkg').X                     (import-type node)
+ *
+ * Codex adversarial review 2026-05-16 caught the earlier regex-based
+ * implementation missing dynamic imports and re-exports — both produce real
+ * runtime reachability. The fixture tests below pin each syntax form so a
+ * future refactor can't reopen the gap silently.
  *
  * Companion to tests/security/spl-token-import-surface.test.ts which guards
  * the narrower allow-listed import surface for @solana/spl-token (where the
  * package IS a direct dep but only the constant-import shape is safe).
- *
- * Related audits:
- *   - docs/audits/2026-05-15-security-sweep.md
- *   - docs/audits/2026-05-16-spl-token-bigint-buffer-triage.md
- *   - audit-ci.jsonc allowlist entries for axios / lodash / protobufjs
- *     chains (transitive via @solana/wallet-adapter-wallets and the Trezor
- *     wallet adapter chain).
  */
 
 const TRANSITIVE_ONLY_PACKAGES = [
   // Reached via @solana/wallet-adapter-wallets > ... > @stellar/stellar-sdk.
-  // Multiple high advisories on the 1.x line (prototype pollution gadgets,
-  // NO_PROXY bypass, header injection).
   'axios',
-
-  // Reached via @walletconnect/universal-provider. Code injection via
-  // _.template historically; we have native ES features for everything
-  // lodash typically offers.
+  // Reached via @walletconnect/universal-provider.
   'lodash',
-  // Submodule imports (lodash/get, lodash/merge, lodash.cloneDeep, etc.)
-  // share the same supply-chain surface — guard them as a prefix below.
-
-  // Reached via the Trezor wallet adapter chain. Multiple advisories on
-  // the 6.x/7.x lines.
+  // Reached via the Trezor wallet adapter chain.
   'protobufjs',
 ] as const;
 
-// Submodule-import prefixes that also count as a direct hit on the base
-// package (e.g. `import get from 'lodash/get'`, `import 'lodash.cloneDeep'`).
-const TRANSITIVE_ONLY_PREFIXES = TRANSITIVE_ONLY_PACKAGES.flatMap((name) => [
-  `${name}/`, // submodule import
-  `${name}.`, // dot-named single-purpose package on npm (e.g. lodash.cloneDeep)
-]);
+const TRANSITIVE_ONLY_SET: ReadonlySet<string> = new Set(TRANSITIVE_ONLY_PACKAGES);
 
-const IMPORT_RE =
-  /(?:import[^'"`]*from\s*|import\s*|require\s*\()\s*['"`]([^'"`]+)['"`]/g;
+const TRANSITIVE_ONLY_PREFIXES = TRANSITIVE_ONLY_PACKAGES.flatMap((name) => [
+  `${name}/`, // submodule import: lodash/get
+  `${name}.`, // dot-named single-purpose package: lodash.cloneDeep
+]);
 
 interface Violation {
   file: string;
   specifier: string;
   matchedPackage: string;
+  syntax: string;
 }
 
-function isViolation(specifier: string): string | null {
-  if (TRANSITIVE_ONLY_PACKAGES.includes(specifier as (typeof TRANSITIVE_ONLY_PACKAGES)[number])) {
+function matchedBase(specifier: string): string | null {
+  if (TRANSITIVE_ONLY_SET.has(specifier)) {
     return specifier;
   }
   for (const prefix of TRANSITIVE_ONLY_PREFIXES) {
     if (specifier.startsWith(prefix)) {
-      // Strip subpath / dotted variant suffix to surface the base package name.
       return specifier.split(/[/.]/)[0];
     }
   }
   return null;
 }
 
-describe('transitive-only-deps stay unreachable from src/ imports', () => {
-  const files = globSync('src/**/*.{ts,tsx,js,jsx,mjs,cjs}', { absolute: true });
+function recordIfViolation(
+  specifier: string,
+  syntax: string,
+  file: string,
+  violations: Violation[],
+): void {
+  const matchedPackage = matchedBase(specifier);
+  if (matchedPackage) {
+    violations.push({ file, specifier, matchedPackage, syntax });
+  }
+}
 
-  it('finds a non-trivial number of source files to scan', () => {
-    expect(files.length).toBeGreaterThan(100);
-  });
+function scanSource(file: string, source: string): Violation[] {
+  const sourceFile = ts.createSourceFile(
+    file,
+    source,
+    ts.ScriptTarget.Latest,
+    /*setParentNodes*/ true,
+    ts.ScriptKind.TSX,
+  );
 
-  it('contains zero direct imports of transitive-only packages', () => {
-    const violations: Violation[] = [];
+  const violations: Violation[] = [];
 
-    for (const file of files) {
-      const source = readFileSync(file, 'utf-8');
-      IMPORT_RE.lastIndex = 0;
-      let match: RegExpExecArray | null;
-      while ((match = IMPORT_RE.exec(source)) !== null) {
-        const specifier = match[1];
-        const matchedPackage = isViolation(specifier);
-        if (matchedPackage) {
-          violations.push({
-            file: path.relative(path.resolve(__dirname, '../..'), file),
-            specifier,
-            matchedPackage,
-          });
+  function visit(node: ts.Node): void {
+    if (ts.isImportDeclaration(node) && ts.isStringLiteral(node.moduleSpecifier)) {
+      recordIfViolation(node.moduleSpecifier.text, 'ImportDeclaration', file, violations);
+    } else if (
+      ts.isExportDeclaration(node) &&
+      node.moduleSpecifier &&
+      ts.isStringLiteral(node.moduleSpecifier)
+    ) {
+      recordIfViolation(node.moduleSpecifier.text, 'ExportDeclaration', file, violations);
+    } else if (
+      ts.isImportTypeNode(node) &&
+      ts.isLiteralTypeNode(node.argument) &&
+      ts.isStringLiteral(node.argument.literal)
+    ) {
+      recordIfViolation(node.argument.literal.text, 'ImportTypeNode', file, violations);
+    } else if (ts.isCallExpression(node) && node.arguments.length > 0) {
+      const arg = node.arguments[0];
+      if (ts.isStringLiteral(arg)) {
+        if (ts.isIdentifier(node.expression) && node.expression.text === 'require') {
+          recordIfViolation(arg.text, 'require()', file, violations);
+        } else if (node.expression.kind === ts.SyntaxKind.ImportKeyword) {
+          recordIfViolation(arg.text, 'dynamic import()', file, violations);
         }
       }
     }
+    ts.forEachChild(node, visit);
+  }
 
-    expect(
-      violations,
-      `Direct import(s) of transitive-only package(s) detected in src/. ` +
-        `These packages live in node_modules only because deeper SDKs pull ` +
-        `them in, and audit-ci's allowlist for their advisories rests on ` +
-        `"no direct app code call site". A direct import collapses that ` +
-        `justification. See the docstring at the top of this file for ` +
-        `remediation steps. Violations:\n${JSON.stringify(violations, null, 2)}`,
-    ).toEqual([]);
+  visit(sourceFile);
+  return violations;
+}
+
+describe('transitive-only-deps stay unreachable from src/ imports (AST scan)', () => {
+  describe('scanner fixture coverage', () => {
+    // Each fixture is a single guarded-syntax example. The scanner must
+    // catch every one. If any of these starts passing through, the
+    // production scan over src/ is silently broken.
+    const fixtures: Array<{ name: string; source: string; expectSyntax: string }> = [
+      {
+        name: 'static default import',
+        source: `import axios from 'axios';\n`,
+        expectSyntax: 'ImportDeclaration',
+      },
+      {
+        name: 'static named import',
+        source: `import { get } from 'lodash';\n`,
+        expectSyntax: 'ImportDeclaration',
+      },
+      {
+        name: 'static namespace import',
+        source: `import * as proto from 'protobufjs';\n`,
+        expectSyntax: 'ImportDeclaration',
+      },
+      {
+        name: 'bare side-effect import',
+        source: `import 'axios';\n`,
+        expectSyntax: 'ImportDeclaration',
+      },
+      {
+        name: 'type-only import',
+        source: `import type { AxiosResponse } from 'axios';\n`,
+        expectSyntax: 'ImportDeclaration',
+      },
+      {
+        name: 'submodule import',
+        source: `import get from 'lodash/get';\n`,
+        expectSyntax: 'ImportDeclaration',
+      },
+      {
+        name: 'dotted single-purpose package',
+        source: `import cloneDeep from 'lodash.cloneDeep';\n`,
+        expectSyntax: 'ImportDeclaration',
+      },
+      {
+        name: 'named re-export',
+        source: `export { Buffer } from 'protobufjs';\n`,
+        expectSyntax: 'ExportDeclaration',
+      },
+      {
+        name: 'wildcard re-export',
+        source: `export * from 'axios';\n`,
+        expectSyntax: 'ExportDeclaration',
+      },
+      {
+        name: 'namespace re-export',
+        source: `export * as l from 'lodash';\n`,
+        expectSyntax: 'ExportDeclaration',
+      },
+      {
+        name: 'dynamic import',
+        source: `const a = import('axios');\n`,
+        expectSyntax: 'dynamic import()',
+      },
+      {
+        name: 'awaited dynamic import',
+        source: `async function f() { const a = await import('lodash/get'); return a; }\n`,
+        expectSyntax: 'dynamic import()',
+      },
+      {
+        name: 'CommonJS require',
+        source: `const proto = require('protobufjs');\n`,
+        expectSyntax: 'require()',
+      },
+      {
+        name: 'import-type node in a type alias',
+        source: `type T = import('axios').AxiosResponse;\n`,
+        expectSyntax: 'ImportTypeNode',
+      },
+    ];
+
+    for (const fixture of fixtures) {
+      it(`catches: ${fixture.name}`, () => {
+        const violations = scanSource('<fixture>', fixture.source);
+        expect(violations.length).toBeGreaterThan(0);
+        expect(violations[0].syntax).toBe(fixture.expectSyntax);
+      });
+    }
+
+    // Negative controls: similar but non-guarded forms must NOT trip.
+    const allowedFixtures: Array<{ name: string; source: string }> = [
+      {
+        name: 'comment containing the package name',
+        source: `// we used to depend on axios here\nconst x = 1;\n`,
+      },
+      {
+        name: 'string literal that is not an import',
+        source: `const docsUrl = 'https://axios-http.com/docs';\n`,
+      },
+      {
+        name: 'unrelated package with similar prefix',
+        source: `import { foo } from 'axioslike';\n`,
+      },
+      {
+        name: 'unrelated dotted package',
+        source: `import { foo } from 'lodashx.helper';\n`,
+      },
+      {
+        name: 'import of a different package entirely',
+        source: `import { z } from 'zod';\n`,
+      },
+    ];
+
+    for (const fixture of allowedFixtures) {
+      it(`ignores: ${fixture.name}`, () => {
+        expect(scanSource('<fixture>', fixture.source)).toEqual([]);
+      });
+    }
+  });
+
+  describe('production scan over src/', () => {
+    const files = globSync('src/**/*.{ts,tsx,js,jsx,mjs,cjs}', { absolute: true });
+
+    it('finds a non-trivial number of source files to scan', () => {
+      expect(files.length).toBeGreaterThan(100);
+    });
+
+    it('contains zero direct imports of transitive-only packages', () => {
+      const violations: Violation[] = [];
+      const repoRoot = path.resolve(__dirname, '../..');
+
+      for (const file of files) {
+        const source = readFileSync(file, 'utf-8');
+        for (const v of scanSource(file, source)) {
+          violations.push({ ...v, file: path.relative(repoRoot, file) });
+        }
+      }
+
+      expect(
+        violations,
+        `Direct reference(s) to transitive-only package(s) detected in src/. ` +
+          `These packages live in node_modules only because deeper SDKs pull ` +
+          `them in, and audit-ci's allowlist for their advisories rests on ` +
+          `"no direct app code call site". A direct import (in any syntax — ` +
+          `static, dynamic, re-export, require, import-type) collapses that ` +
+          `justification. See the docstring at the top of this file for ` +
+          `remediation steps. Violations:\n${JSON.stringify(violations, null, 2)}`,
+      ).toEqual([]);
+    });
   });
 });
