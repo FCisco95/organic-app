@@ -18,14 +18,26 @@ import ts from 'typescript';
  *   - import x from 'pkg' / import 'pkg' / import {a} from 'pkg'
  *   - import type {a} from 'pkg'
  *   - export {x} from 'pkg' / export * from 'pkg' / export * as ns from 'pkg'
- *   - require('pkg')
+ *   - require('pkg') and require(`pkg`)            (CommonJS, str + tmpl)
  *   - import('pkg') / await import('pkg')          (dynamic import)
+ *   - import(`pkg`)                                (dynamic w/ no-subst tmpl)
  *   - type T = import('pkg').X                     (import-type node)
  *
- * Codex adversarial review 2026-05-16 caught the earlier regex-based
- * implementation missing dynamic imports and re-exports — both produce real
- * runtime reachability. The fixture tests below pin each syntax form so a
- * future refactor can't reopen the gap silently.
+ * Template literals with `${…}` substitutions are intentionally NOT flagged
+ * because the specifier is computed at runtime and cannot be statically
+ * resolved. That escape hatch is narrow and intentional.
+ *
+ * Codex review history:
+ *   - 2026-05-16 adversarial review caught the earlier regex implementation
+ *     missing dynamic imports, re-exports, and import-type nodes.
+ *   - 2026-05-16 follow-up review caught the AST rewrite still missing
+ *     no-substitution template literals in require/import call arguments
+ *     (the static ImportDeclaration / ExportDeclaration / ImportTypeNode
+ *     paths can only contain StringLiteral per the TS spec, so they did
+ *     not need the same fix).
+ *
+ * The fixture tests below pin every syntax form so a future refactor
+ * can't reopen the gap silently.
  *
  * Companion to tests/security/spl-token-import-surface.test.ts which guards
  * the narrower allow-listed import surface for @solana/spl-token (where the
@@ -79,6 +91,20 @@ function recordIfViolation(
   }
 }
 
+/**
+ * Returns the resolved string value of a module-specifier expression if and
+ * only if it is statically resolvable: a plain string literal or a
+ * no-substitution template literal. Template literals with `${…}`
+ * substitutions are dynamic and cannot be statically resolved, so we return
+ * null and skip them (anyone willing to template a package name out of
+ * runtime values is doing something this guard cannot help with).
+ */
+function staticSpecifierText(expr: ts.Expression): string | null {
+  if (ts.isStringLiteral(expr)) return expr.text;
+  if (ts.isNoSubstitutionTemplateLiteral(expr)) return expr.text;
+  return null;
+}
+
 function scanSource(file: string, source: string): Violation[] {
   const sourceFile = ts.createSourceFile(
     file,
@@ -106,12 +132,18 @@ function scanSource(file: string, source: string): Violation[] {
     ) {
       recordIfViolation(node.argument.literal.text, 'ImportTypeNode', file, violations);
     } else if (ts.isCallExpression(node) && node.arguments.length > 0) {
-      const arg = node.arguments[0];
-      if (ts.isStringLiteral(arg)) {
+      // require(...) and dynamic import(...) take arbitrary expressions, so
+      // module specifiers can also be no-substitution template literals
+      // (`import(\`axios\`)`, `require(\`lodash\`)`). The static
+      // ImportDeclaration / ExportDeclaration / ImportTypeNode forms above
+      // are spec-required to be StringLiteral, so only this branch needs to
+      // recognise the template-literal form.
+      const specifier = staticSpecifierText(node.arguments[0]);
+      if (specifier !== null) {
         if (ts.isIdentifier(node.expression) && node.expression.text === 'require') {
-          recordIfViolation(arg.text, 'require()', file, violations);
+          recordIfViolation(specifier, 'require()', file, violations);
         } else if (node.expression.kind === ts.SyntaxKind.ImportKeyword) {
-          recordIfViolation(arg.text, 'dynamic import()', file, violations);
+          recordIfViolation(specifier, 'dynamic import()', file, violations);
         }
       }
     }
@@ -194,6 +226,16 @@ describe('transitive-only-deps stay unreachable from src/ imports (AST scan)', (
         expectSyntax: 'require()',
       },
       {
+        name: 'dynamic import with no-substitution template literal',
+        source: 'const a = import(`axios`);\n',
+        expectSyntax: 'dynamic import()',
+      },
+      {
+        name: 'require with no-substitution template literal',
+        source: 'const l = require(`lodash`);\n',
+        expectSyntax: 'require()',
+      },
+      {
         name: 'import-type node in a type alias',
         source: `type T = import('axios').AxiosResponse;\n`,
         expectSyntax: 'ImportTypeNode',
@@ -229,6 +271,10 @@ describe('transitive-only-deps stay unreachable from src/ imports (AST scan)', (
       {
         name: 'import of a different package entirely',
         source: `import { z } from 'zod';\n`,
+      },
+      {
+        name: 'dynamic import with substituted template literal (cannot statically resolve)',
+        source: 'const name = "axios"; const a = import(`${name}`);\n',
       },
     ];
 
