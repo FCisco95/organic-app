@@ -413,6 +413,10 @@ export const RATE_LIMITS = {
   dashboardRead: { limit: 300, windowMs: 60_000 },
   /** Write endpoints: 20 req/min per user/IP */
   write: { limit: 20, windowMs: 60_000 },
+  /** Privileged admin mutations: 10 req/min per user */
+  adminWrite: { limit: 10, windowMs: 60_000 },
+  /** Cost-bearing ops (burns, uploads, paid external APIs): 3 req/min per user */
+  costly: { limit: 3, windowMs: 60_000 },
   /** Sensitive endpoints: 5 req/min per user/IP */
   sensitive: { limit: 5, windowMs: 60_000 },
   /** Solana proxy reads: 100/min per IP (anon) */

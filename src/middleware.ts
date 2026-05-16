@@ -46,7 +46,7 @@ const INTERNAL_BYPASS_PATHS = new Set(['/api/internal/market-cache/refresh']);
 const SENSITIVE_RATE_LIMIT_PREFIXES = [
   '/api/settings',
   '/api/rewards/claims',
-  '/api/rewards/distributions/manual',
+  '/api/rewards/distributions',
   '/api/organic-id/assign',
 ];
 const SOLANA_PROXY_USER_PATHS = new Set(['/api/solana/is-holder']);
@@ -54,11 +54,31 @@ const SOLANA_PROXY_IP_PATH_PREFIX = '/api/solana/';
 const TRANSLATE_RATE_LIMIT_PATH_PATTERN =
   /^\/api\/(?:posts|proposals|ideas|tasks)\/[^/]+\/translate$|^\/api\/translate\/comment\/[^/]+$/;
 
+// Cost-bearing operations (burns, uploads, paid external APIs).
+// Mutation methods on these paths get RATE_LIMITS.costly (3/min/user).
+const COSTLY_WRITE_PATHS = new Set([
+  '/api/gamification/burn',
+  '/api/profile/upload-avatar',
+  '/api/twitter/link/start',
+  '/api/engagement/posts',
+]);
+
+// Admin-only mutations get RATE_LIMITS.adminWrite (10/min/user).
+const ADMIN_WRITE_PATH_PREFIX = '/api/admin/';
+const ADMIN_WRITE_PATTERN =
+  /^\/api\/proposals\/[^/]+\/(?:start-voting|finalize|execute)$|^\/api\/disputes\/[^/]+\/(?:resolve|mediate|assign)$/;
+
+// High-consequence consumer mutations get RATE_LIMITS.sensitive (5/min/user)
+// despite not being under the SENSITIVE_RATE_LIMIT_PREFIXES list (which is
+// method-agnostic and includes reads). These are mutation-only matches.
+const SENSITIVE_WRITE_PATTERN =
+  /^\/api\/disputes$|^\/api\/disputes\/[^/]+\/appeal$|^\/api\/sprints\/[^/]+\/(?:start|complete)$|^\/api\/submissions\/[^/]+\/review$|^\/api\/marketplace\/boosts$|^\/api\/marketplace\/boosts\/[^/]+\/engage$|^\/api\/proposals\/[^/]+\/vote$|^\/api\/engagement\/appeals\/[^/]+\/vote$|^\/api\/engagement\/submissions\/[^/]+\/appeal$/;
+
 function isLocalHost(hostname: string): boolean {
   return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1';
 }
 
-function getApiRateLimitPolicy(pathname: string, method: string): ApiRateLimitPolicy | null {
+export function getApiRateLimitPolicy(pathname: string, method: string): ApiRateLimitPolicy | null {
   if (method === 'OPTIONS') {
     return null;
   }
@@ -93,6 +113,19 @@ function getApiRateLimitPolicy(pathname: string, method: string): ApiRateLimitPo
     }
 
     return { bucket: 'read', config: RATE_LIMITS.read, scope: 'ip' };
+  }
+
+  // Mutation methods (POST/PUT/PATCH/DELETE) below.
+  if (COSTLY_WRITE_PATHS.has(pathname)) {
+    return { bucket: 'costly', config: RATE_LIMITS.costly, scope: 'user' };
+  }
+
+  if (pathname.startsWith(ADMIN_WRITE_PATH_PREFIX) || ADMIN_WRITE_PATTERN.test(pathname)) {
+    return { bucket: 'admin-write', config: RATE_LIMITS.adminWrite, scope: 'user' };
+  }
+
+  if (SENSITIVE_WRITE_PATTERN.test(pathname)) {
+    return { bucket: 'sensitive', config: RATE_LIMITS.sensitive, scope: 'user' };
   }
 
   return { bucket: 'write', config: RATE_LIMITS.write, scope: 'user' };
