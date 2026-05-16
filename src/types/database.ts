@@ -1562,7 +1562,6 @@ export type Database = {
           voting_starts_at: string | null
           execution_deadline: string | null
           execution_status: string | null
-          execution_notes: string | null
           executed_at: string | null
         }
         Insert: {
@@ -1605,7 +1604,6 @@ export type Database = {
           voting_starts_at?: string | null
           execution_deadline?: string | null
           execution_status?: string | null
-          execution_notes?: string | null
           executed_at?: string | null
         }
         Update: {
@@ -1648,7 +1646,6 @@ export type Database = {
           voting_starts_at?: string | null
           execution_deadline?: string | null
           execution_status?: string | null
-          execution_notes?: string | null
           executed_at?: string | null
         }
         Relationships: [
