@@ -38,6 +38,7 @@ import { PageContainer } from '@/components/layout';
 import { SprintSnapshotCard } from '@/components/sprints/sprint-snapshot-card';
 import { SprintStartDialog } from '@/components/sprints/sprint-start-dialog';
 import { SprintCompleteDialog } from '@/components/sprints/sprint-complete-dialog';
+import { StewardPromotePanel } from '@/components/backlog/StewardPromotePanel';
 
 export default function SprintDetailPage() {
   const params = useParams();
@@ -588,6 +589,11 @@ export default function SprintDetailPage() {
         data-testid="sprint-detail-operator-grid"
       >
         <div className="space-y-5">
+          {/* Steward backlog-promote panel — admin/council only, while sprint is in planning */}
+          {canManageSprint && sprint.status === 'planning' && (
+            <StewardPromotePanel sprintId={sprint.id} orgId={sprint.org_id ?? null} />
+          )}
+
           {/* Snapshot for completed sprints */}
           {sprint.status === 'completed' && snapshot && <SprintSnapshotCard snapshot={snapshot} />}
 

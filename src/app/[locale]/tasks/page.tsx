@@ -20,6 +20,7 @@ import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { TaskFiltersBar } from '@/components/tasks/task-filters-bar';
 import { TaskListSection } from '@/components/tasks/task-list-section';
+import { useMyBacklogVotes } from '@/features/backlog/hooks';
 import dynamic from 'next/dynamic';
 const TaskNewModal = dynamic(() => import('@/components/tasks/task-new-modal').then(m => m.TaskNewModal), { ssr: false });
 import { PageContainer } from '@/components/layout';
@@ -65,6 +66,9 @@ export default function TasksPage() {
   const canManage = profile?.role === 'admin';
   const canReview = !!profile?.role && ['admin', 'council'].includes(profile.role);
   const canLike = !!profile?.role && ['member', 'council', 'admin'].includes(profile.role);
+  const canBacklogVote = isOrgMember;
+  const myBacklogVotesQuery = useMyBacklogVotes();
+  const myBacklogVotes = myBacklogVotesQuery.data ?? {};
 
   const loadSprints = useCallback(async () => {
     try {
@@ -739,6 +743,8 @@ export default function TasksPage() {
         onPageChange={handlePageChange}
         onResetFilters={handleClearFilters}
         userId={user?.id ?? null}
+        myBacklogVotes={myBacklogVotes}
+        canBacklogVote={canBacklogVote}
       />
 
       {/* Modals */}

@@ -4,6 +4,7 @@ import { FilterX, Heart, MessageSquare, Upload, Users } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { type Sprint, type TaskListItem, type TaskTab, type TaskStatus } from '@/features/tasks';
+import { BacklogVoteControl } from '@/components/backlog/BacklogVoteControl';
 
 const STATUS_TEXT_COLOR: Record<TaskStatus, string> = {
   backlog: 'text-muted-foreground',
@@ -45,6 +46,8 @@ type TaskListSectionProps = {
   onPageChange: (page: number) => void;
   onResetFilters: () => void;
   userId: string | null;
+  myBacklogVotes?: Record<string, -1 | 1>;
+  canBacklogVote?: boolean;
 };
 
 export function TaskListSection({
@@ -66,6 +69,8 @@ export function TaskListSection({
   onToggleLike,
   onPageChange,
   onResetFilters,
+  myBacklogVotes,
+  canBacklogVote = false,
 }: TaskListSectionProps) {
   const t = useTranslations('Tasks');
   const locale = useLocale();
@@ -196,6 +201,19 @@ export function TaskListSection({
 
                     {/* Activity column — tight icons */}
                     <div className="flex flex-wrap items-center gap-2 md:justify-end">
+                      {activeView === 'backlog' && task.status === 'backlog' && (
+                        <BacklogVoteControl
+                          taskId={task.id}
+                          upvotes={
+                            (task as TaskListItem & { upvotes?: number }).upvotes ?? 0
+                          }
+                          downvotes={
+                            (task as TaskListItem & { downvotes?: number }).downvotes ?? 0
+                          }
+                          myVote={(myBacklogVotes?.[task.id] ?? 0) as -1 | 0 | 1}
+                          canVote={canBacklogVote}
+                        />
+                      )}
                       <button
                         type="button"
                         onClick={(event) => {
