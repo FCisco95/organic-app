@@ -56,7 +56,12 @@ export async function GET(request: NextRequest) {
           logger.warn('boost_requests table not available, returning empty list');
           return NextResponse.json({ data: [] });
         }
-        logger.error('Failed to fetch my boosts', error);
+        logger.error('Failed to fetch my boosts', {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint,
+        });
         return NextResponse.json({ error: 'Failed to fetch boosts' }, { status: 500 });
       }
 
@@ -76,7 +81,12 @@ export async function GET(request: NextRequest) {
         logger.warn('boost_requests table not available, returning empty list');
         return NextResponse.json({ data: [] });
       }
-      logger.error('Failed to fetch active boosts', error);
+      logger.error('Failed to fetch active boosts', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint,
+      });
       return NextResponse.json({ error: 'Failed to fetch boosts' }, { status: 500 });
     }
 

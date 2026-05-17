@@ -1,5 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { createAnonClient } from '@/lib/supabase/server';
+import { createAnonClient, createServiceClient } from '@/lib/supabase/server';
 import { logger } from '@/lib/logger';
 import type { DaoMetricsSnapshot, GovernanceSummaryContent } from './types';
 
@@ -210,8 +210,10 @@ export async function generateGovernanceSummary(): Promise<{
       return { ok: false, error: 'AI response was not valid JSON' };
     }
 
-    // 3. Store in database
-    const supabase = createAnonClient();
+    // 3. Store in database — must use service role: governance_summaries
+    // has RLS enabled with only a public-SELECT policy, so anon INSERTs
+    // are rejected. Service role bypasses RLS for cron-driven writes.
+    const supabase = createServiceClient();
     const now = new Date();
     const periodStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
@@ -229,7 +231,12 @@ export async function generateGovernanceSummary(): Promise<{
       .single();
 
     if (error) {
-      logger.error('Failed to store governance summary', error);
+      logger.error('Failed to store governance summary', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint,
+      });
       return { ok: false, error: 'Database insert failed' };
     }
 

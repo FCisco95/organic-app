@@ -26,17 +26,23 @@ interface CrawlerToken {
  * Loads a "crawler" Twitter token for read-only public API calls. Prefers
  * an admin/council linked account. Refreshes the token if it's expired.
  */
-async function loadCrawlerToken(supabase: DbClient, twitter: TwitterClient): Promise<CrawlerToken | null> {
+export async function loadCrawlerToken(supabase: DbClient, twitter: TwitterClient): Promise<CrawlerToken | null> {
   const encryptionKey = process.env.TWITTER_TOKEN_ENCRYPTION_KEY;
   if (!encryptionKey) {
     logger.error('[engagement.processor] TWITTER_TOKEN_ENCRYPTION_KEY not set');
     return null;
   }
 
+  // Skip rows whose twitter_user_id is a `pending_<ts>` placeholder. Those rows
+  // were created when the OAuth callback couldn't reach /users/me (typically
+  // because the app wasn't attached to a Project yet), so their stored access
+  // token is from that pre-project era and X rejects it on every v2 call.
+  // Picking one as the crawler produces the ORGANIC-APP-1 error class.
   const { data } = await asEngDb(supabase)
     .from('twitter_accounts')
     .select('id, user_id, access_token_encrypted, refresh_token_encrypted, token_expires_at')
     .eq('is_active', true)
+    .not('twitter_user_id', 'like', 'pending_%')
     .order('created_at', { ascending: true })
     .limit(1)
     .maybeSingle();
@@ -97,6 +103,21 @@ async function findActiveSprintId(supabase: DbClient, now: Date = new Date()): P
   return (data?.id as string | undefined) ?? null;
 }
 
+/**
+ * Twitter API v2 rejects requests when the dev app is not attached to a
+ * Project in the developer portal. This is an out-of-band config error
+ * that affects every API call, so we surface it once as a warning and
+ * abort the tick rather than logging it as an error per handle.
+ */
+export function isTwitterProjectAttachmentError(err: unknown): boolean {
+  if (err instanceof Error) {
+    return err.message.includes(
+      'must use keys and tokens from a Twitter developer App that is attached to a Project'
+    );
+  }
+  return false;
+}
+
 // ─── Phase 1: discover new posts from allowlisted handles ──────────────
 
 async function discoverNewPosts(
@@ -154,6 +175,12 @@ async function discoverNewPosts(
         .update({ last_polled_at: new Date().toISOString(), last_seen_tweet_id: maxSeenId } as never)
         .eq('id', h.id as string);
     } catch (err) {
+      if (isTwitterProjectAttachmentError(err)) {
+        logger.warn(
+          '[engagement.processor] Twitter dev app not attached to a Project — aborting discover loop'
+        );
+        return discovered;
+      }
       logger.error(`[engagement.processor] discover failed for @${h.handle}`, err);
     }
   }
