@@ -22,6 +22,24 @@ Add newest entries at the top.
 - `vercel --version` reports `54.1.0`
 - No code changes shipped this session beyond what was already in the 17 merged PRs
 
+### Continuation: Steward + voting feature merged + new sprint launched
+
+- **PR #132 (Steward + 1p1v backlog voting)** rebased onto current main (was 20 commits behind, 11 ahead) and merged as commit `fc49550`. Rebase auto-merged without textual conflicts; verified `src/types/database.ts` integrity (all 3 new tables coexist: `backlog_votes`, `task_steward_reviews`, `proposal_execution_events`). PR #132 was already written using the Next 15 async `params` API, so no patch was needed. Cherry-picked the design-spec commit from `chore/sprint-organic-identity-seed` onto the rebased branch so spec + implementation landed together
+- Real-world validation of the Vercel branch-protection fix: PR #132 (`phase/*` branch) and PR #160 (`chore/*` branch) both merged cleanly without `--admin` once `lint-and-build` went green
+- **PR #160 (seed script historical record)** merged as commit `c30c196`. Preserves `scripts/seed-sprint-2026-05-14.ts` on main alongside `seed-sprint-2026-04-27.ts`. Two finalizing edits before merge: sprint window shifted to 2026-05-18 → 2026-06-01, and the obsolete dev task (sprint-task voting automation — shipped via PR #132) replaced with a 100-pt rollout/hardening task
+- Executed the seed script against prod: sprint `871f9126-05f4-42f2-8dc2-f742a9d6b606` (Sprint — Organic Identity) created in `planning` status with 7 one-shot tasks
+- Closed out prior sprint `9dc7ece3-64b7-4672-9e16-17190aa03635` (Sprint — Community Ritual & Automation) by fast-forwarding `dispute_window_ends_at` (all settlement blockers verified clear: 0 disputes, 0 pending submissions, 0 integrity flags) then advancing `dispute_window → settlement → completed`
+- Started new sprint, posted X announcement
+- Drafted 4 character/persona image prompts for the Organic Identity sprint marketing (BARLEYBEAN, THE BREWMASTER, PERCOLATE, STEEP)
+- Local repo cleanup: deleted 8 stale local branches (PRs already merged on origin) + the rebase backup tag
+
+### State at session close
+
+- 0 open PRs
+- Local repo: only `main`
+- Sprint — Organic Identity is **active** in prod
+- Sentry remains the deferred priority for next session (partially installed: `@sentry/nextjs` + `@sentry/node` + `@sentry/profiling-node` 10.39.0, configs in `src/sentry.{server,edge}.config.ts`, helpers in `src/lib/sentry.ts`, `.wip-sentry/` directory suggests paused prior work to investigate)
+
 ---
 
 ## 2026-05-13 (Session: Organic Hub naming cleanup)
