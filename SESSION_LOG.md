@@ -2,6 +2,28 @@
 
 Add newest entries at the top.
 
+## 2026-05-17 (Session: Security-audit follow-through + Vercel branch-protection fix)
+
+### Summary
+
+- Shipped 17 PRs to `main` across the session: security audit follow-through (rate-limit tightening, RLS leak fix, Twitter OAuth session check, drop deprecated `proposals.execution_notes`), Dependabot triage, audit-ci allowlist prune, and `npm audit fix` for moderate `next-intl` + `ip-address` advisories
+- PRs #152 (`docs/routes-auth-check-triage`) and #157 (`chore/audit-ci-prune-stale-allowlist`) had every CI check green but the required `Vercel` status check never reported — both required `gh pr merge --admin` to land
+- Investigated and diagnosed the gap: `vercel.json`'s `git.deploymentEnabled: false` for `docs/*` / `chore/*` / `claude/*` causes Vercel to skip both the deploy *and* the commit status post; with `Vercel` set as a required check on `main`, those PRs become unmergeable without admin bypass
+- Confirmed perfectly bimodal across 10 recent PRs: `fix/*` always got the Vercel status; `docs/*` / `chore/*` never did
+- Ruled out (with evidence): preview-deploy quota, GitHub App scope, webhook delivery failure, "Ignored Build Step" config
+- Fixed by removing `Vercel` from `main`'s required status checks (kept `lint-and-build`, `strict: true`, all other protections intact). Preview deploys still happen on enabled branch prefixes; they just no longer gate merges
+- Saved gotcha to cross-session memory (`feedback_vercel_branch_protection_gotcha.md`) so future sessions don't burn time on webhook/quota hunts
+- Upgraded Vercel CLI `51.4.0` → `54.1.0` (unrelated nag from SessionStart hook)
+- Discovered Sentry is partially installed (`@sentry/nextjs` + `@sentry/node` + `@sentry/profiling-node` 10.39.0, active configs in `src/sentry.{server,edge}.config.ts`, helpers in `src/lib/sentry.ts`, `.wip-sentry/` directory hinting at paused prior work) — flagged for next session
+
+### Validation
+
+- `gh api /repos/FCisco95/organic-app/branches/main/protection` confirms `required_status_checks.contexts` is now `["lint-and-build"]` only
+- `vercel --version` reports `54.1.0`
+- No code changes shipped this session beyond what was already in the 17 merged PRs
+
+---
+
 ## 2026-05-13 (Session: Organic Hub naming cleanup)
 
 ### Summary
