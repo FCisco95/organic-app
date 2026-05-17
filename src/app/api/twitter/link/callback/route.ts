@@ -39,6 +39,7 @@ export async function GET(request: Request) {
 
     const {
       data: { user },
+      error: getUserError,
     } = await supabase.auth.getUser();
 
     const { data: oauthSession, error: sessionError } = await serviceClient
@@ -55,8 +56,19 @@ export async function GET(request: Request) {
     // session.user_id stored when the OAuth flow was initiated. The random
     // `state` token is the primary CSRF protection; this is the second layer
     // so a leaked state token alone cannot complete the link.
-    if (!user || user.id !== oauthSession.user_id) {
-      return NextResponse.redirect(buildProfileRedirect(appOrigin, false, 'session_mismatch'));
+    if (!user) {
+      logger.warn('[twitter.link.callback] no authenticated user when validating callback', {
+        getUserError: getUserError?.message,
+        sessionUserId: oauthSession.user_id,
+      });
+      return NextResponse.redirect(buildProfileRedirect(appOrigin, false, 'session_no_user'));
+    }
+    if (user.id !== oauthSession.user_id) {
+      logger.warn('[twitter.link.callback] callback user does not match session user', {
+        callbackUserId: user.id,
+        sessionUserId: oauthSession.user_id,
+      });
+      return NextResponse.redirect(buildProfileRedirect(appOrigin, false, 'session_user_mismatch'));
     }
 
     const expired = new Date(oauthSession.expires_at).getTime() <= Date.now();

@@ -20,9 +20,12 @@ import path from 'node:path';
  * Twitter handle to the victim's account.
  *
  * The corrected guard requires both: a valid session AND a session id that
- * matches the one stored at OAuth-init time.
+ * matches the one stored at OAuth-init time. The original combined guard was
+ * split into two branches for diagnostics, but the security intent is the
+ * same — every callback must short-circuit on either condition.
  *
- *   if (!user || user.id !== oauthSession.user_id) { redirect('session_mismatch') }
+ *   if (!user) { redirect('session_no_user') }
+ *   if (user.id !== oauthSession.user_id) { redirect('session_user_mismatch') }
  */
 
 const ROUTE = path.resolve(
@@ -33,17 +36,25 @@ const ROUTE = path.resolve(
 describe('Twitter OAuth callback requires an authenticated session', () => {
   const source = readFileSync(ROUTE, 'utf-8');
 
-  it('rejects when there is no session (not only on session mismatch)', () => {
-    // Strict: the guard must check `!user` (or `user == null` / `user === null`),
-    // not just `user && user.id !== ...`. The earlier vulnerable form
-    // intentionally returns false here so this test would have caught it.
+  it('rejects when there is no authenticated session', () => {
+    // The earlier vulnerable form was `if (user && user.id !== ...)` which let
+    // unauthenticated callers slip through. This test asserts the guard rejects
+    // when `user` is null/undefined, regardless of whether the same condition
+    // lives in one combined `if` or a dedicated branch.
     const guard = source.match(
-      /if\s*\(\s*(?:!\s*user|user\s*==\s*null|user\s*===\s*null)\s*\|\|\s*user\.id\s*!==\s*oauthSession\.user_id\s*\)/
+      /if\s*\(\s*(?:!\s*user|user\s*==\s*null|user\s*===\s*null)\s*[)|]/
     );
     expect(
       guard,
-      'callback must reject when !user OR user.id !== oauthSession.user_id'
+      'callback must short-circuit when !user (e.g. `if (!user)` or `if (!user || ...)`)'
     ).not.toBeNull();
+  });
+
+  it('rejects when callback user does not match session user', () => {
+    expect(
+      source,
+      'callback must short-circuit when user.id !== oauthSession.user_id'
+    ).toMatch(/user\.id\s*!==\s*oauthSession\.user_id/);
   });
 
   it('still calls supabase.auth.getUser() before the guard', () => {
