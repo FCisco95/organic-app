@@ -33,8 +33,8 @@ const supabase = createClient(SUPABASE_URL, SERVICE_KEY, {
 });
 
 const SPRINT_NAME = 'Sprint — Organic Identity';
-const SPRINT_START = '2026-05-14T00:00:00Z';
-const SPRINT_END = '2026-05-28T23:59:59Z';
+const SPRINT_START = '2026-05-18T00:00:00Z';
+const SPRINT_END = '2026-06-01T23:59:59Z';
 const SPRINT_GOAL =
   'Community designs personas representing Organic values. 1 hero + 4 supporting cast win the logo system via 1p1v vote. Every relevant task ships with an X engagement angle to drive distribution.';
 const SPRINT_CAPACITY = 3000;
@@ -220,33 +220,31 @@ const ONE_SHOTS: OneShotSeed[] = [
     max_assignees: 50,
   },
   {
-    title: 'Automate sprint-task voting (backlog → sprint via proposals)',
+    title: 'Roll out + harden sprint-task voting (newly shipped feature)',
     description: [
-      '**WHAT:** Make sprint-task voting automatic. Today, picking which backlog items become the next sprint is a manual `Backlog priority voting` task per sprint. Replace that with: at sprint-end (or on `planning`-status sprint create), the top-N voted backlog items via the existing proposals/voting system auto-promote into the new sprint.',
+      '**WHAT:** Sprint-task voting + Steward review just shipped (PR #132). This task is the rollout: write the council runbook, run a real promotion against day-1 backlog, gather member feedback, and file follow-ups.',
       '',
-      '**WHY:** Reduces admin overhead, surfaces community priorities consistently, removes a recurring manual step.',
-      '',
-      '**ACCEPTANCE:**',
-      '- A new sprint created in `planning` state has its initial backlog/todo task list pre-populated with the top-N voted backlog items from the prior sprint window.',
-      '- N is configurable (default 5–10).',
-      '- 1p1v via `organic_id`, consistent with the persona finalists vote.',
-      '- Council can override, re-pin, or drop any auto-promoted task before sprint goes active.',
-      '- Idempotent — re-running the promotion does not duplicate rows.',
+      '**WHY:** Code shipped but the feature is unused until council actually runs a promotion in front of the community. Friction caught now (day 1) avoids carrying it into the next sprint.',
       '',
       '**SCOPE:**',
-      '- Server logic (RPC or API route) that promotes top-N backlog items into the next sprint.',
-      '- Trigger hook: either on sprint create with `status=planning`, or a manual admin button.',
-      '- Minimal UI surface for council to review and override before activation.',
+      '- Short council runbook documenting: how to trigger `/api/admin/sprints/[id]/promote-backlog`, how Steward review works (`/api/admin/steward/review-backlog`), how to override before activation.',
+      '- Execute one real promotion against the current backlog (or a dry-run sprint) and screenshot the flow.',
+      '- Open at least one follow-up issue for any UX gap surfaced during the dry-run.',
       '',
-      '**HOW TO SUBMIT:** PR link + a short design note in the PR description explaining the promotion algorithm and the trigger choice. Walk-through video or screenshots of the council override UI.',
+      '**ACCEPTANCE:**',
+      '- Runbook lives at `docs/operational/promote-backlog-runbook.md` (or equivalent path).',
+      '- One promotion executed (real or dry-run) with notes/screenshots posted in this task.',
+      '- Follow-ups filed as issues, linked here.',
       '',
-      '**POINTS:** 300.',
+      '**HOW TO SUBMIT:** Paste the runbook URL + the promotion screenshots + linked follow-up issues.',
+      '',
+      '**POINTS:** 100.',
     ].join('\n'),
     status: 'todo',
-    points: 300,
+    points: 100,
     priority: 'high',
     task_type: 'development',
-    labels: ['dev', 'governance', 'feature'],
+    labels: ['dev', 'governance', 'rollout'],
     assigned_to_admin: true,
   },
 ];
